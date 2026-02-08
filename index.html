@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TeamTowers Humà - Consultoría estratégica de RRHH en Vilafranca del Penedès. De las torres humanas a las organizaciones humanas. Innovación en gestión de personas con 20+ años construyendo equipos sólidos como castillos.">
-    <meta name="keywords" content="TeamTowers Humà, consultoría RRHH Penedès, gestión personas Vilafranca, Value Network Analysis, Comunidades de Práctica, TeamTowers, innovación RRHH, desarrollo organizacional, ayudas Penedès, consultoría local">
+    <meta name="description" content="TeamTowers Humà - Consultoría estratégica de RRHH en Vilafranca del Penedès. Innovación en gestión de personas con Value Network Analysis, TeamTowers, Comunidades de Práctica y producción de eventos.">
+    <meta name="keywords" content="TeamTowers Humà, consultoría RRHH Penedès, gestión personas Vilafranca, Value Network Analysis, Comunidades de Práctica, TeamTowers, innovación RRHH, desarrollo organizacional, ayudas Penedès">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
-    <title>TeamTowers Humà | De las Torres Humanas a las Organizaciones Humanas | Vilafranca del Penedès</title>
+    <title>TeamTowers Humà | Consultoría RRHH en Vilafranca del Penedès</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="TeamTowers Humà - De las Torres Humanas a las Organizaciones Humanas">
-    <meta property="og:description" content="20+ años construyendo equipos sólidos como castillos. Consultoría estratégica de RRHH con enfoque humanista en el corazón del Penedès.">
+    <meta property="og:title" content="TeamTowers Humà - Consultoría RRHH en Vilafranca del Penedès">
+    <meta property="og:description" content="De las torres humanas a las organizaciones humanas. Innovación en gestión de personas con 20+ años de experiencia en el corazón del Penedès.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.netlify.app">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
@@ -32,7 +32,7 @@
       "name": "TeamTowers Humà",
       "alternateName": "TeamTowers Humà Consulting",
       "image": "https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png",
-      "description": "Consultoría estratégica especializada en innovación en gestión de personas mediante Value Network Analysis, Comunidades de Práctica y experiencias transformadoras TeamTowers. De las torres humanas a las organizaciones humanas.",
+      "description": "Consultoría estratégica especializada en innovación en gestión de personas mediante Value Network Analysis, Comunidades de Práctica y experiencias transformadoras TeamTowers",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Vilafranca del Penedès",
@@ -72,8 +72,7 @@
         "Gestión del Talento",
         "Transformación Cultural",
         "Desarrollo Organizacional",
-        "Innovación Social",
-        "Economía Social"
+        "Innovación Social"
       ],
       "foundingDate": "2005-01-01",
       "founder": {
@@ -85,15 +84,15 @@
     
     <style>
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --accent: #f5576c;
-            --dark: #1d3557;
-            --light: #f8f9fa;
-            --gold: #ffd700;
-            --success: #4ade80;
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
             --warning: #fbbf24;
-            --gray: #6c757d;
+            --gray: #64748b;
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
@@ -140,7 +139,7 @@
         .lang-btn.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
         }
         
         /* Hero Section with Video Background */
@@ -173,7 +172,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(29, 53, 87, 0.88) 0%, rgba(118, 75, 162, 0.92) 100%);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.95) 100%);
             z-index: -1;
         }
         
@@ -237,81 +236,68 @@
             opacity: 0.9;
         }
         
-        /* Story Section */
-        .story-section {
+        /* Founder Section */
+        .founder-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .founder-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .founder-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .founder-name {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        
+        .founder-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .founder-bio {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            max-width: 700px;
+        }
+        
+        .founder-link {
+            display: inline-block;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 100px 20px;
-            position: relative;
-            overflow: hidden;
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
         }
         
-        .story-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
-            z-index: 0;
-        }
-        
-        .story-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .story-title {
-            text-align: center;
-            font-size: 3.2rem;
-            margin-bottom: 40px;
-            position: relative;
-        }
-        
-        .story-title::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--gold);
-            border-radius: 2px;
-        }
-        
-        .story-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-top: 40px;
-        }
-        
-        .story-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .story-card h3 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: var(--gold);
-        }
-        
-        .story-card p {
-            margin-bottom: 15px;
-            line-height: 1.8;
-        }
-        
-        .highlight {
-            color: var(--gold);
-            font-weight: 600;
+        .founder-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.4);
         }
         
         /* CTA Buttons */
@@ -336,24 +322,25 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, #ffcc00 100%);
-            color: var(--dark);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 12px 30px rgba(30, 58, 138, 0.4);
         }
         
         .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
         }
         
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--light);
             transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2);
         }
         
         /* Section Styling */
@@ -369,6 +356,7 @@
             display: inline-block;
             left: 50%;
             transform: translateX(-50%);
+            color: var(--primary);
         }
         
         .section-title:after {
@@ -379,7 +367,7 @@
             transform: translateX(-50%);
             width: 70px;
             height: 4px;
-            background: var(--primary);
+            background: var(--accent);
             border-radius: 2px;
         }
         
@@ -407,55 +395,29 @@
             box-shadow: var(--box-shadow);
             transition: var(--transition);
             position: relative;
+            border-top: 4px solid var(--accent);
         }
         
         .service-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
         }
         
-        .service-img {
-            height: 220px;
+        .service-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .service-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--gold);
-            color: var(--dark);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        .service-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-        
-        .service-card:hover .service-img img {
-            transform: scale(1.15);
-        }
-        
-        .service-content {
-            padding: 35px;
+            padding: 25px;
+            text-align: center;
+            color: white;
         }
         
         .service-title {
             font-size: 1.9rem;
-            margin-bottom: 18px;
-            color: var(--dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .service-content {
+            padding: 30px;
         }
         
         .service-desc {
@@ -464,67 +426,40 @@
             line-height: 1.7;
         }
         
-        .service-link {
+        .service-highlights {
+            margin-bottom: 25px;
+        }
+        
+        .service-highlights ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .service-highlights li {
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+        
+        .service-cta {
             display: inline-block;
-            color: var(--primary);
-            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
             text-decoration: none;
-            position: relative;
-            padding-right: 30px;
-            font-size: 1.05rem;
-        }
-        
-        .service-link:after {
-            content: '→';
-            position: absolute;
-            right: 0;
-            top: 0;
+            font-weight: 700;
             transition: var(--transition);
-            font-weight: 900;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
         }
         
-        .service-link:hover:after {
-            transform: translateX(8px);
-        }
-        
-        /* Partners Section */
-        .partners-section {
-            background: var(--light);
-        }
-        
-        .partners-grid {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 50px;
-            max-width: 1000px;
-            margin: 50px auto 0;
-        }
-        
-        .partner-logo {
-            max-width: 180px;
-            max-height: 80px;
-            filter: grayscale(100%) brightness(0.8);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .partner-logo:hover {
-            filter: grayscale(0%) brightness(1);
-            transform: scale(1.1);
-        }
-        
-        .partner-logo img {
-            max-width: 100%;
-            max-height: 80px;
-            object-fit: contain;
+        .service-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
         }
         
         /* Value Proposition */
         .value-section {
-            background: linear-gradient(135deg, var(--dark) 0%, #2c3e50 100%);
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
             color: white;
             position: relative;
             overflow: hidden;
@@ -573,7 +508,7 @@
             font-weight: 800;
             margin-bottom: 10px;
             display: block;
-            color: var(--gold);
+            color: var(--accent);
         }
         
         .stat-label {
@@ -596,7 +531,7 @@
             padding: 40px;
             box-shadow: var(--box-shadow);
             position: relative;
-            border-top: 4px solid var(--primary);
+            border-top: 4px solid var(--accent);
         }
         
         .testimonial-card::before {
@@ -606,7 +541,7 @@
             left: 20px;
             font-size: 6rem;
             color: var(--primary);
-            opacity: 0.15;
+            opacity: 0.1;
             font-family: Georgia, serif;
             line-height: 1;
         }
@@ -630,6 +565,7 @@
         .author-info h4 {
             font-weight: 700;
             margin-bottom: 5px;
+            color: var(--primary);
         }
         
         .author-info p {
@@ -639,35 +575,33 @@
         
         /* Contact Section */
         .contact-section {
-            background: var(--light);
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            text-align: center;
         }
         
         .contact-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 50px;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
+            background: white;
+            padding: 50px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
         
-        .contact-info h3 {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: var(--dark);
-        }
-        
-        .contact-details {
+        .contact-info {
             margin-bottom: 30px;
         }
         
         .contact-item {
             display: flex;
+            justify-content: center;
             margin-bottom: 20px;
+            font-size: 1.1rem;
         }
         
         .contact-icon {
-            min-width: 45px;
-            height: 45px;
+            min-width: 40px;
+            height: 40px;
             background: var(--primary);
             border-radius: 50%;
             display: flex;
@@ -676,34 +610,6 @@
             color: white;
             margin-right: 15px;
             flex-shrink: 0;
-            font-size: 1.2rem;
-        }
-        
-        .contact-form .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .contact-form input,
-        .contact-form textarea {
-            width: 100%;
-            padding: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        .contact-form input:focus,
-        .contact-form textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        
-        .contact-form textarea {
-            min-height: 150px;
-            resize: vertical;
         }
         
         /* Footer */
@@ -736,7 +642,7 @@
             left: 0;
             width: 40px;
             height: 3px;
-            background: var(--primary);
+            background: var(--accent);
         }
         
         .footer-links {
@@ -753,10 +659,11 @@
             transition: var(--transition);
             display: block;
             padding: 5px 0;
+            font-size: 1.05rem;
         }
         
         .footer-links a:hover {
-            color: var(--primary);
+            color: var(--accent);
             transform: translateX(5px);
         }
         
@@ -851,6 +758,11 @@
             .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
+            
+            .founder-content {
+                flex-direction: column;
+                text-align: center;
+            }
         }
         
         @media (max-width: 480px) {
@@ -878,31 +790,14 @@
                 padding: 25px;
             }
             
-            .story-card {
-                padding: 30px;
+            .founder-img {
+                width: 160px;
+                height: 160px;
             }
-        }
-        
-        /* Language specific styles */
-        .lang-ca .hero h1 {
-            font-size: 4.5rem;
-        }
-        
-        .evolution-badge {
-            display: inline-block;
-            background: var(--gold);
-            color: var(--dark);
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            
+            .contact-container {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
@@ -930,37 +825,20 @@
             <p class="hero-tagline lang" data-es="De las torres humanas a las organizaciones humanas" data-ca="De les torres humanes a les organitzacions humanes">De las torres humanas a las organizaciones humanas</p>
             <p class="lang" data-es="20+ años construyendo equipos sólidos como castillos. Consultoría estratégica de RRHH con enfoque humanista desde el corazón del Penedès." data-ca="20+ anys construint equips sòlids com castells. Consultoria estratègica de RRHH amb enfocament humanista des del cor del Penedès.">20+ años construyendo equipos sólidos como castillos. Consultoría estratégica de RRHH con enfoque humanista desde el corazón del Penedès.</p>
             <div class="cta-container">
-                <a href="#contact" class="btn btn-primary lang" data-es="Solicitar Consulta Gratuita" data-ca="Sol·licitar Consulta Gratuita">Solicitar Consulta Gratuita</a>
-                <a href="#story" class="btn btn-secondary lang" data-es="Nuestra Historia" data-ca="La Nostra Història">Nuestra Historia</a>
+                <a href="javascript:void(0)" onclick="contactService('Consulta general')" class="btn btn-primary lang" data-es="Solicitar Consulta Gratuita" data-ca="Sol·licitar Consulta Gratuita">Solicitar Consulta Gratuita</a>
+                <a href="#services" class="btn btn-secondary lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</a>
             </div>
         </div>
     </section>
     
-    <!-- Story Section - The Evolution -->
-    <section id="story" class="story-section">
-        <div class="story-content">
-            <h2 class="story-title lang" data-es="Nuestra Evolución" data-ca="La Nostra Evolució">Nuestra Evolución</h2>
-            <div class="evolution-badge lang" data-es="2005 → 2026" data-ca="2005 → 2026">2005 → 2026</div>
-            
-            <div class="story-grid">
-                <div class="story-card">
-                    <h3 class="lang" data-es="Los Orígenes" data-ca="Els Orígens">Los Orígenes</h3>
-                    <p class="lang" data-es="En 2005 nació <span class='highlight'>TeamTowers</span> con una visión clara: transformar equipos corporativos a través de la metáfora de los castellers. La tradición UNESCO se convirtió en nuestra herramienta más poderosa para construir confianza, comunicación y liderazgo compartido." data-ca="El 2005 va néixer <span class='highlight'>TeamTowers</span> amb una visió clara: transformar equips corporatius a través de la metàfora dels castellers. La tradició UNESCO es va convertir en la nostra eina més poderosa per construir confiança, comunicació i lideratge compartit.">En 2005 nació <span class='highlight'>TeamTowers</span> con una visión clara: transformar equipos corporativos a través de la metáfora de los castellers. La tradición UNESCO se convirtió en nuestra herramienta más poderosa para construir confianza, comunicación y liderazgo compartido.</p>
-                    <p class="lang" data-es="<span class='highlight'>60.000+ participantes</span> transformados. <span class='highlight'>150+ empresas</span> impactadas. La experiencia física de construir torres humanas demostró ser un catalizador único para el cambio organizacional." data-ca="<span class='highlight'>60.000+ participants</span> transformats. <span class='highlight'>150+ empreses</span> impactades. L'experiència física de construir torres humanes va demostrar ser un catalitzador únic per al canvi organitzatiu."><span class='highlight'>60.000+ participantes</span> transformados. <span class='highlight'>150+ empresas</span> impactadas. La experiencia física de construir torres humanas demostró ser un catalizador único para el cambio organizacional.</p>
-                </div>
-                
-                <div class="story-card">
-                    <h3 class="lang" data-es="La Transformación" data-ca="La Transformació">La Transformación</h3>
-                    <p class="lang" data-es="A lo largo de dos décadas, descubrimos que la verdadera transformación no termina con la experiencia. Nuestros clientes necesitaban <span class='highlight'>herramientas sostenibles</span> para mantener el impulso, capturar el conocimiento tácito y crear estructuras que perpetuaran los valores aprendidos." data-ca="Al llarg de dues dècades, vam descobrir que la veritable transformació no acaba amb l'experiència. Els nostres clients necessitaven <span class='highlight'>eines sostenibles</span> per mantenir l'impuls, capturar el coneixement tàcit i crear estructures que perpetuessin els valors apresos.">A lo largo de dos décadas, descubrimos que la verdadera transformación no termina con la experiencia. Nuestros clientes necesitaban <span class='highlight'>herramientas sostenibles</span> para mantener el impulso, capturar el conocimiento tácito y crear estructuras que perpetuaran los valores aprendidos.</p>
-                    <p class="lang" data-es="Así nació nuestra especialización en <span class='highlight'>Value Network Analysis</span> y <span class='highlight'>Comunidades de Práctica</span>: metodologías que permiten mapear flujos de valor, identificar cuellos de botella y construir redes de aprendizaje continuo dentro de las organizaciones." data-ca="Així va néixer la nostra especialització en <span class='highlight'>Value Network Analysis</span> i <span class='highlight'>Comunitats de Pràctica</span>: metodologies que permeten mapejar fluxos de valor, identificar colls d'ampolla i construir xarxes d'aprenentatge continu dins de les organitzacions.">Así nació nuestra especialización en <span class='highlight'>Value Network Analysis</span> y <span class='highlight'>Comunidades de Práctica</span>: metodologías que permiten mapear flujos de valor, identificar cuellos de botella y construir redes de aprendizaje continuo dentro de las organizaciones.</p>
-                </div>
-                
-                <div class="story-card">
-                    <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
-                    <p class="lang" data-es="Hoy, <span class='highlight'>TeamTowers Humà</span> representa la síntesis perfecta de nuestra trayectoria: la <span class='highlight'>solidez de las torres</span> combinada con la <span class='highlight'>profundidad humana</span>. No solo construimos experiencias memorables; construimos <span class='highlight'>organizaciones humanas</span> donde el talento florece y los valores perduran." data-ca="Avui, <span class='highlight'>TeamTowers Humà</span> representa la síntesi perfecta de la nostra trajectòria: la <span class='highlight'>solidesa dels castells</span> combinada amb la <span class='highlight'>profunditat humana</span>. No només construïm experiències memorables; construïm <span class='highlight'>organitzacions humanes</span> on el talent floreix i els valors perduren.">Hoy, <span class='highlight'>TeamTowers Humà</span> representa la síntesis perfecta de nuestra trayectoria: la <span class='highlight'>solidez de las torres</span> combinada con la <span class='highlight'>profundidad humana</span>. No solo construimos experiencias memorables; construimos <span class='highlight'>organizaciones humanas</span> donde el talento florece y los valores perduran.</p>
-                    <p class="lang" data-es="Desde <span class='highlight'>Vilafranca del Penedès</span>, nuestro compromiso es claro: ser la <span class='highlight'>consultora de referencia</span> en innovación en gestión de personas, conectando el patrimonio cultural catalán con las necesidades más avanzadas de las organizaciones modernas." data-ca="Des de <span class='highlight'>Vilafranca del Penedès</span>, el nostre compromís és clar: ser la <span class='highlight'>consultora de referència</span> en innovació en gestió de persones, connectant el patrimoni cultural català amb les necessitats més avançades de les organitzacions modernes.">Desde <span class='highlight'>Vilafranca del Penedès</span>, nuestro compromiso es claro: ser la <span class='highlight'>consultora de referencia</span> en innovación en gestión de personas, conectando el patrimonio cultural catalán con las necesidades más avanzadas de las organizaciones modernas.</p>
-                </div>
-            </div>
+    <!-- Founder Section -->
+    <section class="founder-section">
+        <div class="founder-content">
+            <img src="https://valuenetworklab.netlify.app/alvaro.jpg" alt="Álvaro Solache" class="founder-img">
+            <h2 class="founder-name lang" data-es="Álvaro Solache" data-ca="Àlvaro Solache">Álvaro Solache</h2>
+            <p class="founder-title lang" data-es="Fundador de TeamTowers Humà" data-ca="Fundador de TeamTowers Humà">Fundador de TeamTowers Humà</p>
+            <p class="founder-bio lang" data-es="Director de RRHH y consultor estratégico con más de 25 años de experiencia liderando el desarrollo del talento y la transformación organizacional. Fundador de TeamTowers, pionero en la aplicación de la metodología castellera al desarrollo de equipos corporativos. Experto en Value Network Analysis y Comunidades de Práctica, ha transformado más de 150 organizaciones y ha formado a más de 60.000 participantes. Su enfoque único combina la solidez de las torres humanas con la profundidad del análisis de redes de valor." data-ca="Director de RRHH i consultor estratègic amb més de 25 anys d'experiència liderant el desenvolupament del talent i la transformació organitzativa. Fundador de TeamTowers, pioner en l'aplicació de la metodologia castellera al desenvolupament d'equips corporatius. Expert en Value Network Analysis i Comunitats de Pràctica, ha transforma més de 150 organitzacions i ha format a més de 60.000 participants. El seu enfocament únic combina la solidesa de les torres humanes amb la profunditat de l'anàlisi de xarxes de valor.">Director de RRHH y consultor estratégico con más de 25 años de experiencia liderando el desarrollo del talento y la transformación organizacional. Fundador de TeamTowers, pionero en la aplicación de la metodología castellera al desarrollo de equipos corporativos. Experto en Value Network Analysis y Comunidades de Práctica, ha transformado más de 150 organizaciones y ha formado a más de 60.000 participantes. Su enfoque único combina la solidez de las torres humanas con la profundidad del análisis de redes de valor.</p>
+            <a href="https://alvarosolache.netlify.app/" target="_blank" class="founder-link lang" data-es="Más sobre Álvaro Solache" data-ca="Més sobre Àlvaro Solache">Más sobre Álvaro Solache</a>
         </div>
     </section>
     
@@ -972,105 +850,124 @@
         <div class="services-grid">
             <!-- Service 1: TeamTowers -->
             <div class="service-card">
-                <div class="service-img">
-                    <div class="service-badge lang" data-es="UNESCO" data-ca="UNESCO">UNESCO</div>
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers - Experiencias castelleras">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</h3>
                 </div>
                 <div class="service-content">
-                    <h3 class="service-title lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</h3>
                     <p class="service-desc lang" data-es="Experiencias castelleras transformadoras que convierten grupos en equipos cohesionados. Basadas en la tradición UNESCO, nuestras actividades fortalecen la confianza, comunicación y liderazgo compartido en solo 2 horas." data-ca="Experiències castelleres transformadores que converteixen grups en equips cohesionats. Basades en la tradició UNESCO, les nostres activitats fortaleixen la confiança, comunicació i lideratge compartit en només 2 hores.">Experiencias castelleras transformadoras que convierten grupos en equipos cohesionados. Basadas en la tradición UNESCO, nuestras actividades fortalecen la confianza, comunicación y liderazgo compartido en solo 2 horas.</p>
-                    <a href="https://www.teamtowers.eu" target="_blank" class="service-link lang" data-es="Descubrir TeamTowers" data-ca="Descobrir TeamTowers">Descubrir TeamTowers →</a>
+                    <div class="service-highlights">
+                        <p class="lang" data-es="<strong>Beneficios clave:</strong>" data-ca="<strong>Beneficis clau:</strong>"><strong>Beneficios clave:</strong></p>
+                        <ul>
+                            <li class="lang" data-es="Mejora del 30-50% en cohesión de equipo" data-ca="Millora del 30-50% en cohesió d'equip">Mejora del 30-50% en cohesión de equipo</li>
+                            <li class="lang" data-es="Experiencia memorable con impacto emocional duradero" data-ca="Experiència memorable amb impacte emocional durador">Experiencia memorable con impacto emocional duradero</li>
+                            <li class="lang" data-es="Aplicable a grupos de 10 a 1.000 personas" data-ca="Aplicable a grups de 10 a 1.000 persones">Aplicable a grupos de 10 a 1.000 personas</li>
+                            <li class="lang" data-es="Disponible en múltiples idiomas" data-ca="Disponible en múltiples idiomes">Disponible en múltiples idiomas</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('TeamTowers')" class="service-cta lang" data-es="Solicitar Presupuesto" data-ca="Sol·licitar Pressupost">Solicitar Presupuesto</a>
                 </div>
             </div>
             
             <!-- Service 2: Value Network Analysis -->
             <div class="service-card">
-                <div class="service-img">
-                    <div class="service-badge lang" data-es="Exclusivo" data-ca="Exclusiu">Exclusivo</div>
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Analysis">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h3>
                 </div>
                 <div class="service-content">
-                    <h3 class="service-title lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h3>
                     <p class="service-desc lang" data-es="Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias ocultas, optimiza procesos y toma decisiones basadas en evidencia con nuestro análisis de redes de valor." data-ca="Metodologia estratègica per mapejar fluxos de valor a la teva organització. Identifica ineficiències ocultes, optimitza processos i pren decisions basades en evidència amb el nostre anàlisi de xarxes de valor.">Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias ocultas, optimiza procesos y toma decisiones basadas en evidencia con nuestro análisis de redes de valor.</p>
-                    <a href="https://cursovna.netlify.app/" target="_blank" class="service-link lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA →</a>
+                    <div class="service-highlights">
+                        <p class="lang" data-es="<strong>Aplicaciones:</strong>" data-ca="<strong>Aplicacions:</strong>"><strong>Aplicaciones:</strong></p>
+                        <ul>
+                            <li class="lang" data-es="Mapeo de flujos de valor tangibles e intangibles" data-ca="Mapeig de fluxos de valor tangibles i intangibles">Mapeo de flujos de valor tangibles e intangibles</li>
+                            <li class="lang" data-es="Identificación de cuellos de botella y redundancias" data-ca="Identificació de colls d'ampolla i redundàncies">Identificación de cuellos de botella y redundancias</li>
+                            <li class="lang" data-es="Diseño de estructuras organizativas más eficientes" data-ca="Disseny d'estructures organitzatives més eficients">Diseño de estructuras organizativas más eficientes</li>
+                            <li class="lang" data-es="Evaluación de impacto de cambios organizativos" data-ca="Avaluació d'impacte de canvis organitzatius">Evaluación de impacto de cambios organizativos</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Value Network Analysis')" class="service-cta lang" data-es="Solicitar Diagnóstico" data-ca="Sol·licitar Diagnòstic">Solicitar Diagnóstico</a>
                 </div>
             </div>
             
             <!-- Service 3: Comunidades de Práctica -->
             <div class="service-card">
-                <div class="service-img">
-                    <div class="service-badge lang" data-es="Innovación" data-ca="Innovació">Innovación</div>
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Comunidades de Práctica">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h3>
                 </div>
                 <div class="service-content">
-                    <h3 class="service-title lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h3>
                     <p class="service-desc lang" data-es="Modelos de aprendizaje basados en redes de valor que capturan conocimiento tácito y desarrollan competencias críticas. Creamos culturas de aprendizaje continuo donde el talento florece naturalmente." data-ca="Models d'aprenentatge basats en xarxes de valor que capturen coneixement tàcit i desenvolupen competències crítiques. Creem cultures d'aprenentatge continu on el talent floreix naturalment.">Modelos de aprendizaje basados en redes de valor que capturan conocimiento tácito y desarrollan competencias críticas. Creamos culturas de aprendizaje continuo donde el talento florece naturalmente.</p>
-                    <a href="#contact" class="service-link lang" data-es="Implementar Comunidades" data-ca="Implementar Comunitats">Implementar Comunidades →</a>
+                    <div class="service-highlights">
+                        <p class="lang" data-es="<strong>Resultados comprobados:</strong>" data-ca="<strong>Resultats comprovats:</strong>"><strong>Resultados comprobados:</strong></p>
+                        <ul>
+                            <li class="lang" data-es="Reducción del 47% en tiempo de onboarding" data-ca="Reducció del 47% en temps d'onboarding">Reducción del 47% en tiempo de onboarding</li>
+                            <li class="lang" data-es="Aumento del 33% en resolución autónoma de problemas" data-ca="Augment del 33% en resolució autònoma de problemes">Aumento del 33% en resolución autónoma de problemas</li>
+                            <li class="lang" data-es="Disminución del 28% en consultas repetidas" data-ca="Disminució del 28% en consultes repetides">Disminución del 28% en consultas repetidas</li>
+                            <li class="lang" data-es="Generación de mejoras de proceso emergentes" data-ca="Generació de millores de procés emergents">Generación de mejoras de proceso emergentes</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Comunidades de Práctica')" class="service-cta lang" data-es="Implementar Comunidades" data-ca="Implementar Comunitats">Implementar Comunidades</a>
                 </div>
             </div>
             
             <!-- Service 4: Consultoría RRHH -->
             <div class="service-card">
-                <div class="service-img">
-                    <div class="service-badge lang" data-es="Estratégico" data-ca="Estratègic">Estratégico</div>
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Consultoría RRHH">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Consultoría Estratégica RRHH" data-ca="Consultoria Estratègica RRHH">Consultoría Estratégica RRHH</h3>
                 </div>
                 <div class="service-content">
-                    <h3 class="service-title lang" data-es="Consultoría Estratégica RRHH" data-ca="Consultoria Estratègica RRHH">Consultoría Estratégica RRHH</h3>
                     <p class="service-desc lang" data-es="Outsourcing de RRHH, transformación cultural, desarrollo de talento y People Analytics. Soluciones personalizadas para PYMEs y grandes empresas que buscan excelencia organizacional con enfoque humanista." data-ca="Outsourcing de RRHH, transformació cultural, desenvolupament de talent i People Analytics. Solucions personalitzades per a PIMES i grans empreses que busquen excel·lència organitzativa amb enfocament humanista.">Outsourcing de RRHH, transformación cultural, desarrollo de talento y People Analytics. Soluciones personalizadas para PYMEs y grandes empresas que buscan excelencia organizacional con enfoque humanista.</p>
-                    <a href="#contact" class="service-link lang" data-es="Solicitar Diagnóstico" data-ca="Sol·licitar Diagnòstic">Solicitar Diagnóstico →</a>
+                    <div class="service-highlights">
+                        <p class="lang" data-es="<strong>Servicios incluidos:</strong>" data-ca="<strong>Serveis inclosos:</strong>"><strong>Servicios incluidos:</strong></p>
+                        <ul>
+                            <li class="lang" data-es="Gestión estratégica de talento y reclutamiento" data-ca="Gestió estratègica de talent i reclutament">Gestión estratégica de talento y reclutamiento</li>
+                            <li class="lang" data-es="Diseño de estructuras y políticas de RRHH" data-ca="Disseny d'estructures i polítiques de RRHH">Diseño de estructuras y políticas de RRHH</li>
+                            <li class="lang" data-es="Formación y desarrollo de liderazgo" data-ca="Formació i desenvolupament de lideratge">Formación y desarrollo de liderazgo</li>
+                            <li class="lang" data-es="Sistemas de gestión del desempeño" data-ca="Sistemes de gestió del rendiment">Sistemas de gestión del desempeño</li>
+                            <li class="lang" data-es="Transformación cultural y gestión del cambio" data-ca="Transformació cultural i gestió del canvi">Transformación cultural y gestión del cambio</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Consultoría RRHH')" class="service-cta lang" data-es="Solicitar Diagnóstico" data-ca="Sol·licitar Diagnòstic">Solicitar Diagnóstico</a>
                 </div>
             </div>
             
             <!-- Service 5: Producción de Eventos -->
             <div class="service-card">
-                <div class="service-img">
-                    <div class="service-badge lang" data-es="Partner" data-ca="Partner">Partner</div>
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Producción de Eventos">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</h3>
                 </div>
                 <div class="service-content">
-                    <h3 class="service-title lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</h3>
                     <p class="service-desc lang" data-es="Eventos corporativos, team building y festivales con 20+ años de experiencia. Producción integral para empresas líderes con enfoque en la experiencia del participante y el impacto organizacional." data-ca="Esdeveniments corporatius, team building i festivals amb 20+ anys d'experiència. Producció integral per a empreses líders amb enfocament en l'experiència del participant i l'impacte organitzatiu.">Eventos corporativos, team building y festivales con 20+ años de experiencia. Producción integral para empresas líderes con enfoque en la experiencia del participante y el impacto organizacional.</p>
-                    <a href="https://www.laeski.com" target="_blank" class="service-link lang" data-es="Con Laeski" data-ca="Amb Laeski">Con Laeski →</a>
+                    <div class="service-highlights">
+                        <p class="lang" data-es="<strong>Especialidades:</strong>" data-ca="<strong>Especialitats:</strong>"><strong>Especialidades:</strong></p>
+                        <ul>
+                            <li class="lang" data-es="Eventos corporativos y convenciones" data-ca="Esdeveniments corporatius i convencions">Eventos corporativos y convenciones</li>
+                            <li class="lang" data-es="Festivales de música y eventos culturales" data-ca="Festivals de música i esdeveniments culturals">Festivales de música y eventos culturales</li>
+                            <li class="lang" data-es="Team building y eventos de incentivo" data-ca="Team building i esdeveniments d'incentiu">Team building y eventos de incentivo</li>
+                            <li class="lang" data-es="Producción de catering especializado" data-ca="Producció de catering especialitzat">Producción de catering especializado</li>
+                            <li class="lang" data-es="Gestión logística integral" data-ca="Gestió logística integral">Gestión logística integral</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Producción de Eventos')" class="service-cta lang" data-es="Solicitar Presupuesto" data-ca="Sol·licitar Pressupost">Solicitar Presupuesto</a>
                 </div>
             </div>
             
-            <!-- Service 6: Value Network Lab -->
+            <!-- Service 6: Formación de Equipos -->
             <div class="service-card">
-                <div class="service-img">
-                    <div class="service-badge lang" data-es="Recursos" data-ca="Recursos">Recursos</div>
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Lab">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Formación de Equipos" data-ca="Formació d'Equips">Formación de Equipos</h3>
                 </div>
                 <div class="service-content">
-                    <h3 class="service-title lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</h3>
-                    <p class="service-desc lang" data-es="Plataforma de investigación y recursos sobre redes de valor. Explora casos prácticos, metodologías y herramientas para aplicar VNA en tu organización y transformar tu forma de gestionar el talento." data-ca="Plataforma d'investigació i recursos sobre xarxes de valor. Explora casos pràctics, metodologies i eines per aplicar VNA a la teva organització i transformar la teva forma de gestionar el talent.">Plataforma de investigación y recursos sobre redes de valor. Explora casos prácticos, metodologías y herramientas para aplicar VNA en tu organización y transformar tu forma de gestionar el talento.</p>
-                    <a href="https://valuenetworklab.netlify.app/" target="_blank" class="service-link lang" data-es="Explorar Lab" data-ca="Explorar Lab">Explorar Lab →</a>
+                    <p class="service-desc lang" data-es="Programas transformadores que fortalecen la cohesión, comunicación y liderazgo colaborativo mediante metodologías únicas basadas en la experiencia castellera y el análisis de redes de valor." data-ca="Programes transformadors que fortaleixen la cohesió, comunicació i lideratge col·laboratiu mitjançant metodologies úniques basades en l'experiència castellera i l'anàlisi de xarxes de valor.">Programas transformadores que fortalecen la cohesión, comunicación y liderazgo colaborativo mediante metodologías únicas basadas en la experiencia castellera y el análisis de redes de valor.</p>
+                    <div class="service-highlights">
+                        <p class="lang" data-es="<strong>Programas destacados:</strong>" data-ca="<strong>Programes destacats:</strong>"><strong>Programas destacados:</strong></p>
+                        <ul>
+                            <li class="lang" data-es="Taller 'Fent Pinya': experiencia castellera transformadora" data-ca="Taller 'Fent Pinya': experiència castellera transformadora">Taller 'Fent Pinya': experiencia castellera transformadora</li>
+                            <li class="lang" data-es="Liderazgo colaborativo y gestión del cambio" data-ca="Lideratge col·laboratiu i gestió del canvi">Liderazgo colaborativo y gestión del cambio</li>
+                            <li class="lang" data-es="Equipos de alto rendimiento y comunidades de práctica" data-ca="Equips d'alt rendiment i comunitats de pràctica">Equipos de alto rendimiento y comunidades de práctica</li>
+                            <li class="lang" data-es="Comunicación efectiva y resolución de conflictos" data-ca="Comunicació efectiva i resolució de conflictes">Comunicación efectiva y resolución de conflictos</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Formación de Equipos')" class="service-cta lang" data-es="Solicitar Programa" data-ca="Sol·licitar Programa">Solicitar Programa</a>
                 </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Partners Section -->
-    <section class="partners-section">
-        <h2 class="section-title lang" data-es="Nuestros Partners Estratégicos" data-ca="Els Nostres Partners Estratègics">Nuestros Partners Estratégicos</h2>
-        <p class="section-subtitle lang" data-es="Colaboramos con los mejores especialistas para ofrecerte soluciones integrales" data-ca="Col·laborem amb els millors especialistes per oferir-te solucions integrals">Colaboramos con los mejores especialistas para ofrecerte soluciones integrales</p>
-        
-        <div class="partners-grid">
-            <div class="partner-logo">
-                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers">
-            </div>
-            <div class="partner-logo">
-                <a href="https://pantheon.work" target="_blank">
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Pantheon.work" style="filter: none !important; max-height: 60px;">
-                </a>
-            </div>
-            <div class="partner-logo">
-                <a href="https://www.laeski.com" target="_blank">
-                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Laeski" style="filter: none !important; max-height: 60px;">
-                </a>
-            </div>
-            <div class="partner-logo">
-                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Lab">
             </div>
         </div>
     </section>
@@ -1095,8 +992,8 @@
                     <span class="stat-label lang" data-es="Satisfacción clientes" data-ca="Satisfacció clients">Satisfacción clientes</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">4x</span>
-                    <span class="stat-label lang" data-es="Mayor impacto" data-ca="Major impacte">Mayor impacto</span>
+                    <span class="stat-number">60.000+</span>
+                    <span class="stat-label lang" data-es="Participantes formados" data-ca="Participants formats">Participantes formados</span>
                 </div>
             </div>
         </div>
@@ -1109,18 +1006,18 @@
         
         <div class="testimonials-grid">
             <div class="testimonial-card">
-                <div class="testimonial-content lang" data-es="La evolución de TeamTowers a TeamTowers Humà representa exactamente lo que necesitábamos: una consultora que entiende que la transformación organizacional no es solo un evento, sino un proceso continuo de construcción humana." data-ca="L'evolució de TeamTowers a TeamTowers Humà representa exactament el que necessitàvem: una consultora que entén que la transformació organitzativa no és només un esdeveniment, sinó un procés continu de construcció humana.">La evolución de TeamTowers a TeamTowers Humà representa exactamente lo que necesitábamos: una consultora que entiende que la transformación organizacional no es solo un evento, sino un proceso continuo de construcción humana.</div>
+                <div class="testimonial-content lang" data-es="La experiencia de TeamTowers transformó completamente la dinámica de nuestro equipo directivo. La metáfora de las torres humanas nos ayudó a entender la importancia de la confianza y la colaboración en nuestro día a día. Los resultados en cohesión fueron visibles en cuestión de semanas." data-ca="L'experiència de TeamTowers va transformar completament la dinàmica del nostre equip directiu. La metàfora de les torres humanes ens va ajudar a entendre la importància de la confiança i la col·laboració en el nostre dia a dia. Els resultats en cohesió van ser visibles en qüestió de setmanes.">La experiencia de TeamTowers transformó completamente la dinámica de nuestro equipo directivo. La metáfora de las torres humanas nos ayudó a entender la importancia de la confianza y la colaboración en nuestro día a día. Los resultados en cohesión fueron visibles en cuestión de semanas.</div>
                 <div class="testimonial-author">
                     <div class="author-info">
-                        <h4 lang="es">Director General</h4>
-                        <h4 lang="ca" style="display:none">Director General</h4>
+                        <h4 lang="es">Director de Recursos Humanos</h4>
+                        <h4 lang="ca" style="display:none">Director de Recursos Humans</h4>
                         <p>Empresa Tecnológica Internacional</p>
                     </div>
                 </div>
             </div>
             
             <div class="testimonial-card">
-                <div class="testimonial-content lang" data-es="El análisis de Value Network que realizaron nos permitió identificar flujos de valor ocultos que estaban generando ineficiencias del 30%. La implementación de sus recomendaciones transformó completamente nuestra estructura organizativa." data-ca="L'anàlisi de Value Network que van realitzar ens va permetre identificar fluxos de valor ocults que estaven generant ineficiències del 30%. La implementació de les seves recomanacions va transformar completament la nostra estructura organitzativa.">El análisis de Value Network que realizaron nos permitió identificar flujos de valor ocultos que estaban generando ineficiencias del 30%. La implementación de sus recomendaciones transformó completamente nuestra estructura organizativa.</div>
+                <div class="testimonial-content lang" data-es="El análisis de Value Network que realizaron nos permitió identificar flujos de valor ocultos que estaban generando ineficiencias del 30%. La implementación de sus recomendaciones transformó completamente nuestra estructura organizativa y mejoró significativamente la satisfacción del cliente." data-ca="L'anàlisi de Value Network que van realitzar ens va permetre identificar fluxos de valor ocults que estaven generant ineficiències del 30%. La implementació de les seves recomanacions va transformar completament la nostra estructura organitzativa i va millorar significativament la satisfacció del client.">El análisis de Value Network que realizaron nos permitió identificar flujos de valor ocultos que estaban generando ineficiencias del 30%. La implementación de sus recomendaciones transformó completamente nuestra estructura organizativa y mejoró significativamente la satisfacción del cliente.</div>
                 <div class="testimonial-author">
                     <div class="author-info">
                         <h4 lang="es">Directora de Operaciones</h4>
@@ -1131,7 +1028,7 @@
             </div>
             
             <div class="testimonial-card">
-                <div class="testimonial-content lang" data-es="Las Comunidades de Práctica que implementaron revolucionaron nuestra forma de aprender. La reducción del 47% en el tiempo de onboarding y el aumento del 65% en la retención de talento crítico han sido resultados extraordinarios." data-ca="Les Comunitats de Pràctica que van implementar van revolucionar la nostra forma d'aprendre. La reducció del 47% en el temps d'onboarding i l'augment del 65% en la retenció de talent crític han estat resultats extraordinaris.">Las Comunidades de Práctica que implementaron revolucionaron nuestra forma de aprender. La reducción del 47% en el tiempo de onboarding y el aumento del 65% en la retención de talento crítico han sido resultados extraordinarios.</div>
+                <div class="testimonial-content lang" data-es="Las Comunidades de Práctica que implementaron revolucionaron nuestra forma de aprender. La reducción del 47% en el tiempo de onboarding y el aumento del 65% en la retención de talento crítico han sido resultados extraordinarios que superaron todas nuestras expectativas." data-ca="Les Comunitats de Pràctica que van implementar van revolucionar la nostra forma d'aprendre. La reducció del 47% en el temps d'onboarding i l'augment del 65% en la retenció de talent crític han estat resultats extraordinaris que van superar totes les nostres expectatives.">Las Comunidades de Práctica que implementaron revolucionaron nuestra forma de aprender. La reducción del 47% en el tiempo de onboarding y el aumento del 65% en la retención de talento crítico han sido resultados extraordinarios que superaron todas nuestras expectativas.</div>
                 <div class="testimonial-author">
                     <div class="author-info">
                         <h4 lang="es">Gerente de Innovación</h4>
@@ -1150,58 +1047,31 @@
         
         <div class="contact-container">
             <div class="contact-info">
-                <h3 class="lang" data-es="Información de Contacto" data-ca="Informació de Contacte">Información de Contacto</h3>
-                <div class="contact-details">
-                    <div class="contact-item">
-                        <div class="contact-icon">📍</div>
-                        <div>
-                            <p class="lang" data-es="Vilafranca del Penedès, Barcelona" data-ca="Vilafranca del Penedès, Barcelona">Vilafranca del Penedès, Barcelona</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div>
-                            <p>+34 629 86 77 15</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div>
-                            <p>asolache@mac.com</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">🕒</div>
-                        <div>
-                            <p class="lang" data-es="Lunes a Viernes: 9:00 - 18:00" data-ca="Dilluns a Divendres: 9:00 - 18:00">Lunes a Viernes: 9:00 - 18:00</p>
-                        </div>
-                    </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div class="lang" data-es="Vilafranca del Penedès, Barcelona" data-ca="Vilafranca del Penedès, Barcelona">Vilafranca del Penedès, Barcelona</div>
                 </div>
-                <div style="background: white; padding: 30px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); border-top: 4px solid var(--primary);">
-                    <h3 class="lang" data-es="Solicitud de Consulta Gratuita" data-ca="Sol·licitud de Consulta Gratuita">Solicitud de Consulta Gratuita</h3>
-                    <p class="lang" data-es="Completa este formulario y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo TeamTowers Humà puede transformar tu organización." data-ca="Omple aquest formulari i ens posarem en contacte amb tu en menys de 24 hores per agendar la teva sessió exploratòria sense compromís. Descobreix com TeamTowers Humà pot transformar la teva organització.">Completa este formulario y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo TeamTowers Humà puede transformar tu organización.</p>
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <div>+34 629 86 77 15</div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">✉️</div>
+                    <div class="lang" data-es="Envíanos un mensaje" data-ca="Envia'ns un missatge">Envíanos un mensaje</div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🕒</div>
+                    <div class="lang" data-es="Lunes a Viernes: 9:00 - 18:00" data-ca="Dilluns a Divendres: 9:00 - 18:00">Lunes a Viernes: 9:00 - 18:00</div>
                 </div>
             </div>
-            <div class="contact-form">
-                <form id="consultationForm">
-                    <div class="form-group">
-                        <input type="text" placeholder="Nombre completo" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" placeholder="Email corporativo" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="tel" placeholder="Teléfono">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" placeholder="Empresa">
-                    </div>
-                    <div class="form-group">
-                        <textarea placeholder="¿Cuál es tu principal desafío en gestión de personas?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary lang" data-es="Solicitar Consulta Gratuita" data-ca="Sol·licitar Consulta Gratuita" style="width:100%; padding:18px;">Solicitar Consulta Gratuita</button>
-                </form>
-            </div>
+            
+            <a href="javascript:void(0)" onclick="contactService('Consulta general')" class="btn btn-primary" style="margin-top: 20px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Solicitar Consulta Gratuita" data-ca="Sol·licitar Consulta Gratuita">Solicitar Consulta Gratuita</span>
+            </a>
+            
+            <p style="margin-top: 25px; font-size: 1.1rem; color: var(--gray);">
+                <span class="lang" data-es="Completa el formulario de contacto en el servicio que te interesa o escríbenos directamente. Nos pondremos en contacto contigo en menos de 24 horas." data-ca="Omple el formulari de contacte en el servei que t'interessa o escriu-nos directament. Ens posarem en contacte amb tu en menys de 24 hores.">Completa el formulario de contacto en el servicio que te interesa o escríbenos directamente. Nos pondremos en contacto contigo en menos de 24 horas.</span>
+            </p>
         </div>
     </section>
     
@@ -1220,6 +1090,7 @@
                     <li><a href="#services" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
                     <li><a href="#services" class="lang" data-es="Consultoría RRHH" data-ca="Consultoria RRHH">Consultoría RRHH</a></li>
                     <li><a href="#services" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                    <li><a href="#services" class="lang" data-es="Formación de Equipos" data-ca="Formació d'Equips">Formación de Equipos</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1228,8 +1099,7 @@
                     <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
                     <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
                     <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
-                    <li><a href="#story" class="lang" data-es="Nuestra Historia" data-ca="La Nostra Història">Nuestra Historia</a></li>
-                    <li><a href="#" class="lang" data-es="Blog de Innovación" data-ca="Blog d'Innovació">Blog de Innovación</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1237,9 +1107,13 @@
                 <ul class="footer-links">
                     <li>Vilafranca del Penedès, Barcelona</li>
                     <li>+34 629 86 77 15</li>
-                    <li>asolache@mac.com</li>
                     <li>
-                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--primary); font-weight: 600;">LinkedIn</a>
+                        <a href="javascript:void(0)" onclick="contactService('Consulta general')" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
                     </li>
                 </ul>
             </div>
@@ -1297,19 +1171,22 @@
                 document.documentElement.setAttribute('lang', lang);
             }
             
-            // Form submission handling
-            const consultationForm = document.getElementById('consultationForm');
-            if (consultationForm) {
-                consultationForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const lang = document.documentElement.lang;
-                    const message = lang === 'es' ? 
-                        '¡Gracias por contactar! Nos pondremos en contacto contigo en menos de 24 horas para agendar tu consulta gratuita.' :
-                        'Gràcies per contactar! Ens posarem en contacte amb tu en menys de 24 hores per agendar la teva consulta gratuïta.';
-                    alert(message);
-                    this.reset();
-                });
-            }
+            // Contact function with email obfuscation
+            window.contactService = function(serviceName) {
+                // Obfuscated email construction
+                const emailName = 'asolache';
+                const emailDomain = 'mac.com';
+                const fullEmail = emailName + '@' + emailDomain;
+                
+                // Subject line based on service
+                let subject = 'Consulta sobre ' + serviceName;
+                
+                // Create mailto link
+                const mailtoLink = 'mailto:' + fullEmail + '?subject=' + encodeURIComponent(subject);
+                
+                // Open email client
+                window.location.href = mailtoLink;
+            };
             
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
