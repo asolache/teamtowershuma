@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Consultoría estratégica de RRHH en Vilafranca del Penedès. Innovación en gestión de personas con Value Network Analysis, TeamTowers, Comunidades de Práctica y producción de eventos. Transformamos organizaciones con 25+ años de experiencia.">
+    <meta name="keywords" content="consultoría RRHH Vilafranca, gestión personas Penedès, Value Network Analysis, TeamTowers, comunidades práctica, eventos corporativos, innovación RRHH, formación equipos, outsourcing RRHH, desarrollo organizacional">
+    <meta name="author" content="Álvaro Solache Consultoría RRHH">
+    <meta name="robots" content="index, follow">
+    <title>Consultoría RRHH Vilafranca | Innovación en Gestión de Personas | Álvaro Solache</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Consultoría RRHH Vilafranca | Innovación en Gestión de Personas">
+    <meta property="og:description" content="Transformamos organizaciones con Value Network Analysis, TeamTowers y Comunidades de Práctica. 25+ años de experiencia en el Penedès.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://consultoriarrhh-vilafranca.netlify.app">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Consultoría RRHH Vilafranca | Innovación en Gestión de Personas">
+    <meta name="twitter:description" content="Experto en Value Network Analysis y desarrollo organizacional en el corazón del Penedès.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Consultoría Álvaro Solache RRHH",
+      "image": "https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png",
+      "description": "Consultoría estratégica especializada en innovación en gestión de personas mediante Value Network Analysis, Comunidades de Práctica y experiencias transformadoras TeamTowers",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Vilafranca del Penedès",
+        "addressLocality": "Vilafranca del Penedès",
+        "postalCode": "08720",
+        "addressRegion": "Barcelona",
+        "addressCountry": "ES"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 41.3489,
+        "longitude": 1.7003
+      },
+      "telephone": "+34629867715",
+      "priceRange": "$$$",
+      "areaServed": ["Vilafranca del Penedès", "Alt Penedès", "Garraf", "Barcelona", "Cataluña"],
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": 41.3489,
+          "longitude": 1.7003
+        },
+        "geoRadius": "30000"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Consultoría RRHH",
+        "email": "asolache@mac.com",
+        "telephone": "+34629867715",
+        "availableLanguage": ["Spanish", "Catalan", "English"]
+      },
+      "knowsAbout": [
+        "Value Network Analysis",
+        "Comunidades de Práctica",
+        "TeamTowers",
+        "Gestión del Talento",
+        "Transformación Cultural",
+        "Desarrollo Organizacional",
+        "Producción de Eventos"
+      ]
+    }
+    </script>
+    
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f5576c;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(29, 53, 87, 0.85) 0%, rgba(118, 75, 162, 0.9) 100%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-top: 15px;
+            font-weight: 300;
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-img {
+            height: 220px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .service-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .service-card:hover .service-img img {
+            transform: scale(1.1);
+        }
+        
+        .service-content {
+            padding: 30px;
+        }
+        
+        .service-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .service-desc {
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+        
+        .service-link {
+            display: inline-block;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            position: relative;
+            padding-right: 25px;
+        }
+        
+        .service-link:after {
+            content: '→';
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: var(--transition);
+        }
+        
+        .service-link:hover:after {
+            transform: translateX(5px);
+        }
+        
+        /* Partners Section */
+        .partners-section {
+            background: var(--light);
+        }
+        
+        .partners-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 50px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+        
+        .partner-logo {
+            max-width: 180px;
+            max-height: 80px;
+            filter: grayscale(100%) brightness(0.8);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .partner-logo:hover {
+            filter: grayscale(0%) brightness(1);
+            transform: scale(1.05);
+        }
+        
+        .partner-logo img {
+            max-width: 100%;
+            max-height: 80px;
+            object-fit: contain;
+        }
+        
+        /* Value Proposition */
+        .value-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .value-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .value-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        
+        .value-content h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+        }
+        
+        .value-content p {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            padding: 25px;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 6rem;
+            color: var(--primary);
+            opacity: 0.2;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        
+        .testimonial-content {
+            margin-top: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .author-info h4 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .author-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            background: var(--light);
+        }
+        
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .contact-info h3 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .contact-details {
+            margin-bottom: 30px;
+        }
+        
+        .contact-item {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .contact-icon {
+            min-width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .contact-form .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .contact-form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.6rem;
+            }
+            
+            section {
+                padding: 80px 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero p {
+                font-size: 1.4rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .section-title {
+                font-size: 2.3rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.3rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 60px 15px;
+            }
+            
+            .service-content {
+                padding: 20px;
+            }
+        }
+        
+        /* Language specific styles */
+        .lang-ca .hero h1 {
+            font-size: 4.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="lang" data-es="Innovación en Gestión de Personas" data-ca="Innovació en Gestió de Persones">Innovación en Gestión de Personas</h1>
+            <p class="lang" data-es="Transformamos organizaciones con Value Network Analysis, TeamTowers y Comunidades de Práctica. 25+ años de experiencia en el corazón del Penedès." data-ca="Transformem organitzacions amb Value Network Analysis, TeamTowers i Comunitats de Pràctica. 25+ anys d'experiència al cor del Penedès.">Transformamos organizaciones con Value Network Analysis, TeamTowers y Comunidades de Práctica. 25+ años de experiencia en el corazón del Penedès.</p>
+            <p class="hero-subtitle lang" data-es="Consultoría estratégica de RRHH con enfoque innovador en Vilafranca del Penedès" data-ca="Consultoria estratègica de RRHH amb enfocament innovador a Vilafranca del Penedès">Consultoría estratégica de RRHH con enfoque innovador en Vilafranca del Penedès</p>
+            <div class="cta-container">
+                <a href="#contact" class="btn btn-primary lang" data-es="Solicitar Consulta Gratuita" data-ca="Sol·licitar Consulta Gratuita">Solicitar Consulta Gratuita</a>
+                <a href="#services" class="btn btn-secondary lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <h2 class="section-title lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</h2>
+        <p class="section-subtitle lang" data-es="Soluciones innovadoras para transformar tu organización y potenciar el talento de tus equipos" data-ca="Solucions innovadores per transformar la teva organització i potenciar el talent dels teus equips">Soluciones innovadoras para transformar tu organización y potenciar el talento de tus equipos</p>
+        
+        <div class="services-grid">
+            <!-- Service 1: TeamTowers -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers - Experiencias castelleras">
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</h3>
+                    <p class="service-desc lang" data-es="Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo de tus equipos con la tradición UNESCO de los castellers." data-ca="Experiències castelleres transformadores per a esdeveniments corporatius. Fortaleix la cohesió, comunicació i lideratge dels teus equips amb la tradició UNESCO dels castellers.">Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo de tus equipos con la tradición UNESCO de los castellers.</p>
+                    <a href="https://www.teamtowers.eu" target="_blank" class="service-link lang" data-es="Descubrir TeamTowers" data-ca="Descobrir TeamTowers">Descubrir TeamTowers →</a>
+                </div>
+            </div>
+            
+            <!-- Service 2: Value Network Analysis -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Analysis">
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h3>
+                    <p class="service-desc lang" data-es="Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias, optimiza procesos y toma decisiones basadas en evidencia con VNA." data-ca="Metodologia estratègica per mapejar fluxos de valor a la teva organització. Identifica ineficiències, optimitza processos i pren decisions basades en evidència amb VNA.">Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias, optimiza procesos y toma decisiones basadas en evidencia con VNA.</p>
+                    <a href="https://cursovna.netlify.app/" target="_blank" class="service-link lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA →</a>
+                </div>
+            </div>
+            
+            <!-- Service 3: Comunidades de Práctica -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Comunidades de Práctica">
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h3>
+                    <p class="service-desc lang" data-es="Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo en tu organización." data-ca="Models d'aprenentatge basats en xarxes de valor. Captura coneixement tàcit, desenvolupa competències crítiques i crea una cultura d'aprenentatge continu a la teva organització.">Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo en tu organización.</p>
+                    <a href="#contact" class="service-link lang" data-es="Implementar Comunidades" data-ca="Implementar Comunitats">Implementar Comunidades →</a>
+                </div>
+            </div>
+            
+            <!-- Service 4: Producción de Eventos -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Producción de Eventos">
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</h3>
+                    <p class="service-desc lang" data-es="Eventos corporativos, team building y festivales con 20+ años de experiencia. Producción integral para empresas líderes con enfoque en la experiencia del participante." data-ca="Esdeveniments corporatius, team building i festivals amb 20+ anys d'experiència. Producció integral per a empreses líders amb enfocament en l'experiència del participant.">Eventos corporativos, team building y festivales con 20+ años de experiencia. Producción integral para empresas líderes con enfoque en la experiencia del participante.</p>
+                    <a href="https://www.laeski.com" target="_blank" class="service-link lang" data-es="Con Laeski" data-ca="Amb Laeski">Con Laeski →</a>
+                </div>
+            </div>
+            
+            <!-- Service 5: Consultoría RRHH -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Consultoría RRHH">
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title lang" data-es="Consultoría Estratégica RRHH" data-ca="Consultoria Estratègica RRHH">Consultoría Estratégica RRHH</h3>
+                    <p class="service-desc lang" data-es="Outsourcing de RRHH, transformación cultural, desarrollo de talento y People Analytics. Soluciones personalizadas para PYMEs y grandes empresas que buscan excelencia organizacional." data-ca="Outsourcing de RRHH, transformació cultural, desenvolupament de talent i People Analytics. Solucions personalitzades per a PIMES i grans empreses que busquen excel·lència organitzativa.">Outsourcing de RRHH, transformación cultural, desarrollo de talento y People Analytics. Soluciones personalizadas para PYMEs y grandes empresas que buscan excelencia organizacional.</p>
+                    <a href="#contact" class="service-link lang" data-es="Solicitar Diagnóstico" data-ca="Sol·licitar Diagnòstic">Solicitar Diagnóstico →</a>
+                </div>
+            </div>
+            
+            <!-- Service 6: Value Network Lab -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Lab">
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</h3>
+                    <p class="service-desc lang" data-es="Plataforma de investigación y recursos sobre redes de valor. Explora casos prácticos, metodologías y herramientas para aplicar VNA en tu organización." data-ca="Plataforma d'investigació i recursos sobre xarxes de valor. Explora casos pràctics, metodologies i eines per aplicar VNA a la teva organització.">Plataforma de investigación y recursos sobre redes de valor. Explora casos prácticos, metodologías y herramientas para aplicar VNA en tu organización.</p>
+                    <a href="https://valuenetworklab.netlify.app/" target="_blank" class="service-link lang" data-es="Explorar Lab" data-ca="Explorar Lab">Explorar Lab →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Partners Section -->
+    <section class="partners-section">
+        <h2 class="section-title lang" data-es="Nuestros Partners Estratégicos" data-ca="Els Nostres Partners Estratègics">Nuestros Partners Estratégicos</h2>
+        <p class="section-subtitle lang" data-es="Colaboramos con los mejores especialistas para ofrecerte soluciones integrales" data-ca="Col·laborem amb els millors especialistes per oferir-te solucions integrals">Colaboramos con los mejores especialistas para ofrecerte soluciones integrales</p>
+        
+        <div class="partners-grid">
+            <div class="partner-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers">
+            </div>
+            <div class="partner-logo">
+                <a href="https://pantheon.work" target="_blank">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Pantheon.work" style="filter: none !important; max-height: 60px;">
+                </a>
+            </div>
+            <div class="partner-logo">
+                <a href="https://www.laeski.com" target="_blank">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Laeski" style="filter: none !important; max-height: 60px;">
+                </a>
+            </div>
+            <div class="partner-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Lab">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Value Proposition Section -->
+    <section class="value-section">
+        <div class="value-content">
+            <h2 class="lang" data-es="¿Por qué elegir nuestra consultoría?" data-ca="Per què triar la nostra consultoria?">¿Por qué elegir nuestra consultoría?</h2>
+            <p class="lang" data-es="Somos expertos en innovación en gestión de personas. Nuestro enfoque diferencial combina metodologías probadas con experiencias transformadoras únicas, todo desde el corazón del Penedès." data-ca="Som experts en innovació en gestió de persones. El nostre enfocament diferencial combina metodologies provades amb experiències transformadores úniques, tot des del cor del Penedès.">Somos expertos en innovación en gestión de personas. Nuestro enfoque diferencial combina metodologías probadas con experiencias transformadoras únicas, todo desde el corazón del Penedès.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">25+</span>
+                    <span class="stat-label lang" data-es="Años de experiencia" data-ca="Anys d'experiència">Años de experiencia</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">150+</span>
+                    <span class="stat-label lang" data-es="Empresas transformadas" data-ca="Empreses transformades">Empresas transformadas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label lang" data-es="Satisfacción clientes" data-ca="Satisfacció clients">Satisfacción clientes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4x</span>
+                    <span class="stat-label lang" data-es="Mayor impacto formativo" data-ca="Major impacte formatiu">Mayor impacto formativo</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <h2 class="section-title lang" data-es="Testimonios" data-ca="Testimonis">Testimonios</h2>
+        <p class="section-subtitle lang" data-es="Lo que dicen nuestros clientes sobre nuestras soluciones innovadoras" data-ca="El que diuen els nostres clients sobre les nostres solucions innovadores">Lo que dicen nuestros clientes sobre nuestras soluciones innovadoras</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="La experiencia de TeamTowers transformó completamente la dinámica de nuestro equipo directivo. La metáfora de las torres humanas nos ayudó a entender la importancia de la confianza y la colaboración en nuestro día a día." data-ca="L'experiència de TeamTowers va transformar completament la dinàmica del nostre equip directiu. La metàfora de les torres humanes ens va ajudar a entendre la importància de la confiança i la col·laboració en el nostre dia a dia.">La experiencia de TeamTowers transformó completamente la dinámica de nuestro equipo directivo. La metáfora de las torres humanas nos ayudó a entender la importancia de la confianza y la colaboración en nuestro día a día.</div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4 lang="es">Director de Recursos Humanos</h4>
+                        <h4 lang="ca" style="display:none">Director de Recursos Humans</h4>
+                        <p>Empresa Tecnológica Internacional</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="La implementación de Comunidades de Práctica en nuestra organización revolucionó la forma en que aprendemos y compartimos conocimiento. La reducción del 47% en el tiempo de onboarding de nuevos técnicos fue un resultado inesperado pero muy valorado." data-ca="La implementació de Comunitats de Pràctica a la nostra organització va revolucionar la forma en què aprenem i compartim coneixement. La reducció del 47% en el temps d'onboarding de nous tècnics va ser un resultat inesperat però molt valorat.">La implementación de Comunidades de Práctica en nuestra organización revolucionó la forma en que aprendemos y compartimos conocimiento. La reducción del 47% en el tiempo de onboarding de nuevos técnicos fue un resultado inesperado pero muy valorado.</div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4 lang="es">Gerente de Innovación</h4>
+                        <h4 lang="ca" style="display:none">Gerent d'Innovació</h4>
+                        <p>Industria Farmacéutica</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="El análisis de Value Network realizado por Álvaro nos permitió identificar cuellos de botella críticos en nuestros flujos de trabajo. Las recomendaciones implementadas generaron un ahorro del 30% en tiempos de proceso y una mejora significativa en la satisfacción del cliente." data-ca="L'anàlisi de Value Network realitzat per Àlvaro ens va permetre identificar colls d'ampolla crítics als nostres fluxos de treball. Les recomanacions implementades van generar un estalvi del 30% en temps de procés i una millora significativa en la satisfacció del client.">El análisis de Value Network realizado por Álvaro nos permitió identificar cuellos de botella críticos en nuestros flujos de trabajo. Las recomendaciones implementadas generaron un ahorro del 30% en tiempos de proceso y una mejora significativa en la satisfacción del cliente.</div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4 lang="es">Directora de Operaciones</h4>
+                        <h4 lang="ca" style="display:none">Directora d'Operacions</h4>
+                        <p>Empresa de Servicios Financieros</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2 class="section-title lang" data-es="Contáctanos" data-ca="Contacta'ns">Contáctanos</h2>
+        <p class="section-subtitle lang" data-es="Agenda tu consulta gratuita y descubre cómo podemos transformar tu organización" data-ca="Agenda la teva consulta gratuïta i descobreix com podem transformar la teva organització">Agenda tu consulta gratuita y descubre cómo podemos transformar tu organización</p>
+        
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3 class="lang" data-es="Información de Contacto" data-ca="Informació de Contacte">Información de Contacto</h3>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <p class="lang" data-es="Vilafranca del Penedès, Barcelona" data-ca="Vilafranca del Penedès, Barcelona">Vilafranca del Penedès, Barcelona</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <p>+34 629 86 77 15</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div>
+                            <p>asolache@mac.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🕒</div>
+                        <div>
+                            <p class="lang" data-es="Lunes a Viernes: 9:00 - 18:00" data-ca="Dilluns a Divendres: 9:00 - 18:00">Lunes a Viernes: 9:00 - 18:00</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+                    <h3 class="lang" data-es="Solicitud de Consulta Gratuita" data-ca="Sol·licitud de Consulta Gratuita">Solicitud de Consulta Gratuita</h3>
+                    <p class="lang" data-es="Completa este formulario y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso." data-ca="Omple aquest formulari i ens posarem en contacte amb tu en menys de 24 hores per agendar la teva sessió exploratòria sense compromís.">Completa este formulario y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso.</p>
+                </div>
+            </div>
+            <div class="contact-form">
+                <form id="consultationForm">
+                    <div class="form-group">
+                        <input type="text" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Email corporativo" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" placeholder="Teléfono">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="Empresa">
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="¿Cuál es tu principal desafío en gestión de personas?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary lang" data-es="Solicitar Consulta Gratuita" data-ca="Sol·licitar Consulta Gratuita" style="width:100%; padding:16px;">Solicitar Consulta Gratuita</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="Consultoría RRHH" data-ca="Consultoria RRHH">Consultoría RRHH</h3>
+                <p class="lang" data-es="Expertos en innovación en gestión de personas desde Vilafranca del Penedès. Transformamos organizaciones con metodologías únicas y comprobadas." data-ca="Experts en innovació en gestió de persones des de Vilafranca del Penedès. Transformem organitzacions amb metodologies úniques i comprovades.">Expertos en innovación en gestión de personas desde Vilafranca del Penedès. Transformamos organizaciones con metodologías únicas y comprobadas.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="#services" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="#services" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="#services" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="#services" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                    <li><a href="#services" class="lang" data-es="Consultoría RRHH" data-ca="Consultoria RRHH">Consultoría RRHH</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="#" class="lang" data-es="Blog de Innovación" data-ca="Blog d'Innovació">Blog de Innovación</a></li>
+                    <li><a href="#" class="lang" data-es="Casos de Éxito" data-ca="Casos d'Èxit">Casos de Éxito</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>asolache@mac.com</li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--primary); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 Consultoría Álvaro Solache RRHH. Todos los derechos reservados. Vilafranca del Penedès, Barcelona." data-ca="© 2026 Consultoria Àlvaro Solache RRHH. Tots els drets reservats. Vilafranca del Penedès, Barcelona.">© 2026 Consultoría Álvaro Solache RRHH. Todos los derechos reservados. Vilafranca del Penedès, Barcelona.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update language-specific elements
+                document.querySelectorAll(`[lang="es"]`).forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                
+                document.querySelectorAll(`[lang="ca"]`).forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Form submission handling
+            const consultationForm = document.getElementById('consultationForm');
+            if (consultationForm) {
+                consultationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert(document.querySelector('[data-es="¡Gracias por contactar! Nos pondremos en contacto contigo en menos de 24 horas para agendar tu consulta gratuita."]').getAttribute(`data-${document.documentElement.lang}`));
+                    this.reset();
+                });
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
