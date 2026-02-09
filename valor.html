@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Value Network Analysis - Análisis de Redes de Valor para optimizar procesos y tomar decisiones basadas en evidencia. TeamTowers Humà, consultoría RRHH en Vilafranca del Penedès.">
+    <meta name="keywords" content="Value Network Analysis, Análisis de Redes de Valor, Anàlisi de Xarxes de Valor, VNA, consultoría RRHH, Vilafranca del Penedès, Penedès, mapeo flujos valor, optimización procesos">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Value Network Analysis | TeamTowers Humà | Consultoría RRHH en Vilafranca del Penedès</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Value Network Analysis | TeamTowers Humà">
+    <meta property="og:description" content="Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias y optimiza procesos con 20+ años de experiencia desde el Penedès.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.netlify.app/valor">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Value Network Analysis | TeamTowers Humà">
+    <meta name="twitter:description" content="Análisis de Redes de Valor para transformar tu organización desde Vilafranca del Penedès">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Consultoría en Value Network Analysis",
+      "provider": {
+        "@type": "Organization",
+        "name": "TeamTowers Humà"
+      },
+      "areaServed": ["Vilafranca del Penedès", "Alt Penedès", "Garraf", "Barcelona", "Cataluña"],
+      "description": "Consultoría especializada en Value Network Analysis (Análisis de Redes de Valor) para mapear flujos de valor, identificar ineficiencias y optimizar procesos organizativos",
+      "offers": {
+        "@type": "Offer",
+        "businessFunction": "Consultoría",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.95) 100%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero-logo {
+            display: inline-block;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        .hero h1 {
+            font-size: 4.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        
+        .hero-tagline {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            font-style: italic;
+        }
+        
+        .hero p {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* VNA Concept Section */
+        .vna-concept {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin: 40px 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .vna-concept h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .methodology-steps {
+            counter-reset: step-counter;
+            margin: 40px 0;
+        }
+        
+        .methodology-step {
+            counter-increment: step-counter;
+            margin-bottom: 30px;
+            padding-left: 30px;
+            position: relative;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .methodology-step:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+        
+        .methodology-step:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: var(--accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .methodology-step h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--accent);
+            transition: var(--transition);
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+        }
+        
+        .benefit-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .benefit-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* Applications Section */
+        .applications-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin: 50px 0;
+        }
+        
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .application-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .application-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            margin: 40px 0;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+        
+        .service-title {
+            font-size: 1.9rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .service-content {
+            padding: 30px;
+        }
+        
+        .service-desc {
+            margin-bottom: 25px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        .service-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+        
+        .service-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        
+        /* Founder Section */
+        .founder-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .founder-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .founder-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .founder-name {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        
+        .founder-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .founder-bio {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            max-width: 700px;
+        }
+        
+        .founder-link {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
+        }
+        
+        .founder-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Value Proposition */
+        .value-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .value-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .value-content p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+            text-align: center;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+            font-size: 1.3rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.5rem;
+            }
+            
+            section {
+                padding: 80px 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.3rem;
+            }
+            
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .section-title {
+                font-size: 2.3rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .founder-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.3rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 60px 15px;
+            }
+            
+            .vna-concept,
+            .applications-section,
+            .stats-section,
+            .value-section,
+            .contact-section {
+                padding: 30px 20px;
+            }
+            
+            .service-content {
+                padding: 25px;
+            }
+            
+            .founder-img {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .contact-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h1>
+            <p class="hero-tagline lang" data-es="Análisis de Redes de Valor" data-ca="Anàlisi de Xarxes de Valor">Análisis de Redes de Valor</p>
+            <p class="lang" data-es="Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias ocultas, optimiza procesos y toma decisiones basadas en evidencia con nuestro análisis de redes de valor." data-ca="Metodologia estratègica per mapejar fluxos de valor a la teva organització. Identifica ineficiències ocultes, optimitza processos i pren decisions basades en evidència amb el nostre anàlisi de xarxes de valor.">Metodología estratégica para mapear flujos de valor en tu organización. Identifica ineficiencias ocultas, optimiza procesos y toma decisiones basadas en evidencia con nuestro análisis de redes de valor.</p>
+            <div class="cta-container">
+                <a href="javascript:void(0)" onclick="contactService('Value Network Analysis')" class="btn btn-primary lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</a>
+                <a href="#services" class="btn btn-secondary lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- What is VNA Section -->
+    <section id="about">
+        <h2 class="section-title lang" data-es="¿Qué es el Value Network Analysis?" data-ca="Què és el Value Network Analysis?">¿Qué es el Value Network Analysis?</h2>
+        <p class="section-subtitle lang" data-es="Metodología pionera para visualizar y optimizar los flujos de valor en las organizaciones" data-ca="Metodologia pionera per visualitzar i optimitzar els fluxos de valor a les organitzacions">Metodología pionera para visualizar y optimizar los flujos de valor en las organizaciones</p>
+        
+        <div class="vna-concept">
+            <h3 class="lang" data-es="Definición y Orígenes" data-ca="Definició i Orígens">Definición y Orígenes</h3>
+            <p class="lang" data-es="El <strong>Value Network Analysis (VNA)</strong> o <strong>Análisis de Redes de Valor</strong> es una metodología que permite visualizar, analizar y optimizar los flujos de valor dentro de una organización o entre múltiples organizaciones. A través del mapeo de redes de valor, se identifican ineficiencias, oportunidades de mejora y puntos críticos que impactan en el desempeño organizativo." data-ca="El <strong>Value Network Analysis (VNA)</strong> o <strong>Anàlisi de Xarxes de Valor</strong> és una metodologia que permet visualitzar, analitzar i optimitzar els fluxos de valor dins d'una organització o entre múltiples organitzacions. A través del mapeig de xarxes de valor, s'identifiquen ineficiències, oportunitats de millora i punts crítics que impacten en el rendiment organitzatiu.">El <strong>Value Network Analysis (VNA)</strong> o <strong>Análisis de Redes de Valor</strong> es una metodología que permite visualizar, analizar y optimizar los flujos de valor dentro de una organización o entre múltiples organizaciones. A través del mapeo de redes de valor, se identifican ineficiencias, oportunidades de mejora y puntos críticos que impactan en el desempeño organizativo.</p>
+            
+            <p class="lang" data-es="Esta herramienta estratégica fue desarrollada por <strong>Verna Allee</strong>, pionera en el estudio de redes de valor, y facilita la toma de decisiones basadas en evidencia concreta sobre cómo fluye realmente el valor en las estructuras organizativas, permitiendo intervenciones precisas y efectivas." data-ca="Aquesta eina estratègica va ser desenvolupada per <strong>Verna Allee</strong>, pionera en l'estudi de xarxes de valor, i facilita la presa de decisions basades en evidència concreta sobre com flueix realment el valor a les estructures organitzatives, permetent intervencions precises i efectives.">Esta herramienta estratégica fue desarrollada por <strong>Verna Allee</strong>, pionera en el estudio de redes de valor, y facilita la toma de decisiones basadas en evidencia concreta sobre cómo fluye realmente el valor en las estructuras organizativas, permitiendo intervenciones precisas y efectivas.</p>
+            
+            <h3 class="lang" data-es="Los Tres Elementos Fundamentales" data-ca="Els Tres Elements Fonamentals" style="margin-top: 30px;">Los Tres Elementos Fundamentales</h3>
+            <div class="methodology-steps">
+                <div class="methodology-step">
+                    <h4 class="lang" data-es="Flujos de Valor Tangibles e Intangibles" data-ca="Fluxos de Valor Tangibles i Intangibles">Flujos de Valor Tangibles e Intangibles</h4>
+                    <p class="lang" data-es="Análisis de todos los tipos de valor que circulan en la organización: productos, servicios, información, conocimiento, influencia, apoyo emocional y otros activos intangibles que son críticos para el éxito." data-ca="Anàlisi de tots els tipus de valor que circulen a l'organització: productes, serveis, informació, coneixement, influència, suport emocional i altres actius intangibles que són crítics per al èxit.">Análisis de todos los tipos de valor que circulan en la organización: productos, servicios, información, conocimiento, influencia, apoyo emocional y otros activos intangibles que son críticos para el éxito.</p>
+                </div>
+                
+                <div class="methodology-step">
+                    <h4 class="lang" data-es="Roles y Relaciones" data-ca="Rols i Relacions">Roles y Relaciones</h4>
+                    <p class="lang" data-es="Identificación y representación visual de todos los actores relevantes dentro de la red (individuos, equipos, departamentos, organizaciones) y las relaciones entre ellos que permiten el flujo de valor." data-ca="Identificació i representació visual de tots els actors rellevants dins de la xarxa (individus, equips, departaments, organitzacions) i les relacions entre ells que permeten el flux de valor.">Identificación y representación visual de todos los actores relevantes dentro de la red (individuos, equipos, departamentos, organizaciones) y las relaciones entre ellos que permiten el flujo de valor.</p>
+                </div>
+                
+                <div class="methodology-step">
+                    <h4 class="lang" data-es="Transacciones de Valor" data-ca="Transaccions de Valor">Transacciones de Valor</h4>
+                    <p class="lang" data-es="Mapeo de las interacciones específicas donde se crea, transforma o transfiere valor entre los diferentes actores de la red, permitiendo identificar cuellos de botella y oportunidades de optimización." data-ca="Mapeig de les interaccions específiques on es crea, transforma o transfereix valor entre els diferents actors de la xarxa, permetent identificar colls d'ampolla i oportunitats d'optimització.">Mapeo de las interacciones específicas donde se crea, transforma o transfiere valor entre los diferentes actores de la red, permitiendo identificar cuellos de botella y oportunidades de optimización.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Methodology Section -->
+    <section>
+        <h2 class="section-title lang" data-es="Metodología VNA" data-ca="Metodologia VNA">Metodología VNA</h2>
+        <p class="section-subtitle lang" data-es="El proceso de Value Network Analysis se desarrolla en fases estructuradas que garantizan un análisis completo y accionable" data-ca="El procés de Value Network Analysis es desenvolupa en fases estructurades que garanteixen un anàlisi complet i accionable">El proceso de Value Network Analysis se desarrolla en fases estructuradas que garantizan un análisis completo y accionable</p>
+        
+        <div class="methodology-steps">
+            <div class="methodology-step">
+                <h4 class="lang" data-es="Mapeo de Actores y Relaciones" data-ca="Mapeig d'Actors i Relacions">Mapeo de Actores y Relaciones</h4>
+                <p class="lang" data-es="Identificación y representación visual de todos los actores relevantes dentro de la red (individuos, equipos, departamentos, organizaciones) y las relaciones entre ellos." data-ca="Identificació i representació visual de tots els actors rellevants dins de la xarxa (individus, equips, departaments, organitzacions) i les relacions entre ells.">Identificación y representación visual de todos los actores relevantes dentro de la red (individuos, equipos, departamentos, organizaciones) y las relaciones entre ellos.</p>
+            </div>
+            
+            <div class="methodology-step">
+                <h4 class="lang" data-es="Identificación de Flujos de Valor" data-ca="Identificació de Fluxos de Valor">Identificación de Flujos de Valor</h4>
+                <p class="lang" data-es="Análisis detallado de los diferentes tipos de flujos que circulan por la red: tangibles (productos, servicios, dinero) e intangibles (información, conocimiento, influencia, apoyo)." data-ca="Anàlisi detallat dels diferents tipus de fluxos que circulen per la xarxa: tangibles (productes, serveis, diners) i intangibles (informació, coneixement, influència, suport).">Análisis detallado de los diferentes tipos de flujos que circulan por la red: tangibles (productos, servicios, dinero) e intangibles (información, conocimiento, influencia, apoyo).</p>
+            </div>
+            
+            <div class="methodology-step">
+                <h4 class="lang" data-es="Diagnóstico de la Red" data-ca="Diagnòstic de la Xarxa">Diagnóstico de la Red</h4>
+                <p class="lang" data-es="Evaluación de la estructura actual de la red para identificar cuellos de botella, redundancias, brechas de comunicación y oportunidades de optimización." data-ca="Avaluació de l'estructura actual de la xarxa per identificar colls d'ampolla, redundàncies, breus de comunicació i oportunitats d'optimització.">Evaluación de la estructura actual de la red para identificar cuellos de botella, redundancias, brechas de comunicación y oportunidades de optimización.</p>
+            </div>
+            
+            <div class="methodology-step">
+                <h4 class="lang" data-es="Diseño de la Red Óptima" data-ca="Disseny de la Xarxa Òptima">Diseño de la Red Óptima</h4>
+                <p class="lang" data-es="Propuesta de una configuración ideal de la red que maximice el flujo de valor y minimice las ineficiencias, basada en los objetivos estratégicos de la organización." data-ca="Proposta d'una configuració ideal de la xarxa que maximitzi el flux de valor i minimitzi les ineficiències, basada en els objectius estratègics de l'organització.">Propuesta de una configuración ideal de la red que maximice el flujo de valor y minimice las ineficiencias, basada en los objetivos estratégicos de la organización.</p>
+            </div>
+            
+            <div class="methodology-step">
+                <h4 class="lang" data-es="Implementación y Seguimiento" data-ca="Implementació i Seguiment">Implementación y Seguimiento</h4>
+                <p class="lang" data-es="Acompañamiento en la transición hacia la red optimizada y establecimiento de métricas para monitorear el impacto de los cambios implementados." data-ca="Acompanyament en la transició cap a la xarxa optimitzada i establiment de mètriques per monitoritzar l'impacte dels canvis implementats.">Acompañamiento en la transición hacia la red optimizada y establecimiento de métricas para monitorear el impacto de los cambios implementados.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Benefits Section -->
+    <section>
+        <h2 class="section-title lang" data-es="Beneficios del Value Network Analysis" data-ca="Beneficis del Value Network Analysis">Beneficios del Value Network Analysis</h2>
+        <p class="section-subtitle lang" data-es="La aplicación de VNA proporciona múltiples beneficios tangibles para las organizaciones" data-ca="L'aplicació de VNA proporciona múltiples beneficis tangibles per a les organitzacions">La aplicación de VNA proporciona múltiples beneficios tangibles para las organizaciones</p>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <h4 class="lang" data-es="Visibilidad Estratégica" data-ca="Visibilitat Estratègica">Visibilidad Estratégica</h4>
+                <p class="lang" data-es="Comprensión clara de cómo fluye realmente el valor en la organización, más allá de los organigramas formales." data-ca="Comprensió clara de com flueix realment el valor a l'organització, més enllà dels organigrames formals.">Comprensión clara de cómo fluye realmente el valor en la organización, más allá de los organigramas formales.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <h4 class="lang" data-es="Identificación de Ineficiencias" data-ca="Identificació d'Ineficiències">Identificación de Ineficiencias</h4>
+                <p class="lang" data-es="Detección precisa de cuellos de botella, redundancias y brechas que afectan el rendimiento organizativo." data-ca="Detecció precisa de colls d'ampolla, redundàncies i breus que afecten el rendiment organitzatiu.">Detección precisa de cuellos de botella, redundancias y brechas que afectan el rendimiento organizativo.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <h4 class="lang" data-es="Toma de Decisiones Basada en Evidencia" data-ca="Pres de Decisions Basada en Evidència">Toma de Decisiones Basada en Evidencia</h4>
+                <p class="lang" data-es="Fundamentación de decisiones estratégicas en datos concretos sobre flujos reales de valor." data-ca="Fonamentació de decisions estratègiques en dades concretes sobre fluxos reals de valor.">Fundamentación de decisiones estratégicas en datos concretos sobre flujos reales de valor.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <h4 class="lang" data-es="Optimización de Procesos" data-ca="Optimització de Processos">Optimización de Procesos</h4>
+                <p class="lang" data-es="Mejora de la eficiencia operativa mediante la reconfiguración de flujos y relaciones críticas." data-ca="Millora de l'eficiència operativa mitjançant la reconfiguració de fluxos i relacions crítiques.">Mejora de la eficiencia operativa mediante la reconfiguración de flujos y relaciones críticas.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <h4 class="lang" data-es="Gestión del Cambio" data-ca="Gestió del Canvi">Gestión del Cambio</h4>
+                <p class="lang" data-es="Comprensión del impacto de cambios organizativos antes de su implementación, minimizando riesgos." data-ca="Comprensió de l'impacte de canvis organitzatius abans de la seva implementació, minimitzant riscos.">Comprensión del impacto de cambios organizativos antes de su implementación, minimizando riesgos.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <h4 class="lang" data-es="Colaboración Mejorada" data-ca="Col·laboració Millorada">Colaboración Mejorada</h4>
+                <p class="lang" data-es="Fomento de la colaboración efectiva al identificar y fortalecer conexiones clave entre actores." data-ca="Foment de la col·laboració efectiva en identificar i fortalir connexions clau entre actors.">Fomento de la colaboración efectiva al identificar y fortalecer conexiones clave entre actores.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Applications Section -->
+    <section class="applications-section">
+        <h2 class="section-title lang" data-es="Aplicaciones del VNA" data-ca="Aplicacions del VNA">Aplicaciones del VNA</h2>
+        <p class="section-subtitle lang" data-es="Value Network Analysis puede aplicarse en diversos contextos organizativos" data-ca="Value Network Analysis es pot aplicar en diversos contextos organitzatius">Value Network Analysis puede aplicarse en diversos contextos organizativos</p>
+        
+        <div class="applications-grid">
+            <div class="application-card">
+                <h4 class="lang" data-es="Reorganización Empresarial" data-ca="Reorganització Empresarial">Reorganización Empresarial</h4>
+                <p class="lang" data-es="Análisis previo y posterior a cambios estructurales para garantizar continuidad en flujos de valor" data-ca="Anàlisi previ i posterior a canvis estructurals per garantir continuïtat en fluxos de valor">Análisis previo y posterior a cambios estructurales para garantizar continuidad en flujos de valor</p>
+            </div>
+            
+            <div class="application-card">
+                <h4 class="lang" data-es="Optimización de Equipos" data-ca="Optimització d'Equips">Optimización de Equipos</h4>
+                <p class="lang" data-es="Identificación de patrones de colaboración y propuestas para mejorar la efectividad grupal" data-ca="Identificació de patrons de col·laboració i propostes per millorar l'efectivitat grupal">Identificación de patrones de colaboración y propuestas para mejorar la efectividad grupal</p>
+            </div>
+            
+            <div class="application-card">
+                <h4 class="lang" data-es="Gobernanza de Proyectos" data-ca="Governança de Projectes">Gobernanza de Proyectos</h4>
+                <p class="lang" data-es="Mapeo de stakeholders y flujos de decisión en proyectos complejos" data-ca="Mapeig de stakeholders i fluxos de decisió en projectes complexos">Mapeo de stakeholders y flujos de decisión en proyectos complejos</p>
+            </div>
+            
+            <div class="application-card">
+                <h4 class="lang" data-es="Transformación Digital" data-ca="Transformació Digital">Transformación Digital</h4>
+                <p class="lang" data-es="Análisis del impacto de nuevas tecnologías en flujos de valor existentes" data-ca="Anàlisi de l'impacte de noves tecnologies en fluxos de valor existents">Análisis del impacto de nuevas tecnologías en flujos de valor existentes</p>
+            </div>
+            
+            <div class="application-card">
+                <h4 class="lang" data-es="Desarrollo de Liderazgo" data-ca="Desenvolupament de Lideratge">Desarrollo de Liderazgo</h4>
+                <p class="lang" data-es="Comprensión de redes de influencia informal para potenciar el liderazgo emergente" data-ca="Comprensió de xarxes d'influència informal per potenciar el lideratge emergent">Comprensión de redes de influencia informal para potenciar el liderazgo emergente</p>
+            </div>
+            
+            <div class="application-card">
+                <h4 class="lang" data-es="Fusiones y Adquisiciones" data-ca="Fusions i Adquisicions">Fusiones y Adquisiciones</h4>
+                <p class="lang" data-es="Integración post-fusiones mediante análisis de redes combinadas" data-ca="Integració post-fusions mitjançant anàlisi de xarxes combinades">Integración post-fusiones mediante análisis de redes combinadas</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services">
+        <h2 class="section-title lang" data-es="Nuestros Servicios de VNA" data-ca="Els Nostres Serveis de VNA">Nuestros Servicios de VNA</h2>
+        <p class="section-subtitle lang" data-es="Ofrecemos soluciones integrales de Value Network Analysis adaptadas a tus necesidades específicas" data-ca="Ofereixem solucions integrals de Value Network Analysis adaptades a les teves necessitats específiques">Ofrecemos soluciones integrales de Value Network Analysis adaptadas a tus necesidades específicas</p>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Diagnóstico Estratégico" data-ca="Diagnòstic Estratègic">Diagnóstico Estratégico</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Análisis completo de los flujos de valor en tu organización para identificar ineficiencias y oportunidades de mejora." data-ca="Anàlisi complet dels fluxos de valor a la teva organització per identificar ineficiències i oportunitats de millora.">Análisis completo de los flujos de valor en tu organización para identificar ineficiencias y oportunidades de mejora.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Mapeo de actores y relaciones clave" data-ca="Mapeig d'actors i relacions clau">Mapeo de actores y relaciones clave</li>
+                        <li class="lang" data-es="Identificación de flujos tangibles e intangibles" data-ca="Identificació de fluxos tangibles i intangibles">Identificación de flujos tangibles e intangibles</li>
+                        <li class="lang" data-es="Análisis de cuellos de botella y redundancias" data-ca="Anàlisi de colls d'ampolla i redundàncies">Análisis de cuellos de botella y redundancias</li>
+                        <li class="lang" data-es="Informe detallado con recomendaciones accionables" data-ca="Informe detallat amb recomanacions accionables">Informe detallado con recomendaciones accionables</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Diagnóstico VNA')" class="service-cta lang" data-es="Solicitar Diagnóstico" data-ca="Sol·licitar Diagnòstic">Solicitar Diagnóstico</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Diseño de Red Óptima" data-ca="Disseny de Xarxa Òptima">Diseño de Red Óptima</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Propuesta de reconfiguración de flujos y estructuras para maximizar el valor y la eficiencia organizativa." data-ca="Proposta de reconfiguració de fluxos i estructures per maximitzar el valor i l'eficiència organitzativa.">Propuesta de reconfiguración de flujos y estructuras para maximizar el valor y la eficiencia organizativa.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Modelado de escenarios futuros" data-ca="Modelatge d'escenaris futurs">Modelado de escenarios futuros</li>
+                        <li class="lang" data-es="Diseño de estructuras organizativas optimizadas" data-ca="Disseny d'estructures organitzatives optimitzades">Diseño de estructuras organizativas optimizadas</li>
+                        <li class="lang" data-es="Plan de transición hacia la red óptima" data-ca="Pla de transició cap a la xarxa òptima">Plan de transición hacia la red óptima</li>
+                        <li class="lang" data-es="Métricas de seguimiento y evaluación" data-ca="Mètriques de seguiment i avaluació">Métricas de seguimiento y evaluación</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Diseño VNA')" class="service-cta lang" data-es="Solicitar Diseño" data-ca="Sol·licitar Disseny">Solicitar Diseño</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Formación en VNA" data-ca="Formació en VNA">Formación en VNA</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Capacitación para tu equipo en metodología Value Network Analysis para aplicaciones internas continuas." data-ca="Capacitació per al teu equip en metodologia Value Network Analysis per a aplicacions internes contínues.">Capacitación para tu equipo en metodología Value Network Analysis para aplicaciones internas continuas.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Talleres prácticos de mapeo de redes" data-ca="Tallers pràctics de mapeig de xarxes">Talleres prácticos de mapeo de redes</li>
+                        <li class="lang" data-es="Certificación en herramientas VNA" data-ca="Certificació en eines VNA">Certificación en herramientas VNA</li>
+                        <li class="lang" data-es="Material didáctico y casos de estudio" data-ca="Material didàctic i casos d'estudi">Material didáctico y casos de estudio</li>
+                        <li class="lang" data-es="Sesiones de coaching y acompañamiento" data-ca="Sessions de coaching i acompanyament">Sesiones de coaching y acompañamiento</li>
+                    </ul>
+                    <a href="https://cursovna.netlify.app/" target="_blank" class="service-cta lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Implementación y Seguimiento" data-ca="Implementació i Seguiment">Implementación y Seguimiento</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Acompañamiento en la implementación de cambios y monitoreo continuo de los flujos de valor optimizados." data-ca="Acompanyament en la implementació de canvis i monitoratge continu dels fluxos de valor optimitzats.">Acompañamiento en la implementación de cambios y monitoreo continuo de los flujos de valor optimizados.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Gestión del cambio organizativo" data-ca="Gestió del canvi organitzatiu">Gestión del cambio organizativo</li>
+                        <li class="lang" data-es="Capacitación de equipos internos" data-ca="Capacitació d'equips interns">Capacitación de equipos internos</li>
+                        <li class="lang" data-es="Sistema de métricas y dashboards" data-ca="Sistema de mètriques i dashboards">Sistema de métricas y dashboards</li>
+                        <li class="lang" data-es="Revisiones periódicas y ajustes" data-ca="Revisions periòdiques i ajustos">Revisiones periódicas y ajustes</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Implementación VNA')" class="service-cta lang" data-es="Solicitar Implementación" data-ca="Sol·licitar Implementació">Solicitar Implementación</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="lang" data-es="Resultados Impactantes con VNA" data-ca="Resultats Impactants amb VNA">Resultados Impactantes con VNA</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">30%</span>
+                <span class="stat-label lang" data-es="Reducción de tiempos de proceso" data-ca="Reducció de temps de procés">Reducción de tiempos de proceso</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">25%</span>
+                <span class="stat-label lang" data-es="Aumento en satisfacción cliente" data-ca="Augment en satisfacció client">Aumento en satisfacción cliente</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">40%</span>
+                <span class="stat-label lang" data-es="Mejora en toma de decisiones" data-ca="Millora en presa de decisions">Mejora en toma de decisiones</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">2x</span>
+                <span class="stat-label lang" data-es="Velocidad de implementación" data-ca="Velocitat d'implementació">Velocidad de implementación</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Founder Section -->
+    <section class="founder-section">
+        <div class="founder-content">
+            <img src="https://valuenetworklab.netlify.app/alvaro.jpg" alt="Álvaro Solache" class="founder-img">
+            <h2 class="founder-name lang" data-es="Álvaro Solache" data-ca="Àlvaro Solache">Álvaro Solache</h2>
+            <p class="founder-title lang" data-es="Experto en Value Network Analysis" data-ca="Expert en Value Network Analysis">Experto en Value Network Analysis</p>
+            <p class="founder-bio lang" data-es="Director de RRHH y consultor estratégico con más de 25 años de experiencia. Pionero en la aplicación de Value Network Analysis en España, con formación directa en la metodología creada por Verna Allee. Ha implementado VNA en más de 50 organizaciones, generando mejoras significativas en eficiencia y toma de decisiones. Autor de múltiples artículos y recursos sobre redes de valor en Value Network Lab." data-ca="Director de RRHH i consultor estratègic amb més de 25 anys d'experiència. Pioner en l'aplicació de Value Network Analysis a Espanya, amb formació directa en la metodologia creada per Verna Allee. Ha implementat VNA en més de 50 organitzacions, generant millores significatives en eficiència i presa de decisions. Autor de múltiples articles i recursos sobre xarxes de valor a Value Network Lab.">Director de RRHH y consultor estratégico con más de 25 años de experiencia. Pionero en la aplicación de Value Network Analysis en España, con formación directa en la metodología creada por Verna Allee. Ha implementado VNA en más de 50 organizaciones, generando mejoras significativas en eficiencia y toma de decisiones. Autor de múltiples artículos y recursos sobre redes de valor en Value Network Lab.</p>
+            <a href="https://valuenetworklab.netlify.app/" target="_blank" class="founder-link lang" data-es="Explorar Value Network Lab" data-ca="Explorar Value Network Lab">Explorar Value Network Lab</a>
+        </div>
+    </section>
+    
+    <!-- Value Proposition Section -->
+    <section class="value-section">
+        <div class="value-content">
+            <h2 class="lang" data-es="¿Por qué elegir TeamTowers Humà para tu Value Network Analysis?" data-ca="Per què triar TeamTowers Humà per al teu Value Network Analysis?">¿Por qué elegir TeamTowers Humà para tu Value Network Analysis?</h2>
+            <p class="lang" data-es="Somos la única consultora en el Penedès con expertise certificado en Value Network Analysis y 20+ años de experiencia aplicando esta metodología en organizaciones líderes. Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles." data-ca="Som la única consultora al Penedès amb expertise certificat en Value Network Analysis i 20+ anys d'experiència aplicant aquesta metodologia en organitzacions líders. El nostre enfocament únic combina el rigor analític amb la profunditat del coneixement organitzatiu, garantint resultats tangibles i sostenibles.">Somos la única consultora en el Penedès con expertise certificado en Value Network Analysis y 20+ años de experiencia aplicando esta metodología en organizaciones líderes. Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles.</p>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2 class="section-title lang" data-es="Transforma tu Organización con Value Network Analysis" data-ca="Transforma la teva Organització amb Value Network Analysis">Transforma tu Organización con Value Network Analysis</h2>
+        <p class="section-subtitle lang" data-es="Agenda tu diagnóstico gratuito y descubre cómo podemos mapear los flujos de valor en tu organización" data-ca="Agenda el teu diagnòstic gratuït i descobreix com podem mapejar els fluxos de valor a la teva organització">Agenda tu diagnóstico gratuito y descubre cómo podemos mapear los flujos de valor en tu organización</p>
+        
+        <div class="contact-container">
+            <h3 class="lang" data-es="Solicitud de Diagnóstico Gratuito" data-ca="Sol·licitud de Diagnòstic Gratuit">Solicitud de Diagnóstico Gratuito</h3>
+            <p class="lang" data-es="Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo TeamTowers Humà puede optimizar los flujos de valor en tu organización." data-ca="Omple aquesta sol·licitud i ens posarem en contacte amb tu en menys de 24 hores per agendar la teva sessió exploratòria sense compromís. Descobreix com TeamTowers Humà pot optimitzar els fluxos de valor a la teva organització.">Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo TeamTowers Humà puede optimizar los flujos de valor en tu organización.</p>
+            
+            <a href="javascript:void(0)" onclick="contactService('Value Network Analysis')" class="btn btn-primary" style="margin-top: 30px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</span>
+            </a>
+            
+            <p style="margin-top: 25px; font-size: 1.1rem; color: var(--gray);">
+                <span class="lang" data-es="¿Prefieres explorar primero? Visita Value Network Lab para recursos gratuitos y casos de estudio." data-ca="¿Prefereixes explorar primer? Visita Value Network Lab per a recursos gratuïts i casos d'estudi.">¿Prefieres explorar primero? Visita Value Network Lab para recursos gratuitos y casos de estudio.</span>
+            </p>
+            
+            <a href="https://valuenetworklab.netlify.app/" target="_blank" class="btn btn-secondary" style="margin-top: 20px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Explorar Value Network Lab" data-ca="Explorar Value Network Lab">Explorar Value Network Lab</span>
+            </a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès. 20+ anys construint equips sòlids com castells.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowers,eu/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="#services" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/#services" class="lang" data-es="Consultoría RRHH" data-ca="Consultoria RRHH">Consultoría RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/#services" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="javascript:void(0)" onclick="contactService('Value Network Analysis')" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Consultoria estratègica de RRHH a Vilafranca del Penedès.">© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            // Use innerHTML to allow HTML content in translations
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Contact function with email obfuscation
+            window.contactService = function(serviceName) {
+                // Obfuscated email construction
+                const emailName = 'alvaro';
+                const emailDomain = 'teamtowershuma.com';
+                const fullEmail = emailName + '@' + emailDomain;
+                
+                // Subject line based on service
+                let subject = 'Consulta sobre ' + serviceName;
+                
+                // Create mailto link
+                const mailtoLink = 'mailto:' + fullEmail + '?subject=' + encodeURIComponent(subject);
+                
+                // Open email client
+                window.location.href = mailtoLink;
+            };
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
