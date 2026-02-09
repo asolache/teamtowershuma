@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Comunidades de Práctica - Modelos de aprendizaje basados en redes de valor para transformar el aprendizaje organizacional. TeamTowers Humà, consultoría RRHH en Vilafranca del Penedès.">
+    <meta name="keywords" content="Comunidades de Práctica, Comunitats de Pràctica, aprendizaje organizacional, redes de valor, conocimiento tácito, TeamTowers Humà, consultoría RRHH, Vilafranca del Penedès, Penedès">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Comunidades de Práctica | TeamTowers Humà | Consultoría RRHH en Vilafranca del Penedès</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Comunidades de Práctica | TeamTowers Humà">
+    <meta property="og:description" content="Transforma el aprendizaje organizacional con comunidades que capturan conocimiento tácito y desarrollan competencias críticas. 20+ años de experiencia desde el Penedès.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.netlify.app/coops">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Comunidades de Práctica | TeamTowers Humà">
+    <meta name="twitter:description" content="Modelos de aprendizaje basados en redes de valor para transformar organizaciones desde Vilafranca del Penedès">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Consultoría en Comunidades de Práctica",
+      "provider": {
+        "@type": "Organization",
+        "name": "TeamTowers Humà"
+      },
+      "areaServed": ["Vilafranca del Penedès", "Alt Penedès", "Garraf", "Barcelona", "Cataluña"],
+      "description": "Consultoría especializada en diseño e implementación de Comunidades de Práctica para transformar el aprendizaje organizacional y capturar conocimiento tácito",
+      "offers": {
+        "@type": "Offer",
+        "businessFunction": "Consultoría",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.95) 100%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero-logo {
+            display: inline-block;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        .hero h1 {
+            font-size: 4.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        
+        .hero-tagline {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            font-style: italic;
+        }
+        
+        .hero p {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* COP Concept Section */
+        .cop-concept {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin: 40px 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .cop-concept h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .pillar-card {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .pillar-card h4 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .pillar-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .benefit-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .benefit-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* Comparison Section */
+        .comparison-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin: 50px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .comparison-table .highlight {
+            background: #fff3cd;
+            font-weight: bold;
+        }
+        
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            margin: 40px 0;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+        
+        .service-title {
+            font-size: 1.9rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .service-content {
+            padding: 30px;
+        }
+        
+        .service-desc {
+            margin-bottom: 25px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        .service-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+        
+        .service-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        
+        /* Case Study Section */
+        .case-study {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--box-shadow);
+            margin: 50px 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .case-study h3 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 2rem;
+        }
+        
+        .case-study p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .case-study ul {
+            padding-left: 25px;
+            margin: 20px 0;
+        }
+        
+        .case-study li {
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+        
+        /* Value Proposition */
+        .value-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .value-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .value-content p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+            text-align: center;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+            font-size: 1.3rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.5rem;
+            }
+            
+            section {
+                padding: 80px 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.3rem;
+            }
+            
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .section-title {
+                font-size: 2.3rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.3rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 60px 15px;
+            }
+            
+            .cop-concept,
+            .comparison-section,
+            .stats-section,
+            .value-section,
+            .contact-section {
+                padding: 30px 20px;
+            }
+            
+            .service-content {
+                padding: 25px;
+            }
+            
+            .contact-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h1>
+            <p class="hero-tagline lang" data-es="Modelos de aprendizaje basados en redes de valor" data-ca="Models d'aprenentatge basats en xarxes de valor">Modelos de aprendizaje basados en redes de valor</p>
+            <p class="lang" data-es="Transforma el aprendizaje organizacional con comunidades que capturan conocimiento tácito y desarrollan competencias críticas de forma colaborativa y sostenible." data-ca="Transforma l'aprenentatge organitzatiu amb comunitats que capturen coneixement tàcit i desenvolupen competències crítiques de forma col·laborativa i sostenible.">Transforma el aprendizaje organizacional con comunidades que capturan conocimiento tácito y desarrollan competencias críticas de forma colaborativa y sostenible.</p>
+            <div class="cta-container">
+                <a href="javascript:void(0)" onclick="contactService('Comunidades de Práctica')" class="btn btn-primary lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</a>
+                <a href="#services" class="btn btn-secondary lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- What are CoP Section -->
+    <section id="about">
+        <h2 class="section-title lang" data-es="¿Qué son las Comunidades de Práctica?" data-ca="Què són les Comunitats de Pràctica?">¿Qué son las Comunidades de Práctica?</h2>
+        <p class="section-subtitle lang" data-es="Grupos que comparten un interés y aprenden mutuamente mediante la interacción continua" data-ca="Grups que comparteixen un interès i aprenen mútuament mitjançant la interacció contínua">Grupos que comparten un interés y aprenden mutuamente mediante la interacción continua</p>
+        
+        <div class="cop-concept">
+            <h3 class="lang" data-es="Definición y Fundamentos" data-ca="Definició i Fonaments">Definición y Fundamentos</h3>
+            <p class="lang" data-es="Las <strong>Comunidades de Práctica (CoP)</strong> son grupos de personas que comparten un interés, oficio o pasión y que se reúnen regularmente para aprender mutuamente mediante la interacción continua. El concepto fue formalizado por <strong>Etienne Wenger-Trayner</strong> y se define por tres elementos esenciales:" data-ca="Les <strong>Comunitats de Pràctica (CoP)</strong> són grups de persones que comparteixen un interès, ofici o passió i que es reuneixen regularment per aprendre mútuament mitjançant la interacció contínua. El concepte va ser formalitzat per <strong>Etienne Wenger-Trayner</strong> i es defineix per tres elements essencials:">Las <strong>Comunidades de Práctica (CoP)</strong> son grupos de personas que comparten un interés, oficio o pasión y que se reúnen regularmente para aprender mutuamente mediante la interacción continua. El concepto fue formalizado por <strong>Etienne Wenger-Trayner</strong> y se define por tres elementos esenciales:</p>
+            
+            <div class="pillars-grid">
+                <div class="pillar-card">
+                    <h4 class="lang" data-es="Dominio" data-ca="Domini">Dominio</h4>
+                    <p class="lang" data-es="Compromiso compartido con un área de conocimiento (ej: ciberseguridad, gestión ágil)" data-ca="Compromís compartit amb una àrea de coneixement (ex: ciberseguretat, gestió àgil)">Compromiso compartido con un área de conocimiento (ej: ciberseguridad, gestión ágil)</p>
+                </div>
+                <div class="pillar-card">
+                    <h4 class="lang" data-es="Comunidad" data-ca="Comunitat">Comunidad</h4>
+                    <p class="lang" data-es="Interacciones regulares que construyen relaciones y confianza entre los miembros" data-ca="Interaccions regulars que construeixen relacions i confiança entre els membres">Interacciones regulares que construyen relaciones y confianza entre los miembros</p>
+                </div>
+                <div class="pillar-card">
+                    <h4 class="lang" data-es="Práctica" data-ca="Pràctica">Práctica</h4>
+                    <p class="lang" data-es="Acumulación compartida de recursos, casos y conocimientos tácitos" data-ca="Acumulació compartida de recursos, casos i coneixements tàcits">Acumulación compartida de recursos, casos y conocimientos tácitos</p>
+                </div>
+            </div>
+            
+            <h3 class="lang" data-es="Características Diferenciales" data-ca="Característiques Diferencials" style="margin-top: 30px;">Características Diferenciales</h3>
+            <ul style="margin-left: 30px; margin-top: 15px; color: var(--gray);">
+                <li class="lang" data-es="<strong>✅ Auto-organizadas:</strong> Surgen orgánicamente o se facilitan (no se imponen jerárquicamente)" data-ca="<strong>✅ Auto-organitzades:</strong> Sorgeixen orgànicament o es faciliten (no s'imposen jeràrquicament)"><strong>✅ Auto-organizadas:</strong> Surgen orgánicamente o se facilitan (no se imponen jerárquicamente)</li>
+                <li class="lang" data-es="<strong>✅ Enfoque en lo tácito:</strong> Capturan conocimiento que no está documentado formalmente" data-ca="<strong>✅ Enfocament en el tàcit:</strong> Capturen coneixement que no està documentat formalment"><strong>✅ Enfoque en lo tácito:</strong> Capturan conocimiento que no está documentado formalmente</li>
+                <li class="lang" data-es="<strong>✅ Aprendizaje social:</strong> El conocimiento se construye colectivamente mediante la interacción" data-ca="<strong>✅ Aprenentatge social:</strong> El coneixement es construeix col·lectivament mitjançant la interacció"><strong>✅ Aprendizaje social:</strong> El conocimiento se construye colectivamente mediante la interacción</li>
+                <li class="lang" data-es="<strong>✅ Identidad profesional:</strong> Fortalecen el sentido de pertenencia y propósito compartido" data-ca="<strong>✅ Identitat professional:</strong> Fortaleixen el sentit de pertinença i propòsit compartit"><strong>✅ Identidad profesional:</strong> Fortalecen el sentido de pertenencia y propósito compartido</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- Impact Section -->
+    <section class="comparison-section">
+        <h2 class="section-title lang" data-es="Impacto Cuantificable: CoP vs Modelo Tradicional" data-ca="Impacte Quantificable: CoP vs Model Tradicional">Impacto Cuantificable: CoP vs Modelo Tradicional</h2>
+        <p class="section-subtitle lang" data-es="Resultados medibles que demuestran la superioridad del modelo de Comunidades de Práctica" data-ca="Resultats mesurables que demostren la superioritat del model de Comunitats de Pràctica">Resultados medibles que demuestran la superioridad del modelo de Comunidades de Práctica</p>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th class="lang" data-es="Dimensión" data-ca="Dimensió">Dimensión</th>
+                    <th class="lang" data-es="Modelo Tradicional" data-ca="Model Tradicional">Modelo Tradicional</th>
+                    <th class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</th>
+                    <th class="lang" data-es="Ventaja CoP" data-ca="Avantatge CoP">Ventaja CoP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong class="lang" data-es="Transferencia a puesto" data-ca="Transferència a lloc de treball">Transferencia a puesto</strong></td>
+                    <td>15-20%</td>
+                    <td class="highlight">70-80%</td>
+                    <td>✅ 4x mayor aplicación</td>
+                </tr>
+                <tr>
+                    <td><strong class="lang" data-es="Retención del conocimiento" data-ca="Retenció del coneixement">Retención del conocimiento</strong></td>
+                    <td>10% a los 30 días</td>
+                    <td class="highlight">65% a los 90 días</td>
+                    <td>✅ 6.5x mayor retención</td>
+                </tr>
+                <tr>
+                    <td><strong class="lang" data-es="Velocidad de adaptación" data-ca="Velocitat d'adaptació">Velocidad de adaptación</strong></td>
+                    <td>Ciclos anuales</td>
+                    <td class="highlight">Tiempo real</td>
+                    <td>✅ Respuesta inmediata</td>
+                </tr>
+                <tr>
+                    <td><strong class="lang" data-es="Coste por empleado" data-ca="Cost per empleat">Coste por empleado</strong></td>
+                    <td>1.200-2.500€/año</td>
+                    <td class="highlight">300-500€/año</td>
+                    <td>✅ 60-70% ahorro</td>
+                </tr>
+                <tr>
+                    <td><strong class="lang" data-es="Engagement" data-ca="Compromís">Engagement</strong></td>
+                    <td>45% completan cursos</td>
+                    <td class="highlight">85% participación activa</td>
+                    <td>✅ Doble engagement</td>
+                </tr>
+                <tr>
+                    <td><strong class="lang" data-es="Innovación generada" data-ca="Innovació generada">Innovación generada</strong></td>
+                    <td>Limitada al contenido</td>
+                    <td class="highlight">Emergente y orgánica</td>
+                    <td>✅ Genera conocimiento nuevo</td>
+                </tr>
+                <tr>
+                    <td><strong class="lang" data-es="Reducción de turnover" data-ca="Reducció de rotació">Reducción de turnover</strong></td>
+                    <td>-</td>
+                    <td class="highlight">22% menos</td>
+                    <td>✅ Mayor retención de talento</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="stats-section">
+            <h2 class="lang" data-es="Beneficios Estratégicos Adicionales" data-ca="Beneficis Estratègics Addicionals">Beneficios Estratégicos Adicionales</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">✅</span>
+                    <span class="stat-label lang" data-es="Captura de conocimiento tácito" data-ca="Captura de coneixement tàcit">Captura de conocimiento tácito</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">✅</span>
+                    <span class="stat-label lang" data-es="Detección temprana de brechas" data-ca="Detecció primerenca de bretxes">Detección temprana de brechas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">✅</span>
+                    <span class="stat-label lang" data-es="Desarrollo de liderazgo distribuido" data-ca="Desenvolupament de lideratge distribuït">Desarrollo de liderazgo distribuido</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">✅</span>
+                    <span class="stat-label lang" data-es="Cultura de aprendizaje continuo" data-ca="Cultura d'aprenentatge continu">Cultura de aprendizaje continuo</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services">
+        <h2 class="section-title lang" data-es="Nuestros Servicios de Consultoría en CoP" data-ca="Els Nostres Serveis de Consultoria en CoP">Nuestros Servicios de Consultoría en CoP</h2>
+        <p class="section-subtitle lang" data-es="Diseño e implementación de Comunidades de Práctica adaptadas a tus necesidades específicas" data-ca="Disseny i implementació de Comunitats de Pràctica adaptades a les teves necessitats específiques">Diseño e implementación de Comunidades de Práctica adaptadas a tus necesidades específicas</p>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Diagnóstico Estratégico" data-ca="Diagnòstic Estratègic">Diagnóstico Estratégico</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Mapeo de competencias críticas con Value Network Analysis para identificar brechas y oportunidades de aprendizaje." data-ca="Mapeig de competències crítiques amb Value Network Analysis per identificar bretxes i oportunitats d'aprenentatge.">Mapeo de competencias críticas con Value Network Analysis para identificar brechas y oportunidades de aprendizaje.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Análisis de flujos de conocimiento entre roles críticos" data-ca="Anàlisi de fluxos de coneixement entre rols crítics">Análisis de flujos de conocimiento entre roles críticos</li>
+                        <li class="lang" data-es="Detección de nodos conectores informales" data-ca="Detecció de nodes connectors informals">Detección de nodos conectores informales</li>
+                        <li class="lang" data-es="Priorización de 3-5 competencias críticas por rol" data-ca="Priorització de 3-5 competències crítiques per rol">Priorización de 3-5 competencias críticas por rol</li>
+                        <li class="lang" data-es="Identificación de comunidades potenciales" data-ca="Identificació de comunitats potencials">Identificación de comunidades potenciales</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Diagnóstico CoP')" class="service-cta lang" data-es="Solicitar Diagnóstico" data-ca="Sol·licitar Diagnòstic">Solicitar Diagnóstico</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Diseño Arquitectónico" data-ca="Disseny Arquitectònic">Diseño Arquitectónico</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Creación de la estructura y modelo de madurez para cada CoP, desde emergente hasta transformador." data-ca="Creació de l'estructura i model de maduresa per a cada CoP, des d'emergent fins a transformador.">Creación de la estructura y modelo de madurez para cada CoP, desde emergente hasta transformador.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Modelo de 4 niveles de madurez" data-ca="Model de 4 nivells de maduresa">Modelo de 4 niveles de madurez</li>
+                        <li class="lang" data-es="Arquitectura híbrida (presencial + digital)" data-ca="Arquitectura híbrida (presencial + digital)">Arquitectura híbrida (presencial + digital)</li>
+                        <li class="lang" data-es="Diseño de rituals y espacios de aprendizaje" data-ca="Disseny de rituals i espais d'aprenentatge">Diseño de rituals y espacios de aprendizaje</li>
+                        <li class="lang" data-es="Sistema de métricas de impacto" data-ca="Sistema de mètriques d'impacte">Sistema de métricas de impacto</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Diseño CoP')" class="service-cta lang" data-es="Solicitar Diseño" data-ca="Sol·licitar Disseny">Solicitar Diseño</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Implementación por Roles" data-ca="Implementació per Rols">Implementación por Roles</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Lanzamiento de CoP piloto alineadas con competencias críticas y objetivos de negocio." data-ca="Llançament de CoP pilot alineades amb competències crítiques i objectius de negoci.">Lanzamiento de CoP piloto alineadas con competencias críticas y objetivos de negocio.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Facilitación inicial y formación de líderes" data-ca="Facilitació inicial i formació de líders">Facilitación inicial y formación de líderes</li>
+                        <li class="lang" data-es="Creación de repositorios de conocimiento" data-ca="Creació de repositoris de coneixement">Creación de repositorios de conocimiento</li>
+                        <li class="lang" data-es="Implementación de mentorías estructuradas" data-ca="Implementació de mentorias estructurades">Implementación de mentorías estructuradas</li>
+                        <li class="lang" data-es="Integración con sistemas existentes" data-ca="Integració amb sistemes existents">Integración con sistemas existentes</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Implementación CoP')" class="service-cta lang" data-es="Solicitar Implementación" data-ca="Sol·licitar Implementació">Solicitar Implementación</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Sostenibilidad y Escalado" data-ca="Sostenibilitat i Escalat">Sostenibilidad y Escalado</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Asegurar la continuidad y expansión de las CoP con autonomía y presupuesto propio." data-ca="Assegurar la continuïtat i expansió de les CoP amb autonomia i pressupost propi.">Asegurar la continuidad y expansión de las CoP con autonomía y presupuesto propio.</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li class="lang" data-es="Modelo de facilitación rotatorio" data-ca="Model de facilitació rotatòria">Modelo de facilitación rotatorio</li>
+                        <li class="lang" data-es="Presupuesto participativo anual" data-ca="Pressupost participatiu anual">Presupuesto participativo anual</li>
+                        <li class="lang" data-es="Puente con formación formal" data-ca="Pont amb formació formal">Puente con formación formal</li>
+                        <li class="lang" data-es="Plan de escalado a toda la organización" data-ca="Pla d'escalat a tota l'organització">Plan de escalado a toda la organización</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="contactService('Sostenibilidad CoP')" class="service-cta lang" data-es="Solicitar Plan" data-ca="Sol·licitar Pla">Solicitar Plan</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Case Study Section -->
+    <section>
+        <h2 class="section-title lang" data-es="Caso de Éxito: Comunitats Knowledge Management" data-ca="Cas d'Èxit: Comunitats Knowledge Management">Caso de Éxito: Comunitats Knowledge Management</h2>
+        <p class="section-subtitle lang" data-es="Implementación de CoP en organizaciones líderes con resultados medibles" data-ca="Implementació de CoP en organitzacions líders amb resultats mesurables">Implementación de CoP en organizaciones líderes con resultados medibles</p>
+        
+        <div class="case-study">
+            <h3 class="lang" data-es="Comunitats Knowledge Management (2012-2014)" data-ca="Comunitats Knowledge Management (2012-2014)">Comunitats Knowledge Management (2012-2014)</h3>
+            <p class="lang" data-es="Como COO y cofundador de esta startup social especializada en gestión del conocimiento, implementamos Comunidades de Práctica en organizaciones como <strong>Novartis</strong> y <strong>Telefónica</strong> con resultados medibles:" data-ca="Com a COO i cofundador d'aquesta startup social especialitzada en gestió del coneixement, vam implementar Comunitats de Pràctica en organitzacions com <strong>Novartis</strong> i <strong>Telefònica</strong> amb resultats mesurables:">Como COO y cofundador de esta startup social especializada en gestión del conocimiento, implementamos Comunidades de Práctica en organizaciones como <strong>Novartis</strong> y <strong>Telefónica</strong> con resultados medibles:</p>
+            
+            <h4 class="lang" data-es="Estructura implementada:" data-ca="Estructura implementada:">Estructura implementada:</h4>
+            <ul>
+                <li class="lang" data-es="12 CoP temáticas alineadas con competencias críticas" data-ca="12 CoP temàtiques alineades amb competències crítiques">12 CoP temáticas alineadas con competencias críticas</li>
+                <li class="lang" data-es="Plataforma híbrida (presencial + digital con herramientas semánticas)" data-ca="Plataforma híbrida (presencial + digital amb eines semàntiques)">Plataforma híbrida (presencial + digital con herramientas semánticas)</li>
+                <li class="lang" data-es="Facilitadores formados en metodología 'prototipado de redes de valor'" data-ca="Facilitadors formats en metodologia 'prototipat de xarxes de valor'">Facilitadores formados en metodología 'prototipado de redes de valor'</li>
+            </ul>
+            
+            <h4 class="lang" data-es="Resultados cuantificables:" data-ca="Resultats quantificables:">Resultados cuantificables:</h4>
+            <ul>
+                <li class="lang" data-es="<strong>⬆️ 47% reducción</strong> en tiempo de onboarding de nuevos técnicos especializados" data-ca="<strong>⬆️ 47% reducció</strong> en temps d'onboarding de nous tècnics especialitzats"><strong>⬆️ 47% reducción</strong> en tiempo de onboarding de nuevos técnicos especializados</li>
+                <li class="lang" data-es="<strong>⬆️ 33% aumento</strong> en resolución autónoma de incidencias complejas" data-ca="<strong>⬆️ 33% augment</strong> en resolució autònoma d'incidències complexes"><strong>⬆️ 33% aumento</strong> en resolución autónoma de incidencias complejas</li>
+                <li class="lang" data-es="<strong>⬇️ 28% disminución</strong> en consultas repetidas al departamento de soporte" data-ca="<strong>⬇️ 28% disminució</strong> en consultes repetides al departament de suport"><strong>⬇️ 28% disminución</strong> en consultas repetidas al departamento de soporte</li>
+                <li class="lang" data-es="<strong>💡 17 mejoras de proceso</strong> emergentes de las CoP en 10 meses" data-ca="<strong>💡 17 millores de procés</strong> emergents de les CoP en 10 mesos"><strong>💡 17 mejoras de proceso</strong> emergentes de las CoP en 10 meses</li>
+            </ul>
+            
+            <h4 class="lang" data-es="Lección clave:" data-ca="Lliçó clau:">Lección clave:</h4>
+            <p class="lang" data-es="El éxito no dependió de la tecnología, sino de: (1) Vincular explícitamente cada CoP a un objetivo de negocio medible, (2) Dar autonomía real a las comunidades, (3) Celebrar públicamente los aprendizajes compartidos." data-ca="L'èxit no va dependre de la tecnologia, sinó de: (1) Vincular explícitament cada CoP a un objectiu de negoci mesurable, (2) Donar autonomia real a les comunitats, (3) Celebrar públicament els aprenentatges compartits.">El éxito no dependió de la tecnología, sino de: (1) Vincular explícitamente cada CoP a un objetivo de negocio medible, (2) Dar autonomía real a las comunidades, (3) Celebrar públicamente los aprendizajes compartidos.</p>
+        </div>
+    </section>
+    
+    <!-- Value Proposition Section -->
+    <section class="value-section">
+        <div class="value-content">
+            <h2 class="lang" data-es="¿Por qué elegir TeamTowers Humà para tus Comunidades de Práctica?" data-ca="Per què triar TeamTowers Humà per a les teves Comunitats de Pràctica?">¿Por qué elegir TeamTowers Humà para tus Comunidades de Práctica?</h2>
+            <p class="lang" data-es="Somos la única consultora en el Penedès que combina 20+ años de experiencia en desarrollo de equipos con metodologías avanzadas de análisis de redes de valor. Nuestro enfoque único fusiona la solidez de las torres humanas con la profundidad del aprendizaje colaborativo." data-ca="Som la única consultora al Penedès que combina 20+ anys d'experiència en desenvolupament d'equips amb metodologies avançades d'anàlisi de xarxes de valor. El nostre enfocament únic fusiona la solidesa de les torres humanes amb la profunditat de l'aprenentatge col·laboratiu.">Somos la única consultora en el Penedès que combina 20+ años de experiencia en desarrollo de equipos con metodologías avanzadas de análisis de redes de valor. Nuestro enfoque único fusiona la solidez de las torres humanas con la profundidad del aprendizaje colaborativo.</p>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2 class="section-title lang" data-es="Transforma tu Organización con Comunidades de Práctica" data-ca="Transforma la teva Organització amb Comunitats de Pràctica">Transforma tu Organización con Comunidades de Práctica</h2>
+        <p class="section-subtitle lang" data-es="Agenda tu diagnóstico gratuito y descubre cómo podemos implementar CoP en tu organización" data-ca="Agenda el teu diagnòstic gratuït i descobreix com podem implementar CoP a la teva organització">Agenda tu diagnóstico gratuito y descubre cómo podemos implementar CoP en tu organización</p>
+        
+        <div class="contact-container">
+            <h3 class="lang" data-es="Solicitud de Diagnóstico Gratuito" data-ca="Sol·licitud de Diagnòstic Gratuit">Solicitud de Diagnóstico Gratuito</h3>
+            <p class="lang" data-es="Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo TeamTowers Humà puede transformar el aprendizaje en tu organización." data-ca="Omple aquesta sol·licitud i ens posarem en contacte amb tu en menys de 24 hores per agendar la teva sessió exploratòria sense compromís. Descobreix com TeamTowers Humà pot transformar l'aprenentatge a la teva organització.">Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo TeamTowers Humà puede transformar el aprendizaje en tu organización.</p>
+            
+            <a href="javascript:void(0)" onclick="contactService('Comunidades de Práctica')" class="btn btn-primary" style="margin-top: 30px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</span>
+            </a>
+            
+            <p style="margin-top: 25px; font-size: 1.1rem; color: var(--gray);">
+                <span class="lang" data-es="¿Prefieres explorar primero? Visita nuestra página principal para conocer todos nuestros servicios de consultoría RRHH y desarrollo organizacional." data-ca="¿Prefereixes explorar primer? Visita la nostra pàgina principal per conèixer tots els nostres serveis de consultoria RRHH i desenvolupament organitzatiu.">¿Prefieres explorar primero? Visita nuestra página principal para conocer todos nuestros servicios de consultoría RRHH y desarrollo organizacional.</span>
+            </p>
+            
+            <a href="https://teamtowershuma.netlify.app/" class="btn btn-secondary" style="margin-top: 20px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Volver a TeamTowers Humà" data-ca="Tornar a TeamTowers Humà">Volver a TeamTowers Humà</span>
+            </a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès. 20+ anys construint equips sòlids com castells.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.netlify.app/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.netlify.app/#services" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="#services" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.netlify.app/#services" class="lang" data-es="Consultoría RRHH" data-ca="Consultoria RRHH">Consultoría RRHH</a></li>
+                    <li><a href="https://teamtowershuma.netlify.app/#services" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="javascript:void(0)" onclick="contactService('Comunidades de Práctica')" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Consultoria estratègica de RRHH a Vilafranca del Penedès.">© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            // Use innerHTML to allow HTML content in translations
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Contact function with email obfuscation
+            window.contactService = function(serviceName) {
+                // Obfuscated email construction
+                const emailName = 'asolache';
+                const emailDomain = 'mac.com';
+                const fullEmail = emailName + '@' + emailDomain;
+                
+                // Subject line based on service
+                let subject = 'Consulta sobre ' + serviceName;
+                
+                // Create mailto link
+                const mailtoLink = 'mailto:' + fullEmail + '?subject=' + encodeURIComponent(subject);
+                
+                // Open email client
+                window.location.href = mailtoLink;
+            };
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
