@@ -1,1 +1,1227 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Producción de Eventos Corporativos | TeamTowers Humà. Especialistas en team building y desarrollo de equipos en Vilafranca del Penedès. Alianzas con espacios emblemáticos y agencias de producción.">
+    <meta name="keywords" content="producción eventos corporativos, team building Penedès, eventos empresa Vilafranca, desarrollo equipos, Masia Torreblanca, Codorniu, Vallformosa, Laeski, We Barcelona, Kivicom, TeamTowers">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Producción de Eventos Corporativos | TeamTowers Humà | Vilafranca del Penedès</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Producción de Eventos Corporativos | TeamTowers Humà">
+    <meta property="og:description" content="Especialistas en team building y desarrollo de equipos desde el corazón del Penedès. Alianzas con espacios emblemáticos y agencias de producción para crear experiencias inolvidables.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.netlify.app/events">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Producción de Eventos Corporativos | TeamTowers Humà">
+    <meta name="twitter:description" content="Team building y desarrollo de equipos con alianzas estratégicas en el Penedès">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Producción de Eventos Corporativos",
+      "provider": {
+        "@type": "Organization",
+        "name": "TeamTowers Humà"
+      },
+      "areaServed": ["Vilafranca del Penedès", "Alt Penedès", "Garraf", "Barcelona", "Cataluña"],
+      "description": "Producción integral de eventos corporativos especializados en team building y desarrollo de equipos con alianzas estratégicas en espacios emblemáticos y agencias de producción del Penedès",
+      "offers": {
+        "@type": "Offer",
+        "businessFunction": "EventProduction",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.95) 100%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero-logo {
+            display: inline-block;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        .hero h1 {
+            font-size: 4.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        
+        .hero-tagline {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            font-style: italic;
+        }
+        
+        .hero p {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+        
+        .service-title {
+            font-size: 1.9rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .service-content {
+            padding: 30px;
+        }
+        
+        .service-desc {
+            margin-bottom: 25px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        .service-highlights {
+            margin-bottom: 25px;
+        }
+        
+        .service-highlights ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .service-highlights li {
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+        
+        .service-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+        
+        .service-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Locations Section */
+        .locations-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin: 50px 0;
+        }
+        
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+            justify-items: center;
+        }
+        
+        .location-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            border-top: 4px solid var(--accent);
+            transition: var(--transition);
+        }
+        
+        .location-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+        }
+        
+        .location-card img {
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: grayscale(100%);
+            transition: var(--transition);
+        }
+        
+        .location-card:hover img {
+            filter: grayscale(0%);
+        }
+        
+        .location-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        /* Partners Section */
+        .partners-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin: 50px 0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+            justify-items: center;
+        }
+        
+        .partner-card {
+            text-align: center;
+            padding: 20px;
+            transition: var(--transition);
+        }
+        
+        .partner-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .partner-card img {
+            height: 70px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: grayscale(100%);
+            transition: var(--transition);
+        }
+        
+        .partner-card:hover img {
+            filter: grayscale(0%);
+        }
+        
+        .partner-card h4 {
+            font-size: 1.3rem;
+            margin-top: 10px;
+            color: var(--primary);
+        }
+        
+        .partner-card p {
+            font-size: 0.95rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        
+        /* Testimonials Section */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 6rem;
+            color: var(--primary);
+            opacity: 0.1;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        
+        .testimonial-content {
+            margin-top: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+            line-height: 1.8;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .author-info h4 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .author-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Value Proposition */
+        .value-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .value-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .value-content p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+            text-align: center;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 60px;
+            margin: 50px 0;
+        }
+        
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+            font-size: 1.3rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.5rem;
+            }
+            
+            section {
+                padding: 80px 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.3rem;
+            }
+            
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .section-title {
+                font-size: 2.3rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.3rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 60px 15px;
+            }
+            
+            .locations-section,
+            .partners-section,
+            .stats-section,
+            .value-section,
+            .contact-section {
+                padding: 30px 20px;
+            }
+            
+            .service-content {
+                padding: 25px;
+            }
+            
+            .contact-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="Producción de Eventos Corporativos" data-ca="Producció d'Esdeveniments Corporatius">Producción de Eventos Corporativos</h1>
+            <p class="hero-tagline lang" data-es="Team Building y Desarrollo de Equipos" data-ca="Team Building i Desenvolupament d'Equips">Team Building y Desarrollo de Equipos</p>
+            <p class="lang" data-es="Especialistas en eventos corporativos con alianzas estratégicas en espacios emblemáticos del Penedès y agencias de producción. Creamos experiencias inolvidables que fortalecen equipos y transforman organizaciones." data-ca="Especialistes en esdeveniments corporatius amb aliances estratègiques en espais emblemàtics del Penedès i agències de producció. Creem experiències inoblidables que fortaleixen equips i transformen organitzacions.">Especialistas en eventos corporativos con alianzas estratégicas en espacios emblemáticos del Penedès y agencias de producción. Creamos experiencias inolvidables que fortalecen equipos y transforman organizaciones.</p>
+            <div class="cta-container">
+                <a href="javascript:void(0)" onclick="contactService('Producción de Eventos')" class="btn btn-primary lang" data-es="Solicitar Presupuesto" data-ca="Sol·licitar Pressupost">Solicitar Presupuesto</a>
+                <a href="#locations" class="btn btn-secondary lang" data-es="Nuestros Espacios" data-ca="Els Nostres Espais">Nuestros Espacios</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services">
+        <h2 class="section-title lang" data-es="Nuestros Servicios de Eventos" data-ca="Els Nostres Serveis d'Esdeveniments">Nuestros Servicios de Eventos</h2>
+        <p class="section-subtitle lang" data-es="Soluciones integrales para eventos corporativos que transforman equipos y fortalecen la cultura organizacional" data-ca="Solucions integrals per a esdeveniments corporatius que transformen equips i fortaleixen la cultura organitzativa">Soluciones integrales para eventos corporativos que transforman equipos y fortalecen la cultura organizacional</p>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Team Building Corporativo" data-ca="Team Building Corporatiu">Team Building Corporativo</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Experiencias transformadoras basadas en la metodología castellera que fortalecen la cohesión, comunicación y liderazgo compartido en equipos de 10 a 1.000 personas." data-ca="Experiències transformadores basades en la metodologia castellera que fortaleixen la cohesió, comunicació i lideratge compartit en equips de 10 a 1.000 persones.">Experiencias transformadoras basadas en la metodología castellera que fortalecen la cohesión, comunicación y liderazgo compartido en equipos de 10 a 1.000 personas.</p>
+                    <div class="service-highlights">
+                        <ul>
+                            <li class="lang" data-es="Taller 'Fent Pinya': experiencia castellera en 2 horas" data-ca="Taller 'Fent Pinya': experiència castellera en 2 hores">Taller 'Fent Pinya': experiencia castellera en 2 horas</li>
+                            <li class="lang" data-es="Adaptación a diferentes culturas y idiomas" data-ca="Adaptació a diferents cultures i idiomes">Adaptación a diferentes culturas y idiomas</li>
+                            <li class="lang" data-es="Resultados medibles: +30-50% cohesión de equipo" data-ca="Resultats mesurables: +30-50% cohesió d'equip">Resultados medibles: +30-50% cohesión de equipo</li>
+                            <li class="lang" data-es="Seguridad 100% garantizada con monitores expertos" data-ca="Seguretat 100% garantida amb monitors experts">Seguridad 100% garantizada con monitores expertos</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Team Building')" class="service-cta lang" data-es="Solicitar Presupuesto" data-ca="Sol·licitar Pressupost">Solicitar Presupuesto</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Eventos de Empresa" data-ca="Esdeveniments d'Empresa">Eventos de Empresa</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Producción integral de incentivos, convenciones, lanzamientos y celebraciones corporativas con enfoque en la experiencia del participante y el impacto organizacional." data-ca="Producció integral d'incentius, convencions, llançaments i celebracions corporatives amb enfocament en l'experiència del participant i l'impacte organitzatiu.">Producción integral de incentivos, convenciones, lanzamientos y celebraciones corporativas con enfoque en la experiencia del participante y el impacto organizacional.</p>
+                    <div class="service-highlights">
+                        <ul>
+                            <li class="lang" data-es="Gestión logística completa: espacios, alojamiento, transporte" data-ca="Gestió logística completa: espais, allotjament, transport">Gestión logística completa: espacios, alojamiento, transporte</li>
+                            <li class="lang" data-es="Coordinación con proveedores y partners especializados" data-ca="Coordinació amb proveïdors i partners especialitzats">Coordinación con proveedores y partners especializados</li>
+                            <li class="lang" data-es="Diseño de experiencias personalizadas por sector" data-ca="Disseny d'experiències personalitzades per sector">Diseño de experiencias personalizadas por sector</li>
+                            <li class="lang" data-es="Soporte técnico y producción audiovisual" data-ca="Suport tècnic i producció audiovisual">Soporte técnico y producción audiovisual</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Eventos de Empresa')" class="service-cta lang" data-es="Solicitar Presupuesto" data-ca="Sol·licitar Pressupost">Solicitar Presupuesto</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Actividades Especiales" data-ca="Activitats Especials">Actividades Especiales</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Gincanas, Masterchef corporativo, actividades outdoor y experiencias únicas diseñadas para romper el hielo, fomentar la colaboración y generar engagement." data-ca="Gincanes, Masterchef corporatiu, activitats outdoor i experiències úniques dissenyades per trencar el gel, fomentar la col·laboració i generar engagement.">Gincanas, Masterchef corporativo, actividades outdoor y experiencias únicas diseñadas para romper el hielo, fomentar la colaboración y generar engagement.</p>
+                    <div class="service-highlights">
+                        <ul>
+                            <li class="lang" data-es="Masterchef corporativo con chefs profesionales" data-ca="Masterchef corporatiu amb cuiners professionals">Masterchef corporativo con chefs profesionales</li>
+                            <li class="lang" data-es="Gincanas urbanas y rurales personalizadas" data-ca="Gincanes urbanes i rurals personalitzades">Gincanas urbanas y rurales personalizadas</li>
+                            <li class="lang" data-es="Actividades outdoor en entornos naturales del Penedès" data-ca="Activitats outdoor en entorns naturals del Penedès">Actividades outdoor en entornos naturales del Penedès</li>
+                            <li class="lang" data-es="Experiencias sensoriales y creativas" data-ca="Experiències sensorials i creatives">Experiencias sensoriales y creativas</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Actividades Especiales')" class="service-cta lang" data-es="Solicitar Actividades" data-ca="Sol·licitar Activitats">Solicitar Actividades</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <h3 class="service-title lang" data-es="Festivales y Eventos Culturales" data-ca="Festivals i Esdeveniments Culturals">Festivales y Eventos Culturales</h3>
+                </div>
+                <div class="service-content">
+                    <p class="service-desc lang" data-es="Producción de festivales de música, eventos culturales y celebraciones con 20+ años de experiencia. Creamos conexiones auténticas entre marcas, artistas y audiencias." data-ca="Producció de festivals de música, esdeveniments culturals i celebracions amb 20+ anys d'experiència. Creem connexions autèntiques entre marques, artistes i audiències.">Producción de festivales de música, eventos culturales y celebraciones con 20+ años de experiencia. Creamos conexiones auténticas entre marcas, artistas y audiencias.</p>
+                    <div class="service-highlights">
+                        <ul>
+                            <li class="lang" data-es="Producción integral de festivales" data-ca="Producció integral de festivals">Producción integral de festivales</li>
+                            <li class="lang" data-es="Gestión de artistas y programación" data-ca="Gestió d'artistes i programació">Gestión de artistas y programación</li>
+                            <li class="lang" data-es="Logística y seguridad especializada" data-ca="Logística i seguretat especialitzada">Logística y seguridad especializada</li>
+                            <li class="lang" data-es="Integración de valores de marca en experiencias" data-ca="Integració de valors de marca en experiències">Integración de valores de marca en experiencias</li>
+                        </ul>
+                    </div>
+                    <a href="javascript:void(0)" onclick="contactService('Festivales')" class="service-cta lang" data-es="Solicitar Información" data-ca="Sol·licitar Informació">Solicitar Información</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Locations Section -->
+    <section id="locations" class="locations-section">
+        <h2 class="section-title lang" data-es="Espacios Emblemáticos del Penedès" data-ca="Espais Emblemàtics del Penedès">Espacios Emblemáticos del Penedès</h2>
+        <p class="section-subtitle lang" data-es="Colaboramos con los espacios más prestigiosos de la región para crear experiencias únicas en entornos auténticos" data-ca="Col·laborem amb els espais més prestigiosos de la regió per crear experiències úniques en entorns autèntics">Colaboramos con los espacios más prestigiosos de la región para crear experiencias únicas en entornos auténticos</p>
+        
+        <div class="locations-grid">
+            <div class="location-card">
+                <div style="background: var(--light); width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary);">🏰</span>
+                </div>
+                <h4 class="lang" data-es="Masia Torreblanca" data-ca="Masia Torreblanca">Masia Torreblanca</h4>
+                <p class="lang" data-es="Entorno rural con vistas espectaculares" data-ca="Entorn rural amb vistes espectaculars">Entorno rural con vistas espectaculares</p>
+            </div>
+            
+            <div class="location-card">
+                <div style="background: var(--light); width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary);">🍾</span>
+                </div>
+                <h4 class="lang" data-es="Bodegas Codorniu" data-ca="Cellers Codorniu">Bodegas Codorniu</h4>
+                <p class="lang" data-es="Patrimonio histórico y arquitectura modernista" data-ca="Patrimoni històric i arquitectura modernista">Patrimonio histórico y arquitectura modernista</p>
+            </div>
+            
+            <div class="location-card">
+                <div style="background: var(--light); width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary);">🍇</span>
+                </div>
+                <h4 class="lang" data-es="Vallformosa" data-ca="Vallformosa">Vallformosa</h4>
+                <p class="lang" data-es="Viñedos y cavas con encanto" data-ca="Vinyes i caves amb encant">Viñedos y cavas con encanto</p>
+            </div>
+            
+            <div class="location-card">
+                <div style="background: var(--light); width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary);">🏡</span>
+                </div>
+                <h4 class="lang" data-es="Masías del Penedès" data-ca="Masies del Penedès">Masías del Penedès</h4>
+                <p class="lang" data-es="Espacios rurales auténticos y acogedores" data-ca="Espais rurals autèntics i acollidors">Espacios rurales auténticos y acogedores</p>
+            </div>
+            
+            <div class="location-card">
+                <div style="background: var(--light); width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary);">🏨</span>
+                </div>
+                <h4 class="lang" data-es="Hoteles Boutique" data-ca="Hotels Boutique">Hoteles Boutique</h4>
+                <p class="lang" data-es="Alojamiento de lujo con servicios premium" data-ca="Allotjament de luxe amb serveis premium">Alojamiento de lujo con servicios premium</p>
+            </div>
+            
+            <div class="location-card">
+                <div style="background: var(--light); width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary);">🌿</span>
+                </div>
+                <h4 class="lang" data-es="Espacios Naturales" data-ca="Espais Naturals">Espacios Naturales</h4>
+                <p class="lang" data-es="Parques y reservas naturales del Penedès" data-ca="Parcs i reserves naturals del Penedès">Parques y reservas naturales del Penedès</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <p class="lang" data-es="¿Tienes un espacio y quieres colaborar con nosotros? <a href='javascript:void(0)' onclick='contactService(\"Alianzas de Espacios\")' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contáctanos para crear una alianza estratégica</a>" data-ca="Tens un espai i vols col·laborar amb nosaltres? <a href='javascript:void(0)' onclick='contactService(\"Aliances d'Espais\")' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contacta'ns per crear una aliança estratègica</a>">¿Tienes un espacio y quieres colaborar con nosotros? <a href="javascript:void(0)" onclick="contactService('Alianzas de Espacios')" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Contáctanos para crear una alianza estratégica</a></p>
+        </div>
+    </section>
+    
+    <!-- Partners Section -->
+    <section id="partners" class="partners-section">
+        <h2 class="section-title lang" data-es="Nuestros Partners Estratégicos" data-ca="Els Nostres Partners Estratègics">Nuestros Partners Estratégicos</h2>
+        <p class="section-subtitle lang" data-es="Colaboramos con las mejores agencias de producción para ofrecerte soluciones integrales y actividades únicas" data-ca="Col·laborem amb les millors agències de producció per oferir-te solucions integrals i activitats úniques">Colaboramos con las mejores agencias de producción para ofrecerte soluciones integrales y actividades únicas</p>
+        
+        <div class="partners-grid">
+            <div class="partner-card">
+                <div style="background: var(--light); width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary); font-size: 2rem;">🎯</span>
+                </div>
+                <h4 class="lang" data-es="Laeski" data-ca="Laeski">Laeski</h4>
+                <p class="lang" data-es="Producción integral y gestión logística" data-ca="Producció integral i gestió logística">Producción integral y gestión logística</p>
+            </div>
+            
+            <div class="partner-card">
+                <div style="background: var(--light); width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary); font-size: 2rem;">🌍</span>
+                </div>
+                <h4 class="lang" data-es="We Barcelona" data-ca="We Barcelona">We Barcelona</h4>
+                <p class="lang" data-es="Eventos internacionales y MICE" data-ca="Esdeveniments internacionals i MICE">Eventos internacionales y MICE</p>
+            </div>
+            
+            <div class="partner-card">
+                <div style="background: var(--light); width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary); font-size: 2rem;">🎪</span>
+                </div>
+                <h4 class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</h4>
+                <p class="lang" data-es="Experiencias castelleras transformadoras" data-ca="Experiències castelleres transformadores">Experiencias castelleras transformadoras</p>
+            </div>
+            
+            <div class="partner-card">
+                <div style="background: var(--light); width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary); font-size: 2rem;">🎮</span>
+                </div>
+                <h4 class="lang" data-es="Kivicom" data-ca="Kivicom">Kivicom</h4>
+                <p class="lang" data-es="Gincanas y actividades interactivas" data-ca="Gincanes i activitats interactives">Gincanas y actividades interactivas</p>
+            </div>
+            
+            <div class="partner-card">
+                <div style="background: var(--light); width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary); font-size: 2rem;">👨‍🍳</span>
+                </div>
+                <h4 class="lang" data-es="Masterchef Pro" data-ca="Masterchef Pro">Masterchef Pro</h4>
+                <p class="lang" data-es="Experiencias gastronómicas corporativas" data-ca="Experiències gastronòmiques corporatives">Experiencias gastronómicas corporativas</p>
+            </div>
+            
+            <div class="partner-card">
+                <div style="background: var(--light); width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: var(--primary); font-size: 2rem;">🏨</span>
+                </div>
+                <h4 class="lang" data-es="Hoteles Aliados" data-ca="Hotels Aliats">Hoteles Aliados</h4>
+                <p class="lang" data-es="Alojamiento y servicios premium" data-ca="Allotjament i serveis premium">Alojamiento y servicios premium</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <p class="lang" data-es="¿Eres una agencia de producción y quieres colaborar con nosotros? <a href='javascript:void(0)' onclick='contactService(\"Alianzas de Agencias\")' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contáctanos para crear una alianza estratégica</a>" data-ca="Ets una agència de producció i vols col·laborar amb nosaltres? <a href='javascript:void(0)' onclick='contactService(\"Aliances d'Agències\")' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contacta'ns per crear una aliança estratègica</a>">¿Eres una agencia de producción y quieres colaborar con nosotros? <a href="javascript:void(0)" onclick="contactService('Alianzas de Agencias')" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Contáctanos para crear una alianza estratégica</a></p>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="lang" data-es="Nuestra Experiencia en Cifras" data-ca="La Nostra Experiència en Xifres">Nuestra Experiencia en Cifras</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">20+</span>
+                <span class="stat-label lang" data-es="Años produciendo eventos" data-ca="Anys produint esdeveniments">Años produciendo eventos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">150+</span>
+                <span class="stat-label lang" data-es="Empresas atendidas" data-ca="Empreses ateses">Empresas atendidas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">60.000+</span>
+                <span class="stat-label lang" data-es="Participantes transformados" data-ca="Participants transformats">Participantes transformados</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">95%</span>
+                <span class="stat-label lang" data-es="Satisfacción clientes" data-ca="Satisfacció clients">Satisfacción clientes</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <h2 class="section-title lang" data-es="Testimonios" data-ca="Testimonis">Testimonios</h2>
+        <p class="section-subtitle lang" data-es="Lo que dicen nuestros clientes sobre nuestras experiencias de eventos" data-ca="El que diuen els nostres clients sobre les nostres experiències d'esdeveniments">Lo que dicen nuestros clientes sobre nuestras experiencias de eventos</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="La experiencia de TeamTowers en nuestra convención anual fue el punto culminante del evento. La metáfora de las torres humanas ayudó a nuestros equipos a entender la importancia de la confianza y la colaboración. Los resultados en cohesión fueron visibles inmediatamente." data-ca="L'experiència de TeamTowers a la nostra convenció anual va ser el punt culminant de l'esdeveniment. La metàfora de les torres humanes va ajudar els nostres equips a entendre la importància de la confiança i la col·laboració. Els resultats en cohesió van ser visibles immediatament.">La experiencia de TeamTowers en nuestra convención anual fue el punto culminante del evento. La metáfora de las torres humanas ayudó a nuestros equipos a entender la importancia de la confianza y la colaboración. Los resultados en cohesión fueron visibles inmediatamente.</div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Dirección de Recursos Humanos</h4>
+                        <p>Empresa Tecnológica Internacional</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="La producción de nuestro evento de incentivo en una masía del Penedès fue impecable. Desde la logística hasta las actividades especiales, todo estuvo perfectamente coordinado. Nuestros empleados aún hablan de la experiencia Masterchef y la gincana en las viñas." data-ca="La producció del nostre esdeveniment d'incentiu en una masia del Penedès va ser impecable. Des de la logística fins a les activitats especials, tot va estar perfectament coordinat. Els nostres empleats encara parlen de l'experiència Masterchef i la gincana a les vinyes.">La producción de nuestro evento de incentivo en una masía del Penedès fue impecable. Desde la logística hasta las actividades especiales, todo estuvo perfectamente coordinado. Nuestros empleados aún hablan de la experiencia Masterchef y la gincana en las viñas.</div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Dirección de Marketing</h4>
+                        <p>Industria Farmacéutica</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="Como agencia de eventos, la alianza con TeamTowers Humà nos ha permitido ofrecer experiencias únicas a nuestros clientes. Su expertise en team building y su red de espacios y partners del Penedès son un valor añadido increíble para nuestros proyectos." data-ca="Com a agència d'esdeveniments, l'aliança amb TeamTowers Humà ens ha permès oferir experiències úniques als nostres clients. La seva expertesa en team building i la seva xarxa d'espais i partners del Penedès són un valor afegit increïble per als nostres projectes.">Como agencia de eventos, la alianza con TeamTowers Humà nos ha permitido ofrecer experiencias únicas a nuestros clientes. Su expertise en team building y su red de espacios y partners del Penedès son un valor añadido increíble para nuestros proyectos.</div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Gerente de Producción</h4>
+                        <p>Agencia de Eventos Internacional</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Value Proposition Section -->
+    <section class="value-section">
+        <div class="value-content">
+            <h2 class="lang" data-es="¿Por qué elegir TeamTowers Humà para tus eventos corporativos?" data-ca="Per què triar TeamTowers Humà per als teus esdeveniments corporatius?">¿Por qué elegir TeamTowers Humà para tus eventos corporativos?</h2>
+            <p class="lang" data-es="Somos la única consultora en el Penedès que combina 20+ años de experiencia en producción de eventos con expertise en desarrollo de equipos y una red estratégica de espacios emblemáticos y agencias de producción. No solo organizamos eventos: creamos experiencias transformadoras que fortalecen equipos y generan impacto duradero en tu organización." data-ca="Som la única consultora al Penedès que combina 20+ anys d'experiència en producció d'esdeveniments amb expertesa en desenvolupament d'equips i una xarxa estratègica d'espais emblemàtics i agències de producció. No només organitzem esdeveniments: creem experiències transformadores que fortaleixen equips i generen impacte durador a la teva organització.">Somos la única consultora en el Penedès que combina 20+ años de experiencia en producción de eventos con expertise en desarrollo de equipos y una red estratégica de espacios emblemáticos y agencias de producción. No solo organizamos eventos: creamos experiencias transformadoras que fortalecen equipos y generan impacto duradero en tu organización.</p>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2 class="section-title lang" data-es="Organiza tu Evento Corporativo con Nosotros" data-ca="Organitza el teu Esdeveniment Corporatiu amb Nosaltres">Organiza tu Evento Corporativo con Nosotros</h2>
+        <p class="section-subtitle lang" data-es="Agenda una consulta gratuita y descubre cómo podemos crear una experiencia inolvidable para tu equipo" data-ca="Agenda una consulta gratuïta i descobreix com podem crear una experiència inoblidable per al teu equip">Agenda una consulta gratuita y descubre cómo podemos crear una experiencia inolvidable para tu equipo</p>
+        
+        <div class="contact-container">
+            <h3 class="lang" data-es="Solicitud de Presupuesto Personalizado" data-ca="Sol·licitud de Pressupost Personalitzat">Solicitud de Presupuesto Personalizado</h3>
+            <p class="lang" data-es="Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu consulta sin compromiso. Cuéntanos sobre tu evento y te propondremos la solución perfecta." data-ca="Omple aquesta sol·licitud i ens posarem en contacte amb tu en menys de 24 hores per agendar la teva consulta sense compromís. Explica'ns sobre el teu esdeveniment i et proposarem la solució perfecta.">Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu consulta sin compromiso. Cuéntanos sobre tu evento y te propondremos la solución perfecta.</p>
+            
+            <a href="javascript:void(0)" onclick="contactService('Producción de Eventos')" class="btn btn-primary" style="margin-top: 30px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Solicitar Presupuesto" data-ca="Sol·licitar Pressupost">Solicitar Presupuesto</span>
+            </a>
+            
+            <p style="margin-top: 25px; font-size: 1.1rem; color: var(--gray);">
+                <span class="lang" data-es="¿Eres un espacio o agencia y quieres colaborar con nosotros? <a href='javascript:void(0)' onclick='contactService(\"Alianzas Estratégicas\")' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contáctanos para crear una alianza</a>" data-ca="Ets un espai o agència i vols col·laborar amb nosaltres? <a href='javascript:void(0)' onclick='contactService(\"Aliances Estratègiques\")' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contacta'ns per crear una aliança</a>">¿Eres un espacio o agencia y quieres colaborar con nosotros? <a href="javascript:void(0)" onclick="contactService('Alianzas Estratégicas')" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Contáctanos para crear una alianza</a></span>
+            </p>
+            
+            <a href="https://teamtowershuma.netlify.app/" class="btn btn-secondary" style="margin-top: 20px; width: 100%; max-width: 400px;">
+                <span class="lang" data-es="Volver a TeamTowers Humà" data-ca="Tornar a TeamTowers Humà">Volver a TeamTowers Humà</span>
+            </a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès. 20+ anys construint equips sòlids com castells.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.netlify.app/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.netlify.app/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.netlify.app/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.netlify.app/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="#services" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="javascript:void(0)" onclick="contactService('Producción de Eventos')" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Consultoria estratègica de RRHH a Vilafranca del Penedès.">© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            // Use innerHTML to allow HTML content in translations
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Contact function with email obfuscation
+            window.contactService = function(serviceName) {
+                // Obfuscated email construction
+                const emailName = 'asolache';
+                const emailDomain = 'mac.com';
+                const fullEmail = emailName + '@' + emailDomain;
+                
+                // Subject line based on service
+                let subject = 'Consulta sobre ' + serviceName;
+                
+                // Create mailto link
+                const mailtoLink = 'mailto:' + fullEmail + '?subject=' + encodeURIComponent(subject);
+                
+                // Open email client
+                window.location.href = mailtoLink;
+            };
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
