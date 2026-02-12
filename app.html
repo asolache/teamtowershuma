@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Value Network Analysis App - TeamTowers Humà</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6e9ff 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.8rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(126, 58, 242, 0.4);
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            min-height: 600px;
+        }
+        
+        #vna-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: var(--light);
+        }
+        
+        #vna-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .legend-line {
+            width: 30px;
+            height: 3px;
+            display: inline-block;
+        }
+        
+        .legend-tangible {
+            background: var(--primary);
+        }
+        
+        .legend-intangible {
+            background: var(--accent);
+            border-style: dashed;
+            border-width: 0 0 2px 0;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .instructions h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+        }
+        
+        .instructions ol {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        
+        .instructions code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .example-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .example-section h4 {
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .example-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+        
+        .node {
+            cursor: pointer;
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        
+        .node text {
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            font-weight: 600;
+            fill: var(--dark);
+            font-size: 14px;
+        }
+        
+        .node-tangible {
+            fill: var(--success);
+        }
+        
+        .node-intangible {
+            fill: var(--warning);
+        }
+        
+        .link {
+            stroke: var(--gray);
+            stroke-width: 2px;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        
+        .link-tangible {
+            stroke: var(--primary);
+            stroke-width: 3px;
+        }
+        
+        .link-intangible {
+            stroke: var(--accent);
+            stroke-width: 2px;
+            stroke-dasharray: 5, 5;
+        }
+        
+        .link-label {
+            font-size: 11px;
+            fill: var(--dark);
+            pointer-events: none;
+        }
+        
+        .link-label tspan {
+            dominant-baseline: middle;
+        }
+        
+        .link-label.type {
+            font-weight: 600;
+            fill: var(--primary);
+        }
+        
+        .link-label.deliverable {
+            font-size: 10px;
+            fill: var(--gray);
+        }
+        
+        .simulation-running {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--warning);
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            pointer-events: none;
+            max-width: 300px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .tooltip h4 {
+            margin-bottom: 5px;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        
+        .tooltip p {
+            margin: 3px 0;
+        }
+        
+        .tooltip .type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .tooltip .type.tangible {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .tooltip .type.intangible {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .node-count {
+            background: var(--success);
+        }
+        
+        .link-count {
+            background: var(--primary);
+        }
+        
+        .tangible-count {
+            background: var(--warning);
+        }
+        
+        .intangible-count {
+            background: var(--accent);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .badge-tangible {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .badge-intangible {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            header p {
+                font-size: 1.1rem;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            #vna-container {
+                height: 500px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+            }
+            
+            #vna-container {
+                height: 400px;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔷 Value Network Analysis App</h1>
+            <p>TeamTowers Humà - Mapea flujos de valor tangibles e intangibles en tu organización</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="panel">
+                <h2>➕ Añadir Transacción</h2>
+                <div class="input-group">
+                    <label for="origin">Origen</label>
+                    <input type="text" id="origin" placeholder="Ej: Cliente, Vendedor, IT">
+                </div>
+                <div class="input-group">
+                    <label for="destination">Destino</label>
+                    <input type="text" id="destination" placeholder="Ej: Vendedor, Cliente, Marketing">
+                </div>
+                <div class="input-group">
+                    <label for="type">Tipo de Valor</label>
+                    <select id="type">
+                        <option value="tangible">Tangible (bienes, servicios, datos)</option>
+                        <option value="intangible">Intangible (confianza, conocimiento, feedback)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="deliverable">Entregable <span class="badge badge-tangible">Texto libre</span></label>
+                    <textarea id="deliverable" placeholder="Ej: Pedido, Confianza, Informe de uso web, Feedback de campaña"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button id="add-transaction" class="btn btn-primary">
+                        <span>✨</span> Añadir Transacción
+                    </button>
+                    <button id="clear-all" class="btn btn-danger">
+                        <span>🗑️</span> Limpiar Todo
+                    </button>
+                    <button id="load-example" class="btn btn-secondary">
+                        <span>📚</span> Cargar Ejemplo
+                    </button>
+                    <button id="reset-layout" class="btn btn-warning">
+                        <span>🔄</span> Resetear Posiciones
+                    </button>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2>💾 Exportar Mapa</h2>
+                    <div class="btn-group">
+                        <button id="export-png" class="btn btn-export">
+                            <span>🖼️</span> Descargar como PNG (Alta Calidad)
+                        </button>
+                        <button id="export-svg" class="btn btn-export">
+                            <span>🎨</span> Descargar como SVG (Editable)
+                        </button>
+                        <button id="export-json" class="btn btn-export">
+                            <span>📊</span> Descargar Datos JSON
+                        </button>
+                        <button id="copy-data" class="btn btn-export">
+                            <span>📋</span> Copiar Datos al Portapapeles
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="instructions">
+                    <h3>📝 Instrucciones de Uso</h3>
+                    <ol>
+                        <li>Escribe los roles y transacciones en el formato: <code>Origen → Destino | tipo | Entregable</code></li>
+                        <li>Haz clic en los nodos para arrastrarlos y organizar el mapa</li>
+                        <li>Usa los controles de zoom para navegar por mapas grandes</li>
+                        <li>Pasa el ratón sobre las conexiones para ver detalles completos</li>
+                        <li>Exporta tu mapa en PNG, SVG o JSON para compartir o editar</li>
+                    </ol>
+                    
+                    <div class="example-section">
+                        <h4>📊 Ejemplos de Transacciones:</h4>
+                        <div class="example-item">Cliente → Vendedor | tangible | Pedido</div>
+                        <div class="example-item">Vendedor → Cliente | intangible | Confianza</div>
+                        <div class="example-item">IT → Marketing | tangible | Informe de uso web</div>
+                        <div class="example-item">Marketing → IT | intangible | Feedback de campaña</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <h2>🗺️ Mapa de Red de Valor</h2>
+                <div id="vna-container">
+                    <svg id="vna-svg"></svg>
+                    <div class="empty-state" id="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3>Añade tu primera transacción</h3>
+                        <p>Define roles y flujos de valor para visualizar las conexiones en tu organización. Comienza con transacciones simples y ve construyendo tu red de valor completa.</p>
+                        <button id="add-first-transaction" class="btn btn-primary" style="margin-top: 15px;">
+                            <span>✨</span> Añadir Transacción de Ejemplo
+                        </button>
+                    </div>
+                    <div class="simulation-running" id="simulation-status">Optimizando distribución de nodos...</div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-line legend-tangible"></div>
+                        <span>Tangible (bienes, servicios, datos)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line legend-intangible"></div>
+                        <span>Intangible (confianza, conocimiento, feedback)</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="zoom-in">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                        Zoom +
+                    </button>
+                    <button class="control-btn" id="zoom-out">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                        Zoom -
+                    </button>
+                    <button class="control-btn" id="zoom-reset">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6"></path>
+                            <path d="M3.51 15.51l5-5a6 6 0 11-5-5h5"></path>
+                            <path d="M13 20v-6h6"></path>
+                            <path d="M20.49 8.49l-5 5a6 6 0 115 5v-5"></path>
+                        </svg>
+                        Reset Zoom
+                    </button>
+                    <button class="control-btn" id="fit-to-screen">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 3H3v18h18V3z"></path>
+                            <path d="M8 12h8"></path>
+                            <path d="M12 8v8"></path>
+                        </svg>
+                        Ajustar a Pantalla
+                    </button>
+                </div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="node-count">0</div>
+                        <div class="stat-label">Roles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="link-count">0</div>
+                        <div class="stat-label">Transacciones</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="tangible-count">0</div>
+                        <div class="stat-label">Tangibles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="intangible-count">0</div>
+                        <div class="stat-label">Intangibles</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Estado de la aplicación
+        let nodes = [];
+        let links = [];
+        let simulation;
+        let svg;
+        let g;
+        let width = 1100;
+        let height = 600;
+        let zoom;
+        let isSimulationRunning = false;
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar SVG
+            const container = document.getElementById('vna-container');
+            width = container.clientWidth;
+            height = container.clientHeight;
+            
+            svg = d3.select('#vna-svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g');
+            
+            // Configurar zoom
+            zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
+            
+            d3.select('#vna-svg')
+                .call(zoom)
+                .on('dblclick.zoom', null); // Deshabilitar doble click para zoom
+            
+            // Añadir marcador de flecha
+            svg.append('defs').append('marker')
+                .attr('id', 'arrowhead')
+                .attr('viewBox', '-0 -5 10 10')
+                .attr('refX', 13)
+                .attr('refY', 0)
+                .attr('orient', 'auto')
+                .attr('markerWidth', 6)
+                .attr('markerHeight', 6)
+                .attr('xoverflow', 'visible')
+                .append('svg:path')
+                .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+                .attr('fill', '#94a3b8')
+                .style('stroke', 'none');
+            
+            // Eventos de botones
+            document.getElementById('add-transaction').addEventListener('click', addTransaction);
+            document.getElementById('clear-all').addEventListener('click', clearAll);
+            document.getElementById('load-example').addEventListener('click', loadExample);
+            document.getElementById('reset-layout').addEventListener('click', resetLayout);
+            document.getElementById('export-png').addEventListener('click', exportPNG);
+            document.getElementById('export-svg').addEventListener('click', exportSVG);
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('copy-data').addEventListener('click', copyData);
+            document.getElementById('add-first-transaction').addEventListener('click', addFirstTransaction);
+            document.getElementById('zoom-in').addEventListener('click', () => zoom.scaleBy(svg.transition().duration(300), 1.3));
+            document.getElementById('zoom-out').addEventListener('click', () => zoom.scaleBy(svg.transition().duration(300), 0.7));
+            document.getElementById('zoom-reset').addEventListener('click', resetZoom);
+            document.getElementById('fit-to-screen').addEventListener('click', fitToScreen);
+            
+            // Cargar datos guardados
+            loadSavedData();
+            
+            // Si no hay datos, mostrar estado vacío
+            updateEmptyState();
+        });
+        
+        // Añadir transacción
+        function addTransaction() {
+            const origin = document.getElementById('origin').value.trim();
+            const destination = document.getElementById('destination').value.trim();
+            const type = document.getElementById('type').value;
+            const deliverable = document.getElementById('deliverable').value.trim();
+            
+            if (!origin || !destination || !deliverable) {
+                alert('Por favor, completa todos los campos');
+                return;
+            }
+            
+            // Añadir nodos si no existen
+            if (!nodes.find(n => n.id === origin)) {
+                nodes.push({id: origin, group: 1});
+            }
+            
+            if (!nodes.find(n => n.id === destination)) {
+                nodes.push({id: destination, group: 1});
+            }
+            
+            // Añadir enlace
+            links.push({
+                source: origin,
+                target: destination,
+                type: type,
+                deliverable: deliverable,
+                value: 1
+            });
+            
+            // Limpiar formulario
+            document.getElementById('origin').value = '';
+            document.getElementById('destination').value = '';
+            document.getElementById('deliverable').value = '';
+            
+            // Guardar datos
+            saveData();
+            
+            // Actualizar visualización
+            updateVisualization();
+            
+            // Ocultar estado vacío
+            document.getElementById('empty-state').style.display = 'none';
+        }
+        
+        // Añadir transacción de ejemplo
+        function addFirstTransaction() {
+            document.getElementById('origin').value = 'Cliente';
+            document.getElementById('destination').value = 'Vendedor';
+            document.getElementById('type').value = 'tangible';
+            document.getElementById('deliverable').value = 'Pedido';
+            addTransaction();
+        }
+        
+        // Cargar ejemplo
+        function loadExample() {
+            if (links.length > 0 && !confirm('¿Quieres reemplazar los datos actuales con el ejemplo?')) {
+                return;
+            }
+            
+            nodes = [
+                {id: "Cliente", group: 1},
+                {id: "Vendedor", group: 2},
+                {id: "IT", group: 3},
+                {id: "Marketing", group: 4},
+                {id: "CEO", group: 5}
+            ];
+            
+            links = [
+                {source: "Cliente", target: "Vendedor", type: "tangible", deliverable: "Pedido", value: 1},
+                {source: "Vendedor", target: "Cliente", type: "intangible", deliverable: "Confianza y satisfacción", value: 1},
+                {source: "IT", target: "Marketing", type: "tangible", deliverable: "Informe de uso web y analytics", value: 1},
+                {source: "Marketing", target: "IT", type: "intangible", deliverable: "Feedback de campaña y necesidades de usuarios", value: 1},
+                {source: "Vendedor", target: "CEO", type: "tangible", deliverable: "Reporte de ventas y proyecciones", value: 1},
+                {source: "CEO", target: "Vendedor", type: "intangible", deliverable: "Visión estratégica y dirección", value: 1},
+                {source: "Marketing", target: "Cliente", type: "tangible", deliverable: "Contenido y campañas publicitarias", value: 1},
+                {source: "Cliente", target: "Marketing", type: "intangible", deliverable: "Insights de mercado y preferencias", value: 1}
+            ];
+            
+            saveData();
+            updateVisualization();
+            document.getElementById('empty-state').style.display = 'none';
+        }
+        
+        // Limpiar todo
+        function clearAll() {
+            if (links.length === 0) return;
+            
+            if (confirm('¿Estás seguro de que quieres eliminar todas las transacciones?')) {
+                nodes = [];
+                links = [];
+                saveData();
+                updateVisualization();
+                document.getElementById('empty-state').style.display = 'flex';
+            }
+        }
+        
+        // Resetear posiciones
+        function resetLayout() {
+            if (simulation) {
+                simulation.alpha(1).restart();
+                document.getElementById('simulation-status').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('simulation-status').style.display = 'none';
+                }, 2000);
+            }
+        }
+        
+        // Actualizar visualización
+        function updateVisualization() {
+            // Actualizar estadísticas
+            document.getElementById('node-count').textContent = nodes.length;
+            document.getElementById('link-count').textContent = links.length;
+            document.getElementById('tangible-count').textContent = links.filter(l => l.type === 'tangible').length;
+            document.getElementById('intangible-count').textContent = links.filter(l => l.type === 'intangible').length;
+            
+            // Limpiar SVG
+            svg.selectAll('*').remove();
+            
+            // Si no hay datos, mostrar mensaje
+            if (nodes.length === 0) {
+                document.getElementById('empty-state').style.display = 'flex';
+                return;
+            }
+            
+            document.getElementById('empty-state').style.display = 'none';
+            
+            // Crear simulación de fuerza
+            simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(150))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(d => 60))
+                .alphaDecay(0.02)
+                .alphaMin(0.01)
+                .on('tick', ticked)
+                .on('end', () => {
+                    document.getElementById('simulation-status').style.display = 'none';
+                    isSimulationRunning = false;
+                });
+            
+            isSimulationRunning = true;
+            document.getElementById('simulation-status').style.display = 'block';
+            
+            // Crear enlaces
+            const link = svg.append('g')
+                .attr('stroke', '#94a3b8')
+                .attr('stroke-opacity', 0.8)
+                .selectAll('line')
+                .data(links)
+                .join('line')
+                .attr('stroke-width', d => d.type === 'tangible' ? 3 : 2)
+                .attr('stroke', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
+                .attr('stroke-dasharray', d => d.type === 'intangible' ? '5,5' : '0')
+                .attr('marker-end', 'url(#arrowhead)');
+            
+            // Crear etiquetas de enlaces
+            const linkLabelGroup = svg.append('g')
+                .attr('class', 'link-labels')
+                .selectAll('g')
+                .data(links)
+                .join('g')
+                .attr('class', 'link-label-group');
+            
+            const linkLabel = linkLabelGroup.append('text')
+                .attr('class', 'link-label')
+                .attr('dy', -10)
+                .attr('text-anchor', 'middle')
+                .html(d => {
+                    // Dividir el entregable en líneas si es muy largo
+                    const words = d.deliverable.split(' ');
+                    let lines = [];
+                    let currentLine = '';
+                    
+                    words.forEach(word => {
+                        if ((currentLine + ' ' + word).length > 25) {
+                            lines.push(currentLine);
+                            currentLine = word;
+                        } else {
+                            currentLine += (currentLine ? ' ' : '') + word;
+                        }
+                    });
+                    
+                    if (currentLine) lines.push(currentLine);
+                    
+                    return lines.map(line => `<tspan x="0" dy="1.2em">${line}</tspan>`).join('');
+                })
+                .attr('fill', '#4b5563')
+                .style('font-size', '10px');
+            
+            // Crear nodos
+            const node = svg.append('g')
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2)
+                .selectAll('circle')
+                .data(nodes)
+                .join('circle')
+                .attr('r', 45)
+                .attr('fill', d => {
+                    // Contar conexiones del nodo
+                    const connections = links.filter(l => l.source.id === d.id || l.target.id === d.id).length;
+                    return connections > 3 ? '#1e3a8a' : '#4f46e5';
+                })
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+            
+            // Crear etiquetas de nodos
+            const label = svg.append('g')
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'middle')
+                .selectAll('text')
+                .data(nodes)
+                .join('text')
+                .text(d => d.id)
+                .attr('fill', '#0f172a')
+                .attr('font-weight', '600')
+                .attr('font-size', '14px')
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+            
+            // Tooltip para enlaces
+            linkLabelGroup.on('mouseover', function(event, d) {
+                const tooltip = document.getElementById('tooltip');
+                tooltip.innerHTML = `
+                    <h4>Transacción de Valor</h4>
+                    <p><strong>Origen:</strong> ${d.source.id}</p>
+                    <p><strong>Destino:</strong> ${d.target.id}</p>
+                    <p><strong>Tipo:</strong> <span class="type ${d.type}">${d.type.charAt(0).toUpperCase() + d.type.slice(1)}</span></p>
+                    <p><strong>Entregable:</strong> ${d.deliverable}</p>
+                `;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (event.pageX + 15) + 'px';
+                tooltip.style.top = (event.pageY + 15) + 'px';
+            })
+            .on('mouseout', () => {
+                document.getElementById('tooltip').style.display = 'none';
+            });
+            
+            // Tooltip para nodos
+            node.on('mouseover', function(event, d) {
+                // Contar conexiones entrantes y salientes
+                const incoming = links.filter(l => l.target.id === d.id).length;
+                const outgoing = links.filter(l => l.source.id === d.id).length;
+                const total = incoming + outgoing;
+                
+                const tooltip = document.getElementById('tooltip');
+                tooltip.innerHTML = `
+                    <h4>${d.id}</h4>
+                    <p><strong>Conexiones totales:</strong> ${total}</p>
+                    <p><strong>Entrantes:</strong> ${incoming}</p>
+                    <p><strong>Salientes:</strong> ${outgoing}</p>
+                    <p><strong>Importancia en la red:</strong> ${total > 5 ? 'Alta' : total > 2 ? 'Media' : 'Baja'}</p>
+                `;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (event.pageX + 15) + 'px';
+                tooltip.style.top = (event.pageY + 15) + 'px';
+            })
+            .on('mouseout', () => {
+                document.getElementById('tooltip').style.display = 'none';
+            });
+            
+            // Función tick para actualizar posiciones
+            function ticked() {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+                
+                linkLabelGroup
+                    .attr('transform', d => {
+                        const x = (d.source.x + d.target.x) / 2;
+                        const y = (d.source.y + d.target.y) / 2;
+                        return `translate(${x},${y})`;
+                    });
+                
+                node
+                    .attr('cx', d => d.x = Math.max(60, Math.min(width - 60, d.x)))
+                    .attr('cy', d => d.y = Math.max(60, Math.min(height - 60, d.y)));
+                
+                label
+                    .attr('x', d => d.x)
+                    .attr('y', d => d.y);
+            }
+            
+            // Funciones de drag
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alpha(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+            
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+            
+            function dragended(event, d) {
+                if (!event.active) simulation.alpha(0.001);
+                d.fx = null;
+                d.fy = null;
+            }
+            
+            // Guardar referencia a g para el zoom
+            g = svg;
+        }
+        
+        // Resetear zoom
+        function resetZoom() {
+            svg.transition()
+                .duration(300)
+                .call(zoom.transform, d3.zoomIdentity);
+        }
+        
+        // Ajustar a pantalla
+        function fitToScreen() {
+            // Calcular bounding box de todos los elementos
+            const bbox = svg.node().getBBox();
+            
+            if (bbox.width === 0 || bbox.height === 0) return;
+            
+            // Calcular escala y traslación
+            const padding = 50;
+            const scaleX = (width - padding * 2) / bbox.width;
+            const scaleY = (height - padding * 2) / bbox.height;
+            const scale = Math.min(scaleX, scaleY, 2); // Máximo zoom 2x
+            
+            const translateX = (width - bbox.width * scale) / 2 - bbox.x * scale;
+            const translateY = (height - bbox.height * scale) / 2 - bbox.y * scale;
+            
+            // Aplicar transformación
+            svg.transition()
+                .duration(500)
+                .call(zoom.transform, d3.zoomIdentity
+                    .translate(translateX, translateY)
+                    .scale(scale));
+        }
+        
+        // Guardar datos
+        function saveData() {
+            const data = {nodes, links};
+            localStorage.setItem('vnaData', JSON.stringify(data));
+        }
+        
+        // Cargar datos guardados
+        function loadSavedData() {
+            const saved = localStorage.getItem('vnaData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                nodes = data.nodes || [];
+                links = data.links || [];
+                
+                if (nodes.length > 0 || links.length > 0) {
+                    document.getElementById('empty-state').style.display = 'none';
+                }
+            }
+        }
+        
+        // Exportar como PNG
+        function exportPNG() {
+            if (nodes.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            // Mostrar estado de carga
+            const originalText = document.getElementById('export-png').innerHTML;
+            document.getElementById('export-png').innerHTML = '<span>⏳</span> Generando PNG...';
+            document.getElementById('export-png').disabled = true;
+            
+            // Crear un contenedor temporal para la exportación
+            const exportContainer = document.createElement('div');
+            exportContainer.style.width = '1600px';
+            exportContainer.style.height = '1200px';
+            exportContainer.style.position = 'absolute';
+            exportContainer.style.left = '-9999px';
+            document.body.appendChild(exportContainer);
+            
+            // Crear SVG para exportación
+            const exportSvg = d3.select(exportContainer)
+                .append('svg')
+                .attr('width', 1600)
+                .attr('height', 1200)
+                .style('background', 'white');
+            
+            // Copiar contenido del SVG actual
+            const svgNode = document.querySelector('#vna-svg svg');
+            const clone = svgNode.cloneNode(true);
+            exportSvg.node().appendChild(clone);
+            
+            // Ajustar estilos para exportación
+            exportSvg.selectAll('circle')
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 3);
+            
+            exportSvg.selectAll('text')
+                .attr('fill', '#0f172a')
+                .attr('font-family', 'Arial, sans-serif');
+            
+            // Agregar título y leyenda
+            exportSvg.append('text')
+                .attr('x', 800)
+                .attr('y', 40)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '24')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#1e3a8a')
+                .text('Value Network Analysis - TeamTowers Humà');
+            
+            exportSvg.append('text')
+                .attr('x', 800)
+                .attr('y', 80)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '16')
+                .attr('fill', '#4b5563')
+                .text(`Roles: ${nodes.length} | Transacciones: ${links.length} | Tangibles: ${links.filter(l => l.type === 'tangible').length} | Intangibles: ${links.filter(l => l.type === 'intangible').length}`);
+            
+            // Agregar leyenda
+            exportSvg.append('rect')
+                .attr('x', 50)
+                .attr('y', 1100)
+                .attr('width', 200)
+                .attr('height', 60)
+                .attr('fill', '#f8fafc')
+                .attr('stroke', '#e2e8f0');
+            
+            exportSvg.append('line')
+                .attr('x1', 60)
+                .attr('y1', 1120)
+                .attr('x2', 90)
+                .attr('y2', 1120)
+                .attr('stroke', '#1e3a8a')
+                .attr('stroke-width', 3);
+            
+            exportSvg.append('text')
+                .attr('x', 100)
+                .attr('y', 1125)
+                .attr('font-size', '14')
+                .attr('fill', '#4b5563')
+                .text('Tangible');
+            
+            exportSvg.append('line')
+                .attr('x1', 60)
+                .attr('y1', 1145)
+                .attr('x2', 90)
+                .attr('y2', 1145)
+                .attr('stroke', '#8b5cf6')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5');
+            
+            exportSvg.append('text')
+                .attr('x', 100)
+                .attr('y', 1150)
+                .attr('font-size', '14')
+                .attr('fill', '#4b5563')
+                .text('Intangible');
+            
+            // Convertir a canvas y luego a PNG
+            html2canvas(exportContainer, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Limpiar
+                document.body.removeChild(exportContainer);
+                document.getElementById('export-png').innerHTML = originalText;
+                document.getElementById('export-png').disabled = false;
+                
+                alert('Mapa exportado exitosamente como PNG de alta calidad');
+            }).catch(err => {
+                console.error('Error al exportar PNG:', err);
+                alert('Error al generar la imagen. Por favor intenta de nuevo.');
+                document.body.removeChild(exportContainer);
+                document.getElementById('export-png').innerHTML = originalText;
+                document.getElementById('export-png').disabled = false;
+            });
+        }
+        
+        // Exportar como SVG
+        function exportSVG() {
+            if (nodes.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            // Crear SVG para exportación
+            const exportSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            exportSvg.setAttribute('width', '1600');
+            exportSvg.setAttribute('height', '1200');
+            exportSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            exportSvg.style.backgroundColor = 'white';
+            
+            // Copiar contenido del SVG actual
+            const svgNode = document.querySelector('#vna-svg svg');
+            const clone = svgNode.cloneNode(true);
+            
+            // Añadir estilos inline para mejor compatibilidad
+            const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+            style.textContent = `
+                .node { stroke: #fff; stroke-width: 3; }
+                .link { marker-end: url(#arrowhead); }
+                .link-tangible { stroke: #1e3a8a; stroke-width: 3; }
+                .link-intangible { stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 5,5; }
+                text { fill: #0f172a; font-family: Arial, sans-serif; }
+                .link-label { font-size: 10px; fill: #4b5563; }
+            `;
+            exportSvg.appendChild(style);
+            
+            // Añadir título y estadísticas
+            const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            title.setAttribute('x', '800');
+            title.setAttribute('y', '40');
+            title.setAttribute('text-anchor', 'middle');
+            title.setAttribute('font-size', '24');
+            title.setAttribute('font-weight', 'bold');
+            title.setAttribute('fill', '#1e3a8a');
+            title.textContent = 'Value Network Analysis - TeamTowers Humà';
+            exportSvg.appendChild(title);
+            
+            const stats = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            stats.setAttribute('x', '800');
+            stats.setAttribute('y', '80');
+            stats.setAttribute('text-anchor', 'middle');
+            stats.setAttribute('font-size', '16');
+            stats.setAttribute('fill', '#4b5563');
+            stats.textContent = `Roles: ${nodes.length} | Transacciones: ${links.length} | Tangibles: ${links.filter(l => l.type === 'tangible').length} | Intangibles: ${links.filter(l => l.type === 'intangible').length}`;
+            exportSvg.appendChild(stats);
+            
+            // Añadir leyenda
+            const legendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            legendRect.setAttribute('x', '50');
+            legendRect.setAttribute('y', '1100');
+            legendRect.setAttribute('width', '200');
+            legendRect.setAttribute('height', '60');
+            legendRect.setAttribute('fill', '#f8fafc');
+            legendRect.setAttribute('stroke', '#e2e8f0');
+            exportSvg.appendChild(legendRect);
+            
+            const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line1.setAttribute('x1', '60');
+            line1.setAttribute('y1', '1120');
+            line1.setAttribute('x2', '90');
+            line1.setAttribute('y2', '1120');
+            line1.setAttribute('stroke', '#1e3a8a');
+            line1.setAttribute('stroke-width', '3');
+            exportSvg.appendChild(line1);
+            
+            const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text1.setAttribute('x', '100');
+            text1.setAttribute('y', '1125');
+            text1.setAttribute('font-size', '14');
+            text1.setAttribute('fill', '#4b5563');
+            text1.textContent = 'Tangible';
+            exportSvg.appendChild(text1);
+            
+            const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line2.setAttribute('x1', '60');
+            line2.setAttribute('y1', '1145');
+            line2.setAttribute('x2', '90');
+            line2.setAttribute('y2', '1145');
+            line2.setAttribute('stroke', '#8b5cf6');
+            line2.setAttribute('stroke-width', '2');
+            line2.setAttribute('stroke-dasharray', '5,5');
+            exportSvg.appendChild(line2);
+            
+            const text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text2.setAttribute('x', '100');
+            text2.setAttribute('y', '1150');
+            text2.setAttribute('font-size', '14');
+            text2.setAttribute('fill', '#4b5563');
+            text2.textContent = 'Intangible';
+            exportSvg.appendChild(text2);
+            
+            // Añadir contenido del grafo
+            exportSvg.appendChild(clone);
+            
+            // Crear enlace de descarga
+            const serializer = new XMLSerializer();
+            let source = serializer.serializeToString(exportSvg);
+            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+            const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+            
+            const link = document.createElement('a');
+            link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.svg`;
+            link.href = url;
+            link.click();
+            
+            alert('Mapa exportado exitosamente como SVG editable');
+        }
+        
+        // Exportar como JSON
+        function exportJSON() {
+            if (nodes.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            const dataStr = JSON.stringify({nodes, links}, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `vna-data-teamtowers-huma-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert('Datos exportados exitosamente como JSON');
+        }
+        
+        // Copiar datos al portapapeles
+        function copyData() {
+            if (nodes.length === 0) {
+                alert('No hay datos para copiar');
+                return;
+            }
+            
+            // Formatear datos como texto legible
+            let text = 'VALUE NETWORK ANALYSIS - TEAMTOWERS HUMÀ\n';
+            text += `Fecha: ${new Date().toLocaleDateString()}\n`;
+            text += `Roles: ${nodes.length} | Transacciones: ${links.length}\n\n`;
+            text += 'TRANSACCIONES:\n';
+            text += '='.repeat(80) + '\n';
+            
+            links.forEach((link, i) => {
+                text += `${i+1}. ${link.source.id} → ${link.target.id} | ${link.type} | ${link.deliverable}\n`;
+            });
+            
+            text += '='.repeat(80) + '\n';
+            text += `\nTotal de transacciones: ${links.length}`;
+            
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Datos copiados al portapapeles exitosamente');
+                
+                // Efecto visual de confirmación
+                const btn = document.getElementById('copy-data');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span>✅</span> ¡Copiado!';
+                btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar:', err);
+                alert('Error al copiar los datos. Por favor selecciona y copia manualmente.');
+            });
+        }
+        
+        // Actualizar estado vacío
+        function updateEmptyState() {
+            if (nodes.length === 0 && links.length === 0) {
+                document.getElementById('empty-state').style.display = 'flex';
+            } else {
+                document.getElementById('empty-state').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
