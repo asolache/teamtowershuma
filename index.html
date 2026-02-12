@@ -1473,32 +1473,356 @@
         </div>
     </section>
     
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="stats-content">
-            <h2 class="lang" data-es="Nuestro Impacto en Cifras" data-ca="El Nostre Impacte en Xifres">Nuestro Impacto en Cifras</h2>
-            <p class="lang" data-es="Resultados medibles que demuestran la efectividad de nuestro enfoque único en consultoría estratégica de RRHH" data-ca="Resultats mesurables que demostren l'efectivitat del nostre enfocament únic en consultoria estratègica de RRHH">Resultados medibles que demuestran la efectividad de nuestro enfoque único en consultoría estratégica de RRHH</p>
-            
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-number">20+</span>
-                    <span class="stat-label lang" data-es="Años de experiencia" data-ca="Anys d'experiència">Años de experiencia</span>
+    <!-- Stats Section - Versión Mejorada -->
+<section class="stats-section">
+    <div class="stats-content">
+        <h2 class="lang" data-es="Nuestro Impacto en Cifras" data-ca="El Nostre Impacte en Xifres">Nuestro Impacto en Cifras</h2>
+        <p class="lang" data-es="Resultados medibles que demuestran la efectividad de nuestro enfoque único en consultoría estratégica de RRHH" data-ca="Resultats mesurables que demostren l'efectivitat del nostre enfocament únic en consultoria estratègica de RRHH">Resultados medibles que demuestran la efectividad de nuestro enfoque único en consultoría estratégica de RRHH</p>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number-wrapper">
+                    <span class="stat-number">20</span>
+                    <span class="stat-plus">+</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">150+</span>
-                    <span class="stat-label lang" data-es="Empresas transformadas" data-ca="Empreses transformades">Empresas transformadas</span>
+                <span class="stat-label lang" data-es="Años de<br>experiencia" data-ca="Anys d'<br>experiència">Años de<br>experiencia</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number-wrapper">
+                    <span class="stat-number">150</span>
+                    <span class="stat-plus">+</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">95%</span>
-                    <span class="stat-label lang" data-es="Satisfacción clientes" data-ca="Satisfacció clients">Satisfacción clientes</span>
+                <span class="stat-label lang" data-es="Empresas<br>transformadas" data-ca="Empreses<br>transformades">Empresas<br>transformadas</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number-wrapper">
+                    <span class="stat-number">95</span>
+                    <span class="stat-percent">%</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">60.000+</span>
-                    <span class="stat-label lang" data-es="Participantes formados" data-ca="Participants formats">Participantes formados</span>
+                <span class="stat-label lang" data-es="Satisfacción<br>clientes" data-ca="Satisfacció<br>clients">Satisfacción<br>clientes</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number-wrapper">
+                    <span class="stat-number">60</span>
+                    <span class="stat-thousand">MIL</span>
+                    <span class="stat-plus">+</span>
                 </div>
+                <span class="stat-label lang" data-es="Participantes<br>formados" data-ca="Participants<br>formats">Participantes<br>formados</span>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+    /* Estilos específicos para la sección de estadísticas mejorada */
+    .stats-section {
+        background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+        color: white;
+        text-align: center;
+        border-radius: var(--border-radius);
+        padding: 80px 40px;
+        margin: 80px 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    }
+    
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 70%), 
+                    radial-gradient(circle at 70% 70%, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+        z-index: 0;
+    }
+    
+    .stats-content {
+        max-width: 950px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .stats-content h2 {
+        font-size: 3.4rem;
+        margin-bottom: 25px;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        font-weight: 800;
+    }
+    
+    .stats-content p {
+        font-size: 1.6rem;
+        margin-bottom: 50px;
+        max-width: 750px;
+        margin-left: auto;
+        margin-right: auto;
+        opacity: 0.92;
+        line-height: 1.7;
+        font-weight: 300;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 35px;
+        margin-top: 30px;
+    }
+    
+    .stat-item {
+        padding: 32px 25px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.09);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-item::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        z-index: -1;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+    }
+    
+    .stat-item:hover {
+        background: rgba(255, 255, 255, 0.14);
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+    
+    .stat-item:hover::after {
+        opacity: 1;
+    }
+    
+    .stat-number-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        margin-bottom: 15px;
+        min-height: 85px;
+        position: relative;
+    }
+    
+    .stat-number {
+        font-size: 4.2rem;
+        font-weight: 800;
+        display: inline-block;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+        line-height: 1;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-plus {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-left: 4px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-percent {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-left: 4px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-thousand {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+        margin-top: -8px;
+        margin-left: 4px;
+        letter-spacing: 1px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-label {
+        font-size: 1.45rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.4;
+        display: inline-block;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* Animaciones para los números */
+    @keyframes fadeInNumber {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .stat-number-wrapper {
+        animation: fadeInNumber 0.8s ease-out forwards;
+    }
+    
+    .stat-item:nth-child(1) .stat-number-wrapper { animation-delay: 0.1s; }
+    .stat-item:nth-child(2) .stat-number-wrapper { animation-delay: 0.2s; }
+    .stat-item:nth-child(3) .stat-number-wrapper { animation-delay: 0.3s; }
+    .stat-item:nth-child(4) .stat-number-wrapper { animation-delay: 0.4s; }
+    
+    /* Responsive Design para las estadísticas */
+    @media (max-width: 992px) {
+        .stats-content h2 {
+            font-size: 3.0rem;
+        }
+        
+        .stats-content p {
+            font-size: 1.5rem;
+            margin-bottom: 45px;
+        }
+        
+        .stat-number {
+            font-size: 3.8rem;
+        }
+        
+        .stat-plus,
+        .stat-percent {
+            font-size: 2.5rem;
+        }
+        
+        .stat-thousand {
+            font-size: 1.6rem;
+        }
+        
+        .stat-label {
+            font-size: 1.35rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-section {
+            padding: 70px 25px;
+            margin: 70px 15px;
+        }
+        
+        .stats-content h2 {
+            font-size: 2.7rem;
+        }
+        
+        .stats-content p {
+            font-size: 1.45rem;
+            margin-bottom: 40px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 28px;
+        }
+        
+        .stat-item {
+            padding: 28px 20px;
+            border-radius: 18px;
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+        }
+        
+        .stat-plus,
+        .stat-percent {
+            font-size: 2.3rem;
+        }
+        
+        .stat-thousand {
+            font-size: 1.5rem;
+            margin-top: -6px;
+        }
+        
+        .stat-label {
+            font-size: 1.3rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-section {
+            padding: 60px 20px;
+            margin: 60px 10px;
+        }
+        
+        .stats-content h2 {
+            font-size: 2.4rem;
+        }
+        
+        .stats-content p {
+            font-size: 1.35rem;
+            margin-bottom: 35px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+            gap: 25px;
+        }
+        
+        .stat-item {
+            padding: 25px 15px;
+            border-radius: 16px;
+        }
+        
+        .stat-number {
+            font-size: 3.2rem;
+        }
+        
+        .stat-plus,
+        .stat-percent {
+            font-size: 2.1rem;
+        }
+        
+        .stat-thousand {
+            font-size: 1.4rem;
+            margin-top: -5px;
+        }
+        
+        .stat-label {
+            font-size: 1.25rem;
+            line-height: 1.35;
+        }
+        
+        .stat-number-wrapper {
+            min-height: 75px;
+        }
+    }
+</style>
     
     <!-- Testimonials Section -->
     <section class="testimonials-section">
