@@ -602,6 +602,7 @@
         .link-label.deliverable {
             font-size: 10px;
             fill: var(--gray);
+            font-weight: 500;
         }
         
         .simulation-running {
@@ -785,46 +786,6 @@
             transform: scale(1.1);
         }
         
-        /* Test Section */
-        .test-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .test-section h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .test-section h3::before {
-            content: '🧪';
-        }
-        
-        .test-results {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            max-height: 200px;
-            overflow-y: auto;
-            background: var(--light);
-        }
-        
-        .test-pass {
-            color: var(--success);
-        }
-        
-        .test-fail {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        
         /* Footer */
         footer {
             background: var(--dark);
@@ -968,10 +929,6 @@
             .transactions-list {
                 max-height: 300px;
             }
-            
-            .test-section {
-                display: none;
-            }
         }
     </style>
 </head>
@@ -1063,16 +1020,6 @@
                     <div id="transactions-container">
                         <!-- Transactions will be added here dynamically -->
                         <div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>
-                    </div>
-                </div>
-                
-                <div class="test-section">
-                    <h3 class="lang" data-es="🧪 Ejecutar Pruebas" data-ca="🧪 Executar Proves">🧪 Ejecutar Pruebas</h3>
-                    <button id="run-tests" class="btn btn-secondary" style="width: 100%;">
-                        <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas Automáticas" data-ca="Executar Proves Automàtiques">Ejecutar Pruebas Automáticas</span>
-                    </button>
-                    <div class="test-results" id="test-results">
-                        <div class="lang" data-es="Haz clic en el botón para ejecutar las pruebas." data-ca="Fes clic al botó per executar les proves.">Haz clic en el botón para ejecutar las pruebas.</div>
                     </div>
                 </div>
                 
@@ -1211,154 +1158,6 @@
     <div class="tooltip" id="tooltip"></div>
     
     <script>
-        // Test-Driven Development (TDD) Framework
-        const testSuite = {
-            results: [],
-            assert: {
-                equals: function(actual, expected, testName) {
-                    const passed = actual === expected;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: expected
-                    });
-                    return passed;
-                },
-                truthy: function(actual, testName) {
-                    const passed = !!actual;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: 'truthy value'
-                    });
-                    return passed;
-                },
-                falsy: function(actual, testName) {
-                    const passed = !actual;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: 'falsy value'
-                    });
-                    return passed;
-                }
-            },
-            runTests: function() {
-                this.results = [];
-                
-                // Test 1: Initial state
-                this.assert.equals(nodes.length, 0, "Initial nodes array should be empty");
-                this.assert.equals(links.length, 0, "Initial links array should be empty");
-                
-                // Test 2: Add transaction
-                addTransactionToData("TestOrigin", "TestDestination", "tangible", "Test Deliverable");
-                this.assert.equals(nodes.length, 2, "Should have 2 nodes after adding transaction");
-                this.assert.equals(links.length, 1, "Should have 1 link after adding transaction");
-                this.assert.equals(links[0].source, "TestOrigin", "Link source should be 'TestOrigin'");
-                this.assert.equals(links[0].target, "TestDestination", "Link target should be 'TestDestination'");
-                this.assert.equals(links[0].type, "tangible", "Link type should be 'tangible'");
-                this.assert.equals(links[0].deliverable, "Test Deliverable", "Link deliverable should be 'Test Deliverable'");
-                
-                // Test 3: Delete transaction
-                deleteTransaction(0);
-                this.assert.equals(links.length, 0, "Should have 0 links after deleting transaction");
-                this.assert.equals(nodes.length, 0, "Should have 0 nodes after deleting last transaction (orphan removal)");
-                
-                // Test 4: Add bulk transactions
-                const bulkInput = "A → B | tangible | Deliverable 1\nB → C | intangible | Deliverable 2";
-                const lines = bulkInput.split('\n');
-                let addedCount = 0;
-                
-                lines.forEach(line => {
-                    line = line.trim();
-                    if (!line) return;
-                    
-                    const parts = line.split('|');
-                    if (parts.length !== 3) return;
-                    
-                    const originDest = parts[0].trim().split('→');
-                    if (originDest.length !== 2) return;
-                    
-                    const origin = originDest[0].trim();
-                    const destination = originDest[1].trim();
-                    const type = parts[1].trim().toLowerCase();
-                    const deliverable = parts[2].trim();
-                    
-                    if (origin && destination && deliverable && (type === 'tangible' || type === 'intangible')) {
-                        addTransactionToData(origin, destination, type, deliverable);
-                        addedCount++;
-                    }
-                });
-                
-                this.assert.equals(addedCount, 2, "Should add 2 transactions from bulk input");
-                this.assert.equals(nodes.length, 3, "Should have 3 nodes after bulk add (A, B, C)");
-                this.assert.equals(links.length, 2, "Should have 2 links after bulk add");
-                
-                // Test 5: Clear all
-                clearAllData();
-                this.assert.equals(nodes.length, 0, "Should have 0 nodes after clearAll");
-                this.assert.equals(links.length, 0, "Should have 0 links after clearAll");
-                
-                // Test 6: Export data structure
-                const testData = {nodes: [{id: "Test"}], links: [{source: "A", target: "B", type: "tangible", deliverable: "Test"}]};
-                const jsonData = JSON.stringify(testData);
-                const parsedData = JSON.parse(jsonData);
-                this.assert.equals(parsedData.nodes.length, 1, "Exported JSON should have 1 node");
-                this.assert.equals(parsedData.links.length, 1, "Exported JSON should have 1 link");
-                this.assert.equals(parsedData.links[0].deliverable, "Test", "Exported JSON link should have correct deliverable");
-                
-                // Test 7: Transaction list rendering
-                addTransactionToData("Origin1", "Dest1", "tangible", "Deliverable1");
-                updateTransactionsList();
-                const container = document.getElementById('transactions-container');
-                const hasTransactionItem = container.innerHTML.includes("Origin1") && container.innerHTML.includes("Dest1");
-                this.assert.truthy(hasTransactionItem, "Transaction list should render transactions");
-                
-                // Clean up after tests
-                clearAllData();
-                
-                return this.results;
-            },
-            displayResults: function(results) {
-                const testResultsDiv = document.getElementById('test-results');
-                testResultsDiv.innerHTML = '';
-                
-                let passedCount = 0;
-                let failedCount = 0;
-                
-                results.forEach(result => {
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = result.passed ? 'test-pass' : 'test-fail';
-                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
-                        `   Expected: ${result.expected}<br/>` +
-                        `   Actual: ${result.actual}`;
-                    testResultsDiv.appendChild(resultDiv);
-                    
-                    if (result.passed) passedCount++;
-                    else failedCount++;
-                });
-                
-                // Summary
-                const summary = document.createElement('div');
-                summary.style.fontWeight = 'bold';
-                summary.style.marginTop = '15px';
-                summary.style.paddingTop = '10px';
-                summary.style.borderTop = '1px solid #ddd';
-                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
-                testResultsDiv.appendChild(summary);
-                
-                // Alert summary
-                if (failedCount === 0) {
-                    alert(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})`);
-                } else {
-                    alert(`⚠️ Algunas pruebas fallaron (${failedCount}/${results.length}). Revisa los resultados.`);
-                }
-            }
-        };
-        
         // Language switching functionality
         document.addEventListener('DOMContentLoaded', function() {
             const langButtons = document.querySelectorAll('.lang-btn');
@@ -1400,17 +1199,6 @@
             
             // Initialize VNA app after language is set
             initVNAApp();
-            
-            // Setup test button
-            document.getElementById('run-tests').addEventListener('click', function() {
-                const results = testSuite.runTests();
-                testSuite.displayResults(results);
-                
-                // After tests, reload the page to reset state
-                setTimeout(() => {
-                    location.reload();
-                }, 3000);
-            });
         });
         
         // VNA App functionality
@@ -1451,11 +1239,11 @@
             svg.append('defs').append('marker')
                 .attr('id', 'arrowhead')
                 .attr('viewBox', '-0 -5 10 10')
-                .attr('refX', 12)  // Posición óptima para que la flecha quede visible al final del enlace
+                .attr('refX', 18)  // Posición óptima para que la flecha quede visible al final del enlace
                 .attr('refY', 0)
                 .attr('orient', 'auto')
-                .attr('markerWidth', 10)
-                .attr('markerHeight', 10)
+                .attr('markerWidth', 12)
+                .attr('markerHeight', 12)
                 .attr('xoverflow', 'visible')
                 .append('svg:path')
                 .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
@@ -1648,17 +1436,13 @@
                 if (confirm(document.documentElement.lang === 'ca' ? 
                     'Estàs segur que vols eliminar totes les transaccions?' : 
                     '¿Estás seguro de que quieres eliminar todas las transacciones?')) {
-                    clearAllData();
+                    nodes = [];
+                    links = [];
+                    saveData();
                     updateVisualization();
                     updateTransactionsList();
                     document.getElementById('empty-state').style.display = 'flex';
                 }
-            }
-            
-            function clearAllData() {
-                nodes = [];
-                links = [];
-                saveData();
             }
             
             function resetLayout() {
@@ -1706,21 +1490,20 @@
                 isSimulationRunning = true;
                 document.getElementById('simulation-status').style.display = 'block';
                 
-                // Crear enlaces como paths para permitir curvatura - CON FLECHAS VISIBLES
+                // Crear enlaces como líneas rectas con flechas - AHORA CON FLECHAS VISIBLES Y ENTREGABLES CENTRADOS
                 const link = svg.append('g')
                     .attr('stroke-opacity', 0.9)
-                    .selectAll('path')
+                    .selectAll('line')
                     .data(links)
-                    .join('path')
+                    .join('line')
                     .attr('class', d => `link-path link-${d.type}`)
                     .attr('stroke-width', d => d.type === 'tangible' ? 3 : 2)
                     .attr('stroke', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
                     .attr('stroke-dasharray', d => d.type === 'intangible' ? '5,5' : '0')
-                    .attr('fill', 'none')
-                    .attr('marker-end', 'url(#arrowhead)') // Flecha VISIBLE al final del enlace
-                    .attr('stroke-linecap', 'round');
+                    .attr('stroke-linecap', 'round')
+                    .attr('marker-end', 'url(#arrowhead)'); // Flecha VISIBLE al final del enlace
                 
-                // Crear etiquetas de enlaces - POSICIONADAS EN EL CENTRO DE LA FLECHA
+                // Crear etiquetas de enlaces - POSICIONADAS EN EL CENTRO DE LA LÍNEA
                 const linkLabelGroup = svg.append('g')
                     .attr('class', 'link-labels')
                     .selectAll('g')
@@ -1728,17 +1511,7 @@
                     .join('g')
                     .attr('class', 'link-label-group');
                 
-                // Etiqueta para el tipo (tangible/intangible)
-                linkLabelGroup.append('text')
-                    .attr('class', 'link-label type')
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .text(d => d.type === 'tangible' ? 'T' : 'I')
-                    .attr('font-weight', 'bold')
-                    .attr('font-size', '10px')
-                    .attr('fill', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6');
-                
-                // Etiqueta para el entregable - CENTRADA EN LA FLECHA
+                // Etiqueta para el entregable - CENTRADA EN LA LÍNEA DE LA TRANSACCIÓN
                 const linkLabel = linkLabelGroup.append('text')
                     .attr('class', 'link-label deliverable')
                     .attr('text-anchor', 'middle')
@@ -1750,7 +1523,7 @@
                         let currentLine = '';
                         
                         words.forEach(word => {
-                            if ((currentLine + ' ' + word).length > 18) {
+                            if ((currentLine + ' ' + word).length > 20) {
                                 lines.push(currentLine);
                                 currentLine = word;
                             } else {
@@ -1760,10 +1533,10 @@
                         
                         if (currentLine) lines.push(currentLine);
                         
-                        return lines.map(line => `<tspan x="0" dy="${lines.length > 1 ? '1.1em' : '0'}">${line}</tspan>`).join('');
+                        return lines.map(line => `<tspan x="0" dy="${lines.length > 1 ? (lines.indexOf(line) === 0 ? '-0.6em' : '1.2em') : '0'}">${line}</tspan>`).join('');
                     })
                     .attr('fill', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
-                    .style('font-size', '9px')
+                    .style('font-size', '10px')
                     .style('font-weight', '500');
                 
                 // Crear nodos
@@ -1841,7 +1614,7 @@
                     document.getElementById('tooltip').style.display = 'none';
                 });
                 
-                // Función tick para actualizar posiciones - CON ENTREGABLES CENTRADOS EN LA FLECHA
+                // Función tick para actualizar posiciones - CON LÍNEAS RECTAS Y ENTREGABLES CENTRADOS
                 function ticked() {
                     // Calcular el índice de cada enlace entre el mismo par de nodos
                     const linkMap = new Map();
@@ -1851,53 +1624,53 @@
                         linkMap.get(key).push(i);
                     });
                     
-                    // Actualizar posición de los enlaces
-                    link.attr('d', d => {
+                    // Actualizar posición de los enlaces - LÍNEAS RECTAS CON FLECHAS
+                    link.attr('x1', d => {
                         const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
+                        return sourceNode ? sourceNode.x : 0;
+                    })
+                    .attr('y1', d => {
+                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
+                        return sourceNode ? sourceNode.y : 0;
+                    })
+                    .attr('x2', d => {
                         const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
-                        
-                        if (!sourceNode || !targetNode) return 'M0,0L0,0';
-                        
-                        // Calcular curvatura basada en el índice del enlace
-                        const key = `${d.source.id}-${d.target.id}`;
-                        const linkGroup = linkMap.get(key) || [];
-                        const linkIndex = linkGroup.indexOf(links.indexOf(d));
-                        const curvature = (linkIndex - (linkGroup.length - 1) / 2) * 0.3;
-                        
-                        // Calcular puntos de control para la curva
-                        const dx = targetNode.x - sourceNode.x;
-                        const dy = targetNode.y - sourceNode.y;
-                        const dr = Math.sqrt(dx * dx + dy * dy) * Math.abs(curvature);
-                        
-                        return `M${sourceNode.x},${sourceNode.y}A${dr},${dr} 0 0,${curvature > 0 ? 1 : 0} ${targetNode.x},${targetNode.y}`;
+                        return targetNode ? targetNode.x : 0;
+                    })
+                    .attr('y2', d => {
+                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
+                        return targetNode ? targetNode.y : 0;
                     });
                     
-                    // Actualizar posición de las etiquetas - CENTRADAS EN LA FLECHA (al final del enlace)
+                    // Actualizar posición de las etiquetas - CENTRADAS EN LA LÍNEA RECTA
                     linkLabelGroup.attr('transform', d => {
                         const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
                         const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
                         
                         if (!sourceNode || !targetNode) return 'translate(0,0)';
                         
-                        // Calcular vector de dirección
+                        // Calcular el punto medio de la línea
+                        const midX = (sourceNode.x + targetNode.x) / 2;
+                        const midY = (sourceNode.y + targetNode.y) / 2;
+                        
+                        // Calcular vector perpendicular para evitar superposición
                         const dx = targetNode.x - sourceNode.x;
                         const dy = targetNode.y - sourceNode.y;
                         const distance = Math.sqrt(dx*dx + dy*dy) || 1;
                         
-                        // Posicionar la etiqueta a 90% del camino hacia el destino (cerca de la flecha)
-                        const x = sourceNode.x + 0.9 * dx;
-                        const y = sourceNode.y + 0.9 * dy;
-                        
-                        // Calcular desplazamiento perpendicular para múltiples enlaces
+                        // Vector perpendicular normalizado
                         const perpX = -dy / distance;
                         const perpY = dx / distance;
                         
+                        // Obtener el índice del enlace en su grupo
                         const key = `${d.source.id}-${d.target.id}`;
                         const linkGroup = linkMap.get(key) || [];
                         const linkIndex = linkGroup.indexOf(links.indexOf(d));
-                        const offset = (linkIndex - (linkGroup.length - 1) / 2) * 20;
                         
-                        return `translate(${x + perpX * offset},${y + perpY * offset})`;
+                        // Desplazamiento perpendicular basado en el índice
+                        const offset = (linkIndex - (linkGroup.length - 1) / 2) * 25;
+                        
+                        return `translate(${midX + perpX * offset}, ${midY + perpY * offset})`;
                     });
                     
                     // Actualizar posición de nodos y etiquetas
@@ -2199,8 +1972,8 @@
                     .link-tangible { stroke: #1e3a8a; stroke-width: 3; }
                     .link-intangible { stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 5,5; }
                     text { fill: #0f172a; font-family: Arial, sans-serif; font-weight: bold; }
-                    .link-label { font-size: 9px; font-weight: 500; }
-                    .link-label.type { font-size: 10px; font-weight: bold; }
+                    .link-label { font-size: 10px; font-weight: 500; fill: #1e3a8a; }
+                    .link-label.intangible { fill: #8b5cf6; }
                 `;
                 exportSvg.appendChild(style);
                 
