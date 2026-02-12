@@ -37,6 +37,7 @@
             --gold: #f59e0b;
             --success: #10b981;
             --warning: #fbbf24;
+            --danger: #ef4444;
             --gray: #64748b;
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -152,6 +153,8 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             height: fit-content;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .panel h2 {
@@ -702,6 +705,82 @@
             color: #8b5cf6;
         }
         
+        /* Transactions List */
+        .transactions-list {
+            margin-top: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .transactions-list h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .transactions-list h3::before {
+            content: '📋';
+        }
+        
+        .transaction-item {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent);
+            transition: var(--transition);
+        }
+        
+        .transaction-item:hover {
+            background: #e0e7ff;
+            transform: translateX(5px);
+        }
+        
+        .transaction-item.tangible {
+            border-left-color: var(--primary);
+        }
+        
+        .transaction-item.intangible {
+            border-left-color: var(--accent);
+        }
+        
+        .transaction-info {
+            flex: 1;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+        
+        .transaction-info strong {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+        
+        .delete-transaction {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        
+        .delete-transaction:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        
         /* Footer */
         footer {
             background: var(--dark);
@@ -841,6 +920,10 @@
                 width: 100%;
                 max-width: 300px;
             }
+            
+            .transactions-list {
+                max-height: 300px;
+            }
         }
     </style>
 </head>
@@ -924,6 +1007,14 @@
                         <button id="copy-data" class="btn btn-export">
                             <span>📋</span> <span class="lang" data-es="Copiar Datos" data-ca="Copiar Dades">Copiar Datos</span>
                         </button>
+                    </div>
+                </div>
+                
+                <div class="transactions-list">
+                    <h3 class="lang" data-es="Lista de Transacciones" data-ca="Llista de Transaccions">Lista de Transacciones</h3>
+                    <div id="transactions-container">
+                        <!-- Transactions will be added here dynamically -->
+                        <div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>
                     </div>
                 </div>
                 
@@ -1139,15 +1230,15 @@
                 .call(zoom)
                 .on('dblclick.zoom', null); // Deshabilitar doble click para zoom
             
-            // Añadir marcador de flecha
+            // Añadir marcador de flecha MEJORADO
             svg.append('defs').append('marker')
                 .attr('id', 'arrowhead')
                 .attr('viewBox', '-0 -5 10 10')
-                .attr('refX', 15)
+                .attr('refX', 20)  // Posición más adelante para que la flecha quede bien visible
                 .attr('refY', 0)
                 .attr('orient', 'auto')
-                .attr('markerWidth', 8)
-                .attr('markerHeight', 8)
+                .attr('markerWidth', 10)  // Más grande
+                .attr('markerHeight', 10) // Más grande
                 .attr('xoverflow', 'visible')
                 .append('svg:path')
                 .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
@@ -1175,6 +1266,7 @@
             
             // Si no hay datos, mostrar estado vacío
             updateEmptyState();
+            updateTransactionsList();
             
             // Funciones de la aplicación
             function addTransaction() {
@@ -1202,6 +1294,7 @@
                 
                 // Actualizar visualización
                 updateVisualization();
+                updateTransactionsList();
                 
                 // Ocultar estado vacío
                 document.getElementById('empty-state').style.display = 'none';
@@ -1256,6 +1349,7 @@
                     
                     // Actualizar visualización
                     updateVisualization();
+                    updateTransactionsList();
                     
                     // Ocultar estado vacío
                     document.getElementById('empty-state').style.display = 'none';
@@ -1326,6 +1420,7 @@
                 
                 saveData();
                 updateVisualization();
+                updateTransactionsList();
                 document.getElementById('empty-state').style.display = 'none';
             }
             
@@ -1339,6 +1434,7 @@
                     links = [];
                     saveData();
                     updateVisualization();
+                    updateTransactionsList();
                     document.getElementById('empty-state').style.display = 'flex';
                 }
             }
@@ -1394,14 +1490,14 @@
                     .selectAll('path')
                     .data(links)
                     .join('path')
-                    .attr('class', 'link-path')
+                    .attr('class', d => `link-path link-${d.type}`)
                     .attr('stroke-width', d => d.type === 'tangible' ? 3 : 2)
                     .attr('stroke', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
                     .attr('stroke-dasharray', d => d.type === 'intangible' ? '5,5' : '0')
                     .attr('fill', 'none')
-                    .attr('marker-end', 'url(#arrowhead)');
+                    .attr('marker-end', 'url(#arrowhead)'); // Flecha al final del enlace
                 
-                // Crear etiquetas de enlaces
+                // Crear etiquetas de enlaces - POSICIONADAS CERCA DE LA FLECHA
                 const linkLabelGroup = svg.append('g')
                     .attr('class', 'link-labels')
                     .selectAll('g')
@@ -1411,8 +1507,8 @@
                 
                 const linkLabel = linkLabelGroup.append('text')
                     .attr('class', 'link-label')
-                    .attr('dy', -15)
-                    .attr('text-anchor', 'middle')
+                    .attr('dy', -5) // Ajuste vertical para colocar cerca de la flecha
+                    .attr('text-anchor', 'start')
                     .html(d => {
                         // Dividir el entregable en líneas si es muy largo
                         const words = d.deliverable.split(' ');
@@ -1432,8 +1528,9 @@
                         
                         return lines.map(line => `<tspan x="0" dy="1.2em">${line}</tspan>`).join('');
                     })
-                    .attr('fill', '#4b5563')
-                    .style('font-size', '10px');
+                    .attr('fill', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
+                    .style('font-size', '10px')
+                    .style('font-weight', 'bold');
                 
                 // Crear nodos
                 const node = svg.append('g')
@@ -1531,7 +1628,7 @@
                         const key = `${d.source.id}-${d.target.id}`;
                         const linkGroup = linkMap.get(key) || [];
                         const linkIndex = linkGroup.indexOf(links.indexOf(d));
-                        const curvature = (linkIndex - (linkGroup.length - 1) / 2) * 0.2;
+                        const curvature = (linkIndex - (linkGroup.length - 1) / 2) * 0.3; // Más curvatura
                         
                         // Calcular puntos de control para la curva
                         const dx = targetNode.x - sourceNode.x;
@@ -1541,24 +1638,24 @@
                         return `M${sourceNode.x},${sourceNode.y}A${dr},${dr} 0 0,${curvature > 0 ? 1 : 0} ${targetNode.x},${targetNode.y}`;
                     });
                     
-                    // Actualizar posición de las etiquetas
+                    // Actualizar posición de las etiquetas - CERCA DE LA FLECHA (final del enlace)
                     linkLabelGroup.attr('transform', d => {
                         const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
                         const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
                         
                         if (!sourceNode || !targetNode) return 'translate(0,0)';
                         
-                        // Posicionar la etiqueta en el centro del enlace curvado
-                        const x = (sourceNode.x + targetNode.x) / 2;
-                        const y = (sourceNode.y + targetNode.y) / 2;
+                        // Posicionar la etiqueta cerca del final del enlace (cerca de la flecha)
+                        const x = targetNode.x - 30; // 30px antes del nodo destino
+                        const y = targetNode.y - 20; // 20px arriba del nodo destino
                         
-                        // Ajustar verticalmente según la curvatura
+                        // Ajustar según la curvatura
                         const key = `${d.source.id}-${d.target.id}`;
                         const linkGroup = linkMap.get(key) || [];
                         const linkIndex = linkGroup.indexOf(links.indexOf(d));
-                        const offset = (linkIndex - (linkGroup.length - 1) / 2) * 25;
+                        const offset = (linkIndex - (linkGroup.length - 1) / 2) * 35; // Más separación
                         
-                        return `translate(${x},${y + offset})`;
+                        return `translate(${x + offset},${y})`;
                     });
                     
                     // Actualizar posición de nodos y etiquetas
@@ -1591,6 +1688,62 @@
                 
                 // Guardar referencia a g para el zoom
                 g = svg;
+            }
+            
+            function updateTransactionsList() {
+                const container = document.getElementById('transactions-container');
+                
+                if (links.length === 0) {
+                    container.innerHTML = `<div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>`;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                links.forEach((link, index) => {
+                    const item = document.createElement('div');
+                    item.className = `transaction-item ${link.type}`;
+                    item.innerHTML = `
+                        <div class="transaction-info">
+                            <strong>${link.source.id}</strong> → <strong>${link.target.id}</strong> | 
+                            <span class="badge badge-${link.type}">${link.type}</span> | 
+                            ${link.deliverable}
+                        </div>
+                        <button class="delete-transaction" data-index="${index}">×</button>
+                    `;
+                    container.appendChild(item);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-transaction').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteTransaction(index);
+                    });
+                });
+            }
+            
+            function deleteTransaction(index) {
+                if (confirm(document.documentElement.lang === 'ca' ? 
+                    'Estàs segur que vols eliminar aquesta transacció?' : 
+                    '¿Estás seguro de que quieres eliminar esta transacción?')) {
+                    // Eliminar la transacción
+                    links.splice(index, 1);
+                    
+                    // Eliminar nodos huérfanos (sin conexiones)
+                    nodes = nodes.filter(node => {
+                        return links.some(link => 
+                            link.source.id === node.id || link.target.id === node.id
+                        );
+                    });
+                    
+                    // Guardar datos
+                    saveData();
+                    
+                    // Actualizar visualización
+                    updateVisualization();
+                    updateTransactionsList();
+                }
             }
             
             function resetZoom() {
@@ -1659,6 +1812,7 @@
                 exportContainer.style.height = '1200px';
                 exportContainer.style.position = 'absolute';
                 exportContainer.style.left = '-9999px';
+                exportContainer.style.backgroundColor = 'white';
                 document.body.appendChild(exportContainer);
                 
                 // Crear SVG para exportación
@@ -1740,11 +1894,13 @@
                     .attr('fill', '#4b5563')
                     .text(document.documentElement.lang === 'ca' ? 'Intangible (confiança, coneixement)' : 'Intangible (confianza, conocimiento)');
                 
-                // Convertir a canvas y luego a PNG
+                // Convertir a canvas y luego a PNG - USANDO html2canvas correctamente
                 html2canvas(exportContainer, {
                     scale: 2,
                     backgroundColor: '#ffffff',
-                    logging: false
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
                 }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.png`;
@@ -1797,7 +1953,7 @@
                     .link-tangible { stroke: #1e3a8a; stroke-width: 3; }
                     .link-intangible { stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 5,5; }
                     text { fill: #0f172a; font-family: Arial, sans-serif; font-weight: bold; }
-                    .link-label { font-size: 10px; fill: #4b5563; }
+                    .link-label { font-size: 10px; fill: #1e3a8a; font-weight: bold; }
                 `;
                 exportSvg.appendChild(style);
                 
@@ -1873,7 +2029,7 @@
                 const serializer = new XMLSerializer();
                 let source = serializer.serializeToString(exportSvg);
                 source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-                const url = 'image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+                const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
                 
                 const link = document.createElement('a');
                 link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.svg`;
