@@ -24,8 +24,8 @@
     <meta name="twitter:description" content="Modelos tokenómicos transparentes para proyectos de La Masia">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     
-    <!-- Chart.js for data visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js for data visualization - Cargado de forma asíncrona con fallback -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" defer></script>
     
     <style>
         :root {
@@ -51,11 +51,12 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             line-height: 1.6;
             color: #333;
             background-color: #fff;
             overflow-x: hidden;
+            min-height: 100vh;
         }
         
         /* Language Selector */
@@ -80,6 +81,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            font-family: inherit;
         }
         
         .lang-btn.active {
@@ -119,12 +121,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            font-weight: 800;
         }
         
         .tagline {
             font-size: 1.4rem;
             opacity: 0.9;
             margin-bottom: 15px;
+            font-weight: 300;
         }
         
         /* Main Content */
@@ -153,6 +157,8 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             height: fit-content;
+            position: relative;
+            z-index: 10;
         }
         
         .panel h2 {
@@ -164,6 +170,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 700;
         }
         
         .panel h2::before {
@@ -187,6 +194,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: inherit;
         }
         
         .input-group label::before {
@@ -206,6 +214,7 @@
             font-family: inherit;
             font-size: 1rem;
             transition: var(--transition);
+            background: white;
         }
         
         .input-group input:focus,
@@ -241,6 +250,24 @@
             justify-content: center;
             gap: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
         }
         
         .btn:hover {
@@ -286,12 +313,38 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             position: relative;
+            z-index: 10;
         }
         
         .chart-container {
             position: relative;
             height: 400px;
             margin-bottom: 30px;
+            background: var(--light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+            color: var(--gray);
+            padding: 20px;
+        }
+        
+        .chart-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .chart-placeholder h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
         }
         
         .timeline-container {
@@ -302,12 +355,9 @@
             border-radius: 8px;
             padding: 20px;
             background: var(--light);
-        }
-        
-        .timeline-chart {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .stakeholder-grid {
@@ -324,6 +374,25 @@
             border-left: 4px solid var(--accent);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stakeholder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+        
+        .stakeholder-card:hover::before {
+            transform: scaleY(1);
         }
         
         .stakeholder-card:hover {
@@ -337,6 +406,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 700;
+            font-size: 1.2rem;
         }
         
         .stakeholder-card h4::before {
@@ -348,12 +419,14 @@
             font-weight: 800;
             color: var(--primary);
             margin: 10px 0;
+            display: block;
         }
         
         .stakeholder-card .tokens {
             font-size: 1.1rem;
             color: var(--gray);
             margin-bottom: 10px;
+            font-weight: 500;
         }
         
         .role-tag {
@@ -439,6 +512,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 700;
         }
         
         .integration-section h3::before {
@@ -531,6 +605,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 700;
         }
         
         .instructions h3::before {
@@ -566,6 +641,7 @@
             color: var(--primary);
             margin-bottom: 15px;
             font-size: 1.6rem;
+            font-weight: 700;
         }
         
         .distribution-model {
@@ -577,11 +653,37 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: var(--dark);
+            font-family: inherit;
         }
         
         .distribution-slider {
             width: 100%;
             margin: 15px 0;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .distribution-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(30, 58, 138, 0.3);
+        }
+        
+        .distribution-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(30, 58, 138, 0.3);
         }
         
         .slider-values {
@@ -590,6 +692,7 @@
             margin-top: 5px;
             font-size: 0.9rem;
             color: var(--gray);
+            font-family: inherit;
         }
         
         .phase-item {
@@ -604,6 +707,7 @@
             margin-bottom: 8px;
             color: var(--primary);
             font-size: 1.1rem;
+            font-weight: 700;
         }
         
         .import-section {
@@ -621,6 +725,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 700;
         }
         
         .import-section h3::before {
@@ -673,10 +778,33 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 700;
         }
         
         .default-example h4::before {
             content: '💡';
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--light);
+            display: none;
+        }
+        
+        .test-pass {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .test-fail {
+            color: var(--danger);
+            font-weight: bold;
         }
         
         /* Footer */
@@ -701,6 +829,7 @@
             margin-bottom: 25px;
             position: relative;
             padding-bottom: 10px;
+            font-weight: 700;
         }
         
         .footer-col h3::after {
@@ -728,6 +857,7 @@
             display: block;
             padding: 5px 0;
             font-size: 1.05rem;
+            font-family: inherit;
         }
         
         .footer-links a:hover {
@@ -742,6 +872,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.95rem;
             color: rgba(255, 255, 255, 0.6);
+            font-family: inherit;
         }
         
         /* Responsive Design */
@@ -804,6 +935,46 @@
             .stakeholder-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .test-results {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Loading indicator */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn.loading::after {
+            display: none;
+        }
+        
+        .btn.loading span {
+            display: none;
+        }
+        
+        .btn.loading::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0;
         }
     </style>
 </head>
@@ -918,6 +1089,15 @@
                         <h4 class="lang" data-es="Ejemplo por Defecto" data-ca="Exemple per Defecte">Ejemplo por Defecto</h4>
                         <p class="lang" data-es="La aplicación muestra un ejemplo simulado hasta que importes tus datos reales de Contabilidad de Valor. Este ejemplo demuestra cómo se distribuirían los tokens según el modelo Fibonacci." data-ca="L'aplicació mostra un exemple simulat fins que importis les teves dades reals de Comptabilitat de Valor. Aquest exemple demostra com es distribuirien els tokens segons el model Fibonacci.">La aplicación muestra un ejemplo simulado hasta que importes tus datos reales de Contabilidad de Valor. Este ejemplo demuestra cómo se distribuirían los tokens según el modelo Fibonacci.</p>
                     </div>
+                    
+                    <div class="panel" style="margin-top: 20px; background: #f0f9ff; border-left: 4px solid #0ea5e9;">
+                        <h3 style="color: #0ea5e9; margin-bottom: 10px;">🧪 Ejecutar Pruebas</h3>
+                        <p style="margin-bottom: 15px; font-size: 0.9rem;">Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador.</p>
+                        <button id="run-tests" class="btn btn-warning" style="width: 100%;">
+                            <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</span>
+                        </button>
+                        <div id="test-results" class="test-results"></div>
+                    </div>
                 </div>
                 
                 <div class="token-creation">
@@ -998,12 +1178,28 @@
             <div class="visualization-container">
                 <h2>📈 <span class="lang" data-es="Distribución y Evolución de Tokens" data-ca="Distribució i Evolució de Tokens">Distribución y Evolución de Tokens</span></h2>
                 <div class="chart-container">
-                    <canvas id="tokenChart"></canvas>
+                    <div class="chart-placeholder" id="token-chart-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                        </svg>
+                        <h3 class="lang" data-es="Cargando gráfico..." data-ca="Carregant gràfic...">Cargando gráfico...</h3>
+                        <p class="lang" data-es="El gráfico se mostrará aquí una vez que se carguen los datos" data-ca="El gràfic es mostrarà aquí un cop es carreguin les dades">El gráfico se mostrará aquí una vez que se carguen los datos</p>
+                    </div>
+                    <canvas id="tokenChart" style="display: none;"></canvas>
                 </div>
                 
                 <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="📊 Evolución de la Distribución en el Tiempo" data-ca="📊 Evolució de la Distribució en el Temps">📊 Evolución de la Distribución en el Tiempo</h3>
                 <div class="timeline-container">
-                    <canvas id="timelineChart" class="timeline-chart"></canvas>
+                    <div class="chart-placeholder" id="timeline-chart-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                        </svg>
+                        <h3 class="lang" data-es="Cargando gráfico..." data-ca="Carregant gràfic...">Cargando gráfico...</h3>
+                        <p class="lang" data-es="El gráfico de evolución se mostrará aquí" data-ca="El gràfic d'evolució es mostrarà aquí">El gráfico de evolución se mostrará aquí</p>
+                    </div>
+                    <canvas id="timelineChart" style="display: none;"></canvas>
                 </div>
                 
                 <div class="stats-bar">
@@ -1108,6 +1304,130 @@
     </footer>
     
     <script>
+        // ========== TEST-DRIVEN DEVELOPMENT FRAMEWORK ==========
+        const testSuite = {
+            results: [],
+            assert: {
+                equals: function(actual, expected, testName) {
+                    const passed = actual === expected;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: expected
+                    });
+                    return passed;
+                },
+                truthy: function(actual, testName) {
+                    const passed = !!actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'truthy value'
+                    });
+                    return passed;
+                },
+                falsy: function(actual, testName) {
+                    const passed = !actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'falsy value'
+                    });
+                    return passed;
+                },
+                type: function(actual, expectedType, testName) {
+                    const actualType = typeof actual;
+                    const passed = actualType === expectedType;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actualType,
+                        expected: expectedType
+                    });
+                    return passed;
+                }
+            },
+            runTests: function() {
+                this.results = [];
+                
+                // Test 1: Chart.js is loaded
+                this.assert.truthy(typeof Chart !== 'undefined', "Chart.js library is loaded");
+                
+                // Test 2: DOM elements exist
+                this.assert.truthy(document.getElementById('tokenChart'), "Token Chart canvas exists");
+                this.assert.truthy(document.getElementById('timelineChart'), "Timeline Chart canvas exists");
+                this.assert.truthy(document.getElementById('stakeholder-grid'), "Stakeholder grid exists");
+                
+                // Test 3: Initial state
+                this.assert.equals(tokenomicsData.stakeholders.length, 4, "Initial stakeholders count is 4");
+                this.assert.equals(tokenomicsData.totalSupply, 1000000, "Initial total supply is 1,000,000");
+                this.assert.equals(tokenomicsData.isImportMode, false, "Initial mode is simulation (not import)");
+                
+                // Test 4: Default example stakeholders have correct structure
+                if (tokenomicsData.stakeholders.length > 0) {
+                    const firstStakeholder = tokenomicsData.stakeholders[0];
+                    this.assert.truthy(firstStakeholder.id, "Stakeholder has id");
+                    this.assert.truthy(firstStakeholder.name, "Stakeholder has name");
+                    this.assert.truthy(firstStakeholder.type, "Stakeholder has type");
+                    this.assert.truthy(typeof firstStakeholder.percentage === 'number', "Stakeholder has percentage as number");
+                    this.assert.truthy(typeof firstStakeholder.tokens === 'number', "Stakeholder has tokens as number");
+                }
+                
+                // Test 5: CSV parsing function exists
+                this.assert.truthy(typeof processCSV === 'function', "processCSV function exists");
+                this.assert.truthy(typeof previewCSV === 'function', "previewCSV function exists");
+                
+                // Test 6: Charts are initialized
+                this.assert.truthy(tokenChart !== null, "Token chart is initialized");
+                this.assert.truthy(timelineChart !== null, "Timeline chart is initialized");
+                
+                // Test 7: Language functionality
+                this.assert.equals(document.documentElement.lang, 'es', "Default language is Spanish");
+                
+                return this.results;
+            },
+            displayResults: function(results) {
+                const testResultsDiv = document.getElementById('test-results');
+                testResultsDiv.style.display = 'block';
+                testResultsDiv.innerHTML = '';
+                
+                let passedCount = 0;
+                let failedCount = 0;
+                
+                results.forEach(result => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = result.passed ? 'test-pass' : 'test-fail';
+                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
+                        `   Expected: ${result.expected}<br/>` +
+                        `   Actual: ${result.actual}`;
+                    testResultsDiv.appendChild(resultDiv);
+                    
+                    if (result.passed) passedCount++;
+                    else failedCount++;
+                });
+                
+                // Summary
+                const summary = document.createElement('div');
+                summary.style.fontWeight = 'bold';
+                summary.style.marginTop = '15px';
+                summary.style.paddingTop = '10px';
+                summary.style.borderTop = '1px solid #ddd';
+                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
+                testResultsDiv.appendChild(summary);
+                
+                // Alert summary
+                if (failedCount === 0) {
+                    alert(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`);
+                } else {
+                    alert(`⚠️ Algunas pruebas fallaron (${failedCount}/${results.length}).\n\nRevisa los resultados en la sección de pruebas.`);
+                }
+            }
+        };
+        
+        // ========== APPLICATION STATE AND FUNCTIONS ==========
         // Estado de la aplicación
         let tokenomicsData = {
             tokenName: "MASIA",
@@ -1128,85 +1448,310 @@
                 { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
             ],
             timelineData: null,
-            isImportMode: false, // Flag para saber si estamos en modo importación
-            importedData: null, // Datos importados del CSV
-            csvContent: null // Contenido del CSV importado
+            isImportMode: false,
+            importedData: null,
+            csvContent: null
         };
         
         let tokenChart = null;
         let timelineChart = null;
+        let chartsInitialized = false;
         
-        // Inicialización cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar botones de idioma
+        // Wait for Chart.js to load and DOM to be ready
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js failed to load');
+                showChartError('token-chart-placeholder', 'Chart.js no se pudo cargar. Por favor, recarga la página.');
+                showChartError('timeline-chart-placeholder', 'Chart.js no se pudo cargar. Por favor, recarga la página.');
+                return;
+            }
+            
+            // Initialize the application
+            initApplication();
+        });
+        
+        // Initialize the entire application
+        function initApplication() {
+            // Setup language selector
             setupLanguageSelector();
             
-            // Cargar datos guardados
+            // Load saved data
             loadSavedData();
             
-            // Inicializar gráficos
+            // Initialize charts with error handling
             initCharts();
             
-            // Configurar event listeners
+            // Setup event listeners
             setupEventListeners();
             
-            // Si no hay datos guardados, mostrar ejemplo por defecto
+            // Show default example if no data is loaded
             if (tokenomicsData.stakeholders.length === 0) {
                 showDefaultExample();
             }
             
-            // Actualizar visualizaciones
+            // Update visualizations
             updateVisualizations();
-        });
+            
+            // Setup test button
+            document.getElementById('run-tests').addEventListener('click', function() {
+                const results = testSuite.runTests();
+                testSuite.displayResults(results);
+            });
+        }
         
-        // Configurar selector de idioma
+        // Setup language selector
         function setupLanguageSelector() {
             const langButtons = document.querySelectorAll('.lang-btn');
             const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
             
-            // Establecer idioma inicial
+            // Set initial language based on browser settings or default to Spanish
             const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
             setActiveLanguage(userLang);
             
-            // Event listeners para botones de idioma
+            // Add click event to language buttons
             langButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const selectedLang = this.getAttribute('data-lang');
                     setActiveLanguage(selectedLang);
                     
-                    // Actualizar botón activo
+                    // Update active button
                     langButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                 });
             });
             
+            // Set active language
             function setActiveLanguage(lang) {
+                // Update all translatable elements
                 translatableElements.forEach(element => {
                     if (element.hasAttribute(`data-${lang}`)) {
                         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                             element.placeholder = element.getAttribute(`data-${lang}`);
                         } else {
+                            // Use innerHTML to allow HTML content in translations
                             element.innerHTML = element.getAttribute(`data-${lang}`);
                         }
                     }
                 });
                 
+                // Update HTML lang attribute
                 document.documentElement.setAttribute('lang', lang);
             }
         }
         
-        // Configurar event listeners
+        // Initialize charts with error handling
+        function initCharts() {
+            try {
+                // Token Chart
+                const tokenCtx = document.getElementById('tokenChart');
+                if (tokenCtx) {
+                    // Hide placeholder and show canvas
+                    document.getElementById('token-chart-placeholder').style.display = 'none';
+                    tokenCtx.style.display = 'block';
+                    
+                    tokenChart = new Chart(tokenCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                data: [],
+                                backgroundColor: [
+                                    'rgba(245, 158, 11, 0.85)',
+                                    'rgba(16, 185, 129, 0.85)',
+                                    'rgba(139, 92, 246, 0.85)',
+                                    'rgba(59, 130, 246, 0.85)',
+                                    'rgba(245, 158, 11, 0.6)',
+                                    'rgba(16, 185, 129, 0.6)',
+                                    'rgba(139, 92, 246, 0.6)',
+                                    'rgba(59, 130, 246, 0.6)'
+                                ],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        font: {
+                                            size: 14,
+                                            family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                            
+                                            return `${label}: ${percentage}% (${Math.round(value).toLocaleString()} tokens)`;
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                animateScale: true,
+                                animateRotate: true
+                            }
+                        }
+                    });
+                }
+                
+                // Timeline Chart
+                const timelineCtx = document.getElementById('timelineChart');
+                if (timelineCtx) {
+                    // Hide placeholder and show canvas
+                    document.getElementById('timeline-chart-placeholder').style.display = 'none';
+                    timelineCtx.style.display = 'block';
+                    
+                    timelineChart = new Chart(timelineCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [
+                                {
+                                    label: document.documentElement.lang === 'ca' ? 'Inversors' : 'Inversores',
+                                    data: [],
+                                    borderColor: 'rgba(245, 158, 11, 1)',
+                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                                {
+                                    label: document.documentElement.lang === 'ca' ? 'Equip' : 'Equipo',
+                                    data: [],
+                                    borderColor: 'rgba(16, 185, 129, 1)',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                                {
+                                    label: document.documentElement.lang === 'ca' ? 'Reserva' : 'Reserva',
+                                    data: [],
+                                    borderColor: 'rgba(139, 92, 246, 1)',
+                                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                                {
+                                    label: document.documentElement.lang === 'ca' ? 'Comunitat' : 'Comunidad',
+                                    data: [],
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                                // For import mode
+                                {
+                                    label: document.documentElement.lang === 'ca' ? 'Stakeholders Actuals' : 'Stakeholders Actuales',
+                                    data: [],
+                                    borderColor: 'rgba(16, 185, 129, 1)',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    hidden: true
+                                },
+                                {
+                                    label: document.documentElement.lang === 'ca' ? 'Futurs Contribuïdors' : 'Futuros Contribuyentes',
+                                    data: [],
+                                    borderColor: 'rgba(245, 158, 11, 1)',
+                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    hidden: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 13,
+                                            family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: document.documentElement.lang === 'ca' ? 'Percentatge (%)' : 'Porcentaje (%)'
+                                    },
+                                    max: 100
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: document.documentElement.lang === 'ca' ? 'Fases del Projecte' : 'Fases del Proyecto'
+                                    }
+                                }
+                            },
+                            interaction: {
+                                mode: 'nearest',
+                                axis: 'x',
+                                intersect: false
+                            }
+                        }
+                    });
+                }
+                
+                chartsInitialized = true;
+                console.log('Charts initialized successfully');
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+                showChartError('token-chart-placeholder', 'Error al inicializar el gráfico: ' + error.message);
+                showChartError('timeline-chart-placeholder', 'Error al inicializar el gráfico: ' + error.message);
+            }
+        }
+        
+        // Show chart error message
+        function showChartError(elementId, message) {
+            const placeholder = document.getElementById(elementId);
+            if (placeholder) {
+                placeholder.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" class="btn btn-secondary" style="margin-top: 15px; width: auto;">
+                        <span>⟳</span> Recargar Página
+                    </button>
+                `;
+            }
+        }
+        
+        // Setup event listeners
         function setupEventListeners() {
-            // Sliders de distribución
+            // Distribution sliders
             document.getElementById('investors-slider').addEventListener('input', updateDistribution);
             document.getElementById('team-slider').addEventListener('input', updateDistribution);
             document.getElementById('reserve-slider').addEventListener('input', updateDistribution);
             document.getElementById('community-slider').addEventListener('input', updateDistribution);
             
-            // Simular tokenomics
+            // Simulation button
             document.getElementById('simulate-tokenomics').addEventListener('click', simulateTokenomics);
             
-            // Importar datos
+            // Import buttons
             document.getElementById('import-vna').addEventListener('click', importVNA);
             document.getElementById('import-value-csv').addEventListener('click', () => {
                 document.getElementById('value-csv-file').click();
@@ -1215,34 +1760,34 @@
             document.getElementById('process-csv').addEventListener('click', processCSV);
             document.getElementById('import-coops').addEventListener('click', importCoPs);
             
-            // Exportar datos
+            // Export buttons
             document.getElementById('export-json').addEventListener('click', exportJSON);
             document.getElementById('export-smart-contract').addEventListener('click', exportSmartContract);
             
-            // Limpiar datos
+            // Reset button
             document.getElementById('reset-data').addEventListener('click', resetData);
             
-            // Cambiar modelo de distribución
+            // Distribution model change
             document.getElementById('distribution-model').addEventListener('change', function() {
                 tokenomicsData.distributionModel = this.value;
                 saveData();
             });
         }
         
-        // Actualizar distribución en tiempo real
+        // Update distribution values when sliders change
         function updateDistribution() {
             const investorsSlider = document.getElementById('investors-slider');
             const teamSlider = document.getElementById('team-slider');
             const reserveSlider = document.getElementById('reserve-slider');
             const communitySlider = document.getElementById('community-slider');
             
-            // Calcular suma total
+            // Calculate total
             const total = parseInt(investorsSlider.value) + 
                          parseInt(teamSlider.value) + 
                          parseInt(reserveSlider.value) + 
                          parseInt(communitySlider.value);
             
-            // Si excede 100%, ajustar proporcionalmente
+            // If exceeds 100%, adjust proportionally
             if (total > 100) {
                 const ratio = 100 / total;
                 investorsSlider.value = Math.round(parseInt(investorsSlider.value) * ratio);
@@ -1251,14 +1796,14 @@
                 communitySlider.value = Math.round(parseInt(communitySlider.value) * ratio);
             }
             
-            // Actualizar valores mostrados
+            // Update displayed values
             document.getElementById('investors-value').textContent = `${investorsSlider.value}%`;
             document.getElementById('team-value').textContent = `${teamSlider.value}%`;
             document.getElementById('reserve-value').textContent = `${reserveSlider.value}%`;
             document.getElementById('community-value').textContent = `${communitySlider.value}%`;
         }
         
-        // Previsualizar CSV
+        // Preview CSV file
         function previewCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1270,20 +1815,20 @@
                 previewDiv.style.display = 'block';
                 previewDiv.innerHTML = '<div class="csv-row csv-header"><div class="csv-cell">Rol</div><div class="csv-cell">Entregable</div><div class="csv-cell">Valor</div></div>';
                 
-                // Parsear CSV y mostrar las primeras 5 filas
-                const rows = content.split('\n');
-                const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                // Parse CSV and show first 5 rows
+                const rows = parseCSV(content);
+                const headers = rows[0] ? rows[0].map(h => h.trim().toLowerCase()) : [];
                 
-                // Encontrar índices de las columnas que necesitamos
-                const roleIndex = headers.findIndex(h => h.toLowerCase().includes('rol'));
-                const deliverableIndex = headers.findIndex(h => h.toLowerCase().includes('entregable') || h.toLowerCase().includes('descripció'));
-                const valueIndex = headers.findIndex(h => h.toLowerCase().includes('valor'));
+                // Find column indices
+                const roleIndex = headers.findIndex(h => h.includes('rol'));
+                const deliverableIndex = headers.findIndex(h => h.includes('entregable') || h.includes('descripció'));
+                const valueIndex = headers.findIndex(h => h.includes('valor'));
                 
-                // Mostrar hasta 5 filas de datos
+                // Show up to 5 data rows
                 const maxRows = Math.min(5, rows.length - 1);
                 for (let i = 1; i <= maxRows && i < rows.length; i++) {
-                    const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
-                    if (cells.length >= Math.max(roleIndex, deliverableIndex, valueIndex) + 1) {
+                    const cells = rows[i];
+                    if (cells.length > Math.max(roleIndex, deliverableIndex, valueIndex)) {
                         const rowDiv = document.createElement('div');
                         rowDiv.className = 'csv-row';
                         rowDiv.innerHTML = `
@@ -1295,13 +1840,55 @@
                     }
                 }
                 
-                // Guardar el contenido para procesarlo después
+                // Save content for processing
                 tokenomicsData.csvContent = content;
             };
             reader.readAsText(file);
         }
         
-        // Procesar CSV importado - CORREGIDO Y MEJORADO
+        // Parse CSV content - handles quoted fields and different line endings
+        function parseCSV(str) {
+            const rows = [];
+            let currentRow = [];
+            let currentValue = '';
+            let inQuotes = false;
+            let i = 0;
+            
+            // Normalize line endings
+            str = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            
+            while (i < str.length) {
+                const char = str[i];
+                
+                if (char === '"' && (i === 0 || str[i-1] !== '\\')) {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    currentRow.push(currentValue.trim());
+                    currentValue = '';
+                } else if (char === '\n' && !inQuotes) {
+                    currentRow.push(currentValue.trim());
+                    rows.push(currentRow);
+                    currentRow = [];
+                    currentValue = '';
+                } else {
+                    currentValue += char;
+                }
+                
+                i++;
+            }
+            
+            // Push the last value and row
+            if (currentValue.trim() !== '') {
+                currentRow.push(currentValue.trim());
+            }
+            if (currentRow.length > 0) {
+                rows.push(currentRow);
+            }
+            
+            return rows;
+        }
+        
+        // Process CSV file
         function processCSV() {
             if (!tokenomicsData.csvContent) {
                 alert(document.documentElement.lang === 'ca' ? 
@@ -1311,11 +1898,22 @@
             }
             
             try {
-                // Parsear el CSV
-                const rows = tokenomicsData.csvContent.split('\n');
-                const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
+                // Show loading state
+                const processBtn = document.getElementById('process-csv');
+                processBtn.classList.add('loading');
+                processBtn.disabled = true;
                 
-                // Encontrar índices de las columnas que necesitamos
+                // Parse CSV
+                const rows = parseCSV(tokenomicsData.csvContent);
+                if (rows.length < 2) {
+                    throw new Error(document.documentElement.lang === 'ca' ? 
+                        'El archivo CSV está vacío o no tiene datos válidos' : 
+                        'El archivo CSV está vacío o no tiene datos válidos');
+                }
+                
+                const headers = rows[0].map(h => h.trim().replace(/"/g, '').toLowerCase());
+                
+                // Find column indices
                 const roleIndex = headers.findIndex(h => h.includes('rol'));
                 const valueIndex = headers.findIndex(h => h.includes('valor'));
                 
@@ -1325,26 +1923,26 @@
                         'El archivo CSV no tiene las columnas necesarias (Rol, Valor)');
                 }
                 
-                // Agregar valor total por rol
+                // Aggregate value by role
                 const roleValues = {};
                 let totalValue = 0;
                 
                 for (let i = 1; i < rows.length; i++) {
-                    const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
-                    if (cells.length > Math.max(roleIndex, valueIndex)) {
-                        // Normalizar el rol: quitar @, trim, lowercase
-                        let role = cells[roleIndex].replace('@', '').trim().toLowerCase();
-                        
-                        // Corregir errores comunes en los nombres de roles
-                        if (role.includes('inverosr') || role.includes('inversor')) role = 'inversor';
-                        if (role.includes('fundador') || role.includes('equipo')) role = 'equipo';
-                        
-                        const value = parseFloat(cells[valueIndex]) || 0;
-                        
-                        if (value > 0) {
-                            roleValues[role] = (roleValues[role] || 0) + value;
-                            totalValue += value;
-                        }
+                    const cells = rows[i];
+                    if (cells.length <= Math.max(roleIndex, valueIndex)) continue;
+                    
+                    // Normalize role name
+                    let role = cells[roleIndex].replace('@', '').trim().toLowerCase();
+                    
+                    // Fix common typos
+                    if (role.includes('inverosr') || role.includes('inversor')) role = 'inversor';
+                    if (role.includes('fundador') || role.includes('equipo')) role = 'equipo';
+                    
+                    const value = parseFloat(cells[valueIndex]) || 0;
+                    
+                    if (value > 0) {
+                        roleValues[role] = (roleValues[role] || 0) + value;
+                        totalValue += value;
                     }
                 }
                 
@@ -1354,35 +1952,34 @@
                         'No se encontraron valores válidos en el CSV');
                 }
                 
-                // Calcular distribución de tokens basada en el valor aportado
+                // Calculate token distribution based on value contributed
                 const stakeholders = [];
                 let otherValue = 0;
-                let otherTokens = 0;
-                const maxStakeholders = 8; // Máximo de stakeholders a mostrar
+                const maxStakeholders = 8;
                 
-                // Ordenar roles por valor y tomar los top
+                // Sort roles by value and take top ones
                 const sortedRoles = Object.entries(roleValues)
                     .sort((a, b) => b[1] - a[1])
                     .slice(0, maxStakeholders);
                 
-                // Roles que no entran en el top van a "Otros"
+                // Roles not in top go to "Others"
                 const allRoles = Object.entries(roleValues);
                 for (let i = maxStakeholders; i < allRoles.length; i++) {
                     otherValue += allRoles[i][1];
                 }
                 
-                // Crear stakeholders para los top roles
+                // Create stakeholders for top roles
                 sortedRoles.forEach(([role, value]) => {
                     const percentage = (value / totalValue) * 100;
                     const tokens = Math.round((value / totalValue) * tokenomicsData.totalSupply);
                     
-                    // Determinar tipo de stakeholder basado en el nombre del rol
+                    // Determine stakeholder type
                     let type = 'client';
                     if (role.includes('inversor') || role.includes('invers')) type = 'investor';
                     else if (role.includes('equip') || role.includes('team') || role.includes('fundador') || role.includes('equipo')) type = 'team';
                     else if (role.includes('proveedor') || role.includes('supplier')) type = 'supplier';
                     
-                    // Capitalizar el nombre del rol
+                    // Capitalize role name
                     const roleName = role.charAt(0).toUpperCase() + role.slice(1);
                     
                     stakeholders.push({
@@ -1397,10 +1994,10 @@
                     });
                 });
                 
-                // Agregar "Otros" si hay roles restantes
+                // Add "Others" if there are remaining roles
                 if (otherValue > 0) {
                     const otherPercentage = (otherValue / totalValue) * 100;
-                    otherTokens = Math.round((otherValue / totalValue) * tokenomicsData.totalSupply);
+                    const otherTokens = Math.round((otherValue / totalValue) * tokenomicsData.totalSupply);
                     
                     stakeholders.push({
                         id: 'others',
@@ -1414,7 +2011,7 @@
                     });
                 }
                 
-                // Actualizar datos de tokenomics
+                // Update tokenomics data
                 tokenomicsData.stakeholders = stakeholders;
                 tokenomicsData.isImportMode = true;
                 tokenomicsData.importedData = {
@@ -1422,28 +2019,33 @@
                     roleValues: roleValues
                 };
                 
-                // Calcular evolución temporal según modelo Fibonacci
+                // Calculate timeline evolution
                 calculateTimeline();
                 
-                // Guardar y actualizar
+                // Save and update
                 saveData();
                 updateVisualizations();
                 
-                // Feedback al usuario
+                // Success message
                 alert(document.documentElement.lang === 'ca' ? 
                     `S'han processat ${Object.keys(roleValues).length} stakeholders del CSV. La distribució de tokens s'ha calculat segons el valor aportat.` : 
                     `Se han procesado ${Object.keys(roleValues).length} stakeholders del CSV. La distribución de tokens se ha calculado según el valor aportado.`);
             } catch (error) {
-                console.error('Error al procesar CSV:', error);
+                console.error('Error processing CSV:', error);
                 alert(document.documentElement.lang === 'ca' ? 
                     `Error en processar el CSV: ${error.message}` : 
                     `Error al procesar el CSV: ${error.message}`);
+            } finally {
+                // Hide loading state
+                const processBtn = document.getElementById('process-csv');
+                processBtn.classList.remove('loading');
+                processBtn.disabled = false;
             }
         }
         
-        // Mostrar ejemplo por defecto
+        // Show default example
         function showDefaultExample() {
-            // Generar stakeholders simulados basados en la distribución inicial
+            // Generate simulated stakeholders based on initial distribution
             tokenomicsData.stakeholders = [
                 {
                     id: 'investors',
@@ -1490,17 +2092,17 @@
             tokenomicsData.isImportMode = false;
             tokenomicsData.importedData = null;
             
-            // Calcular evolución temporal según modelo
+            // Calculate timeline evolution
             calculateTimeline();
             
-            // Guardar y actualizar
+            // Save and update
             saveData();
             updateVisualizations();
         }
         
-        // Simular tokenomics
+        // Simulate tokenomics
         function simulateTokenomics() {
-            // Si estamos en modo importación, preguntar si quiere cambiar
+            // If in import mode, ask if user wants to switch
             if (tokenomicsData.isImportMode) {
                 if (!confirm(document.documentElement.lang === 'ca' ? 
                     'Estàs en mode d\'importació de CSV. Si continues, es perdran les dades importades i es tornarà al mode de simulació. Vols continuar?' : 
@@ -1508,14 +2110,14 @@
                     return;
                 }
                 
-                // Resetear modo importación
+                // Reset import mode
                 tokenomicsData.isImportMode = false;
                 tokenomicsData.importedData = null;
                 document.getElementById('csv-preview').style.display = 'none';
                 document.getElementById('value-csv-file').value = '';
             }
             
-            // Actualizar datos
+            // Update data
             tokenomicsData.tokenName = document.getElementById('token-name').value;
             tokenomicsData.tokenSymbol = document.getElementById('token-symbol').value;
             tokenomicsData.totalSupply = parseInt(document.getElementById('total-supply').value);
@@ -1528,23 +2130,23 @@
                 community: parseInt(document.getElementById('community-slider').value)
             };
             
-            // Generar stakeholders simulados basados en la distribución
+            // Generate simulated stakeholders
             generateStakeholders();
             
-            // Calcular evolución temporal según modelo
+            // Calculate timeline evolution
             calculateTimeline();
             
-            // Guardar y actualizar
+            // Save and update
             saveData();
             updateVisualizations();
             
-            // Feedback al usuario
+            // Success message
             alert(document.documentElement.lang === 'ca' ? 
                 'Simulació completada! S\'ha generat la distribució de tokens i l\'evolució temporal.' : 
                 '¡Simulación completada! Se ha generado la distribución de tokens y la evolución temporal.');
         }
         
-        // Generar stakeholders simulados
+        // Generate simulated stakeholders
         function generateStakeholders() {
             tokenomicsData.stakeholders = [
                 {
@@ -1590,7 +2192,7 @@
             ];
         }
         
-        // Calcular evolución temporal
+        // Calculate timeline evolution
         function calculateTimeline() {
             const labels = [];
             const datasets = {
@@ -1598,31 +2200,30 @@
                 team: [],
                 reserve: [],
                 community: [],
-                currentStakeholders: [], // Para modo importación
-                futureContributors: []   // Para modo importación
+                currentStakeholders: [],
+                futureContributors: []
             };
             
-            // Si estamos en modo importación, usar un cálculo diferente
+            // If in import mode, use different calculation
             if (tokenomicsData.isImportMode && tokenomicsData.importedData) {
-                // Calcular la evolución para el modo importación
                 let currentTotalSupply = tokenomicsData.totalSupply;
                 let futureTokens = 0;
                 
-                // Punto inicial (fase 0)
+                // Initial point (phase 0)
                 labels.push(document.documentElement.lang === 'ca' ? 'Ara' : 'Ahora');
-                datasets.currentStakeholders.push(100); // 100% para los stakeholders actuales
-                datasets.futureContributors.push(0);   // 0% para futuros contribuyentes
+                datasets.currentStakeholders.push(100);
+                datasets.futureContributors.push(0);
                 
-                // Calcular para cada fase
-                tokenomicsData.phases.forEach((phase, index) => {
+                // Calculate for each phase
+                tokenomicsData.phases.forEach((phase) => {
                     const dilution = phase.dilution / 100;
                     
-                    // Calcular nuevos tokens a acuñar
+                    // Calculate new tokens to mint
                     const newTokens = currentTotalSupply * dilution;
                     currentTotalSupply += newTokens;
                     futureTokens += newTokens;
                     
-                    // Calcular porcentajes
+                    // Calculate percentages
                     const currentStakeholdersPercentage = parseFloat(((tokenomicsData.totalSupply / currentTotalSupply) * 100).toFixed(2));
                     const futureContributorsPercentage = parseFloat(((futureTokens / currentTotalSupply) * 100).toFixed(2));
                     
@@ -1634,29 +2235,28 @@
                 tokenomicsData.timelineData = {
                     labels: labels,
                     datasets: datasets,
-                    mode: 'import' // Indicar que es modo importación
+                    mode: 'import'
                 };
             } else {
-                // Cálculo tradicional para modo simulación
+                // Traditional calculation for simulation mode
                 let currentInvestors = tokenomicsData.initialDistribution.investors;
                 let currentTeam = tokenomicsData.initialDistribution.team;
                 let currentReserve = tokenomicsData.initialDistribution.reserve;
                 let currentCommunity = tokenomicsData.initialDistribution.community;
                 
-                // Punto inicial
+                // Initial point
                 labels.push(document.documentElement.lang === 'ca' ? 'Inici' : 'Inicio');
                 datasets.investors.push(currentInvestors);
                 datasets.team.push(currentTeam);
                 datasets.reserve.push(currentReserve);
                 datasets.community.push(currentCommunity);
                 
-                // Calcular para cada fase
-                tokenomicsData.phases.forEach((phase, index) => {
+                // Calculate for each phase
+                tokenomicsData.phases.forEach((phase) => {
                     const dilution = phase.dilution / 100;
                     
-                    // Aplicar dilución según modelo Fibonacci
+                    // Apply dilution based on Fibonacci model
                     if (tokenomicsData.distributionModel === 'fibonacci') {
-                        // La dilución se aplica principalmente a inversores y equipo
                         const investorsDilution = dilution * 0.6;
                         const teamDilution = dilution * 0.25;
                         const reserveDilution = dilution * 0.1;
@@ -1667,7 +2267,6 @@
                         currentReserve *= (1 - reserveDilution);
                         currentCommunity *= (1 - communityDilution);
                     } else if (tokenomicsData.distributionModel === 'linear') {
-                        // Dilución lineal igual para todos
                         currentInvestors *= (1 - dilution/4);
                         currentTeam *= (1 - dilution/4);
                         currentReserve *= (1 - dilution/4);
@@ -1684,199 +2283,31 @@
                 tokenomicsData.timelineData = {
                     labels: labels,
                     datasets: datasets,
-                    mode: 'simulation' // Indicar que es modo simulación
+                    mode: 'simulation'
                 };
             }
         }
         
-        // Importar datos de VNA
+        // Import VNA data
         function importVNA() {
             alert(document.documentElement.lang === 'ca' ? 
                 'Funcionalitat en desenvolupament. Pròximament podràs importar dades directament des de l\'App VNA.' : 
                 'Funcionalidad en desarrollo. Próximamente podrás importar datos directamente desde la App VNA.');
         }
         
-        // Importar datos de Contabilidad de Valor
-        function importValueAccounting() {
-            alert(document.documentElement.lang === 'ca' ? 
-                'Utilitza el botó "Importar CSV Contabilidad" per importar les dades de la teva App de Comptabilitat de Valor.' : 
-                'Utiliza el botón "Importar CSV Contabilidad" para importar los datos de tu App de Contabilidad de Valor.');
-        }
-        
-        // Importar datos de Comunidades de Práctica
+        // Import CoPs data
         function importCoPs() {
             alert(document.documentElement.lang === 'ca' ? 
                 'Funcionalitat en desenvolupament. Pròximament podràs importar dades directament des de l\'App de Comunitats de Pràctica.' : 
                 'Funcionalidad en desarrollo. Próximamente podrás importar datos directamente desde la App de Comunidades de Práctica.');
         }
         
-        // Inicializar gráficos
-        function initCharts() {
-            // Gráfico de distribución actual
-            const tokenCtx = document.getElementById('tokenChart').getContext('2d');
-            tokenChart = new Chart(tokenCtx, {
-                type: 'doughnut',
-                 {
-                    labels: [],
-                    datasets: [{
-                         [],
-                        backgroundColor: [
-                            'rgba(245, 158, 11, 0.85)',
-                            'rgba(16, 185, 129, 0.85)',
-                            'rgba(139, 92, 246, 0.85)',
-                            'rgba(59, 130, 246, 0.85)',
-                            'rgba(245, 158, 11, 0.6)',
-                            'rgba(16, 185, 129, 0.6)',
-                            'rgba(139, 92, 246, 0.6)',
-                            'rgba(59, 130, 246, 0.6)'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                                    
-                                    return `${label}: ${percentage}% (${Math.round(value).toLocaleString()} tokens)`;
-                                }
-                            }
-                        }
-                    },
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true
-                    }
-                }
-            });
-            
-            // Gráfico de evolución temporal
-            const timelineCtx = document.getElementById('timelineChart').getContext('2d');
-            timelineChart = new Chart(timelineCtx, {
-                type: 'line',
-                 {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: document.documentElement.lang === 'ca' ? 'Inversors' : 'Inversores',
-                             [],
-                            borderColor: 'rgba(245, 158, 11, 1)',
-                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: document.documentElement.lang === 'ca' ? 'Equip' : 'Equipo',
-                             [],
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: document.documentElement.lang === 'ca' ? 'Reserva' : 'Reserva',
-                             [],
-                            borderColor: 'rgba(139, 92, 246, 1)',
-                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: document.documentElement.lang === 'ca' ? 'Comunitat' : 'Comunidad',
-                             [],
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        // Para modo importación
-                        {
-                            label: document.documentElement.lang === 'ca' ? 'Stakeholders Actuals' : 'Stakeholders Actuales',
-                             [],
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            hidden: true // Oculto por defecto
-                        },
-                        {
-                            label: document.documentElement.lang === 'ca' ? 'Futurs Contribuïdors' : 'Futuros Contribuyentes',
-                            data: [],
-                            borderColor: 'rgba(245, 158, 11, 1)',
-                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            hidden: true // Oculto por defecto
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: {
-                                    size: 13
-                                }
-                            }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: document.documentElement.lang === 'ca' ? 'Percentatge (%)' : 'Porcentaje (%)'
-                            },
-                            max: 100
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: document.documentElement.lang === 'ca' ? 'Fases del Projecte' : 'Fases del Proyecto'
-                            }
-                        }
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
-                    }
-                }
-            });
-        }
-        
-        // Actualizar visualizaciones
+        // Update visualizations
         function updateVisualizations() {
-            // Actualizar estadísticas
+            // Update statistics
             document.getElementById('total-tokens').textContent = tokenomicsData.totalSupply.toLocaleString();
             
             if (tokenomicsData.isImportMode) {
-                // En modo importación, calcular circulating supply basado en stakeholders
                 const circulating = tokenomicsData.stakeholders.reduce((sum, s) => sum + s.tokens, 0);
                 document.getElementById('circulating-supply').textContent = circulating.toLocaleString();
                 document.getElementById('vesting-tokens').textContent = '0';
@@ -1887,17 +2318,17 @@
             
             document.getElementById('phases-count').textContent = tokenomicsData.phases.length;
             
-            // Actualizar gráfico de distribución
-            updateTokenChart();
+            // Update charts if initialized
+            if (chartsInitialized) {
+                updateTokenChart();
+                updateTimelineChart();
+            }
             
-            // Actualizar gráfico de evolución temporal
-            updateTimelineChart();
-            
-            // Actualizar grid de stakeholders
+            // Update stakeholder grid
             updateStakeholderGrid();
         }
         
-        // Actualizar gráfico de distribución
+        // Update token chart
         function updateTokenChart() {
             if (!tokenChart) return;
             
@@ -1907,28 +2338,28 @@
             
             tokenChart.data.labels = labels;
             tokenChart.data.datasets[0].data = data;
-            tokenChart.update();
+            tokenChart.update('none'); // Disable animation for better performance
         }
         
-        // Actualizar gráfico de evolución temporal
+        // Update timeline chart
         function updateTimelineChart() {
             if (!timelineChart || !tokenomicsData.timelineData) return;
             
-            // Resetear todos los datasets
+            // Reset all datasets
             timelineChart.data.datasets.forEach(dataset => {
                 dataset.data = [];
-                dataset.hidden = true; // Ocultar todos por defecto
+                dataset.hidden = true;
             });
             
             if (tokenomicsData.timelineData.mode === 'import') {
-                // Mostrar solo los datasets para modo importación
+                // Show only datasets for import mode
                 timelineChart.data.datasets[4].data = tokenomicsData.timelineData.datasets.currentStakeholders;
                 timelineChart.data.datasets[4].hidden = false;
                 
                 timelineChart.data.datasets[5].data = tokenomicsData.timelineData.datasets.futureContributors;
                 timelineChart.data.datasets[5].hidden = false;
             } else {
-                // Mostrar los datasets para modo simulación
+                // Show datasets for simulation mode
                 timelineChart.data.datasets[0].data = tokenomicsData.timelineData.datasets.investors;
                 timelineChart.data.datasets[0].hidden = false;
                 
@@ -1943,10 +2374,10 @@
             }
             
             timelineChart.data.labels = tokenomicsData.timelineData.labels;
-            timelineChart.update();
+            timelineChart.update('none'); // Disable animation for better performance
         }
         
-        // Actualizar grid de stakeholders
+        // Update stakeholder grid
         function updateStakeholderGrid() {
             const grid = document.getElementById('stakeholder-grid');
             
@@ -1993,7 +2424,7 @@
             grid.innerHTML = html;
         }
         
-        // Exportar como JSON
+        // Export as JSON
         function exportJSON() {
             const dataStr = JSON.stringify(tokenomicsData, null, 2);
             const blob = new Blob([dataStr], {type: 'application/json'});
@@ -2009,7 +2440,7 @@
             
             linkElement.click();
             
-            // Limpiar el objeto URL después de la descarga
+            // Clean up
             setTimeout(() => {
                 document.body.removeChild(linkElement);
                 URL.revokeObjectURL(url);
@@ -2020,9 +2451,8 @@
                 'Datos exportados correctamente como JSON');
         }
         
-        // Exportar Smart Contract
+        // Export Smart Contract
         function exportSmartContract() {
-            // Generar código de smart contract básico basado en los datos
             const contractCode = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -2068,12 +2498,12 @@ contract ${tokenomicsData.tokenName}Token {
     
     constructor() {
         // Initial distribution
-        // ${tokenomicsData.isImportMode ? 'Distribution based on value contributed from Value Accounting App' : `
+        ${tokenomicsData.isImportMode ? '// Distribution based on value contributed from Value Accounting App' : `
         // Investors: ${tokenomicsData.initialDistribution.investors}%
         // Team: ${tokenomicsData.initialDistribution.team}%
         // Reserve: ${tokenomicsData.initialDistribution.reserve}%
         // Community: ${tokenomicsData.initialDistribution.community}%
-        // `}
+        `}
         
         // Setup vesting schedules
         // Setup phases based on Fibonacci dilution model
@@ -2170,7 +2600,7 @@ contract ${tokenomicsData.tokenName}Token {
             
             linkElement.click();
             
-            // Limpiar el objeto URL después de la descarga
+            // Clean up
             setTimeout(() => {
                 document.body.removeChild(linkElement);
                 URL.revokeObjectURL(url);
@@ -2181,7 +2611,7 @@ contract ${tokenomicsData.tokenName}Token {
                 '¡Código del Smart Contract generado correctamente! Este es un modelo básico que requiere auditoría y personalización antes de la implementación.');
         }
         
-        // Limpiar datos
+        // Reset data
         function resetData() {
             if (confirm(document.documentElement.lang === 'ca' ? 
                 'Estàs segur que vols esborrar totes les dades de la simulació?' : 
@@ -2226,11 +2656,11 @@ contract ${tokenomicsData.tokenName}Token {
                 document.getElementById('token-symbol').value = "MSA";
                 document.getElementById('total-supply').value = "1000000";
                 
-                // Limpiar preview de CSV
+                // Clear CSV preview
                 document.getElementById('csv-preview').style.display = 'none';
                 document.getElementById('value-csv-file').value = '';
                 
-                // Mostrar ejemplo por defecto
+                // Show default example
                 showDefaultExample();
                 
                 saveData();
@@ -2241,63 +2671,68 @@ contract ${tokenomicsData.tokenName}Token {
             }
         }
         
-        // Guardar datos en localStorage
+        // Save data to localStorage
         function saveData() {
             localStorage.setItem('tokenomicsData', JSON.stringify(tokenomicsData));
         }
         
-        // Cargar datos de localStorage
+        // Load data from localStorage
         function loadSavedData() {
             const saved = localStorage.getItem('tokenomicsData');
             if (saved) {
-                const parsedData = JSON.parse(saved);
-                
-                tokenomicsData = {
-                    tokenName: parsedData.tokenName || "MASIA",
-                    tokenSymbol: parsedData.tokenSymbol || "MSA",
-                    totalSupply: parsedData.totalSupply || 1000000,
-                    distributionModel: parsedData.distributionModel || "fibonacci",
-                    initialDistribution: parsedData.initialDistribution || {
-                        investors: 40,
-                        team: 25,
-                        reserve: 20,
-                        community: 15
-                    },
-                    stakeholders: parsedData.stakeholders || [],
-                    phases: parsedData.phases || [
-                        { name: "Fase 1: Lanzamiento", months: "1-6", dilution: 5 },
-                        { name: "Fase 2: Crecimiento", months: "7-18", dilution: 8 },
-                        { name: "Fase 3: Escalado", months: "19-36", dilution: 13 },
-                        { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
-                    ],
-                    timelineData: parsedData.timelineData || null,
-                    isImportMode: parsedData.isImportMode || false,
-                    importedData: parsedData.importedData || null,
-                    csvContent: parsedData.csvContent || null
-                };
-                
-                // Restaurar valores en sliders
-                document.getElementById('investors-slider').value = tokenomicsData.initialDistribution.investors;
-                document.getElementById('team-slider').value = tokenomicsData.initialDistribution.team;
-                document.getElementById('reserve-slider').value = tokenomicsData.initialDistribution.reserve;
-                document.getElementById('community-slider').value = tokenomicsData.initialDistribution.community;
-                
-                document.getElementById('investors-value').textContent = `${tokenomicsData.initialDistribution.investors}%`;
-                document.getElementById('team-value').textContent = `${tokenomicsData.initialDistribution.team}%`;
-                document.getElementById('reserve-value').textContent = `${tokenomicsData.initialDistribution.reserve}%`;
-                document.getElementById('community-value').textContent = `${tokenomicsData.initialDistribution.community}%`;
-                
-                document.getElementById('token-name').value = tokenomicsData.tokenName;
-                document.getElementById('token-symbol').value = tokenomicsData.tokenSymbol;
-                document.getElementById('total-supply').value = tokenomicsData.totalSupply.toString();
-                document.getElementById('distribution-model').value = tokenomicsData.distributionModel;
-                
-                // Si hay datos CSV guardados, mostrar preview
-                if (tokenomicsData.csvContent && tokenomicsData.isImportMode) {
-                    const previewDiv = document.getElementById('csv-preview');
-                    previewDiv.style.display = 'block';
-                    // Aquí podríamos regenerar el preview, pero para simplificar lo dejamos vacío
-                    previewDiv.innerHTML = '<div class="csv-row csv-header"><div class="csv-cell">Datos CSV importados previamente</div></div>';
+                try {
+                    const parsedData = JSON.parse(saved);
+                    
+                    tokenomicsData = {
+                        tokenName: parsedData.tokenName || "MASIA",
+                        tokenSymbol: parsedData.tokenSymbol || "MSA",
+                        totalSupply: parsedData.totalSupply || 1000000,
+                        distributionModel: parsedData.distributionModel || "fibonacci",
+                        initialDistribution: parsedData.initialDistribution || {
+                            investors: 40,
+                            team: 25,
+                            reserve: 20,
+                            community: 15
+                        },
+                        stakeholders: parsedData.stakeholders || [],
+                        phases: parsedData.phases || [
+                            { name: "Fase 1: Lanzamiento", months: "1-6", dilution: 5 },
+                            { name: "Fase 2: Crecimiento", months: "7-18", dilution: 8 },
+                            { name: "Fase 3: Escalado", months: "19-36", dilution: 13 },
+                            { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
+                        ],
+                        timelineData: parsedData.timelineData || null,
+                        isImportMode: parsedData.isImportMode || false,
+                        importedData: parsedData.importedData || null,
+                        csvContent: parsedData.csvContent || null
+                    };
+                    
+                    // Restore slider values
+                    document.getElementById('investors-slider').value = tokenomicsData.initialDistribution.investors;
+                    document.getElementById('team-slider').value = tokenomicsData.initialDistribution.team;
+                    document.getElementById('reserve-slider').value = tokenomicsData.initialDistribution.reserve;
+                    document.getElementById('community-slider').value = tokenomicsData.initialDistribution.community;
+                    
+                    document.getElementById('investors-value').textContent = `${tokenomicsData.initialDistribution.investors}%`;
+                    document.getElementById('team-value').textContent = `${tokenomicsData.initialDistribution.team}%`;
+                    document.getElementById('reserve-value').textContent = `${tokenomicsData.initialDistribution.reserve}%`;
+                    document.getElementById('community-value').textContent = `${tokenomicsData.initialDistribution.community}%`;
+                    
+                    document.getElementById('token-name').value = tokenomicsData.tokenName;
+                    document.getElementById('token-symbol').value = tokenomicsData.tokenSymbol;
+                    document.getElementById('total-supply').value = tokenomicsData.totalSupply.toString();
+                    document.getElementById('distribution-model').value = tokenomicsData.distributionModel;
+                    
+                    // If CSV content exists and in import mode, show preview
+                    if (tokenomicsData.csvContent && tokenomicsData.isImportMode) {
+                        const previewDiv = document.getElementById('csv-preview');
+                        previewDiv.style.display = 'block';
+                        previewDiv.innerHTML = '<div class="csv-row csv-header"><div class="csv-cell">Datos CSV importados previamente</div></div>';
+                    }
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                    // Reset to default if there's an error
+                    tokenomicsData.stakeholders = [];
                 }
             }
         }
