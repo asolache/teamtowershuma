@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema de contabilidad de valor para proyectos con tokenización futura de contribuciones.">
+    <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, innovación financiera">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Value Accounting App | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Value Accounting App | TeamTowers Humà">
+    <meta property="og:description" content="Sistema de contabilidad de valor para proyectos con tokenización futura de contribuciones. Visualiza en tiempo real cómo se distribuye el valor entre stakeholders.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/contabilidad-valor">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Value Accounting App | TeamTowers Humà">
+    <meta name="twitter:description" content="Visualiza en tiempo real cómo se distribuye el valor entre stakeholders de tu proyecto">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group label::before {
+            content: '•';
+            color: var(--accent);
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        
+        .ranking-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .ranking-header {
+            background: var(--light);
+            padding: 15px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--accent);
+            display: grid;
+            grid-template-columns: 40px 1fr 150px 100px;
+            gap: 15px;
+        }
+        
+        .ranking-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 40px 1fr 150px 100px;
+            gap: 15px;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .ranking-item:hover {
+            background: #f1f5f9;
+        }
+        
+        .ranking-item:nth-child(odd) {
+            background: #f8fafc;
+        }
+        
+        .ranking-badge {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .role-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .role-team {
+            background: rgba(16, 185, 129, 0.15);
+            color: #0d9488;
+        }
+        
+        .role-client {
+            background: rgba(30, 58, 138, 0.15);
+            color: #1e3a8a;
+        }
+        
+        .role-supplier {
+            background: rgba(139, 92, 246, 0.15);
+            color: #7e3af2;
+        }
+        
+        .role-investor {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+        
+        .casteller-base {
+            background: rgba(245, 158, 11, 0.2);
+            color: #b45309;
+        }
+        
+        .casteller-trunk {
+            background: rgba(16, 185, 129, 0.2);
+            color: #0d9488;
+        }
+        
+        .casteller-folre {
+            background: rgba(139, 92, 246, 0.2);
+            color: #7e3af2;
+        }
+        
+        .casteller-pom {
+            background: rgba(30, 58, 138, 0.2);
+            color: #1e3a8a;
+        }
+        
+        .value-amount {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .instructions h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions h3::before {
+            content: 'ℹ️';
+            font-size: 1.4rem;
+        }
+        
+        .instructions ol {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        
+        .instructions code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .example-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .example-section h4 {
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .example-section h4::before {
+            content: '📌';
+        }
+        
+        .example-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: var(--primary);
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .example-item::before {
+            content: '→';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .badge-tangible {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .badge-intangible {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        
+        .transaction-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .transaction-form h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .quick-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .quick-input .btn {
+            padding: 10px 15px;
+            min-width: auto;
+        }
+        
+        .deliverable-input {
+            margin-top: 15px;
+        }
+        
+        .deliverable-input textarea {
+            min-height: 60px;
+        }
+        
+        .value-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .value-input input {
+            max-width: 120px;
+        }
+        
+        .value-input span {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .ranking-header,
+            .ranking-item {
+                grid-template-columns: 35px 1fr 120px 80px;
+                font-size: 0.9rem;
+            }
+            
+            .value-input {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .header-logo {
+                height: 50px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+            
+            .ranking-header,
+            .ranking-item {
+                grid-template-columns: 30px 1fr 100px 70px;
+                font-size: 0.85rem;
+                padding: 8px 10px;
+            }
+            
+            .quick-input {
+                flex-direction: column;
+            }
+            
+            .quick-input input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Value Accounting App" data-ca="Aplicació Comptabilitat de Valor">Value Accounting App</h1>
+            <p class="tagline lang" data-es="Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real" data-ca="Sistema de comptabilitat de valor per tokenitzar contribucions i visualitzar la distribució del valor en temps real">Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real</p>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <div class="panel">
+                <h2 class="lang" data-es="⚙️ Configuración del Proyecto" data-ca="⚙️ Configuració del Projecte">⚙️ Configuración del Proyecto</h2>
+                <div class="input-group">
+                    <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
+                    <input type="text" id="project-name" placeholder="Ej: Proyecto Innovación 2024">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Moneda de Valor" data-ca="Moneda de Valor">Moneda de Valor</label>
+                    <select id="value-currency">
+                        <option value="puntos" class="lang" data-es="Puntos de Valor" data-ca="Punts de Valor">Puntos de Valor</option>
+                        <option value="tokens" class="lang" data-es="Tokens (futuro)" data-ca="Tokens (futur)">Tokens (futuro)</option>
+                        <option value="euros" class="lang" data-es="Euros (€)" data-ca="Euros (€)">Euros (€)</option>
+                    </select>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="📥 Importar Datos" data-ca="📥 Importar Dades">📥 Importar Datos</h2>
+                    <div class="input-group">
+                        <label class="lang" data-es="Importar desde VNA App" data-ca="Importar des de VNA App">Importar desde VNA App</label>
+                        <input type="file" id="import-file" accept=".json">
+                    </div>
+                    <div class="btn-group">
+                        <button id="import-data" class="btn btn-primary">
+                            <span>📤</span> <span class="lang" data-es="Importar Datos" data-ca="Importar Dades">Importar Datos</span>
+                        </button>
+                    </div>
+                    
+                    <div class="instructions" style="margin-top: 20px;">
+                        <h3 class="lang" data-es="Formato de Importación" data-ca="Format de Importació">Formato de Importación</h3>
+                        <p class="lang" data-es="Puedes importar un archivo JSON exportado desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> o crear transacciones manualmente." data-ca="Pots importar un fitxer JSON exportat des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> o crear transaccions manualment.">Puedes importar un archivo JSON exportado desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a> o crear transacciones manualmente.</p>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="➕ Añadir Entregable" data-ca="➕ Afegir Entregable">➕ Añadir Entregable</h2>
+                    <div class="quick-input">
+                        <input type="text" id="quick-input" placeholder="@rol #entregable valor:100">
+                        <button id="quick-add" class="btn btn-success">+</button>
+                    </div>
+                    <p class="lang" data-es="Formato rápido: <code>@rol #entregable valor:100</code>" data-ca="Format ràpid: <code>@rol #entregable valor:100</code>">Formato rápido: <code>@rol #entregable valor:100</code></p>
+                    
+                    <div class="transaction-form">
+                        <h3 class="lang" data-es="Formulario Detallado" data-ca="Formulari Detallat">Formulario Detallado</h3>
+                        <div class="input-group">
+                            <label class="lang" data-es="Rol (@nombre)" data-ca="Rol (@nom)">Rol (@nombre)</label>
+                            <input type="text" id="role-input" placeholder="@equipo-marketing">
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Entregable (#etiqueta)" data-ca="Entregable (#etiqueta)">Entregable (#etiqueta)</label>
+                            <input type="text" id="deliverable-input" placeholder="#informe-semanal">
+                        </div>
+                        <div class="deliverable-input">
+                            <label class="lang" data-es="Descripción" data-ca="Descripció">Descripción</label>
+                            <textarea id="description-input" placeholder="Informe detallado de métricas de campaña"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Enlace (opcional)" data-ca="Enllaç (opcional)">Enlace (opcional)</label>
+                            <input type="url" id="link-input" placeholder="https://ejemplo.com/informe.pdf">
+                        </div>
+                        <div class="value-input">
+                            <span class="lang" data-es="Valor:" data-ca="Valor:">Valor:</span>
+                            <input type="number" id="value-input" placeholder="100" min="1">
+                        </div>
+                        <div class="btn-group">
+                            <button id="add-deliverable" class="btn btn-primary">
+                                <span>✨</span> <span class="lang" data-es="Registrar Entregable" data-ca="Registrar Entregable">Registrar Entregable</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions" style="margin-top: 20px;">
+                        <h3 class="lang" data-es="Cómo Funciona" data-ca="Com Funciona">Cómo Funciona</h3>
+                        <ol>
+                            <li class="lang" data-es="Importa tu mapa de valor desde la VNA App o crea roles manualmente" data-ca="Importa el teu mapa de valor des de l'App VNA o crea rols manualment">Importa tu mapa de valor desde la VNA App o crea roles manualmente</li>
+                            <li class="lang" data-es="Registra entregables con valor asignado usando el formato rápido o formulario detallado" data-ca="Registra entregables amb valor assignat usant el format ràpid o formulari detallat">Registra entregables con valor asignado usando el formato rápido o formulario detallado</li>
+                            <li class="lang" data-es="Visualiza en tiempo real cómo se distribuye el valor entre stakeholders" data-ca="Visualitza en temps real com es distribueix el valor entre stakeholders">Visualiza en tiempo real cómo se distribuye el valor entre stakeholders</li>
+                            <li class="lang" data-es="Exporta los datos para futura tokenización de contribuciones" data-ca="Exporta les dades per futura tokenització de contribucions">Exporta los datos para futura tokenización de contribuciones</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
+                    <div class="btn-group">
+                        <button id="export-json" class="btn btn-export">
+                            <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
+                        </button>
+                        <button id="export-csv" class="btn btn-export">
+                            <span>📈</span> <span class="lang" data-es="Exportar CSV" data-ca="Exportar CSV">Exportar CSV</span>
+                        </button>
+                        <button id="reset-data" class="btn btn-danger">
+                            <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <h2>📊 <span class="lang" data-es="Distribución de Valor en Tiempo Real" data-ca="Distribució de Valor en Temps Real">Distribución de Valor en Tiempo Real</span></h2>
+                <div class="chart-container">
+                    <canvas id="valueChart"></canvas>
+                </div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-value">0</div>
+                        <div class="stat-label lang" data-es="Valor Total" data-ca="Valor Total">Valor Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-deliverables">0</div>
+                        <div class="stat-label lang" data-es="Entregables" data-ca="Entregables">Entregables</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-stakeholders">0</div>
+                        <div class="stat-label lang" data-es="Stakeholders" data-ca="Stakeholders">Stakeholders</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avg-value">0</div>
+                        <div class="stat-label lang" data-es="Valor Promedio" data-ca="Valor Promig">Valor Promedio</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="🏆 Ranking de Stakeholders por Valor Aportado" data-ca="🏆 Rànquing de Stakeholders per Valor Aportat">🏆 Ranking de Stakeholders por Valor Aportado</h3>
+                <div class="ranking-container">
+                    <div class="ranking-header">
+                        <div class="lang" data-es="Pos" data-ca="Pos">Pos</div>
+                        <div class="lang" data-es="Stakeholder" data-ca="Stakeholder">Stakeholder</div>
+                        <div class="lang" data-es="Rol Casteller" data-ca="Rol Casteller">Rol Casteller</div>
+                        <div class="lang" data-es="Valor" data-ca="Valor">Valor</div>
+                    </div>
+                    <div id="ranking-list">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                            <p class="lang" data-es="Registra tu primer entregable para ver la distribución del valor" data-ca="Registra el teu primer entregable per veure la distribució del valor">Registra tu primer entregable para ver la distribución del valor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="La Masia" data-ca="La Masia">La Masia</a></li>
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización futura de contribuciones." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb preparació per tokenització futura de contribucions.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización futura de contribuciones.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Estado de la aplicación
+        let projectData = {
+            name: "Proyecto sin nombre",
+            currency: "puntos",
+            stakeholders: {},
+            deliverables: [],
+            castellerRoles: {
+                'base': { name: 'Base', multiplier: 1.0 },
+                'trunk': { name: 'Tronco', multiplier: 1.2 },
+                'folre': { name: 'Folre/Manilles', multiplier: 1.5 },
+                'pom': { name: 'Pom de Dalt', multiplier: 2.0 }
+            },
+            stakeholderTypes: {
+                'team': { name: 'Equipo', color: '#10b981' },
+                'client': { name: 'Clientes', color: '#1e3a8a' },
+                'supplier': { name: 'Proveedores', color: '#8b5cf6' },
+                'investor': { name: 'Inversores', color: '#f59e0b' }
+            }
+        };
+        
+        let valueChart = null;
+        
+        // Inicialización cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones de idioma
+            setupLanguageSelector();
+            
+            // Cargar datos guardados
+            loadSavedData();
+            
+            // Inicializar gráfico
+            initChart();
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Actualizar visualizaciones
+            updateVisualizations();
+        });
+        
+        // Configurar selector de idioma
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Establecer idioma inicial
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Event listeners para botones de idioma
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Actualizar botón activo
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            function setActiveLanguage(lang) {
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                document.documentElement.setAttribute('lang', lang);
+            }
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Importar datos
+            document.getElementById('import-data').addEventListener('click', importData);
+            
+            // Añadir entregable rápido
+            document.getElementById('quick-add').addEventListener('click', addQuickDeliverable);
+            document.getElementById('quick-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addQuickDeliverable();
+            });
+            
+            // Añadir entregable detallado
+            document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
+            
+            // Exportar datos
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            
+            // Limpiar datos
+            document.getElementById('reset-data').addEventListener('click', resetData);
+            
+            // Cambiar moneda
+            document.getElementById('value-currency').addEventListener('change', function() {
+                projectData.currency = this.value;
+                saveData();
+                updateVisualizations();
+            });
+            
+            // Cambiar nombre del proyecto
+            document.getElementById('project-name').addEventListener('change', function() {
+                projectData.name = this.value || "Proyecto sin nombre";
+                saveData();
+                updateVisualizations();
+            });
+        }
+        
+        // Importar datos desde archivo JSON
+        function importData() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Selecciona un archivo JSON primero' : 
+                    'Select a JSON file first');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Procesar nodos como stakeholders
+                    if (importedData.nodes) {
+                        importedData.nodes.forEach(node => {
+                            const roleName = node.id.toLowerCase();
+                            if (!projectData.stakeholders[roleName]) {
+                                projectData.stakeholders[roleName] = {
+                                    name: node.id,
+                                    type: 'team', // Por defecto equipo
+                                    castellerRole: 'base', // Por defecto base
+                                    totalValue: 0,
+                                    deliverables: []
+                                };
+                            }
+                        });
+                    }
+                    
+                    // Procesar enlaces como transacciones
+                    if (importedData.links) {
+                        importedData.links.forEach(link => {
+                            const fromRole = link.source.id.toLowerCase();
+                            const toRole = link.target.id.toLowerCase();
+                            
+                            // Asegurar que los roles existan
+                            if (!projectData.stakeholders[fromRole]) {
+                                projectData.stakeholders[fromRole] = {
+                                    name: link.source.id,
+                                    type: 'team',
+                                    castellerRole: 'base',
+                                    totalValue: 0,
+                                    deliverables: []
+                                };
+                            }
+                            
+                            if (!projectData.stakeholders[toRole]) {
+                                projectData.stakeholders[toRole] = {
+                                    name: link.target.id,
+                                    type: 'team',
+                                    castellerRole: 'base',
+                                    totalValue: 0,
+                                    deliverables: []
+                                };
+                            }
+                            
+                            // Añadir entregable de ejemplo
+                            projectData.deliverables.push({
+                                id: Date.now() + Math.random().toString(36).substr(2, 5),
+                                role: fromRole,
+                                deliverable: link.deliverable,
+                                description: `Transacción importada: ${link.source.id} → ${link.target.id}`,
+                                link: '',
+                                value: 100, // Valor por defecto
+                                timestamp: new Date().toISOString()
+                            });
+                            
+                            // Actualizar valor total del stakeholder
+                            projectData.stakeholders[fromRole].totalValue += 100;
+                        });
+                    }
+                    
+                    saveData();
+                    updateVisualizations();
+                    
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Dades importades correctament!' : 
+                        'Datos importados correctamente!');
+                } catch (error) {
+                    console.error('Error al importar datos:', error);
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Error en importar les dades. Comprova que el fitxer sigui JSON vàlid.' : 
+                        'Error al importar los datos. Verifica que el archivo sea JSON válido.');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Añadir entregable rápido
+        function addQuickDeliverable() {
+            const input = document.getElementById('quick-input').value.trim();
+            if (!input) return;
+            
+            // Parsear formato: @rol #entregable valor:100
+            const roleMatch = input.match(/@(\S+)/);
+            const deliverableMatch = input.match(/#(\S+)/);
+            const valueMatch = input.match(/valor:(\d+)/i);
+            
+            if (!roleMatch || !deliverableMatch || !valueMatch) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Format incorrecte. Usa: @rol #entregable valor:100' : 
+                    'Formato incorrecto. Usa: @rol #entregable valor:100');
+                return;
+            }
+            
+            const role = roleMatch[1].toLowerCase();
+            const deliverable = deliverableMatch[1];
+            const value = parseInt(valueMatch[1]);
+            
+            addDeliverableToSystem(role, deliverable, `Entregable rápido: ${deliverable}`, '', value);
+            
+            // Limpiar input
+            document.getElementById('quick-input').value = '';
+        }
+        
+        // Añadir entregable detallado
+        function addDeliverable() {
+            const roleInput = document.getElementById('role-input').value.trim();
+            const deliverableInput = document.getElementById('deliverable-input').value.trim();
+            const descriptionInput = document.getElementById('description-input').value.trim();
+            const linkInput = document.getElementById('link-input').value.trim();
+            const valueInput = document.getElementById('value-input').value.trim();
+            
+            if (!roleInput || !deliverableInput || !valueInput) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Omple tots els camps obligatoris (rol, entregable, valor)' : 
+                    'Completa todos los campos obligatorios (rol, entregable, valor)');
+                return;
+            }
+            
+            // Extraer nombre del rol si empieza con @
+            const role = roleInput.startsWith('@') ? roleInput.substring(1).toLowerCase() : roleInput.toLowerCase();
+            const deliverable = deliverableInput.startsWith('#') ? deliverableInput.substring(1) : deliverableInput;
+            const value = parseInt(valueInput);
+            
+            addDeliverableToSystem(role, deliverable, descriptionInput, linkInput, value);
+            
+            // Limpiar formulario
+            document.getElementById('role-input').value = '';
+            document.getElementById('deliverable-input').value = '';
+            document.getElementById('description-input').value = '';
+            document.getElementById('link-input').value = '';
+            document.getElementById('value-input').value = '';
+        }
+        
+        // Función central para añadir entregable
+        function addDeliverableToSystem(role, deliverable, description, link, value) {
+            // Asegurar que el stakeholder exista
+            if (!projectData.stakeholders[role]) {
+                projectData.stakeholders[role] = {
+                    name: role.charAt(0).toUpperCase() + role.slice(1),
+                    type: 'team', // Por defecto equipo
+                    castellerRole: 'base', // Por defecto base
+                    totalValue: 0,
+                    deliverables: []
+                };
+            }
+            
+            // Crear entregable
+            const deliverableObj = {
+                id: Date.now() + Math.random().toString(36).substr(2, 5),
+                role: role,
+                deliverable: deliverable,
+                description: description,
+                link: link,
+                value: value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Añadir a la lista de entregables
+            projectData.deliverables.push(deliverableObj);
+            
+            // Actualizar valor total del stakeholder
+            projectData.stakeholders[role].totalValue += value;
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualizations();
+            
+            // Feedback al usuario
+            const successMsg = document.documentElement.lang === 'ca' ? 
+                `Entregable registrat per @${role} amb valor ${value}` : 
+                `Entregable registrado para @${role} con valor ${value}`;
+            
+            const btn = document.getElementById('add-deliverable');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span>✅</span> ${successMsg}`;
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        // Inicializar gráfico
+        function initChart() {
+            const ctx = document.getElementById('valueChart').getContext('2d');
+            valueChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+        
+        // Actualizar visualizaciones
+        function updateVisualizations() {
+            // Actualizar estadísticas
+            const totalValue = Object.values(projectData.stakeholders).reduce((sum, s) => sum + s.totalValue, 0);
+            const totalDeliverables = projectData.deliverables.length;
+            const totalStakeholders = Object.keys(projectData.stakeholders).length;
+            const avgValue = totalDeliverables > 0 ? Math.round(totalValue / totalDeliverables) : 0;
+            
+            document.getElementById('total-value').textContent = formatNumber(totalValue);
+            document.getElementById('total-deliverables').textContent = totalDeliverables;
+            document.getElementById('total-stakeholders').textContent = totalStakeholders;
+            document.getElementById('avg-value').textContent = formatNumber(avgValue);
+            
+            // Actualizar gráfico
+            updateChart();
+            
+            // Actualizar ranking
+            updateRanking();
+        }
+        
+        // Actualizar gráfico
+        function updateChart() {
+            if (!valueChart) return;
+            
+            // Preparar datos para el gráfico
+            const labels = [];
+            const data = [];
+            const backgroundColors = [];
+            
+            // Ordenar stakeholders por valor total
+            const sortedStakeholders = Object.entries(projectData.stakeholders)
+                .sort((a, b) => b[1].totalValue - a[1].totalValue)
+                .slice(0, 8); // Mostrar solo los top 8
+            
+            sortedStakeholders.forEach(([role, stakeholder]) => {
+                if (stakeholder.totalValue > 0) {
+                    labels.push(`@${stakeholder.name}`);
+                    data.push(stakeholder.totalValue);
+                    
+                    // Asignar color según tipo de stakeholder
+                    const type = projectData.stakeholderTypes[stakeholder.type];
+                    backgroundColors.push(type ? type.color : '#8b5cf6');
+                }
+            });
+            
+            // Actualizar gráfico
+            valueChart.data.labels = labels;
+            valueChart.data.datasets[0].data = data;
+            valueChart.data.datasets[0].backgroundColor = backgroundColors;
+            valueChart.update();
+        }
+        
+        // Actualizar ranking
+        function updateRanking() {
+            const rankingList = document.getElementById('ranking-list');
+            
+            if (Object.keys(projectData.stakeholders).length === 0 || 
+                Object.values(projectData.stakeholders).every(s => s.totalValue === 0)) {
+                rankingList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                        <p class="lang" data-es="Registra tu primer entregable para ver la distribución del valor" data-ca="Registra el teu primer entregable per veure la distribució del valor">Registra tu primer entregable para ver la distribución del valor</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Ordenar stakeholders por valor total (descendente)
+            const sortedStakeholders = Object.entries(projectData.stakeholders)
+                .sort((a, b) => b[1].totalValue - a[1].totalValue);
+            
+            // Generar HTML para el ranking
+            let html = '';
+            sortedStakeholders.forEach(([role, stakeholder], index) => {
+                if (stakeholder.totalValue === 0) return;
+                
+                const stakeholderType = projectData.stakeholderTypes[stakeholder.type];
+                const castellerRole = projectData.castellerRoles[stakeholder.castellerRole];
+                const position = index + 1;
+                
+                html += `
+                    <div class="ranking-item">
+                        <div class="ranking-badge">${position}</div>
+                        <div>
+                            <strong>@${stakeholder.name}</strong><br>
+                            <span class="role-tag role-${stakeholder.type}">${stakeholderType ? stakeholderType.name : 'Equipo'}</span>
+                            <span class="role-tag casteller-${stakeholder.castellerRole}">${castellerRole ? castellerRole.name : 'Base'}</span>
+                        </div>
+                        <div>
+                            <span class="role-tag casteller-${stakeholder.castellerRole}">
+                                ${castellerRole ? castellerRole.name : 'Base'} 
+                                ${castellerRole && castellerRole.multiplier !== 1.0 ? `×${castellerRole.multiplier}` : ''}
+                            </span>
+                        </div>
+                        <div class="value-amount">${formatNumber(stakeholder.totalValue)}</div>
+                    </div>
+                `;
+            });
+            
+            rankingList.innerHTML = html;
+        }
+        
+        // Formatear números con separador de miles
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        
+        // Exportar como JSON
+        function exportJSON() {
+            const dataStr = JSON.stringify(projectData, null, 2);
+            const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a JSON' : 
+                'Datos exportados correctamente como JSON');
+        }
+        
+        // Exportar como CSV
+        function exportCSV() {
+            // Cabeceras
+            let csv = 'Rol,Entregable,Descripción,Enlace,Valor,Fecha\n';
+            
+            // Datos
+            projectData.deliverables.forEach(d => {
+                csv += `"${d.role}","${d.deliverable}","${d.description.replace(/"/g, '""')}","${d.link}",${d.value},"${new Date(d.timestamp).toLocaleDateString()}"\n`;
+            });
+            
+            const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            
+            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a CSV' : 
+                'Datos exportados correctamente como CSV');
+        }
+        
+        // Limpiar datos
+        function resetData() {
+            if (confirm(document.documentElement.lang === 'ca' ? 
+                'Estàs segur que vols esborrar totes les dades del projecte?' : 
+                '¿Estás seguro de que quieres borrar todos los datos del proyecto?')) {
+                
+                projectData = {
+                    name: "Proyecto sin nombre",
+                    currency: "puntos",
+                    stakeholders: {},
+                    deliverables: [],
+                    castellerRoles: {
+                        'base': { name: 'Base', multiplier: 1.0 },
+                        'trunk': { name: 'Tronco', multiplier: 1.2 },
+                        'folre': { name: 'Folre/Manilles', multiplier: 1.5 },
+                        'pom': { name: 'Pom de Dalt', multiplier: 2.0 }
+                    },
+                    stakeholderTypes: {
+                        'team': { name: 'Equipo', color: '#10b981' },
+                        'client': { name: 'Clientes', color: '#1e3a8a' },
+                        'supplier': { name: 'Proveedores', color: '#8b5cf6' },
+                        'investor': { name: 'Inversores', color: '#f59e0b' }
+                    }
+                };
+                
+                saveData();
+                updateVisualizations();
+                
+                // Limpiar campos de formulario
+                document.getElementById('project-name').value = "Proyecto sin nombre";
+                document.getElementById('quick-input').value = '';
+                document.getElementById('role-input').value = '';
+                document.getElementById('deliverable-input').value = '';
+                document.getElementById('description-input').value = '';
+                document.getElementById('link-input').value = '';
+                document.getElementById('value-input').value = '';
+                
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Dades esborrades correctament' : 
+                    'Datos borrados correctamente');
+            }
+        }
+        
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('valueAccountingData', JSON.stringify(projectData));
+        }
+        
+        // Cargar datos de localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('valueAccountingData');
+            if (saved) {
+                const parsedData = JSON.parse(saved);
+                
+                // Mantener estructura actualizada
+                projectData = {
+                    name: parsedData.name || "Proyecto sin nombre",
+                    currency: parsedData.currency || "puntos",
+                    stakeholders: parsedData.stakeholders || {},
+                    deliverables: parsedData.deliverables || [],
+                    castellerRoles: {
+                        'base': { name: 'Base', multiplier: 1.0 },
+                        'trunk': { name: 'Tronco', multiplier: 1.2 },
+                        'folre': { name: 'Folre/Manilles', multiplier: 1.5 },
+                        'pom': { name: 'Pom de Dalt', multiplier: 2.0 }
+                    },
+                    stakeholderTypes: {
+                        'team': { name: 'Equipo', color: '#10b981' },
+                        'client': { name: 'Clientes', color: '#1e3a8a' },
+                        'supplier': { name: 'Proveedores', color: '#8b5cf6' },
+                        'investor': { name: 'Inversores', color: '#f59e0b' }
+                    }
+                };
+                
+                // Restaurar nombre del proyecto en el input
+                document.getElementById('project-name').value = projectData.name;
+                document.getElementById('value-currency').value = projectData.currency;
+            }
+        }
+    </script>
+</body>
+</html>
