@@ -24,6 +24,9 @@
     <meta name="twitter:description" content="Mapea flujos de valor tangibles e intangibles en tu organización">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     
+    <!-- vis-network CSS -->
+    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    
     <style>
         :root {
             --primary: #1e3a8a; /* Azul TeamTowers */
@@ -343,15 +346,98 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
         
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin-bottom: 30px;
-            background: var(--light);
+        #network-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
+            background: var(--light);
+            position: relative;
+        }
+        
+        .empty-state {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+        
+        .empty-state svg {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 25px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .empty-state p {
+            max-width: 550px;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+        
+        .quick-add {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .quick-add h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quick-add h3::before {
+            content: '✨';
+        }
+        
+        .quick-add p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        .quick-add-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .quick-add-btn:hover {
+            background: #0da27f;
+            transform: translateY(-2px);
         }
         
         .export-section {
@@ -407,39 +493,6 @@
             font-size: 1.4rem;
         }
         
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-        
-        .empty-state svg {
-            width: 140px;
-            height: 140px;
-            margin-bottom: 25px;
-            color: var(--accent);
-            opacity: 0.7;
-        }
-        
-        .empty-state h3 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: var(--dark);
-            font-weight: 700;
-        }
-        
-        .empty-state p {
-            max-width: 550px;
-            margin-bottom: 30px;
-            line-height: 1.7;
-            font-size: 1.1rem;
-        }
-        
         .next-step {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -485,6 +538,49 @@
         .next-step a:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .transaction-form {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .transaction-form h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .transaction-form h3::before {
+            content: '🔄';
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            margin-bottom: 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-row select, 
+        .form-row input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
         }
         
         /* Footer */
@@ -594,8 +690,8 @@
                 padding: 20px;
             }
             
-            .chart-container {
-                height: 320px;
+            #network-container {
+                height: 450px;
             }
         }
         
@@ -627,9 +723,56 @@
                 font-size: 1rem;
             }
             
-            .chart-container {
-                height: 280px;
+            #network-container {
+                height: 350px;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Test Results Section */
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--light);
+            display: none;
+        }
+        
+        .test-pass {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .test-fail {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .test-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+        }
+        
+        .test-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .test-section h3::before {
+            content: '🧪';
         }
     </style>
 </head>
@@ -654,66 +797,62 @@
     <div class="container">
         <div class="app-container">
             <div class="panel">
-                <h2 class="lang" data-es="⚙️ Configuración del Mapa" data-ca="⚙️ Configuració del Mapa">⚙️ Configuración del Mapa</h2>
+                <h2 class="lang" data-es="➕ Añadir Elementos" data-ca="➕ Afegir Elements">➕ Añadir Elementos</h2>
+                
                 <div class="input-group">
                     <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
-                    <input type="text" id="project-name" placeholder="Ej: Proyecto Innovación 2024" value="Proyecto MASIA">
+                    <input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
                 </div>
+                
                 <div class="input-group">
-                    <label class="lang" data-es="Tipo de Entregable" data-ca="Tipus d'Entregable">Tipo de Entregable</label>
-                    <select id="deliverable-type">
-                        <option value="tangible" class="lang" data-es="Tangible (bienes, servicios)" data-ca="Tangible (béns, serveis)">Tangible (bienes, servicios)</option>
-                        <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento)" data-ca="Intangible (confiança, coneixement)">Intangible (confianza, conocimiento)</option>
-                        <option value="both" class="lang" data-es="Ambos" data-ca="Ambdós">Ambos</option>
-                    </select>
+                    <label class="lang" data-es="Nuevo Rol" data-ca="Nou Rol">Nuevo Rol</label>
+                    <input type="text" id="node-name" placeholder="Ej: Equipo de Marketing">
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;">
-                    <h2 class="lang" data-es="➕ Añadir Nodo/Rol" data-ca="➕ Afegir Node/Rol">➕ Añadir Nodo/Rol</h2>
-                    <div class="input-group">
-                        <label class="lang" data-es="Nombre del Rol" data-ca="Nom del Rol">Nombre del Rol</label>
-                        <input type="text" id="node-name" placeholder="Ej: Equipo de Marketing">
-                    </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Grupo (opcional)" data-ca="Grup (opcional)">Grupo (opcional)</label>
-                        <select id="node-group">
-                            <option value="1" class="lang" data-es="Equipo Interno" data-ca="Equip Intern">Equipo Interno</option>
-                            <option value="2" class="lang" data-es="Clientes" data-ca="Clients">Clientes</option>
-                            <option value="3" class="lang" data-es="Proveedores" data-ca="Proveïdors">Proveedores</option>
-                            <option value="4" class="lang" data-es="Inversores" data-ca="Inversors">Inversores</option>
-                            <option value="5" class="lang" data-es="Otros" data-ca="Altres">Otros</option>
-                        </select>
-                    </div>
-                    <div class="btn-group">
-                        <button id="add-node" class="btn btn-primary">
-                            <span>✨</span> <span class="lang" data-es="Añadir Rol" data-ca="Afegir Rol">Añadir Rol</span>
-                        </button>
-                    </div>
+                <div class="btn-group">
+                    <button id="add-node" class="btn btn-primary">
+                        <span>✨</span> <span class="lang" data-es="Añadir Rol" data-ca="Afegir Rol">Añadir Rol</span>
+                    </button>
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;">
-                    <h2 class="lang" data-es="➕ Añadir Transacción" data-ca="➕ Afegir Transacció">➕ Añadir Transacción</h2>
-                    <div class="input-group">
-                        <label class="lang" data-es="Rol Origen" data-ca="Rol Origen">Rol Origen</label>
+                <div class="transaction-form">
+                    <h3 class="lang" data-es="Nueva Transacción" data-ca="Nova Transacció">Nueva Transacción</h3>
+                    <div class="form-row">
+                        <label class="lang" data-es="De:" data-ca="De:">De:</label>
                         <select id="source-node">
-                            <!-- Will be populated dynamically -->
+                            <option class="lang" data-es="Selecciona un rol de origen" data-ca="Selecciona un rol d'origen">Selecciona un rol de origen</option>
                         </select>
                     </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Rol Destino" data-ca="Rol Destí">Rol Destino</label>
+                    <div class="form-row">
+                        <label class="lang" data-es="Para:" data-ca="Per a:">Para:</label>
                         <select id="target-node">
-                            <!-- Will be populated dynamically -->
+                            <option class="lang" data-es="Selecciona un rol destino" data-ca="Selecciona un rol destí">Selecciona un rol destino</option>
                         </select>
                     </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Entregable" data-ca="Entregable">Entregable</label>
+                    <div class="form-row">
+                        <label class="lang" data-es="Tipo:" data-ca="Tipus:">Tipo:</label>
+                        <select id="deliverable-type">
+                            <option value="tangible" class="lang" data-es="Tangible (bienes, servicios)" data-ca="Tangible (béns, serveis)">Tangible (bienes, servicios)</option>
+                            <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento)" data-ca="Intangible (confiança, coneixement)">Intangible (confianza, conocimiento)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
                         <input type="text" id="deliverable-name" placeholder="Ej: Informe de mercado">
                     </div>
-                    <div class="btn-group">
+                    <div class="btn-group" style="margin-top: 15px;">
                         <button id="add-link" class="btn btn-primary">
                             <span>🔗</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
                         </button>
                     </div>
+                </div>
+                
+                <div class="quick-add">
+                    <h3 class="lang" data-es="Comenzar Rápido" data-ca="Començar Ràpid">Comenzar Rápido</h3>
+                    <p class="lang" data-es="Añade roles y transacciones de ejemplo para ver cómo funciona el mapa de valor." data-ca="Afegeix rols i transaccions d'exemple per veure com funciona el mapa de valor.">Añade roles y transacciones de ejemplo para ver cómo funciona el mapa de valor.</p>
+                    <button id="quick-start" class="quick-add-btn">
+                        <span>🚀</span> <span class="lang" data-es="Añadir Ejemplo" data-ca="Afegir Exemple">Añadir Ejemplo</span>
+                    </button>
                 </div>
                 
                 <div class="panel" style="margin-top: 25px;">
@@ -724,6 +863,9 @@
                         </button>
                         <button id="export-roles-csv" class="btn btn-success">
                             <span>👥</span> <span class="lang" data-es="Exportar Roles como CSV" data-ca="Exportar Rols com a CSV">Exportar Roles como CSV</span>
+                        </button>
+                        <button id="export-png" class="btn btn-warning">
+                            <span>🖼️</span> <span class="lang" data-es="Exportar como PNG" data-ca="Exportar com a PNG">Exportar como PNG</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
@@ -737,6 +879,15 @@
                     <p class="lang" data-es="<strong>Formato del CSV:</strong> El archivo exportado contendrá una columna 'Rol' con todos los roles/nodos de tu mapa de valor. Este formato es compatible con la importación en la App de Contabilidad de Valor." data-ca="<strong>Format de l'CSV:</strong> L'arxiu exportat contindrà una columna 'Rol' amb tots els rols/nodes del teu mapa de valor. Aquest format és compatible amb la importació a l'App de Comptabilitat de Valor."><strong>Formato del CSV:</strong> El archivo exportado contendrá una columna 'Rol' con todos los roles/nodos de tu mapa de valor. Este formato es compatible con la importación en la App de Contabilidad de Valor.</p>
                 </div>
                 
+                <div class="test-section">
+                    <h3 class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</h3>
+                    <p class="lang" data-es="Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador." data-ca="Executa proves automàtiques per verificar que l'aplicació funcioni correctament al teu navegador.">Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador.</p>
+                    <button id="run-tests" class="btn btn-warning" style="width: 100%;">
+                        <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</span>
+                    </button>
+                    <div id="test-results" class="test-results"></div>
+                </div>
+                
                 <div class="integration-section" style="margin-top: 25px;">
                     <h3 class="lang" data-es="Siguiente Paso: Value Accounting App" data-ca="Pas Següent: App Comptabilitat de Valor">Siguiente Paso: Value Accounting App</h3>
                     <p class="lang" data-es="Una vez hayas mapeado los flujos de valor y exportado los roles, continúa en la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a> para registrar entregables, asignar usuarios por rol y preparar para la tokenización." data-ca="Un cop hagis mapejat els fluxos de valor i exportat els rols, continua a l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a> per registrar entregables, assignar usuaris per rol i preparar per a la tokenització.">Una vez hayas mapeado los flujos de valor y exportado los roles, continúa en la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a> para registrar entregables, asignar usuarios por rol y preparar para la tokenización.</p>
@@ -745,16 +896,13 @@
             
             <div class="visualization-container">
                 <h2>🗺️ <span class="lang" data-es="Mapa de Valor Visual" data-ca="Mapa de Valor Visual">Mapa de Valor Visual</span></h2>
-                <div class="chart-container" id="network-container">
+                <div id="network-container">
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                         <h3 class="lang" data-es="No hay nodos en el mapa aún" data-ca="No hi ha nodes al mapa encara">No hay nodos en el mapa aún</h3>
-                        <p class="lang" data-es="Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo." data-ca="Afegeix rols i transaccions per visualitzar el teu mapa de valor. Comença afegint rols al tauler esquerre.">Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo.</p>
-                        <button id="quick-start-vna" class="btn btn-primary">
-                            <span>🚀</span> <span class="lang" data-es="Añadir Roles de Ejemplo" data-ca="Afegir Rols d'Exemple">Añadir Roles de Ejemplo</span>
-                        </button>
+                        <p class="lang" data-es="Añade roles y transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo." data-ca="Afegeix rols i transaccions per visualitzar el teu mapa de valor. Utilitza el botó 'Afegir Exemple' per veure un mapa d'exemple.">Añade roles y transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo.</p>
                     </div>
                 </div>
                 
@@ -816,13 +964,217 @@
         </div>
     </footer>
     
+    <!-- vis-network JS -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    
     <script>
+        // ========== TEST-DRIVEN DEVELOPMENT FRAMEWORK ==========
+        const testSuite = {
+            results: [],
+            assert: {
+                equals: function(actual, expected, testName) {
+                    const passed = actual === expected;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: expected
+                    });
+                    return passed;
+                },
+                truthy: function(actual, testName) {
+                    const passed = !!actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'truthy value'
+                    });
+                    return passed;
+                },
+                falsy: function(actual, testName) {
+                    const passed = !actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'falsy value'
+                    });
+                    return passed;
+                },
+                type: function(actual, expectedType, testName) {
+                    const actualType = typeof actual;
+                    const passed = actualType === expectedType;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actualType,
+                        expected: expectedType
+                    });
+                    return passed;
+                }
+            },
+            runTests: function() {
+                this.results = [];
+                
+                // Test 1: Network container exists
+                this.assert.truthy(document.getElementById('network-container'), "Network container exists");
+                
+                // Test 2: Add node button exists
+                this.assert.truthy(document.getElementById('add-node'), "Add node button exists");
+                
+                // Test 3: Add link button exists
+                this.assert.truthy(document.getElementById('add-link'), "Add link button exists");
+                
+                // Test 4: Export JSON button exists
+                this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
+                
+                // Test 5: Export CSV button exists
+                this.assert.truthy(document.getElementById('export-roles-csv'), "Export CSV button exists");
+                
+                // Test 6: Export PNG button exists
+                this.assert.truthy(document.getElementById('export-png'), "Export PNG button exists");
+                
+                // Test 7: Reset button exists
+                this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
+                
+                // Test 8: Quick start button exists
+                this.assert.truthy(document.getElementById('quick-start'), "Quick start button exists");
+                
+                // Test 9: Initial state has no nodes
+                this.assert.equals(vnaData.nodes.length, 0, "Initial state has no nodes");
+                
+                // Test 10: Initial state has no edges
+                this.assert.equals(vnaData.edges.length, 0, "Initial state has no edges");
+                
+                // Test 11: Add a test node
+                addTestNode();
+                this.assert.equals(vnaData.nodes.length, 1, "Adding a node increases node count");
+                
+                // Test 12: Add a test edge
+                addTestEdge();
+                this.assert.equals(vnaData.edges.length, 1, "Adding an edge increases edge count");
+                
+                // Test 13: Export roles CSV function exists
+                this.assert.truthy(typeof exportRolesCSV === 'function', "exportRolesCSV function exists");
+                
+                // Test 14: Export JSON function exists
+                this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
+                
+                // Test 15: Network is initialized
+                this.assert.truthy(network !== null, "Network is initialized");
+                
+                // Clean up test data
+                resetTestData();
+                
+                return this.results;
+            },
+            displayResults: function(results) {
+                const testResultsDiv = document.getElementById('test-results');
+                testResultsDiv.style.display = 'block';
+                testResultsDiv.innerHTML = '';
+                
+                let passedCount = 0;
+                let failedCount = 0;
+                
+                results.forEach(result => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = result.passed ? 'test-pass' : 'test-fail';
+                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
+                        `   Expected: ${result.expected}<br/>` +
+                        `   Actual: ${result.actual}`;
+                    testResultsDiv.appendChild(resultDiv);
+                    
+                    if (result.passed) passedCount++;
+                    else failedCount++;
+                });
+                
+                // Summary
+                const summary = document.createElement('div');
+                summary.style.fontWeight = 'bold';
+                summary.style.marginTop = '15px';
+                summary.style.paddingTop = '10px';
+                summary.style.borderTop = '1px solid #ddd';
+                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
+                testResultsDiv.appendChild(summary);
+                
+                // Alert summary
+                if (failedCount === 0) {
+                    alert(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`);
+                } else {
+                    alert(`⚠️ Algunas pruebas fallaron (${failedCount}/${results.length}).\n\nRevisa los resultados en la sección de pruebas.`);
+                }
+            }
+        };
+        
+        // Test helper functions
+        function addTestNode() {
+            const newNode = {
+                id: 'test-node',
+                label: 'Test Node',
+                group: 1
+            };
+            vnaData.nodes.push(newNode);
+            nodes.add(newNode);
+        }
+        
+        function addTestEdge() {
+            if (vnaData.nodes.length < 2) {
+                const secondNode = {
+                    id: 'test-node-2',
+                    label: 'Test Node 2',
+                    group: 2
+                };
+                vnaData.nodes.push(secondNode);
+                nodes.add(secondNode);
+            }
+            
+            const newEdge = {
+                id: 'test-edge',
+                from: 'test-node',
+                to: 'test-node-2',
+                label: 'Test Deliverable',
+                type: 'tangible',
+                color: { color: '#1e3a8a', highlight: '#4f46e5' },
+                width: 2,
+                font: {
+                    size: 12,
+                    align: 'middle',
+                    background: 'white'
+                },
+                smooth: {
+                    enabled: true,
+                    type: "continuous",
+                    forceDirection: "none",
+                    roundness: 0.5
+                }
+            };
+            vnaData.edges.push(newEdge);
+            edges.add(newEdge);
+        }
+        
+        function resetTestData() {
+            // Remove test nodes and edges
+            nodes.remove(['test-node', 'test-node-2']);
+            edges.remove(['test-edge']);
+            
+            // Remove from vnaData
+            vnaData.nodes = vnaData.nodes.filter(n => !n.id.startsWith('test-node'));
+            vnaData.edges = vnaData.edges.filter(e => e.id !== 'test-edge');
+        }
+        
+        // ========== APPLICATION STATE AND FUNCTIONS ==========
         // Estado de la aplicación
         let vnaData = {
             projectName: "Proyecto MASIA",
             nodes: [],
-            links: []
+            edges: []
         };
+        
+        // vis-network variables
+        let nodes = null;
+        let edges = null;
+        let network = null;
         
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
@@ -832,11 +1184,17 @@
             // Cargar datos guardados
             loadSavedData();
             
+            // Inicializar la red
+            initNetwork();
+            
             // Configurar event listeners
             setupEventListeners();
             
-            // Actualizar visualizaciones
-            updateVisualization();
+            // Actualizar selectores de nodos
+            updateNodeSelectors();
+            
+            // Ejecutar pruebas iniciales
+            runInitialTests();
         });
         
         // Configurar selector de idioma
@@ -875,6 +1233,84 @@
             }
         }
         
+        // Inicializar la red de vis-network
+        function initNetwork() {
+            // Initialize the nodes and edges DataSet
+            nodes = new vis.DataSet();
+            edges = new vis.DataSet();
+            
+            // Get the container for the network
+            const container = document.getElementById('network-container');
+            
+            // Network options
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    size: 25,
+                    font: {
+                        size: 16,
+                        face: 'Tahoma'
+                    },
+                    borderWidth: 2,
+                    shadow: true
+                },
+                edges: {
+                    width: 2,
+                    color: {
+                        color: '#1e3a8a',
+                        highlight: '#4f46e5'
+                    },
+                    font: {
+                        size: 12,
+                        align: 'middle',
+                        background: 'white'
+                    },
+                    smooth: {
+                        enabled: true,
+                        type: "continuous",
+                        forceDirection: "none",
+                        roundness: 0.5
+                    },
+                    shadow: true,
+                    arrows: {
+                        to: { enabled: true, scaleFactor: 0.7 }
+                    }
+                },
+                physics: {
+                    enabled: true,
+                    solver: 'forceAtlas2Based',
+                    stabilization: {
+                        enabled: true,
+                        iterations: 100,
+                        updateInterval: 25
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 200
+                }
+            };
+            
+            // Initialize the network
+            network = new vis.Network(container, { nodes: nodes, edges: edges }, options);
+            
+            // Set up event listeners for the network
+            network.on('click', function(params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    const node = nodes.get(nodeId);
+                    alert(`Nodo seleccionado: ${node.label}`);
+                }
+                
+                if (params.edges.length > 0) {
+                    const edgeId = params.edges[0];
+                    const edge = edges.get(edgeId);
+                    const typeText = edge.type === 'tangible' ? 'Tangible' : 'Intangible';
+                    alert(`Transacción seleccionada:\n${edge.label}\nTipo: ${typeText}`);
+                }
+            });
+        }
+        
         // Configurar event listeners
         function setupEventListeners() {
             // Añadir nodo
@@ -889,11 +1325,17 @@
             // Exportar Roles CSV
             document.getElementById('export-roles-csv').addEventListener('click', exportRolesCSV);
             
+            // Exportar PNG
+            document.getElementById('export-png').addEventListener('click', exportPNG);
+            
             // Limpiar datos
             document.getElementById('reset-data').addEventListener('click', resetData);
             
             // Quick start
-            document.getElementById('quick-start-vna').addEventListener('click', quickStartVNA);
+            document.getElementById('quick-start').addEventListener('click', quickStartVNA);
+            
+            // Ejecutar pruebas
+            document.getElementById('run-tests').addEventListener('click', runTests);
             
             // Cambiar nombre del proyecto
             document.getElementById('project-name').addEventListener('change', function() {
@@ -905,7 +1347,6 @@
         // Añadir nodo/rol
         function addNode() {
             const nodeName = document.getElementById('node-name').value.trim();
-            const nodeGroup = document.getElementById('node-group').value;
             
             if (!nodeName) {
                 alert(document.documentElement.lang === 'ca' ? 
@@ -915,7 +1356,7 @@
             }
             
             // Verificar si el nodo ya existe
-            const existingNode = vnaData.nodes.find(n => n.id.toLowerCase() === nodeName.toLowerCase());
+            const existingNode = vnaData.nodes.find(n => n.label.toLowerCase() === nodeName.toLowerCase());
             if (existingNode) {
                 alert(document.documentElement.lang === 'ca' ? 
                     `El rol "${nodeName}" ja existeix` : 
@@ -924,27 +1365,30 @@
             }
             
             // Crear nuevo nodo
+            const nodeId = `node-${Date.now()}`;
             const newNode = {
-                id: nodeName,
+                id: nodeId,
                 label: nodeName,
-                group: parseInt(nodeGroup),
-                physics: true
+                group: vnaData.nodes.length % 5 + 1 // Cycle through 5 groups
             };
             
+            // Add to data structures
             vnaData.nodes.push(newNode);
+            nodes.add(newNode);
             
             // Guardar y actualizar
             saveData();
-            updateVisualization();
             updateNodeSelectors();
             
             // Limpiar formulario
             document.getElementById('node-name').value = '';
             
             // Feedback al usuario
-            alert(document.documentElement.lang === 'ca' ? 
+            const successMsg = document.documentElement.lang === 'ca' ? 
                 `Rol "${nodeName}" afegit correctament` : 
-                `Rol "${nodeName}" añadido correctamente`);
+                `Rol "${nodeName}" añadido correctamente`;
+            
+            showNotification(successMsg, 'success');
         }
         
         // Añadir enlace/transacción
@@ -952,6 +1396,7 @@
             const sourceNode = document.getElementById('source-node').value;
             const targetNode = document.getElementById('target-node').value;
             const deliverableName = document.getElementById('deliverable-name').value.trim();
+            const deliverableType = document.getElementById('deliverable-type').value;
             
             if (!sourceNode || !targetNode) {
                 alert(document.documentElement.lang === 'ca' ? 
@@ -974,41 +1419,81 @@
                 return;
             }
             
-            // Verificar si la transacción ya existe
-            const existingLink = vnaData.links.find(l => 
-                l.source === sourceNode && 
-                l.target === targetNode && 
-                l.deliverable === deliverableName
+            // Verificar si la transacción ya existe entre estos nodos con el mismo entregable
+            const existingEdge = vnaData.edges.find(e => 
+                e.from === sourceNode && 
+                e.to === targetNode && 
+                e.label === deliverableName
             );
             
-            if (existingLink) {
+            if (existingEdge) {
                 alert(document.documentElement.lang === 'ca' ? 
                     `La transacció de "${sourceNode}" a "${targetNode}" amb l'entregable "${deliverableName}" ja existeix` : 
                     `La transacción de "${sourceNode}" a "${targetNode}" con el entregable "${deliverableName}" ya existe`);
                 return;
             }
             
-            // Crear nueva transacción
-            const newLink = {
-                source: sourceNode,
-                target: targetNode,
-                deliverable: deliverableName,
-                type: document.getElementById('deliverable-type').value
+            // Create edge ID based on source, target and deliverable to avoid duplicates
+            const edgeId = `edge-${sourceNode}-${targetNode}-${deliverableName.replace(/\s+/g, '-')}`;
+            
+            // Determine edge appearance based on type
+            let edgeColor, edgeDashes;
+            if (deliverableType === 'tangible') {
+                edgeColor = { color: '#1e3a8a', highlight: '#4f46e5' };
+                edgeDashes = false;
+            } else {
+                edgeColor = { color: '#0ea5e9', highlight: '#0284c7' };
+                edgeDashes = [5, 5];
+            }
+            
+            // Create new edge with improved styling to avoid overlapping
+            const newEdge = {
+                id: edgeId,
+                from: sourceNode,
+                to: targetNode,
+                label: deliverableName,
+                type: deliverableType,
+                color: edgeColor,
+                dashes: edgeDashes,
+                width: 2,
+                font: {
+                    size: 12,
+                    align: 'middle',
+                    background: 'white',
+                    strokeWidth: 2,
+                    strokeColor: '#ffffff'
+                },
+                // Use different roundness values to avoid overlapping edges between same nodes
+                smooth: {
+                    enabled: true,
+                    type: "continuous",
+                    forceDirection: "none",
+                    roundness: 0.3 + (vnaData.edges.filter(e => e.from === sourceNode && e.to === targetNode).length * 0.2)
+                }
             };
             
-            vnaData.links.push(newLink);
+            // Add to data structures
+            vnaData.edges.push(newEdge);
+            edges.add(newEdge);
             
             // Guardar y actualizar
             saveData();
-            updateVisualization();
             
             // Limpiar formulario
             document.getElementById('deliverable-name').value = '';
             
             // Feedback al usuario
-            alert(document.documentElement.lang === 'ca' ? 
-                `Transacció afegida correctament de "${sourceNode}" a "${targetNode}"` : 
-                `Transacción añadida correctamente de "${sourceNode}" a "${targetNode}"`);
+            const successMsg = document.documentElement.lang === 'ca' ? 
+                `Transacció afegida correctament de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}"` : 
+                `Transacción añadida correctamente de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}"`;
+            
+            showNotification(successMsg, 'success');
+        }
+        
+        // Get node label by ID
+        function getNodeLabelById(nodeId) {
+            const node = vnaData.nodes.find(n => n.id === nodeId);
+            return node ? node.label : nodeId;
         }
         
         // Actualizar selectores de nodos
@@ -1016,9 +1501,13 @@
             const sourceSelect = document.getElementById('source-node');
             const targetSelect = document.getElementById('target-node');
             
-            // Limpiar opciones actuales
-            sourceSelect.innerHTML = '';
-            targetSelect.innerHTML = '';
+            // Save current selections
+            const currentSource = sourceSelect.value;
+            const currentTarget = targetSelect.value;
+            
+            // Limpiar opciones actuales excepto la primera
+            sourceSelect.innerHTML = '<option class="lang" data-es="Selecciona un rol de origen" data-ca="Selecciona un rol d\'origen">Selecciona un rol de origen</option>';
+            targetSelect.innerHTML = '<option class="lang" data-es="Selecciona un rol destino" data-ca="Selecciona un rol destí">Selecciona un rol destino</option>';
             
             // Añadir opciones para cada nodo
             vnaData.nodes.forEach(node => {
@@ -1032,79 +1521,158 @@
                 targetOption.textContent = node.label;
                 targetSelect.appendChild(targetOption);
             });
-        }
-        
-        // Actualizar visualización
-        function updateVisualization() {
-            const container = document.getElementById('network-container');
             
-            if (vnaData.nodes.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <h3 class="lang" data-es="No hay nodos en el mapa aún" data-ca="No hi ha nodes al mapa encara">No hay nodos en el mapa aún</h3>
-                        <p class="lang" data-es="Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo." data-ca="Afegeix rols i transaccions per visualitzar el teu mapa de valor. Comença afegint rols al tauler esquerre.">Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo.</p>
-                        <button id="quick-start-vna" class="btn btn-primary">
-                            <span>🚀</span> <span class="lang" data-es="Añadir Roles de Ejemplo" data-ca="Afegir Rols d'Exemple">Añadir Roles de Ejemplo</span>
-                        </button>
-                    </div>
-                `;
-                
-                // Reattach event listener
-                document.getElementById('quick-start-vna').addEventListener('click', quickStartVNA);
-                return;
+            // Restore selections if they still exist
+            if (vnaData.nodes.some(n => n.id === currentSource)) {
+                sourceSelect.value = currentSource;
             }
-            
-            // Aquí iría la visualización con vis-network o similar
-            // Para esta demostración, mostramos un resumen
-            container.innerHTML = `
-                <div style="padding: 20px; text-align: center;">
-                    <h3 class="lang" data-es="Mapa de Valor Generado" data-ca="Mapa de Valor Generat">Mapa de Valor Generado</h3>
-                    <p style="margin: 20px 0;"><strong class="lang" data-es="Proyecto:" data-ca="Projecte:">Proyecto:</strong> ${vnaData.projectName}</p>
-                    <p style="margin: 10px 0;"><strong class="lang" data-es="Roles/Nodos:" data-ca="Rols/Nodes:">Roles/Nodos:</strong> ${vnaData.nodes.length}</p>
-                    <p style="margin: 10px 0;"><strong class="lang" data-es="Transacciones:" data-ca="Transaccions:">Transacciones:</strong> ${vnaData.links.length}</p>
-                    <div style="margin-top: 30px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
-                        <p class="lang" data-es="✅ Tu mapa de valor está listo para ser exportado. Haz clic en 'Exportar Roles como CSV' para continuar en la App de Contabilidad de Valor." data-ca="✅ El teu mapa de valor està a punt per ser exportat. Fes clic a 'Exportar Rols com a CSV' per continuar a l'App de Comptabilitat de Valor.">✅ Tu mapa de valor está listo para ser exportado. Haz clic en 'Exportar Roles como CSV' para continuar en la App de Contabilidad de Valor.</p>
-                    </div>
-                </div>
-            `;
+            if (vnaData.nodes.some(n => n.id === currentTarget)) {
+                targetSelect.value = currentTarget;
+            }
         }
         
         // Quick start para VNA
         function quickStartVNA() {
-            // Añadir roles de ejemplo
+            // Clear existing data
+            if (vnaData.nodes.length > 0) {
+                if (!confirm(document.documentElement.lang === 'ca' ? 
+                    'Això esborrarà el teu mapa actual. Vols continuar?' : 
+                    'Esto borrará tu mapa actual. ¿Quieres continuar?')) {
+                    return;
+                }
+                resetDataWithoutConfirmation();
+            }
+            
+            // Add example roles
             const exampleRoles = [
-                {id: "Equipo Fundador", label: "Equipo Fundador", group: 1},
-                {id: "Clientes", label: "Clientes", group: 2},
-                {id: "Proveedores", label: "Proveedores", group: 3},
-                {id: "Inversores", label: "Inversores", group: 4},
-                {id: "Comunidad", label: "Comunidad", group: 5}
+                {id: "node-ceo", label: "CEO", group: 1},
+                {id: "node-team", label: "Equipo", group: 2},
+                {id: "node-clients", label: "Clientes", group: 3},
+                {id: "node-providers", label: "Proveedores", group: 4},
+                {id: "node-investors", label: "Inversores", group: 5}
             ];
             
-            // Limpiar nodos existentes
-            vnaData.nodes = [];
-            vnaData.links = [];
-            
-            // Añadir roles de ejemplo
+            // Add nodes
             exampleRoles.forEach(role => {
                 vnaData.nodes.push(role);
+                nodes.add(role);
+            });
+            
+            // Add example edges with different types and deliverables
+            const exampleEdges = [
+                {
+                    id: "edge-ceo-team-strategy",
+                    from: "node-ceo",
+                    to: "node-team",
+                    label: "Estrategia",
+                    type: "intangible",
+                    color: { color: '#0ea5e9', highlight: '#0284c7' },
+                    dashes: [5, 5]
+                },
+                {
+                    id: "edge-ceo-team-resources",
+                    from: "node-ceo",
+                    to: "node-team",
+                    label: "Recursos",
+                    type: "tangible",
+                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
+                    dashes: false
+                },
+                {
+                    id: "edge-team-clients-product",
+                    from: "node-team",
+                    to: "node-clients",
+                    label: "Producto",
+                    type: "tangible",
+                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
+                    dashes: false
+                },
+                {
+                    id: "edge-team-clients-support",
+                    from: "node-team",
+                    to: "node-clients",
+                    label: "Soporte",
+                    type: "intangible",
+                    color: { color: '#0ea5e9', highlight: '#0284c7' },
+                    dashes: [5, 5]
+                },
+                {
+                    id: "edge-clients-providers-feedback",
+                    from: "node-clients",
+                    to: "node-providers",
+                    label: "Feedback",
+                    type: "intangible",
+                    color: { color: '#0ea5e9', highlight: '#0284c7' },
+                    dashes: [5, 5]
+                },
+                {
+                    id: "edge-providers-team-materials",
+                    from: "node-providers",
+                    to: "node-team",
+                    label: "Materiales",
+                    type: "tangible",
+                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
+                    dashes: false
+                },
+                {
+                    id: "edge-investors-ceo-capital",
+                    from: "node-investors",
+                    to: "node-ceo",
+                    label: "Capital",
+                    type: "tangible",
+                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
+                    dashes: false
+                },
+                {
+                    id: "edge-ceo-investors-reports",
+                    from: "node-ceo",
+                    to: "node-investors",
+                    label: "Reportes",
+                    type: "intangible",
+                    color: { color: '#0ea5e9', highlight: '#0284c7' },
+                    dashes: [5, 5]
+                }
+            ];
+            
+            // Add edges with proper styling
+            exampleEdges.forEach(edge => {
+                edge.width = 2;
+                edge.font = {
+                    size: 12,
+                    align: 'middle',
+                    background: 'white',
+                    strokeWidth: 2,
+                    strokeColor: '#ffffff'
+                };
+                edge.smooth = {
+                    enabled: true,
+                    type: "continuous",
+                    forceDirection: "none",
+                    roundness: 0.5
+                };
+                vnaData.edges.push(edge);
+                edges.add(edge);
             });
             
             // Guardar y actualizar
             saveData();
-            updateVisualization();
             updateNodeSelectors();
             
             // Feedback al usuario
-            alert(document.documentElement.lang === 'ca' ? 
-                'S\'han afegit 5 rols d\'exemple al teu mapa de valor. Ara pots afegir transaccions entre ells.' : 
-                'Se han añadido 5 roles de ejemplo a tu mapa de valor. Ahora puedes añadir transacciones entre ellos.');
+            showNotification(document.documentElement.lang === 'ca' ? 
+                'S\'han afegit 5 rols i 8 transaccions d\'exemple al teu mapa de valor.' : 
+                'Se han añadido 5 roles y 8 transacciones de ejemplo a tu mapa de valor.', 'success');
         }
         
         // Exportar JSON
         function exportJSON() {
+            if (vnaData.nodes.length === 0) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'No hi ha dades per exportar. Crea un mapa de valor primer.' : 
+                    'No hay datos para exportar. Crea un mapa de valor primero.');
+                return;
+            }
+            
             const dataStr = JSON.stringify(vnaData, null, 2);
             const blob = new Blob([dataStr], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -1125,9 +1693,9 @@
                 URL.revokeObjectURL(url);
             }, 100);
             
-            alert(document.documentElement.lang === 'ca' ? 
+            showNotification(document.documentElement.lang === 'ca' ? 
                 'Dades exportades correctament com a JSON' : 
-                'Datos exportados correctamente como JSON');
+                'Datos exportados correctamente como JSON', 'success');
         }
         
         // Exportar Roles como CSV
@@ -1169,9 +1737,40 @@
                 URL.revokeObjectURL(url);
             }, 100);
             
-            alert(document.documentElement.lang === 'ca' ? 
+            showNotification(document.documentElement.lang === 'ca' ? 
                 `S'han exportat ${vnaData.nodes.length} rols com a CSV. Aquest arxiu és compatible amb la importació a l'App de Comptabilitat de Valor.` : 
-                `Se han exportado ${vnaData.nodes.length} roles como CSV. Este archivo es compatible con la importación en la App de Contabilidad de Valor.`);
+                `Se han exportado ${vnaData.nodes.length} roles como CSV. Este archivo es compatible con la importación en la App de Contabilidad de Valor.`, 'success');
+        }
+        
+        // Exportar como PNG
+        function exportPNG() {
+            if (vnaData.nodes.length === 0) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'No hi ha dades per exportar. Crea un mapa de valor primer.' : 
+                    'No hay datos para exportar. Crea un mapa de valor primero.');
+                return;
+            }
+            
+            // Get the PNG data URL
+            const pngData = network.getImage();
+            
+            // Create a link and trigger download
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', pngData);
+            linkElement.setAttribute('download', `vna-${vnaData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.png`);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+            }, 100);
+            
+            showNotification(document.documentElement.lang === 'ca' ? 
+                'Mapa de valor exportat correctament com a PNG' : 
+                'Mapa de valor exportado correctamente como PNG', 'success');
         }
         
         // Limpiar datos
@@ -1179,27 +1778,82 @@
             if (confirm(document.documentElement.lang === 'ca' ? 
                 'Estàs segur que vols esborrar totes les dades del mapa de valor?' : 
                 '¿Estás seguro de que quieres borrar todos los datos del mapa de valor?')) {
-                
-                vnaData = {
-                    projectName: "Proyecto MASIA",
-                    nodes: [],
-                    links: []
-                };
-                
-                // Limpiar campos de formulario
-                document.getElementById('project-name').value = "Proyecto MASIA";
-                document.getElementById('node-name').value = '';
-                document.getElementById('deliverable-name').value = '';
-                
-                saveData();
-                updateVisualization();
-                updateNodeSelectors();
-                
-                alert(document.documentElement.lang === 'ca' ? 
+                resetDataWithoutConfirmation();
+                showNotification(document.documentElement.lang === 'ca' ? 
                     'Dades esborrades correctament' : 
-                    'Datos borrados correctamente');
+                    'Datos borrados correctamente', 'success');
             }
         }
+        
+        // Reset data without confirmation (for quick start)
+        function resetDataWithoutConfirmation() {
+            // Clear data structures
+            vnaData = {
+                projectName: "Proyecto MASIA",
+                nodes: [],
+                edges: []
+            };
+            
+            // Clear vis-network data
+            nodes.clear();
+            edges.clear();
+            
+            // Limpiar campos de formulario
+            document.getElementById('project-name').value = "Proyecto MASIA";
+            document.getElementById('node-name').value = '';
+            document.getElementById('deliverable-name').value = '';
+            
+            // Update selectors
+            updateNodeSelectors();
+            
+            // Save
+            saveData();
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 25px';
+            notification.style.borderRadius = '8px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '600';
+            notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+            notification.style.zIndex = '10000';
+            notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 2.5s forwards';
+            notification.innerHTML = message;
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+            } else {
+                notification.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+            }
+            
+            // Add to body
+            document.body.appendChild(notification);
+            
+            // Remove after animation
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+        
+        // Add CSS animation for notifications
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(style);
         
         // Guardar datos en localStorage
         function saveData() {
@@ -1215,15 +1869,54 @@
                 vnaData = {
                     projectName: parsedData.projectName || "Proyecto MASIA",
                     nodes: parsedData.nodes || [],
-                    links: parsedData.links || []
+                    edges: parsedData.edges || []
                 };
                 
                 // Restaurar nombre del proyecto en el input
                 document.getElementById('project-name').value = vnaData.projectName;
                 
-                // Actualizar selectores de nodos
-                updateNodeSelectors();
+                // Add nodes to vis-network
+                vnaData.nodes.forEach(node => {
+                    nodes.add(node);
+                });
+                
+                // Add edges to vis-network
+                vnaData.edges.forEach(edge => {
+                    // Ensure edge has all required properties
+                    if (!edge.font) {
+                        edge.font = {
+                            size: 12,
+                            align: 'middle',
+                            background: 'white',
+                            strokeWidth: 2,
+                            strokeColor: '#ffffff'
+                        };
+                    }
+                    if (!edge.smooth) {
+                        edge.smooth = {
+                            enabled: true,
+                            type: "continuous",
+                            forceDirection: "none",
+                            roundness: 0.5
+                        };
+                    }
+                    edges.add(edge);
+                });
             }
+        }
+        
+        // Run initial tests
+        function runInitialTests() {
+            // Run a quick test to ensure everything is working
+            console.log("Running initial tests...");
+            const results = testSuite.runTests();
+            console.log(`Initial tests completed: ${results.filter(r => r.passed).length}/${results.length} passed`);
+        }
+        
+        // Run tests manually
+        function runTests() {
+            const results = testSuite.runTests();
+            testSuite.displayResults(results);
         }
     </script>
 </body>
