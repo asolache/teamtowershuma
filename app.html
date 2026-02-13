@@ -2062,27 +2062,46 @@
             }
             
             function exportJSON() {
-                if (nodes.length === 0) {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'No hi ha dades per exportar' : 
-                        'No hay datos para exportar');
-                    return;
-                }
-                
-                const dataStr = JSON.stringify({nodes, links}, null, 2);
-                const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `vna-data-teamtowers-huma-${new Date().toISOString().slice(0,10)}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-                
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Dades exportades correctament com a JSON' : 
-                    'Datos exportados exitosamente como JSON');
-            }
+    if (nodes.length === 0) {
+        alert(document.documentElement.lang === 'ca' ? 
+            'No hi ha dades per exportar' : 
+            'No hay datos para exportar');
+        return;
+    }
+    
+    // Crear versión limpia de los enlaces para exportación
+    const cleanLinks = links.map(link => {
+        return {
+            source: typeof link.source === 'object' ? link.source.id : link.source,
+            target: typeof link.target === 'object' ? link.target.id : link.target,
+            type: link.type,
+            deliverable: link.deliverable,
+            value: link.value
+        };
+    });
+    
+    // Crear versión limpia de los nodos para exportación
+    const cleanNodes = nodes.map(node => {
+        return {
+            id: node.id,
+            group: node.group
+        };
+    });
+    
+    const dataStr = JSON.stringify({nodes: cleanNodes, links: cleanLinks}, null, 2);
+    const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `vna-data-teamtowers-huma-${new Date().toISOString().slice(0,10)}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    alert(document.documentElement.lang === 'ca' ? 
+        'Dades exportades correctament com a JSON' : 
+        'Datos exportados exitosamente como JSON');
+}
             
             function copyData() {
                 if (nodes.length === 0) {
