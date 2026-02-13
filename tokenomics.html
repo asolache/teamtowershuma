@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tokenomics App | TeamTowers Humà. Diseña modelos tokenómicos con distribución transparente y proyecciones de evolución para tu proyecto de La Masia.">
+    <meta name="keywords" content="Tokenomics, blockchain, smart contracts, TeamTowers Humà, Vilafranca del Penedès, tokenización, stakeholders">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Tokenomics App | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Tokenomics App | TeamTowers Humà">
+    <meta property="og:description" content="Diseña modelos tokenómicos con distribución transparente y proyecciones de evolución para tu proyecto de La Masia.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/tokenomics">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tokenomics App | TeamTowers Humà">
+    <meta name="twitter:description" content="Modelos tokenómicos transparentes para proyectos de La Masia">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group label::before {
+            content: '•';
+            color: var(--accent);
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            background: var(--light);
+        }
+        
+        .timeline-chart {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .stakeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stakeholder-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        .stakeholder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stakeholder-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stakeholder-card h4::before {
+            content: '👤';
+        }
+        
+        .stakeholder-card .percentage {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stakeholder-card .tokens {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        
+        .role-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-top: 8px;
+        }
+        
+        .role-team {
+            background: rgba(16, 185, 129, 0.15);
+            color: #0d9488;
+        }
+        
+        .role-client {
+            background: rgba(30, 58, 138, 0.15);
+            color: #1e3a8a;
+        }
+        
+        .role-supplier {
+            background: rgba(139, 92, 246, 0.15);
+            color: #7e3af2;
+        }
+        
+        .role-investor {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+        
+        .vesting-badge {
+            background: rgba(79, 70, 229, 0.15);
+            color: #4f46e5;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .integration-section {
+            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .integration-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .integration-section h3::before {
+            content: '🔗';
+            font-size: 1.4rem;
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .integration-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .integration-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .integration-card img {
+            height: 40px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+        
+        .integration-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .integration-card p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .instructions h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions h3::before {
+            content: 'ℹ️';
+            font-size: 1.4rem;
+        }
+        
+        .instructions ol {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        
+        .instructions code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .token-creation {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+        }
+        
+        .token-creation h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+        }
+        
+        .distribution-model {
+            margin-top: 20px;
+        }
+        
+        .distribution-model label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .distribution-slider {
+            width: 100%;
+            margin: 15px 0;
+        }
+        
+        .slider-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .phase-item {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .phase-item h4 {
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .chart-container,
+            .timeline-container {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .header-logo {
+                height: 50px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .chart-container,
+            .timeline-container {
+                height: 250px;
+            }
+            
+            .stakeholder-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Tokenomics App" data-ca="Tokenomics App">Tokenomics App</h1>
+            <p class="tagline lang" data-es="Diseña modelos tokenómicos transparentes con distribución justa y proyecciones de evolución para tu proyecto de La Masia" data-ca="Disseña models tokenòmics transparents amb distribució justa i projeccions d'evolució per al teu projecte de La Masia">Diseña modelos tokenómicos transparentes con distribución justa y proyecciones de evolución para tu proyecto de La Masia</p>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <div class="panel">
+                <h2 class="lang" data-es="⚙️ Configuración del Token" data-ca="⚙️ Configuració del Token">⚙️ Configuración del Token</h2>
+                <div class="input-group">
+                    <label class="lang" data-es="Nombre del Token" data-ca="Nom del Token">Nombre del Token</label>
+                    <input type="text" id="token-name" placeholder="Ej: MASIA" value="MASIA">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Símbolo" data-ca="Símbol">Símbolo</label>
+                    <input type="text" id="token-symbol" placeholder="Ej: MSA" value="MSA">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Suministro Total" data-ca="Subministrament Total">Suministro Total</label>
+                    <input type="number" id="total-supply" placeholder="1000000" value="1000000" min="1000">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Model de Distribución" data-ca="Model de Distribució">Model de Distribución</label>
+                    <select id="distribution-model">
+                        <option value="fibonacci" class="lang" data-es="Modelo Fibonacci (dilución progresiva)" data-ca="Model Fibonacci (dilució progressiva)">Modelo Fibonacci (dilución progresiva)</option>
+                        <option value="linear" class="lang" data-es="Lineal (dilución constante)" data-ca="Lineal (dilució constant)">Lineal (dilución constante)</option>
+                        <option value="custom" class="lang" data-es="Personalizado (definir fases)" data-ca="Personalitzat (definir fases)">Personalizado (definir fases)</option>
+                    </select>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="📥 Integración con Apps" data-ca="📥 Integració amb Apps">📥 Integración con Apps</h2>
+                    <div class="btn-group">
+                        <button id="import-vna" class="btn btn-primary">
+                            <span>📊</span> <span class="lang" data-es="Importar VNA" data-ca="Importar VNA">Importar VNA</span>
+                        </button>
+                        <button id="import-value" class="btn btn-secondary">
+                            <span>💰</span> <span class="lang" data-es="Importar Contabilidad" data-ca="Importar Comptabilitat">Importar Contabilidad</span>
+                        </button>
+                        <button id="import-coops" class="btn btn-success">
+                            <span>📚</span> <span class="lang" data-es="Importar CoPs" data-ca="Importar CoPs">Importar CoPs</span>
+                        </button>
+                    </div>
+                    
+                    <div class="integration-section">
+                        <h3 class="lang" data-es="Conexión con el Sistema Integral" data-ca="Connexió amb el Sistema Integral">Conexión con el Sistema Integral</h3>
+                        <div class="integration-grid">
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="VNA">
+                                <h4 class="lang" data-es="VNA App" data-ca="VNA App">VNA App</h4>
+                                <p class="lang" data-es="Mapa de valor" data-ca="Mapa de valor">Mapa de valor</p>
+                            </div>
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Accounting">
+                                <h4 class="lang" data-es="Contabilidad" data-ca="Comptabilitat">Contabilidad</h4>
+                                <p class="lang" data-es="Valor entregables" data-ca="Valor entregables">Valor entregables</p>
+                            </div>
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="CoPs">
+                                <h4 class="lang" data-es="Comunidades" data-ca="Comunitats">Comunidades</h4>
+                                <p class="lang" data-es="Conocimiento" data-ca="Coneixement">Conocimiento</p>
+                            </div>
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="La Masia">
+                                <h4 class="lang" data-es="La Masia" data-ca="La Masia">La Masia</h4>
+                                <p class="lang" data-es="Sistema integral" data-ca="Sistema integral">Sistema integral</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="token-creation">
+                    <h3 class="lang" data-es="🎯 Distribución Inicial" data-ca="🎯 Distribució Inicial">🎯 Distribución Inicial</h3>
+                    <div class="distribution-model">
+                        <label class="lang" data-es="Inversores Iniciales" data-ca="Inversors Inicials">Inversores Iniciales</label>
+                        <input type="range" id="investors-slider" class="distribution-slider" min="0" max="100" value="40">
+                        <div class="slider-values">
+                            <span>0%</span>
+                            <span id="investors-value">40%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="distribution-model">
+                        <label class="lang" data-es="Equipo Fundador" data-ca="Equip Fundador">Equipo Fundador</label>
+                        <input type="range" id="team-slider" class="distribution-slider" min="0" max="100" value="25">
+                        <div class="slider-values">
+                            <span>0%</span>
+                            <span id="team-value">25%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="distribution-model">
+                        <label class="lang" data-es="Reserva del Proyecto" data-ca="Reserva del Projecte">Reserva del Proyecto</label>
+                        <input type="range" id="reserve-slider" class="distribution-slider" min="0" max="100" value="20">
+                        <div class="slider-values">
+                            <span>0%</span>
+                            <span id="reserve-value">20%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="distribution-model">
+                        <label class="lang" data-es="Comunidad (Staking)" data-ca="Comunitat (Staking)">Comunidad (Staking)</label>
+                        <input type="range" id="community-slider" class="distribution-slider" min="0" max="100" value="15">
+                        <div class="slider-values">
+                            <span>0%</span>
+                            <span id="community-value">15%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button id="simulate-tokenomics" class="btn btn-primary">
+                            <span>🚀</span> <span class="lang" data-es="Simular Tokenomics" data-ca="Simular Tokenomics">Simular Tokenomics</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
+                    <div class="btn-group">
+                        <button id="export-json" class="btn btn-export">
+                            <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
+                        </button>
+                        <button id="export-smart-contract" class="btn btn-export">
+                            <span>📜</span> <span class="lang" data-es="Generar Smart Contract" data-ca="Generar Smart Contract">Generar Smart Contract</span>
+                        </button>
+                        <button id="reset-data" class="btn btn-danger">
+                            <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="instructions" style="margin-top: 20px;">
+                    <h3 class="lang" data-es="Beneficios del Modelo Tokenómico" data-ca="Beneficis del Model Tokenòmic">Beneficios del Modelo Tokenómico</h3>
+                    <ol>
+                        <li class="lang" data-es="<strong>Transparencia total</strong> - Todos los stakeholders ven exactamente cómo se distribuyen los tokens y cómo evolucionará su participación" data-ca="<strong>Transparència total</strong> - Tots els stakeholders veuen exactament com es distribueixen els tokens i com evolucionarà la seva participació"><strong>Transparencia total</strong> - Todos los stakeholders ven exactamente cómo se distribuyen los tokens y cómo evolucionará su participación</li>
+                        <li class="lang" data-es="<strong>Aligación de incentivos</strong> - Los tokens recompensan a quienes aportan más valor al proyecto según la contabilidad de valor" data-ca="<strong>Aliniació d'incentius</strong> - Els tokens recompensen a qui aporta més valor al projecte segons la comptabilitat de valor"><strong>Aligación de incentivos</strong> - Los tokens recompensan a quienes aportan más valor al proyecto según la contabilidad de valor</li>
+                        <li class="lang" data-es="<strong>Captación de talento</strong> - El modelo Fibonacci permite diluir progresivamente la participación inicial para atraer nuevos stakeholders" data-ca="<strong>Captació de talent</strong> - El model Fibonacci permet diluir progressivament la participació inicial per atreure nous stakeholders"><strong>Captación de talento</strong> - El modelo Fibonacci permite diluir progresivamente la participación inicial para atraer nuevos stakeholders</li>
+                        <li class="lang" data-es="<strong>Gobernanza descentralizada</strong> - Los tokens permiten votar en decisiones estratégicas del proyecto" data-ca="<strong>Governança descentralitzada</strong> - Els tokens permeten votar en decisions estratègiques del projecte"><strong>Gobernanza descentralizada</strong> - Los tokens permiten votar en decisiones estratégicas del proyecto</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <h2>📈 <span class="lang" data-es="Distribución y Evolución de Tokens" data-ca="Distribució i Evolució de Tokens">Distribución y Evolución de Tokens</span></h2>
+                <div class="chart-container">
+                    <canvas id="tokenChart"></canvas>
+                </div>
+                
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="📊 Evolución de la Distribución en el Tiempo" data-ca="📊 Evolució de la Distribució en el Temps">📊 Evolución de la Distribución en el Tiempo</h3>
+                <div class="timeline-container">
+                    <canvas id="timelineChart" class="timeline-chart"></canvas>
+                </div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-tokens">1,000,000</div>
+                        <div class="stat-label lang" data-es="Tokens Totales" data-ca="Tokens Totals">Tokens Totales</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="circulating-supply">400,000</div>
+                        <div class="stat-label lang" data-es="En Circulación" data-ca="En Circulació">En Circulación</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="vesting-tokens">250,000</div>
+                        <div class="stat-label lang" data-es="Con Vesting" data-ca="Amb Vesting">Con Vesting</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="phases-count">4</div>
+                        <div class="stat-label lang" data-es="Fases del Modelo" data-ca="Fases del Model">Fases del Modelo</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="👥 Distribución Actual por Stakeholders" data-ca="👥 Distribució Actual per Stakeholders">👥 Distribución Actual por Stakeholders</h3>
+                <div id="stakeholder-grid" class="stakeholder-grid">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <h3 class="lang" data-es="No hay stakeholders configurados aún" data-ca="No hi ha stakeholders configurats encara">No hay stakeholders configurados aún</h3>
+                        <p class="lang" data-es="Simula tu modelo tokenómico para ver la distribución entre stakeholders" data-ca="Simula el teu model tokenòmic per veure la distribució entre stakeholders">Simula tu modelo tokenómico para ver la distribución entre stakeholders</p>
+                    </div>
+                </div>
+                
+                <div class="integration-section" style="margin-top: 30px;">
+                    <h3 class="lang" data-es="💡 Modelo Fibonacci de Dilución" data-ca="💡 Model Fibonacci de Dilució">💡 Modelo Fibonacci de Dilución</h3>
+                    <p class="lang" data-es="Nuestro modelo Fibonacci permite una dilución progresiva y predecible de la participación inicial. En cada fase, la dilución sigue la secuencia de Fibonacci (1, 1, 2, 3, 5, 8...), lo que significa que la dilución inicial es menor y aumenta gradualmente a medida que el proyecto madura y necesita atraer nuevos stakeholders. Esto protege a los inversores iniciales mientras permite la incorporación de talento, proveedores y clientes a lo largo del tiempo." data-ca="El nostre model Fibonacci permet una dilució progressiva i previsible de la participació inicial. A cada fase, la dilució segueix la seqüència de Fibonacci (1, 1, 2, 3, 5, 8...), cosa que significa que la dilució inicial és menor i augmenta gradualment a mesura que el projecte madura i necessita atreure nous stakeholders. Això protegeix els inversors inicials mentre permet la incorporació de talent, proveïdors i clients al llarg del temps.">Nuestro modelo Fibonacci permite una dilución progresiva y predecible de la participación inicial. En cada fase, la dilución sigue la secuencia de Fibonacci (1, 1, 2, 3, 5, 8...), lo que significa que la dilución inicial es menor y aumenta gradualmente a medida que el proyecto madura y necesita atraer nuevos stakeholders. Esto protege a los inversores iniciales mientras permite la incorporación de talento, proveedores y clientes a lo largo del tiempo.</p>
+                    
+                    <div class="phase-item">
+                        <h4 class="lang" data-es="Fase 1: Lanzamiento (Meses 1-6)" data-ca="Fase 1: Llançament (Mesos 1-6)">Fase 1: Lanzamiento (Meses 1-6)</h4>
+                        <p class="lang" data-es="Dilución: 5% - Enfoque en validación del modelo y primeros clientes" data-ca="Dilució: 5% - Enfocament en validació del model i primers clients">Dilución: 5% - Enfoque en validación del modelo y primeros clientes</p>
+                    </div>
+                    
+                    <div class="phase-item">
+                        <h4 class="lang" data-es="Fase 2: Crecimiento (Meses 7-18)" data-ca="Fase 2: Creixement (Mesos 7-18)">Fase 2: Crecimiento (Meses 7-18)</h4>
+                        <p class="lang" data-es="Dilución: 8% - Incorporación de talento clave y expansión de mercado" data-ca="Dilució: 8% - Incorporació de talent clau i expansió de mercat">Dilución: 8% - Incorporación de talento clave y expansión de mercado</p>
+                    </div>
+                    
+                    <div class="phase-item">
+                        <h4 class="lang" data-es="Fase 3: Escalado (Meses 19-36)" data-ca="Fase 3: Escalat (Mesos 19-36)">Fase 3: Escalado (Meses 19-36)</h4>
+                        <p class="lang" data-es="Dilución: 13% - Expansión internacional y nuevos productos/servicios" data-ca="Dilució: 13% - Expansió internacional i nous productes/serveis">Dilución: 13% - Expansión internacional y nuevos productos/servicios</p>
+                    </div>
+                    
+                    <div class="phase-item">
+                        <h4 class="lang" data-es="Fase 4: Madurez (Meses 37+)" data-ca="Fase 4: Maduresa (Mesos 37+)">Fase 4: Madurez (Meses 37+)</h4>
+                        <p class="lang" data-es="Dilución: 21% - Consolidación y nuevos mercados" data-ca="Dilució: 21% - Consolidació i nous mercats">Dilución: 21% - Consolidación y nuevos mercados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="La Masia" data-ca="La Masia">La Masia</a></li>
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Apps" data-ca="Apps">Apps</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
+                    <li><a href="https://teamtowershuma.com/app_coops" class="lang" data-es="App Comunidades de Práctica" data-ca="App Comunitats de Pràctica">App Comunidades de Práctica</a></li>
+                    <li><a href="#" class="lang" data-es="App Tokenomics" data-ca="App Tokenomics">App Tokenomics</a></li>
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema Tokenómico para proyectos de La Masia con distribución transparente y modelo Fibonacci de dilución progresiva." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema Tokenòmic per a projectes de La Masia amb distribució transparent i model Fibonacci de dilució progressiva.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema Tokenómico para proyectos de La Masia con distribución transparente y modelo Fibonacci de dilución progresiva.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Estado de la aplicación
+        let tokenomicsData = {
+            tokenName: "MASIA",
+            tokenSymbol: "MSA",
+            totalSupply: 1000000,
+            distributionModel: "fibonacci",
+            initialDistribution: {
+                investors: 40,
+                team: 25,
+                reserve: 20,
+                community: 15
+            },
+            stakeholders: [],
+            phases: [
+                { name: "Fase 1: Lanzamiento", months: "1-6", dilution: 5 },
+                { name: "Fase 2: Crecimiento", months: "7-18", dilution: 8 },
+                { name: "Fase 3: Escalado", months: "19-36", dilution: 13 },
+                { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
+            ],
+            timelineData: null
+        };
+        
+        let tokenChart = null;
+        let timelineChart = null;
+        
+        // Inicialización cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones de idioma
+            setupLanguageSelector();
+            
+            // Cargar datos guardados
+            loadSavedData();
+            
+            // Inicializar gráficos
+            initCharts();
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Actualizar visualizaciones
+            updateVisualizations();
+        });
+        
+        // Configurar selector de idioma
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Establecer idioma inicial
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Event listeners para botones de idioma
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Actualizar botón activo
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            function setActiveLanguage(lang) {
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                document.documentElement.setAttribute('lang', lang);
+            }
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Sliders de distribución
+            document.getElementById('investors-slider').addEventListener('input', updateDistribution);
+            document.getElementById('team-slider').addEventListener('input', updateDistribution);
+            document.getElementById('reserve-slider').addEventListener('input', updateDistribution);
+            document.getElementById('community-slider').addEventListener('input', updateDistribution);
+            
+            // Simular tokenomics
+            document.getElementById('simulate-tokenomics').addEventListener('click', simulateTokenomics);
+            
+            // Importar datos
+            document.getElementById('import-vna').addEventListener('click', importVNA);
+            document.getElementById('import-value').addEventListener('click', importValueAccounting);
+            document.getElementById('import-coops').addEventListener('click', importCoPs);
+            
+            // Exportar datos
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('export-smart-contract').addEventListener('click', exportSmartContract);
+            
+            // Limpiar datos
+            document.getElementById('reset-data').addEventListener('click', resetData);
+            
+            // Cambiar modelo de distribución
+            document.getElementById('distribution-model').addEventListener('change', function() {
+                tokenomicsData.distributionModel = this.value;
+                saveData();
+            });
+        }
+        
+        // Actualizar distribución en tiempo real
+        function updateDistribution() {
+            const investorsSlider = document.getElementById('investors-slider');
+            const teamSlider = document.getElementById('team-slider');
+            const reserveSlider = document.getElementById('reserve-slider');
+            const communitySlider = document.getElementById('community-slider');
+            
+            // Calcular suma total
+            const total = parseInt(investorsSlider.value) + 
+                         parseInt(teamSlider.value) + 
+                         parseInt(reserveSlider.value) + 
+                         parseInt(communitySlider.value);
+            
+            // Si excede 100%, ajustar proporcionalmente
+            if (total > 100) {
+                const ratio = 100 / total;
+                investorsSlider.value = Math.round(parseInt(investorsSlider.value) * ratio);
+                teamSlider.value = Math.round(parseInt(teamSlider.value) * ratio);
+                reserveSlider.value = Math.round(parseInt(reserveSlider.value) * ratio);
+                communitySlider.value = Math.round(parseInt(communitySlider.value) * ratio);
+            }
+            
+            // Actualizar valores mostrados
+            document.getElementById('investors-value').textContent = `${investorsSlider.value}%`;
+            document.getElementById('team-value').textContent = `${teamSlider.value}%`;
+            document.getElementById('reserve-value').textContent = `${reserveSlider.value}%`;
+            document.getElementById('community-value').textContent = `${communitySlider.value}%`;
+        }
+        
+        // Simular tokenomics
+        function simulateTokenomics() {
+            // Actualizar datos
+            tokenomicsData.tokenName = document.getElementById('token-name').value;
+            tokenomicsData.tokenSymbol = document.getElementById('token-symbol').value;
+            tokenomicsData.totalSupply = parseInt(document.getElementById('total-supply').value);
+            tokenomicsData.distributionModel = document.getElementById('distribution-model').value;
+            
+            tokenomicsData.initialDistribution = {
+                investors: parseInt(document.getElementById('investors-slider').value),
+                team: parseInt(document.getElementById('team-slider').value),
+                reserve: parseInt(document.getElementById('reserve-slider').value),
+                community: parseInt(document.getElementById('community-slider').value)
+            };
+            
+            // Generar stakeholders simulados basados en la distribución
+            generateStakeholders();
+            
+            // Calcular evolución temporal según modelo
+            calculateTimeline();
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualizations();
+            
+            // Feedback al usuario
+            alert(document.documentElement.lang === 'ca' ? 
+                'Simulació completada! S\'ha generat la distribució de tokens i l\'evolució temporal.' : 
+                '¡Simulación completada! Se ha generado la distribución de tokens y la evolución temporal.');
+        }
+        
+        // Generar stakeholders simulados
+        function generateStakeholders() {
+            tokenomicsData.stakeholders = [
+                {
+                    id: 'investors',
+                    name: document.documentElement.lang === 'ca' ? 'Inversors Inicials' : 'Inversores Iniciales',
+                    type: 'investor',
+                    percentage: tokenomicsData.initialDistribution.investors,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.investors / 100),
+                    vesting: '4 años con 1 año de cliff',
+                    role: 'Capital inicial y recursos'
+                },
+                {
+                    id: 'team',
+                    name: document.documentElement.lang === 'ca' ? 'Equip Fundador' : 'Equipo Fundador',
+                    type: 'team',
+                    percentage: tokenomicsData.initialDistribution.team,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.team / 100),
+                    vesting: '4 años con 1 año de cliff',
+                    role: 'Liderazgo y ejecución'
+                },
+                {
+                    id: 'reserve',
+                    name: document.documentElement.lang === 'ca' ? 'Reserva del Projecte' : 'Reserva del Proyecto',
+                    type: 'reserve',
+                    percentage: tokenomicsData.initialDistribution.reserve,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.reserve / 100),
+                    vesting: 'Liberación programada',
+                    role: 'Desarrollo futuro y expansión'
+                },
+                {
+                    id: 'community',
+                    name: document.documentElement.lang === 'ca' ? 'Comunitat (Staking)' : 'Comunidad (Staking)',
+                    type: 'community',
+                    percentage: tokenomicsData.initialDistribution.community,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.community / 100),
+                    vesting: 'Recompensas por participación',
+                    role: 'Validación y gobernanza'
+                }
+            ];
+            
+            // Añadir stakeholders adicionales basados en apps importadas
+            if (tokenomicsData.vnaData && tokenomicsData.vnaData.nodes) {
+                tokenomicsData.vnaData.nodes.forEach((node, index) => {
+                    if (index < 5) { // Limitar a 5 stakeholders adicionales
+                        tokenomicsData.stakeholders.push({
+                            id: `node-${index}`,
+                            name: node.id,
+                            type: index % 2 === 0 ? 'client' : 'supplier',
+                            percentage: (5 / tokenomicsData.vnaData.nodes.length),
+                            tokens: Math.round(tokenomicsData.totalSupply * 5 / 100 / tokenomicsData.vnaData.nodes.length),
+                            vesting: 'Basado en entregables',
+                            role: 'Contribución de valor según VNA'
+                        });
+                    }
+                });
+            }
+        }
+        
+        // Calcular evolución temporal
+        function calculateTimeline() {
+            const labels = [];
+            const datasets = {
+                investors: [],
+                team: [],
+                reserve: [],
+                community: []
+            };
+            
+            let currentInvestors = tokenomicsData.initialDistribution.investors;
+            let currentTeam = tokenomicsData.initialDistribution.team;
+            let currentReserve = tokenomicsData.initialDistribution.reserve;
+            let currentCommunity = tokenomicsData.initialDistribution.community;
+            
+            // Punto inicial
+            labels.push('Inicio');
+            datasets.investors.push(currentInvestors);
+            datasets.team.push(currentTeam);
+            datasets.reserve.push(currentReserve);
+            datasets.community.push(currentCommunity);
+            
+            // Calcular para cada fase
+            tokenomicsData.phases.forEach((phase, index) => {
+                const dilution = phase.dilution / 100;
+                
+                // Aplicar dilución según modelo Fibonacci
+                if (tokenomicsData.distributionModel === 'fibonacci') {
+                    // La dilución se aplica principalmente a inversores y equipo
+                    const investorsDilution = dilution * 0.6;
+                    const teamDilution = dilution * 0.25;
+                    const reserveDilution = dilution * 0.1;
+                    const communityDilution = dilution * 0.05;
+                    
+                    currentInvestors *= (1 - investorsDilution);
+                    currentTeam *= (1 - teamDilution);
+                    currentReserve *= (1 - reserveDilution);
+                    currentCommunity *= (1 - communityDilution);
+                } else if (tokenomicsData.distributionModel === 'linear') {
+                    // Dilución lineal igual para todos
+                    currentInvestors *= (1 - dilution/4);
+                    currentTeam *= (1 - dilution/4);
+                    currentReserve *= (1 - dilution/4);
+                    currentCommunity *= (1 - dilution/4);
+                }
+                
+                labels.push(phase.name);
+                datasets.investors.push(Math.round(currentInvestors * 10) / 10);
+                datasets.team.push(Math.round(currentTeam * 10) / 10);
+                datasets.reserve.push(Math.round(currentReserve * 10) / 10);
+                datasets.community.push(Math.round(currentCommunity
