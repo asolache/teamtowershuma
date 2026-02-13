@@ -606,6 +606,59 @@
             font-size: 1.1rem;
         }
         
+        .import-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .import-section h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .import-section h3::before {
+            content: '📊';
+            font-size: 1.4rem;
+        }
+        
+        .csv-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .csv-row {
+            display: flex;
+            padding: 5px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .csv-header {
+            font-weight: 700;
+            background: var(--light);
+        }
+        
+        .csv-cell {
+            flex: 1;
+            padding: 0 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
         /* Footer */
         footer {
             background: var(--dark);
@@ -782,8 +835,8 @@
                         <button id="import-vna" class="btn btn-primary">
                             <span>📊</span> <span class="lang" data-es="Importar VNA" data-ca="Importar VNA">Importar VNA</span>
                         </button>
-                        <button id="import-value" class="btn btn-secondary">
-                            <span>💰</span> <span class="lang" data-es="Importar Contabilidad" data-ca="Importar Comptabilitat">Importar Contabilidad</span>
+                        <button id="import-value-csv" class="btn btn-secondary">
+                            <span>📄</span> <span class="lang" data-es="Importar CSV Contabilidad" data-ca="Importar CSV Comptabilitat">Importar CSV Contabilidad</span>
                         </button>
                         <button id="import-coops" class="btn btn-success">
                             <span>📚</span> <span class="lang" data-es="Importar CoPs" data-ca="Importar CoPs">Importar CoPs</span>
@@ -814,6 +867,31 @@
                                 <p class="lang" data-es="Sistema integral" data-ca="Sistema integral">Sistema integral</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="import-section">
+                    <h3 class="lang" data-es="Importar Datos de Contabilidad de Valor" data-ca="Importar Dades de Comptabilitat de Valor">Importar Datos de Contabilidad de Valor</h3>
+                    <p class="lang" data-es="Importa el archivo CSV exportado desde la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a> para visualizar la distribución real de tokens según el valor aportado por cada stakeholder." data-ca="Importa el fitxer CSV exportat des de l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a> per visualitzar la distribució real de tokens segons el valor aportat per cada stakeholder.">Importa el archivo CSV exportado desde la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a> para visualizar la distribución real de tokens según el valor aportado por cada stakeholder.</p>
+                    
+                    <div class="input-group">
+                        <label class="lang" data-es="Archivo CSV de Contabilidad de Valor" data-ca="Fitxer CSV de Comptabilitat de Valor">Archivo CSV de Contabilidad de Valor</label>
+                        <input type="file" id="value-csv-file" accept=".csv">
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button id="process-csv" class="btn btn-primary">
+                            <span>🔄</span> <span class="lang" data-es="Procesar CSV" data-ca="Processar CSV">Procesar CSV</span>
+                        </button>
+                    </div>
+                    
+                    <div id="csv-preview" class="csv-preview" style="display: none;">
+                        <div class="csv-row csv-header">
+                            <div class="csv-cell lang" data-es="Rol" data-ca="Rol">Rol</div>
+                            <div class="csv-cell lang" data-es="Entregable" data-ca="Entregable">Entregable</div>
+                            <div class="csv-cell lang" data-es="Valor" data-ca="Valor">Valor</div>
+                        </div>
+                        <!-- CSV data will be inserted here dynamically -->
                     </div>
                 </div>
                 
@@ -929,7 +1007,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
                         <h3 class="lang" data-es="No hay stakeholders configurados aún" data-ca="No hi ha stakeholders configurats encara">No hay stakeholders configurados aún</h3>
-                        <p class="lang" data-es="Simula tu modelo tokenómico para ver la distribución entre stakeholders" data-ca="Simula el teu model tokenòmic per veure la distribució entre stakeholders">Simula tu modelo tokenómico para ver la distribución entre stakeholders</p>
+                        <p class="lang" data-es="Importa tu CSV de Contabilidad de Valor o simula tu modelo tokenómico para ver la distribución entre stakeholders" data-ca="Importa el teu CSV de Comptabilitat de Valor o simula el teu model tokenòmic per veure la distribució entre stakeholders">Importa tu CSV de Contabilidad de Valor o simula tu modelo tokenómico para ver la distribución entre stakeholders</p>
                     </div>
                 </div>
                 
@@ -1030,7 +1108,9 @@
                 { name: "Fase 3: Escalado", months: "19-36", dilution: 13 },
                 { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
             ],
-            timelineData: null
+            timelineData: null,
+            isImportMode: false, // Flag para saber si estamos en modo importación
+            importedData: null // Datos importados del CSV
         };
         
         let tokenChart = null;
@@ -1103,7 +1183,11 @@
             
             // Importar datos
             document.getElementById('import-vna').addEventListener('click', importVNA);
-            document.getElementById('import-value').addEventListener('click', importValueAccounting);
+            document.getElementById('import-value-csv').addEventListener('click', () => {
+                document.getElementById('value-csv-file').click();
+            });
+            document.getElementById('value-csv-file').addEventListener('change', previewCSV);
+            document.getElementById('process-csv').addEventListener('click', processCSV);
             document.getElementById('import-coops').addEventListener('click', importCoPs);
             
             // Exportar datos
@@ -1149,8 +1233,191 @@
             document.getElementById('community-value').textContent = `${communitySlider.value}%`;
         }
         
+        // Previsualizar CSV
+        function previewCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const previewDiv = document.getElementById('csv-preview');
+                previewDiv.style.display = 'block';
+                previewDiv.innerHTML = '<div class="csv-row csv-header"><div class="csv-cell">Rol</div><div class="csv-cell">Entregable</div><div class="csv-cell">Valor</div></div>';
+                
+                // Parsear CSV y mostrar las primeras 5 filas
+                const rows = content.split('\n');
+                const headers = rows[0].split(',').map(h => h.trim());
+                
+                // Encontrar índices de las columnas que necesitamos
+                const roleIndex = headers.findIndex(h => h.toLowerCase().includes('rol'));
+                const deliverableIndex = headers.findIndex(h => h.toLowerCase().includes('entregable') || h.toLowerCase().includes('descripció'));
+                const valueIndex = headers.findIndex(h => h.toLowerCase().includes('valor'));
+                
+                // Mostrar hasta 5 filas de datos
+                const maxRows = Math.min(5, rows.length - 1);
+                for (let i = 1; i <= maxRows && i < rows.length; i++) {
+                    const cells = rows[i].split(',').map(c => c.trim());
+                    if (cells.length >= Math.max(roleIndex, deliverableIndex, valueIndex) + 1) {
+                        const rowDiv = document.createElement('div');
+                        rowDiv.className = 'csv-row';
+                        rowDiv.innerHTML = `
+                            <div class="csv-cell">${cells[roleIndex] || ''}</div>
+                            <div class="csv-cell">${cells[deliverableIndex] || ''}</div>
+                            <div class="csv-cell">${cells[valueIndex] || ''}</div>
+                        `;
+                        previewDiv.appendChild(rowDiv);
+                    }
+                }
+                
+                // Guardar el contenido para procesarlo después
+                tokenomicsData.csvContent = content;
+            };
+            reader.readAsText(file);
+        }
+        
+        // Procesar CSV importado
+        function processCSV() {
+            if (!tokenomicsData.csvContent) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Selecciona un archivo CSV primero' : 
+                    'Selecciona un archivo CSV primero');
+                return;
+            }
+            
+            try {
+                // Parsear el CSV
+                const rows = tokenomicsData.csvContent.split('\n');
+                const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+                
+                // Encontrar índices de las columnas que necesitamos
+                const roleIndex = headers.findIndex(h => h.includes('rol'));
+                const valueIndex = headers.findIndex(h => h.includes('valor'));
+                
+                if (roleIndex === -1 || valueIndex === -1) {
+                    throw new Error(document.documentElement.lang === 'ca' ? 
+                        'El archivo CSV no tiene las columnas necesarias (Rol, Valor)' : 
+                        'El archivo CSV no tiene las columnas necesarias (Rol, Valor)');
+                }
+                
+                // Agregar valor total por rol
+                const roleValues = {};
+                let totalValue = 0;
+                
+                for (let i = 1; i < rows.length; i++) {
+                    const cells = rows[i].split(',').map(c => c.trim());
+                    if (cells.length > Math.max(roleIndex, valueIndex)) {
+                        const role = cells[roleIndex].replace('@', '').toLowerCase();
+                        const value = parseFloat(cells[valueIndex]) || 0;
+                        
+                        if (value > 0) {
+                            roleValues[role] = (roleValues[role] || 0) + value;
+                            totalValue += value;
+                        }
+                    }
+                }
+                
+                // Calcular distribución de tokens basada en el valor aportado
+                const stakeholders = [];
+                let otherValue = 0;
+                let otherTokens = 0;
+                const maxStakeholders = 8; // Máximo de stakeholders a mostrar
+                
+                // Ordenar roles por valor y tomar los top
+                const sortedRoles = Object.entries(roleValues)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, maxStakeholders);
+                
+                // Roles que no entran en el top van a "Otros"
+                const allRoles = Object.entries(roleValues);
+                for (let i = maxStakeholders; i < allRoles.length; i++) {
+                    otherValue += allRoles[i][1];
+                }
+                
+                // Crear stakeholders para los top roles
+                sortedRoles.forEach(([role, value]) => {
+                    const percentage = (value / totalValue) * 100;
+                    const tokens = Math.round((value / totalValue) * tokenomicsData.totalSupply);
+                    
+                    // Determinar tipo de stakeholder basado en el nombre del rol
+                    let type = 'client';
+                    if (role.includes('inversor') || role.includes('invers')) type = 'investor';
+                    else if (role.includes('equip') || role.includes('team') || role.includes('fundador')) type = 'team';
+                    else if (role.includes('proveedor') || role.includes('supplier')) type = 'supplier';
+                    
+                    stakeholders.push({
+                        id: role,
+                        name: role.charAt(0).toUpperCase() + role.slice(1),
+                        type: type,
+                        percentage: parseFloat(percentage.toFixed(2)),
+                        tokens: tokens,
+                        vesting: document.documentElement.lang === 'ca' ? 'Basat en entregables' : 'Basado en entregables',
+                        role: document.documentElement.lang === 'ca' ? 'Aportació de valor segons registre' : 'Aportación de valor según registro',
+                        value: value
+                    });
+                });
+                
+                // Agregar "Otros" si hay roles restantes
+                if (otherValue > 0) {
+                    const otherPercentage = (otherValue / totalValue) * 100;
+                    otherTokens = Math.round((otherValue / totalValue) * tokenomicsData.totalSupply);
+                    
+                    stakeholders.push({
+                        id: 'others',
+                        name: document.documentElement.lang === 'ca' ? 'Altres Stakeholders' : 'Otros Stakeholders',
+                        type: 'client',
+                        percentage: parseFloat(otherPercentage.toFixed(2)),
+                        tokens: otherTokens,
+                        vesting: document.documentElement.lang === 'ca' ? 'Basat en entregables' : 'Basado en entregables',
+                        role: document.documentElement.lang === 'ca' ? 'Aportació de valor col·lectiva' : 'Aportación de valor colectiva',
+                        value: otherValue
+                    });
+                }
+                
+                // Actualizar datos de tokenomics
+                tokenomicsData.stakeholders = stakeholders;
+                tokenomicsData.isImportMode = true;
+                tokenomicsData.importedData = {
+                    totalValue: totalValue,
+                    roleValues: roleValues
+                };
+                
+                // Calcular evolución temporal según modelo Fibonacci
+                calculateTimeline();
+                
+                // Guardar y actualizar
+                saveData();
+                updateVisualizations();
+                
+                // Feedback al usuario
+                alert(document.documentElement.lang === 'ca' ? 
+                    `S'han processat ${Object.keys(roleValues).length} stakeholders del CSV. La distribució de tokens s'ha calculat segons el valor aportat.` : 
+                    `Se han procesado ${Object.keys(roleValues).length} stakeholders del CSV. La distribución de tokens se ha calculado según el valor aportado.`);
+            } catch (error) {
+                console.error('Error al procesar CSV:', error);
+                alert(document.documentElement.lang === 'ca' ? 
+                    `Error en processar el CSV: ${error.message}` : 
+                    `Error al procesar el CSV: ${error.message}`);
+            }
+        }
+        
         // Simular tokenomics
         function simulateTokenomics() {
+            // Si estamos en modo importación, no permitir simulación
+            if (tokenomicsData.isImportMode) {
+                if (!confirm(document.documentElement.lang === 'ca' ? 
+                    'Estàs en mode d\'importació de CSV. Si continues, es perdran les dades importades i es tornarà al mode de simulació. Vols continuar?' : 
+                    'Estás en modo de importación de CSV. Si continúas, se perderán los datos importados y se volverá al modo de simulación. ¿Quieres continuar?')) {
+                    return;
+                }
+                
+                // Resetear modo importación
+                tokenomicsData.isImportMode = false;
+                tokenomicsData.importedData = null;
+                document.getElementById('csv-preview').style.display = 'none';
+                document.getElementById('value-csv-file').value = '';
+            }
+            
             // Actualizar datos
             tokenomicsData.tokenName = document.getElementById('token-name').value;
             tokenomicsData.tokenSymbol = document.getElementById('token-symbol').value;
@@ -1246,47 +1513,731 @@
                 investors: [],
                 team: [],
                 reserve: [],
-                community: []
+                community: [],
+                currentStakeholders: [], // Para modo importación
+                futureContributors: []   // Para modo importación
             };
             
-            let currentInvestors = tokenomicsData.initialDistribution.investors;
-            let currentTeam = tokenomicsData.initialDistribution.team;
-            let currentReserve = tokenomicsData.initialDistribution.reserve;
-            let currentCommunity = tokenomicsData.initialDistribution.community;
-            
-            // Punto inicial
-            labels.push('Inicio');
-            datasets.investors.push(currentInvestors);
-            datasets.team.push(currentTeam);
-            datasets.reserve.push(currentReserve);
-            datasets.community.push(currentCommunity);
-            
-            // Calcular para cada fase
-            tokenomicsData.phases.forEach((phase, index) => {
-                const dilution = phase.dilution / 100;
+            // Si estamos en modo importación, usar un cálculo diferente
+            if (tokenomicsData.isImportMode && tokenomicsData.importedData) {
+                // Calcular la evolución para el modo importación
+                let currentTotalSupply = tokenomicsData.totalSupply;
+                let futureTokens = 0;
                 
-                // Aplicar dilución según modelo Fibonacci
-                if (tokenomicsData.distributionModel === 'fibonacci') {
-                    // La dilución se aplica principalmente a inversores y equipo
-                    const investorsDilution = dilution * 0.6;
-                    const teamDilution = dilution * 0.25;
-                    const reserveDilution = dilution * 0.1;
-                    const communityDilution = dilution * 0.05;
+                // Punto inicial (fase 0)
+                labels.push(document.documentElement.lang === 'ca' ? 'Ara' : 'Ahora');
+                datasets.currentStakeholders.push(100); // 100% para los stakeholders actuales
+                datasets.futureContributors.push(0);   // 0% para futuros contribuyentes
+                
+                // Calcular para cada fase
+                tokenomicsData.phases.forEach((phase, index) => {
+                    const dilution = phase.dilution / 100;
                     
-                    currentInvestors *= (1 - investorsDilution);
-                    currentTeam *= (1 - teamDilution);
-                    currentReserve *= (1 - reserveDilution);
-                    currentCommunity *= (1 - communityDilution);
-                } else if (tokenomicsData.distributionModel === 'linear') {
-                    // Dilución lineal igual para todos
-                    currentInvestors *= (1 - dilution/4);
-                    currentTeam *= (1 - dilution/4);
-                    currentReserve *= (1 - dilution/4);
-                    currentCommunity *= (1 - dilution/4);
-                }
+                    // Calcular nuevos tokens a acuñar
+                    const newTokens = currentTotalSupply * dilution;
+                    currentTotalSupply += newTokens;
+                    futureTokens += newTokens;
+                    
+                    // Calcular porcentajes
+                    const currentStakeholdersPercentage = parseFloat(((tokenomicsData.totalSupply / currentTotalSupply) * 100).toFixed(2));
+                    const futureContributorsPercentage = parseFloat(((futureTokens / currentTotalSupply) * 100).toFixed(2));
+                    
+                    labels.push(phase.name);
+                    datasets.currentStakeholders.push(currentStakeholdersPercentage);
+                    datasets.futureContributors.push(futureContributorsPercentage);
+                });
                 
-                labels.push(phase.name);
-                datasets.investors.push(Math.round(currentInvestors * 10) / 10);
-                datasets.team.push(Math.round(currentTeam * 10) / 10);
-                datasets.reserve.push(Math.round(currentReserve * 10) / 10);
-                datasets.community.push(Math.round(currentCommunity
+                tokenomicsData.timelineData = {
+                    labels: labels,
+                    datasets: datasets,
+                    mode: 'import' // Indicar que es modo importación
+                };
+            } else {
+                // Cálculo tradicional para modo simulación
+                let currentInvestors = tokenomicsData.initialDistribution.investors;
+                let currentTeam = tokenomicsData.initialDistribution.team;
+                let currentReserve = tokenomicsData.initialDistribution.reserve;
+                let currentCommunity = tokenomicsData.initialDistribution.community;
+                
+                // Punto inicial
+                labels.push(document.documentElement.lang === 'ca' ? 'Inici' : 'Inicio');
+                datasets.investors.push(currentInvestors);
+                datasets.team.push(currentTeam);
+                datasets.reserve.push(currentReserve);
+                datasets.community.push(currentCommunity);
+                
+                // Calcular para cada fase
+                tokenomicsData.phases.forEach((phase, index) => {
+                    const dilution = phase.dilution / 100;
+                    
+                    // Aplicar dilución según modelo Fibonacci
+                    if (tokenomicsData.distributionModel === 'fibonacci') {
+                        // La dilución se aplica principalmente a inversores y equipo
+                        const investorsDilution = dilution * 0.6;
+                        const teamDilution = dilution * 0.25;
+                        const reserveDilution = dilution * 0.1;
+                        const communityDilution = dilution * 0.05;
+                        
+                        currentInvestors *= (1 - investorsDilution);
+                        currentTeam *= (1 - teamDilution);
+                        currentReserve *= (1 - reserveDilution);
+                        currentCommunity *= (1 - communityDilution);
+                    } else if (tokenomicsData.distributionModel === 'linear') {
+                        // Dilución lineal igual para todos
+                        currentInvestors *= (1 - dilution/4);
+                        currentTeam *= (1 - dilution/4);
+                        currentReserve *= (1 - dilution/4);
+                        currentCommunity *= (1 - dilution/4);
+                    }
+                    
+                    labels.push(phase.name);
+                    datasets.investors.push(Math.round(currentInvestors * 10) / 10);
+                    datasets.team.push(Math.round(currentTeam * 10) / 10);
+                    datasets.reserve.push(Math.round(currentReserve * 10) / 10);
+                    datasets.community.push(Math.round(currentCommunity * 10) / 10);
+                });
+                
+                tokenomicsData.timelineData = {
+                    labels: labels,
+                    datasets: datasets,
+                    mode: 'simulation' // Indicar que es modo simulación
+                };
+            }
+        }
+        
+        // Importar datos de VNA
+        function importVNA() {
+            alert(document.documentElement.lang === 'ca' ? 
+                'Funcionalitat en desenvolupament. Pròximament podràs importar dades directament des de l\'App VNA.' : 
+                'Funcionalidad en desarrollo. Próximamente podrás importar datos directamente desde la App VNA.');
+            
+            // Simular datos importados para demostración
+            tokenomicsData.vnaData = {
+                nodes: [
+                    {id: "Cliente A", group: 1},
+                    {id: "Equipo Producto", group: 2},
+                    {id: "Proveedores", group: 3},
+                    {id: "Marketing", group: 4},
+                    {id: "Inversores", group: 5}
+                ],
+                links: [
+                    {source: "Cliente A", target: "Equipo Producto", type: "tangible", deliverable: "Feedback de producto"},
+                    {source: "Equipo Producto", target: "Proveedores", type: "tangible", deliverable: "Especificaciones técnicas"},
+                    {source: "Marketing", target: "Cliente A", type: "intangible", deliverable: "Confianza y engagement"},
+                    {source: "Inversores", target: "Equipo Producto", type: "tangible", deliverable: "Capital y recursos"}
+                ]
+            };
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades de VNA importades correctament per a la demostració!' : 
+                '¡Datos de VNA importados correctamente para la demostración!');
+        }
+        
+        // Importar datos de Contabilidad de Valor
+        function importValueAccounting() {
+            alert(document.documentElement.lang === 'ca' ? 
+                'Utilitza el botó "Importar CSV Contabilidad" per importar les dades de la teva App de Comptabilitat de Valor.' : 
+                'Utiliza el botón "Importar CSV Contabilidad" para importar los datos de tu App de Contabilidad de Valor.');
+        }
+        
+        // Importar datos de Comunidades de Práctica
+        function importCoPs() {
+            alert(document.documentElement.lang === 'ca' ? 
+                'Funcionalitat en desenvolupament. Pròximament podràs importar dades directament des de l\'App de Comunitats de Pràctica.' : 
+                'Funcionalidad en desarrollo. Próximamente podrás importar datos directamente desde la App de Comunidades de Práctica.');
+        }
+        
+        // Inicializar gráficos
+        function initCharts() {
+            // Gráfico de distribución actual
+            const tokenCtx = document.getElementById('tokenChart').getContext('2d');
+            tokenChart = new Chart(tokenCtx, {
+                type: 'doughnut',
+                 {
+                    labels: [],
+                    datasets: [{
+                         [],
+                        backgroundColor: [
+                            'rgba(245, 158, 11, 0.85)',
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(139, 92, 246, 0.85)',
+                            'rgba(59, 130, 246, 0.85)',
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(16, 185, 129, 0.6)',
+                            'rgba(139, 92, 246, 0.6)',
+                            'rgba(59, 130, 246, 0.6)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    
+                                    return `${label}: ${percentage}% (${Math.round(value).toLocaleString()} tokens)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+            
+            // Gráfico de evolución temporal
+            const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+            timelineChart = new Chart(timelineCtx, {
+                type: 'line',
+                 {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: document.documentElement.lang === 'ca' ? 'Inversors' : 'Inversores',
+                             [],
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: document.documentElement.lang === 'ca' ? 'Equip' : 'Equipo',
+                             [],
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: document.documentElement.lang === 'ca' ? 'Reserva' : 'Reserva',
+                             [],
+                            borderColor: 'rgba(139, 92, 246, 1)',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: document.documentElement.lang === 'ca' ? 'Comunitat' : 'Comunidad',
+                             [],
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        // Para modo importación
+                        {
+                            label: document.documentElement.lang === 'ca' ? 'Stakeholders Actuals' : 'Stakeholders Actuales',
+                            data: [],
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            hidden: true // Oculto por defecto
+                        },
+                        {
+                            label: document.documentElement.lang === 'ca' ? 'Futurs Contribuïdors' : 'Futuros Contribuyentes',
+                            data: [],
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            hidden: true // Oculto por defecto
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: document.documentElement.lang === 'ca' ? 'Percentatge (%)' : 'Porcentaje (%)'
+                            },
+                            max: 100
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: document.documentElement.lang === 'ca' ? 'Fases del Projecte' : 'Fases del Proyecto'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+        
+        // Actualizar visualizaciones
+        function updateVisualizations() {
+            // Actualizar estadísticas
+            document.getElementById('total-tokens').textContent = tokenomicsData.totalSupply.toLocaleString();
+            
+            if (tokenomicsData.isImportMode) {
+                // En modo importación, calcular circulating supply basado en stakeholders
+                const circulating = tokenomicsData.stakeholders.reduce((sum, s) => sum + s.tokens, 0);
+                document.getElementById('circulating-supply').textContent = circulating.toLocaleString();
+                document.getElementById('vesting-tokens').textContent = '0';
+            } else {
+                document.getElementById('circulating-supply').textContent = Math.round(tokenomicsData.totalSupply * 0.4).toLocaleString();
+                document.getElementById('vesting-tokens').textContent = Math.round(tokenomicsData.totalSupply * 0.25).toLocaleString();
+            }
+            
+            document.getElementById('phases-count').textContent = tokenomicsData.phases.length;
+            
+            // Actualizar gráfico de distribución
+            updateTokenChart();
+            
+            // Actualizar gráfico de evolución temporal
+            updateTimelineChart();
+            
+            // Actualizar grid de stakeholders
+            updateStakeholderGrid();
+        }
+        
+        // Actualizar gráfico de distribución
+        function updateTokenChart() {
+            if (!tokenChart) return;
+            
+            const stakeholders = tokenomicsData.stakeholders.filter(s => s.percentage > 0);
+            const labels = stakeholders.map(s => s.name);
+            const data = stakeholders.map(s => s.percentage);
+            
+            tokenChart.data.labels = labels;
+            tokenChart.data.datasets[0].data = data;
+            tokenChart.update();
+        }
+        
+        // Actualizar gráfico de evolución temporal
+        function updateTimelineChart() {
+            if (!timelineChart || !tokenomicsData.timelineData) return;
+            
+            // Resetear todos los datasets
+            timelineChart.data.datasets.forEach(dataset => {
+                dataset.data = [];
+                dataset.hidden = true; // Ocultar todos por defecto
+            });
+            
+            if (tokenomicsData.timelineData.mode === 'import') {
+                // Mostrar solo los datasets para modo importación
+                timelineChart.data.datasets[4].data = tokenomicsData.timelineData.datasets.currentStakeholders;
+                timelineChart.data.datasets[4].hidden = false;
+                
+                timelineChart.data.datasets[5].data = tokenomicsData.timelineData.datasets.futureContributors;
+                timelineChart.data.datasets[5].hidden = false;
+            } else {
+                // Mostrar los datasets para modo simulación
+                timelineChart.data.datasets[0].data = tokenomicsData.timelineData.datasets.investors;
+                timelineChart.data.datasets[0].hidden = false;
+                
+                timelineChart.data.datasets[1].data = tokenomicsData.timelineData.datasets.team;
+                timelineChart.data.datasets[1].hidden = false;
+                
+                timelineChart.data.datasets[2].data = tokenomicsData.timelineData.datasets.reserve;
+                timelineChart.data.datasets[2].hidden = false;
+                
+                timelineChart.data.datasets[3].data = tokenomicsData.timelineData.datasets.community;
+                timelineChart.data.datasets[3].hidden = false;
+            }
+            
+            timelineChart.data.labels = tokenomicsData.timelineData.labels;
+            timelineChart.update();
+        }
+        
+        // Actualizar grid de stakeholders
+        function updateStakeholderGrid() {
+            const grid = document.getElementById('stakeholder-grid');
+            
+            if (tokenomicsData.stakeholders.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <h3 class="lang" data-es="No hay stakeholders configurados aún" data-ca="No hi ha stakeholders configurats encara">No hay stakeholders configurados aún</h3>
+                        <p class="lang" data-es="Importa tu CSV de Contabilidad de Valor o simula tu modelo tokenómico para ver la distribución entre stakeholders" data-ca="Importa el teu CSV de Comptabilitat de Valor o simula el teu model tokenòmic per veure la distribució entre stakeholders">Importa tu CSV de Contabilidad de Valor o simula tu modelo tokenómico para ver la distribución entre stakeholders</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            tokenomicsData.stakeholders.forEach(stakeholder => {
+                const percentage = stakeholder.percentage.toFixed(1);
+                const tokens = stakeholder.tokens.toLocaleString();
+                const typeClass = {
+                    'investor': 'role-investor',
+                    'team': 'role-team',
+                    'supplier': 'role-supplier',
+                    'client': 'role-client',
+                    'reserve': 'role-supplier',
+                    'community': 'role-client',
+                    'others': 'role-client'
+                }[stakeholder.type] || 'role-team';
+                
+                html += `
+                    <div class="stakeholder-card">
+                        <h4>${stakeholder.name}</h4>
+                        <div class="percentage">${percentage}%</div>
+                        <div class="tokens">${tokens} ${tokenomicsData.tokenSymbol}</div>
+                        <p><span class="role-tag ${typeClass}">${stakeholder.role}</span></p>
+                        <p><span class="role-tag vesting-badge">${stakeholder.vesting}</span></p>
+                        ${stakeholder.value ? `<p><small>${document.documentElement.lang === 'ca' ? 'Valor aportat: ' : 'Valor aportado: '}${stakeholder.value.toLocaleString()} pts</small></p>` : ''}
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+        
+        // Exportar como JSON
+        function exportJSON() {
+            const dataStr = JSON.stringify(tokenomicsData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `tokenomics-${tokenomicsData.tokenName}-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a JSON' : 
+                'Datos exportados correctamente como JSON');
+        }
+        
+        // Exportar Smart Contract
+        function exportSmartContract() {
+            // Generar código de smart contract básico basado en los datos
+            const contractCode = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * ${tokenomicsData.tokenName} Token (${tokenomicsData.tokenSymbol})
+ * Tokenomics Model: ${tokenomicsData.distributionModel === 'fibonacci' ? 'Fibonacci Dilution' : 'Linear Dilution'}
+ * Total Supply: ${tokenomicsData.totalSupply.toLocaleString()} ${tokenomicsData.tokenSymbol}
+ */
+
+contract ${tokenomicsData.tokenName}Token {
+    string public name = "${tokenomicsData.tokenName}";
+    string public symbol = "${tokenomicsData.tokenSymbol}";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = ${tokenomicsData.totalSupply} * 10 ** 18;
+    
+    // Distribution phases based on Fibonacci sequence
+    struct Phase {
+        string name;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 dilutionPercentage;
+    }
+    
+    Phase[] public phases;
+    
+    // Stakeholder allocations
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowances;
+    
+    // Vesting schedules
+    struct VestingSchedule {
+        uint256 startTime;
+        uint256 cliffTime;
+        uint256 endTime;
+        bool revocable;
+    }
+    
+    mapping(address => VestingSchedule) public vestingSchedules;
+    
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event TokensReleased(address indexed holder, uint256 amount);
+    
+    constructor() {
+        // Initial distribution
+        // ${tokenomicsData.isImportMode ? 'Distribution based on value contributed from Value Accounting App' : `
+        // Investors: ${tokenomicsData.initialDistribution.investors}%
+        // Team: ${tokenomicsData.initialDistribution.team}%
+        // Reserve: ${tokenomicsData.initialDistribution.reserve}%
+        // Community: ${tokenomicsData.initialDistribution.community}%
+        // `}
+        
+        // Setup vesting schedules
+        // Setup phases based on Fibonacci dilution model
+        
+        emit Transfer(address(0), msg.sender, totalSupply);
+    }
+    
+    // Standard ERC20 functions
+    function transfer(address to, uint256 amount) public returns (bool) {
+        _transfer(msg.sender, to, amount);
+        return true;
+    }
+    
+    function approve(address spender, uint256 amount) public returns (bool) {
+        allowances[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+    
+    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+        uint256 allowed = allowances[from][msg.sender];
+        require(allowed >= amount, "ERC20: insufficient allowance");
+        
+        allowances[from][msg.sender] = allowed - amount;
+        _transfer(from, to, amount);
+        return true;
+    }
+    
+    function balanceOf(address account) public view returns (uint256) {
+        return balances[account];
+    }
+    
+    function allowance(address owner, address spender) public view returns (uint256) {
+        return allowances[owner][spender];
+    }
+    
+    // Vesting functions
+    function releaseVestedTokens() public {
+        VestingSchedule memory schedule = vestingSchedules[msg.sender];
+        require(block.timestamp >= schedule.startTime, "Vesting: not started yet");
+        
+        uint256 vestedAmount = calculateVestedAmount(msg.sender);
+        require(vestedAmount > 0, "Vesting: no tokens to release");
+        
+        balances[msg.sender] += vestedAmount;
+        emit TokensReleased(msg.sender, vestedAmount);
+    }
+    
+    function calculateVestedAmount(address holder) public view returns (uint256) {
+        VestingSchedule memory schedule = vestingSchedules[holder];
+        if (block.timestamp < schedule.startTime) return 0;
+        
+        // Calculate vested amount based on time elapsed
+        // Implementation depends on vesting schedule details
+        
+        return 0;
+    }
+    
+    // Internal transfer function
+    function _transfer(address from, address to, uint256 amount) internal {
+        require(from != address(0), "ERC20: transfer from the zero address");
+        require(to != address(0), "ERC20: transfer to the zero address");
+        require(amount <= balances[from], "ERC20: insufficient balance");
+        
+        balances[from] -= amount;
+        balances[to] += amount;
+        
+        emit Transfer(from, to, amount);
+    }
+    
+    // Phase management functions
+    function addPhase(string memory name, uint256 startTime, uint256 endTime, uint256 dilution) external {
+        // Only owner can add phases
+        // Implementation for phase management
+        phases.push(Phase(name, startTime, endTime, dilution));
+    }
+    
+    function getCurrentPhase() public view returns (uint256) {
+        // Return current phase index based on block timestamp
+        return 0;
+    }
+}`;
+            
+            const blob = new Blob([contractCode], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `${tokenomicsData.tokenName}Token.sol`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Codi del Smart Contract generat correctament! Aquest és un model bàsic que requereix auditoria i personalització abans de la implementació.' : 
+                '¡Código del Smart Contract generado correctamente! Este es un modelo básico que requiere auditoría y personalización antes de la implementación.');
+        }
+        
+        // Limpiar datos
+        function resetData() {
+            if (confirm(document.documentElement.lang === 'ca' ? 
+                'Estàs segur que vols esborrar totes les dades de la simulació?' : 
+                '¿Estás seguro de que quieres borrar todos los datos de la simulación?')) {
+                
+                tokenomicsData = {
+                    tokenName: "MASIA",
+                    tokenSymbol: "MSA",
+                    totalSupply: 1000000,
+                    distributionModel: "fibonacci",
+                    initialDistribution: {
+                        investors: 40,
+                        team: 25,
+                        reserve: 20,
+                        community: 15
+                    },
+                    stakeholders: [],
+                    phases: [
+                        { name: "Fase 1: Lanzamiento", months: "1-6", dilution: 5 },
+                        { name: "Fase 2: Crecimiento", months: "7-18", dilution: 8 },
+                        { name: "Fase 3: Escalado", months: "19-36", dilution: 13 },
+                        { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
+                    ],
+                    timelineData: null,
+                    vnaData: null,
+                    isImportMode: false,
+                    importedData: null,
+                    csvContent: null
+                };
+                
+                // Reset sliders
+                document.getElementById('investors-slider').value = 40;
+                document.getElementById('team-slider').value = 25;
+                document.getElementById('reserve-slider').value = 20;
+                document.getElementById('community-slider').value = 15;
+                
+                document.getElementById('investors-value').textContent = '40%';
+                document.getElementById('team-value').textContent = '25%';
+                document.getElementById('reserve-value').textContent = '20%';
+                document.getElementById('community-value').textContent = '15%';
+                
+                document.getElementById('token-name').value = "MASIA";
+                document.getElementById('token-symbol').value = "MSA";
+                document.getElementById('total-supply').value = "1000000";
+                
+                // Limpiar preview de CSV
+                document.getElementById('csv-preview').style.display = 'none';
+                document.getElementById('value-csv-file').value = '';
+                
+                saveData();
+                updateVisualizations();
+                
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Dades esborrades correctament' : 
+                    'Datos borrados correctamente');
+            }
+        }
+        
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('tokenomicsData', JSON.stringify(tokenomicsData));
+        }
+        
+        // Cargar datos de localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('tokenomicsData');
+            if (saved) {
+                const parsedData = JSON.parse(saved);
+                
+                tokenomicsData = {
+                    tokenName: parsedData.tokenName || "MASIA",
+                    tokenSymbol: parsedData.tokenSymbol || "MSA",
+                    totalSupply: parsedData.totalSupply || 1000000,
+                    distributionModel: parsedData.distributionModel || "fibonacci",
+                    initialDistribution: parsedData.initialDistribution || {
+                        investors: 40,
+                        team: 25,
+                        reserve: 20,
+                        community: 15
+                    },
+                    stakeholders: parsedData.stakeholders || [],
+                    phases: parsedData.phases || [
+                        { name: "Fase 1: Lanzamiento", months: "1-6", dilution: 5 },
+                        { name: "Fase 2: Crecimiento", months: "7-18", dilution: 8 },
+                        { name: "Fase 3: Escalado", months: "19-36", dilution: 13 },
+                        { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
+                    ],
+                    timelineData: parsedData.timelineData || null,
+                    vnaData: parsedData.vnaData || null,
+                    isImportMode: parsedData.isImportMode || false,
+                    importedData: parsedData.importedData || null,
+                    csvContent: parsedData.csvContent || null
+                };
+                
+                // Restaurar valores en sliders
+                document.getElementById('investors-slider').value = tokenomicsData.initialDistribution.investors;
+                document.getElementById('team-slider').value = tokenomicsData.initialDistribution.team;
+                document.getElementById('reserve-slider').value = tokenomicsData.initialDistribution.reserve;
+                document.getElementById('community-slider').value = tokenomicsData.initialDistribution.community;
+                
+                document.getElementById('investors-value').textContent = `${tokenomicsData.initialDistribution.investors}%`;
+                document.getElementById('team-value').textContent = `${tokenomicsData.initialDistribution.team}%`;
+                document.getElementById('reserve-value').textContent = `${tokenomicsData.initialDistribution.reserve}%`;
+                document.getElementById('community-value').textContent = `${tokenomicsData.initialDistribution.community}%`;
+                
+                document.getElementById('token-name').value = tokenomicsData.tokenName;
+                document.getElementById('token-symbol').value = tokenomicsData.tokenSymbol;
+                document.getElementById('total-supply').value = tokenomicsData.totalSupply.toString();
+                document.getElementById('distribution-model').value = tokenomicsData.distributionModel;
+                
+                // Si hay datos CSV guardados, mostrar preview
+                if (tokenomicsData.csvContent && tokenomicsData.isImportMode) {
+                    const previewDiv = document.getElementById('csv-preview');
+                    previewDiv.style.display = 'block';
+                    // Aquí podríamos regenerar el preview, pero para simplificar lo dejamos vacío
+                    previewDiv.innerHTML = '<div class="csv-row csv-header"><div class="csv-cell">Datos CSV importados previamente</div></div>';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
