@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Network Analysis App | TeamTowers Humà. Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva.">
-    <meta name="keywords" content="Value Network Analysis, VNA, mapeo de valor, TeamTowers Humà, Vilafranca del Penedès, flujos de valor, innovación organizacional">
+    <meta name="description" content="Value Network Analysis App | TeamTowers Humà. Herramienta para mapear flujos de valor tangibles e intangibles en tu organización.">
+    <meta name="keywords" content="Value Network Analysis, VNA, mapeo valor, TeamTowers Humà, consultoría RRHH, Vilafranca del Penedès">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
     <title>Value Network Analysis App | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Value Network Analysis App | TeamTowers Humà">
-    <meta property="og:description" content="Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva.">
+    <meta property="og:description" content="Herramienta interactiva para mapear flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://teamtowershuma.com/app">
+    <meta property="og:url" content="https://teamtowershuma.netlify.app/app">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="ca_ES">
@@ -21,11 +21,11 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Value Network Analysis App | TeamTowers Humà">
-    <meta name="twitter:description" content="Mapea flujos de valor tangibles e intangibles en tu organización">
+    <meta name="twitter:description" content="Mapea flujos de valor tangibles e intangibles con nuestra herramienta interactiva">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     
-    <!-- vis-network CSS -->
-    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
     <style>
         :root {
@@ -34,7 +34,7 @@
             --accent: #8b5cf6; /* Morado TeamTowers */
             --dark: #0f172a;
             --light: #f8fafc;
-            --gold: #f59e01;
+            --gold: #f59e0b;
             --success: #10b981;
             --warning: #fbbf24;
             --danger: #ef4444;
@@ -42,9 +42,6 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
-            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
         }
         
         * {
@@ -86,14 +83,14 @@
         }
         
         .lang-btn.active {
-            background: var(--gradient-primary);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
         }
         
         /* Header */
         header {
-            background: var(--gradient-dark);
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -122,25 +119,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-weight: 800;
         }
         
         .tagline {
             font-size: 1.4rem;
             opacity: 0.9;
             margin-bottom: 15px;
-            font-weight: 300;
-        }
-        
-        .integration-badge {
-            display: inline-block;
-            background: rgba(139, 92, 246, 0.2);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin-top: 10px;
-            font-size: 0.95rem;
         }
         
         /* Main Content */
@@ -152,7 +136,7 @@
         
         .app-container {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 400px 1fr;
             gap: 30px;
             margin-top: 20px;
         }
@@ -169,18 +153,8 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             height: fit-content;
-            position: relative;
-        }
-        
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-primary);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .panel h2 {
@@ -192,8 +166,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            position: relative;
-            z-index: 10;
         }
         
         .panel h2::before {
@@ -247,13 +219,40 @@
         }
         
         .input-group textarea {
-            min-height: 80px;
+            min-height: 100px;
             resize: vertical;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+        
+        .bulk-input {
+            background: var(--light);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .bulk-input p {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+        
+        .bulk-input code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9rem;
         }
         
         .btn-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 15px;
         }
@@ -271,23 +270,6 @@
             justify-content: center;
             gap: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: left 0.6s;
-        }
-        
-        .btn:hover::after {
-            left: 100%;
         }
         
         .btn:hover {
@@ -296,7 +278,7 @@
         }
         
         .btn-primary {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
         
@@ -322,7 +304,7 @@
         }
         
         .btn-export {
-            background: var(--gradient-accent);
+            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
             color: white;
             grid-column: span 2;
         }
@@ -335,24 +317,115 @@
             position: relative;
         }
         
-        .visualization-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        #vna-container {
             width: 100%;
-            height: 5px;
-            background: var(--gradient-accent);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-        
-        #network-container {
-            width: 100%;
-            height: 600px;
+            height: 700px;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
-            background: var(--light);
+            overflow: hidden;
             position: relative;
+            background: var(--light);
+            margin-top: 15px;
+        }
+        
+        #vna-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .legend-line {
+            width: 30px;
+            height: 3px;
+            display: inline-block;
+            border-radius: 2px;
+        }
+        
+        .legend-tangible {
+            background: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .legend-intangible {
+            background: var(--accent);
+            border: 2px dashed var(--accent);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 3px;
         }
         
         .empty-state {
@@ -362,257 +435,379 @@
             justify-content: center;
             height: 100%;
             text-align: center;
-            padding: 40px 20px;
+            padding: 20px;
             color: var(--gray);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
         }
         
         .empty-state svg {
-            width: 140px;
-            height: 140px;
-            margin-bottom: 25px;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
             color: var(--accent);
             opacity: 0.7;
         }
         
         .empty-state h3 {
-            font-size: 2rem;
-            margin-bottom: 15px;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
             color: var(--dark);
-            font-weight: 700;
         }
         
         .empty-state p {
-            max-width: 550px;
-            margin-bottom: 30px;
+            max-width: 500px;
+            margin-bottom: 25px;
             line-height: 1.7;
-            font-size: 1.1rem;
         }
         
-        .quick-add {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 4px solid var(--success);
-        }
-        
-        .quick-add h3 {
-            color: var(--success);
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .quick-add h3::before {
-            content: '✨';
-        }
-        
-        .quick-add p {
-            margin-bottom: 15px;
-            color: var(--gray);
-            font-size: 0.95rem;
-        }
-        
-        .quick-add-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .quick-add-btn:hover {
-            background: #0da27f;
-            transform: translateY(-2px);
-        }
-        
-        .export-section {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid var(--accent);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
-            border-radius: var(--border-radius);
-        }
-        
-        .export-section h3 {
-            color: var(--success);
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
-        
-        .export-section h3::before {
-            content: '📤';
-            font-size: 1.4rem;
-        }
-        
-        .export-section p {
-            margin-bottom: 15px;
-            color: var(--gray);
-            line-height: 1.7;
-            font-size: 1.05rem;
-        }
-        
-        .export-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .integration-section {
-            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
+        .instructions {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
             border-radius: var(--border-radius);
             padding: 25px;
             margin-top: 25px;
             border-left: 4px solid var(--accent);
         }
         
-        .integration-section h3 {
+        .instructions h3 {
             color: var(--primary);
             margin-bottom: 15px;
             font-size: 1.6rem;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 700;
         }
         
-        .integration-section h3::before {
-            content: '🔗';
+        .instructions h3::before {
+            content: 'ℹ️';
             font-size: 1.4rem;
         }
         
-        .next-step {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            margin: 30px 0;
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        .instructions ol {
+            padding-left: 25px;
+            margin-top: 10px;
         }
         
-        .next-step h3 {
+        .instructions li {
             margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        
+        .instructions code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .example-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .example-section h4 {
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .example-section h4::before {
+            content: '📌';
+        }
+        
+        .example-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: var(--primary);
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .example-item::before {
+            content: '→';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .node {
+            cursor: pointer;
+            stroke: #fff;
+            stroke-width: 3px;
+        }
+        
+        .node text {
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            font-weight: 600;
+            fill: var(--dark);
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        .link {
+            stroke: var(--gray);
+            stroke-width: 2px;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        
+        .link-tangible {
+            stroke: var(--primary);
+            stroke-width: 3px;
+        }
+        
+        .link-intangible {
+            stroke: var(--accent);
+            stroke-width: 2px;
+            stroke-dasharray: 5, 5;
+        }
+        
+        .link-path {
+            fill: none;
+            stroke-width: 3px;
+            marker-end: url(#arrowhead);
+        }
+        
+        .link-label {
+            font-size: 11px;
+            fill: var(--dark);
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        
+        .link-label tspan {
+            dominant-baseline: middle;
+        }
+        
+        .link-label.type {
+            font-weight: 600;
+            fill: var(--primary);
+        }
+        
+        .link-label.deliverable {
+            font-size: 10px;
+            fill: var(--gray);
+            font-weight: 500;
+        }
+        
+        .simulation-running {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--warning);
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            border: 2px solid var(--warning);
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
             color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            pointer-events: none;
+            max-width: 350px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            border: 1px solid var(--accent);
+        }
+        
+        .tooltip h4 {
+            margin-bottom: 8px;
+            color: var(--accent);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tooltip h4::before {
+            content: '💡';
+        }
+        
+        .tooltip p {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .tooltip .label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-right: 5px;
+        }
+        
+        .tooltip .value {
+            color: white;
+        }
+        
+        .tooltip .type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tooltip .type-badge.tangible {
+            background: rgba(16, 185, 129, 0.25);
+            color: #0d9488;
+            border: 1px solid #14b8a6;
+        }
+        
+        .tooltip .type-badge.intangible {
+            background: rgba(139, 92, 246, 0.25);
+            color: #7e3af2;
+            border: 1px solid #8b5cf6;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .badge-tangible {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .badge-intangible {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        
+        /* Transactions List */
+        .transactions-list {
+            margin-top: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .transactions-list h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .transactions-list h3::before {
+            content: '📋';
+        }
+        
+        .transaction-item {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent);
+            transition: var(--transition);
+        }
+        
+        .transaction-item:hover {
+            background: #e0e7ff;
+            transform: translateX(5px);
+        }
+        
+        .transaction-item.tangible {
+            border-left-color: var(--primary);
+        }
+        
+        .transaction-item.intangible {
+            border-left-color: var(--accent);
+        }
+        
+        .transaction-info {
+            flex: 1;
+            font-family: monospace;
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+        
+        .transaction-info strong {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+        
+        .delete-transaction {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.5rem;
-        }
-        
-        .next-step h3::before {
-            content: '➡️';
-        }
-        
-        .next-step p {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-        }
-        
-        .next-step a {
-            display: inline-block;
-            background: white;
-            color: var(--primary);
-            padding: 10px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            margin-top: 10px;
+            font-weight: bold;
             transition: var(--transition);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            margin-left: 10px;
         }
         
-        .next-step a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .transaction-form {
-            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .transaction-form h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .transaction-form h3::before {
-            content: '🔄';
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .form-row label {
-            margin-bottom: 0;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-        
-        .form-row select, 
-        .form-row input {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
+        .delete-transaction:hover {
+            background: #dc2626;
+            transform: scale(1.1);
         }
         
         /* Footer */
         footer {
-            background: var(--gradient-dark);
+            background: var(--dark);
             color: rgba(255, 255, 255, 0.85);
-            padding: 70px 20px 40px;
-            margin-top: 70px;
+            padding: 60px 20px 30px;
+            margin-top: 60px;
         }
         
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 45px;
-            max-width: 1300px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
         .footer-col h3 {
             color: white;
-            font-size: 1.75rem;
-            margin-bottom: 28px;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
             position: relative;
-            padding-bottom: 12px;
-            font-weight: 700;
+            padding-bottom: 10px;
         }
         
         .footer-col h3::after {
@@ -620,10 +815,9 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 45px;
-            height: 4px;
-            background: var(--gradient-accent);
-            border-radius: 2px;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
         }
         
         .footer-links {
@@ -631,52 +825,30 @@
         }
         
         .footer-links li {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         
         .footer-links a {
-            color: rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             transition: var(--transition);
             display: block;
-            padding: 6px 0;
-            font-size: 1.1rem;
-            font-weight: 500;
-            position: relative;
-            padding-left: 22px;
-        }
-        
-        .footer-links a::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            opacity: 0;
-            transform: translateX(-8px);
-            transition: all 0.3s ease;
-            color: var(--accent);
+            padding: 5px 0;
+            font-size: 1.05rem;
         }
         
         .footer-links a:hover {
-            color: white;
-            transform: translateX(3px);
-        }
-        
-        .footer-links a:hover::before {
-            opacity: 1;
-            transform: translateX(0);
+            color: var(--accent);
+            transform: translateX(5px);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 50px;
-            margin-top: 50px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 1.05rem;
-            color: rgba(255, 255, 255, 0.65);
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.7;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
         }
         
         /* Responsive Design */
@@ -685,28 +857,24 @@
                 grid-template-columns: 1fr;
             }
             
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
             h1 {
-                font-size: 2.3rem;
+                font-size: 2.2rem;
             }
             
             .tagline {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .panel {
                 padding: 20px;
             }
             
-            #network-container {
-                height: 450px;
-            }
-            
-            .btn-group {
-                grid-template-columns: 1fr;
-            }
-            
-            .export-buttons {
-                grid-template-columns: 1fr;
+            #vna-container {
+                height: 500px;
             }
         }
         
@@ -722,11 +890,11 @@
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .tagline {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .container {
@@ -735,156 +903,32 @@
             
             .btn {
                 padding: 12px 15px;
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             
-            #network-container {
-                height: 350px;
+            #vna-container {
+                height: 400px;
             }
             
-            .form-row {
-                grid-template-columns: 1fr;
+            .legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
             }
             
-            .btn-group {
-                grid-template-columns: 1fr;
+            .controls {
+                flex-direction: column;
+                align-items: center;
             }
             
-            .export-buttons {
-                grid-template-columns: 1fr;
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
             }
-        }
-        
-        /* Test Results Section */
-        .test-results {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            max-height: 200px;
-            overflow-y: auto;
-            background: var(--light);
-            display: none;
-        }
-        
-        .test-pass {
-            color: var(--success);
-            font-weight: bold;
-        }
-        
-        .test-fail {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        
-        .test-section {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid var(--accent);
-        }
-        
-        .test-section h3 {
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
-        
-        .test-section h3::before {
-            content: '🧪';
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 10000;
-            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
-        }
-        
-        .notification.success {
-            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
-        }
-        
-        .notification.error {
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; transform: translateX(100%); }
-        }
-        
-        /* Autocomplete styling */
-        .autocomplete {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-        
-        .autocomplete-items {
-            position: absolute;
-            border: 1px solid #e2e8f0;
-            border-top: none;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: white;
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.95rem;
-        }
-        
-        .autocomplete-items div:hover {
-            background-color: #f1f5f9;
-            color: var(--primary);
-        }
-        
-        .autocomplete-items div.selected {
-            background-color: var(--light);
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .autocomplete-active {
-            background-color: var(--light) !important;
-            color: var(--primary) !important;
-        }
-        
-        /* Role badge in form */
-        .role-badge {
-            display: inline-block;
-            background: rgba(30, 58, 138, 0.1);
-            color: var(--primary);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            margin-left: 8px;
-            font-weight: 600;
+            
+            .transactions-list {
+                max-height: 300px;
+            }
         }
     </style>
 </head>
@@ -899,9 +943,8 @@
     <header>
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
-            <h1 class="lang" data-es="Value Network Analysis App" data-ca="Value Network Analysis App">Value Network Analysis App</h1>
-            <p class="tagline lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva" data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització amb la nostra eina visual interactiva">Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva</p>
-            <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
+            <h1 class="lang" data-es="Value Network Analysis App" data-ca="Aplicació Value Network Analysis">Value Network Analysis App</h1>
+            <p class="tagline lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización" data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització">Mapea flujos de valor tangibles e intangibles en tu organización</p>
         </div>
     </header>
     
@@ -910,110 +953,156 @@
         <div class="app-container">
             <div class="panel">
                 <h2 class="lang" data-es="➕ Añadir Transacción" data-ca="➕ Afegir Transacció">➕ Añadir Transacción</h2>
-                
                 <div class="input-group">
-                    <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
-                    <input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
+                    <label class="lang" data-es="Origen" data-ca="Origen">Origen</label>
+                    <input type="text" id="origin" placeholder="Ej: Cliente, Vendedor, IT">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Destino" data-ca="Destí">Destino</label>
+                    <input type="text" id="destination" placeholder="Ej: Vendedor, Cliente, Marketing">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Tipo de Valor" data-ca="Tipus de Valor">Tipo de Valor</label>
+                    <select id="type">
+                        <option value="tangible" class="lang" data-es="Tangible (bienes, servicios, datos)" data-ca="Tangible (béns, serveis, dades)">Tangible (bienes, servicios, datos)</option>
+                        <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento, feedback)" data-ca="Intangible (confiança, coneixement, feedback)">Intangible (confianza, conocimiento, feedback)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Entregable" data-ca="Entregable"><span class="lang" data-es="Entregable" data-ca="Entregable">Entregable</span> <span class="badge badge-tangible lang" data-es="Texto libre" data-ca="Text lliure">Texto libre</span></label>
+                    <textarea id="deliverable" placeholder="Ej: Pedido, Confianza, Informe de uso web, Feedback de campaña"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button id="add-transaction" class="btn btn-primary">
+                        <span>✨</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
+                    </button>
+                    <button id="clear-all" class="btn btn-danger">
+                        <span>🗑️</span> <span class="lang" data-es="Limpiar Todo" data-ca="Netejar Tot">Limpiar Todo</span>
+                    </button>
+                    <button id="load-example" class="btn btn-secondary">
+                        <span>📚</span> <span class="lang" data-es="Cargar Ejemplo" data-ca="Carregar Exemple">Cargar Ejemplo</span>
+                    </button>
+                    <button id="reset-layout" class="btn btn-warning">
+                        <span>🔄</span> <span class="lang" data-es="Resetear Posiciones" data-ca="Reiniciar Posicions">Resetear Posiciones</span>
+                    </button>
                 </div>
                 
-                <div class="transaction-form">
-                    <h3 class="lang" data-es="Nueva Transacción" data-ca="Nova Transacció">Nueva Transacción</h3>
-                    <div class="form-row">
-                        <label class="lang" data-es="De:" data-ca="De:">De:</label>
-                        <div class="autocomplete">
-                            <input type="text" id="source-node" placeholder="Escribe un rol o crea uno nuevo...">
-                            <div id="source-node-list" class="autocomplete-items"></div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="lang" data-es="Para:" data-ca="Per a:">Para:</label>
-                        <div class="autocomplete">
-                            <input type="text" id="target-node" placeholder="Escribe un rol o crea uno nuevo...">
-                            <div id="target-node-list" class="autocomplete-items"></div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="lang" data-es="Tipo:" data-ca="Tipus:">Tipo:</label>
-                        <select id="deliverable-type">
-                            <option value="tangible" class="lang" data-es="Tangible (bienes, servicios)" data-ca="Tangible (béns, serveis)">Tangible (bienes, servicios)</option>
-                            <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento)" data-ca="Intangible (confiança, coneixement)">Intangible (confianza, conocimiento)</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
-                        <input type="text" id="deliverable-name" placeholder="Ej: Informe de mercado">
-                    </div>
-                    <div class="btn-group" style="margin-top: 15px; grid-template-columns: 1fr;">
-                        <button id="add-link" class="btn btn-primary">
-                            <span>🔗</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
-                        </button>
-                    </div>
-                    <p class="lang" data-es="💡 <strong>Consejo:</strong> Simplemente escribe el nombre de un rol en los campos 'De:' o 'Para:'. Si no existe, se creará automáticamente al añadir la transacción." data-ca="💡 <strong>Consell:</strong> Simplement escriviu el nom d'un rol als camps 'De:' o 'Per a:'. Si no existeix, es crearà automàticament en afegir la transacció." style="margin-top: 15px; font-size: 0.9rem; color: var(--gray);">💡 <strong>Consejo:</strong> Simplemente escribe el nombre de un rol en los campos 'De:' o 'Para:'. Si no existe, se creará automáticamente al añadir la transacción.</p>
-                </div>
-                
-                <div class="quick-add">
-                    <h3 class="lang" data-es="Comenzar Rápido" data-ca="Començar Ràpid">Comenzar Rápido</h3>
-                    <p class="lang" data-es="Añade roles y transacciones de ejemplo para ver cómo funciona el mapa de valor." data-ca="Afegeix rols i transaccions d'exemple per veure com funciona el mapa de valor.">Añade roles y transacciones de ejemplo para ver cómo funciona el mapa de valor.</p>
-                    <button id="quick-start" class="quick-add-btn">
-                        <span>🚀</span> <span class="lang" data-es="Añadir Ejemplo" data-ca="Afegir Exemple">Añadir Ejemplo</span>
+                <div class="bulk-input">
+                    <h3 class="lang" data-es="📥 Añadir Varias Transacciones" data-ca="📥 Afegir Diverses Transaccions">📥 Añadir Varias Transacciones</h3>
+                    <p class="lang" data-es="Pega varias transacciones en formato:" data-ca="Enganxa diverses transaccions en format:">Pega varias transacciones en formato:</p>
+                    <code>Origen → Destino | tipo | Entregable</code>
+                    <textarea id="bulk-input" placeholder="Cliente → Vendedor | tangible | Pedido&#10;Vendedor → Cliente | intangible | Confianza&#10;IT → Marketing | tangible | Informe de uso web"></textarea>
+                    <button id="add-bulk" class="btn btn-success" style="margin-top: 10px; width: 100%;">
+                        <span>🚀</span> <span class="lang" data-es="Añadir Todas las Transacciones" data-ca="Afegir Totes les Transaccions">Añadir Todas las Transacciones</span>
                     </button>
                 </div>
                 
                 <div class="panel" style="margin-top: 25px;">
-                    <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
-                    <div class="export-buttons">
+                    <h2>💾 <span class="lang" data-es="Exportar Mapa" data-ca="Exportar Mapa">Exportar Mapa</span></h2>
+                    <div class="btn-group">
+                        <button id="export-png" class="btn btn-export">
+                            <span>🖼️</span> <span class="lang" data-es="Descargar PNG" data-ca="Descarregar PNG">Descargar PNG</span>
+                        </button>
+                        <button id="export-svg" class="btn btn-export">
+                            <span>🎨</span> <span class="lang" data-es="Descargar SVG" data-ca="Descarregar SVG">Descargar SVG</span>
+                        </button>
                         <button id="export-json" class="btn btn-export">
-                            <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
+                            <span>📊</span> <span class="lang" data-es="Descargar JSON" data-ca="Descarregar JSON">Descargar JSON</span>
                         </button>
-                        <button id="export-roles-csv" class="btn btn-success">
-                            <span>👥</span> <span class="lang" data-es="Exportar Roles CSV" data-ca="Exportar Rols CSV">Exportar Roles CSV</span>
-                        </button>
-                        <button id="export-png" class="btn btn-warning">
-                            <span>🖼️</span> <span class="lang" data-es="Exportar PNG" data-ca="Exportar PNG">Exportar PNG</span>
-                        </button>
-                        <button id="reset-data" class="btn btn-danger">
-                            <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
+                        <button id="copy-data" class="btn btn-export">
+                            <span>📋</span> <span class="lang" data-es="Copiar Datos" data-ca="Copiar Dades">Copiar Datos</span>
                         </button>
                     </div>
                 </div>
                 
-                <div class="export-section">
-                    <h3 class="lang" data-es="Exportar Roles para Value Accounting App" data-ca="Exportar Rols per a App Comptabilitat de Valor">Exportar Roles para Value Accounting App</h3>
-                    <p class="lang" data-es="Exporta los roles de tu mapa de valor como archivo CSV para importarlos directamente en la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a>. Esto pre-poblará los roles disponibles al registrar entregables." data-ca="Exporta els rols del teu mapa de valor com a arxiu CSV per importar-los directament a l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a>. Això pre-omplirà els rols disponibles en registrar entregables.">Exporta los roles de tu mapa de valor como archivo CSV para importarlos directamente en la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a>. Esto pre-poblará los roles disponibles al registrar entregables.</p>
-                    <p class="lang" data-es="<strong>Formato del CSV:</strong> El archivo exportado contendrá una columna 'Rol' con todos los roles/nodos de tu mapa de valor. Este formato es compatible con la importación en la App de Contabilidad de Valor." data-ca="<strong>Format de l'CSV:</strong> L'arxiu exportat contindrà una columna 'Rol' amb tots els rols/nodes del teu mapa de valor. Aquest format és compatible amb la importació a l'App de Comptabilitat de Valor."><strong>Formato del CSV:</strong> El archivo exportado contendrá una columna 'Rol' con todos los roles/nodos de tu mapa de valor. Este formato es compatible con la importación en la App de Contabilidad de Valor.</p>
+                <div class="transactions-list">
+                    <h3 class="lang" data-es="Lista de Transacciones" data-ca="Llista de Transaccions">Lista de Transacciones</h3>
+                    <div id="transactions-container">
+                        <!-- Transactions will be added here dynamically -->
+                        <div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>
+                    </div>
                 </div>
                 
-                <div class="test-section">
-                    <h3 class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</h3>
-                    <p class="lang" data-es="Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador." data-ca="Executa proves automàtiques per verificar que l'aplicació funcioni correctament al teu navegador.">Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador.</p>
-                    <button id="run-tests" class="btn btn-warning" style="width: 100%;">
-                        <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</span>
-                    </button>
-                    <div id="test-results" class="test-results"></div>
-                </div>
-                
-                <div class="integration-section" style="margin-top: 25px;">
-                    <h3 class="lang" data-es="Siguiente Paso: Value Accounting App" data-ca="Pas Següent: App Comptabilitat de Valor">Siguiente Paso: Value Accounting App</h3>
-                    <p class="lang" data-es="Una vez hayas mapeado los flujos de valor y exportado los roles, continúa en la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a> para registrar entregables, asignar usuarios por rol y preparar para la tokenización." data-ca="Un cop hagis mapejat els fluxos de valor i exportat els rols, continua a l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a> per registrar entregables, assignar usuaris per rol i preparar per a la tokenització.">Una vez hayas mapeado los flujos de valor y exportado los roles, continúa en la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a> para registrar entregables, asignar usuarios por rol y preparar para la tokenización.</p>
+                <div class="instructions">
+                    <h3 class="lang" data-es="Instrucciones de Uso" data-ca="Instruccions d'Ús">Instrucciones de Uso</h3>
+                    <ol>
+                        <li class="lang" data-es="Escribe los roles y transacciones en el formato: <code>Origen → Destino | tipo | Entregable</code>" data-ca="Escriu els rols i transaccions en el format: <code>Origen → Destí | tipus | Entregable</code>">Escribe los roles y transacciones en el formato: <code>Origen → Destino | tipo | Entregable</code></li>
+                        <li class="lang" data-es="Haz clic en los nodos para arrastrarlos y organizar el mapa" data-ca="Fes clic als nodes per arrossegar-los i organitzar el mapa">Haz clic en los nodos para arrastrarlos y organizar el mapa</li>
+                        <li class="lang" data-es="Usa los controles de zoom para navegar por mapas grandes" data-ca="Utilitza els controls de zoom per navegar per mapes grans">Usa los controles de zoom para navegar por mapas grandes</li>
+                        <li class="lang" data-es="Pasa el ratón sobre las conexiones para ver detalles completos" data-ca="Passa el ratolí sobre les connexions per veure detalls complets">Pasa el ratón sobre las conexiones para ver detalles completos</li>
+                        <li class="lang" data-es="Exporta tu mapa en PNG, SVG o JSON para compartir o editar" data-ca="Exporta el teu mapa en PNG, SVG o JSON per compartir o editar">Exporta tu mapa en PNG, SVG o JSON para compartir o editar</li>
+                    </ol>
+                    
+                    <div class="example-section">
+                        <h4 class="lang" data-es="Ejemplos de Transacciones:" data-ca="Exemples de Transaccions:">Ejemplos de Transacciones:</h4>
+                        <div class="example-item">Cliente → Vendedor | tangible | Pedido</div>
+                        <div class="example-item">Vendedor → Cliente | intangible | Confianza</div>
+                        <div class="example-item">IT → Marketing | tangible | Informe de uso web</div>
+                        <div class="example-item">Marketing → IT | intangible | Feedback de campaña</div>
+                    </div>
                 </div>
             </div>
             
             <div class="visualization-container">
-                <h2>🗺️ <span class="lang" data-es="Mapa de Valor Visual" data-ca="Mapa de Valor Visual">Mapa de Valor Visual</span></h2>
-                <div id="network-container">
-                    <div class="empty-state">
+                <h2>🗺️ <span class="lang" data-es="Mapa de Red de Valor" data-ca="Mapa de Xarxa de Valor">Mapa de Red de Valor</span></h2>
+                <div id="vna-container">
+                    <svg id="vna-svg"></svg>
+                    <div class="empty-state" id="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        <h3 class="lang" data-es="No hay nodos en el mapa aún" data-ca="No hi ha nodes al mapa encara">No hay nodos en el mapa aún</h3>
-                        <p class="lang" data-es="Añade transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo." data-ca="Afegeix transaccions per visualitzar el teu mapa de valor. Utilitza el botó 'Afegir Exemple' per veure un mapa d'exemple.">Añade transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo.</p>
+                        <h3 class="lang" data-es="Añade tu primera transacción" data-ca="Afegeix la teva primera transacció">Añade tu primera transacción</h3>
+                        <p class="lang" data-es="Define roles y flujos de valor para visualizar las conexiones en tu organización. Comienza con transacciones simples y ve construyendo tu red de valor completa." data-ca="Defineix rols i fluxos de valor per visualitzar les connexions a la teva organització. Comença amb transaccions simples i ves construint la teva xarxa de valor completa.">Define roles y flujos de valor para visualizar las conexiones en tu organización. Comienza con transacciones simples y ve construyendo tu red de valor completa.</p>
+                        <button id="add-first-transaction" class="btn btn-primary" style="margin-top: 15px;">
+                            <span>✨</span> <span class="lang" data-es="Añadir Transacción de Ejemplo" data-ca="Afegir Transacció d'Exemple">Añadir Transacción de Ejemplo</span>
+                        </button>
+                    </div>
+                    <div class="simulation-running" id="simulation-status">Optimizando distribución de nodos...</div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-line legend-tangible"></div>
+                        <span class="lang" data-es="Tangible (bienes, servicios, datos)" data-ca="Tangible (béns, serveis, dades)">Tangible (bienes, servicios, datos)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line legend-intangible"></div>
+                        <span class="lang" data-es="Intangible (confianza, conocimiento, feedback)" data-ca="Intangible (confiança, coneixement, feedback)">Intangible (confianza, conocimiento, feedback)</span>
                     </div>
                 </div>
                 
-                <div class="next-step">
-                    <h3 class="lang" data-es="Exporta tus Roles para Continuar" data-ca="Exporta els teus Rols per Continuar">Exporta tus Roles para Continuar</h3>
-                    <p class="lang" data-es="Una vez hayas creado tu mapa de valor, haz clic en 'Exportar Roles como CSV' para descargar un archivo compatible con la App de Contabilidad de Valor. Este archivo contiene todos los roles/nodos de tu mapa." data-ca="Un cop hagis creat el teu mapa de valor, fes clic a 'Exportar Rols com a CSV' per descarregar un arxiu compatible amb l'App de Comptabilitat de Valor. Aquest arxiu conté tots els rols/nodes del teu mapa.">Una vez hayas creado tu mapa de valor, haz clic en 'Exportar Roles como CSV' para descargar un archivo compatible con la App de Contabilidad de Valor. Este archivo contiene todos los roles/nodos de tu mapa.</p>
-                    <a href="#export-section" class="lang" data-es="Ir a Exportar Roles" data-ca="Anar a Exportar Rols">Ir a Exportar Roles</a>
+                <div class="controls">
+                    <button class="control-btn" id="zoom-in">
+                        <span>🔍+</span> <span class="lang" data-es="Zoom +" data-ca="Zoom +">Zoom +</span>
+                    </button>
+                    <button class="control-btn" id="zoom-out">
+                        <span>🔍-</span> <span class="lang" data-es="Zoom -" data-ca="Zoom -">Zoom -</span>
+                    </button>
+                    <button class="control-btn" id="zoom-reset">
+                        <span>↺</span> <span class="lang" data-es="Reset Zoom" data-ca="Reiniciar Zoom">Reset Zoom</span>
+                    </button>
+                    <button class="control-btn" id="fit-to-screen">
+                        <span>❐</span> <span class="lang" data-es="Ajustar a Pantalla" data-ca="Ajustar a Pantalla">Ajustar a Pantalla</span>
+                    </button>
+                </div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="node-count">0</div>
+                        <div class="stat-label lang" data-es="Roles" data-ca="Rols">Roles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="link-count">0</div>
+                        <div class="stat-label lang" data-es="Transacciones" data-ca="Transaccions">Transacciones</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="tangible-count">0</div>
+                        <div class="stat-label lang" data-es="Tangibles" data-ca="Tangibles">Tangibles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="intangible-count">0</div>
+                        <div class="stat-label lang" data-es="Intangibles" data-ca="Intangibles">Intangibles</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1029,22 +1118,20 @@
             <div class="footer-col">
                 <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
                 <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
-                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
-                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
-                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
-                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="La Masia" data-ca="La Masia">La Masia</a></li>
-                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
+                    <li><a href="/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="/events" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Apps del Ecosistema" data-ca="Apps de l'Ecosistema">Apps del Ecosistema</h3>
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
                 <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
-                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
-                    <li><a href="https://teamtowershuma.com/app_coops" class="lang" data-es="App Comunidades de Práctica" data-ca="App Comunitats de Pràctica">App Comunidades de Práctica</a></li>
-                    <li><a href="https://teamtowershuma.com/tokenomics" class="lang" data-es="App Tokenomics" data-ca="App Tokenomics">App Tokenomics</a></li>
                     <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1064,944 +1151,1011 @@
             </div>
         </div>
         <div class="copyright">
-            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Value Network Analysis App para mapear flujos de valor tangibles e intangibles en organizaciones." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Value Network Analysis App per mapejar fluxos de valor tangibles i intangibles en organitzacions.">© 2026 TeamTowers Humà. Todos los derechos reservados. Value Network Analysis App para mapear flujos de valor tangibles e intangibles en organizaciones.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats.">© 2026 TeamTowers Humà. Todos los derechos reservados.</p>
         </div>
     </footer>
     
-    <!-- vis-network JS -->
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <div class="tooltip" id="tooltip"></div>
     
     <script>
-        // ========== TEST-DRIVEN DEVELOPMENT FRAMEWORK ==========
-        const testSuite = {
-            results: [],
-            assert: {
-                equals: function(actual, expected, testName) {
-                    const passed = actual === expected;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: expected
-                    });
-                    return passed;
-                },
-                truthy: function(actual, testName) {
-                    const passed = !!actual;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: 'truthy value'
-                    });
-                    return passed;
-                },
-                falsy: function(actual, testName) {
-                    const passed = !actual;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: 'falsy value'
-                    });
-                    return passed;
-                },
-                type: function(actual, expectedType, testName) {
-                    const actualType = typeof actual;
-                    const passed = actualType === expectedType;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actualType,
-                        expected: expectedType
-                    });
-                    return passed;
-                }
-            },
-            runTests: function() {
-                this.results = [];
-                
-                // Test 1: Network container exists
-                this.assert.truthy(document.getElementById('network-container'), "Network container exists");
-                
-                // Test 2: Add link button exists
-                this.assert.truthy(document.getElementById('add-link'), "Add link button exists");
-                
-                // Test 3: Export JSON button exists
-                this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
-                
-                // Test 4: Export CSV button exists
-                this.assert.truthy(document.getElementById('export-roles-csv'), "Export CSV button exists");
-                
-                // Test 5: Export PNG button exists
-                this.assert.truthy(document.getElementById('export-png'), "Export PNG button exists");
-                
-                // Test 6: Reset button exists
-                this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
-                
-                // Test 7: Quick start button exists
-                this.assert.truthy(document.getElementById('quick-start'), "Quick start button exists");
-                
-                // Test 8: Initial state has no nodes
-                this.assert.equals(vnaData.nodes.length, 0, "Initial state has no nodes");
-                
-                // Test 9: Initial state has no edges
-                this.assert.equals(vnaData.edges.length, 0, "Initial state has no edges");
-                
-                // Test 10: Add a test transaction (which will create nodes)
-                const testSource = "Test Source " + Date.now();
-                const testTarget = "Test Target " + Date.now();
-                document.getElementById('source-node').value = testSource;
-                document.getElementById('target-node').value = testTarget;
-                document.getElementById('deliverable-name').value = "Test Deliverable";
-                document.getElementById('deliverable-type').value = "tangible";
-                document.getElementById('add-link').click();
-                
-                this.assert.equals(vnaData.nodes.length, 2, "Adding a transaction creates 2 nodes");
-                this.assert.equals(vnaData.edges.length, 1, "Adding a transaction creates 1 edge");
-                
-                // Test 11: Verify nodes were added correctly
-                const sourceNode = vnaData.nodes.find(n => n.label === testSource);
-                const targetNode = vnaData.nodes.find(n => n.label === testTarget);
-                this.assert.truthy(sourceNode, "Source node was added to vnaData");
-                this.assert.truthy(targetNode, "Target node was added to vnaData");
-                this.assert.truthy(nodes.get(sourceNode.id), "Source node was added to vis-network dataset");
-                this.assert.truthy(nodes.get(targetNode.id), "Target node was added to vis-network dataset");
-                
-                // Test 12: Verify edge was added correctly
-                const addedEdge = vnaData.edges.find(e => e.label === "Test Deliverable");
-                this.assert.truthy(addedEdge, "Edge was added to vnaData");
-                this.assert.truthy(edges.get(addedEdge.id), "Edge was added to vis-network dataset");
-                
-                // Test 13: Export roles CSV function exists
-                this.assert.truthy(typeof exportRolesCSV === 'function', "exportRolesCSV function exists");
-                
-                // Test 14: Export JSON function exists
-                this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
-                
-                // Test 15: Network is initialized
-                this.assert.truthy(network !== null, "Network is initialized");
-                
-                // Clean up test data
-                resetDataWithoutConfirmation();
-                
-                return this.results;
-            },
-            displayResults: function(results) {
-                const testResultsDiv = document.getElementById('test-results');
-                testResultsDiv.style.display = 'block';
-                testResultsDiv.innerHTML = '';
-                
-                let passedCount = 0;
-                let failedCount = 0;
-                
-                results.forEach(result => {
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = result.passed ? 'test-pass' : 'test-fail';
-                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
-                        `   Expected: ${result.expected}<br/>` +
-                        `   Actual: ${result.actual}`;
-                    testResultsDiv.appendChild(resultDiv);
-                    
-                    if (result.passed) passedCount++;
-                    else failedCount++;
-                });
-                
-                // Summary
-                const summary = document.createElement('div');
-                summary.style.fontWeight = 'bold';
-                summary.style.marginTop = '15px';
-                summary.style.paddingTop = '10px';
-                summary.style.borderTop = '1px solid #ddd';
-                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
-                testResultsDiv.appendChild(summary);
-                
-                // Alert summary
-                if (failedCount === 0) {
-                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`, 'success');
-                } else {
-                    showNotification(`⚠️ Algunas pruebas fallaron (${failedCount}/${results.length}).\n\nRevisa los resultados en la sección de pruebas.`, 'error');
-                }
-            }
-        };
-        
-        // ========== APPLICATION STATE AND FUNCTIONS ==========
-        // Estado de la aplicación
-        let vnaData = {
-            projectName: "Proyecto MASIA",
-            nodes: [],
-            edges: []
-        };
-        
-        // vis-network variables
-        let nodes = null;
-        let edges = null;
-        let network = null;
-        let nextNodeId = 1;
-        let nextEdgeId = 1;
-        
-        // Autocomplete variables
-        let currentAutocompleteField = null;
-        
-        // Inicialización cuando el DOM esté listo
+        // Language switching functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Configurar botones de idioma
-            setupLanguageSelector();
-            
-            // Cargar datos guardados
-            loadSavedData();
-            
-            // Inicializar la red
-            initNetwork();
-            
-            // Configurar event listeners
-            setupEventListeners();
-            
-            // Configurar autocompletado
-            setupAutocomplete();
-            
-            // Mostrar notificación de bienvenida
-            setTimeout(() => {
-                showNotification('¡Bienvenido a la Value Network Analysis App! Escribe roles en los campos "De:" y "Para:" para crear tu mapa de valor.', 'success');
-            }, 1000);
-        });
-        
-        // Configurar selector de idioma
-        function setupLanguageSelector() {
             const langButtons = document.querySelectorAll('.lang-btn');
             const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
             
-            // Establecer idioma inicial
+            // Set initial language based on browser settings or default to Spanish
             const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
             setActiveLanguage(userLang);
             
-            // Event listeners para botones de idioma
+            // Add click event to language buttons
             langButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const selectedLang = this.getAttribute('data-lang');
                     setActiveLanguage(selectedLang);
                     
-                    // Actualizar botón activo
+                    // Update active button
                     langButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                 });
             });
             
+            // Set active language
             function setActiveLanguage(lang) {
+                // Update all translatable elements
                 translatableElements.forEach(element => {
                     if (element.hasAttribute(`data-${lang}`)) {
                         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                             element.placeholder = element.getAttribute(`data-${lang}`);
                         } else {
+                            // Use innerHTML to allow HTML content in translations
                             element.innerHTML = element.getAttribute(`data-${lang}`);
                         }
                     }
                 });
                 
+                // Update HTML lang attribute
                 document.documentElement.setAttribute('lang', lang);
             }
-        }
+            
+            // Initialize VNA app after language is set
+            initVNAApp();
+        });
         
-        // Inicializar la red de vis-network
-        function initNetwork() {
-            // Initialize the nodes and edges DataSet
-            nodes = new vis.DataSet();
-            edges = new vis.DataSet();
+        // VNA App functionality
+        function initVNAApp() {
+            // Estado de la aplicación
+            let nodes = window.nodes = [];
+            let links = window.links = [];
+            let simulation;
+            let svg;
+            let g;
+            let width = 1100;
+            let height = 700;
+            let zoom;
+            let isSimulationRunning = false;
             
-            // Get the container for the network
-            const container = document.getElementById('network-container');
+            // Inicialización
+            const container = document.getElementById('vna-container');
+            width = container.clientWidth;
+            height = container.clientHeight - 60; // Adjust for controls
             
-            // Network options
-            const options = {
-                nodes: {
-                    shape: 'dot',
-                    size: 25,
-                    font: {
-                        size: 16,
-                        face: 'Tahoma'
-                    },
-                    borderWidth: 2,
-                    shadow: true
-                },
-                edges: {
-                    width: 2,
-                    color: {
-                        color: '#1e3a8a',
-                        highlight: '#4f46e5'
-                    },
-                    font: {
-                        size: 12,
-                        align: 'middle',
-                        background: 'white',
-                        strokeWidth: 2,
-                        strokeColor: '#ffffff'
-                    },
-                    smooth: {
-                        enabled: true,
-                        type: "continuous",
-                        forceDirection: "none",
-                        roundness: 0.5
-                    },
-                    shadow: true,
-                    arrows: {
-                        to: { enabled: true, scaleFactor: 0.7 }
-                    }
-                },
-                physics: {
-                    enabled: true,
-                    solver: 'forceAtlas2Based',
-                    stabilization: {
-                        enabled: true,
-                        iterations: 100,
-                        updateInterval: 25
-                    }
-                },
-                interaction: {
-                    hover: true,
-                    tooltipDelay: 200
-                }
-            };
+            svg = d3.select('#vna-svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g');
             
-            // Initialize the network
-            network = new vis.Network(container, { nodes: nodes, edges: edges }, options);
+            // Configurar zoom
+            zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
             
-            // Set up event listeners for the network
-            network.on('click', function(params) {
-                if (params.nodes.length > 0) {
-                    const nodeId = params.nodes[0];
-                    const node = nodes.get(nodeId);
-                    showNotification(`Nodo seleccionado: ${node.label}`, 'success');
-                }
-                
-                if (params.edges.length > 0) {
-                    const edgeId = params.edges[0];
-                    const edge = edges.get(edgeId);
-                    const typeText = edge.type === 'tangible' ? 'Tangible' : 'Intangible';
-                    showNotification(`Transacción: ${edge.label}\nTipo: ${typeText}`, 'success');
-                }
-            });
-        }
-        
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Añadir enlace
-            document.getElementById('add-link').addEventListener('click', addLink);
+            d3.select('#vna-svg')
+                .call(zoom)
+                .on('dblclick.zoom', null); // Deshabilitar doble click para zoom
             
-            // Exportar JSON
-            document.getElementById('export-json').addEventListener('click', exportJSON);
+            // Añadir marcador de flecha MEJORADO - POSICIONADO CORRECTAMENTE
+            svg.append('defs').append('marker')
+                .attr('id', 'arrowhead')
+                .attr('viewBox', '-0 -5 10 10')
+                .attr('refX', 18)  // Posición óptima para que la flecha quede visible al final del enlace
+                .attr('refY', 0)
+                .attr('orient', 'auto')
+                .attr('markerWidth', 12)
+                .attr('markerHeight', 12)
+                .attr('xoverflow', 'visible')
+                .append('svg:path')
+                .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+                .attr('fill', '#4b5563')
+                .style('stroke-width', 1.5)
+                .style('stroke', '#4b5563');
             
-            // Exportar Roles CSV
-            document.getElementById('export-roles-csv').addEventListener('click', exportRolesCSV);
-            
-            // Exportar PNG
+            // Eventos de botones
+            document.getElementById('add-transaction').addEventListener('click', addTransaction);
+            document.getElementById('add-bulk').addEventListener('click', addBulkTransactions);
+            document.getElementById('clear-all').addEventListener('click', clearAll);
+            document.getElementById('load-example').addEventListener('click', loadExample);
+            document.getElementById('reset-layout').addEventListener('click', resetLayout);
             document.getElementById('export-png').addEventListener('click', exportPNG);
+            document.getElementById('export-svg').addEventListener('click', exportSVG);
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('copy-data').addEventListener('click', copyData);
+            document.getElementById('add-first-transaction').addEventListener('click', addFirstTransaction);
+            document.getElementById('zoom-in').addEventListener('click', () => zoom.scaleBy(svg.transition().duration(300), 1.3));
+            document.getElementById('zoom-out').addEventListener('click', () => zoom.scaleBy(svg.transition().duration(300), 0.7));
+            document.getElementById('zoom-reset').addEventListener('click', resetZoom);
+            document.getElementById('fit-to-screen').addEventListener('click', fitToScreen);
             
-            // Limpiar datos
-            document.getElementById('reset-data').addEventListener('click', resetData);
+            // Cargar datos guardados
+            loadSavedData();
             
-            // Quick start
-            document.getElementById('quick-start').addEventListener('click', quickStartVNA);
+            // Si no hay datos, mostrar estado vacío
+            updateEmptyState();
+            updateTransactionsList();
             
-            // Ejecutar pruebas
-            document.getElementById('run-tests').addEventListener('click', runTests);
-            
-            // Cambiar nombre del proyecto
-            document.getElementById('project-name').addEventListener('change', function() {
-                vnaData.projectName = this.value || "Proyecto MASIA";
-                saveData();
-            });
-        }
-        
-        // Configurar autocompletado
-        function setupAutocomplete() {
-            const sourceInput = document.getElementById('source-node');
-            const targetInput = document.getElementById('target-node');
-            const sourceList = document.getElementById('source-node-list');
-            const targetList = document.getElementById('target-node-list');
-            
-            // Set up autocomplete for source field
-            sourceInput.addEventListener('input', function(e) {
-                currentAutocompleteField = 'source';
-                showAutocomplete(this.value, sourceList);
-            });
-            
-            sourceInput.addEventListener('focus', function(e) {
-                currentAutocompleteField = 'source';
-                showAutocomplete(this.value, sourceList);
-            });
-            
-            sourceInput.addEventListener('blur', function(e) {
-                // Delay hiding to allow click on suggestions
-                setTimeout(() => {
-                    sourceList.innerHTML = '';
-                }, 200);
-            });
-            
-            // Set up autocomplete for target field
-            targetInput.addEventListener('input', function(e) {
-                currentAutocompleteField = 'target';
-                showAutocomplete(this.value, targetList);
-            });
-            
-            targetInput.addEventListener('focus', function(e) {
-                currentAutocompleteField = 'target';
-                showAutocomplete(this.value, targetList);
-            });
-            
-            targetInput.addEventListener('blur', function(e) {
-                // Delay hiding to allow click on suggestions
-                setTimeout(() => {
-                    targetList.innerHTML = '';
-                }, 200);
-            });
-            
-            // Close autocomplete when clicking outside
-            document.addEventListener('click', function(e) {
-                if (e.target !== sourceInput && e.target !== targetInput) {
-                    sourceList.innerHTML = '';
-                    targetList.innerHTML = '';
-                }
-            });
-        }
-        
-        // Show autocomplete suggestions
-        function showAutocomplete(inputValue, container) {
-            // Clear container
-            container.innerHTML = '';
-            
-            if (!inputValue) {
-                return;
-            }
-            
-            // Find matching roles (case-insensitive)
-            const matches = vnaData.nodes.filter(node => 
-                node.label.toLowerCase().includes(inputValue.toLowerCase())
-            );
-            
-            // Limit to 10 matches
-            matches.slice(0, 10).forEach(node => {
-                const suggestion = document.createElement('div');
-                suggestion.textContent = node.label;
-                suggestion.addEventListener('click', function() {
-                    if (currentAutocompleteField === 'source') {
-                        document.getElementById('source-node').value = node.label;
-                    } else {
-                        document.getElementById('target-node').value = node.label;
-                    }
-                    container.innerHTML = '';
-                });
-                container.appendChild(suggestion);
-            });
-            
-            // Add option to create new role if no exact match
-            if (matches.length === 0) {
-                const newOption = document.createElement('div');
-                newOption.innerHTML = `➕ <strong>Crear nuevo rol:</strong> "${inputValue}"`;
-                newOption.style.fontStyle = 'italic';
-                newOption.addEventListener('click', function() {
-                    // The role will be created when the transaction is added
-                    if (currentAutocompleteField === 'source') {
-                        document.getElementById('source-node').value = inputValue;
-                    } else {
-                        document.getElementById('target-node').value = inputValue;
-                    }
-                    container.innerHTML = '';
-                });
-                container.appendChild(newOption);
-            }
-        }
-        
-        // Helper function to find node by label (case-insensitive)
-        function findNodeByLabel(label) {
-            if (!label) return null;
-            return vnaData.nodes.find(n => 
-                n.label.toLowerCase().trim() === label.toLowerCase().trim()
-            );
-        }
-        
-        // Helper function to add a node
-        function addNode(label) {
-            // Check if node already exists (case-insensitive)
-            const existingNode = findNodeByLabel(label);
-            if (existingNode) {
-                return existingNode;
-            }
-            
-            // Create new node
-            const nodeId = `node-${nextNodeId++}`;
-            const newNode = {
-                id: nodeId,
-                label: label.trim(),
-                group: vnaData.nodes.length % 5 + 1 // Cycle through 5 groups
-            };
-            
-            // Add to data structures
-            vnaData.nodes.push(newNode);
-            nodes.add(newNode);
-            
-            return newNode;
-        }
-        
-        // Añadir enlace/transacción
-        function addLink() {
-            const sourceInput = document.getElementById('source-node').value.trim();
-            const targetInput = document.getElementById('target-node').value.trim();
-            const deliverableName = document.getElementById('deliverable-name').value.trim();
-            const deliverableType = document.getElementById('deliverable-type').value;
-            
-            if (!sourceInput || !targetInput) {
-                showNotification('Introduce roles en los campos "De:" y "Para:"', 'error');
-                return;
-            }
-            
-            if (!deliverableName) {
-                showNotification('Introduce un nombre para el entregable', 'error');
-                return;
-            }
-            
-            if (sourceInput.toLowerCase() === targetInput.toLowerCase()) {
-                showNotification('El rol origen y destino no pueden ser el mismo', 'error');
-                return;
-            }
-            
-            // Add or get source node
-            let sourceNode = findNodeByLabel(sourceInput);
-            if (!sourceNode) {
-                sourceNode = addNode(sourceInput);
-            }
-            
-            // Add or get target node
-            let targetNode = findNodeByLabel(targetInput);
-            if (!targetNode) {
-                targetNode = addNode(targetInput);
-            }
-            
-            // Normalize the input fields to the actual node labels
-            document.getElementById('source-node').value = sourceNode.label;
-            document.getElementById('target-node').value = targetNode.label;
-            
-            // Check if the transaction already exists between these nodes with the same deliverable
-            const existingEdge = vnaData.edges.find(e => 
-                e.from === sourceNode.id && 
-                e.to === targetNode.id && 
-                e.label.toLowerCase() === deliverableName.toLowerCase()
-            );
-            
-            if (existingEdge) {
-                showNotification(`La transacción de "${sourceNode.label}" a "${targetNode.label}" con el entregable "${deliverableName}" ya existe`, 'error');
-                return;
-            }
-            
-            // Create edge ID
-            const edgeId = `edge-${nextEdgeId++}`;
-            
-            // Determine edge appearance based on type
-            let edgeColor, edgeDashes;
-            if (deliverableType === 'tangible') {
-                edgeColor = { color: '#1e3a8a', highlight: '#4f46e5' };
-                edgeDashes = false;
-            } else {
-                edgeColor = { color: '#0ea5e9', highlight: '#0284c7' };
-                edgeDashes = [5, 5];
-            }
-            
-            // Count edges between these nodes to adjust roundness
-            const edgesBetweenNodes = vnaData.edges.filter(e => 
-                (e.from === sourceNode.id && e.to === targetNode.id) || 
-                (e.from === targetNode.id && e.to === sourceNode.id)
-            ).length;
-            
-            // Create new edge with improved styling to avoid overlapping
-            const newEdge = {
-                id: edgeId,
-                from: sourceNode.id,
-                to: targetNode.id,
-                label: deliverableName,
-                type: deliverableType,
-                color: edgeColor,
-                dashes: edgeDashes,
-                width: 2,
-                font: {
-                    size: 12,
-                    align: 'middle',
-                    background: 'white',
-                    strokeWidth: 2,
-                    strokeColor: '#ffffff'
-                },
-                // Use different roundness values to avoid overlapping edges between same nodes
-                smooth: {
-                    enabled: true,
-                    type: "continuous",
-                    forceDirection: "none",
-                    roundness: 0.3 + (edgesBetweenNodes * 0.15)
-                }
-            };
-            
-            // Add to data structures
-            vnaData.edges.push(newEdge);
-            edges.add(newEdge);
-            
-            // Guardar y actualizar
-            saveData();
-            
-            // Limpiar formulario
-            document.getElementById('deliverable-name').value = '';
-            
-            // Feedback al usuario
-            showNotification(`Transacción añadida correctamente de "${sourceNode.label}" a "${targetNode.label}"`, 'success');
-        }
-        
-        // Quick start para VNA
-        function quickStartVNA() {
-            // Clear existing data
-            if (vnaData.nodes.length > 0) {
-                if (!confirm(document.documentElement.lang === 'ca' ? 
-                    'Això esborrarà el teu mapa actual. Vols continuar?' : 
-                    'Esto borrará tu mapa actual. ¿Quieres continuar?')) {
+            // Funciones de la aplicación
+            function addTransaction() {
+                const origin = document.getElementById('origin').value.trim();
+                const destination = document.getElementById('destination').value.trim();
+                const type = document.getElementById('type').value;
+                const deliverable = document.getElementById('deliverable').value.trim();
+                
+                if (!origin || !destination || !deliverable) {
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Si us plau, completa tots els camps' : 
+                        'Por favor, completa todos los campos');
                     return;
                 }
-                resetDataWithoutConfirmation();
+                
+                addTransactionToData(origin, destination, type, deliverable);
+                
+                // Limpiar formulario
+                document.getElementById('origin').value = '';
+                document.getElementById('destination').value = '';
+                document.getElementById('deliverable').value = '';
+                
+                // Guardar datos
+                saveData();
+                
+                // Actualizar visualización
+                updateVisualization();
+                updateTransactionsList();
+                
+                // Ocultar estado vacío
+                document.getElementById('empty-state').style.display = 'none';
             }
             
-            // Add example roles
-            const exampleRoles = [
-                {id: "node-ceo", label: "CEO", group: 1},
-                {id: "node-team", label: "Equipo", group: 2},
-                {id: "node-clients", label: "Clientes", group: 3},
-                {id: "node-providers", label: "Proveedores", group: 4},
-                {id: "node-investors", label: "Inversores", group: 5}
-            ];
-            
-            // Add nodes
-            exampleRoles.forEach(role => {
-                vnaData.nodes.push(role);
-                nodes.add(role);
-                nextNodeId++;
-            });
-            
-            // Add example edges with different types and deliverables
-            const exampleEdges = [
-                {
-                    id: "edge-ceo-team-strategy",
-                    from: "node-ceo",
-                    to: "node-team",
-                    label: "Estrategia",
-                    type: "intangible"
-                },
-                {
-                    id: "edge-ceo-team-resources",
-                    from: "node-ceo",
-                    to: "node-team",
-                    label: "Recursos",
-                    type: "tangible"
-                },
-                {
-                    id: "edge-team-clients-product",
-                    from: "node-team",
-                    to: "node-clients",
-                    label: "Producto",
-                    type: "tangible"
-                },
-                {
-                    id: "edge-team-clients-support",
-                    from: "node-team",
-                    to: "node-clients",
-                    label: "Soporte",
-                    type: "intangible"
-                },
-                {
-                    id: "edge-clients-providers-feedback",
-                    from: "node-clients",
-                    to: "node-providers",
-                    label: "Feedback",
-                    type: "intangible"
-                },
-                {
-                    id: "edge-providers-team-materials",
-                    from: "node-providers",
-                    to: "node-team",
-                    label: "Materiales",
-                    type: "tangible"
-                },
-                {
-                    id: "edge-investors-ceo-capital",
-                    from: "node-investors",
-                    to: "node-ceo",
-                    label: "Capital",
-                    type: "tangible"
-                },
-                {
-                    id: "edge-ceo-investors-reports",
-                    from: "node-ceo",
-                    to: "node-investors",
-                    label: "Reportes",
-                    type: "intangible"
+            function addBulkTransactions() {
+                const bulkInput = document.getElementById('bulk-input').value.trim();
+                if (!bulkInput) {
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Enganxa les transaccions que vols afegir' : 
+                        'Pega las transacciones que quieres añadir');
+                    return;
                 }
-            ];
-            
-            // Add edges with proper styling
-            exampleEdges.forEach((edge, index) => {
-                edge.width = 2;
-                edge.font = {
-                    size: 12,
-                    align: 'middle',
-                    background: 'white',
-                    strokeWidth: 2,
-                    strokeColor: '#ffffff'
-                };
                 
-                // Determine edge appearance based on type
-                if (edge.type === 'tangible') {
-                    edge.color = { color: '#1e3a8a', highlight: '#4f46e5' };
-                    edge.dashes = false;
+                const lines = bulkInput.split('\n');
+                let addedCount = 0;
+                
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (!line) return;
+                    
+                    // Parsear el formato: Origen → Destino | tipo | Entregable
+                    const parts = line.split('|');
+                    if (parts.length !== 3) {
+                        console.warn('Formato incorrecto:', line);
+                        return;
+                    }
+                    
+                    const originDest = parts[0].trim().split('→');
+                    if (originDest.length !== 2) {
+                        console.warn('Formato de origen/destino incorrecto:', line);
+                        return;
+                    }
+                    
+                    const origin = originDest[0].trim();
+                    const destination = originDest[1].trim();
+                    const type = parts[1].trim().toLowerCase();
+                    const deliverable = parts[2].trim();
+                    
+                    if (origin && destination && deliverable && (type === 'tangible' || type === 'intangible')) {
+                        addTransactionToData(origin, destination, type, deliverable);
+                        addedCount++;
+                    }
+                });
+                
+                if (addedCount > 0) {
+                    // Limpiar textarea
+                    document.getElementById('bulk-input').value = '';
+                    
+                    // Guardar datos
+                    saveData();
+                    
+                    // Actualizar visualización
+                    updateVisualization();
+                    updateTransactionsList();
+                    
+                    // Ocultar estado vacío
+                    document.getElementById('empty-state').style.display = 'none';
+                    
+                    alert(`${addedCount} ${document.documentElement.lang === 'ca' ? 
+                        'transaccions afegides correctament' : 
+                        'transacciones añadidas correctamente'}`);
                 } else {
-                    edge.color = { color: '#0ea5e9', highlight: '#0284c7' };
-                    edge.dashes = [5, 5];
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'No s\'han pogut afegir transaccions. Revisa el format.' : 
+                        'No se han podido añadir transacciones. Revisa el formato.');
+                }
+            }
+            
+            function addTransactionToData(origin, destination, type, deliverable) {
+                // Añadir nodos si no existen
+                if (!nodes.find(n => n.id === origin)) {
+                    nodes.push({id: origin, group: 1});
                 }
                 
-                // Adjust roundness to avoid overlapping
-                edge.smooth = {
-                    enabled: true,
-                    type: "continuous",
-                    forceDirection: "none",
-                    roundness: 0.3 + (index * 0.05)
-                };
-                
-                vnaData.edges.push(edge);
-                edges.add(edge);
-                nextEdgeId++;
-            });
-            
-            // Guardar y actualizar
-            saveData();
-            
-            // Feedback al usuario
-            showNotification('Se han añadido 5 roles y 8 transacciones de ejemplo a tu mapa de valor.', 'success');
-        }
-        
-        // Exportar JSON
-        function exportJSON() {
-            if (vnaData.nodes.length === 0) {
-                showNotification('No hay datos para exportar. Crea un mapa de valor primero.', 'error');
-                return;
-            }
-            
-            const dataStr = JSON.stringify(vnaData, null, 2);
-            const blob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            
-            const exportFileDefaultName = `vna-${vnaData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', url);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.style.display = 'none';
-            document.body.appendChild(linkElement);
-            
-            linkElement.click();
-            
-            // Limpiar el objeto URL después de la descarga
-            setTimeout(() => {
-                document.body.removeChild(linkElement);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification('Datos exportados correctamente como JSON', 'success');
-        }
-        
-        // Exportar Roles como CSV
-        function exportRolesCSV() {
-            if (vnaData.nodes.length === 0) {
-                showNotification('No hay roles para exportar. Añade roles a tu mapa de valor primero.', 'error');
-                return;
-            }
-            
-            // Crear contenido CSV
-            let csvContent = "Rol\n"; // Header
-            
-            vnaData.nodes.forEach(node => {
-                // Escapar comillas y comas en el nombre del rol
-                let role = node.label || node.id;
-                role = role.replace(/"/g, '""'); // Escapar comillas dobles
-                csvContent += `"${role}"\n`;
-            });
-            
-            // Crear blob y descargar
-            const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
-            const url = URL.createObjectURL(blob);
-            
-            const exportFileDefaultName = `vna-roles-${vnaData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', url);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.style.display = 'none';
-            document.body.appendChild(linkElement);
-            
-            linkElement.click();
-            
-            // Limpiar el objeto URL después de la descarga
-            setTimeout(() => {
-                document.body.removeChild(linkElement);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification(`Se han exportado ${vnaData.nodes.length} roles como CSV. Este archivo es compatible con la importación en la App de Contabilidad de Valor.`, 'success');
-        }
-        
-        // Exportar como PNG
-        function exportPNG() {
-            if (vnaData.nodes.length === 0) {
-                showNotification('No hay datos para exportar. Crea un mapa de valor primero.', 'error');
-                return;
-            }
-            
-            // Get the PNG data URL
-            const pngData = network.getImage();
-            
-            // Create a link and trigger download
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', pngData);
-            linkElement.setAttribute('download', `vna-${vnaData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.png`);
-            linkElement.style.display = 'none';
-            document.body.appendChild(linkElement);
-            
-            linkElement.click();
-            
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(linkElement);
-            }, 100);
-            
-            showNotification('Mapa de valor exportado correctamente como PNG', 'success');
-        }
-        
-        // Limpiar datos
-        function resetData() {
-            if (confirm(document.documentElement.lang === 'ca' ? 
-                'Estàs segur que vols esborrar totes les dades del mapa de valor?' : 
-                '¿Estás seguro de que quieres borrar todos los datos del mapa de valor?')) {
-                resetDataWithoutConfirmation();
-                showNotification('Datos borrados correctamente', 'success');
-            }
-        }
-        
-        // Reset data without confirmation (for quick start)
-        function resetDataWithoutConfirmation() {
-            // Clear data structures
-            vnaData = {
-                projectName: "Proyecto MASIA",
-                nodes: [],
-                edges: []
-            };
-            
-            // Clear vis-network data
-            nodes.clear();
-            edges.clear();
-            
-            // Reset counters
-            nextNodeId = 1;
-            nextEdgeId = 1;
-            
-            // Limpiar campos de formulario
-            document.getElementById('project-name').value = "Proyecto MASIA";
-            document.getElementById('source-node').value = '';
-            document.getElementById('target-node').value = '';
-            document.getElementById('deliverable-name').value = '';
-            
-            // Save
-            saveData();
-        }
-        
-        // Show notification
-        function showNotification(message, type) {
-            // Remove existing notifications
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = message.replace(/\n/g, '<br>');
-            
-            // Add to body
-            document.body.appendChild(notification);
-            
-            // Remove after animation
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
-            }, 3000);
-        }
-        
-        // Guardar datos en localStorage
-        function saveData() {
-            localStorage.setItem('vnaData', JSON.stringify(vnaData));
-        }
-        
-        // Cargar datos de localStorage
-        function loadSavedData() {
-            const saved = localStorage.getItem('vnaData');
-            if (saved) {
-                const parsedData = JSON.parse(saved);
-                
-                vnaData = {
-                    projectName: parsedData.projectName || "Proyecto MASIA",
-                    nodes: parsedData.nodes || [],
-                    edges: parsedData.edges || []
-                };
-                
-                // Restore counters
-                if (vnaData.nodes.length > 0) {
-                    const maxNodeId = Math.max(...vnaData.nodes.map(n => parseInt(n.id.split('-')[1] || 0)));
-                    nextNodeId = maxNodeId + 1;
+                if (!nodes.find(n => n.id === destination)) {
+                    nodes.push({id: destination, group: 1});
                 }
                 
-                if (vnaData.edges.length > 0) {
-                    const maxEdgeId = Math.max(...vnaData.edges.map(e => parseInt(e.id.split('-')[1] || 0)));
-                    nextEdgeId = maxEdgeId + 1;
-                }
-                
-                // Restaurar nombre del proyecto en el input
-                document.getElementById('project-name').value = vnaData.projectName;
-                
-                // Add nodes to vis-network
-                vnaData.nodes.forEach(node => {
-                    nodes.add(node);
-                });
-                
-                // Add edges to vis-network
-                vnaData.edges.forEach(edge => {
-                    // Ensure edge has all required properties
-                    if (!edge.font) {
-                        edge.font = {
-                            size: 12,
-                            align: 'middle',
-                            background: 'white',
-                            strokeWidth: 2,
-                            strokeColor: '#ffffff'
-                        };
-                    }
-                    if (!edge.smooth) {
-                        edge.smooth = {
-                            enabled: true,
-                            type: "continuous",
-                            forceDirection: "none",
-                            roundness: 0.5
-                        };
-                    }
-                    edges.add(edge);
+                // Añadir enlace
+                links.push({
+                    source: origin,
+                    target: destination,
+                    type: type,
+                    deliverable: deliverable,
+                    value: 1
                 });
             }
-        }
-        
-        // Run tests manually
-        function runTests() {
-            const results = testSuite.runTests();
-            testSuite.displayResults(results);
+            
+            function addFirstTransaction() {
+                document.getElementById('origin').value = 'Cliente';
+                document.getElementById('destination').value = 'Vendedor';
+                document.getElementById('type').value = 'tangible';
+                document.getElementById('deliverable').value = 'Pedido';
+                addTransaction();
+            }
+            
+            function loadExample() {
+                if (links.length > 0 && !confirm(document.documentElement.lang === 'ca' ? 
+                    'Vols reemplaçar les dades actuals amb l\'exemple?' : 
+                    '¿Quieres reemplazar los datos actuales con el ejemplo?')) {
+                    return;
+                }
+                
+                nodes = [
+                    {id: "Cliente", group: 1},
+                    {id: "Vendedor", group: 2},
+                    {id: "IT", group: 3},
+                    {id: "Marketing", group: 4},
+                    {id: "CEO", group: 5}
+                ];
+                
+                links = [
+                    {source: "Cliente", target: "Vendedor", type: "tangible", deliverable: "Pedido", value: 1},
+                    {source: "Vendedor", target: "Cliente", type: "intangible", deliverable: "Confianza y satisfacción", value: 1},
+                    {source: "IT", target: "Marketing", type: "tangible", deliverable: "Informe de uso web y analytics", value: 1},
+                    {source: "Marketing", target: "IT", type: "intangible", deliverable: "Feedback de campaña y necesidades de usuarios", value: 1},
+                    {source: "Vendedor", target: "CEO", type: "tangible", deliverable: "Reporte de ventas y proyecciones", value: 1},
+                    {source: "CEO", target: "Vendedor", type: "intangible", deliverable: "Visión estratégica y dirección", value: 1},
+                    {source: "Marketing", target: "Cliente", type: "tangible", deliverable: "Contenido y campañas publicitarias", value: 1},
+                    {source: "Cliente", target: "Marketing", type: "intangible", deliverable: "Insights de mercado y preferencias", value: 1}
+                ];
+                
+                saveData();
+                updateVisualization();
+                updateTransactionsList();
+                document.getElementById('empty-state').style.display = 'none';
+            }
+            
+            function clearAll() {
+                if (links.length === 0) return;
+                
+                if (confirm(document.documentElement.lang === 'ca' ? 
+                    'Estàs segur que vols eliminar totes les transaccions?' : 
+                    '¿Estás seguro de que quieres eliminar todas las transacciones?')) {
+                    nodes = [];
+                    links = [];
+                    saveData();
+                    updateVisualization();
+                    updateTransactionsList();
+                    document.getElementById('empty-state').style.display = 'flex';
+                }
+            }
+            
+            function resetLayout() {
+                if (simulation) {
+                    simulation.alpha(1).restart();
+                    document.getElementById('simulation-status').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('simulation-status').style.display = 'none';
+                    }, 2000);
+                }
+            }
+            
+            function updateVisualization() {
+                // Actualizar estadísticas
+                document.getElementById('node-count').textContent = nodes.length;
+                document.getElementById('link-count').textContent = links.length;
+                document.getElementById('tangible-count').textContent = links.filter(l => l.type === 'tangible').length;
+                document.getElementById('intangible-count').textContent = links.filter(l => l.type === 'intangible').length;
+                
+                // Limpiar SVG
+                svg.selectAll('*').remove();
+                
+                // Si no hay datos, mostrar mensaje
+                if (nodes.length === 0) {
+                    document.getElementById('empty-state').style.display = 'flex';
+                    return;
+                }
+                
+                document.getElementById('empty-state').style.display = 'none';
+                
+                // Crear simulación de fuerza
+                simulation = d3.forceSimulation(nodes)
+                    .force('link', d3.forceLink(links).id(d => d.id).distance(180))
+                    .force('charge', d3.forceManyBody().strength(-400))
+                    .force('center', d3.forceCenter(width / 2, height / 2))
+                    .force('collision', d3.forceCollide().radius(d => 70))
+                    .alphaDecay(0.02)
+                    .alphaMin(0.01)
+                    .on('tick', ticked)
+                    .on('end', () => {
+                        document.getElementById('simulation-status').style.display = 'none';
+                        isSimulationRunning = false;
+                    });
+                
+                isSimulationRunning = true;
+                document.getElementById('simulation-status').style.display = 'block';
+                
+                // Crear enlaces como líneas rectas con flechas - AHORA CON FLECHAS VISIBLES Y ENTREGABLES CENTRADOS
+                const link = svg.append('g')
+                    .attr('stroke-opacity', 0.9)
+                    .selectAll('line')
+                    .data(links)
+                    .join('line')
+                    .attr('class', d => `link-path link-${d.type}`)
+                    .attr('stroke-width', d => d.type === 'tangible' ? 3 : 2)
+                    .attr('stroke', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
+                    .attr('stroke-dasharray', d => d.type === 'intangible' ? '5,5' : '0')
+                    .attr('stroke-linecap', 'round')
+                    .attr('marker-end', 'url(#arrowhead)'); // Flecha VISIBLE al final del enlace
+                
+                // Crear etiquetas de enlaces - POSICIONADAS EN EL CENTRO DE LA LÍNEA
+                const linkLabelGroup = svg.append('g')
+                    .attr('class', 'link-labels')
+                    .selectAll('g')
+                    .data(links)
+                    .join('g')
+                    .attr('class', 'link-label-group');
+                
+                // Etiqueta para el entregable - CENTRADA EN LA LÍNEA DE LA TRANSACCIÓN
+                const linkLabel = linkLabelGroup.append('text')
+                    .attr('class', 'link-label deliverable')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .html(d => {
+                        // Dividir el entregable en líneas si es muy largo
+                        const words = d.deliverable.split(' ');
+                        let lines = [];
+                        let currentLine = '';
+                        
+                        words.forEach(word => {
+                            if ((currentLine + ' ' + word).length > 20) {
+                                lines.push(currentLine);
+                                currentLine = word;
+                            } else {
+                                currentLine += (currentLine ? ' ' : '') + word;
+                            }
+                        });
+                        
+                        if (currentLine) lines.push(currentLine);
+                        
+                        return lines.map(line => `<tspan x="0" dy="${lines.length > 1 ? (lines.indexOf(line) === 0 ? '-0.6em' : '1.2em') : '0'}">${line}</tspan>`).join('');
+                    })
+                    .attr('fill', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
+                    .style('font-size', '10px')
+                    .style('font-weight', '500');
+                
+                // Crear nodos
+                const node = svg.append('g')
+                    .attr('stroke', '#fff')
+                    .attr('stroke-width', 3)
+                    .selectAll('circle')
+                    .data(nodes)
+                    .join('circle')
+                    .attr('r', 50)
+                    .attr('fill', d => {
+                        // Contar conexiones del nodo
+                        const connections = links.filter(l => l.source.id === d.id || l.target.id === d.id).length;
+                        return connections > 3 ? '#1e3a8a' : '#4f46e5';
+                    })
+                    .call(d3.drag()
+                        .on('start', dragstarted)
+                        .on('drag', dragged)
+                        .on('end', dragended));
+                
+                // Crear etiquetas de nodos
+                const label = svg.append('g')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .selectAll('text')
+                    .data(nodes)
+                    .join('text')
+                    .text(d => d.id)
+                    .attr('fill', '#0f172a')
+                    .attr('font-weight', '700')
+                    .attr('font-size', '14px')
+                    .call(d3.drag()
+                        .on('start', dragstarted)
+                        .on('drag', dragged)
+                        .on('end', dragended));
+                
+                // Tooltip para enlaces
+                linkLabelGroup.on('mouseover', function(event, d) {
+                    const tooltip = document.getElementById('tooltip');
+                    tooltip.innerHTML = `
+                        <h4>${document.documentElement.lang === 'ca' ? 'Transacció de Valor' : 'Transacción de Valor'}</h4>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Origen:' : 'Origen:'}</span> <span class="value">${d.source.id}</span></p>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Destí:' : 'Destino:'}</span> <span class="value">${d.target.id}</span></p>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Tipus:' : 'Tipo:'}</span> <span class="type-badge ${d.type}">${d.type.charAt(0).toUpperCase() + d.type.slice(1)}</span></p>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Entregable:' : 'Entregable:'}</span> <span class="value">${d.deliverable}</span></p>
+                    `;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (event.pageX + 15) + 'px';
+                    tooltip.style.top = (event.pageY + 15) + 'px';
+                })
+                .on('mouseout', () => {
+                    document.getElementById('tooltip').style.display = 'none';
+                });
+                
+                // Tooltip para nodos
+                node.on('mouseover', function(event, d) {
+                    // Contar conexiones entrantes y salientes
+                    const incoming = links.filter(l => l.target.id === d.id).length;
+                    const outgoing = links.filter(l => l.source.id === d.id).length;
+                    const total = incoming + outgoing;
+                    
+                    const tooltip = document.getElementById('tooltip');
+                    tooltip.innerHTML = `
+                        <h4>${d.id}</h4>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Connexions totals:' : 'Conexiones totales:'}</span> <span class="value">${total}</span></p>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Entrants:' : 'Entrantes:'}</span> <span class="value">${incoming}</span></p>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Sortints:' : 'Salientes:'}</span> <span class="value">${outgoing}</span></p>
+                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Importància a la xarxa:' : 'Importancia en la red:'}</span> <span class="value">${total > 5 ? (document.documentElement.lang === 'ca' ? 'Alta' : 'Alta') : total > 2 ? (document.documentElement.lang === 'ca' ? 'Mitjana' : 'Media') : (document.documentElement.lang === 'ca' ? 'Baixa' : 'Baja')}</span></p>
+                    `;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (event.pageX + 15) + 'px';
+                    tooltip.style.top = (event.pageY + 15) + 'px';
+                })
+                .on('mouseout', () => {
+                    document.getElementById('tooltip').style.display = 'none';
+                });
+                
+                // Función tick para actualizar posiciones - CON LÍNEAS RECTAS Y ENTREGABLES CENTRADOS
+                function ticked() {
+                    // Calcular el índice de cada enlace entre el mismo par de nodos
+                    const linkMap = new Map();
+                    links.forEach((link, i) => {
+                        const key = `${link.source.id}-${link.target.id}`;
+                        if (!linkMap.has(key)) linkMap.set(key, []);
+                        linkMap.get(key).push(i);
+                    });
+                    
+                    // Actualizar posición de los enlaces - LÍNEAS RECTAS CON FLECHAS
+                    link.attr('x1', d => {
+                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
+                        return sourceNode ? sourceNode.x : 0;
+                    })
+                    .attr('y1', d => {
+                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
+                        return sourceNode ? sourceNode.y : 0;
+                    })
+                    .attr('x2', d => {
+                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
+                        return targetNode ? targetNode.x : 0;
+                    })
+                    .attr('y2', d => {
+                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
+                        return targetNode ? targetNode.y : 0;
+                    });
+                    
+                    // Actualizar posición de las etiquetas - CENTRADAS EN LA LÍNEA RECTA
+                    linkLabelGroup.attr('transform', d => {
+                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
+                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
+                        
+                        if (!sourceNode || !targetNode) return 'translate(0,0)';
+                        
+                        // Calcular el punto medio de la línea
+                        const midX = (sourceNode.x + targetNode.x) / 2;
+                        const midY = (sourceNode.y + targetNode.y) / 2;
+                        
+                        // Calcular vector perpendicular para evitar superposición
+                        const dx = targetNode.x - sourceNode.x;
+                        const dy = targetNode.y - sourceNode.y;
+                        const distance = Math.sqrt(dx*dx + dy*dy) || 1;
+                        
+                        // Vector perpendicular normalizado
+                        const perpX = -dy / distance;
+                        const perpY = dx / distance;
+                        
+                        // Obtener el índice del enlace en su grupo
+                        const key = `${d.source.id}-${d.target.id}`;
+                        const linkGroup = linkMap.get(key) || [];
+                        const linkIndex = linkGroup.indexOf(links.indexOf(d));
+                        
+                        // Desplazamiento perpendicular basado en el índice
+                        const offset = (linkIndex - (linkGroup.length - 1) / 2) * 25;
+                        
+                        return `translate(${midX + perpX * offset}, ${midY + perpY * offset})`;
+                    });
+                    
+                    // Actualizar posición de nodos y etiquetas
+                    node
+                        .attr('cx', d => d.x = Math.max(60, Math.min(width - 60, d.x)))
+                        .attr('cy', d => d.y = Math.max(60, Math.min(height - 60, d.y)));
+                    
+                    label
+                        .attr('x', d => d.x)
+                        .attr('y', d => d.y);
+                }
+                
+                // Funciones de drag
+                function dragstarted(event, d) {
+                    if (!event.active) simulation.alpha(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+                
+                function dragged(event, d) {
+                    d.fx = event.x;
+                    d.fy = event.y;
+                }
+                
+                function dragended(event, d) {
+                    if (!event.active) simulation.alpha(0.001);
+                    d.fx = null;
+                    d.fy = null;
+                }
+                
+                // Guardar referencia a g para el zoom
+                g = svg;
+            }
+            
+            function updateTransactionsList() {
+                const container = document.getElementById('transactions-container');
+                
+                if (links.length === 0) {
+                    container.innerHTML = `<div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>`;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                links.forEach((link, index) => {
+                    const item = document.createElement('div');
+                    item.className = `transaction-item ${link.type}`;
+                    item.innerHTML = `
+                        <div class="transaction-info">
+                            <strong>${link.source.id}</strong> → <strong>${link.target.id}</strong> | 
+                            <span class="badge badge-${link.type}">${link.type}</span> | 
+                            ${link.deliverable}
+                        </div>
+                        <button class="delete-transaction" data-index="${index}">×</button>
+                    `;
+                    container.appendChild(item);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-transaction').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteTransaction(index);
+                    });
+                });
+            }
+            
+            function deleteTransaction(index) {
+                if (confirm(document.documentElement.lang === 'ca' ? 
+                    'Estàs segur que vols eliminar aquesta transacció?' : 
+                    '¿Estás seguro de que quieres eliminar esta transacción?')) {
+                    // Eliminar la transacción
+                    links.splice(index, 1);
+                    
+                    // Eliminar nodos huérfanos (sin conexiones)
+                    nodes = nodes.filter(node => {
+                        return links.some(link => 
+                            link.source.id === node.id || link.target.id === node.id
+                        );
+                    });
+                    
+                    // Guardar datos
+                    saveData();
+                    
+                    // Actualizar visualización
+                    updateVisualization();
+                    updateTransactionsList();
+                }
+            }
+            
+            function resetZoom() {
+                svg.transition()
+                    .duration(300)
+                    .call(zoom.transform, d3.zoomIdentity);
+            }
+            
+            function fitToScreen() {
+                // Calcular bounding box de todos los elementos
+                const bbox = svg.node().getBBox();
+                
+                if (bbox.width === 0 || bbox.height === 0) return;
+                
+                // Calcular escala y traslación
+                const padding = 80;
+                const scaleX = (width - padding * 2) / bbox.width;
+                const scaleY = (height - padding * 2) / bbox.height;
+                const scale = Math.min(scaleX, scaleY, 2); // Máximo zoom 2x
+                
+                const translateX = (width - bbox.width * scale) / 2 - bbox.x * scale;
+                const translateY = (height - bbox.height * scale) / 2 - bbox.y * scale;
+                
+                // Aplicar transformación
+                svg.transition()
+                    .duration(500)
+                    .call(zoom.transform, d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(scale));
+            }
+            
+            function saveData() {
+                const data = {nodes, links};
+                localStorage.setItem('vnaData', JSON.stringify(data));
+            }
+            
+            function loadSavedData() {
+                const saved = localStorage.getItem('vnaData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    nodes = data.nodes || [];
+                    links = data.links || [];
+                    
+                    if (nodes.length > 0 || links.length > 0) {
+                        document.getElementById('empty-state').style.display = 'none';
+                    }
+                    
+                    // Actualizar lista de transacciones después de cargar
+                    updateTransactionsList();
+                }
+            }
+            
+            function exportPNG() {
+                if (nodes.length === 0) {
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'No hi ha dades per exportar' : 
+                        'No hay datos para exportar');
+                    return;
+                }
+                
+                // Mostrar estado de carga
+                const originalText = document.getElementById('export-png').innerHTML;
+                document.getElementById('export-png').innerHTML = '<span>⏳</span> ' + (document.documentElement.lang === 'ca' ? 'Generant PNG...' : 'Generando PNG...');
+                document.getElementById('export-png').disabled = true;
+                
+                // Crear un contenedor temporal para la exportación
+                const exportContainer = document.createElement('div');
+                exportContainer.style.width = '1600px';
+                exportContainer.style.height = '1200px';
+                exportContainer.style.position = 'absolute';
+                exportContainer.style.left = '-9999px';
+                exportContainer.style.backgroundColor = 'white';
+                exportContainer.style.padding = '40px';
+                document.body.appendChild(exportContainer);
+                
+                // Crear SVG para exportación
+                const exportSvg = d3.select(exportContainer)
+                    .append('svg')
+                    .attr('width', 1600)
+                    .attr('height', 1200)
+                    .style('background', 'white');
+                
+                // Copiar contenido del SVG actual
+                const svgNode = document.querySelector('#vna-svg svg');
+                const clone = svgNode.cloneNode(true);
+                exportSvg.node().appendChild(clone);
+                
+                // Ajustar estilos para exportación
+                exportSvg.selectAll('circle')
+                    .attr('stroke', '#fff')
+                    .attr('stroke-width', 4);
+                
+                exportSvg.selectAll('text')
+                    .attr('fill', '#0f172a')
+                    .attr('font-family', 'Arial, sans-serif');
+                
+                // Agregar título y leyenda
+                exportSvg.append('text')
+                    .attr('x', 800)
+                    .attr('y', 40)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '24')
+                    .attr('font-weight', 'bold')
+                    .attr('fill', '#1e3a8a')
+                    .text('Value Network Analysis - TeamTowers Humà');
+                
+                exportSvg.append('text')
+                    .attr('x', 800)
+                    .attr('y', 80)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '16')
+                    .attr('fill', '#4b5563')
+                    .text(`Roles: ${nodes.length} | Transacciones: ${links.length} | Tangibles: ${links.filter(l => l.type === 'tangible').length} | Intangibles: ${links.filter(l => l.type === 'intangible').length}`);
+                
+                // Agregar leyenda
+                exportSvg.append('rect')
+                    .attr('x', 50)
+                    .attr('y', 1100)
+                    .attr('width', 250)
+                    .attr('height', 70)
+                    .attr('fill', '#f8fafc')
+                    .attr('stroke', '#e2e8f0');
+                
+                exportSvg.append('line')
+                    .attr('x1', 60)
+                    .attr('y1', 1120)
+                    .attr('x2', 100)
+                    .attr('y2', 1120)
+                    .attr('stroke', '#1e3a8a')
+                    .attr('stroke-width', 4);
+                
+                exportSvg.append('text')
+                    .attr('x', 110)
+                    .attr('y', 1125)
+                    .attr('font-size', '14')
+                    .attr('fill', '#4b5563')
+                    .text(document.documentElement.lang === 'ca' ? 'Tangible (béns, serveis, dades)' : 'Tangible (bienes, servicios, datos)');
+                
+                exportSvg.append('line')
+                    .attr('x1', 60)
+                    .attr('y1', 1145)
+                    .attr('x2', 100)
+                    .attr('y2', 1145)
+                    .attr('stroke', '#8b5cf6')
+                    .attr('stroke-width', 3)
+                    .attr('stroke-dasharray', '5,5');
+                
+                exportSvg.append('text')
+                    .attr('x', 110)
+                    .attr('y', 1150)
+                    .attr('font-size', '14')
+                    .attr('fill', '#4b5563')
+                    .text(document.documentElement.lang === 'ca' ? 'Intangible (confiança, coneixement)' : 'Intangible (confianza, conocimiento)');
+                
+                // Convertir a canvas y luego a PNG - USANDO html2canvas correctamente
+                html2canvas(exportContainer, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    // Limpiar
+                    document.body.removeChild(exportContainer);
+                    document.getElementById('export-png').innerHTML = originalText;
+                    document.getElementById('export-png').disabled = false;
+                    
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Mapa exportat correctament com a PNG' : 
+                        'Mapa exportado exitosamente como PNG');
+                }).catch(err => {
+                    console.error('Error al exportar PNG:', err);
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Error en generar la imatge. Torna-ho a provar.' : 
+                        'Error al generar la imagen. Por favor intenta de nuevo.');
+                    document.body.removeChild(exportContainer);
+                    document.getElementById('export-png').innerHTML = originalText;
+                    document.getElementById('export-png').disabled = false;
+                });
+            }
+            
+            function exportSVG() {
+                if (nodes.length === 0) {
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'No hi ha dades per exportar' : 
+                        'No hay datos para exportar');
+                    return;
+                }
+                
+                // Crear SVG para exportación
+                const exportSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                exportSvg.setAttribute('width', '1600');
+                exportSvg.setAttribute('height', '1200');
+                exportSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                exportSvg.style.backgroundColor = 'white';
+                
+                // Copiar contenido del SVG actual
+                const svgNode = document.querySelector('#vna-svg svg');
+                const clone = svgNode.cloneNode(true);
+                
+                // Añadir estilos inline para mejor compatibilidad
+                const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+                style.textContent = `
+                    .node { stroke: #fff; stroke-width: 4; }
+                    .link-path { marker-end: url(#arrowhead); stroke-linecap: round; }
+                    .link-tangible { stroke: #1e3a8a; stroke-width: 3; }
+                    .link-intangible { stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 5,5; }
+                    text { fill: #0f172a; font-family: Arial, sans-serif; font-weight: bold; }
+                    .link-label { font-size: 10px; font-weight: 500; fill: #1e3a8a; }
+                    .link-label.intangible { fill: #8b5cf6; }
+                `;
+                exportSvg.appendChild(style);
+                
+                // Añadir título y estadísticas
+                const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                title.setAttribute('x', '800');
+                title.setAttribute('y', '40');
+                title.setAttribute('text-anchor', 'middle');
+                title.setAttribute('font-size', '24');
+                title.setAttribute('font-weight', 'bold');
+                title.setAttribute('fill', '#1e3a8a');
+                title.textContent = 'Value Network Analysis - TeamTowers Humà';
+                exportSvg.appendChild(title);
+                
+                const stats = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                stats.setAttribute('x', '800');
+                stats.setAttribute('y', '80');
+                stats.setAttribute('text-anchor', 'middle');
+                stats.setAttribute('font-size', '16');
+                stats.setAttribute('fill', '#4b5563');
+                stats.textContent = `Roles: ${nodes.length} | Transacciones: ${links.length} | Tangibles: ${links.filter(l => l.type === 'tangible').length} | Intangibles: ${links.filter(l => l.type === 'intangible').length}`;
+                exportSvg.appendChild(stats);
+                
+                // Añadir leyenda
+                const legendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                legendRect.setAttribute('x', '50');
+                legendRect.setAttribute('y', '1100');
+                legendRect.setAttribute('width', '250');
+                legendRect.setAttribute('height', '70');
+                legendRect.setAttribute('fill', '#f8fafc');
+                legendRect.setAttribute('stroke', '#e2e8f0');
+                exportSvg.appendChild(legendRect);
+                
+                const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line1.setAttribute('x1', '60');
+                line1.setAttribute('y1', '1120');
+                line1.setAttribute('x2', '100');
+                line1.setAttribute('y2', '1120');
+                line1.setAttribute('stroke', '#1e3a8a');
+                line1.setAttribute('stroke-width', '4');
+                exportSvg.appendChild(line1);
+                
+                const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text1.setAttribute('x', '110');
+                text1.setAttribute('y', '1125');
+                text1.setAttribute('font-size', '14');
+                text1.setAttribute('fill', '#4b5563');
+                text1.textContent = document.documentElement.lang === 'ca' ? 'Tangible (béns, serveis, dades)' : 'Tangible (bienes, servicios, datos)';
+                exportSvg.appendChild(text1);
+                
+                const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line2.setAttribute('x1', '60');
+                line2.setAttribute('y1', '1145');
+                line2.setAttribute('x2', '100');
+                line2.setAttribute('y2', '1145');
+                line2.setAttribute('stroke', '#8b5cf6');
+                line2.setAttribute('stroke-width', '3');
+                line2.setAttribute('stroke-dasharray', '5,5');
+                exportSvg.appendChild(line2);
+                
+                const text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text2.setAttribute('x', '110');
+                text2.setAttribute('y', '1150');
+                text2.setAttribute('font-size', '14');
+                text2.setAttribute('fill', '#4b5563');
+                text2.textContent = document.documentElement.lang === 'ca' ? 'Intangible (confiança, coneixement)' : 'Intangible (confianza, conocimiento)';
+                exportSvg.appendChild(text2);
+                
+                // Añadir contenido del grafo
+                exportSvg.appendChild(clone);
+                
+                // Crear enlace de descarga
+                const serializer = new XMLSerializer();
+                let source = serializer.serializeToString(exportSvg);
+                source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+                const url = 'image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+                
+                const link = document.createElement('a');
+                link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.svg`;
+                link.href = url;
+                link.click();
+                
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Mapa exportat correctament com a SVG' : 
+                    'Mapa exportado exitosamente como SVG');
+            }
+            
+            function exportJSON() {
+    if (nodes.length === 0) {
+        alert(document.documentElement.lang === 'ca' ? 
+            'No hi ha dades per exportar' : 
+            'No hay datos para exportar');
+        return;
+    }
+    
+    // Crear versión limpia de los enlaces para exportación
+    const cleanLinks = links.map(link => {
+        return {
+            source: typeof link.source === 'object' ? link.source.id : link.source,
+            target: typeof link.target === 'object' ? link.target.id : link.target,
+            type: link.type,
+            deliverable: link.deliverable,
+            value: link.value
+        };
+    });
+    
+    // Crear versión limpia de los nodos para exportación
+    const cleanNodes = nodes.map(node => {
+        return {
+            id: node.id,
+            group: node.group
+        };
+    });
+    
+    const dataStr = JSON.stringify({nodes: cleanNodes, links: cleanLinks}, null, 2);
+    const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `vna-data-teamtowers-huma-${new Date().toISOString().slice(0,10)}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    alert(document.documentElement.lang === 'ca' ? 
+        'Dades exportades correctament com a JSON' : 
+        'Datos exportados exitosamente como JSON');
+}
+            
+            function copyData() {
+                if (nodes.length === 0) {
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'No hi ha dades per copiar' : 
+                        'No hay datos para copiar');
+                    return;
+                }
+                
+                // Formatear datos como texto legible
+                let text = 'VALUE NETWORK ANALYSIS - TEAMTOWERS HUMÀ\n';
+                text += `Data: ${new Date().toLocaleDateString()}\n`;
+                text += `Roles: ${nodes.length} | Transaccions: ${links.length}\n\n`;
+                text += 'TRANSACCIONS:\n';
+                text += '='.repeat(80) + '\n';
+                
+                links.forEach((link, i) => {
+                    text += `${i+1}. ${link.source.id} → ${link.target.id} | ${link.type} | ${link.deliverable}\n`;
+                });
+                
+                text += '='.repeat(80) + '\n';
+                text += `\nTotal de transaccions: ${links.length}`;
+                
+                // Copiar al portapapeles
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Dades copiades al porta-retalls correctament' : 
+                        'Datos copiados al portapapeles exitosamente');
+                    
+                    // Efecto visual de confirmación
+                    const btn = document.getElementById('copy-data');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<span>✅</span> ' + (document.documentElement.lang === 'ca' ? '¡Copiat!' : '¡Copiado!');
+                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Error al copiar:', err);
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Error en copiar les dades. Selecciona i copia manualment.' : 
+                        'Error al copiar los datos. Por favor selecciona y copia manualmente.');
+                });
+            }
+            
+            function updateEmptyState() {
+                if (nodes.length === 0 && links.length === 0) {
+                    document.getElementById('empty-state').style.display = 'flex';
+                } else {
+                    document.getElementById('empty-state').style.display = 'none';
+                }
+            }
         }
     </script>
 </body>
