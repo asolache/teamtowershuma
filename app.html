@@ -253,7 +253,7 @@
         
         .btn-group {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
             margin-top: 15px;
         }
@@ -468,6 +468,13 @@
             color: var(--gray);
             line-height: 1.7;
             font-size: 1.05rem;
+        }
+        
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
         
         .integration-section {
@@ -693,6 +700,14 @@
             #network-container {
                 height: 450px;
             }
+            
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 480px) {
@@ -728,6 +743,14 @@
             }
             
             .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
                 grid-template-columns: 1fr;
             }
         }
@@ -773,6 +796,37 @@
         
         .test-section h3::before {
             content: '🧪';
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
         }
     </style>
 </head>
@@ -840,7 +894,7 @@
                         <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
                         <input type="text" id="deliverable-name" placeholder="Ej: Informe de mercado">
                     </div>
-                    <div class="btn-group" style="margin-top: 15px;">
+                    <div class="btn-group" style="margin-top: 15px; grid-template-columns: 1fr;">
                         <button id="add-link" class="btn btn-primary">
                             <span>🔗</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
                         </button>
@@ -857,15 +911,15 @@
                 
                 <div class="panel" style="margin-top: 25px;">
                     <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
-                    <div class="btn-group">
+                    <div class="export-buttons">
                         <button id="export-json" class="btn btn-export">
-                            <span>📊</span> <span class="lang" data-es="Exportar JSON (Completo)" data-ca="Exportar JSON (Complet)">Exportar JSON (Completo)</span>
+                            <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
                         </button>
                         <button id="export-roles-csv" class="btn btn-success">
-                            <span>👥</span> <span class="lang" data-es="Exportar Roles como CSV" data-ca="Exportar Rols com a CSV">Exportar Roles como CSV</span>
+                            <span>👥</span> <span class="lang" data-es="Exportar Roles CSV" data-ca="Exportar Rols CSV">Exportar Roles CSV</span>
                         </button>
                         <button id="export-png" class="btn btn-warning">
-                            <span>🖼️</span> <span class="lang" data-es="Exportar como PNG" data-ca="Exportar com a PNG">Exportar como PNG</span>
+                            <span>🖼️</span> <span class="lang" data-es="Exportar PNG" data-ca="Exportar PNG">Exportar PNG</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
@@ -1048,24 +1102,55 @@
                 this.assert.equals(vnaData.edges.length, 0, "Initial state has no edges");
                 
                 // Test 11: Add a test node
-                addTestNode();
+                const testNodeName = "Test Node " + Date.now();
+                document.getElementById('node-name').value = testNodeName;
+                document.getElementById('add-node').click();
                 this.assert.equals(vnaData.nodes.length, 1, "Adding a node increases node count");
                 
-                // Test 12: Add a test edge
-                addTestEdge();
+                // Test 12: Verify node was added correctly
+                const addedNode = vnaData.nodes.find(n => n.label === testNodeName);
+                this.assert.truthy(addedNode, "Node was added to vnaData");
+                this.assert.truthy(nodes.get(addedNode.id), "Node was added to vis-network dataset");
+                
+                // Test 13: Add a test edge
+                if (vnaData.nodes.length >= 2) {
+                    // Add second node if needed
+                    const testNodeName2 = "Test Node 2 " + Date.now();
+                    document.getElementById('node-name').value = testNodeName2;
+                    document.getElementById('add-node').click();
+                }
+                
+                // Set up edge form
+                document.getElementById('source-node').value = vnaData.nodes[0].id;
+                document.getElementById('target-node').value = vnaData.nodes[1].id;
+                document.getElementById('deliverable-name').value = "Test Deliverable";
+                document.getElementById('deliverable-type').value = "tangible";
+                document.getElementById('add-link').click();
+                
                 this.assert.equals(vnaData.edges.length, 1, "Adding an edge increases edge count");
                 
-                // Test 13: Export roles CSV function exists
+                // Test 14: Verify edge was added correctly
+                const addedEdge = vnaData.edges.find(e => e.label === "Test Deliverable");
+                this.assert.truthy(addedEdge, "Edge was added to vnaData");
+                this.assert.truthy(edges.get(addedEdge.id), "Edge was added to vis-network dataset");
+                
+                // Test 15: Export roles CSV function exists
                 this.assert.truthy(typeof exportRolesCSV === 'function', "exportRolesCSV function exists");
                 
-                // Test 14: Export JSON function exists
+                // Test 16: Export JSON function exists
                 this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
                 
-                // Test 15: Network is initialized
+                // Test 17: Network is initialized
                 this.assert.truthy(network !== null, "Network is initialized");
                 
+                // Test 18: Node selectors are updated
+                const sourceOptions = document.getElementById('source-node').options.length;
+                const targetOptions = document.getElementById('target-node').options.length;
+                this.assert.equals(sourceOptions, vnaData.nodes.length + 1, "Source node selector has correct options");
+                this.assert.equals(targetOptions, vnaData.nodes.length + 1, "Target node selector has correct options");
+                
                 // Clean up test data
-                resetTestData();
+                resetDataWithoutConfirmation();
                 
                 return this.results;
             },
@@ -1100,68 +1185,12 @@
                 
                 // Alert summary
                 if (failedCount === 0) {
-                    alert(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`);
+                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`, 'success');
                 } else {
-                    alert(`⚠️ Algunas pruebas fallaron (${failedCount}/${results.length}).\n\nRevisa los resultados en la sección de pruebas.`);
+                    showNotification(`⚠️ Algunas pruebas fallaron (${failedCount}/${results.length}).\n\nRevisa los resultados en la sección de pruebas.`, 'error');
                 }
             }
         };
-        
-        // Test helper functions
-        function addTestNode() {
-            const newNode = {
-                id: 'test-node',
-                label: 'Test Node',
-                group: 1
-            };
-            vnaData.nodes.push(newNode);
-            nodes.add(newNode);
-        }
-        
-        function addTestEdge() {
-            if (vnaData.nodes.length < 2) {
-                const secondNode = {
-                    id: 'test-node-2',
-                    label: 'Test Node 2',
-                    group: 2
-                };
-                vnaData.nodes.push(secondNode);
-                nodes.add(secondNode);
-            }
-            
-            const newEdge = {
-                id: 'test-edge',
-                from: 'test-node',
-                to: 'test-node-2',
-                label: 'Test Deliverable',
-                type: 'tangible',
-                color: { color: '#1e3a8a', highlight: '#4f46e5' },
-                width: 2,
-                font: {
-                    size: 12,
-                    align: 'middle',
-                    background: 'white'
-                },
-                smooth: {
-                    enabled: true,
-                    type: "continuous",
-                    forceDirection: "none",
-                    roundness: 0.5
-                }
-            };
-            vnaData.edges.push(newEdge);
-            edges.add(newEdge);
-        }
-        
-        function resetTestData() {
-            // Remove test nodes and edges
-            nodes.remove(['test-node', 'test-node-2']);
-            edges.remove(['test-edge']);
-            
-            // Remove from vnaData
-            vnaData.nodes = vnaData.nodes.filter(n => !n.id.startsWith('test-node'));
-            vnaData.edges = vnaData.edges.filter(e => e.id !== 'test-edge');
-        }
         
         // ========== APPLICATION STATE AND FUNCTIONS ==========
         // Estado de la aplicación
@@ -1175,6 +1204,8 @@
         let nodes = null;
         let edges = null;
         let network = null;
+        let nextNodeId = 1;
+        let nextEdgeId = 1;
         
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
@@ -1193,8 +1224,10 @@
             // Actualizar selectores de nodos
             updateNodeSelectors();
             
-            // Ejecutar pruebas iniciales
-            runInitialTests();
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('¡Bienvenido a la Value Network Analysis App! Usa "Añadir Ejemplo" para ver un mapa de valor demostrativo.', 'success');
+            }, 1000);
         });
         
         // Configurar selector de idioma
@@ -1263,7 +1296,9 @@
                     font: {
                         size: 12,
                         align: 'middle',
-                        background: 'white'
+                        background: 'white',
+                        strokeWidth: 2,
+                        strokeColor: '#ffffff'
                     },
                     smooth: {
                         enabled: true,
@@ -1299,14 +1334,14 @@
                 if (params.nodes.length > 0) {
                     const nodeId = params.nodes[0];
                     const node = nodes.get(nodeId);
-                    alert(`Nodo seleccionado: ${node.label}`);
+                    showNotification(`Nodo seleccionado: ${node.label}`, 'success');
                 }
                 
                 if (params.edges.length > 0) {
                     const edgeId = params.edges[0];
                     const edge = edges.get(edgeId);
                     const typeText = edge.type === 'tangible' ? 'Tangible' : 'Intangible';
-                    alert(`Transacción seleccionada:\n${edge.label}\nTipo: ${typeText}`);
+                    showNotification(`Transacción: ${edge.label}\nTipo: ${typeText}`, 'success');
                 }
             });
         }
@@ -1349,23 +1384,19 @@
             const nodeName = document.getElementById('node-name').value.trim();
             
             if (!nodeName) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Introdueix un nom per al rol' : 
-                    'Introduce un nombre para el rol');
+                showNotification('Por favor, introduce un nombre para el rol', 'error');
                 return;
             }
             
             // Verificar si el nodo ya existe
             const existingNode = vnaData.nodes.find(n => n.label.toLowerCase() === nodeName.toLowerCase());
             if (existingNode) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    `El rol "${nodeName}" ja existeix` : 
-                    `El rol "${nodeName}" ya existe`);
+                showNotification(`El rol "${nodeName}" ya existe`, 'error');
                 return;
             }
             
             // Crear nuevo nodo
-            const nodeId = `node-${Date.now()}`;
+            const nodeId = `node-${nextNodeId++}`;
             const newNode = {
                 id: nodeId,
                 label: nodeName,
@@ -1384,11 +1415,7 @@
             document.getElementById('node-name').value = '';
             
             // Feedback al usuario
-            const successMsg = document.documentElement.lang === 'ca' ? 
-                `Rol "${nodeName}" afegit correctament` : 
-                `Rol "${nodeName}" añadido correctamente`;
-            
-            showNotification(successMsg, 'success');
+            showNotification(`Rol "${nodeName}" añadido correctamente`, 'success');
         }
         
         // Añadir enlace/transacción
@@ -1398,24 +1425,18 @@
             const deliverableName = document.getElementById('deliverable-name').value.trim();
             const deliverableType = document.getElementById('deliverable-type').value;
             
-            if (!sourceNode || !targetNode) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Selecciona un rol origen i un rol destí' : 
-                    'Selecciona un rol origen y un rol destino');
+            if (!sourceNode || !targetNode || sourceNode === "default" || targetNode === "default") {
+                showNotification('Selecciona un rol origen y un rol destino', 'error');
                 return;
             }
             
             if (!deliverableName) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Introdueix un nom per a l\'entregable' : 
-                    'Introduce un nombre para el entregable');
+                showNotification('Introduce un nombre para el entregable', 'error');
                 return;
             }
             
             if (sourceNode === targetNode) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'El rol origen i destí no poden ser el mateix' : 
-                    'El rol origen y destino no pueden ser el mismo');
+                showNotification('El rol origen y destino no pueden ser el mismo', 'error');
                 return;
             }
             
@@ -1427,14 +1448,12 @@
             );
             
             if (existingEdge) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    `La transacció de "${sourceNode}" a "${targetNode}" amb l'entregable "${deliverableName}" ja existeix` : 
-                    `La transacción de "${sourceNode}" a "${targetNode}" con el entregable "${deliverableName}" ya existe`);
+                showNotification(`La transacción de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}" con el entregable "${deliverableName}" ya existe`, 'error');
                 return;
             }
             
-            // Create edge ID based on source, target and deliverable to avoid duplicates
-            const edgeId = `edge-${sourceNode}-${targetNode}-${deliverableName.replace(/\s+/g, '-')}`;
+            // Create edge ID
+            const edgeId = `edge-${nextEdgeId++}`;
             
             // Determine edge appearance based on type
             let edgeColor, edgeDashes;
@@ -1445,6 +1464,12 @@
                 edgeColor = { color: '#0ea5e9', highlight: '#0284c7' };
                 edgeDashes = [5, 5];
             }
+            
+            // Count edges between these nodes to adjust roundness
+            const edgesBetweenNodes = vnaData.edges.filter(e => 
+                (e.from === sourceNode && e.to === targetNode) || 
+                (e.from === targetNode && e.to === sourceNode)
+            ).length;
             
             // Create new edge with improved styling to avoid overlapping
             const newEdge = {
@@ -1468,7 +1493,7 @@
                     enabled: true,
                     type: "continuous",
                     forceDirection: "none",
-                    roundness: 0.3 + (vnaData.edges.filter(e => e.from === sourceNode && e.to === targetNode).length * 0.2)
+                    roundness: 0.3 + (edgesBetweenNodes * 0.15)
                 }
             };
             
@@ -1483,11 +1508,7 @@
             document.getElementById('deliverable-name').value = '';
             
             // Feedback al usuario
-            const successMsg = document.documentElement.lang === 'ca' ? 
-                `Transacció afegida correctament de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}"` : 
-                `Transacción añadida correctamente de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}"`;
-            
-            showNotification(successMsg, 'success');
+            showNotification(`Transacción añadida correctamente de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}"`, 'success');
         }
         
         // Get node label by ID
@@ -1506,8 +1527,8 @@
             const currentTarget = targetSelect.value;
             
             // Limpiar opciones actuales excepto la primera
-            sourceSelect.innerHTML = '<option class="lang" data-es="Selecciona un rol de origen" data-ca="Selecciona un rol d\'origen">Selecciona un rol de origen</option>';
-            targetSelect.innerHTML = '<option class="lang" data-es="Selecciona un rol destino" data-ca="Selecciona un rol destí">Selecciona un rol destino</option>';
+            sourceSelect.innerHTML = '<option value="default" class="lang" data-es="Selecciona un rol de origen" data-ca="Selecciona un rol d\'origen">Selecciona un rol de origen</option>';
+            targetSelect.innerHTML = '<option value="default" class="lang" data-es="Selecciona un rol destino" data-ca="Selecciona un rol destí">Selecciona un rol destino</option>';
             
             // Añadir opciones para cada nodo
             vnaData.nodes.forEach(node => {
@@ -1556,6 +1577,7 @@
             exampleRoles.forEach(role => {
                 vnaData.nodes.push(role);
                 nodes.add(role);
+                nextNodeId++;
             });
             
             // Add example edges with different types and deliverables
@@ -1565,77 +1587,61 @@
                     from: "node-ceo",
                     to: "node-team",
                     label: "Estrategia",
-                    type: "intangible",
-                    color: { color: '#0ea5e9', highlight: '#0284c7' },
-                    dashes: [5, 5]
+                    type: "intangible"
                 },
                 {
                     id: "edge-ceo-team-resources",
                     from: "node-ceo",
                     to: "node-team",
                     label: "Recursos",
-                    type: "tangible",
-                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
-                    dashes: false
+                    type: "tangible"
                 },
                 {
                     id: "edge-team-clients-product",
                     from: "node-team",
                     to: "node-clients",
                     label: "Producto",
-                    type: "tangible",
-                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
-                    dashes: false
+                    type: "tangible"
                 },
                 {
                     id: "edge-team-clients-support",
                     from: "node-team",
                     to: "node-clients",
                     label: "Soporte",
-                    type: "intangible",
-                    color: { color: '#0ea5e9', highlight: '#0284c7' },
-                    dashes: [5, 5]
+                    type: "intangible"
                 },
                 {
                     id: "edge-clients-providers-feedback",
                     from: "node-clients",
                     to: "node-providers",
                     label: "Feedback",
-                    type: "intangible",
-                    color: { color: '#0ea5e9', highlight: '#0284c7' },
-                    dashes: [5, 5]
+                    type: "intangible"
                 },
                 {
                     id: "edge-providers-team-materials",
                     from: "node-providers",
                     to: "node-team",
                     label: "Materiales",
-                    type: "tangible",
-                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
-                    dashes: false
+                    type: "tangible"
                 },
                 {
                     id: "edge-investors-ceo-capital",
                     from: "node-investors",
                     to: "node-ceo",
                     label: "Capital",
-                    type: "tangible",
-                    color: { color: '#1e3a8a', highlight: '#4f46e5' },
-                    dashes: false
+                    type: "tangible"
                 },
                 {
                     id: "edge-ceo-investors-reports",
                     from: "node-ceo",
                     to: "node-investors",
                     label: "Reportes",
-                    type: "intangible",
-                    color: { color: '#0ea5e9', highlight: '#0284c7' },
-                    dashes: [5, 5]
+                    type: "intangible"
                 }
             ];
             
             // Add edges with proper styling
-            exampleEdges.forEach(edge => {
+            exampleEdges.forEach((edge, index) => {
                 edge.width = 2;
                 edge.font = {
                     size: 12,
@@ -1644,14 +1650,27 @@
                     strokeWidth: 2,
                     strokeColor: '#ffffff'
                 };
+                
+                // Determine edge appearance based on type
+                if (edge.type === 'tangible') {
+                    edge.color = { color: '#1e3a8a', highlight: '#4f46e5' };
+                    edge.dashes = false;
+                } else {
+                    edge.color = { color: '#0ea5e9', highlight: '#0284c7' };
+                    edge.dashes = [5, 5];
+                }
+                
+                // Adjust roundness to avoid overlapping
                 edge.smooth = {
                     enabled: true,
                     type: "continuous",
                     forceDirection: "none",
-                    roundness: 0.5
+                    roundness: 0.3 + (index * 0.05)
                 };
+                
                 vnaData.edges.push(edge);
                 edges.add(edge);
+                nextEdgeId++;
             });
             
             // Guardar y actualizar
@@ -1659,17 +1678,13 @@
             updateNodeSelectors();
             
             // Feedback al usuario
-            showNotification(document.documentElement.lang === 'ca' ? 
-                'S\'han afegit 5 rols i 8 transaccions d\'exemple al teu mapa de valor.' : 
-                'Se han añadido 5 roles y 8 transacciones de ejemplo a tu mapa de valor.', 'success');
+            showNotification('Se han añadido 5 roles y 8 transacciones de ejemplo a tu mapa de valor.', 'success');
         }
         
         // Exportar JSON
         function exportJSON() {
             if (vnaData.nodes.length === 0) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'No hi ha dades per exportar. Crea un mapa de valor primer.' : 
-                    'No hay datos para exportar. Crea un mapa de valor primero.');
+                showNotification('No hay datos para exportar. Crea un mapa de valor primero.', 'error');
                 return;
             }
             
@@ -1693,17 +1708,13 @@
                 URL.revokeObjectURL(url);
             }, 100);
             
-            showNotification(document.documentElement.lang === 'ca' ? 
-                'Dades exportades correctament com a JSON' : 
-                'Datos exportados correctamente como JSON', 'success');
+            showNotification('Datos exportados correctamente como JSON', 'success');
         }
         
         // Exportar Roles como CSV
         function exportRolesCSV() {
             if (vnaData.nodes.length === 0) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'No hi ha rols per exportar. Afegeix rols al teu mapa de valor primer.' : 
-                    'No hay roles para exportar. Añade roles a tu mapa de valor primero.');
+                showNotification('No hay roles para exportar. Añade roles a tu mapa de valor primero.', 'error');
                 return;
             }
             
@@ -1737,17 +1748,13 @@
                 URL.revokeObjectURL(url);
             }, 100);
             
-            showNotification(document.documentElement.lang === 'ca' ? 
-                `S'han exportat ${vnaData.nodes.length} rols com a CSV. Aquest arxiu és compatible amb la importació a l'App de Comptabilitat de Valor.` : 
-                `Se han exportado ${vnaData.nodes.length} roles como CSV. Este archivo es compatible con la importación en la App de Contabilidad de Valor.`, 'success');
+            showNotification(`Se han exportado ${vnaData.nodes.length} roles como CSV. Este archivo es compatible con la importación en la App de Contabilidad de Valor.`, 'success');
         }
         
         // Exportar como PNG
         function exportPNG() {
             if (vnaData.nodes.length === 0) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'No hi ha dades per exportar. Crea un mapa de valor primer.' : 
-                    'No hay datos para exportar. Crea un mapa de valor primero.');
+                showNotification('No hay datos para exportar. Crea un mapa de valor primero.', 'error');
                 return;
             }
             
@@ -1768,9 +1775,7 @@
                 document.body.removeChild(linkElement);
             }, 100);
             
-            showNotification(document.documentElement.lang === 'ca' ? 
-                'Mapa de valor exportat correctament com a PNG' : 
-                'Mapa de valor exportado correctamente como PNG', 'success');
+            showNotification('Mapa de valor exportado correctamente como PNG', 'success');
         }
         
         // Limpiar datos
@@ -1779,9 +1784,7 @@
                 'Estàs segur que vols esborrar totes les dades del mapa de valor?' : 
                 '¿Estás seguro de que quieres borrar todos los datos del mapa de valor?')) {
                 resetDataWithoutConfirmation();
-                showNotification(document.documentElement.lang === 'ca' ? 
-                    'Dades esborrades correctament' : 
-                    'Datos borrados correctamente', 'success');
+                showNotification('Datos borrados correctamente', 'success');
             }
         }
         
@@ -1798,6 +1801,10 @@
             nodes.clear();
             edges.clear();
             
+            // Reset counters
+            nextNodeId = 1;
+            nextEdgeId = 1;
+            
             // Limpiar campos de formulario
             document.getElementById('project-name').value = "Proyecto MASIA";
             document.getElementById('node-name').value = '';
@@ -1812,48 +1819,27 @@
         
         // Show notification
         function showNotification(message, type) {
+            // Remove existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
             // Create notification element
             const notification = document.createElement('div');
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.padding = '15px 25px';
-            notification.style.borderRadius = '8px';
-            notification.style.color = 'white';
-            notification.style.fontWeight = '600';
-            notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
-            notification.style.zIndex = '10000';
-            notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 2.5s forwards';
-            notification.innerHTML = message;
-            
-            if (type === 'success') {
-                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
-            } else {
-                notification.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
-            }
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message.replace(/\n/g, '<br>');
             
             // Add to body
             document.body.appendChild(notification);
             
             // Remove after animation
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
             }, 3000);
         }
-        
-        // Add CSS animation for notifications
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; transform: translateX(100%); }
-            }
-        `;
-        document.head.appendChild(style);
         
         // Guardar datos en localStorage
         function saveData() {
@@ -1871,6 +1857,17 @@
                     nodes: parsedData.nodes || [],
                     edges: parsedData.edges || []
                 };
+                
+                // Restore counters
+                if (vnaData.nodes.length > 0) {
+                    const maxNodeId = Math.max(...vnaData.nodes.map(n => parseInt(n.id.split('-')[1] || 0)));
+                    nextNodeId = maxNodeId + 1;
+                }
+                
+                if (vnaData.edges.length > 0) {
+                    const maxEdgeId = Math.max(...vnaData.edges.map(e => parseInt(e.id.split('-')[1] || 0)));
+                    nextEdgeId = maxEdgeId + 1;
+                }
                 
                 // Restaurar nombre del proyecto en el input
                 document.getElementById('project-name').value = vnaData.projectName;
@@ -1902,15 +1899,10 @@
                     }
                     edges.add(edge);
                 });
+                
+                // Update selectors
+                updateNodeSelectors();
             }
-        }
-        
-        // Run initial tests
-        function runInitialTests() {
-            // Run a quick test to ensure everything is working
-            console.log("Running initial tests...");
-            const results = testSuite.runTests();
-            console.log(`Initial tests completed: ${results.filter(r => r.passed).length}/${results.length} passed`);
         }
         
         // Run tests manually
