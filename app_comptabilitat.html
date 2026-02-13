@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema para registrar y valorar entregables en tu proyecto con integración blockchain y gestión de usuarios por rol.">
-    <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, Ethereum wallet, vesting">
+    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real">
+    <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, innovación financiera">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
     <title>Value Accounting App | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Value Accounting App | TeamTowers Humà">
-    <meta property="og:description" content="Sistema para registrar y valorar entregables en tu proyecto con integración blockchain y gestión de usuarios por rol.">
+    <meta property="og:description" content="Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/app_comptabilitat">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
@@ -21,8 +21,11 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Value Accounting App | TeamTowers Humà">
-    <meta name="twitter:description" content="Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum">
+    <meta name="twitter:description" content="Visualiza en tiempo real cómo se distribuye el valor entre stakeholders de tu proyecto">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
@@ -39,9 +42,6 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
-            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
         }
         
         * {
@@ -83,14 +83,14 @@
         }
         
         .lang-btn.active {
-            background: var(--gradient-primary);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
         }
         
         /* Header */
         header {
-            background: var(--gradient-dark);
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -119,25 +119,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-weight: 800;
         }
         
         .tagline {
             font-size: 1.4rem;
             opacity: 0.9;
             margin-bottom: 15px;
-            font-weight: 300;
-        }
-        
-        .integration-badge {
-            display: inline-block;
-            background: rgba(139, 92, 246, 0.2);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin-top: 10px;
-            font-size: 0.95rem;
         }
         
         /* Main Content */
@@ -166,18 +153,6 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             height: fit-content;
-            position: relative;
-        }
-        
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-primary);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
         
         .panel h2 {
@@ -189,8 +164,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            position: relative;
-            z-index: 10;
         }
         
         .panel h2::before {
@@ -268,23 +241,6 @@
             justify-content: center;
             gap: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: left 0.6s;
-        }
-        
-        .btn:hover::after {
-            left: 100%;
         }
         
         .btn:hover {
@@ -293,7 +249,7 @@
         }
         
         .btn-primary {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
         
@@ -319,7 +275,7 @@
         }
         
         .btn-export {
-            background: var(--gradient-accent);
+            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
             color: white;
             grid-column: span 2;
         }
@@ -332,92 +288,70 @@
             position: relative;
         }
         
-        .visualization-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-accent);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-        
         .chart-container {
             position: relative;
             height: 400px;
             margin-bottom: 30px;
-            background: var(--light);
+        }
+        
+        .ranking-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .ranking-header {
+            background: var(--light);
+            padding: 15px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--accent);
+            display: grid;
+            grid-template-columns: 40px 1fr 150px 120px 120px;
+            gap: 15px;
+        }
+        
+        .ranking-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 40px 1fr 150px 120px 120px;
+            gap: 15px;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .ranking-item:hover {
+            background: #f1f5f9;
+        }
+        
+        .ranking-item:nth-child(odd) {
+            background: #f8fafc;
+        }
+        
+        .ranking-badge {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
-        }
-        
-        .user-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            border-left: 5px solid var(--accent);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .user-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--gradient-primary);
-            transform: scaleY(0);
-            transform-origin: bottom;
-            transition: transform 0.3s ease;
-        }
-        
-        .user-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .user-card:hover::before {
-            transform: scaleY(1);
-        }
-        
-        .user-card h4 {
-            color: var(--primary);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.4rem;
             font-weight: 700;
-        }
-        
-        .user-card h4::before {
-            content: '👤';
-            font-size: 1.6rem;
-        }
-        
-        .user-card .role {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
             font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        }
+        
+        .role-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-top: 8px;
         }
         
         .role-team {
@@ -440,74 +374,163 @@
             color: #b45309;
         }
         
+        .value-amount {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
         .wallet-address {
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
+            font-family: monospace;
+            font-size: 0.85rem;
             color: var(--gray);
             word-break: break-all;
-            margin: 10px 0;
-            padding: 8px 12px;
-            background: rgba(139, 92, 246, 0.08);
-            border-radius: 6px;
-            border-left: 3px solid var(--accent);
         }
         
         .stats-bar {
             display: flex;
             justify-content: space-around;
             background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 30px 0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
             flex-wrap: wrap;
             gap: 15px;
             border: 1px solid rgba(30, 58, 138, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
         
         .stat-item {
             text-align: center;
-            min-width: 110px;
-            padding: 12px 15px;
+            min-width: 100px;
+            padding: 8px 15px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
         .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 1.8rem;
+            font-weight: 700;
             color: var(--primary);
-            margin-bottom: 5px;
         }
         
         .stat-label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             font-weight: 600;
+            margin-left: 5px;
         }
         
-        .integration-section {
-            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-top: 25px;
-            border-left: 4px solid var(--accent);
+        .badge-tangible {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
         }
         
-        .integration-section h3 {
+        .badge-intangible {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        
+        .transaction-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .transaction-form h3 {
             color: var(--primary);
             margin-bottom: 15px;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
+        }
+        
+        .quick-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .quick-input .btn {
+            padding: 10px 15px;
+            min-width: auto;
+        }
+        
+        .deliverable-input {
+            margin-top: 15px;
+        }
+        
+        .deliverable-input textarea {
+            min-height: 60px;
+        }
+        
+        .value-input {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 700;
+            margin-top: 10px;
         }
         
-        .integration-section h3::before {
-            content: '🔗';
-            font-size: 1.4rem;
+        .value-input input {
+            max-width: 120px;
+        }
+        
+        .value-input span {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .user-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .user-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .user-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .user-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .user-card .wallet {
+            font-size: 0.8rem;
+            color: var(--gray);
+            word-break: break-all;
         }
         
         .empty-state {
@@ -517,274 +540,74 @@
             justify-content: center;
             height: 100%;
             text-align: center;
-            padding: 40px 20px;
+            padding: 20px;
             color: var(--gray);
         }
         
         .empty-state svg {
-            width: 140px;
-            height: 140px;
-            margin-bottom: 25px;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
             color: var(--accent);
             opacity: 0.7;
         }
         
         .empty-state h3 {
-            font-size: 2rem;
-            margin-bottom: 15px;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
             color: var(--dark);
-            font-weight: 700;
         }
         
         .empty-state p {
-            max-width: 550px;
-            margin-bottom: 30px;
+            max-width: 500px;
+            margin-bottom: 25px;
             line-height: 1.7;
-            font-size: 1.1rem;
         }
         
-        .instructions {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-top: 25px;
-            border-left: 4px solid var(--accent);
-        }
-        
-        .instructions h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
-        
-        .instructions h3::before {
-            content: 'ℹ️';
-            font-size: 1.4rem;
-        }
-        
-        .instructions ol {
-            padding-left: 25px;
-            margin-top: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 12px;
-            line-height: 1.7;
-            font-size: 1.05rem;
-        }
-        
-        .instructions code {
-            background: rgba(30, 58, 138, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: 600;
-        }
-        
-        .wallet-section {
+        .import-section {
             margin-top: 25px;
             padding-top: 25px;
             border-top: 2px solid var(--accent);
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
             border-radius: var(--border-radius);
         }
         
-        .wallet-section h3 {
-            color: var(--accent);
+        .import-section h3 {
+            color: var(--gold);
             margin-bottom: 15px;
             font-size: 1.6rem;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 700;
         }
         
-        .wallet-section h3::before {
-            content: '🪙';
+        .import-section h3::before {
+            content: '📊';
             font-size: 1.4rem;
-        }
-        
-        .wallet-section p {
-            margin-bottom: 15px;
-            color: var(--gray);
-            line-height: 1.7;
-            font-size: 1.05rem;
-        }
-        
-        .wallet-input {
-            background: rgba(139, 92, 246, 0.12);
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            border-left: 4px solid var(--accent);
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.05rem;
-            margin: 10px 0;
-            transition: var(--transition);
-        }
-        
-        .wallet-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-            background: rgba(139, 92, 246, 0.15);
-        }
-        
-        .workflow-steps {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin: 30px 0;
-            position: relative;
-        }
-        
-        .workflow-steps::before {
-            content: '';
-            position: absolute;
-            top: 35px;
-            left: 10%;
-            width: 80%;
-            height: 3px;
-            background: var(--gradient-primary);
-            z-index: 0;
-            display: none;
-        }
-        
-        @media (min-width: 768px) {
-            .workflow-steps::before {
-                display: block;
-            }
-        }
-        
-        .step {
-            text-align: center;
-            min-width: 150px;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .step-number {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin: 0 auto 15px;
-            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.35);
-            position: relative;
-        }
-        
-        .step-number::after {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(79, 70, 229, 0.3);
-            z-index: -1;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.5; }
-        }
-        
-        .step-title {
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .step-desc {
-            color: var(--gray);
-            font-size: 0.95rem;
-            max-width: 160px;
-            margin: 0 auto;
-        }
-        
-        .next-step {
-            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
-            color: white;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            margin: 30px 0;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-        }
-        
-        .next-step h3 {
-            margin-bottom: 10px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1.5rem;
-        }
-        
-        .next-step h3::before {
-            content: '➡️';
-        }
-        
-        .next-step p {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-        }
-        
-        .next-step a {
-            display: inline-block;
-            background: white;
-            color: var(--success);
-            padding: 10px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            margin-top: 10px;
-            transition: var(--transition);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-        
-        .next-step a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
         
         /* Footer */
         footer {
-            background: var(--gradient-dark);
+            background: var(--dark);
             color: rgba(255, 255, 255, 0.85);
-            padding: 70px 20px 40px;
-            margin-top: 70px;
+            padding: 60px 20px 30px;
+            margin-top: 60px;
         }
         
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 45px;
-            max-width: 1300px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
         .footer-col h3 {
             color: white;
-            font-size: 1.75rem;
-            margin-bottom: 28px;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
             position: relative;
-            padding-bottom: 12px;
-            font-weight: 700;
+            padding-bottom: 10px;
         }
         
         .footer-col h3::after {
@@ -792,10 +615,9 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 45px;
-            height: 4px;
-            background: var(--gradient-accent);
-            border-radius: 2px;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
         }
         
         .footer-links {
@@ -803,52 +625,30 @@
         }
         
         .footer-links li {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         
         .footer-links a {
-            color: rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             transition: var(--transition);
             display: block;
-            padding: 6px 0;
-            font-size: 1.1rem;
-            font-weight: 500;
-            position: relative;
-            padding-left: 22px;
-        }
-        
-        .footer-links a::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            opacity: 0;
-            transform: translateX(-8px);
-            transition: all 0.3s ease;
-            color: var(--accent);
+            padding: 5px 0;
+            font-size: 1.05rem;
         }
         
         .footer-links a:hover {
-            color: white;
-            transform: translateX(3px);
-        }
-        
-        .footer-links a:hover::before {
-            opacity: 1;
-            transform: translateX(0);
+            color: var(--accent);
+            transform: translateX(5px);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 50px;
-            margin-top: 50px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 1.05rem;
-            color: rgba(255, 255, 255, 0.65);
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.7;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
         }
         
         /* Responsive Design */
@@ -858,32 +658,26 @@
             }
             
             h1 {
-                font-size: 2.3rem;
+                font-size: 2.2rem;
             }
             
             .tagline {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .panel {
                 padding: 20px;
             }
             
-            .chart-container {
-                height: 320px;
+            .ranking-header,
+            .ranking-item {
+                grid-template-columns: 35px 1fr 120px 100px 100px;
+                font-size: 0.9rem;
             }
             
-            .workflow-steps {
+            .value-input {
                 flex-direction: column;
-                align-items: center;
-            }
-            
-            .workflow-steps::before {
-                display: none;
-            }
-            
-            .step {
-                margin-bottom: 25px;
+                align-items: flex-start;
             }
         }
         
@@ -899,11 +693,11 @@
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .tagline {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .container {
@@ -912,23 +706,26 @@
             
             .btn {
                 padding: 12px 15px;
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             
             .chart-container {
-                height: 280px;
+                height: 300px;
             }
             
-            .user-grid {
-                grid-template-columns: 1fr;
+            .ranking-header,
+            .ranking-item {
+                grid-template-columns: 30px 1fr 100px 80px 80px;
+                font-size: 0.85rem;
+                padding: 8px 10px;
             }
             
-            .stat-value {
-                font-size: 1.8rem;
+            .quick-input {
+                flex-direction: column;
             }
             
-            .stat-label {
-                font-size: 0.9rem;
+            .quick-input input {
+                width: 100%;
             }
         }
     </style>
@@ -945,8 +742,7 @@
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
             <h1 class="lang" data-es="Value Accounting App" data-ca="Aplicació Comptabilitat de Valor">Value Accounting App</h1>
-            <p class="tagline lang" data-es="Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum" data-ca="Registra entregables, assigna usuaris per rol i prepara per a tokenització amb wallet Ethereum">Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum</p>
-            <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
+            <p class="tagline lang" data-es="Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real" data-ca="Sistema de comptabilitat de valor per tokenitzar contribucions i visualitzar la distribució del valor en temps real">Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real</p>
         </div>
     </header>
     
@@ -957,7 +753,7 @@
                 <h2 class="lang" data-es="⚙️ Configuración del Proyecto" data-ca="⚙️ Configuració del Projecte">⚙️ Configuración del Proyecto</h2>
                 <div class="input-group">
                     <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
-                    <input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
+                    <input type="text" id="project-name" placeholder="Ej: Proyecto Innovación 2024">
                 </div>
                 <div class="input-group">
                     <label class="lang" data-es="Moneda de Valor" data-ca="Moneda de Valor">Moneda de Valor</label>
@@ -968,152 +764,162 @@
                     </select>
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;">
-                    <h2 class="lang" data-es="📥 Importar Datos de VNA" data-ca="📥 Importar Dades de VNA">📥 Importar Datos de VNA</h2>
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="📥 Importar Mapa de Valor" data-ca="📥 Importar Mapa de Valor">📥 Importar Mapa de Valor</h2>
                     <div class="input-group">
                         <label class="lang" data-es="Importar desde VNA App" data-ca="Importar des de VNA App">Importar desde VNA App</label>
                         <input type="file" id="import-file" accept=".json">
                     </div>
                     <div class="btn-group">
                         <button id="import-data" class="btn btn-primary">
-                            <span>📤</span> <span class="lang" data-es="Importar Mapa de Valor" data-ca="Importar Mapa de Valor">Importar Mapa de Valor</span>
+                            <span>📤</span> <span class="lang" data-es="Importar Datos" data-ca="Importar Dades">Importar Datos</span>
                         </button>
                     </div>
                     
-                    <div class="integration-section">
-                        <h3 class="lang" data-es="Conexión con VNA App" data-ca="Connexió amb VNA App">Conexión con VNA App</h3>
-                        <p class="lang" data-es="Importa tu mapa de valor desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> para pre-poblar roles y transacciones. Esto facilitará el registro de entregables por usuario." data-ca="Importa el teu mapa de valor des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> per pre-omplir rols i transaccions. Això facilitarà el registre d'entregables per usuari.">Importa tu mapa de valor desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a> para pre-poblar roles y transacciones. Esto facilitará el registro de entregables por usuario.</p>
+                    <div class="import-section">
+                        <h3 class="lang" data-es="Asignación de Usuarios a Roles" data-ca="Assignació d'Usuaris a Rols">Asignación de Usuarios a Roles</h3>
+                        <p class="lang" data-es="Después de importar el mapa de valor, asigna usuarios a cada rol para poder registrar sus entregables y asociar wallets Ethereum para futura tokenización." data-ca="Després d'importar el mapa de valor, assigna usuaris a cada rol per poder registrar els seus entregables i associar wallets Ethereum per a futura tokenització.">Después de importar el mapa de valor, asigna usuarios a cada rol para poder registrar sus entregables y asociar wallets Ethereum para futura tokenización.</p>
+                        
+                        <div id="role-user-assignment" style="display: none; margin-top: 15px;">
+                            <h4 class="lang" data-es="Roles Detectados" data-ca="Rols Detectats">Roles Detectados</h4>
+                            <div id="roles-container"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;">
+                <div class="panel" style="margin-top: 20px;">
                     <h2 class="lang" data-es="➕ Añadir Entregable" data-ca="➕ Afegir Entregable">➕ Añadir Entregable</h2>
-                    <div class="input-group">
-                        <label class="lang" data-es="Rol (@nombre)" data-ca="Rol (@nom)">Rol (@nombre)</label>
-                        <input type="text" id="role-input" placeholder="@equipo-marketing" list="roles-datalist">
-                        <datalist id="roles-datalist">
-                            <!-- Will be populated dynamically -->
-                        </datalist>
+                    <div class="quick-input">
+                        <input type="text" id="quick-input" placeholder="@rol #entregable valor:100">
+                        <button id="quick-add" class="btn btn-success">+</button>
                     </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Nombre de Usuario" data-ca="Nom d'Usuari">Nombre de Usuario</label>
-                        <input type="text" id="user-name" placeholder="Ej: Juan Pérez">
+                    <p class="lang" data-es="Formato rápido: <code>@rol #entregable valor:100</code>" data-ca="Format ràpid: <code>@rol #entregable valor:100</code>">Formato rápido: <code>@rol #entregable valor:100</code></p>
+                    
+                    <div class="transaction-form">
+                        <h3 class="lang" data-es="Formulario Detallado" data-ca="Formulari Detallat">Formulario Detallado</h3>
+                        <div class="input-group">
+                            <label class="lang" data-es="Rol (@nombre)" data-ca="Rol (@nom)">Rol (@nombre)</label>
+                            <select id="role-select">
+                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Usuario" data-ca="Usuari">Usuario</label>
+                            <select id="user-select">
+                                <option class="lang" data-es="Selecciona un usuario" data-ca="Selecciona un usuari">Selecciona un usuario</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Entregable (#etiqueta)" data-ca="Entregable (#etiqueta)">Entregable (#etiqueta)</label>
+                            <input type="text" id="deliverable-input" placeholder="#informe-semanal">
+                        </div>
+                        <div class="deliverable-input">
+                            <label class="lang" data-es="Descripción" data-ca="Descripció">Descripción</label>
+                            <textarea id="description-input" placeholder="Informe detallado de métricas de campaña"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Enlace (opcional)" data-ca="Enllaç (opcional)">Enlace (opcional)</label>
+                            <input type="url" id="link-input" placeholder="https://ejemplo.com/informe.pdf">
+                        </div>
+                        <div class="value-input">
+                            <span class="lang" data-es="Valor:" data-ca="Valor:">Valor:</span>
+                            <input type="number" id="value-input" placeholder="100" min="1">
+                        </div>
+                        <div class="btn-group">
+                            <button id="add-deliverable" class="btn btn-primary">
+                                <span>✨</span> <span class="lang" data-es="Registrar Entregable" data-ca="Registrar Entregable">Registrar Entregable</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="wallet-section">
-                        <label class="lang" data-es="Dirección de Monedero Ethereum" data-ca="Adreça de Moneder Ethereum">Dirección de Monedero Ethereum</label>
-                        <input type="text" id="wallet-address" placeholder="0x..." class="wallet-input" pattern="^0x[a-fA-F0-9]{40}$">
-                        <p class="lang" data-es="Formato: 0x seguido de 40 caracteres hexadecimales. Ej: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e" data-ca="Format: 0x seguit de 40 caràcters hexadecimals. Ex: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e">Formato: 0x seguido de 40 caracteres hexadecimales. Ej: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e</p>
-                    </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Entregable (#etiqueta)" data-ca="Entregable (#etiqueta)">Entregable (#etiqueta)</label>
-                        <input type="text" id="deliverable-input" placeholder="#informe-semanal">
-                    </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Descripción" data-ca="Descripció">Descripción</label>
-                        <textarea id="description-input" placeholder="Informe detallado de métricas de campaña"></textarea>
-                    </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Enlace (opcional)" data-ca="Enllaç (opcional)">Enlace (opcional)</label>
-                        <input type="url" id="link-input" placeholder="https://ejemplo.com/informe.pdf">
-                    </div>
-                    <div class="input-group">
-                        <label class="lang" data-es="Valor:" data-ca="Valor:">Valor:</label>
-                        <input type="number" id="value-input" placeholder="100" min="1">
-                    </div>
-                    <div class="btn-group">
-                        <button id="add-deliverable" class="btn btn-primary">
-                            <span>✨</span> <span class="lang" data-es="Registrar Entregable" data-ca="Registrar Entregable">Registrar Entregable</span>
-                        </button>
+                    
+                    <div class="user-section">
+                        <h3 class="lang" data-es="👥 Gestión de Usuarios" data-ca="👥 Gestió d'Usuaris">👥 Gestión de Usuarios</h3>
+                        <p class="lang" data-es="Añade usuarios a los roles para poder registrar sus entregables y asociar wallets Ethereum." data-ca="Afegeix usuaris als rols per poder registrar els seus entregables i associar wallets Ethereum.">Añade usuarios a los roles para poder registrar sus entregables y asociar wallets Ethereum.</p>
+                        
+                        <div class="input-group">
+                            <label class="lang" data-es="Nombre de Usuario" data-ca="Nom d'Usuari">Nombre de Usuario</label>
+                            <input type="text" id="new-user-name" placeholder="Ej: María García">
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Wallet Ethereum (opcional)" data-ca="Wallet Ethereum (opcional)">Wallet Ethereum (opcional)</label>
+                            <input type="text" id="new-user-wallet" placeholder="0x...">
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Rol Asignado" data-ca="Rol Assignat">Rol Asignado</label>
+                            <select id="new-user-role">
+                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button id="add-user" class="btn btn-success">
+                                <span>👤</span> <span class="lang" data-es="Añadir Usuario" data-ca="Afegir Usuari">Añadir Usuario</span>
+                            </button>
+                        </div>
+                        
+                        <div class="user-grid" id="user-grid">
+                            <!-- Users will be added here dynamically -->
+                        </div>
                     </div>
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;">
+                <div class="panel" style="margin-top: 20px;">
                     <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
                     <div class="btn-group">
                         <button id="export-json" class="btn btn-export">
                             <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
                         </button>
                         <button id="export-csv" class="btn btn-export">
-                            <span>📈</span> <span class="lang" data-es="Exportar CSV para Tokenomics" data-ca="Exportar CSV per Tokenomics">Exportar CSV para Tokenomics</span>
+                            <span>📈</span> <span class="lang" data-es="Exportar CSV" data-ca="Exportar CSV">Exportar CSV</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
                         </button>
                     </div>
                 </div>
-                
-                <div class="instructions" style="margin-top: 25px;">
-                    <h3 class="lang" data-es="Flujo del Sistema Integral" data-ca="Flux del Sistema Integral">Flujo del Sistema Integral</h3>
-                    <div class="workflow-steps">
-                        <div class="step">
-                            <div class="step-number">1</div>
-                            <div class="step-title lang" data-es="Mapear Valor" data-ca="Mapejar Valor">Mapear Valor</div>
-                            <div class="step-desc lang" data-es="Con VNA App" data-ca="Amb VNA App">Con VNA App</div>
-                        </div>
-                        <div class="step">
-                            <div class="step-number">2</div>
-                            <div class="step-title lang" data-es="Registrar Entregables" data-ca="Registrar Entregables">Registrar Entregables</div>
-                            <div class="step-desc lang" data-es="Con esta App" data-ca="Amb aquesta App">Con esta App</div>
-                        </div>
-                        <div class="step">
-                            <div class="step-number">3</div>
-                            <div class="step-title lang" data-es="Tokenizar Valor" data-ca="Tokenitzar Valor">Tokenizar Valor</div>
-                            <div class="step-desc lang" data-es="Con Tokenomics App" data-ca="Amb Tokenomics App">Con Tokenomics App</div>
-                        </div>
-                    </div>
-                    
-                    <p class="lang" data-es="<strong>Beneficios del Sistema:</strong> Asigna entregables a usuarios específicos dentro de cada rol, registra direcciones de wallet Ethereum para futura distribución de tokens, e importa roles y transacciones desde tu mapa de valor para agilizar el proceso." data-ca="<strong>Beneficis del Sistema:</strong> Assigna entregables a usuaris específics dins de cada rol, registra adreces de wallet Ethereum per a futura distribució de tokens, i importa rols i transaccions des del teu mapa de valor per agilitar el procés."><strong>Beneficios del Sistema:</strong> Asigna entregables a usuarios específicos dentro de cada rol, registra direcciones de wallet Ethereum para futura distribución de tokens, e importa roles y transacciones desde tu mapa de valor para agilizar el proceso.</p>
-                </div>
             </div>
             
             <div class="visualization-container">
-                <h2>👥 <span class="lang" data-es="Usuarios y Roles Registrados" data-ca="Usuaris i Rols Registrats">Usuarios y Roles Registrados</span></h2>
+                <h2>📊 <span class="lang" data-es="Distribución de Valor en Tiempo Real" data-ca="Distribució de Valor en Temps Real">Distribución de Valor en Tiempo Real</span></h2>
+                <div class="chart-container">
+                    <canvas id="valueChart"></canvas>
+                </div>
+                
                 <div class="stats-bar">
                     <div class="stat-item">
-                        <div class="stat-value" id="total-users">0</div>
-                        <div class="stat-label lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-roles">0</div>
-                        <div class="stat-label lang" data-es="Roles Únicos" data-ca="Rols Únics">Roles Únicos</div>
+                        <div class="stat-value" id="total-value">0</div>
+                        <div class="stat-label lang" data-es="Valor Total" data-ca="Valor Total">Valor Total</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="total-deliverables">0</div>
                         <div class="stat-label lang" data-es="Entregables" data-ca="Entregables">Entregables</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="total-value">0</div>
-                        <div class="stat-label lang" data-es="Valor Total" data-ca="Valor Total">Valor Total</div>
+                        <div class="stat-value" id="total-users">0</div>
+                        <div class="stat-label lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-roles">0</div>
+                        <div class="stat-label lang" data-es="Roles" data-ca="Rols">Roles</div>
                     </div>
                 </div>
                 
-                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="📋 Lista de Usuarios con Wallets" data-ca="📋 Llista d'Usuaris amb Wallets">📋 Lista de Usuarios con Wallets</h3>
-                <div id="user-grid" class="user-grid">
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <h3 class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</h3>
-                        <p class="lang" data-es="Registra tu primer entregable con nombre de usuario y dirección de wallet para comenzar. Puedes importar roles desde la VNA App para agilizar el proceso." data-ca="Registra el teu primer entregable amb nom d'usuari i adreça de wallet per començar. Pots importar rols des de la VNA App per agilitar el procés.">Registra tu primer entregable con nombre de usuario y dirección de wallet para comenzar. Puedes importar roles desde la VNA App para agilizar el proceso.</p>
-                        <button id="quick-start" class="btn btn-primary">
-                            <span>🚀</span> <span class="lang" data-es="Comenzar Rápido" data-ca="Començar Ràpid">Comenzar Rápido</span>
-                        </button>
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="🏆 Ranking de Usuarios por Valor Aportado" data-ca="🏆 Rànquing d'Usuaris per Valor Aportat">🏆 Ranking de Usuarios por Valor Aportado</h3>
+                <div class="ranking-container">
+                    <div class="ranking-header">
+                        <div class="lang" data-es="Pos" data-ca="Pos">Pos</div>
+                        <div class="lang" data-es="Usuario" data-ca="Usuari">Usuario</div>
+                        <div class="lang" data-es="Rol" data-ca="Rol">Rol</div>
+                        <div class="lang" data-es="Wallet" data-ca="Wallet">Wallet</div>
+                        <div class="lang" data-es="Valor" data-ca="Valor">Valor</div>
                     </div>
-                </div>
-                
-                <div class="next-step">
-                    <h3 class="lang" data-es="Siguiente Paso: Tokenomics App" data-ca="Pas Següent: Tokenomics App">Siguiente Paso: Tokenomics App</h3>
-                    <p class="lang" data-es="Una vez hayas registrado tus entregables y usuarios, exporta el CSV y continúa en la Tokenomics App para configurar la distribución de tokens, parámetros de vesting y generar tu smart contract optimizado." data-ca="Un cop hagis registrat els teus entregables i usuaris, exporta el CSV i continua a la Tokenomics App per configurar la distribució de tokens, paràmetres de vesting i generar el teu smart contract optimitzat.">Una vez hayas registrado tus entregables y usuarios, exporta el CSV y continúa en la Tokenomics App para configurar la distribución de tokens, parámetros de vesting y generar tu smart contract optimizado.</p>
-                    <a href="https://teamtowershuma.com/tokenomics" target="_blank" class="lang" data-es="Ir a Tokenomics App" data-ca="Anar a Tokenomics App">Ir a Tokenomics App</a>
-                </div>
-                
-                <div class="integration-section" style="margin-top: 30px;">
-                    <h3 class="lang" data-es="💡 Preparación para Tokenomics" data-ca="💡 Preparació per a Tokenomics">💡 Preparación para Tokenomics</h3>
-                    <p class="lang" data-es="Esta aplicación prepara tus datos para la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. Al exportar el CSV, incluye información crítica para la distribución de tokens: nombre de usuario, rol, dirección de wallet Ethereum y valor total aportado. Esto permite configurar automáticamente los parámetros de vesting y cliff en la siguiente fase." data-ca="Aquesta aplicació prepara les teves dades per a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. En exportar el CSV, inclou informació crítica per a la distribució de tokens: nom d'usuari, rol, adreça de wallet Ethereum i valor total aportat. Això permet configurar automàticament els paràmetres de vesting i cliff en la següent fase.">Esta aplicación prepara tus datos para la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. Al exportar el CSV, incluye información crítica para la distribución de tokens: nombre de usuario, rol, dirección de wallet Ethereum y valor total aportado. Esto permite configurar automáticamente los parámetros de vesting y cliff en la siguiente fase.</p>
-                    
-                    <div style="margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.12); border-radius: 8px; border-left: 3px solid var(--success);">
-                        <strong class="lang" data-es="Recomendación de Expertos:" data-ca="Recomanació d'Experts:">Recomendación de Expertos:</strong>
-                        <p class="lang" data-es="Para una distribución justa de tokens, asegúrate de que cada usuario tenga una wallet Ethereum válida registrada. Los parámetros de vesting estándar recomendados son: 1 año de cliff y 4 años de vesting total para equipos fundadores, y 6 meses de cliff con 2 años de vesting para advisors e inversores tempranos." data-ca="Per a una distribució justa de tokens, assegura't que cada usuari tingui una wallet Ethereum vàlida registrada. Els paràmetres de vesting estàndard recomanats són: 1 any de cliff i 4 anys de vesting total per a equips fundadors, i 6 mesos de cliff amb 2 anys de vesting per a advisors i inversors temprans.">Para una distribución justa de tokens, asegúrate de que cada usuario tenga una wallet Ethereum válida registrada. Los parámetros de vesting estándar recomendados son: 1 año de cliff y 4 años de vesting total para equipos fundadores, y 6 meses de cliff con 2 años de vesting para advisors e inversores tempranos.</p>
+                    <div id="ranking-list">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                            <p class="lang" data-es="Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor" data-ca="Importa el teu mapa de valor o afegeix el primer entregable per començar a construir la teva comptabilitat de valor">Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1139,7 +945,7 @@
                 </ul>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Apps del Ecosistema" data-ca="Apps de l'Ecosistema">Apps del Ecosistema</h3>
+                <h3 class="lang" data-es="Apps" data-ca="Apps">Apps</h3>
                 <ul class="footer-links">
                     <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
                     <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
@@ -1165,20 +971,21 @@
             </div>
         </div>
         <div class="copyright">
-            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización y gestión de usuarios por rol." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb preparació per a tokenització i gestió d'usuaris per rol.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización y gestión de usuarios por rol.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización futura de contribuciones." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb preparació per tokenització futura de contribucions.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización futura de contribuciones.</p>
         </div>
     </footer>
     
     <script>
         // Estado de la aplicación
         let projectData = {
-            name: "Proyecto MASIA",
+            name: "Proyecto sin nombre",
             currency: "puntos",
-            users: [],
+            roles: {}, // { roleName: { users: [{name, wallet}], deliverables: [] } }
             deliverables: [],
-            roles: [],
             vnaData: null
         };
+        
+        let valueChart = null;
         
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
@@ -1188,14 +995,17 @@
             // Cargar datos guardados
             loadSavedData();
             
+            // Inicializar gráfico
+            initChart();
+            
             // Configurar event listeners
             setupEventListeners();
             
             // Actualizar visualizaciones
             updateVisualizations();
             
-            // Rellenar datalist de roles si hay datos VNA
-            updateRolesDatalist();
+            // Cargar roles en los selects
+            loadRolesInSelects();
         });
         
         // Configurar selector de idioma
@@ -1238,14 +1048,22 @@
         function setupEventListeners() {
             // Importar datos
             document.getElementById('import-data').addEventListener('click', importData);
-            document.getElementById('quick-start').addEventListener('click', quickStart);
             
-            // Añadir entregable
+            // Añadir entregable rápido
+            document.getElementById('quick-add').addEventListener('click', addQuickDeliverable);
+            document.getElementById('quick-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addQuickDeliverable();
+            });
+            
+            // Añadir entregable detallado
             document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
+            
+            // Añadir usuario
+            document.getElementById('add-user').addEventListener('click', addUser);
             
             // Exportar datos
             document.getElementById('export-json').addEventListener('click', exportJSON);
-            document.getElementById('export-csv').addEventListener('click', exportCSVForTokenomics);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
             
             // Limpiar datos
             document.getElementById('reset-data').addEventListener('click', resetData);
@@ -1254,41 +1072,20 @@
             document.getElementById('value-currency').addEventListener('change', function() {
                 projectData.currency = this.value;
                 saveData();
+                updateVisualizations();
             });
             
             // Cambiar nombre del proyecto
             document.getElementById('project-name').addEventListener('change', function() {
-                projectData.name = this.value || "Proyecto MASIA";
+                projectData.name = this.value || "Proyecto sin nombre";
                 saveData();
+                updateVisualizations();
             });
             
-            // Validación de wallet Ethereum
-            document.getElementById('wallet-address').addEventListener('input', function(e) {
-                const walletInput = e.target;
-                const walletPattern = /^0x[a-fA-F0-9]{40}$/;
-                
-                if (walletInput.value && !walletPattern.test(walletInput.value)) {
-                    walletInput.style.borderColor = 'var(--danger)';
-                } else {
-                    walletInput.style.borderColor = '';
-                }
+            // Cuando se selecciona un rol, cargar usuarios de ese rol
+            document.getElementById('role-select').addEventListener('change', function() {
+                loadUsersInSelect(this.value);
             });
-        }
-        
-        // Quick start para nuevos usuarios
-        function quickStart() {
-            // Pre-poblar con datos de ejemplo
-            const exampleRoles = ['equipo', 'inversor', 'cliente', 'proveedor'];
-            projectData.roles = exampleRoles;
-            updateRolesDatalist();
-            
-            // Mostrar mensaje de éxito
-            alert(document.documentElement.lang === 'ca' ? 
-                'S\'han carregat rols d\'exemple per començar ràpidament. Ara pots registrar entregables per a cada rol.' : 
-                'Se han cargado roles de ejemplo para comenzar rápidamente. Ahora puedes registrar entregables para cada rol.');
-            
-            // Scroll to the deliverable form
-            document.querySelector('.panel:nth-child(3)').scrollIntoView({behavior: 'smooth'});
         }
         
         // Importar datos desde archivo JSON
@@ -1316,23 +1113,47 @@
                     // Guardar datos VNA
                     projectData.vnaData = importedData;
                     
-                    // Extraer roles únicos de los nodos
-                    const uniqueRoles = new Set();
+                    // Procesar nodos como roles
                     importedData.nodes.forEach(node => {
-                        const roleName = typeof node === 'object' ? node.id : node;
-                        uniqueRoles.add(roleName.toLowerCase());
+                        const roleName = node.id.toLowerCase();
+                        if (!projectData.roles[roleName]) {
+                            projectData.roles[roleName] = {
+                                name: node.id,
+                                users: [],
+                                deliverables: []
+                            };
+                        }
                     });
                     
-                    // Añadir roles a la lista
-                    projectData.roles = Array.from(uniqueRoles);
+                    // Procesar enlaces como transacciones
+                    importedData.links.forEach(link => {
+                        const source = typeof link.source === 'object' ? link.source.id : link.source;
+                        const target = typeof link.target === 'object' ? link.target.id : link.target;
+                        const deliverable = link.deliverable || 'Entregable importado';
+                        
+                        // Añadir entregable de ejemplo
+                        projectData.deliverables.push({
+                            id: Date.now() + Math.random().toString(36).substr(2, 5),
+                            role: source.toLowerCase(),
+                            deliverable: deliverable,
+                            description: `Transacción importada: ${source} → ${target}`,
+                            link: '',
+                            value: 100, // Valor por defecto
+                            timestamp: new Date().toISOString()
+                        });
+                    });
                     
-                    // Guardar y actualizar
                     saveData();
-                    updateRolesDatalist();
+                    updateVisualizations();
+                    loadRolesInSelects();
+                    
+                    // Mostrar sección de asignación de usuarios
+                    document.getElementById('role-user-assignment').style.display = 'block';
+                    loadRolesForAssignment();
                     
                     alert(document.documentElement.lang === 'ca' ? 
-                        `S'han importat ${projectData.roles.length} rols des del mapa de valor. Ara pots assignar usuaris a aquests rols.` : 
-                        `Se han importado ${projectData.roles.length} roles desde el mapa de valor. Ahora puedes asignar usuarios a estos roles.`);
+                        'Mapa de valor importado correctamente! Ahora asigna usuarios a cada rol.' : 
+                        'Mapa de valor importado correctamente! Ahora asigna usuarios a cada rol.');
                 } catch (error) {
                     console.error('Error al importar datos:', error);
                     alert(document.documentElement.lang === 'ca' ? 
@@ -1344,104 +1165,142 @@
             reader.readAsText(file);
         }
         
-        // Actualizar datalist de roles
-        function updateRolesDatalist() {
-            const datalist = document.getElementById('roles-datalist');
-            datalist.innerHTML = '';
+        // Cargar roles para asignación de usuarios
+        function loadRolesForAssignment() {
+            const container = document.getElementById('roles-container');
+            container.innerHTML = '';
             
-            // Añadir roles del VNA
-            projectData.roles.forEach(role => {
-                const option = document.createElement('option');
-                option.value = `@${role}`;
-                datalist.appendChild(option);
+            Object.keys(projectData.roles).forEach(roleName => {
+                const role = projectData.roles[roleName];
+                
+                const roleDiv = document.createElement('div');
+                roleDiv.className = 'user-card';
+                roleDiv.innerHTML = `
+                    <h4>${role.name}</h4>
+                    <p><small class="lang" data-es="Usuarios asignados:" data-ca="Usuaris assignats:">Usuarios asignados:</small> ${role.users.length}</p>
+                    <div style="margin-top: 10px;">
+                        <input type="text" placeholder="${document.documentElement.lang === 'ca' ? 'Nom d\'usuari' : 'Nombre de usuario'}" class="user-name-input" data-role="${roleName}">
+                        <input type="text" placeholder="0x..." class="user-wallet-input" data-role="${roleName}" style="margin-top: 5px; font-family: monospace; font-size: 0.85rem;">
+                        <button class="btn btn-success add-user-to-role" style="margin-top: 8px; padding: 6px 12px; font-size: 0.9rem;" data-role="${roleName}">
+                            <span>👤</span> ${document.documentElement.lang === 'ca' ? 'Afegir' : 'Añadir'}
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(roleDiv);
             });
             
-            // Añadir roles de usuarios existentes
-            const existingRoles = new Set(projectData.users.map(u => u.role));
-            existingRoles.forEach(role => {
-                if (!projectData.roles.includes(role)) {
-                    const option = document.createElement('option');
-                    option.value = `@${role}`;
-                    datalist.appendChild(option);
-                }
+            // Añadir event listeners a los botones
+            document.querySelectorAll('.add-user-to-role').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roleName = this.getAttribute('data-role');
+                    const nameInput = this.parentElement.querySelector('.user-name-input');
+                    const walletInput = this.parentElement.querySelector('.user-wallet-input');
+                    
+                    const userName = nameInput.value.trim();
+                    const userWallet = walletInput.value.trim();
+                    
+                    if (!userName) {
+                        alert(document.documentElement.lang === 'ca' ? 
+                            'Introdueix un nom d\'usuari' : 
+                            'Introduce un nombre de usuario');
+                        return;
+                    }
+                    
+                    // Añadir usuario al rol
+                    if (!projectData.roles[roleName]) {
+                        projectData.roles[roleName] = { name: roleName, users: [], deliverables: [] };
+                    }
+                    
+                    projectData.roles[roleName].users.push({
+                        name: userName,
+                        wallet: userWallet || null
+                    });
+                    
+                    saveData();
+                    loadRolesForAssignment();
+                    loadRolesInSelects();
+                    
+                    // Limpiar inputs
+                    nameInput.value = '';
+                    walletInput.value = '';
+                    
+                    alert(document.documentElement.lang === 'ca' ? 
+                        `Usuari ${userName} afegit al rol ${roleName}` : 
+                        `Usuario ${userName} añadido al rol ${roleName}`);
+                });
             });
         }
         
-        // Añadir entregable
+        // Añadir entregable rápido
+        function addQuickDeliverable() {
+            const input = document.getElementById('quick-input').value.trim();
+            if (!input) return;
+            
+            // Parsear formato: @rol #entregable valor:100
+            const roleMatch = input.match(/@(\S+)/);
+            const deliverableMatch = input.match(/#(\S+)/);
+            const valueMatch = input.match(/valor:(\d+)/i);
+            
+            if (!roleMatch || !deliverableMatch || !valueMatch) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Format incorrecte. Usa: @rol #entregable valor:100' : 
+                    'Formato incorrecto. Usa: @rol #entregable valor:100');
+                return;
+            }
+            
+            const role = roleMatch[1].toLowerCase();
+            const deliverable = deliverableMatch[1];
+            const value = parseInt(valueMatch[1]);
+            
+            // Obtener primer usuario del rol (o crear uno por defecto)
+            let userName = 'Usuario';
+            let userWallet = null;
+            
+            if (projectData.roles[role] && projectData.roles[role].users.length > 0) {
+                const firstUser = projectData.roles[role].users[0];
+                userName = firstUser.name;
+                userWallet = firstUser.wallet;
+            }
+            
+            addDeliverableToSystem(role, userName, userWallet, deliverable, `Entregable rápido: ${deliverable}`, '', value);
+            
+            // Limpiar input
+            document.getElementById('quick-input').value = '';
+        }
+        
+        // Añadir entregable detallado
         function addDeliverable() {
-            const roleInput = document.getElementById('role-input').value.trim();
-            const userName = document.getElementById('user-name').value.trim();
-            const walletAddress = document.getElementById('wallet-address').value.trim();
+            const roleSelect = document.getElementById('role-select');
+            const userSelect = document.getElementById('user-select');
             const deliverableInput = document.getElementById('deliverable-input').value.trim();
             const descriptionInput = document.getElementById('description-input').value.trim();
             const linkInput = document.getElementById('link-input').value.trim();
             const valueInput = document.getElementById('value-input').value.trim();
             
-            if (!roleInput || !userName || !deliverableInput || !valueInput) {
+            if (!roleSelect.value || !userSelect.value || !deliverableInput || !valueInput) {
                 alert(document.documentElement.lang === 'ca' ? 
-                    'Omple tots els camps obligatoris (rol, nom d\'usuari, entregable, valor)' : 
-                    'Completa todos los campos obligatorios (rol, nombre de usuario, entregable, valor)');
+                    'Omple tots els camps obligatoris (rol, usuari, entregable, valor)' : 
+                    'Completa todos los campos obligatorios (rol, usuario, entregable, valor)');
                 return;
             }
             
-            // Extraer nombre del rol si empieza con @
-            const role = roleInput.startsWith('@') ? roleInput.substring(1).toLowerCase() : roleInput.toLowerCase();
+            const role = roleSelect.value;
+            const userName = userSelect.options[userSelect.selectedIndex].text;
+            const userId = userSelect.value;
             
-            // Validar dirección de wallet Ethereum
-            if (walletAddress && !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'La direcció del moneder no és vàlida. Ha de començar amb 0x i tenir 40 caràcters hexadecimals.' : 
-                    'La dirección del monedero no es válida. Debe empezar con 0x y tener 40 caracteres hexadecimales.');
-                return;
+            // Obtener wallet del usuario
+            let userWallet = null;
+            if (projectData.roles[role] && projectData.roles[role].users) {
+                const user = projectData.roles[role].users.find(u => `${u.name}|${u.wallet || ''}` === userId);
+                if (user) userWallet = user.wallet;
             }
             
-            // Verificar si el usuario ya existe
-            let user = projectData.users.find(u => u.name === userName && u.role === role);
+            const value = parseInt(valueInput);
             
-            if (!user) {
-                // Crear nuevo usuario
-                user = {
-                    id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
-                    name: userName,
-                    role: role,
-                    walletAddress: walletAddress || '',
-                    totalValue: 0,
-                    deliverables: []
-                };
-                projectData.users.push(user);
-            } else if (walletAddress && !user.walletAddress) {
-                // Actualizar wallet si el usuario existe pero no tiene wallet
-                user.walletAddress = walletAddress;
-            }
-            
-            // Crear entregable
-            const deliverable = {
-                id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
-                role: role,
-                userName: userName,
-                walletAddress: walletAddress,
-                deliverable: deliverableInput,
-                description: descriptionInput,
-                link: linkInput,
-                value: parseInt(valueInput),
-                timestamp: new Date().toISOString()
-            };
-            
-            // Añadir a la lista de entregables del usuario
-            user.deliverables.push(deliverable);
-            user.totalValue += deliverable.value;
-            
-            // Añadir a la lista global de entregables
-            projectData.deliverables.push(deliverable);
-            
-            // Guardar y actualizar
-            saveData();
-            updateVisualizations();
+            addDeliverableToSystem(role, userName, userWallet, deliverableInput, descriptionInput, linkInput, value);
             
             // Limpiar formulario
-            document.getElementById('role-input').value = '';
-            document.getElementById('user-name').value = '';
-            document.getElementById('wallet-address').value = '';
             document.getElementById('deliverable-input').value = '';
             document.getElementById('description-input').value = '';
             document.getElementById('link-input').value = '';
@@ -1449,8 +1308,8 @@
             
             // Feedback al usuario
             const successMsg = document.documentElement.lang === 'ca' ? 
-                `Entregable registrat per ${userName} (${role})` : 
-                `Entregable registrado para ${userName} (${role})`;
+                `Entregable registrat per ${userName}` : 
+                `Entregable registrado para ${userName}`;
             
             const btn = document.getElementById('add-deliverable');
             const originalText = btn.innerHTML;
@@ -1463,18 +1322,153 @@
             }, 2000);
         }
         
-        // Actualizar visualizaciones
-        function updateVisualizations() {
-            // Actualizar estadísticas
-            const totalUsers = projectData.users.length;
-            const uniqueRoles = new Set(projectData.users.map(u => u.role)).size;
-            const totalDeliverables = projectData.deliverables.length;
-            const totalValue = projectData.users.reduce((sum, u) => sum + u.totalValue, 0);
+        // Función central para añadir entregable
+        function addDeliverableToSystem(role, userName, userWallet, deliverable, description, link, value) {
+            // Asegurar que el rol exista
+            if (!projectData.roles[role]) {
+                projectData.roles[role] = {
+                    name: role.charAt(0).toUpperCase() + role.slice(1),
+                    users: [],
+                    deliverables: []
+                };
+                
+                // Añadir usuario si no existe
+                if (!projectData.roles[role].users.some(u => u.name === userName)) {
+                    projectData.roles[role].users.push({
+                        name: userName,
+                        wallet: userWallet
+                    });
+                }
+            }
             
-            document.getElementById('total-users').textContent = totalUsers;
-            document.getElementById('total-roles').textContent = uniqueRoles;
-            document.getElementById('total-deliverables').textContent = totalDeliverables;
-            document.getElementById('total-value').textContent = totalValue.toLocaleString();
+            // Crear entregable
+            const deliverableObj = {
+                id: Date.now() + Math.random().toString(36).substr(2, 5),
+                role: role,
+                user: userName,
+                wallet: userWallet,
+                deliverable: deliverable,
+                description: description,
+                link: link,
+                value: value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Añadir a la lista de entregables
+            projectData.deliverables.push(deliverableObj);
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualizations();
+        }
+        
+        // Añadir usuario
+        function addUser() {
+            const userName = document.getElementById('new-user-name').value.trim();
+            const userWallet = document.getElementById('new-user-wallet').value.trim();
+            const roleSelect = document.getElementById('new-user-role');
+            const roleName = roleSelect.value;
+            
+            if (!userName || !roleName) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Omple tots els camps obligatoris (nom d\'usuari, rol)' : 
+                    'Completa todos los campos obligatorios (nombre de usuario, rol)');
+                return;
+            }
+            
+            // Asegurar que el rol exista
+            if (!projectData.roles[roleName]) {
+                projectData.roles[roleName] = {
+                    name: roleName.charAt(0).toUpperCase() + roleName.slice(1),
+                    users: [],
+                    deliverables: []
+                };
+            }
+            
+            // Añadir usuario al rol
+            projectData.roles[roleName].users.push({
+                name: userName,
+                wallet: userWallet || null
+            });
+            
+            saveData();
+            updateVisualizations();
+            loadRolesInSelects();
+            
+            // Limpiar formulario
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-wallet').value = '';
+            
+            // Feedback al usuario
+            const successMsg = document.documentElement.lang === 'ca' ? 
+                `Usuari ${userName} afegit al rol ${roleName}` : 
+                `Usuario ${userName} añadido al rol ${roleName}`;
+            
+            const btn = document.getElementById('add-user');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span>✅</span> ${successMsg}`;
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        // Cargar roles en los selects
+        function loadRolesInSelects() {
+            const roleSelect = document.getElementById('role-select');
+            const newUserRoleSelect = document.getElementById('new-user-role');
+            
+            // Limpiar opciones actuales (excepto la primera)
+            while (roleSelect.options.length > 1) {
+                roleSelect.remove(1);
+            }
+            
+            while (newUserRoleSelect.options.length > 1) {
+                newUserRoleSelect.remove(1);
+            }
+            
+            // Añadir roles
+            Object.keys(projectData.roles).forEach(roleName => {
+                const role = projectData.roles[roleName];
+                
+                const option1 = document.createElement('option');
+                option1.value = roleName;
+                option1.textContent = role.name;
+                roleSelect.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = roleName;
+                option2.textContent = role.name;
+                newUserRoleSelect.appendChild(option2);
+            });
+            
+            // Si hay roles, cargar usuarios del primer rol
+            if (Object.keys(projectData.roles).length > 0) {
+                loadUsersInSelect(Object.keys(projectData.roles)[0]);
+            }
+        }
+        
+        // Cargar usuarios en el select de usuarios
+        function loadUsersInSelect(roleName) {
+            const userSelect = document.getElementById('user-select');
+            
+            // Limpiar opciones actuales (excepto la primera)
+            while (userSelect.options.length > 1) {
+                userSelect.remove(1);
+            }
+            
+            // Si no hay rol seleccionado, salir
+            if (!roleName || !projectData.roles[roleName]) return;
+            
+            // Añadir usuarios del rol
+            projectData.roles[roleName].users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = `${user.name}|${user.wallet || ''}`;
+                option.textContent = user.name;
+                userSelect.appendChild(option);
+            });
             
             // Actualizar grid de usuarios
             updateUserGrid();
@@ -1482,59 +1476,189 @@
         
         // Actualizar grid de usuarios
         function updateUserGrid() {
-            const grid = document.getElementById('user-grid');
+            const userGrid = document.getElementById('user-grid');
+            userGrid.innerHTML = '';
             
-            if (projectData.users.length === 0) {
-                grid.innerHTML = `
+            // Contar total de usuarios
+            let totalUsers = 0;
+            
+            // Mostrar usuarios por rol
+            Object.keys(projectData.roles).forEach(roleName => {
+                const role = projectData.roles[roleName];
+                
+                role.users.forEach(user => {
+                    totalUsers++;
+                    
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    userCard.innerHTML = `
+                        <h4>${user.name}</h4>
+                        <p><small class="role-tag role-team">${role.name}</small></p>
+                        ${user.wallet ? `<p class="wallet">${user.wallet}</p>` : ''}
+                    `;
+                    userGrid.appendChild(userCard);
+                });
+            });
+            
+            // Actualizar estadística
+            document.getElementById('total-users').textContent = totalUsers;
+            document.getElementById('total-roles').textContent = Object.keys(projectData.roles).length;
+        }
+        
+        // Inicializar gráfico
+        function initChart() {
+            const ctx = document.getElementById('valueChart').getContext('2d');
+            valueChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.85)',
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(245, 158, 11, 0.85)',
+                            'rgba(59, 130, 246, 0.85)',
+                            'rgba(139, 92, 246, 0.85)',
+                            'rgba(22, 163, 74, 0.85)',
+                            'rgba(168, 85, 247, 0.85)',
+                            'rgba(37, 99, 235, 0.85)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    
+                                    return `${label}: ${percentage}% (${Math.round(value).toLocaleString()} puntos)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+        
+        // Actualizar visualizaciones
+        function updateVisualizations() {
+            // Actualizar estadísticas
+            const totalValue = projectData.deliverables.reduce((sum, d) => sum + d.value, 0);
+            const totalDeliverables = projectData.deliverables.length;
+            
+            document.getElementById('total-value').textContent = totalValue.toLocaleString();
+            document.getElementById('total-deliverables').textContent = totalDeliverables;
+            
+            // Actualizar gráfico
+            updateChart();
+            
+            // Actualizar ranking
+            updateRanking();
+        }
+        
+        // Actualizar gráfico
+        function updateChart() {
+            if (!valueChart) return;
+            
+            // Calcular valor total por rol
+            const roleValues = {};
+            projectData.deliverables.forEach(deliverable => {
+                const role = deliverable.role;
+                roleValues[role] = (roleValues[role] || 0) + deliverable.value;
+            });
+            
+            // Preparar datos para el gráfico
+            const labels = Object.keys(roleValues);
+            const data = Object.values(roleValues);
+            
+            // Actualizar gráfico
+            valueChart.data.labels = labels;
+            valueChart.data.datasets[0].data = data;
+            valueChart.update();
+        }
+        
+        // Actualizar ranking
+        function updateRanking() {
+            const rankingList = document.getElementById('ranking-list');
+            
+            if (projectData.deliverables.length === 0) {
+                rankingList.innerHTML = `
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        <h3 class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</h3>
-                        <p class="lang" data-es="Registra tu primer entregable con nombre de usuario y dirección de wallet para comenzar. Puedes importar roles desde la VNA App para agilizar el proceso." data-ca="Registra el teu primer entregable amb nom d'usuari i adreça de wallet per començar. Pots importar rols des de la VNA App per agilitar el procés.">Registra tu primer entregable con nombre de usuario y dirección de wallet para comenzar. Puedes importar roles desde la VNA App para agilizar el proceso.</p>
-                        <button id="quick-start" class="btn btn-primary">
-                            <span>🚀</span> <span class="lang" data-es="Comenzar Rápido" data-ca="Començar Ràpid">Comenzar Rápido</span>
-                        </button>
+                        <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                        <p class="lang" data-es="Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor" data-ca="Importa el teu mapa de valor o afegeix el primer entregable per començar a construir la teva comptabilitat de valor">Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor</p>
                     </div>
                 `;
                 return;
             }
             
-            // Ordenar usuarios por valor total (descendente)
-            const sortedUsers = [...projectData.users].sort((a, b) => b.totalValue - a.totalValue);
+            // Calcular valor total por usuario
+            const userValues = {};
+            projectData.deliverables.forEach(deliverable => {
+                const userKey = `${deliverable.user}|${deliverable.role}`;
+                if (!userValues[userKey]) {
+                    userValues[userKey] = {
+                        name: deliverable.user,
+                        role: deliverable.role,
+                        wallet: deliverable.wallet,
+                        totalValue: 0
+                    };
+                }
+                userValues[userKey].totalValue += deliverable.value;
+            });
             
+            // Convertir a array y ordenar
+            const usersArray = Object.values(userValues).sort((a, b) => b.totalValue - a.totalValue);
+            
+            // Generar HTML para el ranking
             let html = '';
-            sortedUsers.forEach(user => {
-                // Determinar tipo de rol para el color
-                let roleType = 'client';
-                if (user.role.includes('inversor') || user.role.includes('invers')) roleType = 'investor';
-                else if (user.role.includes('equip') || user.role.includes('team') || user.role.includes('fundador')) roleType = 'team';
-                else if (user.role.includes('proveedor') || user.role.includes('supplier')) roleType = 'supplier';
+            usersArray.forEach((user, index) => {
+                const position = index + 1;
+                const role = projectData.roles[user.role] ? projectData.roles[user.role].name : user.role;
                 
                 html += `
-                    <div class="user-card">
-                        <h4>${user.name}</h4>
-                        <div class="role role-${roleType}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</div>
-                        <p><strong class="lang" data-es="Valor Total:" data-ca="Valor Total:">Valor Total:</strong> ${user.totalValue.toLocaleString()} ${projectData.currency === 'puntos' ? 'puntos' : projectData.currency}</p>
-                        <p><strong class="lang" data-es="Entregables:" data-ca="Entregables:">Entregables:</strong> ${user.deliverables.length}</p>
-                        ${user.walletAddress ? `
-                            <p><strong class="lang" data-es="Wallet:" data-ca="Wallet:">Wallet:</strong></p>
-                            <div class="wallet-address">${user.walletAddress}</div>
-                        ` : `
-                            <p style="color: var(--warning); margin-top: 10px;"><strong>⚠️</strong> <span class="lang" data-es="Sin wallet registrada" data-ca="Sense wallet registrada">Sin wallet registrada</span></p>
-                            <p class="lang" data-es="Para preparar la tokenización, añade una dirección de wallet Ethereum válida." data-ca="Per preparar la tokenització, afegeix una adreça de wallet Ethereum vàlida.">Para preparar la tokenización, añade una dirección de wallet Ethereum válida.</p>
-                        `}
+                    <div class="ranking-item">
+                        <div class="ranking-badge">${position}</div>
+                        <div>
+                            <strong>${user.name}</strong><br>
+                            <span class="role-tag role-team">${role}</span>
+                        </div>
+                        <div>
+                            ${user.wallet ? `<div class="wallet-address">${user.wallet.substring(0, 6)}...${user.wallet.substring(user.wallet.length - 4)}</div>` : '<span class="lang" data-es="Sin wallet" data-ca="Sense wallet">Sin wallet</span>'}
+                        </div>
+                        <div class="wallet-address">
+                            ${user.wallet || '-'}
+                        </div>
+                        <div class="value-amount">${user.totalValue.toLocaleString()}</div>
                     </div>
                 `;
             });
             
-            grid.innerHTML = html;
-            
-            // Reattach event listener to quick-start button if present
-            const quickStartBtn = document.getElementById('quick-start');
-            if (quickStartBtn) {
-                quickStartBtn.addEventListener('click', quickStart);
-            }
+            rankingList.innerHTML = html;
         }
         
         // Exportar como JSON
@@ -1564,36 +1688,20 @@
                 'Datos exportados correctamente como JSON');
         }
         
-        // Exportar CSV para Tokenomics
-        function exportCSVForTokenomics() {
-            // Verificar que todos los usuarios tengan wallet
-            const usersWithoutWallet = projectData.users.filter(u => !u.walletAddress);
-            if (usersWithoutWallet.length > 0) {
-                if (!confirm(document.documentElement.lang === 'ca' ? 
-                    `Hi ha ${usersWithoutWallet.length} usuaris sense wallet registrada. Aquests usuaris no rebran tokens. Vols continuar igualment?` : 
-                    `Hay ${usersWithoutWallet.length} usuarios sin wallet registrada. Estos usuarios no recibirán tokens. ¿Quieres continuar igualmente?`)) {
-                    return;
-                }
-            }
+        // Exportar como CSV
+        function exportCSV() {
+            // Cabeceras
+            let csv = 'Rol,Usuario,Wallet,Entregable,Descripción,Enlace,Valor,Fecha\n';
             
-            // Cabeceras específicas para Tokenomics App
-            let csv = 'Usuario,Rol,Dirección Wallet,Valor Total,Entregables,Tipo de Rol\n';
-            
-            // Datos de usuarios
-            projectData.users.forEach(user => {
-                // Determinar tipo de rol para vesting
-                let roleType = 'client';
-                if (user.role.includes('inversor') || user.role.includes('invers')) roleType = 'investor';
-                else if (user.role.includes('equip') || user.role.includes('team') || user.role.includes('fundador')) roleType = 'team';
-                else if (user.role.includes('proveedor') || user.role.includes('supplier') || user.role.includes('advisor')) roleType = 'supplier';
-                
-                csv += `"${user.name}","${user.role}","${user.walletAddress}","${user.totalValue}","${user.deliverables.length}","${roleType}"\n`;
+            // Datos
+            projectData.deliverables.forEach(d => {
+                csv += `"${d.role}","${d.user}","${d.wallet || ''}","${d.deliverable}","${d.description.replace(/"/g, '""')}","${d.link}",${d.value},"${new Date(d.timestamp).toLocaleDateString()}"\n`;
             });
             
             const blob = new Blob([csv], {type: 'text/csv'});
             const url = URL.createObjectURL(blob);
             
-            const exportFileDefaultName = `tokenomics-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', url);
@@ -1610,8 +1718,8 @@
             }, 100);
             
             alert(document.documentElement.lang === 'ca' ? 
-                `Dades exportades correctament com a CSV per a Tokenomics App. Aquest fitxer inclou ${projectData.users.length} usuaris amb les seves wallets i valors totals. Els paràmetres de vesting es configuraran automàticament segons el tipus de rol.` : 
-                `Datos exportados correctamente como CSV para Tokenomics App. Este archivo incluye ${projectData.users.length} usuarios con sus wallets y valores totales. Los parámetros de vesting se configurarán automáticamente según el tipo de rol.`);
+                'Dades exportades correctament com a CSV' : 
+                'Datos exportados correctamente como CSV');
         }
         
         // Limpiar datos
@@ -1621,27 +1729,30 @@
                 '¿Estás seguro de que quieres borrar todos los datos del proyecto?')) {
                 
                 projectData = {
-                    name: "Proyecto MASIA",
+                    name: "Proyecto sin nombre",
                     currency: "puntos",
-                    users: [],
+                    roles: {},
                     deliverables: [],
-                    roles: [],
                     vnaData: null
                 };
                 
+                saveData();
+                updateVisualizations();
+                loadRolesInSelects();
+                updateUserGrid();
+                
                 // Limpiar campos de formulario
-                document.getElementById('project-name').value = "Proyecto MASIA";
-                document.getElementById('role-input').value = '';
-                document.getElementById('user-name').value = '';
-                document.getElementById('wallet-address').value = '';
+                document.getElementById('project-name').value = "Proyecto sin nombre";
+                document.getElementById('quick-input').value = '';
                 document.getElementById('deliverable-input').value = '';
                 document.getElementById('description-input').value = '';
                 document.getElementById('link-input').value = '';
                 document.getElementById('value-input').value = '';
+                document.getElementById('new-user-name').value = '';
+                document.getElementById('new-user-wallet').value = '';
                 
-                saveData();
-                updateVisualizations();
-                updateRolesDatalist();
+                // Ocultar sección de asignación
+                document.getElementById('role-user-assignment').style.display = 'none';
                 
                 alert(document.documentElement.lang === 'ca' ? 
                     'Dades esborrades correctament' : 
@@ -1661,11 +1772,10 @@
                 const parsedData = JSON.parse(saved);
                 
                 projectData = {
-                    name: parsedData.name || "Proyecto MASIA",
+                    name: parsedData.name || "Proyecto sin nombre",
                     currency: parsedData.currency || "puntos",
-                    users: parsedData.users || [],
+                    roles: parsedData.roles || {},
                     deliverables: parsedData.deliverables || [],
-                    roles: parsedData.roles || [],
                     vnaData: parsedData.vnaData || null
                 };
                 
@@ -1673,8 +1783,11 @@
                 document.getElementById('project-name').value = projectData.name;
                 document.getElementById('value-currency').value = projectData.currency;
                 
-                // Actualizar datalist de roles
-                updateRolesDatalist();
+                // Cargar roles en selects
+                loadRolesInSelects();
+                
+                // Actualizar grid de usuarios
+                updateUserGrid();
             }
         }
     </script>
