@@ -1092,96 +1092,131 @@
         
         // Importar datos desde archivo JSON
         function importData() {
-            const fileInput = document.getElementById('import-file');
-            const file = fileInput.files[0];
+    const fileInput = document.getElementById('import-file');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert(document.documentElement.lang === 'ca' ? 
+            'Selecciona un archivo JSON primero' : 
+            'Selecciona un archivo JSON primero');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
             
-            if (!file) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Selecciona un archivo JSON primero' : 
-                    'Select a JSON file first');
-                return;
+            // Validar estructura básica
+            if (!importedData.nodes || !importedData.links) {
+                throw new Error('El archivo no tiene la estructura correcta (nodes y links)');
             }
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // Procesar nodos como stakeholders
-                    if (importedData.nodes) {
-                        importedData.nodes.forEach(node => {
-                            const roleName = node.id.toLowerCase();
-                            if (!projectData.stakeholders[roleName]) {
-                                projectData.stakeholders[roleName] = {
-                                    name: node.id,
-                                    type: 'team', // Por defecto equipo
-                                    castellerRole: 'base', // Por defecto base
-                                    totalValue: 0,
-                                    deliverables: []
-                                };
-                            }
-                        });
-                    }
-                    
-                    // Procesar enlaces como transacciones
-                    if (importedData.links) {
-                        importedData.links.forEach(link => {
-                            const fromRole = link.source.id.toLowerCase();
-                            const toRole = link.target.id.toLowerCase();
-                            
-                            // Asegurar que los roles existan
-                            if (!projectData.stakeholders[fromRole]) {
-                                projectData.stakeholders[fromRole] = {
-                                    name: link.source.id,
-                                    type: 'team',
-                                    castellerRole: 'base',
-                                    totalValue: 0,
-                                    deliverables: []
-                                };
-                            }
-                            
-                            if (!projectData.stakeholders[toRole]) {
-                                projectData.stakeholders[toRole] = {
-                                    name: link.target.id,
-                                    type: 'team',
-                                    castellerRole: 'base',
-                                    totalValue: 0,
-                                    deliverables: []
-                                };
-                            }
-                            
-                            // Añadir entregable de ejemplo
-                            projectData.deliverables.push({
-                                id: Date.now() + Math.random().toString(36).substr(2, 5),
-                                role: fromRole,
-                                deliverable: link.deliverable,
-                                description: `Transacción importada: ${link.source.id} → ${link.target.id}`,
-                                link: '',
-                                value: 100, // Valor por defecto
-                                timestamp: new Date().toISOString()
-                            });
-                            
-                            // Actualizar valor total del stakeholder
-                            projectData.stakeholders[fromRole].totalValue += 100;
-                        });
-                    }
-                    
-                    saveData();
-                    updateVisualizations();
-                    
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Dades importades correctament!' : 
-                        'Datos importados correctamente!');
-                } catch (error) {
-                    console.error('Error al importar datos:', error);
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Error en importar les dades. Comprova que el fitxer sigui JSON vàlid.' : 
-                        'Error al importar los datos. Verifica que el archivo sea JSON válido.');
+            // Procesar nodos como stakeholders
+            importedData.nodes.forEach(node => {
+                // Manejar tanto objetos como strings
+                const nodeId = typeof node === 'object' ? node.id : node;
+                const roleName = nodeId.toString().toLowerCase();
+                
+                if (!projectData.stakeholders[roleName]) {
+                    projectData.stakeholders[roleName] = {
+                        name: nodeId.toString(),
+                        type: 'team',
+                        castellerRole: 'base',
+                        totalValue: 0,
+                        deliverables: []
+                    };
                 }
-            };
+            });
             
-            reader.readAsText(file);
+            // Procesar enlaces como transacciones
+            let importedCount = 0;
+            importedData.links.forEach(link => {
+                try {
+                    // Manejar source como string u objeto
+                    let sourceId = link.source;
+                    if (typeof link.source === 'object' && link.source.id) {
+                        sourceId = link.source.id;
+                    } else if (typeof link.source === 'object' && link.source.index !== undefined) {
+                        // Caso especial: cuando D3 usa el índice
+                        sourceId = link.source.id || `node_${link.source.index}`;
+                    }
+                    
+                    // Manejar target como string u objeto
+                    let targetId = link.target;
+                    if (typeof link.target === 'object' && link.target.id) {
+                        targetId = link.target.id;
+                    } else if (typeof link.target === 'object' && link.target.index !== undefined) {
+                        targetId = link.target.id || `node_${link.target.index}`;
+                    }
+                    
+                    const fromRole = sourceId.toString().toLowerCase();
+                    const toRole = targetId.toString().toLowerCase();
+                    const deliverable = link.deliverable || 'Entregable importado';
+                    const type = link.type || 'tangible';
+                    
+                    // Asegurar que los roles existan
+                    if (!projectData.stakeholders[fromRole]) {
+                        projectData.stakeholders[fromRole] = {
+                            name: sourceId.toString(),
+                            type: 'team',
+                            castellerRole: 'base',
+                            totalValue: 0,
+                            deliverables: []
+                        };
+                    }
+                    
+                    if (!projectData.stakeholders[toRole]) {
+                        projectData.stakeholders[toRole] = {
+                            name: targetId.toString(),
+                            type: 'team',
+                            castellerRole: 'base',
+                            totalValue: 0,
+                            deliverables: []
+                        };
+                    }
+                    
+                    // Añadir entregable
+                    projectData.deliverables.push({
+                        id: Date.now() + Math.random().toString(36).substr(2, 5),
+                        role: fromRole,
+                        deliverable: deliverable,
+                        description: `Transacción: ${sourceId} → ${targetId} (${type})`,
+                        link: '',
+                        value: 100, // Valor por defecto
+                        timestamp: new Date().toISOString(),
+                        type: type
+                    });
+                    
+                    // Actualizar valor total
+                    projectData.stakeholders[fromRole].totalValue += 100;
+                    importedCount++;
+                } catch (linkError) {
+                    console.warn('Error procesando enlace:', link, linkError);
+                    // Continuar con el siguiente enlace
+                }
+            });
+            
+            if (importedCount === 0) {
+                throw new Error('No se pudieron importar transacciones válidas');
+            }
+            
+            saveData();
+            updateVisualizations();
+            
+            alert(`${importedCount} ${document.documentElement.lang === 'ca' ? 
+                'transaccions importades correctament!' : 
+                'transacciones importadas correctamente!'}`);
+        } catch (error) {
+            console.error('Error al importar datos:', error);
+            alert(document.documentElement.lang === 'ca' ? 
+                `Error en importar les dades: ${error.message}. Assegura't que el fitxer sigui exportat des de l'App VNA de TeamTowers Humà.` : 
+                `Error al importar los datos: ${error.message}. Asegúrate de que el archivo sea exportado desde la App VNA de TeamTowers Humà.`);
         }
+    };
+    
+    reader.readAsText(file);
+}
         
         // Añadir entregable rápido
         function addQuickDeliverable() {
