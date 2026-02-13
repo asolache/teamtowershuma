@@ -932,60 +932,28 @@
             }
         }
         
-        /* Test Results Section */
-        .test-results {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            max-height: 200px;
-            overflow-y: auto;
-            background: var(--light);
-            display: none;
-        }
-        
-        .test-pass {
-            color: var(--success);
-            font-weight: bold;
-        }
-        
-        .test-fail {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        
-        .test-section {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid var(--accent);
-        }
-        
-        .test-section h3 {
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
-        
-        .test-section h3::before {
-            content: '🧪';
-        }
-        
-        .notification {
+        /* Notification System */
+        .notification-container {
             position: fixed;
             top: 20px;
             right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification {
             padding: 15px 25px;
             border-radius: 8px;
             color: white;
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 10000;
             animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .notification.success {
@@ -994,6 +962,14 @@
         
         .notification.error {
             background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
         
         @keyframes slideIn {
@@ -1005,6 +981,83 @@
             from { opacity: 1; }
             to { opacity: 0; transform: translateX(100%); }
         }
+        
+        /* Import example */
+        .import-example {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .import-example h4 {
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .import-example code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+            display: block;
+            margin: 5px 0;
+        }
+        
+        /* Empty states */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Form feedback */
+        .form-feedback {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .form-feedback.valid {
+            color: var(--success);
+        }
+        
+        .form-feedback.invalid {
+            color: var(--danger);
+        }
     </style>
 </head>
 <body>
@@ -1013,6 +1066,9 @@
         <button class="lang-btn active" data-lang="es">ES</button>
         <button class="lang-btn" data-lang="ca">CA</button>
     </div>
+    
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
     
     <!-- Header -->
     <header>
@@ -1044,10 +1100,19 @@
                 
                 <div class="import-section">
                     <h3 class="lang" data-es="Importar Roles desde VNA App" data-ca="Importar Rols des de VNA App">Importar Roles desde VNA App</h3>
-                    <p class="lang" data-es="Importa los roles de tu mapa de valor desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> para pre-poblar los roles disponibles al registrar entregables." data-ca="Importa els rols del teu mapa de valor des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> per pre-omplir els rols disponibles en registrar entregables.">Importa los roles de tu mapa de valor desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a> para pre-poblar los roles disponibles al registrar entregables.</p>
+                    <p class="lang" data-es="Importa los roles de tu mapa de valor desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a>. Formato simple: un archivo CSV con una columna 'Rol'." data-ca="Importa els rols del teu mapa de valor des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a>. Format simple: un fitxer CSV amb una columna 'Rol'.">Importa los roles de tu mapa de valor desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a>. Formato simple: un archivo CSV con una columna 'Rol'.</p>
+                    
+                    <div class="import-example">
+                        <h4 class="lang" data-es="Ejemplo de CSV:" data-ca="Exemple de CSV:">Ejemplo de CSV:</h4>
+                        <code>Rol</code>
+                        <code>inversor</code>
+                        <code>fundador</code>
+                        <code>equipo</code>
+                    </div>
+                    
                     <div class="input-group">
-                        <label class="lang" data-es="Archivo CSV o JSON de Roles" data-ca="Fitxer CSV o JSON de Rols">Archivo CSV o JSON de Roles</label>
-                        <input type="file" id="import-roles-file" accept=".csv,.json">
+                        <label class="lang" data-es="Archivo CSV de Roles" data-ca="Fitxer CSV de Rols">Archivo CSV de Roles</label>
+                        <input type="file" id="import-roles-file" accept=".csv">
                     </div>
                     <div class="btn-group">
                         <button id="import-roles" class="btn btn-success">
@@ -1061,16 +1126,16 @@
                     <div class="form-row">
                         <label class="lang" data-es="Persona:" data-ca="Persona:">Persona:</label>
                         <div class="autocomplete">
-                            <input type="text" id="user-name" placeholder="Escribe un nombre o crea uno nuevo...">
+                            <input type="text" id="user-name" placeholder="Escribe un nombre...">
                             <div id="user-list" class="autocomplete-items"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <label class="lang" data-es="Rol:" data-ca="Rol:">Rol:</label>
-                        <select id="role-select">
-                            <option value="" class="lang" data-es="Selecciona un rol o crea uno nuevo" data-ca="Selecciona un rol o crea un de nou">Selecciona un rol o crea uno nuevo</option>
-                            <!-- Roles will be populated dynamically -->
-                        </select>
+                        <div class="autocomplete">
+                            <input type="text" id="role-name" placeholder="Escribe un rol...">
+                            <div id="role-list" class="autocomplete-items"></div>
+                        </div>
                     </div>
                     <div class="form-row">
                         <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
@@ -1098,6 +1163,7 @@
                     <div class="form-row">
                         <label class="lang" data-es="Valor:" data-ca="Valor:">Valor:</label>
                         <input type="number" id="value" placeholder="100" min="1">
+                        <div class="form-feedback" id="value-feedback"></div>
                     </div>
                     <div class="btn-group" style="margin-top: 15px; grid-template-columns: 1fr;">
                         <button id="add-deliverable" class="btn btn-primary">
@@ -1113,7 +1179,7 @@
                             <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
                         </button>
                         <button id="export-csv" class="btn btn-success">
-                            <span>📈</span> <span class="lang" data-es="Exportar CSV para Tokenomics" data-ca="Exportar CSV per Tokenomics">Exportar CSV para Tokenomics</span>
+                            <span>📈</span> <span class="lang" data-es="Exportar para Tokenomics" data-ca="Exportar per a Tokenomics">Exportar para Tokenomics</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
@@ -1123,21 +1189,7 @@
                 
                 <div class="export-section">
                     <h3 class="lang" data-es="Exportar para Tokenomics App" data-ca="Exportar per a Tokenomics App">Exportar para Tokenomics App</h3>
-                    <p class="lang" data-es="Exporta tus datos como CSV para importarlos directamente en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá usuarios, roles, valores totales y preparará los parámetros de vesting." data-ca="Exporta les teves dades com a CSV per importar-les directament a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà usuaris, rols, valors totals i prepararà els paràmetres de vesting.">Exporta tus datos como CSV para importarlos directamente en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá usuarios, roles, valores totales y preparará los parámetros de vesting.</p>
-                </div>
-                
-                <div class="test-section">
-                    <h3 class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</h3>
-                    <p class="lang" data-es="Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador." data-ca="Executa proves automàtiques per verificar que l'aplicació funcioni correctament al teu navegador.">Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador.</p>
-                    <button id="run-tests" class="btn btn-warning" style="width: 100%;">
-                        <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</span>
-                    </button>
-                    <div id="test-results" class="test-results"></div>
-                </div>
-                
-                <div class="integration-section" style="margin-top: 25px;">
-                    <h3 class="lang" data-es="Siguiente Paso: Tokenomics App" data-ca="Pas Següent: Tokenomics App">Siguiente Paso: Tokenomics App</h3>
-                    <p class="lang" data-es="Una vez hayas registrado tus entregables y usuarios, exporta el CSV y continúa en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a> para configurar la distribución de tokens, parámetros de vesting y generar tu smart contract optimizado." data-ca="Un cop hagis registrat els teus entregables i usuaris, exporta el CSV i continua a la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a> per configurar la distribució de tokens, paràmetres de vesting i generar el teu smart contract optimitzat.">Una vez hayas registrado tus entregables y usuarios, exporta el CSV y continúa en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a> para configurar la distribución de tokens, parámetros de vesting y generar tu smart contract optimizado.</p>
+                    <p class="lang" data-es="Exporta tus datos como CSV para importarlos en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor)." data-ca="Exporta les teves dades com a CSV per importar-les a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà: Usuari, Rol, Valor Total i Tokens a Mintar (1 token = 1 unitat de valor).">Exporta tus datos como CSV para importarlos en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor).</p>
                 </div>
             </div>
             
@@ -1179,7 +1231,13 @@
                     <tbody id="ranking-body">
                         <tr>
                             <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
-                                <span class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</span>
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                    <h3 class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</h3>
+                                    <p class="lang" data-es="Registra tu primer entregable para comenzar" data-ca="Registra el teu primer entregable per començar">Registra tu primer entregable para comenzar</p>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -1199,7 +1257,13 @@
                     <tbody id="deliverables-body">
                         <tr>
                             <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
-                                <span class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</span>
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                                    <p class="lang" data-es="Añade entregables para verlos en esta lista" data-ca="Afegeix entregables per veure'ls en aquesta llista">Añade entregables para verlos en esta lista</p>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -1207,7 +1271,7 @@
                 
                 <div class="next-step">
                     <h3 class="lang" data-es="Exporta tus Datos para Tokenomics" data-ca="Exporta les teves Dades per a Tokenomics">Exporta tus Datos para Tokenomics</h3>
-                    <p class="lang" data-es="Una vez hayas registrado tus entregables, haz clic en 'Exportar CSV para Tokenomics' para descargar un archivo compatible con la App de Tokenomics. Este archivo contiene todos los usuarios, roles y valores totales." data-ca="Un cop hagis registrat els teus entregables, fes clic a 'Exportar CSV per a Tokenomics' per descarregar un arxiu compatible amb l'App de Tokenomics. Aquest arxiu conté tots els usuaris, rols i valors totals.">Una vez hayas registrado tus entregables, haz clic en 'Exportar CSV para Tokenomics' para descargar un archivo compatible con la App de Tokenomics. Este archivo contiene todos los usuarios, roles y valores totales.</p>
+                    <p class="lang" data-es="Una vez hayas registrado tus entregables, haz clic en 'Exportar para Tokenomics' para descargar un archivo compatible con la App de Tokenomics." data-ca="Un cop hagis registrat els teus entregables, fes clic a 'Exportar per a Tokenomics' per descarregar un arxiu compatible amb l'App de Tokenomics.">Una vez hayas registrado tus entregables, haz clic en 'Exportar para Tokenomics' para descargar un archivo compatible con la App de Tokenomics.</p>
                     <a href="#export-section" class="lang" data-es="Ir a Exportar Datos" data-ca="Anar a Exportar Dades">Ir a Exportar Datos</a>
                 </div>
             </div>
@@ -1264,150 +1328,7 @@
     </footer>
     
     <script>
-        // ========== TEST-DRIVEN DEVELOPMENT FRAMEWORK ==========
-        const testSuite = {
-            results: [],
-            assert: {
-                equals: function(actual, expected, testName) {
-                    const passed = actual === expected;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: expected
-                    });
-                    return passed;
-                },
-                truthy: function(actual, testName) {
-                    const passed = !!actual;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: 'truthy value'
-                    });
-                    return passed;
-                },
-                falsy: function(actual, testName) {
-                    const passed = !actual;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actual,
-                        expected: 'falsy value'
-                    });
-                    return passed;
-                },
-                type: function(actual, expectedType, testName) {
-                    const actualType = typeof actual;
-                    const passed = actualType === expectedType;
-                    this.results.push({
-                        name: testName,
-                        passed: passed,
-                        actual: actualType,
-                        expected: expectedType
-                    });
-                    return passed;
-                }
-            },
-            runTests: function() {
-                this.results = [];
-                
-                // Test 1: Add deliverable button exists
-                this.assert.truthy(document.getElementById('add-deliverable'), "Add deliverable button exists");
-                
-                // Test 2: Export JSON button exists
-                this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
-                
-                // Test 3: Export CSV button exists
-                this.assert.truthy(document.getElementById('export-csv'), "Export CSV button exists");
-                
-                // Test 4: Reset button exists
-                this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
-                
-                // Test 5: Import roles button exists
-                this.assert.truthy(document.getElementById('import-roles'), "Import roles button exists");
-                
-                // Test 6: Initial state has no users
-                this.assert.equals(accountingData.users.length, 0, "Initial state has no users");
-                
-                // Test 7: Initial state has no deliverables
-                this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
-                
-                // Test 8: Add a test user and deliverable
-                const testUser = "Test User " + Date.now();
-                const testRole = "Test Role";
-                document.getElementById('user-name').value = testUser;
-                document.getElementById('role-select').innerHTML = `<option value="${testRole}">${testRole}</option>`;
-                document.getElementById('role-select').value = testRole;
-                document.getElementById('deliverable-name').value = "Test Deliverable";
-                document.getElementById('value').value = "100";
-                document.getElementById('add-deliverable').click();
-                
-                this.assert.equals(accountingData.users.length, 1, "Adding a deliverable creates a user");
-                this.assert.equals(accountingData.deliverables.length, 1, "Adding a deliverable creates a deliverable");
-                
-                // Test 9: Verify user was added correctly
-                const addedUser = accountingData.users.find(u => u.name === testUser);
-                this.assert.truthy(addedUser, "User was added to accountingData");
-                this.assert.equals(addedUser.totalValue, 100, "User has correct total value");
-                
-                // Test 10: Verify deliverable was added correctly
-                const addedDeliverable = accountingData.deliverables.find(d => d.deliverable === "Test Deliverable");
-                this.assert.truthy(addedDeliverable, "Deliverable was added to accountingData");
-                this.assert.equals(addedDeliverable.value, 100, "Deliverable has correct value");
-                
-                // Test 11: Export CSV function exists
-                this.assert.truthy(typeof exportCSV === 'function', "exportCSV function exists");
-                
-                // Test 12: Export JSON function exists
-                this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
-                
-                // Clean up test data
-                resetDataWithoutConfirmation();
-                
-                return this.results;
-            },
-            displayResults: function(results) {
-                const testResultsDiv = document.getElementById('test-results');
-                testResultsDiv.style.display = 'block';
-                testResultsDiv.innerHTML = '';
-                
-                let passedCount = 0;
-                let failedCount = 0;
-                
-                results.forEach(result => {
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = result.passed ? 'test-pass' : 'test-fail';
-                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
-                        `   Expected: ${result.expected}<br/>` +
-                        `   Actual: ${result.actual}`;
-                    testResultsDiv.appendChild(resultDiv);
-                    
-                    if (result.passed) passedCount++;
-                    else failedCount++;
-                });
-                
-                // Summary
-                const summary = document.createElement('div');
-                summary.style.fontWeight = 'bold';
-                summary.style.marginTop = '15px';
-                summary.style.paddingTop = '10px';
-                summary.style.borderTop = '1px solid #ddd';
-                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
-                testResultsDiv.appendChild(summary);
-                
-                // Alert summary
-                if (failedCount === 0) {
-                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`, 'success');
-                } else {
-                    showNotification(`⚠️ Algunas pruebas fallaron (${failedCount}/{results.length}).\n\nRevisa los resultados en la sección de pruebas.`, 'error');
-                }
-            }
-        };
-        
-        // ========== APPLICATION STATE AND FUNCTIONS ==========
-        // Estado de la aplicación
+        // ========== APPLICATION STATE ==========
         let accountingData = {
             projectName: "Proyecto MASIA",
             valueUnit: "puntos",
@@ -1419,80 +1340,42 @@
         // Chart variable
         let valueChart = null;
         
-        // Autocomplete variables
-        let currentAutocompleteField = null;
-        
-        // Inicialización cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar botones de idioma
-            setupLanguageSelector();
+        // Notification system
+        function showNotification(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('notification-container');
             
-            // Cargar datos guardados
-            loadSavedData();
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<span>${message}</span>`;
             
-            // Inicializar gráfico
-            initChart();
+            // Add to container
+            container.appendChild(notification);
             
-            // Configurar event listeners
-            setupEventListeners();
-            
-            // Configurar autocompletado
-            setupAutocomplete();
-            
-            // Actualizar visualizaciones
-            updateVisualizations();
-            
-            // Mostrar notificación de bienvenida
+            // Remove after duration
             setTimeout(() => {
-                showNotification('¡Bienvenido a la Value Accounting App! Importa roles desde la VNA App o crea entregables directamente.', 'success');
-            }, 1000);
-        });
-        
-        // Configurar selector de idioma
-        function setupLanguageSelector() {
-            const langButtons = document.querySelectorAll('.lang-btn');
-            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
-            
-            // Establecer idioma inicial
-            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
-            setActiveLanguage(userLang);
-            
-            // Event listeners para botones de idioma
-            langButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const selectedLang = this.getAttribute('data-lang');
-                    setActiveLanguage(selectedLang);
-                    
-                    // Actualizar botón activo
-                    langButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            function setActiveLanguage(lang) {
-                translatableElements.forEach(element => {
-                    if (element.hasAttribute(`data-${lang}`)) {
-                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                            element.placeholder = element.getAttribute(`data-${lang}`);
-                        } else {
-                            element.innerHTML = element.getAttribute(`data-${lang}`);
-                        }
+                notification.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        container.removeChild(notification);
                     }
-                });
-                
-                document.documentElement.setAttribute('lang', lang);
-            }
+                }, 500);
+            }, duration);
+            
+            return notification;
         }
         
-        // Inicializar gráfico
+        // ========== CORE FUNCTIONS ==========
+        
+        // Initialize chart
         function initChart() {
             const ctx = document.getElementById('valueChart').getContext('2d');
             valueChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
+                 {
                     labels: [],
                     datasets: [{
-                        data: [],
+                         [],
                         backgroundColor: [
                             'rgba(30, 58, 138, 0.85)',
                             'rgba(79, 70, 229, 0.85)',
@@ -1541,239 +1424,207 @@
             });
         }
         
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Importar roles
-            document.getElementById('import-roles').addEventListener('click', importRoles);
+        // Setup autocomplete for input fields
+        function setupAutocomplete(inputId, listId, suggestionsGetter) {
+            const input = document.getElementById(inputId);
+            const list = document.getElementById(listId);
             
-            // Añadir entregable
-            document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
-            
-            // Exportar JSON
-            document.getElementById('export-json').addEventListener('click', exportJSON);
-            
-            // Exportar CSV
-            document.getElementById('export-csv').addEventListener('click', exportCSV);
-            
-            // Limpiar datos
-            document.getElementById('reset-data').addEventListener('click', resetData);
-            
-            // Ejecutar pruebas
-            document.getElementById('run-tests').addEventListener('click', runTests);
-            
-            // Cambiar nombre del proyecto
-            document.getElementById('project-name').addEventListener('change', function() {
-                accountingData.projectName = this.value || "Proyecto MASIA";
-                saveData();
+            // Show suggestions on input
+            input.addEventListener('input', function(e) {
+                const value = this.value.trim();
+                list.innerHTML = '';
+                
+                if (value === '') return;
+                
+                // Get current suggestions
+                const suggestions = suggestionsGetter();
+                
+                // Filter case-insensitive
+                const matches = suggestions.filter(item => 
+                    item.toLowerCase().includes(value.toLowerCase())
+                ).slice(0, 10); // Limit to 10 results
+                
+                // Display matches
+                matches.forEach(item => {
+                    const div = document.createElement('div');
+                    div.textContent = item;
+                    div.addEventListener('click', function() {
+                        input.value = item;
+                        list.innerHTML = '';
+                        input.focus();
+                    });
+                    list.appendChild(div);
+                });
+                
+                // Add "Create new" option if no matches
+                if (matches.length === 0) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `➕ <strong>Crear:</strong> "${value}"`;
+                    div.style.fontStyle = 'italic';
+                    div.addEventListener('click', function() {
+                        input.value = value;
+                        list.innerHTML = '';
+                        input.focus();
+                    });
+                    list.appendChild(div);
+                }
             });
             
-            // Cambiar unidad de valor
-            document.getElementById('value-unit').addEventListener('change', function() {
-                accountingData.valueUnit = this.value;
-                saveData();
-                updateVisualizations();
-            });
-        }
-        
-        // Configurar autocompletado
-        function setupAutocomplete() {
-            const userInput = document.getElementById('user-name');
-            const userList = document.getElementById('user-list');
-            
-            // Set up autocomplete for user field
-            userInput.addEventListener('input', function(e) {
-                currentAutocompleteField = 'user';
-                showAutocomplete(this.value, userList);
+            // Hide suggestions on blur (with delay for click handling)
+            input.addEventListener('blur', function() {
+                setTimeout(() => {
+                    list.innerHTML = '';
+                }, 200);
             });
             
-            userInput.addEventListener('focus', function(e) {
-                currentAutocompleteField = 'user';
-                showAutocomplete(this.value, userList);
-            });
-            
-            // Close autocomplete when clicking outside
+            // Close on outside click
             document.addEventListener('click', function(e) {
-                if (e.target !== userInput) {
-                    userList.innerHTML = '';
+                if (e.target !== input) {
+                    list.innerHTML = '';
                 }
             });
         }
         
-        // Show autocomplete suggestions
-        function showAutocomplete(inputValue, container) {
-            // Clear container
-            container.innerHTML = '';
-            
-            if (!inputValue || inputValue.trim() === '') {
-                return;
-            }
-            
-            // Find matching users (case-insensitive)
-            const matches = accountingData.users.filter(user => 
-                user.name.toLowerCase().includes(inputValue.toLowerCase().trim())
-            );
-            
-            // Limit to 10 matches
-            matches.slice(0, 10).forEach(user => {
-                const suggestion = document.createElement('div');
-                suggestion.textContent = user.name;
-                suggestion.addEventListener('click', function() {
-                    document.getElementById('user-name').value = user.name;
-                    container.innerHTML = '';
-                });
-                container.appendChild(suggestion);
-            });
-            
-            // Add option to create new user if no exact match
-            if (matches.length === 0) {
-                const newOption = document.createElement('div');
-                newOption.innerHTML = `➕ <strong>Crear nuevo usuario:</strong> "${inputValue.trim()}"`;
-                newOption.style.fontStyle = 'italic';
-                newOption.addEventListener('click', function() {
-                    document.getElementById('user-name').value = inputValue.trim();
-                    container.innerHTML = '';
-                });
-                container.appendChild(newOption);
-            }
-        }
-        
-        // Importar roles desde CSV o JSON
+        // Import roles from CSV - SIMPLE AND INFALLIBLE
         function importRoles() {
             const fileInput = document.getElementById('import-roles-file');
             const file = fileInput.files[0];
             
             if (!file) {
-                showNotification('Selecciona un archivo CSV o JSON primero', 'error');
+                showNotification('⚠️ Selecciona un archivo CSV primero', 'warning');
                 return;
             }
+            
+            // Show loading state
+            const importBtn = document.getElementById('import-roles');
+            const originalHTML = importBtn.innerHTML;
+            importBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Importando...';
+            importBtn.disabled = true;
             
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    let importedRoles = [];
+                    const lines = content.split('\n');
                     
-                    if (file.name.endsWith('.csv')) {
-                        // Parse CSV
-                        const rows = content.split('\n');
-                        if (rows.length < 2) {
-                            throw new Error('El CSV está vacío o no tiene datos');
-                        }
-                        
-                        // Get headers
-                        const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
-                        const roleIndex = headers.findIndex(h => h === 'rol' || h === 'role');
-                        
-                        if (roleIndex === -1) {
-                            throw new Error('El CSV debe tener una columna llamada "Rol"');
-                        }
-                        
-                        // Extract roles
-                        for (let i = 1; i < rows.length; i++) {
-                            if (!rows[i].trim()) continue;
-                            
-                            const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
-                            if (cells.length > roleIndex) {
-                                const role = cells[roleIndex].trim();
-                                if (role && !accountingData.roles.includes(role)) {
-                                    importedRoles.push(role);
-                                }
-                            }
-                        }
-                    } else if (file.name.endsWith('.json')) {
-                        // Parse JSON
-                        const data = JSON.parse(content);
-                        
-                        // Check if it's VNA format
-                        if (data.nodes && Array.isArray(data.nodes)) {
-                            data.nodes.forEach(node => {
-                                const role = node.label || node.id;
-                                if (role && !accountingData.roles.includes(role)) {
-                                    importedRoles.push(role);
-                                }
-                            });
-                        } else if (data.roles && Array.isArray(data.roles)) {
-                            importedRoles = data.roles.filter(r => !accountingData.roles.includes(r));
-                        } else {
-                            throw new Error('Formato JSON no reconocido. Debe contener "nodes" o "roles"');
-                        }
-                    } else {
-                        throw new Error('Formato de archivo no soportado. Usa CSV o JSON');
+                    if (lines.length < 2) {
+                        throw new Error('El archivo está vacío o no tiene datos');
                     }
                     
-                    // Add imported roles to the list
-                    importedRoles.forEach(role => {
-                        if (!accountingData.roles.includes(role)) {
-                            accountingData.roles.push(role);
-                        }
-                    });
+                    // Get headers and find "Rol" column (case-insensitive)
+                    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
+                    const roleIndex = headers.findIndex(h => h === 'rol' || h === 'role' || h === 'nombre' || h === 'name');
                     
-                    // Update role dropdown
-                    updateRoleDropdown();
+                    if (roleIndex === -1) {
+                        throw new Error('El CSV debe tener una columna llamada "Rol", "Role", "Nombre" o "Name"');
+                    }
+                    
+                    // Extract roles
+                    const importedRoles = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        
+                        // Simple CSV parsing (handles quoted fields)
+                        const cells = lines[i].split(',').map(cell => 
+                            cell.trim().replace(/^"|"$/g, '')
+                        );
+                        
+                        if (cells.length > roleIndex) {
+                            const role = cells[roleIndex].trim();
+                            if (role && role !== '' && !accountingData.roles.includes(role)) {
+                                importedRoles.push(role);
+                                accountingData.roles.push(role);
+                            }
+                        }
+                    }
                     
                     // Save and update
                     saveData();
-                    updateVisualizations();
                     
-                    showNotification(`Se han importado ${importedRoles.length} roles correctamente`, 'success');
+                    // Show success
+                    if (importedRoles.length > 0) {
+                        showNotification(`✅ Se importaron ${importedRoles.length} roles: ${importedRoles.join(', ')}`, 'success');
+                    } else {
+                        showNotification('⚠️ No se encontraron roles nuevos para importar', 'warning');
+                    }
                 } catch (error) {
-                    console.error('Error al importar roles:', error);
-                    showNotification(`Error al importar roles: ${error.message}`, 'error');
+                    console.error('Error importing roles:', error);
+                    showNotification(`❌ Error al importar: ${error.message}`, 'error');
+                } finally {
+                    // Restore button
+                    importBtn.innerHTML = originalHTML;
+                    importBtn.disabled = false;
                 }
+            };
+            
+            reader.onerror = function() {
+                importBtn.innerHTML = originalHTML;
+                importBtn.disabled = false;
+                showNotification('❌ Error al leer el archivo', 'error');
             };
             
             reader.readAsText(file);
         }
         
-        // Actualizar dropdown de roles
-        function updateRoleDropdown() {
-            const roleSelect = document.getElementById('role-select');
-            roleSelect.innerHTML = '<option value="" class="lang" data-es="Selecciona un rol o crea uno nuevo" data-ca="Selecciona un rol o crea un de nou">Selecciona un rol o crea uno nuevo</option>';
-            
-            // Add imported roles
-            accountingData.roles.forEach(role => {
-                const option = document.createElement('option');
-                option.value = role;
-                option.textContent = role;
-                roleSelect.appendChild(option);
-            });
-        }
-        
-        // Añadir entregable
+        // Add deliverable
         function addDeliverable() {
             const userName = document.getElementById('user-name').value.trim();
-            const role = document.getElementById('role-select').value.trim() || document.getElementById('role-select').options[document.getElementById('role-select').selectedIndex].text.trim();
+            const roleName = document.getElementById('role-name').value.trim();
             const deliverableName = document.getElementById('deliverable-name').value.trim();
             const transactionType = document.getElementById('transaction-type').value;
             const description = document.getElementById('description').value.trim();
             const link = document.getElementById('link').value.trim();
             const value = parseInt(document.getElementById('value').value);
             
-            if (!userName || !role || !deliverableName || !value) {
-                showNotification('Completa todos los campos obligatorios (Persona, Rol, Entregable, Valor)', 'error');
+            // Validate inputs
+            if (!userName) {
+                showNotification('⚠️ El campo "Persona" es obligatorio', 'warning');
+                document.getElementById('user-name').focus();
+                return;
+            }
+            
+            if (!roleName) {
+                showNotification('⚠️ El campo "Rol" es obligatorio', 'warning');
+                document.getElementById('role-name').focus();
+                return;
+            }
+            
+            if (!deliverableName) {
+                showNotification('⚠️ El campo "Entregable" es obligatorio', 'warning');
+                document.getElementById('deliverable-name').focus();
                 return;
             }
             
             if (isNaN(value) || value <= 0) {
-                showNotification('El valor debe ser un número positivo', 'error');
+                showNotification('⚠️ El valor debe ser un número positivo', 'warning');
+                document.getElementById('value').focus();
                 return;
             }
             
-            // Find or create user
+            // Add role to global list if not exists (case-insensitive)
+            const existingRole = accountingData.roles.find(r => r.toLowerCase() === roleName.toLowerCase());
+            if (!existingRole) {
+                accountingData.roles.push(roleName);
+                showNotification(`✨ Nuevo rol creado: ${roleName}`, 'info');
+            }
+            
+            // Find or create user (case-insensitive)
             let user = accountingData.users.find(u => u.name.toLowerCase() === userName.toLowerCase());
             if (!user) {
                 user = {
                     id: `user-${Date.now()}`,
                     name: userName,
-                    roles: [role],
+                    roles: [roleName],
                     totalValue: 0,
                     deliverables: []
                 };
                 accountingData.users.push(user);
+                showNotification(`✨ Nuevo usuario creado: ${userName}`, 'info');
             } else {
-                // Add role if not exists
-                if (!user.roles.includes(role)) {
-                    user.roles.push(role);
+                // Add role if not exists (case-insensitive)
+                const hasRole = user.roles.some(r => r.toLowerCase() === roleName.toLowerCase());
+                if (!hasRole) {
+                    user.roles.push(roleName);
                 }
             }
             
@@ -1781,7 +1632,7 @@
             const deliverable = {
                 id: `deliverable-${Date.now()}`,
                 userName: userName,
-                role: role,
+                role: roleName,
                 deliverable: deliverableName,
                 transactionType: transactionType,
                 description: description,
@@ -1801,16 +1652,59 @@
             
             // Clear form
             document.getElementById('user-name').value = '';
+            document.getElementById('role-name').value = '';
             document.getElementById('deliverable-name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
             document.getElementById('value').value = '';
             
-            // Show success message
-            showNotification(`Entregable "${deliverableName}" registrado correctamente para ${userName}`, 'success');
+            // Show success
+            showNotification(`✅ Entregable registrado: "${deliverableName}" para ${userName} (+${value} ${accountingData.valueUnit})`, 'success');
         }
         
-        // Actualizar visualizaciones
+        // Delete deliverable
+        function deleteDeliverable(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este entregable?')) {
+                return;
+            }
+            
+            // Find deliverable
+            const deliverableIndex = accountingData.deliverables.findIndex(d => d.id === id);
+            if (deliverableIndex === -1) return;
+            
+            const deliverable = accountingData.deliverables[deliverableIndex];
+            const valueToRemove = deliverable.value;
+            
+            // Find user and update
+            const user = accountingData.users.find(u => u.name === deliverable.userName);
+            if (user) {
+                // Remove from user's deliverables
+                user.deliverables = user.deliverables.filter(d => d.id !== id);
+                
+                // Update total value
+                user.totalValue -= valueToRemove;
+                
+                // Clean up user if no deliverables left
+                if (user.deliverables.length === 0) {
+                    accountingData.users = accountingData.users.filter(u => u.id !== user.id);
+                }
+            }
+            
+            // Remove from global list
+            accountingData.deliverables.splice(deliverableIndex, 1);
+            
+            // Clean up unused roles
+            const usedRoles = [...new Set(accountingData.users.flatMap(u => u.roles))];
+            accountingData.roles = usedRoles;
+            
+            // Save and update
+            saveData();
+            updateVisualizations();
+            
+            showNotification(`🗑️ Entregable eliminado (-${valueToRemove} ${accountingData.valueUnit})`, 'info');
+        }
+        
+        // Update visualizations
         function updateVisualizations() {
             // Update stats
             document.getElementById('total-users').textContent = accountingData.users.length;
@@ -1828,7 +1722,7 @@
             updateDeliverablesList();
         }
         
-        // Actualizar gráfico
+        // Update chart
         function updateChart() {
             if (!valueChart) return;
             
@@ -1842,7 +1736,7 @@
             valueChart.update();
         }
         
-        // Actualizar tabla de ranking
+        // Update ranking table
         function updateRankingTable() {
             const tbody = document.getElementById('ranking-body');
             
@@ -1850,7 +1744,13 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
-                            <span class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</span>
+                            <div class="empty-state">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <h3 class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</h3>
+                                <p class="lang" data-es="Registra tu primer entregable para comenzar" data-ca="Registra el teu primer entregable per començar">Registra tu primer entregable para comenzar</p>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1875,7 +1775,7 @@
             tbody.innerHTML = html;
         }
         
-        // Actualizar lista de entregables
+        // Update deliverables list
         function updateDeliverablesList() {
             const tbody = document.getElementById('deliverables-body');
             
@@ -1883,7 +1783,13 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
-                            <span class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</span>
+                            <div class="empty-state">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                                <p class="lang" data-es="Añade entregables para verlos en esta lista" data-ca="Afegeix entregables per veure'ls en aquesta llista">Añade entregables para verlos en esta lista</p>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1904,10 +1810,7 @@
                         <td>${deliverable.deliverable}</td>
                         <td>${deliverable.value} ${accountingData.valueUnit}</td>
                         <td>
-                            <button class="action-btn edit" data-id="${deliverable.id}">
-                                <span>✏️</span>
-                            </button>
-                            <button class="action-btn delete" data-id="${deliverable.id}">
+                            <button class="action-btn delete" data-id="${deliverable.id}" title="Eliminar">
                                 <span>🗑️</span>
                             </button>
                         </td>
@@ -1917,13 +1820,7 @@
             
             tbody.innerHTML = html;
             
-            // Add event listeners to edit and delete buttons
-            document.querySelectorAll('.action-btn.edit').forEach(button => {
-                button.addEventListener('click', function() {
-                    editDeliverable(this.getAttribute('data-id'));
-                });
-            });
-            
+            // Add event listeners to delete buttons
             document.querySelectorAll('.action-btn.delete').forEach(button => {
                 button.addEventListener('click', function() {
                     deleteDeliverable(this.getAttribute('data-id'));
@@ -1931,147 +1828,95 @@
             });
         }
         
-        // Editar entregable (placeholder for future implementation)
-        function editDeliverable(id) {
-            showNotification('Función de edición en desarrollo. Por ahora, elimina y vuelve a crear el entregable.', 'info');
-        }
-        
-        // Eliminar entregable
-        function deleteDeliverable(id) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este entregable?')) {
-                return;
-            }
-            
-            // Find deliverable
-            const deliverableIndex = accountingData.deliverables.findIndex(d => d.id === id);
-            if (deliverableIndex === -1) return;
-            
-            const deliverable = accountingData.deliverables[deliverableIndex];
-            
-            // Find user and update
-            const user = accountingData.users.find(u => u.name === deliverable.userName);
-            if (user) {
-                // Remove from user's deliverables
-                user.deliverables = user.deliverables.filter(d => d.id !== id);
-                
-                // Update total value
-                user.totalValue -= deliverable.value;
-                
-                // Remove role if no more deliverables with that role
-                if (user.deliverables.length === 0) {
-                    user.roles = [];
-                } else {
-                    // Check if role is still used
-                    const rolesInUse = [...new Set(user.deliverables.map(d => d.role))];
-                    user.roles = rolesInUse;
-                }
-            }
-            
-            // Remove from global list
-            accountingData.deliverables.splice(deliverableIndex, 1);
-            
-            // Remove user if no deliverables left
-            accountingData.users = accountingData.users.filter(u => u.deliverables.length > 0);
-            
-            // Save and update
-            saveData();
-            updateVisualizations();
-            
-            showNotification('Entregable eliminado correctamente', 'success');
-        }
-        
-        // Exportar JSON
+        // Export JSON
         function exportJSON() {
             if (accountingData.users.length === 0) {
-                showNotification('No hay datos para exportar. Registra entregables primero.', 'error');
+                showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
                 return;
             }
             
-            const dataStr = JSON.stringify(accountingData, null, 2);
-            const blob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            
-            const exportFileDefaultName = `value-accounting-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', url);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.style.display = 'none';
-            document.body.appendChild(linkElement);
-            
-            linkElement.click();
-            
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(linkElement);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification('Datos exportados correctamente como JSON', 'success');
+            try {
+                const dataStr = JSON.stringify(accountingData, null, 2);
+                const blob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                
+                const exportFileDefaultName = `value-accounting-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', url);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.style.display = 'none';
+                document.body.appendChild(linkElement);
+                
+                linkElement.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(linkElement);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                showNotification(`✅ Datos exportados como JSON: ${exportFileDefaultName}`, 'success');
+            } catch (error) {
+                console.error('Error exporting JSON:', error);
+                showNotification(`❌ Error al exportar JSON: ${error.message}`, 'error');
+            }
         }
         
-        // Exportar CSV para Tokenomics
+        // Export CSV for Tokenomics
         function exportCSV() {
             if (accountingData.users.length === 0) {
-                showNotification('No hay datos para exportar. Registra entregables primero.', 'error');
+                showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
                 return;
             }
             
-            // CSV headers
-            let csv = 'Usuario,Rol,Dirección Wallet,Valor Total,Entregables,Tipo de Rol\n';
-            
-            // Data rows
-            accountingData.users.forEach(user => {
-                // Determine role type for vesting parameters
-                let roleType = 'client';
-                const rolesLower = user.roles.map(r => r.toLowerCase());
+            try {
+                // CSV headers - MVP format for Tokenomics
+                let csv = 'Usuario,Rol,Valor Total,Tokens a Mintar\n';
                 
-                if (rolesLower.some(r => r.includes('inversor') || r.includes('invers') || r.includes('investor'))) {
-                    roleType = 'investor';
-                } else if (rolesLower.some(r => r.includes('equip') || r.includes('team') || r.includes('fundador') || r.includes('founder'))) {
-                    roleType = 'team';
-                } else if (rolesLower.some(r => r.includes('proveedor') || r.includes('supplier') || r.includes('advisor') || r.includes('consultor'))) {
-                    roleType = 'supplier';
-                }
+                // Data rows - 1 token = 1 value unit
+                accountingData.users.forEach(user => {
+                    const tokensToMint = user.totalValue; // Simple conversion: 1 token per value unit
+                    
+                    csv += `"${user.name}","${user.roles.join(', ')}","${user.totalValue}","${tokensToMint}"\n`;
+                });
                 
-                // For now, wallet is empty (to be added in future version)
-                const wallet = '';
+                // Create blob and download
+                const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+                const url = URL.createObjectURL(blob);
                 
-                csv += `"${user.name}","${user.roles.join(', ')}","${wallet}","${user.totalValue}","${user.deliverables.length}","${roleType}"\n`;
-            });
-            
-            // Create blob and download
-            const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-            const url = URL.createObjectURL(blob);
-            
-            const exportFileDefaultName = `tokenomics-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', url);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.style.display = 'none';
-            document.body.appendChild(linkElement);
-            
-            linkElement.click();
-            
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(linkElement);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification(`Se han exportado ${accountingData.users.length} usuarios como CSV para Tokenomics App.`, 'success');
-        }
-        
-        // Limpiar datos
-        function resetData() {
-            if (confirm('¿Estás seguro de que quieres borrar todos los datos del proyecto?')) {
-                resetDataWithoutConfirmation();
-                showNotification('Datos borrados correctamente', 'success');
+                const exportFileDefaultName = `tokenomics-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', url);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.style.display = 'none';
+                document.body.appendChild(linkElement);
+                
+                linkElement.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(linkElement);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                showNotification(`✅ Exportado para Tokenomics: ${accountingData.users.length} usuarios, ${accountingData.users.reduce((sum, u) => sum + u.totalValue, 0)} tokens totales`, 'success');
+            } catch (error) {
+                console.error('Error exporting CSV:', error);
+                showNotification(`❌ Error al exportar CSV: ${error.message}`, 'error');
             }
         }
         
-        // Reset data without confirmation
+        // Reset data
+        function resetData() {
+            if (confirm('¿Estás seguro de que quieres borrar todos los datos del proyecto? Esta acción no se puede deshacer.')) {
+                resetDataWithoutConfirmation();
+                showNotification('🗑️ Todos los datos han sido eliminados', 'info');
+            }
+        }
+        
+        // Reset without confirmation (for tests)
         function resetDataWithoutConfirmation() {
             accountingData = {
                 projectName: "Proyecto MASIA",
@@ -2085,53 +1930,32 @@
             document.getElementById('project-name').value = "Proyecto MASIA";
             document.getElementById('value-unit').value = "puntos";
             document.getElementById('user-name').value = '';
+            document.getElementById('role-name').value = '';
             document.getElementById('deliverable-name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
             document.getElementById('value').value = '';
-            
-            // Clear role dropdown
-            updateRoleDropdown();
             
             // Save and update
             saveData();
             updateVisualizations();
         }
         
-        // Show notification
-        function showNotification(message, type) {
-            // Remove existing notifications
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = message.replace(/\n/g, '<br>');
-            
-            // Add to body
-            document.body.appendChild(notification);
-            
-            // Remove after animation
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
-            }, 3000);
-        }
-        
-        // Guardar datos en localStorage
+        // Save data to localStorage
         function saveData() {
-            localStorage.setItem('valueAccountingData', JSON.stringify(accountingData));
+            try {
+                localStorage.setItem('valueAccountingData', JSON.stringify(accountingData));
+            } catch (error) {
+                console.error('Error saving ', error);
+                showNotification('⚠️ No se pudieron guardar los datos. El almacenamiento local puede estar deshabilitado.', 'warning');
+            }
         }
         
-        // Cargar datos de localStorage
-        function loadSavedData() {
-            const saved = localStorage.getItem('valueAccountingData');
-            if (saved) {
-                try {
+        // Load data from localStorage
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('valueAccountingData');
+                if (saved) {
                     const parsedData = JSON.parse(saved);
                     
                     accountingData = {
@@ -2146,19 +1970,148 @@
                     document.getElementById('project-name').value = accountingData.projectName;
                     document.getElementById('value-unit').value = accountingData.valueUnit;
                     
-                    // Update role dropdown
-                    updateRoleDropdown();
-                } catch (error) {
-                    console.error('Error loading saved data:', error);
+                    // Show notification if data was loaded
+                    if (accountingData.users.length > 0) {
+                        showNotification(`✅ Datos cargados: ${accountingData.users.length} usuarios, ${accountingData.deliverables.length} entregables`, 'info');
+                    }
                 }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showNotification('⚠️ Error al cargar los datos guardados', 'warning');
             }
         }
         
-        // Run tests manually
-        function runTests() {
-            const results = testSuite.runTests();
-            testSuite.displayResults(results);
+        // Setup event listeners
+        function setupEventListeners() {
+            // Form elements
+            document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
+            document.getElementById('import-roles').addEventListener('click', importRoles);
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            document.getElementById('reset-data').addEventListener('click', resetData);
+            
+            // Project name change
+            document.getElementById('project-name').addEventListener('change', function() {
+                accountingData.projectName = this.value || "Proyecto MASIA";
+                saveData();
+            });
+            
+            // Value unit change
+            document.getElementById('value-unit').addEventListener('change', function() {
+                accountingData.valueUnit = this.value;
+                saveData();
+                updateVisualizations();
+            });
+            
+            // Value input validation
+            document.getElementById('value').addEventListener('input', function() {
+                const value = parseInt(this.value);
+                const feedback = document.getElementById('value-feedback');
+                
+                if (isNaN(value) || value <= 0) {
+                    feedback.textContent = '⚠️ Debe ser un número positivo';
+                    feedback.className = 'form-feedback invalid';
+                } else if (value > 10000) {
+                    feedback.textContent = '💡 Valor alto, ¿es correcto?';
+                    feedback.className = 'form-feedback warning';
+                } else {
+                    feedback.textContent = '✅ Valor válido';
+                    feedback.className = 'form-feedback valid';
+                }
+            });
         }
+        
+        // Setup autocomplete
+        function setupAutocompletes() {
+            // User autocomplete - suggests existing users
+            setupAutocomplete('user-name', 'user-list', () => 
+                accountingData.users.map(u => u.name)
+            );
+            
+            // Role autocomplete - suggests imported/existing roles
+            setupAutocomplete('role-name', 'role-list', () => 
+                [...accountingData.roles]
+            );
+        }
+        
+        // Setup language selector
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Event listeners for language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    showNotification(selectedLang === 'ca' ? '✅ Idioma cambiado a Català' : '✅ Idioma cambiado a Español', 'info');
+                });
+            });
+            
+            function setActiveLanguage(lang) {
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Hide/show language-specific elements
+                document.querySelectorAll('[lang="es"]').forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                document.querySelectorAll('[lang="ca"]').forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                document.documentElement.setAttribute('lang', lang);
+            }
+        }
+        
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup language
+            setupLanguageSelector();
+            
+            // Load saved data
+            loadData();
+            
+            // Initialize chart
+            initChart();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Setup autocompletes
+            setupAutocompletes();
+            
+            // Update visualizations
+            updateVisualizations();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('✨ ¡Bienvenido a Value Accounting App! Importa roles o registra entregables para comenzar.', 'success', 5000);
+            }, 1000);
+            
+            // Show tip after 3 seconds
+            setTimeout(() => {
+                if (accountingData.users.length === 0) {
+                    showNotification('💡 Consejo: Importa roles desde la VNA App o empieza creando tu primer entregable', 'info', 8000);
+                }
+            }, 3000);
+        });
     </script>
 </body>
 </html>
