@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real">
-    <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, innovación financiera">
+    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema para registrar y valorar entregables en tu proyecto con integración blockchain y gestión de usuarios por rol.">
+    <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, Ethereum wallet, vesting">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
     <title>Value Accounting App | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Value Accounting App | TeamTowers Humà">
-    <meta property="og:description" content="Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real">
+    <meta property="og:description" content="Sistema para registrar y valorar entregables en tu proyecto con integración blockchain y gestión de usuarios por rol.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/app_comptabilitat">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
@@ -21,7 +21,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Value Accounting App | TeamTowers Humà">
-    <meta name="twitter:description" content="Visualiza en tiempo real cómo se distribuye el valor entre stakeholders de tu proyecto">
+    <meta name="twitter:description" content="Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     
     <!-- Chart.js for data visualization -->
@@ -34,7 +34,7 @@
             --accent: #8b5cf6; /* Morado TeamTowers */
             --dark: #0f172a;
             --light: #f8fafc;
-            --gold: #f59e0b;
+            --gold: #f59e01;
             --success: #10b981;
             --warning: #fbbf24;
             --danger: #ef4444;
@@ -42,6 +42,9 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
         }
         
         * {
@@ -83,14 +86,14 @@
         }
         
         .lang-btn.active {
-            background: var(--primary);
+            background: var(--gradient-primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
         }
         
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            background: var(--gradient-dark);
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -119,12 +122,25 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            font-weight: 800;
         }
         
         .tagline {
             font-size: 1.4rem;
             opacity: 0.9;
             margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .integration-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 0.95rem;
         }
         
         /* Main Content */
@@ -153,6 +169,18 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             height: fit-content;
+            position: relative;
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
         
         .panel h2 {
@@ -164,6 +192,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            z-index: 10;
         }
         
         .panel h2::before {
@@ -223,7 +253,7 @@
         
         .btn-group {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
             margin-top: 15px;
         }
@@ -241,6 +271,23 @@
             justify-content: center;
             gap: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
         }
         
         .btn:hover {
@@ -249,7 +296,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: var(--gradient-primary);
             color: white;
         }
         
@@ -275,7 +322,7 @@
         }
         
         .btn-export {
-            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
+            background: var(--gradient-accent);
             color: white;
             grid-column: span 2;
         }
@@ -288,326 +335,449 @@
             position: relative;
         }
         
+        .visualization-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
         .chart-container {
             position: relative;
             height: 400px;
             margin-bottom: 30px;
-        }
-        
-        .ranking-container {
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        
-        .ranking-header {
             background: var(--light);
-            padding: 15px;
-            font-weight: 700;
-            border-bottom: 2px solid var(--accent);
-            display: grid;
-            grid-template-columns: 40px 1fr 150px 120px 120px;
-            gap: 15px;
-        }
-        
-        .ranking-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
-            display: grid;
-            grid-template-columns: 40px 1fr 150px 120px 120px;
-            gap: 15px;
-            align-items: center;
-            transition: var(--transition);
-        }
-        
-        .ranking-item:hover {
-            background: #f1f5f9;
-        }
-        
-        .ranking-item:nth-child(odd) {
-            background: #f8fafc;
-        }
-        
-        .ranking-badge {
-            display: inline-block;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        
-        .role-tag {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-right: 5px;
-            margin-top: 8px;
-        }
-        
-        .role-team {
-            background: rgba(16, 185, 129, 0.15);
-            color: #0d9488;
-        }
-        
-        .role-client {
-            background: rgba(30, 58, 138, 0.15);
-            color: #1e3a8a;
-        }
-        
-        .role-supplier {
-            background: rgba(139, 92, 246, 0.15);
-            color: #7e3af2;
-        }
-        
-        .role-investor {
-            background: rgba(245, 158, 11, 0.15);
-            color: #b45309;
-        }
-        
-        .value-amount {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-        
-        .wallet-address {
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: var(--gray);
-            word-break: break-all;
+            border-radius: 8px;
+            padding: 20px;
         }
         
         .stats-bar {
             display: flex;
             justify-content: space-around;
             background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
             flex-wrap: wrap;
             gap: 15px;
             border: 1px solid rgba(30, 58, 138, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
         
         .stat-item {
             text-align: center;
-            min-width: 100px;
-            padding: 8px 15px;
+            min-width: 110px;
+            padding: 12px 15px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
         }
         
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--primary);
+            margin-bottom: 5px;
         }
         
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--gray);
-            margin-top: 3px;
+            font-weight: 600;
         }
         
-        .badge {
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .ranking-table th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        .ranking-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .ranking-table tr:nth-child(even) {
+            background-color: var(--light);
+        }
+        
+        .ranking-table tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .position-badge {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 5px;
-        }
-        
-        .badge-tangible {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-        
-        .badge-intangible {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-        }
-        
-        .transaction-form {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .transaction-form h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-        }
-        
-        .quick-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .quick-input input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-        }
-        
-        .quick-input .btn {
-            padding: 10px 15px;
-            min-width: auto;
-        }
-        
-        .deliverable-input {
-            margin-top: 15px;
-        }
-        
-        .deliverable-input textarea {
-            min-height: 60px;
-        }
-        
-        .value-input {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .value-input input {
-            max-width: 120px;
-        }
-        
-        .value-input span {
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .user-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .user-section h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-        }
-        
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .user-card {
-            background: var(--light);
-            border-radius: 8px;
-            padding: 12px;
-            border-left: 3px solid var(--accent);
-        }
-        
-        .user-card h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-        
-        .user-card .wallet {
-            font-size: 0.8rem;
-            color: var(--gray);
-            word-break: break-all;
-        }
-        
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
             text-align: center;
-            padding: 20px;
-            color: var(--gray);
+            line-height: 30px;
+            font-weight: 700;
         }
         
-        .empty-state svg {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
-            color: var(--accent);
-            opacity: 0.7;
+        .deliverables-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
         }
         
-        .empty-state h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            color: var(--dark);
+        .deliverables-list th {
+            background: var(--gradient-accent);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 700;
         }
         
-        .empty-state p {
-            max-width: 500px;
-            margin-bottom: 25px;
-            line-height: 1.7;
+        .deliverables-list td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .deliverables-list tr:nth-child(even) {
+            background-color: var(--light);
+        }
+        
+        .deliverables-list tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 5px;
+            transition: var(--transition);
+        }
+        
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
         .import-section {
             margin-top: 25px;
             padding-top: 25px;
             border-top: 2px solid var(--accent);
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
             border-radius: var(--border-radius);
         }
         
         .import-section h3 {
-            color: var(--gold);
+            color: var(--success);
             margin-bottom: 15px;
             font-size: 1.6rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 700;
         }
         
         .import-section h3::before {
-            content: '📊';
+            content: '📥';
             font-size: 1.4rem;
+        }
+        
+        .import-section p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .export-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .export-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .export-section h3::before {
+            content: '📤';
+            font-size: 1.4rem;
+        }
+        
+        .export-section p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .integration-section {
+            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .integration-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .integration-section h3::before {
+            content: '🔗';
+            font-size: 1.4rem;
+        }
+        
+        .next-step {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        }
+        
+        .next-step h3 {
+            margin-bottom: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .next-step h3::before {
+            content: '➡️';
+        }
+        
+        .next-step p {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        .next-step a {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: 10px;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .next-step a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .deliverable-form {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .deliverable-form h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .deliverable-form h3::before {
+            content: '✨';
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            margin-bottom: 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-row select, 
+        .form-row input,
+        .form-row textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+        }
+        
+        .autocomplete-items div:hover {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+        
+        .autocomplete-items div.selected {
+            background-color: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .autocomplete-active {
+            background-color: var(--light) !important;
+            color: var(--primary) !important;
         }
         
         /* Footer */
         footer {
-            background: var(--dark);
+            background: var(--gradient-dark);
             color: rgba(255, 255, 255, 0.85);
-            padding: 60px 20px 30px;
-            margin-top: 60px;
+            padding: 70px 20px 40px;
+            margin-top: 70px;
         }
         
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
             margin: 0 auto;
         }
         
         .footer-col h3 {
             color: white;
-            font-size: 1.6rem;
-            margin-bottom: 25px;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
             position: relative;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
+            font-weight: 700;
         }
         
         .footer-col h3::after {
@@ -615,9 +785,10 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--accent);
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
         }
         
         .footer-links {
@@ -625,30 +796,52 @@
         }
         
         .footer-links li {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         
         .footer-links a {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.75);
             text-decoration: none;
             transition: var(--transition);
             display: block;
-            padding: 5px 0;
-            font-size: 1.05rem;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
         }
         
         .footer-links a:hover {
-            color: var(--accent);
-            transform: translateX(5px);
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 40px;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
         }
         
         /* Responsive Design */
@@ -658,26 +851,31 @@
             }
             
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.3rem;
             }
             
             .tagline {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
             
             .panel {
                 padding: 20px;
             }
             
-            .ranking-header,
-            .ranking-item {
-                grid-template-columns: 35px 1fr 120px 100px 100px;
-                font-size: 0.9rem;
+            .chart-container {
+                height: 320px;
             }
             
-            .value-input {
-                flex-direction: column;
-                align-items: flex-start;
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -693,11 +891,11 @@
             }
             
             h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             
             .tagline {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
             
             .container {
@@ -706,27 +904,106 @@
             
             .btn {
                 padding: 12px 15px;
-                font-size: 0.95rem;
+                font-size: 1rem;
             }
             
             .chart-container {
-                height: 300px;
+                height: 280px;
             }
             
-            .ranking-header,
-            .ranking-item {
-                grid-template-columns: 30px 1fr 100px 80px 80px;
-                font-size: 0.85rem;
-                padding: 8px 10px;
+            .form-row {
+                grid-template-columns: 1fr;
             }
             
-            .quick-input {
-                flex-direction: column;
+            .btn-group {
+                grid-template-columns: 1fr;
             }
             
-            .quick-input input {
-                width: 100%;
+            .export-buttons {
+                grid-template-columns: 1fr;
             }
+            
+            .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .stat-label {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Test Results Section */
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--light);
+            display: none;
+        }
+        
+        .test-pass {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .test-fail {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .test-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+        }
+        
+        .test-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .test-section h3::before {
+            content: '🧪';
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
         }
     </style>
 </head>
@@ -742,7 +1019,8 @@
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
             <h1 class="lang" data-es="Value Accounting App" data-ca="Aplicació Comptabilitat de Valor">Value Accounting App</h1>
-            <p class="tagline lang" data-es="Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real" data-ca="Sistema de comptabilitat de valor per tokenitzar contribucions i visualitzar la distribució del valor en temps real">Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real</p>
+            <p class="tagline lang" data-es="Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum" data-ca="Registra entregables, assigna usuaris per rol i prepara per a tokenització amb wallet Ethereum">Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum</p>
+            <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
         </div>
     </header>
     
@@ -753,146 +1031,123 @@
                 <h2 class="lang" data-es="⚙️ Configuración del Proyecto" data-ca="⚙️ Configuració del Projecte">⚙️ Configuración del Proyecto</h2>
                 <div class="input-group">
                     <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
-                    <input type="text" id="project-name" placeholder="Ej: Proyecto Innovación 2024">
+                    <input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
                 </div>
                 <div class="input-group">
-                    <label class="lang" data-es="Moneda de Valor" data-ca="Moneda de Valor">Moneda de Valor</label>
-                    <select id="value-currency">
+                    <label class="lang" data-es="Unidad de Valor" data-ca="Unitat de Valor">Unidad de Valor</label>
+                    <select id="value-unit">
                         <option value="puntos" class="lang" data-es="Puntos de Valor" data-ca="Punts de Valor">Puntos de Valor</option>
                         <option value="tokens" class="lang" data-es="Tokens (futuro)" data-ca="Tokens (futur)">Tokens (futuro)</option>
                         <option value="euros" class="lang" data-es="Euros (€)" data-ca="Euros (€)">Euros (€)</option>
                     </select>
                 </div>
                 
-                <div class="panel" style="margin-top: 20px;">
-                    <h2 class="lang" data-es="📥 Importar Mapa de Valor" data-ca="📥 Importar Mapa de Valor">📥 Importar Mapa de Valor</h2>
+                <div class="import-section">
+                    <h3 class="lang" data-es="Importar Roles desde VNA App" data-ca="Importar Rols des de VNA App">Importar Roles desde VNA App</h3>
+                    <p class="lang" data-es="Importa los roles de tu mapa de valor desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> para pre-poblar los roles disponibles al registrar entregables." data-ca="Importa els rols del teu mapa de valor des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> per pre-omplir els rols disponibles en registrar entregables.">Importa los roles de tu mapa de valor desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a> para pre-poblar los roles disponibles al registrar entregables.</p>
                     <div class="input-group">
-                        <label class="lang" data-es="Importar desde VNA App" data-ca="Importar des de VNA App">Importar desde VNA App</label>
-                        <input type="file" id="import-file" accept=".json">
+                        <label class="lang" data-es="Archivo CSV o JSON de Roles" data-ca="Fitxer CSV o JSON de Rols">Archivo CSV o JSON de Roles</label>
+                        <input type="file" id="import-roles-file" accept=".csv,.json">
                     </div>
                     <div class="btn-group">
-                        <button id="import-data" class="btn btn-primary">
-                            <span>📤</span> <span class="lang" data-es="Importar Datos" data-ca="Importar Dades">Importar Datos</span>
+                        <button id="import-roles" class="btn btn-success">
+                            <span>📤</span> <span class="lang" data-es="Importar Roles" data-ca="Importar Rols">Importar Roles</span>
                         </button>
                     </div>
-                    
-                    <div class="import-section">
-                        <h3 class="lang" data-es="Asignación de Usuarios a Roles" data-ca="Assignació d'Usuaris a Rols">Asignación de Usuarios a Roles</h3>
-                        <p class="lang" data-es="Después de importar el mapa de valor, asigna usuarios a cada rol para poder registrar sus entregables y asociar wallets Ethereum para futura tokenización." data-ca="Després d'importar el mapa de valor, assigna usuaris a cada rol per poder registrar els seus entregables i associar wallets Ethereum per a futura tokenització.">Después de importar el mapa de valor, asigna usuarios a cada rol para poder registrar sus entregables y asociar wallets Ethereum para futura tokenización.</p>
-                        
-                        <div id="role-user-assignment" style="display: none; margin-top: 15px;">
-                            <h4 class="lang" data-es="Roles Detectados" data-ca="Rols Detectats">Roles Detectados</h4>
-                            <div id="roles-container"></div>
+                </div>
+                
+                <div class="deliverable-form">
+                    <h3 class="lang" data-es="➕ Añadir Entregable" data-ca="➕ Afegir Entregable">➕ Añadir Entregable</h3>
+                    <div class="form-row">
+                        <label class="lang" data-es="Persona:" data-ca="Persona:">Persona:</label>
+                        <div class="autocomplete">
+                            <input type="text" id="user-name" placeholder="Escribe un nombre o crea uno nuevo...">
+                            <div id="user-list" class="autocomplete-items"></div>
                         </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Rol:" data-ca="Rol:">Rol:</label>
+                        <select id="role-select">
+                            <option value="" class="lang" data-es="Selecciona un rol o crea uno nuevo" data-ca="Selecciona un rol o crea un de nou">Selecciona un rol o crea uno nuevo</option>
+                            <!-- Roles will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
+                        <input type="text" id="deliverable-name" placeholder="Ej: Informe de mercado">
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Tipo de Transacción:" data-ca="Tipus de Transacció:">Tipo de Transacción:</label>
+                        <select id="transaction-type">
+                            <option value="tangible" class="lang" data-es="Tangible (bienes, servicios)" data-ca="Tangible (béns, serveis)">Tangible (bienes, servicios)</option>
+                            <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento)" data-ca="Intangible (confiança, coneixement)">Intangible (confianza, conocimiento)</option>
+                        </select>
+                        <span class="tooltip">
+                            <span>ℹ️</span>
+                            <span class="tooltip-text lang" data-es="Tangible: bienes físicos o servicios medibles. Intangible: conocimiento, confianza, relaciones." data-ca="Tangible: béns físics o serveis mesurables. Intangible: coneixement, confiança, relacions.">Tangible: bienes físicos o servicios medibles. Intangible: conocimiento, confianza, relaciones.</span>
+                        </span>
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Descripción:" data-ca="Descripció:">Descripción:</label>
+                        <textarea id="description" placeholder="Describe el entregable en detalle"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Enlace (opcional):" data-ca="Enllaç (opcional):">Enlace (opcional):</label>
+                        <input type="url" id="link" placeholder="https://ejemplo.com/documento.pdf">
+                    </div>
+                    <div class="form-row">
+                        <label class="lang" data-es="Valor:" data-ca="Valor:">Valor:</label>
+                        <input type="number" id="value" placeholder="100" min="1">
+                    </div>
+                    <div class="btn-group" style="margin-top: 15px; grid-template-columns: 1fr;">
+                        <button id="add-deliverable" class="btn btn-primary">
+                            <span>✨</span> <span class="lang" data-es="Registrar Entregable" data-ca="Registrar Entregable">Registrar Entregable</span>
+                        </button>
                     </div>
                 </div>
                 
-                <div class="panel" style="margin-top: 20px;">
-                    <h2 class="lang" data-es="➕ Añadir Entregable" data-ca="➕ Afegir Entregable">➕ Añadir Entregable</h2>
-                    <div class="quick-input">
-                        <input type="text" id="quick-input" placeholder="@rol #entregable valor:100">
-                        <button id="quick-add" class="btn btn-success">+</button>
-                    </div>
-                    <p class="lang" data-es="Formato rápido: <code>@rol #entregable valor:100</code>" data-ca="Format ràpid: <code>@rol #entregable valor:100</code>">Formato rápido: <code>@rol #entregable valor:100</code></p>
-                    
-                    <div class="transaction-form">
-                        <h3 class="lang" data-es="Formulario Detallado" data-ca="Formulari Detallat">Formulario Detallado</h3>
-                        <div class="input-group">
-                            <label class="lang" data-es="Rol (@nombre)" data-ca="Rol (@nom)">Rol (@nombre)</label>
-                            <select id="role-select">
-                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label class="lang" data-es="Usuario" data-ca="Usuari">Usuario</label>
-                            <select id="user-select">
-                                <option class="lang" data-es="Selecciona un usuario" data-ca="Selecciona un usuari">Selecciona un usuario</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label class="lang" data-es="Entregable (#etiqueta)" data-ca="Entregable (#etiqueta)">Entregable (#etiqueta)</label>
-                            <input type="text" id="deliverable-input" placeholder="#informe-semanal">
-                        </div>
-                        <div class="deliverable-input">
-                            <label class="lang" data-es="Descripción" data-ca="Descripció">Descripción</label>
-                            <textarea id="description-input" placeholder="Informe detallado de métricas de campaña"></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label class="lang" data-es="Enlace (opcional)" data-ca="Enllaç (opcional)">Enlace (opcional)</label>
-                            <input type="url" id="link-input" placeholder="https://ejemplo.com/informe.pdf">
-                        </div>
-                        <div class="value-input">
-                            <span class="lang" data-es="Valor:" data-ca="Valor:">Valor:</span>
-                            <input type="number" id="value-input" placeholder="100" min="1">
-                        </div>
-                        <div class="btn-group">
-                            <button id="add-deliverable" class="btn btn-primary">
-                                <span>✨</span> <span class="lang" data-es="Registrar Entregable" data-ca="Registrar Entregable">Registrar Entregable</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="user-section">
-                        <h3 class="lang" data-es="👥 Gestión de Usuarios" data-ca="👥 Gestió d'Usuaris">👥 Gestión de Usuarios</h3>
-                        <p class="lang" data-es="Añade usuarios a los roles para poder registrar sus entregables y asociar wallets Ethereum." data-ca="Afegeix usuaris als rols per poder registrar els seus entregables i associar wallets Ethereum.">Añade usuarios a los roles para poder registrar sus entregables y asociar wallets Ethereum.</p>
-                        
-                        <div class="input-group">
-                            <label class="lang" data-es="Nombre de Usuario" data-ca="Nom d'Usuari">Nombre de Usuario</label>
-                            <input type="text" id="new-user-name" placeholder="Ej: María García">
-                        </div>
-                        <div class="input-group">
-                            <label class="lang" data-es="Wallet Ethereum (opcional)" data-ca="Wallet Ethereum (opcional)">Wallet Ethereum (opcional)</label>
-                            <input type="text" id="new-user-wallet" placeholder="0x...">
-                        </div>
-                        <div class="input-group">
-                            <label class="lang" data-es="Rol Asignado" data-ca="Rol Assignat">Rol Asignado</label>
-                            <select id="new-user-role">
-                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
-                            </select>
-                        </div>
-                        <div class="btn-group">
-                            <button id="add-user" class="btn btn-success">
-                                <span>👤</span> <span class="lang" data-es="Añadir Usuario" data-ca="Afegir Usuari">Añadir Usuario</span>
-                            </button>
-                        </div>
-                        
-                        <div class="user-grid" id="user-grid">
-                            <!-- Users will be added here dynamically -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="panel" style="margin-top: 20px;">
+                <div class="panel" style="margin-top: 25px;">
                     <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
-                    <div class="btn-group">
+                    <div class="export-buttons">
                         <button id="export-json" class="btn btn-export">
                             <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
                         </button>
-                        <button id="export-csv" class="btn btn-export">
-                            <span>📈</span> <span class="lang" data-es="Exportar CSV" data-ca="Exportar CSV">Exportar CSV</span>
+                        <button id="export-csv" class="btn btn-success">
+                            <span>📈</span> <span class="lang" data-es="Exportar CSV para Tokenomics" data-ca="Exportar CSV per Tokenomics">Exportar CSV para Tokenomics</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
                         </button>
                     </div>
                 </div>
+                
+                <div class="export-section">
+                    <h3 class="lang" data-es="Exportar para Tokenomics App" data-ca="Exportar per a Tokenomics App">Exportar para Tokenomics App</h3>
+                    <p class="lang" data-es="Exporta tus datos como CSV para importarlos directamente en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá usuarios, roles, valores totales y preparará los parámetros de vesting." data-ca="Exporta les teves dades com a CSV per importar-les directament a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà usuaris, rols, valors totals i prepararà els paràmetres de vesting.">Exporta tus datos como CSV para importarlos directamente en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá usuarios, roles, valores totales y preparará los parámetros de vesting.</p>
+                </div>
+                
+                <div class="test-section">
+                    <h3 class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</h3>
+                    <p class="lang" data-es="Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador." data-ca="Executa proves automàtiques per verificar que l'aplicació funcioni correctament al teu navegador.">Ejecuta pruebas automáticas para verificar que la aplicación funcione correctamente en tu navegador.</p>
+                    <button id="run-tests" class="btn btn-warning" style="width: 100%;">
+                        <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</span>
+                    </button>
+                    <div id="test-results" class="test-results"></div>
+                </div>
+                
+                <div class="integration-section" style="margin-top: 25px;">
+                    <h3 class="lang" data-es="Siguiente Paso: Tokenomics App" data-ca="Pas Següent: Tokenomics App">Siguiente Paso: Tokenomics App</h3>
+                    <p class="lang" data-es="Una vez hayas registrado tus entregables y usuarios, exporta el CSV y continúa en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a> para configurar la distribución de tokens, parámetros de vesting y generar tu smart contract optimizado." data-ca="Un cop hagis registrat els teus entregables i usuaris, exporta el CSV i continua a la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a> per configurar la distribució de tokens, paràmetres de vesting i generar el teu smart contract optimitzat.">Una vez hayas registrado tus entregables y usuarios, exporta el CSV y continúa en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a> para configurar la distribución de tokens, parámetros de vesting y generar tu smart contract optimizado.</p>
+                </div>
             </div>
             
             <div class="visualization-container">
-                <h2>📊 <span class="lang" data-es="Distribución de Valor en Tiempo Real" data-ca="Distribució de Valor en Temps Real">Distribución de Valor en Tiempo Real</span></h2>
+                <h2>📈 <span class="lang" data-es="Distribución de Valor" data-ca="Distribució de Valor">Distribución de Valor</span></h2>
                 <div class="chart-container">
                     <canvas id="valueChart"></canvas>
                 </div>
                 
                 <div class="stats-bar">
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-value">0</div>
-                        <div class="stat-label lang" data-es="Valor Total" data-ca="Valor Total">Valor Total</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-deliverables">0</div>
-                        <div class="stat-label lang" data-es="Entregables" data-ca="Entregables">Entregables</div>
-                    </div>
                     <div class="stat-item">
                         <div class="stat-value" id="total-users">0</div>
                         <div class="stat-label lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</div>
@@ -901,26 +1156,59 @@
                         <div class="stat-value" id="total-roles">0</div>
                         <div class="stat-label lang" data-es="Roles" data-ca="Rols">Roles</div>
                     </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-deliverables">0</div>
+                        <div class="stat-label lang" data-es="Entregables" data-ca="Entregables">Entregables</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-value">0</div>
+                        <div class="stat-label lang" data-es="Valor Total" data-ca="Valor Total">Valor Total</div>
+                    </div>
                 </div>
                 
-                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="🏆 Ranking de Usuarios por Valor Aportado" data-ca="🏆 Rànquing d'Usuaris per Valor Aportat">🏆 Ranking de Usuarios por Valor Aportado</h3>
-                <div class="ranking-container">
-                    <div class="ranking-header">
-                        <div class="lang" data-es="Pos" data-ca="Pos">Pos</div>
-                        <div class="lang" data-es="Usuario" data-ca="Usuari">Usuario</div>
-                        <div class="lang" data-es="Rol" data-ca="Rol">Rol</div>
-                        <div class="lang" data-es="Wallet" data-ca="Wallet">Wallet</div>
-                        <div class="lang" data-es="Valor" data-ca="Valor">Valor</div>
-                    </div>
-                    <div id="ranking-list">
-                        <div class="empty-state">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
-                            <p class="lang" data-es="Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor" data-ca="Importa el teu mapa de valor o afegeix el primer entregable per començar a construir la teva comptabilitat de valor">Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor</p>
-                        </div>
-                    </div>
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="🏆 Ranking de Usuarios" data-ca="🏆 Rànquing d'Usuaris">🏆 Ranking de Usuarios</h3>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th class="lang" data-es="Posición" data-ca="Posició">Posición</th>
+                            <th class="lang" data-es="Usuario" data-ca="Usuari">Usuario</th>
+                            <th class="lang" data-es="Rol(es)" data-ca="Rol(es)">Rol(es)</th>
+                            <th class="lang" data-es="Valor" data-ca="Valor">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <span class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="📋 Lista de Entregables" data-ca="📋 Llista d'Entregables">📋 Lista de Entregables</h3>
+                <table class="deliverables-list">
+                    <thead>
+                        <tr>
+                            <th class="lang" data-es="Usuario" data-ca="Usuari">Usuario</th>
+                            <th class="lang" data-es="Rol" data-ca="Rol">Rol</th>
+                            <th class="lang" data-es="Entregable" data-ca="Entregable">Entregable</th>
+                            <th class="lang" data-es="Valor" data-ca="Valor">Valor</th>
+                            <th class="lang" data-es="Acciones" data-ca="Accions">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deliverables-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <span class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="next-step">
+                    <h3 class="lang" data-es="Exporta tus Datos para Tokenomics" data-ca="Exporta les teves Dades per a Tokenomics">Exporta tus Datos para Tokenomics</h3>
+                    <p class="lang" data-es="Una vez hayas registrado tus entregables, haz clic en 'Exportar CSV para Tokenomics' para descargar un archivo compatible con la App de Tokenomics. Este archivo contiene todos los usuarios, roles y valores totales." data-ca="Un cop hagis registrat els teus entregables, fes clic a 'Exportar CSV per a Tokenomics' per descarregar un arxiu compatible amb l'App de Tokenomics. Aquest arxiu conté tots els usuaris, rols i valors totals.">Una vez hayas registrado tus entregables, haz clic en 'Exportar CSV para Tokenomics' para descargar un archivo compatible con la App de Tokenomics. Este archivo contiene todos los usuarios, roles y valores totales.</p>
+                    <a href="#export-section" class="lang" data-es="Ir a Exportar Datos" data-ca="Anar a Exportar Dades">Ir a Exportar Datos</a>
                 </div>
             </div>
         </div>
@@ -945,7 +1233,7 @@
                 </ul>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Apps" data-ca="Apps">Apps</h3>
+                <h3 class="lang" data-es="Apps del Ecosistema" data-ca="Apps de l'Ecosistema">Apps del Ecosistema</h3>
                 <ul class="footer-links">
                     <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
                     <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
@@ -971,21 +1259,168 @@
             </div>
         </div>
         <div class="copyright">
-            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización futura de contribuciones." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb preparació per tokenització futura de contribucions.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización futura de contribuciones.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización y gestión de usuarios por rol." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb preparació per a tokenització i gestió d'usuaris per rol.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización y gestión de usuarios por rol.</p>
         </div>
     </footer>
     
     <script>
-        // Estado de la aplicación
-        let projectData = {
-            name: "Proyecto sin nombre",
-            currency: "puntos",
-            roles: {}, // { roleName: { users: [{name, wallet}], deliverables: [] } }
-            deliverables: [],
-            vnaData: null
+        // ========== TEST-DRIVEN DEVELOPMENT FRAMEWORK ==========
+        const testSuite = {
+            results: [],
+            assert: {
+                equals: function(actual, expected, testName) {
+                    const passed = actual === expected;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: expected
+                    });
+                    return passed;
+                },
+                truthy: function(actual, testName) {
+                    const passed = !!actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'truthy value'
+                    });
+                    return passed;
+                },
+                falsy: function(actual, testName) {
+                    const passed = !actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'falsy value'
+                    });
+                    return passed;
+                },
+                type: function(actual, expectedType, testName) {
+                    const actualType = typeof actual;
+                    const passed = actualType === expectedType;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actualType,
+                        expected: expectedType
+                    });
+                    return passed;
+                }
+            },
+            runTests: function() {
+                this.results = [];
+                
+                // Test 1: Add deliverable button exists
+                this.assert.truthy(document.getElementById('add-deliverable'), "Add deliverable button exists");
+                
+                // Test 2: Export JSON button exists
+                this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
+                
+                // Test 3: Export CSV button exists
+                this.assert.truthy(document.getElementById('export-csv'), "Export CSV button exists");
+                
+                // Test 4: Reset button exists
+                this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
+                
+                // Test 5: Import roles button exists
+                this.assert.truthy(document.getElementById('import-roles'), "Import roles button exists");
+                
+                // Test 6: Initial state has no users
+                this.assert.equals(accountingData.users.length, 0, "Initial state has no users");
+                
+                // Test 7: Initial state has no deliverables
+                this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
+                
+                // Test 8: Add a test user and deliverable
+                const testUser = "Test User " + Date.now();
+                const testRole = "Test Role";
+                document.getElementById('user-name').value = testUser;
+                document.getElementById('role-select').innerHTML = `<option value="${testRole}">${testRole}</option>`;
+                document.getElementById('role-select').value = testRole;
+                document.getElementById('deliverable-name').value = "Test Deliverable";
+                document.getElementById('value').value = "100";
+                document.getElementById('add-deliverable').click();
+                
+                this.assert.equals(accountingData.users.length, 1, "Adding a deliverable creates a user");
+                this.assert.equals(accountingData.deliverables.length, 1, "Adding a deliverable creates a deliverable");
+                
+                // Test 9: Verify user was added correctly
+                const addedUser = accountingData.users.find(u => u.name === testUser);
+                this.assert.truthy(addedUser, "User was added to accountingData");
+                this.assert.equals(addedUser.totalValue, 100, "User has correct total value");
+                
+                // Test 10: Verify deliverable was added correctly
+                const addedDeliverable = accountingData.deliverables.find(d => d.deliverable === "Test Deliverable");
+                this.assert.truthy(addedDeliverable, "Deliverable was added to accountingData");
+                this.assert.equals(addedDeliverable.value, 100, "Deliverable has correct value");
+                
+                // Test 11: Export CSV function exists
+                this.assert.truthy(typeof exportCSV === 'function', "exportCSV function exists");
+                
+                // Test 12: Export JSON function exists
+                this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
+                
+                // Clean up test data
+                resetDataWithoutConfirmation();
+                
+                return this.results;
+            },
+            displayResults: function(results) {
+                const testResultsDiv = document.getElementById('test-results');
+                testResultsDiv.style.display = 'block';
+                testResultsDiv.innerHTML = '';
+                
+                let passedCount = 0;
+                let failedCount = 0;
+                
+                results.forEach(result => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = result.passed ? 'test-pass' : 'test-fail';
+                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
+                        `   Expected: ${result.expected}<br/>` +
+                        `   Actual: ${result.actual}`;
+                    testResultsDiv.appendChild(resultDiv);
+                    
+                    if (result.passed) passedCount++;
+                    else failedCount++;
+                });
+                
+                // Summary
+                const summary = document.createElement('div');
+                summary.style.fontWeight = 'bold';
+                summary.style.marginTop = '15px';
+                summary.style.paddingTop = '10px';
+                summary.style.borderTop = '1px solid #ddd';
+                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
+                testResultsDiv.appendChild(summary);
+                
+                // Alert summary
+                if (failedCount === 0) {
+                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`, 'success');
+                } else {
+                    showNotification(`⚠️ Algunas pruebas fallaron (${failedCount}/{results.length}).\n\nRevisa los resultados en la sección de pruebas.`, 'error');
+                }
+            }
         };
         
+        // ========== APPLICATION STATE AND FUNCTIONS ==========
+        // Estado de la aplicación
+        let accountingData = {
+            projectName: "Proyecto MASIA",
+            valueUnit: "puntos",
+            roles: [],
+            users: [],
+            deliverables: []
+        };
+        
+        // Chart variable
         let valueChart = null;
+        
+        // Autocomplete variables
+        let currentAutocompleteField = null;
         
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
@@ -1001,11 +1436,16 @@
             // Configurar event listeners
             setupEventListeners();
             
+            // Configurar autocompletado
+            setupAutocomplete();
+            
             // Actualizar visualizaciones
             updateVisualizations();
             
-            // Cargar roles en los selects
-            loadRolesInSelects();
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('¡Bienvenido a la Value Accounting App! Importa roles desde la VNA App o crea entregables directamente.', 'success');
+            }, 1000);
         });
         
         // Configurar selector de idioma
@@ -1044,467 +1484,6 @@
             }
         }
         
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Importar datos
-            document.getElementById('import-data').addEventListener('click', importData);
-            
-            // Añadir entregable rápido
-            document.getElementById('quick-add').addEventListener('click', addQuickDeliverable);
-            document.getElementById('quick-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') addQuickDeliverable();
-            });
-            
-            // Añadir entregable detallado
-            document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
-            
-            // Añadir usuario
-            document.getElementById('add-user').addEventListener('click', addUser);
-            
-            // Exportar datos
-            document.getElementById('export-json').addEventListener('click', exportJSON);
-            document.getElementById('export-csv').addEventListener('click', exportCSV);
-            
-            // Limpiar datos
-            document.getElementById('reset-data').addEventListener('click', resetData);
-            
-            // Cambiar moneda
-            document.getElementById('value-currency').addEventListener('change', function() {
-                projectData.currency = this.value;
-                saveData();
-                updateVisualizations();
-            });
-            
-            // Cambiar nombre del proyecto
-            document.getElementById('project-name').addEventListener('change', function() {
-                projectData.name = this.value || "Proyecto sin nombre";
-                saveData();
-                updateVisualizations();
-            });
-            
-            // Cuando se selecciona un rol, cargar usuarios de ese rol
-            document.getElementById('role-select').addEventListener('change', function() {
-                loadUsersInSelect(this.value);
-            });
-        }
-        
-        // Importar datos desde archivo JSON
-        function importData() {
-            const fileInput = document.getElementById('import-file');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Selecciona un archivo JSON primero' : 
-                    'Selecciona un archivo JSON primero');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // Validar estructura básica
-                    if (!importedData.nodes || !importedData.links) {
-                        throw new Error('El archivo no tiene la estructura correcta (nodes y links)');
-                    }
-                    
-                    // Guardar datos VNA
-                    projectData.vnaData = importedData;
-                    
-                    // Procesar nodos como roles
-                    importedData.nodes.forEach(node => {
-                        const roleName = node.id.toLowerCase();
-                        if (!projectData.roles[roleName]) {
-                            projectData.roles[roleName] = {
-                                name: node.id,
-                                users: [],
-                                deliverables: []
-                            };
-                        }
-                    });
-                    
-                    // Procesar enlaces como transacciones
-                    importedData.links.forEach(link => {
-                        const source = typeof link.source === 'object' ? link.source.id : link.source;
-                        const target = typeof link.target === 'object' ? link.target.id : link.target;
-                        const deliverable = link.deliverable || 'Entregable importado';
-                        
-                        // Añadir entregable de ejemplo
-                        projectData.deliverables.push({
-                            id: Date.now() + Math.random().toString(36).substr(2, 5),
-                            role: source.toLowerCase(),
-                            deliverable: deliverable,
-                            description: `Transacción importada: ${source} → ${target}`,
-                            link: '',
-                            value: 100, // Valor por defecto
-                            timestamp: new Date().toISOString()
-                        });
-                    });
-                    
-                    saveData();
-                    updateVisualizations();
-                    loadRolesInSelects();
-                    
-                    // Mostrar sección de asignación de usuarios
-                    document.getElementById('role-user-assignment').style.display = 'block';
-                    loadRolesForAssignment();
-                    
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Mapa de valor importado correctamente! Ahora asigna usuarios a cada rol.' : 
-                        'Mapa de valor importado correctamente! Ahora asigna usuarios a cada rol.');
-                } catch (error) {
-                    console.error('Error al importar datos:', error);
-                    alert(document.documentElement.lang === 'ca' ? 
-                        `Error en importar les dades: ${error.message}` : 
-                        `Error al importar los datos: ${error.message}`);
-                }
-            };
-            
-            reader.readAsText(file);
-        }
-        
-        // Cargar roles para asignación de usuarios
-        function loadRolesForAssignment() {
-            const container = document.getElementById('roles-container');
-            container.innerHTML = '';
-            
-            Object.keys(projectData.roles).forEach(roleName => {
-                const role = projectData.roles[roleName];
-                
-                const roleDiv = document.createElement('div');
-                roleDiv.className = 'user-card';
-                roleDiv.innerHTML = `
-                    <h4>${role.name}</h4>
-                    <p><small class="lang" data-es="Usuarios asignados:" data-ca="Usuaris assignats:">Usuarios asignados:</small> ${role.users.length}</p>
-                    <div style="margin-top: 10px;">
-                        <input type="text" placeholder="${document.documentElement.lang === 'ca' ? 'Nom d\'usuari' : 'Nombre de usuario'}" class="user-name-input" data-role="${roleName}">
-                        <input type="text" placeholder="0x..." class="user-wallet-input" data-role="${roleName}" style="margin-top: 5px; font-family: monospace; font-size: 0.85rem;">
-                        <button class="btn btn-success add-user-to-role" style="margin-top: 8px; padding: 6px 12px; font-size: 0.9rem;" data-role="${roleName}">
-                            <span>👤</span> ${document.documentElement.lang === 'ca' ? 'Afegir' : 'Añadir'}
-                        </button>
-                    </div>
-                `;
-                
-                container.appendChild(roleDiv);
-            });
-            
-            // Añadir event listeners a los botones
-            document.querySelectorAll('.add-user-to-role').forEach(button => {
-                button.addEventListener('click', function() {
-                    const roleName = this.getAttribute('data-role');
-                    const nameInput = this.parentElement.querySelector('.user-name-input');
-                    const walletInput = this.parentElement.querySelector('.user-wallet-input');
-                    
-                    const userName = nameInput.value.trim();
-                    const userWallet = walletInput.value.trim();
-                    
-                    if (!userName) {
-                        alert(document.documentElement.lang === 'ca' ? 
-                            'Introdueix un nom d\'usuari' : 
-                            'Introduce un nombre de usuario');
-                        return;
-                    }
-                    
-                    // Añadir usuario al rol
-                    if (!projectData.roles[roleName]) {
-                        projectData.roles[roleName] = { name: roleName, users: [], deliverables: [] };
-                    }
-                    
-                    projectData.roles[roleName].users.push({
-                        name: userName,
-                        wallet: userWallet || null
-                    });
-                    
-                    saveData();
-                    loadRolesForAssignment();
-                    loadRolesInSelects();
-                    
-                    // Limpiar inputs
-                    nameInput.value = '';
-                    walletInput.value = '';
-                    
-                    alert(document.documentElement.lang === 'ca' ? 
-                        `Usuari ${userName} afegit al rol ${roleName}` : 
-                        `Usuario ${userName} añadido al rol ${roleName}`);
-                });
-            });
-        }
-        
-        // Añadir entregable rápido
-        function addQuickDeliverable() {
-            const input = document.getElementById('quick-input').value.trim();
-            if (!input) return;
-            
-            // Parsear formato: @rol #entregable valor:100
-            const roleMatch = input.match(/@(\S+)/);
-            const deliverableMatch = input.match(/#(\S+)/);
-            const valueMatch = input.match(/valor:(\d+)/i);
-            
-            if (!roleMatch || !deliverableMatch || !valueMatch) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Format incorrecte. Usa: @rol #entregable valor:100' : 
-                    'Formato incorrecto. Usa: @rol #entregable valor:100');
-                return;
-            }
-            
-            const role = roleMatch[1].toLowerCase();
-            const deliverable = deliverableMatch[1];
-            const value = parseInt(valueMatch[1]);
-            
-            // Obtener primer usuario del rol (o crear uno por defecto)
-            let userName = 'Usuario';
-            let userWallet = null;
-            
-            if (projectData.roles[role] && projectData.roles[role].users.length > 0) {
-                const firstUser = projectData.roles[role].users[0];
-                userName = firstUser.name;
-                userWallet = firstUser.wallet;
-            }
-            
-            addDeliverableToSystem(role, userName, userWallet, deliverable, `Entregable rápido: ${deliverable}`, '', value);
-            
-            // Limpiar input
-            document.getElementById('quick-input').value = '';
-        }
-        
-        // Añadir entregable detallado
-        function addDeliverable() {
-            const roleSelect = document.getElementById('role-select');
-            const userSelect = document.getElementById('user-select');
-            const deliverableInput = document.getElementById('deliverable-input').value.trim();
-            const descriptionInput = document.getElementById('description-input').value.trim();
-            const linkInput = document.getElementById('link-input').value.trim();
-            const valueInput = document.getElementById('value-input').value.trim();
-            
-            if (!roleSelect.value || !userSelect.value || !deliverableInput || !valueInput) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Omple tots els camps obligatoris (rol, usuari, entregable, valor)' : 
-                    'Completa todos los campos obligatorios (rol, usuario, entregable, valor)');
-                return;
-            }
-            
-            const role = roleSelect.value;
-            const userName = userSelect.options[userSelect.selectedIndex].text;
-            const userId = userSelect.value;
-            
-            // Obtener wallet del usuario
-            let userWallet = null;
-            if (projectData.roles[role] && projectData.roles[role].users) {
-                const user = projectData.roles[role].users.find(u => `${u.name}|${u.wallet || ''}` === userId);
-                if (user) userWallet = user.wallet;
-            }
-            
-            const value = parseInt(valueInput);
-            
-            addDeliverableToSystem(role, userName, userWallet, deliverableInput, descriptionInput, linkInput, value);
-            
-            // Limpiar formulario
-            document.getElementById('deliverable-input').value = '';
-            document.getElementById('description-input').value = '';
-            document.getElementById('link-input').value = '';
-            document.getElementById('value-input').value = '';
-            
-            // Feedback al usuario
-            const successMsg = document.documentElement.lang === 'ca' ? 
-                `Entregable registrat per ${userName}` : 
-                `Entregable registrado para ${userName}`;
-            
-            const btn = document.getElementById('add-deliverable');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<span>✅</span> ${successMsg}`;
-            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-            }, 2000);
-        }
-        
-        // Función central para añadir entregable
-        function addDeliverableToSystem(role, userName, userWallet, deliverable, description, link, value) {
-            // Asegurar que el rol exista
-            if (!projectData.roles[role]) {
-                projectData.roles[role] = {
-                    name: role.charAt(0).toUpperCase() + role.slice(1),
-                    users: [],
-                    deliverables: []
-                };
-                
-                // Añadir usuario si no existe
-                if (!projectData.roles[role].users.some(u => u.name === userName)) {
-                    projectData.roles[role].users.push({
-                        name: userName,
-                        wallet: userWallet
-                    });
-                }
-            }
-            
-            // Crear entregable
-            const deliverableObj = {
-                id: Date.now() + Math.random().toString(36).substr(2, 5),
-                role: role,
-                user: userName,
-                wallet: userWallet,
-                deliverable: deliverable,
-                description: description,
-                link: link,
-                value: value,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Añadir a la lista de entregables
-            projectData.deliverables.push(deliverableObj);
-            
-            // Guardar y actualizar
-            saveData();
-            updateVisualizations();
-        }
-        
-        // Añadir usuario
-        function addUser() {
-            const userName = document.getElementById('new-user-name').value.trim();
-            const userWallet = document.getElementById('new-user-wallet').value.trim();
-            const roleSelect = document.getElementById('new-user-role');
-            const roleName = roleSelect.value;
-            
-            if (!userName || !roleName) {
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Omple tots els camps obligatoris (nom d\'usuari, rol)' : 
-                    'Completa todos los campos obligatorios (nombre de usuario, rol)');
-                return;
-            }
-            
-            // Asegurar que el rol exista
-            if (!projectData.roles[roleName]) {
-                projectData.roles[roleName] = {
-                    name: roleName.charAt(0).toUpperCase() + roleName.slice(1),
-                    users: [],
-                    deliverables: []
-                };
-            }
-            
-            // Añadir usuario al rol
-            projectData.roles[roleName].users.push({
-                name: userName,
-                wallet: userWallet || null
-            });
-            
-            saveData();
-            updateVisualizations();
-            loadRolesInSelects();
-            
-            // Limpiar formulario
-            document.getElementById('new-user-name').value = '';
-            document.getElementById('new-user-wallet').value = '';
-            
-            // Feedback al usuario
-            const successMsg = document.documentElement.lang === 'ca' ? 
-                `Usuari ${userName} afegit al rol ${roleName}` : 
-                `Usuario ${userName} añadido al rol ${roleName}`;
-            
-            const btn = document.getElementById('add-user');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<span>✅</span> ${successMsg}`;
-            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-            }, 2000);
-        }
-        
-        // Cargar roles en los selects
-        function loadRolesInSelects() {
-            const roleSelect = document.getElementById('role-select');
-            const newUserRoleSelect = document.getElementById('new-user-role');
-            
-            // Limpiar opciones actuales (excepto la primera)
-            while (roleSelect.options.length > 1) {
-                roleSelect.remove(1);
-            }
-            
-            while (newUserRoleSelect.options.length > 1) {
-                newUserRoleSelect.remove(1);
-            }
-            
-            // Añadir roles
-            Object.keys(projectData.roles).forEach(roleName => {
-                const role = projectData.roles[roleName];
-                
-                const option1 = document.createElement('option');
-                option1.value = roleName;
-                option1.textContent = role.name;
-                roleSelect.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = roleName;
-                option2.textContent = role.name;
-                newUserRoleSelect.appendChild(option2);
-            });
-            
-            // Si hay roles, cargar usuarios del primer rol
-            if (Object.keys(projectData.roles).length > 0) {
-                loadUsersInSelect(Object.keys(projectData.roles)[0]);
-            }
-        }
-        
-        // Cargar usuarios en el select de usuarios
-        function loadUsersInSelect(roleName) {
-            const userSelect = document.getElementById('user-select');
-            
-            // Limpiar opciones actuales (excepto la primera)
-            while (userSelect.options.length > 1) {
-                userSelect.remove(1);
-            }
-            
-            // Si no hay rol seleccionado, salir
-            if (!roleName || !projectData.roles[roleName]) return;
-            
-            // Añadir usuarios del rol
-            projectData.roles[roleName].users.forEach(user => {
-                const option = document.createElement('option');
-                option.value = `${user.name}|${user.wallet || ''}`;
-                option.textContent = user.name;
-                userSelect.appendChild(option);
-            });
-            
-            // Actualizar grid de usuarios
-            updateUserGrid();
-        }
-        
-        // Actualizar grid de usuarios
-        function updateUserGrid() {
-            const userGrid = document.getElementById('user-grid');
-            userGrid.innerHTML = '';
-            
-            // Contar total de usuarios
-            let totalUsers = 0;
-            
-            // Mostrar usuarios por rol
-            Object.keys(projectData.roles).forEach(roleName => {
-                const role = projectData.roles[roleName];
-                
-                role.users.forEach(user => {
-                    totalUsers++;
-                    
-                    const userCard = document.createElement('div');
-                    userCard.className = 'user-card';
-                    userCard.innerHTML = `
-                        <h4>${user.name}</h4>
-                        <p><small class="role-tag role-team">${role.name}</small></p>
-                        ${user.wallet ? `<p class="wallet">${user.wallet}</p>` : ''}
-                    `;
-                    userGrid.appendChild(userCard);
-                });
-            });
-            
-            // Actualizar estadística
-            document.getElementById('total-users').textContent = totalUsers;
-            document.getElementById('total-roles').textContent = Object.keys(projectData.roles).length;
-        }
-        
         // Inicializar gráfico
         function initChart() {
             const ctx = document.getElementById('valueChart').getContext('2d');
@@ -1515,14 +1494,14 @@
                     datasets: [{
                         data: [],
                         backgroundColor: [
+                            'rgba(30, 58, 138, 0.85)',
                             'rgba(79, 70, 229, 0.85)',
+                            'rgba(139, 92, 246, 0.85)',
                             'rgba(16, 185, 129, 0.85)',
                             'rgba(245, 158, 11, 0.85)',
+                            'rgba(239, 68, 68, 0.85)',
                             'rgba(59, 130, 246, 0.85)',
-                            'rgba(139, 92, 246, 0.85)',
-                            'rgba(22, 163, 74, 0.85)',
-                            'rgba(168, 85, 247, 0.85)',
-                            'rgba(37, 99, 235, 0.85)'
+                            'rgba(107, 114, 128, 0.85)'
                         ],
                         borderWidth: 2,
                         borderColor: '#ffffff'
@@ -1549,7 +1528,7 @@
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                                     
-                                    return `${label}: ${percentage}% (${Math.round(value).toLocaleString()} puntos)`;
+                                    return `${label}: ${percentage}% (${value} ${accountingData.valueUnit})`;
                                 }
                             }
                         }
@@ -1562,112 +1541,457 @@
             });
         }
         
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Importar roles
+            document.getElementById('import-roles').addEventListener('click', importRoles);
+            
+            // Añadir entregable
+            document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
+            
+            // Exportar JSON
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            
+            // Exportar CSV
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            
+            // Limpiar datos
+            document.getElementById('reset-data').addEventListener('click', resetData);
+            
+            // Ejecutar pruebas
+            document.getElementById('run-tests').addEventListener('click', runTests);
+            
+            // Cambiar nombre del proyecto
+            document.getElementById('project-name').addEventListener('change', function() {
+                accountingData.projectName = this.value || "Proyecto MASIA";
+                saveData();
+            });
+            
+            // Cambiar unidad de valor
+            document.getElementById('value-unit').addEventListener('change', function() {
+                accountingData.valueUnit = this.value;
+                saveData();
+                updateVisualizations();
+            });
+        }
+        
+        // Configurar autocompletado
+        function setupAutocomplete() {
+            const userInput = document.getElementById('user-name');
+            const userList = document.getElementById('user-list');
+            
+            // Set up autocomplete for user field
+            userInput.addEventListener('input', function(e) {
+                currentAutocompleteField = 'user';
+                showAutocomplete(this.value, userList);
+            });
+            
+            userInput.addEventListener('focus', function(e) {
+                currentAutocompleteField = 'user';
+                showAutocomplete(this.value, userList);
+            });
+            
+            // Close autocomplete when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target !== userInput) {
+                    userList.innerHTML = '';
+                }
+            });
+        }
+        
+        // Show autocomplete suggestions
+        function showAutocomplete(inputValue, container) {
+            // Clear container
+            container.innerHTML = '';
+            
+            if (!inputValue || inputValue.trim() === '') {
+                return;
+            }
+            
+            // Find matching users (case-insensitive)
+            const matches = accountingData.users.filter(user => 
+                user.name.toLowerCase().includes(inputValue.toLowerCase().trim())
+            );
+            
+            // Limit to 10 matches
+            matches.slice(0, 10).forEach(user => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = user.name;
+                suggestion.addEventListener('click', function() {
+                    document.getElementById('user-name').value = user.name;
+                    container.innerHTML = '';
+                });
+                container.appendChild(suggestion);
+            });
+            
+            // Add option to create new user if no exact match
+            if (matches.length === 0) {
+                const newOption = document.createElement('div');
+                newOption.innerHTML = `➕ <strong>Crear nuevo usuario:</strong> "${inputValue.trim()}"`;
+                newOption.style.fontStyle = 'italic';
+                newOption.addEventListener('click', function() {
+                    document.getElementById('user-name').value = inputValue.trim();
+                    container.innerHTML = '';
+                });
+                container.appendChild(newOption);
+            }
+        }
+        
+        // Importar roles desde CSV o JSON
+        function importRoles() {
+            const fileInput = document.getElementById('import-roles-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Selecciona un archivo CSV o JSON primero', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    let importedRoles = [];
+                    
+                    if (file.name.endsWith('.csv')) {
+                        // Parse CSV
+                        const rows = content.split('\n');
+                        if (rows.length < 2) {
+                            throw new Error('El CSV está vacío o no tiene datos');
+                        }
+                        
+                        // Get headers
+                        const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
+                        const roleIndex = headers.findIndex(h => h === 'rol' || h === 'role');
+                        
+                        if (roleIndex === -1) {
+                            throw new Error('El CSV debe tener una columna llamada "Rol"');
+                        }
+                        
+                        // Extract roles
+                        for (let i = 1; i < rows.length; i++) {
+                            if (!rows[i].trim()) continue;
+                            
+                            const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
+                            if (cells.length > roleIndex) {
+                                const role = cells[roleIndex].trim();
+                                if (role && !accountingData.roles.includes(role)) {
+                                    importedRoles.push(role);
+                                }
+                            }
+                        }
+                    } else if (file.name.endsWith('.json')) {
+                        // Parse JSON
+                        const data = JSON.parse(content);
+                        
+                        // Check if it's VNA format
+                        if (data.nodes && Array.isArray(data.nodes)) {
+                            data.nodes.forEach(node => {
+                                const role = node.label || node.id;
+                                if (role && !accountingData.roles.includes(role)) {
+                                    importedRoles.push(role);
+                                }
+                            });
+                        } else if (data.roles && Array.isArray(data.roles)) {
+                            importedRoles = data.roles.filter(r => !accountingData.roles.includes(r));
+                        } else {
+                            throw new Error('Formato JSON no reconocido. Debe contener "nodes" o "roles"');
+                        }
+                    } else {
+                        throw new Error('Formato de archivo no soportado. Usa CSV o JSON');
+                    }
+                    
+                    // Add imported roles to the list
+                    importedRoles.forEach(role => {
+                        if (!accountingData.roles.includes(role)) {
+                            accountingData.roles.push(role);
+                        }
+                    });
+                    
+                    // Update role dropdown
+                    updateRoleDropdown();
+                    
+                    // Save and update
+                    saveData();
+                    updateVisualizations();
+                    
+                    showNotification(`Se han importado ${importedRoles.length} roles correctamente`, 'success');
+                } catch (error) {
+                    console.error('Error al importar roles:', error);
+                    showNotification(`Error al importar roles: ${error.message}`, 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Actualizar dropdown de roles
+        function updateRoleDropdown() {
+            const roleSelect = document.getElementById('role-select');
+            roleSelect.innerHTML = '<option value="" class="lang" data-es="Selecciona un rol o crea uno nuevo" data-ca="Selecciona un rol o crea un de nou">Selecciona un rol o crea uno nuevo</option>';
+            
+            // Add imported roles
+            accountingData.roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role;
+                option.textContent = role;
+                roleSelect.appendChild(option);
+            });
+        }
+        
+        // Añadir entregable
+        function addDeliverable() {
+            const userName = document.getElementById('user-name').value.trim();
+            const role = document.getElementById('role-select').value.trim() || document.getElementById('role-select').options[document.getElementById('role-select').selectedIndex].text.trim();
+            const deliverableName = document.getElementById('deliverable-name').value.trim();
+            const transactionType = document.getElementById('transaction-type').value;
+            const description = document.getElementById('description').value.trim();
+            const link = document.getElementById('link').value.trim();
+            const value = parseInt(document.getElementById('value').value);
+            
+            if (!userName || !role || !deliverableName || !value) {
+                showNotification('Completa todos los campos obligatorios (Persona, Rol, Entregable, Valor)', 'error');
+                return;
+            }
+            
+            if (isNaN(value) || value <= 0) {
+                showNotification('El valor debe ser un número positivo', 'error');
+                return;
+            }
+            
+            // Find or create user
+            let user = accountingData.users.find(u => u.name.toLowerCase() === userName.toLowerCase());
+            if (!user) {
+                user = {
+                    id: `user-${Date.now()}`,
+                    name: userName,
+                    roles: [role],
+                    totalValue: 0,
+                    deliverables: []
+                };
+                accountingData.users.push(user);
+            } else {
+                // Add role if not exists
+                if (!user.roles.includes(role)) {
+                    user.roles.push(role);
+                }
+            }
+            
+            // Create deliverable
+            const deliverable = {
+                id: `deliverable-${Date.now()}`,
+                userName: userName,
+                role: role,
+                deliverable: deliverableName,
+                transactionType: transactionType,
+                description: description,
+                link: link,
+                value: value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Add to user and global list
+            user.deliverables.push(deliverable);
+            user.totalValue += value;
+            accountingData.deliverables.push(deliverable);
+            
+            // Save and update
+            saveData();
+            updateVisualizations();
+            
+            // Clear form
+            document.getElementById('user-name').value = '';
+            document.getElementById('deliverable-name').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('link').value = '';
+            document.getElementById('value').value = '';
+            
+            // Show success message
+            showNotification(`Entregable "${deliverableName}" registrado correctamente para ${userName}`, 'success');
+        }
+        
         // Actualizar visualizaciones
         function updateVisualizations() {
-            // Actualizar estadísticas
-            const totalValue = projectData.deliverables.reduce((sum, d) => sum + d.value, 0);
-            const totalDeliverables = projectData.deliverables.length;
+            // Update stats
+            document.getElementById('total-users').textContent = accountingData.users.length;
+            document.getElementById('total-roles').textContent = accountingData.roles.length;
+            document.getElementById('total-deliverables').textContent = accountingData.deliverables.length;
+            document.getElementById('total-value').textContent = accountingData.users.reduce((sum, u) => sum + u.totalValue, 0);
             
-            document.getElementById('total-value').textContent = totalValue.toLocaleString();
-            document.getElementById('total-deliverables').textContent = totalDeliverables;
-            
-            // Actualizar gráfico
+            // Update chart
             updateChart();
             
-            // Actualizar ranking
-            updateRanking();
+            // Update ranking table
+            updateRankingTable();
+            
+            // Update deliverables list
+            updateDeliverablesList();
         }
         
         // Actualizar gráfico
         function updateChart() {
             if (!valueChart) return;
             
-            // Calcular valor total por rol
-            const roleValues = {};
-            projectData.deliverables.forEach(deliverable => {
-                const role = deliverable.role;
-                roleValues[role] = (roleValues[role] || 0) + deliverable.value;
-            });
+            // Get top 8 users by value
+            const topUsers = [...accountingData.users]
+                .sort((a, b) => b.totalValue - a.totalValue)
+                .slice(0, 8);
             
-            // Preparar datos para el gráfico
-            const labels = Object.keys(roleValues);
-            const data = Object.values(roleValues);
-            
-            // Actualizar gráfico
-            valueChart.data.labels = labels;
-            valueChart.data.datasets[0].data = data;
+            valueChart.data.labels = topUsers.map(u => u.name);
+            valueChart.data.datasets[0].data = topUsers.map(u => u.totalValue);
             valueChart.update();
         }
         
-        // Actualizar ranking
-        function updateRanking() {
-            const rankingList = document.getElementById('ranking-list');
+        // Actualizar tabla de ranking
+        function updateRankingTable() {
+            const tbody = document.getElementById('ranking-body');
             
-            if (projectData.deliverables.length === 0) {
-                rankingList.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
-                        <p class="lang" data-es="Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor" data-ca="Importa el teu mapa de valor o afegeix el primer entregable per començar a construir la teva comptabilitat de valor">Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor</p>
-                    </div>
+            if (accountingData.users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <span class="lang" data-es="No hay usuarios registrados aún" data-ca="No hi ha usuaris registrats encara">No hay usuarios registrados aún</span>
+                        </td>
+                    </tr>
                 `;
                 return;
             }
             
-            // Calcular valor total por usuario
-            const userValues = {};
-            projectData.deliverables.forEach(deliverable => {
-                const userKey = `${deliverable.user}|${deliverable.role}`;
-                if (!userValues[userKey]) {
-                    userValues[userKey] = {
-                        name: deliverable.user,
-                        role: deliverable.role,
-                        wallet: deliverable.wallet,
-                        totalValue: 0
-                    };
-                }
-                userValues[userKey].totalValue += deliverable.value;
-            });
+            // Sort users by total value (descending)
+            const sortedUsers = [...accountingData.users].sort((a, b) => b.totalValue - a.totalValue);
             
-            // Convertir a array y ordenar
-            const usersArray = Object.values(userValues).sort((a, b) => b.totalValue - a.totalValue);
-            
-            // Generar HTML para el ranking
             let html = '';
-            usersArray.forEach((user, index) => {
-                const position = index + 1;
-                const role = projectData.roles[user.role] ? projectData.roles[user.role].name : user.role;
-                
+            sortedUsers.forEach((user, index) => {
                 html += `
-                    <div class="ranking-item">
-                        <div class="ranking-badge">${position}</div>
-                        <div>
-                            <strong>${user.name}</strong><br>
-                            <span class="role-tag role-team">${role}</span>
-                        </div>
-                        <div>
-                            ${user.wallet ? `<div class="wallet-address">${user.wallet.substring(0, 6)}...${user.wallet.substring(user.wallet.length - 4)}</div>` : '<span class="lang" data-es="Sin wallet" data-ca="Sense wallet">Sin wallet</span>'}
-                        </div>
-                        <div class="wallet-address">
-                            ${user.wallet || '-'}
-                        </div>
-                        <div class="value-amount">${user.totalValue.toLocaleString()}</div>
-                    </div>
+                    <tr>
+                        <td><span class="position-badge">${index + 1}</span></td>
+                        <td>${user.name}</td>
+                        <td>${user.roles.join(', ')}</td>
+                        <td>${user.totalValue} ${accountingData.valueUnit}</td>
+                    </tr>
                 `;
             });
             
-            rankingList.innerHTML = html;
+            tbody.innerHTML = html;
         }
         
-        // Exportar como JSON
+        // Actualizar lista de entregables
+        function updateDeliverablesList() {
+            const tbody = document.getElementById('deliverables-body');
+            
+            if (accountingData.deliverables.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <span class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</span>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort deliverables by timestamp (newest first)
+            const sortedDeliverables = [...accountingData.deliverables].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+            
+            let html = '';
+            sortedDeliverables.forEach(deliverable => {
+                html += `
+                    <tr>
+                        <td>${deliverable.userName}</td>
+                        <td>${deliverable.role}</td>
+                        <td>${deliverable.deliverable}</td>
+                        <td>${deliverable.value} ${accountingData.valueUnit}</td>
+                        <td>
+                            <button class="action-btn edit" data-id="${deliverable.id}">
+                                <span>✏️</span>
+                            </button>
+                            <button class="action-btn delete" data-id="${deliverable.id}">
+                                <span>🗑️</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.action-btn.edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    editDeliverable(this.getAttribute('data-id'));
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    deleteDeliverable(this.getAttribute('data-id'));
+                });
+            });
+        }
+        
+        // Editar entregable (placeholder for future implementation)
+        function editDeliverable(id) {
+            showNotification('Función de edición en desarrollo. Por ahora, elimina y vuelve a crear el entregable.', 'info');
+        }
+        
+        // Eliminar entregable
+        function deleteDeliverable(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este entregable?')) {
+                return;
+            }
+            
+            // Find deliverable
+            const deliverableIndex = accountingData.deliverables.findIndex(d => d.id === id);
+            if (deliverableIndex === -1) return;
+            
+            const deliverable = accountingData.deliverables[deliverableIndex];
+            
+            // Find user and update
+            const user = accountingData.users.find(u => u.name === deliverable.userName);
+            if (user) {
+                // Remove from user's deliverables
+                user.deliverables = user.deliverables.filter(d => d.id !== id);
+                
+                // Update total value
+                user.totalValue -= deliverable.value;
+                
+                // Remove role if no more deliverables with that role
+                if (user.deliverables.length === 0) {
+                    user.roles = [];
+                } else {
+                    // Check if role is still used
+                    const rolesInUse = [...new Set(user.deliverables.map(d => d.role))];
+                    user.roles = rolesInUse;
+                }
+            }
+            
+            // Remove from global list
+            accountingData.deliverables.splice(deliverableIndex, 1);
+            
+            // Remove user if no deliverables left
+            accountingData.users = accountingData.users.filter(u => u.deliverables.length > 0);
+            
+            // Save and update
+            saveData();
+            updateVisualizations();
+            
+            showNotification('Entregable eliminado correctamente', 'success');
+        }
+        
+        // Exportar JSON
         function exportJSON() {
-            const dataStr = JSON.stringify(projectData, null, 2);
+            if (accountingData.users.length === 0) {
+                showNotification('No hay datos para exportar. Registra entregables primero.', 'error');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(accountingData, null, 2);
             const blob = new Blob([dataStr], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             
-            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+            const exportFileDefaultName = `value-accounting-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', url);
@@ -1677,31 +2001,50 @@
             
             linkElement.click();
             
-            // Limpiar el objeto URL después de la descarga
+            // Clean up
             setTimeout(() => {
                 document.body.removeChild(linkElement);
                 URL.revokeObjectURL(url);
             }, 100);
             
-            alert(document.documentElement.lang === 'ca' ? 
-                'Dades exportades correctament com a JSON' : 
-                'Datos exportados correctamente como JSON');
+            showNotification('Datos exportados correctamente como JSON', 'success');
         }
         
-        // Exportar como CSV
+        // Exportar CSV para Tokenomics
         function exportCSV() {
-            // Cabeceras
-            let csv = 'Rol,Usuario,Wallet,Entregable,Descripción,Enlace,Valor,Fecha\n';
+            if (accountingData.users.length === 0) {
+                showNotification('No hay datos para exportar. Registra entregables primero.', 'error');
+                return;
+            }
             
-            // Datos
-            projectData.deliverables.forEach(d => {
-                csv += `"${d.role}","${d.user}","${d.wallet || ''}","${d.deliverable}","${d.description.replace(/"/g, '""')}","${d.link}",${d.value},"${new Date(d.timestamp).toLocaleDateString()}"\n`;
+            // CSV headers
+            let csv = 'Usuario,Rol,Dirección Wallet,Valor Total,Entregables,Tipo de Rol\n';
+            
+            // Data rows
+            accountingData.users.forEach(user => {
+                // Determine role type for vesting parameters
+                let roleType = 'client';
+                const rolesLower = user.roles.map(r => r.toLowerCase());
+                
+                if (rolesLower.some(r => r.includes('inversor') || r.includes('invers') || r.includes('investor'))) {
+                    roleType = 'investor';
+                } else if (rolesLower.some(r => r.includes('equip') || r.includes('team') || r.includes('fundador') || r.includes('founder'))) {
+                    roleType = 'team';
+                } else if (rolesLower.some(r => r.includes('proveedor') || r.includes('supplier') || r.includes('advisor') || r.includes('consultor'))) {
+                    roleType = 'supplier';
+                }
+                
+                // For now, wallet is empty (to be added in future version)
+                const wallet = '';
+                
+                csv += `"${user.name}","${user.roles.join(', ')}","${wallet}","${user.totalValue}","${user.deliverables.length}","${roleType}"\n`;
             });
             
-            const blob = new Blob([csv], {type: 'text/csv'});
+            // Create blob and download
+            const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
             const url = URL.createObjectURL(blob);
             
-            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+            const exportFileDefaultName = `tokenomics-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', url);
@@ -1711,84 +2054,110 @@
             
             linkElement.click();
             
-            // Limpiar el objeto URL después de la descarga
+            // Clean up
             setTimeout(() => {
                 document.body.removeChild(linkElement);
                 URL.revokeObjectURL(url);
             }, 100);
             
-            alert(document.documentElement.lang === 'ca' ? 
-                'Dades exportades correctament com a CSV' : 
-                'Datos exportados correctamente como CSV');
+            showNotification(`Se han exportado ${accountingData.users.length} usuarios como CSV para Tokenomics App.`, 'success');
         }
         
         // Limpiar datos
         function resetData() {
-            if (confirm(document.documentElement.lang === 'ca' ? 
-                'Estàs segur que vols esborrar totes les dades del projecte?' : 
-                '¿Estás seguro de que quieres borrar todos los datos del proyecto?')) {
-                
-                projectData = {
-                    name: "Proyecto sin nombre",
-                    currency: "puntos",
-                    roles: {},
-                    deliverables: [],
-                    vnaData: null
-                };
-                
-                saveData();
-                updateVisualizations();
-                loadRolesInSelects();
-                updateUserGrid();
-                
-                // Limpiar campos de formulario
-                document.getElementById('project-name').value = "Proyecto sin nombre";
-                document.getElementById('quick-input').value = '';
-                document.getElementById('deliverable-input').value = '';
-                document.getElementById('description-input').value = '';
-                document.getElementById('link-input').value = '';
-                document.getElementById('value-input').value = '';
-                document.getElementById('new-user-name').value = '';
-                document.getElementById('new-user-wallet').value = '';
-                
-                // Ocultar sección de asignación
-                document.getElementById('role-user-assignment').style.display = 'none';
-                
-                alert(document.documentElement.lang === 'ca' ? 
-                    'Dades esborrades correctament' : 
-                    'Datos borrados correctamente');
+            if (confirm('¿Estás seguro de que quieres borrar todos los datos del proyecto?')) {
+                resetDataWithoutConfirmation();
+                showNotification('Datos borrados correctamente', 'success');
             }
+        }
+        
+        // Reset data without confirmation
+        function resetDataWithoutConfirmation() {
+            accountingData = {
+                projectName: "Proyecto MASIA",
+                valueUnit: "puntos",
+                roles: [],
+                users: [],
+                deliverables: []
+            };
+            
+            // Clear form fields
+            document.getElementById('project-name').value = "Proyecto MASIA";
+            document.getElementById('value-unit').value = "puntos";
+            document.getElementById('user-name').value = '';
+            document.getElementById('deliverable-name').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('link').value = '';
+            document.getElementById('value').value = '';
+            
+            // Clear role dropdown
+            updateRoleDropdown();
+            
+            // Save and update
+            saveData();
+            updateVisualizations();
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            // Remove existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message.replace(/\n/g, '<br>');
+            
+            // Add to body
+            document.body.appendChild(notification);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 3000);
         }
         
         // Guardar datos en localStorage
         function saveData() {
-            localStorage.setItem('valueAccountingData', JSON.stringify(projectData));
+            localStorage.setItem('valueAccountingData', JSON.stringify(accountingData));
         }
         
         // Cargar datos de localStorage
         function loadSavedData() {
             const saved = localStorage.getItem('valueAccountingData');
             if (saved) {
-                const parsedData = JSON.parse(saved);
-                
-                projectData = {
-                    name: parsedData.name || "Proyecto sin nombre",
-                    currency: parsedData.currency || "puntos",
-                    roles: parsedData.roles || {},
-                    deliverables: parsedData.deliverables || [],
-                    vnaData: parsedData.vnaData || null
-                };
-                
-                // Restaurar nombre del proyecto en el input
-                document.getElementById('project-name').value = projectData.name;
-                document.getElementById('value-currency').value = projectData.currency;
-                
-                // Cargar roles en selects
-                loadRolesInSelects();
-                
-                // Actualizar grid de usuarios
-                updateUserGrid();
+                try {
+                    const parsedData = JSON.parse(saved);
+                    
+                    accountingData = {
+                        projectName: parsedData.projectName || "Proyecto MASIA",
+                        valueUnit: parsedData.valueUnit || "puntos",
+                        roles: parsedData.roles || [],
+                        users: parsedData.users || [],
+                        deliverables: parsedData.deliverables || []
+                    };
+                    
+                    // Restore form fields
+                    document.getElementById('project-name').value = accountingData.projectName;
+                    document.getElementById('value-unit').value = accountingData.valueUnit;
+                    
+                    // Update role dropdown
+                    updateRoleDropdown();
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                }
             }
+        }
+        
+        // Run tests manually
+        function runTests() {
+            const results = testSuite.runTests();
+            testSuite.displayResults(results);
         }
     </script>
 </body>
