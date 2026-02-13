@@ -34,7 +34,7 @@
             --accent: #8b5cf6; /* Morado TeamTowers */
             --dark: #0f172a;
             --light: #f8fafc;
-            --gold: #f59e0b;
+            --gold: #f59e01;
             --success: #10b981;
             --warning: #fbbf24;
             --danger: #ef4444;
@@ -659,6 +659,26 @@
             white-space: nowrap;
         }
         
+        .default-example {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .default-example h4 {
+            color: var(--success);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .default-example h4::before {
+            content: '💡';
+        }
+        
         /* Footer */
         footer {
             background: var(--dark);
@@ -893,6 +913,11 @@
                         </div>
                         <!-- CSV data will be inserted here dynamically -->
                     </div>
+                    
+                    <div class="default-example">
+                        <h4 class="lang" data-es="Ejemplo por Defecto" data-ca="Exemple per Defecte">Ejemplo por Defecto</h4>
+                        <p class="lang" data-es="La aplicación muestra un ejemplo simulado hasta que importes tus datos reales de Contabilidad de Valor. Este ejemplo demuestra cómo se distribuirían los tokens según el modelo Fibonacci." data-ca="L'aplicació mostra un exemple simulat fins que importis les teves dades reals de Comptabilitat de Valor. Aquest exemple demostra com es distribuirien els tokens segons el model Fibonacci.">La aplicación muestra un ejemplo simulado hasta que importes tus datos reales de Contabilidad de Valor. Este ejemplo demuestra cómo se distribuirían los tokens según el modelo Fibonacci.</p>
+                    </div>
                 </div>
                 
                 <div class="token-creation">
@@ -1002,13 +1027,7 @@
                 
                 <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="👥 Distribución Actual por Stakeholders" data-ca="👥 Distribució Actual per Stakeholders">👥 Distribución Actual por Stakeholders</h3>
                 <div id="stakeholder-grid" class="stakeholder-grid">
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <h3 class="lang" data-es="No hay stakeholders configurados aún" data-ca="No hi ha stakeholders configurats encara">No hay stakeholders configurados aún</h3>
-                        <p class="lang" data-es="Importa tu CSV de Contabilidad de Valor o simula tu modelo tokenómico para ver la distribución entre stakeholders" data-ca="Importa el teu CSV de Comptabilitat de Valor o simula el teu model tokenòmic per veure la distribució entre stakeholders">Importa tu CSV de Contabilidad de Valor o simula tu modelo tokenómico para ver la distribución entre stakeholders</p>
-                    </div>
+                    <!-- Stakeholders will be populated here -->
                 </div>
                 
                 <div class="integration-section" style="margin-top: 30px;">
@@ -1110,7 +1129,8 @@
             ],
             timelineData: null,
             isImportMode: false, // Flag para saber si estamos en modo importación
-            importedData: null // Datos importados del CSV
+            importedData: null, // Datos importados del CSV
+            csvContent: null // Contenido del CSV importado
         };
         
         let tokenChart = null;
@@ -1129,6 +1149,11 @@
             
             // Configurar event listeners
             setupEventListeners();
+            
+            // Si no hay datos guardados, mostrar ejemplo por defecto
+            if (tokenomicsData.stakeholders.length === 0) {
+                showDefaultExample();
+            }
             
             // Actualizar visualizaciones
             updateVisualizations();
@@ -1247,7 +1272,7 @@
                 
                 // Parsear CSV y mostrar las primeras 5 filas
                 const rows = content.split('\n');
-                const headers = rows[0].split(',').map(h => h.trim());
+                const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
                 
                 // Encontrar índices de las columnas que necesitamos
                 const roleIndex = headers.findIndex(h => h.toLowerCase().includes('rol'));
@@ -1257,7 +1282,7 @@
                 // Mostrar hasta 5 filas de datos
                 const maxRows = Math.min(5, rows.length - 1);
                 for (let i = 1; i <= maxRows && i < rows.length; i++) {
-                    const cells = rows[i].split(',').map(c => c.trim());
+                    const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
                     if (cells.length >= Math.max(roleIndex, deliverableIndex, valueIndex) + 1) {
                         const rowDiv = document.createElement('div');
                         rowDiv.className = 'csv-row';
@@ -1276,7 +1301,7 @@
             reader.readAsText(file);
         }
         
-        // Procesar CSV importado
+        // Procesar CSV importado - CORREGIDO Y MEJORADO
         function processCSV() {
             if (!tokenomicsData.csvContent) {
                 alert(document.documentElement.lang === 'ca' ? 
@@ -1288,7 +1313,7 @@
             try {
                 // Parsear el CSV
                 const rows = tokenomicsData.csvContent.split('\n');
-                const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+                const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
                 
                 // Encontrar índices de las columnas que necesitamos
                 const roleIndex = headers.findIndex(h => h.includes('rol'));
@@ -1305,9 +1330,15 @@
                 let totalValue = 0;
                 
                 for (let i = 1; i < rows.length; i++) {
-                    const cells = rows[i].split(',').map(c => c.trim());
+                    const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
                     if (cells.length > Math.max(roleIndex, valueIndex)) {
-                        const role = cells[roleIndex].replace('@', '').toLowerCase();
+                        // Normalizar el rol: quitar @, trim, lowercase
+                        let role = cells[roleIndex].replace('@', '').trim().toLowerCase();
+                        
+                        // Corregir errores comunes en los nombres de roles
+                        if (role.includes('inverosr') || role.includes('inversor')) role = 'inversor';
+                        if (role.includes('fundador') || role.includes('equipo')) role = 'equipo';
+                        
                         const value = parseFloat(cells[valueIndex]) || 0;
                         
                         if (value > 0) {
@@ -1315,6 +1346,12 @@
                             totalValue += value;
                         }
                     }
+                }
+                
+                if (totalValue === 0) {
+                    throw new Error(document.documentElement.lang === 'ca' ? 
+                        'No se encontraron valores válidos en el CSV' : 
+                        'No se encontraron valores válidos en el CSV');
                 }
                 
                 // Calcular distribución de tokens basada en el valor aportado
@@ -1342,12 +1379,15 @@
                     // Determinar tipo de stakeholder basado en el nombre del rol
                     let type = 'client';
                     if (role.includes('inversor') || role.includes('invers')) type = 'investor';
-                    else if (role.includes('equip') || role.includes('team') || role.includes('fundador')) type = 'team';
+                    else if (role.includes('equip') || role.includes('team') || role.includes('fundador') || role.includes('equipo')) type = 'team';
                     else if (role.includes('proveedor') || role.includes('supplier')) type = 'supplier';
+                    
+                    // Capitalizar el nombre del rol
+                    const roleName = role.charAt(0).toUpperCase() + role.slice(1);
                     
                     stakeholders.push({
                         id: role,
-                        name: role.charAt(0).toUpperCase() + role.slice(1),
+                        name: roleName,
                         type: type,
                         percentage: parseFloat(percentage.toFixed(2)),
                         tokens: tokens,
@@ -1401,9 +1441,66 @@
             }
         }
         
+        // Mostrar ejemplo por defecto
+        function showDefaultExample() {
+            // Generar stakeholders simulados basados en la distribución inicial
+            tokenomicsData.stakeholders = [
+                {
+                    id: 'investors',
+                    name: document.documentElement.lang === 'ca' ? 'Inversors Inicials' : 'Inversores Iniciales',
+                    type: 'investor',
+                    percentage: tokenomicsData.initialDistribution.investors,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.investors / 100),
+                    vesting: '4 años con 1 año de cliff',
+                    role: 'Capital inicial y recursos',
+                    value: 400000
+                },
+                {
+                    id: 'team',
+                    name: document.documentElement.lang === 'ca' ? 'Equip Fundador' : 'Equipo Fundador',
+                    type: 'team',
+                    percentage: tokenomicsData.initialDistribution.team,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.team / 100),
+                    vesting: '4 años con 1 año de cliff',
+                    role: 'Liderazgo y ejecución',
+                    value: 250000
+                },
+                {
+                    id: 'reserve',
+                    name: document.documentElement.lang === 'ca' ? 'Reserva del Projecte' : 'Reserva del Proyecto',
+                    type: 'reserve',
+                    percentage: tokenomicsData.initialDistribution.reserve,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.reserve / 100),
+                    vesting: 'Liberación programada',
+                    role: 'Desarrollo futuro y expansión',
+                    value: 200000
+                },
+                {
+                    id: 'community',
+                    name: document.documentElement.lang === 'ca' ? 'Comunitat (Staking)' : 'Comunidad (Staking)',
+                    type: 'community',
+                    percentage: tokenomicsData.initialDistribution.community,
+                    tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.community / 100),
+                    vesting: 'Recompensas por participación',
+                    role: 'Validación y gobernanza',
+                    value: 150000
+                }
+            ];
+            
+            tokenomicsData.isImportMode = false;
+            tokenomicsData.importedData = null;
+            
+            // Calcular evolución temporal según modelo
+            calculateTimeline();
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualizations();
+        }
+        
         // Simular tokenomics
         function simulateTokenomics() {
-            // Si estamos en modo importación, no permitir simulación
+            // Si estamos en modo importación, preguntar si quiere cambiar
             if (tokenomicsData.isImportMode) {
                 if (!confirm(document.documentElement.lang === 'ca' ? 
                     'Estàs en mode d\'importació de CSV. Si continues, es perdran les dades importades i es tornarà al mode de simulació. Vols continuar?' : 
@@ -1457,7 +1554,8 @@
                     percentage: tokenomicsData.initialDistribution.investors,
                     tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.investors / 100),
                     vesting: '4 años con 1 año de cliff',
-                    role: 'Capital inicial y recursos'
+                    role: 'Capital inicial y recursos',
+                    value: tokenomicsData.totalSupply * tokenomicsData.initialDistribution.investors / 100
                 },
                 {
                     id: 'team',
@@ -1466,7 +1564,8 @@
                     percentage: tokenomicsData.initialDistribution.team,
                     tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.team / 100),
                     vesting: '4 años con 1 año de cliff',
-                    role: 'Liderazgo y ejecución'
+                    role: 'Liderazgo y ejecución',
+                    value: tokenomicsData.totalSupply * tokenomicsData.initialDistribution.team / 100
                 },
                 {
                     id: 'reserve',
@@ -1475,7 +1574,8 @@
                     percentage: tokenomicsData.initialDistribution.reserve,
                     tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.reserve / 100),
                     vesting: 'Liberación programada',
-                    role: 'Desarrollo futuro y expansión'
+                    role: 'Desarrollo futuro y expansión',
+                    value: tokenomicsData.totalSupply * tokenomicsData.initialDistribution.reserve / 100
                 },
                 {
                     id: 'community',
@@ -1484,26 +1584,10 @@
                     percentage: tokenomicsData.initialDistribution.community,
                     tokens: Math.round(tokenomicsData.totalSupply * tokenomicsData.initialDistribution.community / 100),
                     vesting: 'Recompensas por participación',
-                    role: 'Validación y gobernanza'
+                    role: 'Validación y gobernanza',
+                    value: tokenomicsData.totalSupply * tokenomicsData.initialDistribution.community / 100
                 }
             ];
-            
-            // Añadir stakeholders adicionales basados en apps importadas
-            if (tokenomicsData.vnaData && tokenomicsData.vnaData.nodes) {
-                tokenomicsData.vnaData.nodes.forEach((node, index) => {
-                    if (index < 5) { // Limitar a 5 stakeholders adicionales
-                        tokenomicsData.stakeholders.push({
-                            id: `node-${index}`,
-                            name: node.id,
-                            type: index % 2 === 0 ? 'client' : 'supplier',
-                            percentage: (5 / tokenomicsData.vnaData.nodes.length),
-                            tokens: Math.round(tokenomicsData.totalSupply * 5 / 100 / tokenomicsData.vnaData.nodes.length),
-                            vesting: 'Basado en entregables',
-                            role: 'Contribución de valor según VNA'
-                        });
-                    }
-                });
-            }
         }
         
         // Calcular evolución temporal
@@ -1610,27 +1694,6 @@
             alert(document.documentElement.lang === 'ca' ? 
                 'Funcionalitat en desenvolupament. Pròximament podràs importar dades directament des de l\'App VNA.' : 
                 'Funcionalidad en desarrollo. Próximamente podrás importar datos directamente desde la App VNA.');
-            
-            // Simular datos importados para demostración
-            tokenomicsData.vnaData = {
-                nodes: [
-                    {id: "Cliente A", group: 1},
-                    {id: "Equipo Producto", group: 2},
-                    {id: "Proveedores", group: 3},
-                    {id: "Marketing", group: 4},
-                    {id: "Inversores", group: 5}
-                ],
-                links: [
-                    {source: "Cliente A", target: "Equipo Producto", type: "tangible", deliverable: "Feedback de producto"},
-                    {source: "Equipo Producto", target: "Proveedores", type: "tangible", deliverable: "Especificaciones técnicas"},
-                    {source: "Marketing", target: "Cliente A", type: "intangible", deliverable: "Confianza y engagement"},
-                    {source: "Inversores", target: "Equipo Producto", type: "tangible", deliverable: "Capital y recursos"}
-                ]
-            };
-            
-            alert(document.documentElement.lang === 'ca' ? 
-                'Dades de VNA importades correctament per a la demostració!' : 
-                '¡Datos de VNA importados correctamente para la demostración!');
         }
         
         // Importar datos de Contabilidad de Valor
@@ -1746,7 +1809,7 @@
                         // Para modo importación
                         {
                             label: document.documentElement.lang === 'ca' ? 'Stakeholders Actuals' : 'Stakeholders Actuales',
-                            data: [],
+                             [],
                             borderColor: 'rgba(16, 185, 129, 1)',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
                             fill: true,
@@ -2143,7 +2206,6 @@ contract ${tokenomicsData.tokenName}Token {
                         { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
                     ],
                     timelineData: null,
-                    vnaData: null,
                     isImportMode: false,
                     importedData: null,
                     csvContent: null
@@ -2168,8 +2230,10 @@ contract ${tokenomicsData.tokenName}Token {
                 document.getElementById('csv-preview').style.display = 'none';
                 document.getElementById('value-csv-file').value = '';
                 
+                // Mostrar ejemplo por defecto
+                showDefaultExample();
+                
                 saveData();
-                updateVisualizations();
                 
                 alert(document.documentElement.lang === 'ca' ? 
                     'Dades esborrades correctament' : 
@@ -2207,7 +2271,6 @@ contract ${tokenomicsData.tokenName}Token {
                         { name: "Fase 4: Madurez", months: "37+", dilution: 21 }
                     ],
                     timelineData: parsedData.timelineData || null,
-                    vnaData: parsedData.vnaData || null,
                     isImportMode: parsedData.isImportMode || false,
                     importedData: parsedData.importedData || null,
                     csvContent: parsedData.csvContent || null
