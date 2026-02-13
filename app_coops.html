@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Comunidades de Práctica App | TeamTowers Humà. Sistema para gestionar el conocimiento tácito y desarrollar competencias críticas en tu organización.">
+    <meta name="keywords" content="Comunidades de Práctica, CoPs, gestión conocimiento, TeamTowers Humà, Vilafranca del Penedès, desarrollo competencias">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Comunidades de Práctica App | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Comunidades de Práctica App | TeamTowers Humà">
+    <meta property="og:description" content="Sistema para gestionar el conocimiento tácito y desarrollar competencias críticas en tu organización. Conecta con Value Network Analysis y Contabilidad de Valor.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/coops-app">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Comunidades de Práctica App | TeamTowers Humà">
+    <meta name="twitter:description" content="Gestiona el conocimiento tácito y desarrolla competencias críticas en tu organización">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group label::before {
+            content: '•';
+            color: var(--accent);
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .knowledge-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border-left: 4px solid var(--accent);
+            transition: var(--transition);
+        }
+        
+        .knowledge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .knowledge-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .knowledge-card h4::before {
+            content: '📚';
+        }
+        
+        .knowledge-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .role-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-top: 8px;
+        }
+        
+        .role-team {
+            background: rgba(16, 185, 129, 0.15);
+            color: #0d9488;
+        }
+        
+        .role-client {
+            background: rgba(30, 58, 138, 0.15);
+            color: #1e3a8a;
+        }
+        
+        .role-supplier {
+            background: rgba(139, 92, 246, 0.15);
+            color: #7e3af2;
+        }
+        
+        .role-investor {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+        
+        .critical-badge {
+            background: rgba(239, 68, 68, 0.15);
+            color: #b91c1c;
+            font-weight: 700;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .integration-section {
+            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .integration-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .integration-section h3::before {
+            content: '🔗';
+            font-size: 1.4rem;
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .integration-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .integration-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .integration-card img {
+            height: 40px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+        
+        .integration-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .integration-card p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .instructions h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions h3::before {
+            content: 'ℹ️';
+            font-size: 1.4rem;
+        }
+        
+        .instructions ol {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        
+        .instructions code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 60px 20px 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 5px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            
+            .header-logo {
+                height: 50px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .knowledge-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Comunidades de Práctica App" data-ca="Comunitats de Pràctica App">Comunidades de Práctica App</h1>
+            <p class="tagline lang" data-es="Captura conocimiento tácito y desarrolla competencias críticas con nuestro sistema integrado de gestión del conocimiento" data-ca="Captura coneixement tàcit i desenvolupa competències crítiques amb el nostre sistema integrat de gestió del coneixement">Captura conocimiento tácito y desarrolla competencias críticas con nuestro sistema integrado de gestión del conocimiento</p>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <div class="panel">
+                <h2 class="lang" data-es="⚙️ Configuración de la Comunidad" data-ca="⚙️ Configuració de la Comunitat">⚙️ Configuración de la Comunidad</h2>
+                <div class="input-group">
+                    <label class="lang" data-es="Nombre de la Comunidad" data-ca="Nom de la Comunitat">Nombre de la Comunidad</label>
+                    <input type="text" id="community-name" placeholder="Ej: Comunidad de Marketing Digital">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Área de Conocimiento" data-ca="Àrea de Coneixement">Área de Conocimiento</label>
+                    <select id="knowledge-area">
+                        <option value="marketing" class="lang" data-es="Marketing y Ventas" data-ca="Màrqueting i Vendes">Marketing y Ventas</option>
+                        <option value="tech" class="lang" data-es="Tecnología e Innovación" data-ca="Tecnologia i Innovació">Tecnología e Innovación</option>
+                        <option value="hr" class="lang" data-es="Recursos Humanos" data-ca="Recursos Humans">Recursos Humanos</option>
+                        <option value="finance" class="lang" data-es="Finanzas y Contabilidad" data-ca="Finances i Comptabilitat">Finanzas y Contabilidad</option>
+                        <option value="operations" class="lang" data-es="Operaciones y Logística" data-ca="Operacions i Logística">Operaciones y Logística</option>
+                    </select>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="📥 Integración con VNA" data-ca="📥 Integració amb VNA">📥 Integración con VNA</h2>
+                    <div class="input-group">
+                        <label class="lang" data-es="Importar Mapa de Valor" data-ca="Importar Mapa de Valor">Importar Mapa de Valor</label>
+                        <input type="file" id="import-vna" accept=".json">
+                    </div>
+                    <div class="btn-group">
+                        <button id="import-vna-btn" class="btn btn-primary">
+                            <span>📤</span> <span class="lang" data-es="Importar VNA" data-ca="Importar VNA">Importar VNA</span>
+                        </button>
+                    </div>
+                    
+                    <div class="integration-section">
+                        <h3 class="lang" data-es="Conexión con otras apps" data-ca="Connexió amb altres apps">Conexión con otras apps</h3>
+                        <div class="integration-grid">
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="VNA">
+                                <h4 class="lang" data-es="VNA App" data-ca="VNA App">VNA App</h4>
+                                <p class="lang" data-es="Mapa de valor" data-ca="Mapa de valor">Mapa de valor</p>
+                            </div>
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Accounting">
+                                <h4 class="lang" data-es="Contabilidad" data-ca="Comptabilitat">Contabilidad</h4>
+                                <p class="lang" data-es="Valor entregables" data-ca="Valor entregables">Valor entregables</p>
+                            </div>
+                            <div class="integration-card">
+                                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="La Masia">
+                                <h4 class="lang" data-es="La Masia" data-ca="La Masia">La Masia</h4>
+                                <p class="lang" data-es="Sistema integral" data-ca="Sistema integral">Sistema integral</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="➕ Añadir Conocimiento" data-ca="➕ Afegir Coneixement">➕ Añadir Conocimiento</h2>
+                    <div class="input-group">
+                        <label class="lang" data-es="Rol (@nombre)" data-ca="Rol (@nom)">Rol (@nombre)</label>
+                        <input type="text" id="knowledge-role" placeholder="@equipo-marketing">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Tema Crítico" data-ca="Tema Crític">Tema Crítico</label>
+                        <input type="text" id="critical-topic" placeholder="Gestión de presupuestos de marketing">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Transacción Relacionada" data-ca="Transacció Relacionada">Transacción Relacionada</label>
+                        <select id="related-transaction">
+                            <option class="lang" data-es="Selecciona una transacción" data-ca="Selecciona una transacció">Selecciona una transacción</option>
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Tipo de Conocimiento" data-ca="Tipus de Coneixement">Tipo de Conocimiento</label>
+                        <select id="knowledge-type">
+                            <option value="procedure" class="lang" data-es="Procedimiento" data-ca="Procediment">Procedimiento</option>
+                            <option value="best-practice" class="lang" data-es="Mejor Práctica" data-ca="Millor Pràctica">Mejor Práctica</option>
+                            <option value="lesson-learned" class="lang" data-es="Lección Aprendida" data-ca="Lliçó Apresa">Lección Aprendida</option>
+                            <option value="tool" class="lang" data-es="Herramienta" data-ca="Eina">Herramienta</option>
+                            <option value="resource" class="lang" data-es="Recurso" data-ca="Recurs">Recurso</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Descripción" data-ca="Descripció">Descripción</label>
+                        <textarea id="knowledge-description" placeholder="Describe el conocimiento o comparte un enlace a un recurso..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Enlace (opcional)" data-ca="Enllaç (opcional)">Enlace (opcional)</label>
+                        <input type="url" id="knowledge-link" placeholder="https://ejemplo.com/recurso.pdf">
+                    </div>
+                    <div class="btn-group">
+                        <button id="add-knowledge" class="btn btn-primary">
+                            <span>✨</span> <span class="lang" data-es="Añadir Conocimiento" data-ca="Afegir Coneixement">Añadir Conocimiento</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
+                    <div class="btn-group">
+                        <button id="export-json" class="btn btn-export">
+                            <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
+                        </button>
+                        <button id="export-csv" class="btn btn-export">
+                            <span>📈</span> <span class="lang" data-es="Exportar CSV" data-ca="Exportar CSV">Exportar CSV</span>
+                        </button>
+                        <button id="reset-data" class="btn btn-danger">
+                            <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="instructions" style="margin-top: 20px;">
+                    <h3 class="lang" data-es="Beneficios del Sistema" data-ca="Beneficis del Sistema">Beneficios del Sistema</h3>
+                    <ol>
+                        <li class="lang" data-es="<strong>Reducción del 47% en tiempo de onboarding</strong> - Los nuevos miembros aprenden más rápido con conocimiento estructurado" data-ca="<strong>Reducció del 47% en temps d'onboarding</strong> - Els nous membres aprenen més ràpid amb coneixement estructurat"><strong>Reducción del 47% en tiempo de onboarding</strong> - Los nuevos miembros aprenden más rápido con conocimiento estructurado</li>
+                        <li class="lang" data-es="<strong>Aumento del 33% en resolución autónoma</strong> - Los equipos resuelven problemas sin depender de expertos" data-ca="<strong>Augment del 33% en resolució autònoma</strong> - Els equips resolen problemes sense dependre d'experts"><strong>Aumento del 33% en resolución autónoma</strong> - Los equipos resuelven problemas sin depender de expertos</li>
+                        <li class="lang" data-es="<strong>Disminución del 28% en consultas repetidas</strong> - El conocimiento queda documentado y accesible" data-ca="<strong>Disminució del 28% en consultes repetides</strong> - El coneixement queda documentat i accessible"><strong>Disminución del 28% en consultas repetidas</strong> - El conocimiento queda documentado y accesible</li>
+                        <li class="lang" data-es="<strong>Generación de mejoras emergentes</strong> - El conocimiento compartido impulsa la innovación continua" data-ca="<strong>Generació de millores emergents</strong> - El coneixement compartit impulsa la innovació contínua"><strong>Generación de mejoras emergentes</strong> - El conocimiento compartido impulsa la innovación continua</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <h2>🧠 <span class="lang" data-es="Mapa de Conocimiento de la Comunidad" data-ca="Mapa de Coneixement de la Comunitat">Mapa de Conocimiento de la Comunidad</span></h2>
+                <div class="chart-container">
+                    <canvas id="knowledgeChart"></canvas>
+                </div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-knowledge">0</div>
+                        <div class="stat-label lang" data-es="Conocimientos" data-ca="Coneixements">Conocimientos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="critical-topics">0</div>
+                        <div class="stat-label lang" data-es="Temas Críticos" data-ca="Temes Crítics">Temas Críticos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="active-roles">0</div>
+                        <div class="stat-label lang" data-es="Roles Activos" data-ca="Rols Actius">Roles Activos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="knowledge-gaps">0</div>
+                        <div class="stat-label lang" data-es="Brechas Detectadas" data-ca="Breus Detectades">Brechas Detectadas</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="📚 Repositorio de Conocimiento" data-ca="📚 Repositori de Coneixement">📚 Repositorio de Conocimiento</h3>
+                <div id="knowledge-repository">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <h3 class="lang" data-es="No hay conocimientos registrados aún" data-ca="No hi ha coneixements registrats encara">No hay conocimientos registrados aún</h3>
+                        <p class="lang" data-es="Importa tu mapa de valor o añade el primer conocimiento para comenzar a construir tu comunidad de práctica" data-ca="Importa el teu mapa de valor o afegeix el primer coneixement per començar a construir la teva comunitat de pràctica">Importa tu mapa de valor o añade el primer conocimiento para comenzar a construir tu comunidad de práctica</p>
+                    </div>
+                </div>
+                
+                <div class="integration-section" style="margin-top: 30px;">
+                    <h3 class="lang" data-es="💡 Índice de Temas Críticos por Rol" data-ca="💡 Índex de Temes Crítics per Rol">💡 Índice de Temas Críticos por Rol</h3>
+                    <p class="lang" data-es="Este índice se genera automáticamente a partir de las transacciones del mapa de valor y el tiempo promedio de cada entregable. Los temas marcados como críticos requieren atención prioritaria para el desarrollo de competencias." data-ca="Aquest índex es genera automàticament a partir de les transaccions del mapa de valor i el temps promig de cada entregable. Els temes marcats com a crítics requereixen atenció prioritària per al desenvolupament de competències.">Este índice se genera automáticamente a partir de las transacciones del mapa de valor y el tiempo promedio de cada entregable. Los temas marcados como críticos requieren atención prioritaria para el desarrollo de competencias.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="La Masia" data-ca="La Masia">La Masia</a></li>
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Apps" data-ca="Apps">Apps</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
+                    <li><a href="#" class="lang" data-es="App Comunidades de Práctica" data-ca="App Comunitats de Pràctica">App Comunidades de Práctica</a></li>
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Comunidades de Práctica para capturar conocimiento tácito y desarrollar competencias críticas en organizaciones humanas." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comunitats de Pràctica per capturar coneixement tàcit i desenvolupar competències crítiques en organitzacions humanes.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Comunidades de Práctica para capturar conocimiento tácito y desarrollar competencias críticas en organizaciones humanas.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Estado de la aplicación
+        let communityData = {
+            name: "Comunidad sin nombre",
+            area: "marketing",
+            knowledgeItems: [],
+            vnaData: null,
+            criticalTopics: []
+        };
+        
+        let knowledgeChart = null;
+        
+        // Inicialización cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones de idioma
+            setupLanguageSelector();
+            
+            // Cargar datos guardados
+            loadSavedData();
+            
+            // Inicializar gráfico
+            initChart();
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Actualizar visualizaciones
+            updateVisualizations();
+        });
+        
+        // Configurar selector de idioma
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Establecer idioma inicial
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Event listeners para botones de idioma
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Actualizar botón activo
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            function setActiveLanguage(lang) {
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                document.documentElement.setAttribute('lang', lang);
+            }
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Importar VNA
+            document.getElementById('import-vna-btn').addEventListener('click', importVNA);
+            
+            // Añadir conocimiento
+            document.getElementById('add-knowledge').addEventListener('click', addKnowledge);
+            
+            // Exportar datos
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            
+            // Limpiar datos
+            document.getElementById('reset-data').addEventListener('click', resetData);
+            
+            // Cambiar nombre de la comunidad
+            document.getElementById('community-name').addEventListener('change', function() {
+                communityData.name = this.value || "Comunidad sin nombre";
+                saveData();
+                updateVisualizations();
+            });
+            
+            // Cambiar área de conocimiento
+            document.getElementById('knowledge-area').addEventListener('change', function() {
+                communityData.area = this.value;
+                saveData();
+            });
+        }
+        
+        // Importar datos desde VNA App
+        function importVNA() {
+            const fileInput = document.getElementById('import-vna');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Selecciona un archivo JSON primero' : 
+                    'Selecciona un archivo JSON primero');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validar estructura básica
+                    if (!importedData.nodes || !importedData.links) {
+                        throw new Error('El archivo no tiene la estructura correcta (nodes y links)');
+                    }
+                    
+                    // Guardar datos VNA
+                    communityData.vnaData = importedData;
+                    
+                    // Generar temas críticos a partir del mapa de valor
+                    generateCriticalTopics();
+                    
+                    // Actualizar lista de transacciones relacionadas
+                    updateRelatedTransactions();
+                    
+                    saveData();
+                    updateVisualizations();
+                    
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Mapa de valor importat correctament! S\'han generat temes crítics automàticament.' : 
+                        'Mapa de valor importado correctamente! Se han generado temas críticos automáticamente.');
+                } catch (error) {
+                    console.error('Error al importar VNA:', error);
+                    alert(document.documentElement.lang === 'ca' ? 
+                        `Error en importar el mapa de valor: ${error.message}` : 
+                        `Error al importar el mapa de valor: ${error.message}`);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Generar temas críticos a partir del mapa de valor
+        function generateCriticalTopics() {
+            if (!communityData.vnaData || !communityData.vnaData.links) return;
+            
+            communityData.criticalTopics = [];
+            
+            // Analizar cada transacción para identificar temas críticos
+            communityData.vnaData.links.forEach(link => {
+                // Extraer roles y entregables
+                const source = typeof link.source === 'object' ? link.source.id : link.source;
+                const target = typeof link.target === 'object' ? link.target.id : link.target;
+                const deliverable = link.deliverable || 'Entregable';
+                
+                // Determinar criticidad basada en el tipo y contenido
+                const isCritical = link.type === 'intangible' || 
+                                  deliverable.toLowerCase().includes('estrateg') ||
+                                  deliverable.toLowerCase().includes('decisi') ||
+                                  deliverable.toLowerCase().includes('crític');
+                
+                // Crear tema crítico
+                communityData.criticalTopics.push({
+                    id: Date.now() + Math.random().toString(36).substr(2, 5),
+                    source: source.toString(),
+                    target: target.toString(),
+                    deliverable: deliverable,
+                    topic: `Dominio de ${deliverable} entre ${source} y ${target}`,
+                    critical: isCritical,
+                    knowledgeType: isCritical ? 'procedure' : 'best-practice',
+                    estimatedTime: isCritical ? 120 : 60 // minutos estimados para dominar
+                });
+            });
+        }
+        
+        // Actualizar lista de transacciones relacionadas
+        function updateRelatedTransactions() {
+            const select = document.getElementById('related-transaction');
+            select.innerHTML = '<option class="lang" data-es="Selecciona una transacción" data-ca="Selecciona una transacció">Selecciona una transacción</option>';
+            
+            if (!communityData.vnaData || !communityData.vnaData.links) return;
+            
+            communityData.vnaData.links.forEach((link, index) => {
+                const source = typeof link.source === 'object' ? link.source.id : link.source;
+                const target = typeof link.target === 'object' ? link.target.id : link.target;
+                const deliverable = link.deliverable || 'Entregable';
+                
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${source} → ${target} | ${deliverable}`;
+                select.appendChild(option);
+            });
+        }
+        
+        // Añadir conocimiento
+        function addKnowledge() {
+            const roleInput = document.getElementById('knowledge-role').value.trim();
+            const topicInput = document.getElementById('critical-topic').value.trim();
+            const transactionIndex = document.getElementById('related-transaction').value;
+            const typeInput = document.getElementById('knowledge-type').value;
+            const descriptionInput = document.getElementById('knowledge-description').value.trim();
+            const linkInput = document.getElementById('knowledge-link').value.trim();
+            
+            if (!roleInput || !topicInput || !descriptionInput) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Omple tots els camps obligatoris (rol, tema, descripció)' : 
+                    'Completa todos los campos obligatorios (rol, tema, descripción)');
+                return;
+            }
+            
+            // Extraer nombre del rol si empieza con @
+            const role = roleInput.startsWith('@') ? roleInput.substring(1).toLowerCase() : roleInput.toLowerCase();
+            
+            // Obtener transacción relacionada si existe
+            let relatedTransaction = null;
+            if (transactionIndex && communityData.vnaData && communityData.vnaData.links[transactionIndex]) {
+                const link = communityData.vnaData.links[transactionIndex];
+                relatedTransaction = {
+                    source: typeof link.source === 'object' ? link.source.id : link.source,
+                    target: typeof link.target === 'object' ? link.target.id : link.target,
+                    deliverable: link.deliverable
+                };
+            }
+            
+            // Crear item de conocimiento
+            const knowledgeItem = {
+                id: Date.now() + Math.random().toString(36).substr(2, 5),
+                role: role,
+                topic: topicInput,
+                relatedTransaction: relatedTransaction,
+                type: typeInput,
+                description: descriptionInput,
+                link: linkInput,
+                timestamp: new Date().toISOString(),
+                critical: topicInput.toLowerCase().includes('crític') || 
+                         topicInput.toLowerCase().includes('estrateg') ||
+                         topicInput.toLowerCase().includes('decisi')
+            };
+            
+            // Añadir a la lista
+            communityData.knowledgeItems.push(knowledgeItem);
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualizations();
+            
+            // Limpiar formulario
+            document.getElementById('knowledge-role').value = '';
+            document.getElementById('critical-topic').value = '';
+            document.getElementById('knowledge-description').value = '';
+            document.getElementById('knowledge-link').value = '';
+            
+            // Feedback al usuario
+            const successMsg = document.documentElement.lang === 'ca' ? 
+                `Coneixement afegit per @${role}` : 
+                `Conocimiento añadido para @${role}`;
+            
+            const btn = document.getElementById('add-knowledge');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span>✅</span> ${successMsg}`;
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        // Inicializar gráfico
+        function initChart() {
+            const ctx = document.getElementById('knowledgeChart').getContext('2d');
+            knowledgeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Conocimientos por Rol',
+                        data: [],
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y} conocimientos`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad de Conocimientos'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Roles'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Actualizar visualizaciones
+        function updateVisualizations() {
+            // Actualizar estadísticas
+            const totalKnowledge = communityData.knowledgeItems.length;
+            const criticalTopics = communityData.criticalTopics.length;
+            const activeRoles = new Set(communityData.knowledgeItems.map(k => k.role)).size;
+            const knowledgeGaps = communityData.criticalTopics.filter(t => 
+                !communityData.knowledgeItems.some(k => 
+                    k.topic.includes(t.topic) || k.topic.includes(t.deliverable)
+                )
+            ).length;
+            
+            document.getElementById('total-knowledge').textContent = totalKnowledge;
+            document.getElementById('critical-topics').textContent = criticalTopics;
+            document.getElementById('active-roles').textContent = activeRoles;
+            document.getElementById('knowledge-gaps').textContent = knowledgeGaps;
+            
+            // Actualizar gráfico
+            updateChart();
+            
+            // Actualizar repositorio
+            updateRepository();
+        }
+        
+        // Actualizar gráfico
+        function updateChart() {
+            if (!knowledgeChart) return;
+            
+            // Contar conocimientos por rol
+            const roleCounts = {};
+            communityData.knowledgeItems.forEach(item => {
+                roleCounts[item.role] = (roleCounts[item.role] || 0) + 1;
+            });
+            
+            // Preparar datos para el gráfico
+            const labels = Object.keys(roleCounts);
+            const data = Object.values(roleCounts);
+            
+            // Actualizar gráfico
+            knowledgeChart.data.labels = labels;
+            knowledgeChart.data.datasets[0].data = data;
+            knowledgeChart.update();
+        }
+        
+        // Actualizar repositorio
+        function updateRepository() {
+            const repositoryDiv = document.getElementById('knowledge-repository');
+            
+            if (communityData.knowledgeItems.length === 0) {
+                repositoryDiv.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <h3 class="lang" data-es="No hay conocimientos registrados aún" data-ca="No hi ha coneixements registrats encara">No hay conocimientos registrados aún</h3>
+                        <p class="lang" data-es="Importa tu mapa de valor o añade el primer conocimiento para comenzar a construir tu comunidad de práctica" data-ca="Importa el teu mapa de valor o afegeix el primer coneixement per començar a construir la teva comunitat de pràctica">Importa tu mapa de valor o añade el primer conocimiento para comenzar a construir tu comunidad de práctica</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Generar HTML para el repositorio
+            let html = `<div class="knowledge-grid">`;
+            
+            communityData.knowledgeItems.slice().reverse().forEach(item => {
+                const typeLabels = {
+                    'procedure': 'Procedimiento',
+                    'best-practice': 'Mejor Práctica',
+                    'lesson-learned': 'Lección Aprendida',
+                    'tool': 'Herramienta',
+                    'resource': 'Recurso'
+                };
+                
+                html += `
+                    <div class="knowledge-card">
+                        <h4>${item.topic}</h4>
+                        <p><strong>@${item.role}</strong></p>
+                        <p class="role-tag ${item.critical ? 'critical-badge' : 'role-team'}">
+                            ${item.critical ? '⚠️ CRÍTICO' : typeLabels[item.type]}
+                        </p>
+                        <p>${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</p>
+                        ${item.link ? `<p><a href="${item.link}" target="_blank" style="color: var(--primary); font-weight: 600;">🔗 Ver recurso</a></p>` : ''}
+                        ${item.relatedTransaction ? `<p><small>Transacción: ${item.relatedTransaction.source} → ${item.relatedTransaction.target}</small></p>` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            
+            repositoryDiv.innerHTML = html;
+        }
+        
+        // Exportar como JSON
+        function exportJSON() {
+            const dataStr = JSON.stringify(communityData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `coops-${communityData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a JSON' : 
+                'Datos exportados correctamente como JSON');
+        }
+        
+        // Exportar como CSV
+        function exportCSV() {
+            // Cabeceras
+            let csv = 'Rol,Tema,Tipo,Crítico,Descripción,Enlace,Fecha\n';
+            
+            // Datos
+            communityData.knowledgeItems.forEach(item => {
+                csv += `"${item.role}","${item.topic}","${item.type}","${item.critical ? 'Sí' : 'No'}","${item.description.replace(/"/g, '""')}","${item.link}",${new Date(item.timestamp).toLocaleDateString()}\n`;
+            });
+            
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `coops-${communityData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a CSV' : 
+                'Datos exportados correctamente como CSV');
+        }
+        
+        // Limpiar datos
+        function resetData() {
+            if (confirm(document.documentElement.lang === 'ca' ? 
+                'Estàs segur que vols esborrar totes les dades de la comunitat?' : 
+                '¿Estás seguro de que quieres borrar todos los datos de la comunidad?')) {
+                
+                communityData = {
+                    name: "Comunidad sin nombre",
+                    area: "marketing",
+                    knowledgeItems: [],
+                    vnaData: null,
+                    criticalTopics: []
+                };
+                
+                saveData();
+                updateVisualizations();
+                
+                // Limpiar campos de formulario
+                document.getElementById('community-name').value = "Comunidad sin nombre";
+                document.getElementById('knowledge-role').value = '';
+                document.getElementById('critical-topic').value = '';
+                document.getElementById('knowledge-description').value = '';
+                document.getElementById('knowledge-link').value = '';
+                
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Dades esborrades correctament' : 
+                    'Datos borrados correctamente');
+            }
+        }
+        
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('coopsData', JSON.stringify(communityData));
+        }
+        
+        // Cargar datos de localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('coopsData');
+            if (saved) {
+                const parsedData = JSON.parse(saved);
+                
+                communityData = {
+                    name: parsedData.name || "Comunidad sin nombre",
+                    area: parsedData.area || "marketing",
+                    knowledgeItems: parsedData.knowledgeItems || [],
+                    vnaData: parsedData.vnaData || null,
+                    criticalTopics: parsedData.criticalTopics || []
+                };
+                
+                // Restaurar nombre de la comunidad en el input
+                document.getElementById('community-name').value = communityData.name;
+                document.getElementById('knowledge-area').value = communityData.area;
+                
+                // Actualizar lista de transacciones si hay datos VNA
+                if (communityData.vnaData) {
+                    updateRelatedTransactions();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
