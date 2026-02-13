@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Network Analysis App | TeamTowers Humà. Herramienta para mapear flujos de valor tangibles e intangibles en tu organización.">
-    <meta name="keywords" content="Value Network Analysis, VNA, mapeo valor, TeamTowers Humà, consultoría RRHH, Vilafranca del Penedès">
+    <meta name="description" content="Value Network Analysis App | TeamTowers Humà. Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva.">
+    <meta name="keywords" content="Value Network Analysis, VNA, mapeo de valor, TeamTowers Humà, Vilafranca del Penedès, flujos de valor, innovación organizacional">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
     <title>Value Network Analysis App | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Value Network Analysis App | TeamTowers Humà">
-    <meta property="og:description" content="Herramienta interactiva para mapear flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos.">
+    <meta property="og:description" content="Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://teamtowershuma.netlify.app/app">
+    <meta property="og:url" content="https://teamtowershuma.com/app">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="ca_ES">
@@ -21,11 +21,8 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Value Network Analysis App | TeamTowers Humà">
-    <meta name="twitter:description" content="Mapea flujos de valor tangibles e intangibles con nuestra herramienta interactiva">
+    <meta name="twitter:description" content="Mapea flujos de valor tangibles e intangibles en tu organización">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
-    
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
     <style>
         :root {
@@ -34,7 +31,7 @@
             --accent: #8b5cf6; /* Morado TeamTowers */
             --dark: #0f172a;
             --light: #f8fafc;
-            --gold: #f59e0b;
+            --gold: #f59e01;
             --success: #10b981;
             --warning: #fbbf24;
             --danger: #ef4444;
@@ -42,6 +39,9 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
         }
         
         * {
@@ -83,14 +83,14 @@
         }
         
         .lang-btn.active {
-            background: var(--primary);
+            background: var(--gradient-primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
         }
         
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            background: var(--gradient-dark);
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -119,12 +119,25 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            font-weight: 800;
         }
         
         .tagline {
             font-size: 1.4rem;
             opacity: 0.9;
             margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .integration-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 0.95rem;
         }
         
         /* Main Content */
@@ -136,7 +149,7 @@
         
         .app-container {
             display: grid;
-            grid-template-columns: 400px 1fr;
+            grid-template-columns: 380px 1fr;
             gap: 30px;
             margin-top: 20px;
         }
@@ -153,8 +166,18 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             height: fit-content;
-            max-height: 80vh;
-            overflow-y: auto;
+            position: relative;
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
         
         .panel h2 {
@@ -166,6 +189,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            z-index: 10;
         }
         
         .panel h2::before {
@@ -219,40 +244,13 @@
         }
         
         .input-group textarea {
-            min-height: 100px;
+            min-height: 80px;
             resize: vertical;
-            font-family: monospace;
-            font-size: 0.95rem;
-        }
-        
-        .bulk-input {
-            background: var(--light);
-            border-left: 4px solid var(--accent);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        
-        .bulk-input p {
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            color: var(--gray);
-        }
-        
-        .bulk-input code {
-            background: rgba(30, 58, 138, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: 600;
-            display: block;
-            margin: 5px 0;
-            font-size: 0.9rem;
         }
         
         .btn-group {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 12px;
             margin-top: 15px;
         }
@@ -270,6 +268,23 @@
             justify-content: center;
             gap: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
         }
         
         .btn:hover {
@@ -278,7 +293,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: var(--gradient-primary);
             color: white;
         }
         
@@ -304,7 +319,7 @@
         }
         
         .btn-export {
-            background: linear-gradient(135deg, #7e3af2 0%, #4f46e5 100%);
+            background: var(--gradient-accent);
             color: white;
             grid-column: span 2;
         }
@@ -317,115 +332,79 @@
             position: relative;
         }
         
-        #vna-container {
+        .visualization-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 700px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            overflow: hidden;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .chart-container {
             position: relative;
-            background: var(--light);
-            margin-top: 15px;
-        }
-        
-        #vna-svg {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
-            padding: 15px;
+            height: 400px;
+            margin-bottom: 30px;
             background: var(--light);
             border-radius: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-        
-        .legend-line {
-            width: 30px;
-            height: 3px;
-            display: inline-block;
-            border-radius: 2px;
-        }
-        
-        .legend-tangible {
-            background: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .legend-intangible {
-            background: var(--accent);
-            border: 2px dashed var(--accent);
-        }
-        
-        .controls {
-            display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
         }
         
-        .control-btn {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid var(--primary);
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
+        .export-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .export-section h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-        
-        .control-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .stats-bar {
-            display: flex;
-            justify-content: space-around;
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-            border: 1px solid rgba(30, 58, 138, 0.1);
-        }
-        
-        .stat-item {
-            text-align: center;
-            min-width: 100px;
-            padding: 8px 15px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
+            gap: 10px;
             font-weight: 700;
-            color: var(--primary);
         }
         
-        .stat-label {
-            font-size: 0.9rem;
+        .export-section h3::before {
+            content: '📤';
+            font-size: 1.4rem;
+        }
+        
+        .export-section p {
+            margin-bottom: 15px;
             color: var(--gray);
-            margin-top: 3px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .integration-section {
+            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .integration-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .integration-section h3::before {
+            content: '🔗';
+            font-size: 1.4rem;
         }
         
         .empty-state {
@@ -435,379 +414,102 @@
             justify-content: center;
             height: 100%;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             color: var(--gray);
         }
         
         .empty-state svg {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 25px;
             color: var(--accent);
             opacity: 0.7;
         }
         
         .empty-state h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             color: var(--dark);
+            font-weight: 700;
         }
         
         .empty-state p {
-            max-width: 500px;
-            margin-bottom: 25px;
+            max-width: 550px;
+            margin-bottom: 30px;
             line-height: 1.7;
+            font-size: 1.1rem;
         }
         
-        .instructions {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-top: 25px;
-            border-left: 4px solid var(--accent);
-        }
-        
-        .instructions h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .instructions h3::before {
-            content: 'ℹ️';
-            font-size: 1.4rem;
-        }
-        
-        .instructions ol {
-            padding-left: 25px;
-            margin-top: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-            line-height: 1.7;
-        }
-        
-        .instructions code {
-            background: rgba(30, 58, 138, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: 600;
-        }
-        
-        .example-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .example-section h4 {
-            margin-bottom: 12px;
-            color: var(--primary);
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .example-section h4::before {
-            content: '📌';
-        }
-        
-        .example-item {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            font-family: monospace;
-            font-size: 0.95rem;
-            color: var(--primary);
-            position: relative;
-            padding-left: 30px;
-        }
-        
-        .example-item::before {
-            content: '→';
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .node {
-            cursor: pointer;
-            stroke: #fff;
-            stroke-width: 3px;
-        }
-        
-        .node text {
-            pointer-events: none;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            font-weight: 600;
-            fill: var(--dark);
-            font-size: 14px;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-        }
-        
-        .link {
-            stroke: var(--gray);
-            stroke-width: 2px;
-            fill: none;
-            marker-end: url(#arrowhead);
-        }
-        
-        .link-tangible {
-            stroke: var(--primary);
-            stroke-width: 3px;
-        }
-        
-        .link-intangible {
-            stroke: var(--accent);
-            stroke-width: 2px;
-            stroke-dasharray: 5, 5;
-        }
-        
-        .link-path {
-            fill: none;
-            stroke-width: 3px;
-            marker-end: url(#arrowhead);
-        }
-        
-        .link-label {
-            font-size: 11px;
-            fill: var(--dark);
-            pointer-events: none;
-            text-anchor: middle;
-            dominant-baseline: middle;
-        }
-        
-        .link-label tspan {
-            dominant-baseline: middle;
-        }
-        
-        .link-label.type {
-            font-weight: 600;
-            fill: var(--primary);
-        }
-        
-        .link-label.deliverable {
-            font-size: 10px;
-            fill: var(--gray);
-            font-weight: 500;
-        }
-        
-        .simulation-running {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: var(--warning);
-            display: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            border: 2px solid var(--warning);
-        }
-        
-        .tooltip {
-            position: absolute;
-            background: rgba(15, 23, 42, 0.95);
+        .next-step {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             padding: 15px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.6;
-            pointer-events: none;
-            max-width: 350px;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: none;
-            border: 1px solid var(--accent);
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
         }
         
-        .tooltip h4 {
-            margin-bottom: 8px;
-            color: var(--accent);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .tooltip h4::before {
-            content: '💡';
-        }
-        
-        .tooltip p {
-            margin: 5px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .tooltip .label {
-            font-weight: 600;
-            color: var(--primary);
-            margin-right: 5px;
-        }
-        
-        .tooltip .value {
-            color: white;
-        }
-        
-        .tooltip .type-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .tooltip .type-badge.tangible {
-            background: rgba(16, 185, 129, 0.25);
-            color: #0d9488;
-            border: 1px solid #14b8a6;
-        }
-        
-        .tooltip .type-badge.intangible {
-            background: rgba(139, 92, 246, 0.25);
-            color: #7e3af2;
-            border: 1px solid #8b5cf6;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 5px;
-        }
-        
-        .badge-tangible {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-        
-        .badge-intangible {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-        }
-        
-        /* Transactions List */
-        .transactions-list {
-            margin-top: 25px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .transactions-list h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .transactions-list h3::before {
-            content: '📋';
-        }
-        
-        .transaction-item {
-            background: var(--light);
-            border-radius: 8px;
-            padding: 12px 15px;
+        .next-step h3 {
             margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--accent);
-            transition: var(--transition);
-        }
-        
-        .transaction-item:hover {
-            background: #e0e7ff;
-            transform: translateX(5px);
-        }
-        
-        .transaction-item.tangible {
-            border-left-color: var(--primary);
-        }
-        
-        .transaction-item.intangible {
-            border-left-color: var(--accent);
-        }
-        
-        .transaction-info {
-            flex: 1;
-            font-family: monospace;
-            font-size: 0.95rem;
-            word-break: break-word;
-        }
-        
-        .transaction-info strong {
-            color: var(--primary);
-            margin-right: 5px;
-        }
-        
-        .delete-transaction {
-            background: var(--danger);
             color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            transition: var(--transition);
-            flex-shrink: 0;
-            margin-left: 10px;
+            gap: 10px;
+            font-size: 1.5rem;
         }
         
-        .delete-transaction:hover {
-            background: #dc2626;
-            transform: scale(1.1);
+        .next-step h3::before {
+            content: '➡️';
+        }
+        
+        .next-step p {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        .next-step a {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: 10px;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .next-step a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
         
         /* Footer */
         footer {
-            background: var(--dark);
+            background: var(--gradient-dark);
             color: rgba(255, 255, 255, 0.85);
-            padding: 60px 20px 30px;
-            margin-top: 60px;
+            padding: 70px 20px 40px;
+            margin-top: 70px;
         }
         
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
             margin: 0 auto;
         }
         
         .footer-col h3 {
             color: white;
-            font-size: 1.6rem;
-            margin-bottom: 25px;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
             position: relative;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
+            font-weight: 700;
         }
         
         .footer-col h3::after {
@@ -815,9 +517,10 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--accent);
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
         }
         
         .footer-links {
@@ -825,30 +528,52 @@
         }
         
         .footer-links li {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         
         .footer-links a {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.75);
             text-decoration: none;
             transition: var(--transition);
             display: block;
-            padding: 5px 0;
-            font-size: 1.05rem;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
         }
         
         .footer-links a:hover {
-            color: var(--accent);
-            transform: translateX(5px);
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 40px;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
         }
         
         /* Responsive Design */
@@ -857,24 +582,20 @@
                 grid-template-columns: 1fr;
             }
             
-            .btn-group {
-                grid-template-columns: 1fr;
-            }
-            
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.3rem;
             }
             
             .tagline {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
             
             .panel {
                 padding: 20px;
             }
             
-            #vna-container {
-                height: 500px;
+            .chart-container {
+                height: 320px;
             }
         }
         
@@ -890,11 +611,11 @@
             }
             
             h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             
             .tagline {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
             
             .container {
@@ -903,31 +624,11 @@
             
             .btn {
                 padding: 12px 15px;
-                font-size: 0.95rem;
+                font-size: 1rem;
             }
             
-            #vna-container {
-                height: 400px;
-            }
-            
-            .legend {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .control-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-            
-            .transactions-list {
-                max-height: 300px;
+            .chart-container {
+                height: 280px;
             }
         }
     </style>
@@ -943,8 +644,9 @@
     <header>
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
-            <h1 class="lang" data-es="Value Network Analysis App" data-ca="Aplicació Value Network Analysis">Value Network Analysis App</h1>
-            <p class="tagline lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización" data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització">Mapea flujos de valor tangibles e intangibles en tu organización</p>
+            <h1 class="lang" data-es="Value Network Analysis App" data-ca="Value Network Analysis App">Value Network Analysis App</h1>
+            <p class="tagline lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva" data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització amb la nostra eina visual interactiva">Mapea flujos de valor tangibles e intangibles en tu organización con nuestra herramienta visual interactiva</p>
+            <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
         </div>
     </header>
     
@@ -952,157 +654,114 @@
     <div class="container">
         <div class="app-container">
             <div class="panel">
-                <h2 class="lang" data-es="➕ Añadir Transacción" data-ca="➕ Afegir Transacció">➕ Añadir Transacción</h2>
+                <h2 class="lang" data-es="⚙️ Configuración del Mapa" data-ca="⚙️ Configuració del Mapa">⚙️ Configuración del Mapa</h2>
                 <div class="input-group">
-                    <label class="lang" data-es="Origen" data-ca="Origen">Origen</label>
-                    <input type="text" id="origin" placeholder="Ej: Cliente, Vendedor, IT">
+                    <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
+                    <input type="text" id="project-name" placeholder="Ej: Proyecto Innovación 2024" value="Proyecto MASIA">
                 </div>
                 <div class="input-group">
-                    <label class="lang" data-es="Destino" data-ca="Destí">Destino</label>
-                    <input type="text" id="destination" placeholder="Ej: Vendedor, Cliente, Marketing">
-                </div>
-                <div class="input-group">
-                    <label class="lang" data-es="Tipo de Valor" data-ca="Tipus de Valor">Tipo de Valor</label>
-                    <select id="type">
-                        <option value="tangible" class="lang" data-es="Tangible (bienes, servicios, datos)" data-ca="Tangible (béns, serveis, dades)">Tangible (bienes, servicios, datos)</option>
-                        <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento, feedback)" data-ca="Intangible (confiança, coneixement, feedback)">Intangible (confianza, conocimiento, feedback)</option>
+                    <label class="lang" data-es="Tipo de Entregable" data-ca="Tipus d'Entregable">Tipo de Entregable</label>
+                    <select id="deliverable-type">
+                        <option value="tangible" class="lang" data-es="Tangible (bienes, servicios)" data-ca="Tangible (béns, serveis)">Tangible (bienes, servicios)</option>
+                        <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento)" data-ca="Intangible (confiança, coneixement)">Intangible (confianza, conocimiento)</option>
+                        <option value="both" class="lang" data-es="Ambos" data-ca="Ambdós">Ambos</option>
                     </select>
-                </div>
-                <div class="input-group">
-                    <label class="lang" data-es="Entregable" data-ca="Entregable"><span class="lang" data-es="Entregable" data-ca="Entregable">Entregable</span> <span class="badge badge-tangible lang" data-es="Texto libre" data-ca="Text lliure">Texto libre</span></label>
-                    <textarea id="deliverable" placeholder="Ej: Pedido, Confianza, Informe de uso web, Feedback de campaña"></textarea>
-                </div>
-                <div class="btn-group">
-                    <button id="add-transaction" class="btn btn-primary">
-                        <span>✨</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
-                    </button>
-                    <button id="clear-all" class="btn btn-danger">
-                        <span>🗑️</span> <span class="lang" data-es="Limpiar Todo" data-ca="Netejar Tot">Limpiar Todo</span>
-                    </button>
-                    <button id="load-example" class="btn btn-secondary">
-                        <span>📚</span> <span class="lang" data-es="Cargar Ejemplo" data-ca="Carregar Exemple">Cargar Ejemplo</span>
-                    </button>
-                    <button id="reset-layout" class="btn btn-warning">
-                        <span>🔄</span> <span class="lang" data-es="Resetear Posiciones" data-ca="Reiniciar Posicions">Resetear Posiciones</span>
-                    </button>
-                </div>
-                
-                <div class="bulk-input">
-                    <h3 class="lang" data-es="📥 Añadir Varias Transacciones" data-ca="📥 Afegir Diverses Transaccions">📥 Añadir Varias Transacciones</h3>
-                    <p class="lang" data-es="Pega varias transacciones en formato:" data-ca="Enganxa diverses transaccions en format:">Pega varias transacciones en formato:</p>
-                    <code>Origen → Destino | tipo | Entregable</code>
-                    <textarea id="bulk-input" placeholder="Cliente → Vendedor | tangible | Pedido&#10;Vendedor → Cliente | intangible | Confianza&#10;IT → Marketing | tangible | Informe de uso web"></textarea>
-                    <button id="add-bulk" class="btn btn-success" style="margin-top: 10px; width: 100%;">
-                        <span>🚀</span> <span class="lang" data-es="Añadir Todas las Transacciones" data-ca="Afegir Totes les Transaccions">Añadir Todas las Transacciones</span>
-                    </button>
                 </div>
                 
                 <div class="panel" style="margin-top: 25px;">
-                    <h2>💾 <span class="lang" data-es="Exportar Mapa" data-ca="Exportar Mapa">Exportar Mapa</span></h2>
+                    <h2 class="lang" data-es="➕ Añadir Nodo/Rol" data-ca="➕ Afegir Node/Rol">➕ Añadir Nodo/Rol</h2>
+                    <div class="input-group">
+                        <label class="lang" data-es="Nombre del Rol" data-ca="Nom del Rol">Nombre del Rol</label>
+                        <input type="text" id="node-name" placeholder="Ej: Equipo de Marketing">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Grupo (opcional)" data-ca="Grup (opcional)">Grupo (opcional)</label>
+                        <select id="node-group">
+                            <option value="1" class="lang" data-es="Equipo Interno" data-ca="Equip Intern">Equipo Interno</option>
+                            <option value="2" class="lang" data-es="Clientes" data-ca="Clients">Clientes</option>
+                            <option value="3" class="lang" data-es="Proveedores" data-ca="Proveïdors">Proveedores</option>
+                            <option value="4" class="lang" data-es="Inversores" data-ca="Inversors">Inversores</option>
+                            <option value="5" class="lang" data-es="Otros" data-ca="Altres">Otros</option>
+                        </select>
+                    </div>
                     <div class="btn-group">
-                        <button id="export-png" class="btn btn-export">
-                            <span>🖼️</span> <span class="lang" data-es="Descargar PNG" data-ca="Descarregar PNG">Descargar PNG</span>
+                        <button id="add-node" class="btn btn-primary">
+                            <span>✨</span> <span class="lang" data-es="Añadir Rol" data-ca="Afegir Rol">Añadir Rol</span>
                         </button>
-                        <button id="export-svg" class="btn btn-export">
-                            <span>🎨</span> <span class="lang" data-es="Descargar SVG" data-ca="Descarregar SVG">Descargar SVG</span>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 25px;">
+                    <h2 class="lang" data-es="➕ Añadir Transacción" data-ca="➕ Afegir Transacció">➕ Añadir Transacción</h2>
+                    <div class="input-group">
+                        <label class="lang" data-es="Rol Origen" data-ca="Rol Origen">Rol Origen</label>
+                        <select id="source-node">
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Rol Destino" data-ca="Rol Destí">Rol Destino</label>
+                        <select id="target-node">
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Entregable" data-ca="Entregable">Entregable</label>
+                        <input type="text" id="deliverable-name" placeholder="Ej: Informe de mercado">
+                    </div>
+                    <div class="btn-group">
+                        <button id="add-link" class="btn btn-primary">
+                            <span>🔗</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
                         </button>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 25px;">
+                    <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
+                    <div class="btn-group">
                         <button id="export-json" class="btn btn-export">
-                            <span>📊</span> <span class="lang" data-es="Descargar JSON" data-ca="Descarregar JSON">Descargar JSON</span>
+                            <span>📊</span> <span class="lang" data-es="Exportar JSON (Completo)" data-ca="Exportar JSON (Complet)">Exportar JSON (Completo)</span>
                         </button>
-                        <button id="copy-data" class="btn btn-export">
-                            <span>📋</span> <span class="lang" data-es="Copiar Datos" data-ca="Copiar Dades">Copiar Datos</span>
+                        <button id="export-roles-csv" class="btn btn-success">
+                            <span>👥</span> <span class="lang" data-es="Exportar Roles como CSV" data-ca="Exportar Rols com a CSV">Exportar Roles como CSV</span>
+                        </button>
+                        <button id="reset-data" class="btn btn-danger">
+                            <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
                         </button>
                     </div>
                 </div>
                 
-                <div class="transactions-list">
-                    <h3 class="lang" data-es="Lista de Transacciones" data-ca="Llista de Transaccions">Lista de Transacciones</h3>
-                    <div id="transactions-container">
-                        <!-- Transactions will be added here dynamically -->
-                        <div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>
-                    </div>
+                <div class="export-section">
+                    <h3 class="lang" data-es="Exportar Roles para Value Accounting App" data-ca="Exportar Rols per a App Comptabilitat de Valor">Exportar Roles para Value Accounting App</h3>
+                    <p class="lang" data-es="Exporta los roles de tu mapa de valor como archivo CSV para importarlos directamente en la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a>. Esto pre-poblará los roles disponibles al registrar entregables." data-ca="Exporta els rols del teu mapa de valor com a arxiu CSV per importar-los directament a l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a>. Això pre-omplirà els rols disponibles en registrar entregables.">Exporta los roles de tu mapa de valor como archivo CSV para importarlos directamente en la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a>. Esto pre-poblará los roles disponibles al registrar entregables.</p>
+                    <p class="lang" data-es="<strong>Formato del CSV:</strong> El archivo exportado contendrá una columna 'Rol' con todos los roles/nodos de tu mapa de valor. Este formato es compatible con la importación en la App de Contabilidad de Valor." data-ca="<strong>Format de l'CSV:</strong> L'arxiu exportat contindrà una columna 'Rol' amb tots els rols/nodes del teu mapa de valor. Aquest format és compatible amb la importació a l'App de Comptabilitat de Valor."><strong>Formato del CSV:</strong> El archivo exportado contendrá una columna 'Rol' con todos los roles/nodos de tu mapa de valor. Este formato es compatible con la importación en la App de Contabilidad de Valor.</p>
                 </div>
                 
-                <div class="instructions">
-                    <h3 class="lang" data-es="Instrucciones de Uso" data-ca="Instruccions d'Ús">Instrucciones de Uso</h3>
-                    <ol>
-                        <li class="lang" data-es="Escribe los roles y transacciones en el formato: <code>Origen → Destino | tipo | Entregable</code>" data-ca="Escriu els rols i transaccions en el format: <code>Origen → Destí | tipus | Entregable</code>">Escribe los roles y transacciones en el formato: <code>Origen → Destino | tipo | Entregable</code></li>
-                        <li class="lang" data-es="Haz clic en los nodos para arrastrarlos y organizar el mapa" data-ca="Fes clic als nodes per arrossegar-los i organitzar el mapa">Haz clic en los nodos para arrastrarlos y organizar el mapa</li>
-                        <li class="lang" data-es="Usa los controles de zoom para navegar por mapas grandes" data-ca="Utilitza els controls de zoom per navegar per mapes grans">Usa los controles de zoom para navegar por mapas grandes</li>
-                        <li class="lang" data-es="Pasa el ratón sobre las conexiones para ver detalles completos" data-ca="Passa el ratolí sobre les connexions per veure detalls complets">Pasa el ratón sobre las conexiones para ver detalles completos</li>
-                        <li class="lang" data-es="Exporta tu mapa en PNG, SVG o JSON para compartir o editar" data-ca="Exporta el teu mapa en PNG, SVG o JSON per compartir o editar">Exporta tu mapa en PNG, SVG o JSON para compartir o editar</li>
-                    </ol>
-                    
-                    <div class="example-section">
-                        <h4 class="lang" data-es="Ejemplos de Transacciones:" data-ca="Exemples de Transaccions:">Ejemplos de Transacciones:</h4>
-                        <div class="example-item">Cliente → Vendedor | tangible | Pedido</div>
-                        <div class="example-item">Vendedor → Cliente | intangible | Confianza</div>
-                        <div class="example-item">IT → Marketing | tangible | Informe de uso web</div>
-                        <div class="example-item">Marketing → IT | intangible | Feedback de campaña</div>
-                    </div>
+                <div class="integration-section" style="margin-top: 25px;">
+                    <h3 class="lang" data-es="Siguiente Paso: Value Accounting App" data-ca="Pas Següent: App Comptabilitat de Valor">Siguiente Paso: Value Accounting App</h3>
+                    <p class="lang" data-es="Una vez hayas mapeado los flujos de valor y exportado los roles, continúa en la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a> para registrar entregables, asignar usuarios por rol y preparar para la tokenización." data-ca="Un cop hagis mapejat els fluxos de valor i exportat els rols, continua a l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a> per registrar entregables, assignar usuaris per rol i preparar per a la tokenització.">Una vez hayas mapeado los flujos de valor y exportado los roles, continúa en la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a> para registrar entregables, asignar usuarios por rol y preparar para la tokenización.</p>
                 </div>
             </div>
             
             <div class="visualization-container">
-                <h2>🗺️ <span class="lang" data-es="Mapa de Red de Valor" data-ca="Mapa de Xarxa de Valor">Mapa de Red de Valor</span></h2>
-                <div id="vna-container">
-                    <svg id="vna-svg"></svg>
-                    <div class="empty-state" id="empty-state">
+                <h2>🗺️ <span class="lang" data-es="Mapa de Valor Visual" data-ca="Mapa de Valor Visual">Mapa de Valor Visual</span></h2>
+                <div class="chart-container" id="network-container">
+                    <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
-                        <h3 class="lang" data-es="Añade tu primera transacción" data-ca="Afegeix la teva primera transacció">Añade tu primera transacción</h3>
-                        <p class="lang" data-es="Define roles y flujos de valor para visualizar las conexiones en tu organización. Comienza con transacciones simples y ve construyendo tu red de valor completa." data-ca="Defineix rols i fluxos de valor per visualitzar les connexions a la teva organització. Comença amb transaccions simples i ves construint la teva xarxa de valor completa.">Define roles y flujos de valor para visualizar las conexiones en tu organización. Comienza con transacciones simples y ve construyendo tu red de valor completa.</p>
-                        <button id="add-first-transaction" class="btn btn-primary" style="margin-top: 15px;">
-                            <span>✨</span> <span class="lang" data-es="Añadir Transacción de Ejemplo" data-ca="Afegir Transacció d'Exemple">Añadir Transacción de Ejemplo</span>
+                        <h3 class="lang" data-es="No hay nodos en el mapa aún" data-ca="No hi ha nodes al mapa encara">No hay nodos en el mapa aún</h3>
+                        <p class="lang" data-es="Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo." data-ca="Afegeix rols i transaccions per visualitzar el teu mapa de valor. Comença afegint rols al tauler esquerre.">Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo.</p>
+                        <button id="quick-start-vna" class="btn btn-primary">
+                            <span>🚀</span> <span class="lang" data-es="Añadir Roles de Ejemplo" data-ca="Afegir Rols d'Exemple">Añadir Roles de Ejemplo</span>
                         </button>
                     </div>
-                    <div class="simulation-running" id="simulation-status">Optimizando distribución de nodos...</div>
                 </div>
                 
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-line legend-tangible"></div>
-                        <span class="lang" data-es="Tangible (bienes, servicios, datos)" data-ca="Tangible (béns, serveis, dades)">Tangible (bienes, servicios, datos)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-line legend-intangible"></div>
-                        <span class="lang" data-es="Intangible (confianza, conocimiento, feedback)" data-ca="Intangible (confiança, coneixement, feedback)">Intangible (confianza, conocimiento, feedback)</span>
-                    </div>
-                </div>
-                
-                <div class="controls">
-                    <button class="control-btn" id="zoom-in">
-                        <span>🔍+</span> <span class="lang" data-es="Zoom +" data-ca="Zoom +">Zoom +</span>
-                    </button>
-                    <button class="control-btn" id="zoom-out">
-                        <span>🔍-</span> <span class="lang" data-es="Zoom -" data-ca="Zoom -">Zoom -</span>
-                    </button>
-                    <button class="control-btn" id="zoom-reset">
-                        <span>↺</span> <span class="lang" data-es="Reset Zoom" data-ca="Reiniciar Zoom">Reset Zoom</span>
-                    </button>
-                    <button class="control-btn" id="fit-to-screen">
-                        <span>❐</span> <span class="lang" data-es="Ajustar a Pantalla" data-ca="Ajustar a Pantalla">Ajustar a Pantalla</span>
-                    </button>
-                </div>
-                
-                <div class="stats-bar">
-                    <div class="stat-item">
-                        <div class="stat-value" id="node-count">0</div>
-                        <div class="stat-label lang" data-es="Roles" data-ca="Rols">Roles</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="link-count">0</div>
-                        <div class="stat-label lang" data-es="Transacciones" data-ca="Transaccions">Transacciones</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="tangible-count">0</div>
-                        <div class="stat-label lang" data-es="Tangibles" data-ca="Tangibles">Tangibles</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="intangible-count">0</div>
-                        <div class="stat-label lang" data-es="Intangibles" data-ca="Intangibles">Intangibles</div>
-                    </div>
+                <div class="next-step">
+                    <h3 class="lang" data-es="Exporta tus Roles para Continuar" data-ca="Exporta els teus Rols per Continuar">Exporta tus Roles para Continuar</h3>
+                    <p class="lang" data-es="Una vez hayas creado tu mapa de valor, haz clic en 'Exportar Roles como CSV' para descargar un archivo compatible con la App de Contabilidad de Valor. Este archivo contiene todos los roles/nodos de tu mapa." data-ca="Un cop hagis creat el teu mapa de valor, fes clic a 'Exportar Rols com a CSV' per descarregar un arxiu compatible amb l'App de Comptabilitat de Valor. Aquest arxiu conté tots els rols/nodes del teu mapa.">Una vez hayas creado tu mapa de valor, haz clic en 'Exportar Roles como CSV' para descargar un archivo compatible con la App de Contabilidad de Valor. Este archivo contiene todos los roles/nodos de tu mapa.</p>
+                    <a href="#export-section" class="lang" data-es="Ir a Exportar Roles" data-ca="Anar a Exportar Rols">Ir a Exportar Roles</a>
                 </div>
             </div>
         </div>
@@ -1118,20 +777,22 @@
             <div class="footer-col">
                 <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
                 <ul class="footer-links">
-                    <li><a href="/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
-                    <li><a href="/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
-                    <li><a href="/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
-                    <li><a href="/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
-                    <li><a href="/events" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="La Masia" data-ca="La Masia">La Masia</a></li>
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <h3 class="lang" data-es="Apps del Ecosistema" data-ca="Apps de l'Ecosistema">Apps del Ecosistema</h3>
                 <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
+                    <li><a href="https://teamtowershuma.com/app_coops" class="lang" data-es="App Comunidades de Práctica" data-ca="App Comunitats de Pràctica">App Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/tokenomics" class="lang" data-es="App Tokenomics" data-ca="App Tokenomics">App Tokenomics</a></li>
                     <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
-                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
-                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
-                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1151,1010 +812,417 @@
             </div>
         </div>
         <div class="copyright">
-            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats.">© 2026 TeamTowers Humà. Todos los derechos reservados.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Value Network Analysis App para mapear flujos de valor tangibles e intangibles en organizaciones." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Value Network Analysis App per mapejar fluxos de valor tangibles i intangibles en organitzacions.">© 2026 TeamTowers Humà. Todos los derechos reservados. Value Network Analysis App para mapear flujos de valor tangibles e intangibles en organizaciones.</p>
         </div>
     </footer>
     
-    <div class="tooltip" id="tooltip"></div>
-    
     <script>
-        // Language switching functionality
+        // Estado de la aplicación
+        let vnaData = {
+            projectName: "Proyecto MASIA",
+            nodes: [],
+            links: []
+        };
+        
+        // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones de idioma
+            setupLanguageSelector();
+            
+            // Cargar datos guardados
+            loadSavedData();
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Actualizar visualizaciones
+            updateVisualization();
+        });
+        
+        // Configurar selector de idioma
+        function setupLanguageSelector() {
             const langButtons = document.querySelectorAll('.lang-btn');
             const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
             
-            // Set initial language based on browser settings or default to Spanish
+            // Establecer idioma inicial
             const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
             setActiveLanguage(userLang);
             
-            // Add click event to language buttons
+            // Event listeners para botones de idioma
             langButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const selectedLang = this.getAttribute('data-lang');
                     setActiveLanguage(selectedLang);
                     
-                    // Update active button
+                    // Actualizar botón activo
                     langButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                 });
             });
             
-            // Set active language
             function setActiveLanguage(lang) {
-                // Update all translatable elements
                 translatableElements.forEach(element => {
                     if (element.hasAttribute(`data-${lang}`)) {
                         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                             element.placeholder = element.getAttribute(`data-${lang}`);
                         } else {
-                            // Use innerHTML to allow HTML content in translations
                             element.innerHTML = element.getAttribute(`data-${lang}`);
                         }
                     }
                 });
                 
-                // Update HTML lang attribute
                 document.documentElement.setAttribute('lang', lang);
             }
-            
-            // Initialize VNA app after language is set
-            initVNAApp();
-        });
+        }
         
-        // VNA App functionality
-        function initVNAApp() {
-            // Estado de la aplicación
-            let nodes = window.nodes = [];
-            let links = window.links = [];
-            let simulation;
-            let svg;
-            let g;
-            let width = 1100;
-            let height = 700;
-            let zoom;
-            let isSimulationRunning = false;
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Añadir nodo
+            document.getElementById('add-node').addEventListener('click', addNode);
             
-            // Inicialización
-            const container = document.getElementById('vna-container');
-            width = container.clientWidth;
-            height = container.clientHeight - 60; // Adjust for controls
+            // Añadir enlace
+            document.getElementById('add-link').addEventListener('click', addLink);
             
-            svg = d3.select('#vna-svg')
-                .attr('width', width)
-                .attr('height', height)
-                .append('g');
-            
-            // Configurar zoom
-            zoom = d3.zoom()
-                .scaleExtent([0.1, 4])
-                .on('zoom', (event) => {
-                    g.attr('transform', event.transform);
-                });
-            
-            d3.select('#vna-svg')
-                .call(zoom)
-                .on('dblclick.zoom', null); // Deshabilitar doble click para zoom
-            
-            // Añadir marcador de flecha MEJORADO - POSICIONADO CORRECTAMENTE
-            svg.append('defs').append('marker')
-                .attr('id', 'arrowhead')
-                .attr('viewBox', '-0 -5 10 10')
-                .attr('refX', 18)  // Posición óptima para que la flecha quede visible al final del enlace
-                .attr('refY', 0)
-                .attr('orient', 'auto')
-                .attr('markerWidth', 12)
-                .attr('markerHeight', 12)
-                .attr('xoverflow', 'visible')
-                .append('svg:path')
-                .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-                .attr('fill', '#4b5563')
-                .style('stroke-width', 1.5)
-                .style('stroke', '#4b5563');
-            
-            // Eventos de botones
-            document.getElementById('add-transaction').addEventListener('click', addTransaction);
-            document.getElementById('add-bulk').addEventListener('click', addBulkTransactions);
-            document.getElementById('clear-all').addEventListener('click', clearAll);
-            document.getElementById('load-example').addEventListener('click', loadExample);
-            document.getElementById('reset-layout').addEventListener('click', resetLayout);
-            document.getElementById('export-png').addEventListener('click', exportPNG);
-            document.getElementById('export-svg').addEventListener('click', exportSVG);
+            // Exportar JSON
             document.getElementById('export-json').addEventListener('click', exportJSON);
-            document.getElementById('copy-data').addEventListener('click', copyData);
-            document.getElementById('add-first-transaction').addEventListener('click', addFirstTransaction);
-            document.getElementById('zoom-in').addEventListener('click', () => zoom.scaleBy(svg.transition().duration(300), 1.3));
-            document.getElementById('zoom-out').addEventListener('click', () => zoom.scaleBy(svg.transition().duration(300), 0.7));
-            document.getElementById('zoom-reset').addEventListener('click', resetZoom);
-            document.getElementById('fit-to-screen').addEventListener('click', fitToScreen);
             
-            // Cargar datos guardados
-            loadSavedData();
+            // Exportar Roles CSV
+            document.getElementById('export-roles-csv').addEventListener('click', exportRolesCSV);
             
-            // Si no hay datos, mostrar estado vacío
-            updateEmptyState();
-            updateTransactionsList();
+            // Limpiar datos
+            document.getElementById('reset-data').addEventListener('click', resetData);
             
-            // Funciones de la aplicación
-            function addTransaction() {
-                const origin = document.getElementById('origin').value.trim();
-                const destination = document.getElementById('destination').value.trim();
-                const type = document.getElementById('type').value;
-                const deliverable = document.getElementById('deliverable').value.trim();
-                
-                if (!origin || !destination || !deliverable) {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Si us plau, completa tots els camps' : 
-                        'Por favor, completa todos los campos');
-                    return;
-                }
-                
-                addTransactionToData(origin, destination, type, deliverable);
-                
-                // Limpiar formulario
-                document.getElementById('origin').value = '';
-                document.getElementById('destination').value = '';
-                document.getElementById('deliverable').value = '';
-                
-                // Guardar datos
+            // Quick start
+            document.getElementById('quick-start-vna').addEventListener('click', quickStartVNA);
+            
+            // Cambiar nombre del proyecto
+            document.getElementById('project-name').addEventListener('change', function() {
+                vnaData.projectName = this.value || "Proyecto MASIA";
                 saveData();
-                
-                // Actualizar visualización
-                updateVisualization();
-                updateTransactionsList();
-                
-                // Ocultar estado vacío
-                document.getElementById('empty-state').style.display = 'none';
+            });
+        }
+        
+        // Añadir nodo/rol
+        function addNode() {
+            const nodeName = document.getElementById('node-name').value.trim();
+            const nodeGroup = document.getElementById('node-group').value;
+            
+            if (!nodeName) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Introdueix un nom per al rol' : 
+                    'Introduce un nombre para el rol');
+                return;
             }
             
-            function addBulkTransactions() {
-                const bulkInput = document.getElementById('bulk-input').value.trim();
-                if (!bulkInput) {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Enganxa les transaccions que vols afegir' : 
-                        'Pega las transacciones que quieres añadir');
-                    return;
-                }
-                
-                const lines = bulkInput.split('\n');
-                let addedCount = 0;
-                
-                lines.forEach(line => {
-                    line = line.trim();
-                    if (!line) return;
-                    
-                    // Parsear el formato: Origen → Destino | tipo | Entregable
-                    const parts = line.split('|');
-                    if (parts.length !== 3) {
-                        console.warn('Formato incorrecto:', line);
-                        return;
-                    }
-                    
-                    const originDest = parts[0].trim().split('→');
-                    if (originDest.length !== 2) {
-                        console.warn('Formato de origen/destino incorrecto:', line);
-                        return;
-                    }
-                    
-                    const origin = originDest[0].trim();
-                    const destination = originDest[1].trim();
-                    const type = parts[1].trim().toLowerCase();
-                    const deliverable = parts[2].trim();
-                    
-                    if (origin && destination && deliverable && (type === 'tangible' || type === 'intangible')) {
-                        addTransactionToData(origin, destination, type, deliverable);
-                        addedCount++;
-                    }
-                });
-                
-                if (addedCount > 0) {
-                    // Limpiar textarea
-                    document.getElementById('bulk-input').value = '';
-                    
-                    // Guardar datos
-                    saveData();
-                    
-                    // Actualizar visualización
-                    updateVisualization();
-                    updateTransactionsList();
-                    
-                    // Ocultar estado vacío
-                    document.getElementById('empty-state').style.display = 'none';
-                    
-                    alert(`${addedCount} ${document.documentElement.lang === 'ca' ? 
-                        'transaccions afegides correctament' : 
-                        'transacciones añadidas correctamente'}`);
-                } else {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'No s\'han pogut afegir transaccions. Revisa el format.' : 
-                        'No se han podido añadir transacciones. Revisa el formato.');
-                }
+            // Verificar si el nodo ya existe
+            const existingNode = vnaData.nodes.find(n => n.id.toLowerCase() === nodeName.toLowerCase());
+            if (existingNode) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    `El rol "${nodeName}" ja existeix` : 
+                    `El rol "${nodeName}" ya existe`);
+                return;
             }
             
-            function addTransactionToData(origin, destination, type, deliverable) {
-                // Añadir nodos si no existen
-                if (!nodes.find(n => n.id === origin)) {
-                    nodes.push({id: origin, group: 1});
-                }
-                
-                if (!nodes.find(n => n.id === destination)) {
-                    nodes.push({id: destination, group: 1});
-                }
-                
-                // Añadir enlace
-                links.push({
-                    source: origin,
-                    target: destination,
-                    type: type,
-                    deliverable: deliverable,
-                    value: 1
-                });
+            // Crear nuevo nodo
+            const newNode = {
+                id: nodeName,
+                label: nodeName,
+                group: parseInt(nodeGroup),
+                physics: true
+            };
+            
+            vnaData.nodes.push(newNode);
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualization();
+            updateNodeSelectors();
+            
+            // Limpiar formulario
+            document.getElementById('node-name').value = '';
+            
+            // Feedback al usuario
+            alert(document.documentElement.lang === 'ca' ? 
+                `Rol "${nodeName}" afegit correctament` : 
+                `Rol "${nodeName}" añadido correctamente`);
+        }
+        
+        // Añadir enlace/transacción
+        function addLink() {
+            const sourceNode = document.getElementById('source-node').value;
+            const targetNode = document.getElementById('target-node').value;
+            const deliverableName = document.getElementById('deliverable-name').value.trim();
+            
+            if (!sourceNode || !targetNode) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Selecciona un rol origen i un rol destí' : 
+                    'Selecciona un rol origen y un rol destino');
+                return;
             }
             
-            function addFirstTransaction() {
-                document.getElementById('origin').value = 'Cliente';
-                document.getElementById('destination').value = 'Vendedor';
-                document.getElementById('type').value = 'tangible';
-                document.getElementById('deliverable').value = 'Pedido';
-                addTransaction();
+            if (!deliverableName) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Introdueix un nom per a l\'entregable' : 
+                    'Introduce un nombre para el entregable');
+                return;
             }
             
-            function loadExample() {
-                if (links.length > 0 && !confirm(document.documentElement.lang === 'ca' ? 
-                    'Vols reemplaçar les dades actuals amb l\'exemple?' : 
-                    '¿Quieres reemplazar los datos actuales con el ejemplo?')) {
-                    return;
-                }
-                
-                nodes = [
-                    {id: "Cliente", group: 1},
-                    {id: "Vendedor", group: 2},
-                    {id: "IT", group: 3},
-                    {id: "Marketing", group: 4},
-                    {id: "CEO", group: 5}
-                ];
-                
-                links = [
-                    {source: "Cliente", target: "Vendedor", type: "tangible", deliverable: "Pedido", value: 1},
-                    {source: "Vendedor", target: "Cliente", type: "intangible", deliverable: "Confianza y satisfacción", value: 1},
-                    {source: "IT", target: "Marketing", type: "tangible", deliverable: "Informe de uso web y analytics", value: 1},
-                    {source: "Marketing", target: "IT", type: "intangible", deliverable: "Feedback de campaña y necesidades de usuarios", value: 1},
-                    {source: "Vendedor", target: "CEO", type: "tangible", deliverable: "Reporte de ventas y proyecciones", value: 1},
-                    {source: "CEO", target: "Vendedor", type: "intangible", deliverable: "Visión estratégica y dirección", value: 1},
-                    {source: "Marketing", target: "Cliente", type: "tangible", deliverable: "Contenido y campañas publicitarias", value: 1},
-                    {source: "Cliente", target: "Marketing", type: "intangible", deliverable: "Insights de mercado y preferencias", value: 1}
-                ];
-                
-                saveData();
-                updateVisualization();
-                updateTransactionsList();
-                document.getElementById('empty-state').style.display = 'none';
+            if (sourceNode === targetNode) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'El rol origen i destí no poden ser el mateix' : 
+                    'El rol origen y destino no pueden ser el mismo');
+                return;
             }
             
-            function clearAll() {
-                if (links.length === 0) return;
-                
-                if (confirm(document.documentElement.lang === 'ca' ? 
-                    'Estàs segur que vols eliminar totes les transaccions?' : 
-                    '¿Estás seguro de que quieres eliminar todas las transacciones?')) {
-                    nodes = [];
-                    links = [];
-                    saveData();
-                    updateVisualization();
-                    updateTransactionsList();
-                    document.getElementById('empty-state').style.display = 'flex';
-                }
+            // Verificar si la transacción ya existe
+            const existingLink = vnaData.links.find(l => 
+                l.source === sourceNode && 
+                l.target === targetNode && 
+                l.deliverable === deliverableName
+            );
+            
+            if (existingLink) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    `La transacció de "${sourceNode}" a "${targetNode}" amb l'entregable "${deliverableName}" ja existeix` : 
+                    `La transacción de "${sourceNode}" a "${targetNode}" con el entregable "${deliverableName}" ya existe`);
+                return;
             }
             
-            function resetLayout() {
-                if (simulation) {
-                    simulation.alpha(1).restart();
-                    document.getElementById('simulation-status').style.display = 'block';
-                    setTimeout(() => {
-                        document.getElementById('simulation-status').style.display = 'none';
-                    }, 2000);
-                }
-            }
+            // Crear nueva transacción
+            const newLink = {
+                source: sourceNode,
+                target: targetNode,
+                deliverable: deliverableName,
+                type: document.getElementById('deliverable-type').value
+            };
             
-            function updateVisualization() {
-                // Actualizar estadísticas
-                document.getElementById('node-count').textContent = nodes.length;
-                document.getElementById('link-count').textContent = links.length;
-                document.getElementById('tangible-count').textContent = links.filter(l => l.type === 'tangible').length;
-                document.getElementById('intangible-count').textContent = links.filter(l => l.type === 'intangible').length;
-                
-                // Limpiar SVG
-                svg.selectAll('*').remove();
-                
-                // Si no hay datos, mostrar mensaje
-                if (nodes.length === 0) {
-                    document.getElementById('empty-state').style.display = 'flex';
-                    return;
-                }
-                
-                document.getElementById('empty-state').style.display = 'none';
-                
-                // Crear simulación de fuerza
-                simulation = d3.forceSimulation(nodes)
-                    .force('link', d3.forceLink(links).id(d => d.id).distance(180))
-                    .force('charge', d3.forceManyBody().strength(-400))
-                    .force('center', d3.forceCenter(width / 2, height / 2))
-                    .force('collision', d3.forceCollide().radius(d => 70))
-                    .alphaDecay(0.02)
-                    .alphaMin(0.01)
-                    .on('tick', ticked)
-                    .on('end', () => {
-                        document.getElementById('simulation-status').style.display = 'none';
-                        isSimulationRunning = false;
-                    });
-                
-                isSimulationRunning = true;
-                document.getElementById('simulation-status').style.display = 'block';
-                
-                // Crear enlaces como líneas rectas con flechas - AHORA CON FLECHAS VISIBLES Y ENTREGABLES CENTRADOS
-                const link = svg.append('g')
-                    .attr('stroke-opacity', 0.9)
-                    .selectAll('line')
-                    .data(links)
-                    .join('line')
-                    .attr('class', d => `link-path link-${d.type}`)
-                    .attr('stroke-width', d => d.type === 'tangible' ? 3 : 2)
-                    .attr('stroke', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
-                    .attr('stroke-dasharray', d => d.type === 'intangible' ? '5,5' : '0')
-                    .attr('stroke-linecap', 'round')
-                    .attr('marker-end', 'url(#arrowhead)'); // Flecha VISIBLE al final del enlace
-                
-                // Crear etiquetas de enlaces - POSICIONADAS EN EL CENTRO DE LA LÍNEA
-                const linkLabelGroup = svg.append('g')
-                    .attr('class', 'link-labels')
-                    .selectAll('g')
-                    .data(links)
-                    .join('g')
-                    .attr('class', 'link-label-group');
-                
-                // Etiqueta para el entregable - CENTRADA EN LA LÍNEA DE LA TRANSACCIÓN
-                const linkLabel = linkLabelGroup.append('text')
-                    .attr('class', 'link-label deliverable')
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .html(d => {
-                        // Dividir el entregable en líneas si es muy largo
-                        const words = d.deliverable.split(' ');
-                        let lines = [];
-                        let currentLine = '';
-                        
-                        words.forEach(word => {
-                            if ((currentLine + ' ' + word).length > 20) {
-                                lines.push(currentLine);
-                                currentLine = word;
-                            } else {
-                                currentLine += (currentLine ? ' ' : '') + word;
-                            }
-                        });
-                        
-                        if (currentLine) lines.push(currentLine);
-                        
-                        return lines.map(line => `<tspan x="0" dy="${lines.length > 1 ? (lines.indexOf(line) === 0 ? '-0.6em' : '1.2em') : '0'}">${line}</tspan>`).join('');
-                    })
-                    .attr('fill', d => d.type === 'tangible' ? '#1e3a8a' : '#8b5cf6')
-                    .style('font-size', '10px')
-                    .style('font-weight', '500');
-                
-                // Crear nodos
-                const node = svg.append('g')
-                    .attr('stroke', '#fff')
-                    .attr('stroke-width', 3)
-                    .selectAll('circle')
-                    .data(nodes)
-                    .join('circle')
-                    .attr('r', 50)
-                    .attr('fill', d => {
-                        // Contar conexiones del nodo
-                        const connections = links.filter(l => l.source.id === d.id || l.target.id === d.id).length;
-                        return connections > 3 ? '#1e3a8a' : '#4f46e5';
-                    })
-                    .call(d3.drag()
-                        .on('start', dragstarted)
-                        .on('drag', dragged)
-                        .on('end', dragended));
-                
-                // Crear etiquetas de nodos
-                const label = svg.append('g')
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .selectAll('text')
-                    .data(nodes)
-                    .join('text')
-                    .text(d => d.id)
-                    .attr('fill', '#0f172a')
-                    .attr('font-weight', '700')
-                    .attr('font-size', '14px')
-                    .call(d3.drag()
-                        .on('start', dragstarted)
-                        .on('drag', dragged)
-                        .on('end', dragended));
-                
-                // Tooltip para enlaces
-                linkLabelGroup.on('mouseover', function(event, d) {
-                    const tooltip = document.getElementById('tooltip');
-                    tooltip.innerHTML = `
-                        <h4>${document.documentElement.lang === 'ca' ? 'Transacció de Valor' : 'Transacción de Valor'}</h4>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Origen:' : 'Origen:'}</span> <span class="value">${d.source.id}</span></p>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Destí:' : 'Destino:'}</span> <span class="value">${d.target.id}</span></p>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Tipus:' : 'Tipo:'}</span> <span class="type-badge ${d.type}">${d.type.charAt(0).toUpperCase() + d.type.slice(1)}</span></p>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Entregable:' : 'Entregable:'}</span> <span class="value">${d.deliverable}</span></p>
-                    `;
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = (event.pageX + 15) + 'px';
-                    tooltip.style.top = (event.pageY + 15) + 'px';
-                })
-                .on('mouseout', () => {
-                    document.getElementById('tooltip').style.display = 'none';
-                });
-                
-                // Tooltip para nodos
-                node.on('mouseover', function(event, d) {
-                    // Contar conexiones entrantes y salientes
-                    const incoming = links.filter(l => l.target.id === d.id).length;
-                    const outgoing = links.filter(l => l.source.id === d.id).length;
-                    const total = incoming + outgoing;
-                    
-                    const tooltip = document.getElementById('tooltip');
-                    tooltip.innerHTML = `
-                        <h4>${d.id}</h4>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Connexions totals:' : 'Conexiones totales:'}</span> <span class="value">${total}</span></p>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Entrants:' : 'Entrantes:'}</span> <span class="value">${incoming}</span></p>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Sortints:' : 'Salientes:'}</span> <span class="value">${outgoing}</span></p>
-                        <p><span class="label">${document.documentElement.lang === 'ca' ? 'Importància a la xarxa:' : 'Importancia en la red:'}</span> <span class="value">${total > 5 ? (document.documentElement.lang === 'ca' ? 'Alta' : 'Alta') : total > 2 ? (document.documentElement.lang === 'ca' ? 'Mitjana' : 'Media') : (document.documentElement.lang === 'ca' ? 'Baixa' : 'Baja')}</span></p>
-                    `;
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = (event.pageX + 15) + 'px';
-                    tooltip.style.top = (event.pageY + 15) + 'px';
-                })
-                .on('mouseout', () => {
-                    document.getElementById('tooltip').style.display = 'none';
-                });
-                
-                // Función tick para actualizar posiciones - CON LÍNEAS RECTAS Y ENTREGABLES CENTRADOS
-                function ticked() {
-                    // Calcular el índice de cada enlace entre el mismo par de nodos
-                    const linkMap = new Map();
-                    links.forEach((link, i) => {
-                        const key = `${link.source.id}-${link.target.id}`;
-                        if (!linkMap.has(key)) linkMap.set(key, []);
-                        linkMap.get(key).push(i);
-                    });
-                    
-                    // Actualizar posición de los enlaces - LÍNEAS RECTAS CON FLECHAS
-                    link.attr('x1', d => {
-                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
-                        return sourceNode ? sourceNode.x : 0;
-                    })
-                    .attr('y1', d => {
-                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
-                        return sourceNode ? sourceNode.y : 0;
-                    })
-                    .attr('x2', d => {
-                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
-                        return targetNode ? targetNode.x : 0;
-                    })
-                    .attr('y2', d => {
-                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
-                        return targetNode ? targetNode.y : 0;
-                    });
-                    
-                    // Actualizar posición de las etiquetas - CENTRADAS EN LA LÍNEA RECTA
-                    linkLabelGroup.attr('transform', d => {
-                        const sourceNode = typeof d.source === 'object' ? d.source : nodes.find(n => n.id === d.source);
-                        const targetNode = typeof d.target === 'object' ? d.target : nodes.find(n => n.id === d.target);
-                        
-                        if (!sourceNode || !targetNode) return 'translate(0,0)';
-                        
-                        // Calcular el punto medio de la línea
-                        const midX = (sourceNode.x + targetNode.x) / 2;
-                        const midY = (sourceNode.y + targetNode.y) / 2;
-                        
-                        // Calcular vector perpendicular para evitar superposición
-                        const dx = targetNode.x - sourceNode.x;
-                        const dy = targetNode.y - sourceNode.y;
-                        const distance = Math.sqrt(dx*dx + dy*dy) || 1;
-                        
-                        // Vector perpendicular normalizado
-                        const perpX = -dy / distance;
-                        const perpY = dx / distance;
-                        
-                        // Obtener el índice del enlace en su grupo
-                        const key = `${d.source.id}-${d.target.id}`;
-                        const linkGroup = linkMap.get(key) || [];
-                        const linkIndex = linkGroup.indexOf(links.indexOf(d));
-                        
-                        // Desplazamiento perpendicular basado en el índice
-                        const offset = (linkIndex - (linkGroup.length - 1) / 2) * 25;
-                        
-                        return `translate(${midX + perpX * offset}, ${midY + perpY * offset})`;
-                    });
-                    
-                    // Actualizar posición de nodos y etiquetas
-                    node
-                        .attr('cx', d => d.x = Math.max(60, Math.min(width - 60, d.x)))
-                        .attr('cy', d => d.y = Math.max(60, Math.min(height - 60, d.y)));
-                    
-                    label
-                        .attr('x', d => d.x)
-                        .attr('y', d => d.y);
-                }
-                
-                // Funciones de drag
-                function dragstarted(event, d) {
-                    if (!event.active) simulation.alpha(0.3).restart();
-                    d.fx = d.x;
-                    d.fy = d.y;
-                }
-                
-                function dragged(event, d) {
-                    d.fx = event.x;
-                    d.fy = event.y;
-                }
-                
-                function dragended(event, d) {
-                    if (!event.active) simulation.alpha(0.001);
-                    d.fx = null;
-                    d.fy = null;
-                }
-                
-                // Guardar referencia a g para el zoom
-                g = svg;
-            }
+            vnaData.links.push(newLink);
             
-            function updateTransactionsList() {
-                const container = document.getElementById('transactions-container');
-                
-                if (links.length === 0) {
-                    container.innerHTML = `<div class="empty-transactions lang" data-es="No hay transacciones aún. Añade una transacción para comenzar." data-ca="No hi ha transaccions encara. Afegeix una transacció per començar.">No hay transacciones aún. Añade una transacción para comenzar.</div>`;
-                    return;
-                }
-                
-                container.innerHTML = '';
-                
-                links.forEach((link, index) => {
-                    const item = document.createElement('div');
-                    item.className = `transaction-item ${link.type}`;
-                    item.innerHTML = `
-                        <div class="transaction-info">
-                            <strong>${link.source.id}</strong> → <strong>${link.target.id}</strong> | 
-                            <span class="badge badge-${link.type}">${link.type}</span> | 
-                            ${link.deliverable}
-                        </div>
-                        <button class="delete-transaction" data-index="${index}">×</button>
-                    `;
-                    container.appendChild(item);
-                });
-                
-                // Add event listeners to delete buttons
-                document.querySelectorAll('.delete-transaction').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        deleteTransaction(index);
-                    });
-                });
-            }
+            // Guardar y actualizar
+            saveData();
+            updateVisualization();
             
-            function deleteTransaction(index) {
-                if (confirm(document.documentElement.lang === 'ca' ? 
-                    'Estàs segur que vols eliminar aquesta transacció?' : 
-                    '¿Estás seguro de que quieres eliminar esta transacción?')) {
-                    // Eliminar la transacción
-                    links.splice(index, 1);
-                    
-                    // Eliminar nodos huérfanos (sin conexiones)
-                    nodes = nodes.filter(node => {
-                        return links.some(link => 
-                            link.source.id === node.id || link.target.id === node.id
-                        );
-                    });
-                    
-                    // Guardar datos
-                    saveData();
-                    
-                    // Actualizar visualización
-                    updateVisualization();
-                    updateTransactionsList();
-                }
-            }
+            // Limpiar formulario
+            document.getElementById('deliverable-name').value = '';
             
-            function resetZoom() {
-                svg.transition()
-                    .duration(300)
-                    .call(zoom.transform, d3.zoomIdentity);
-            }
+            // Feedback al usuario
+            alert(document.documentElement.lang === 'ca' ? 
+                `Transacció afegida correctament de "${sourceNode}" a "${targetNode}"` : 
+                `Transacción añadida correctamente de "${sourceNode}" a "${targetNode}"`);
+        }
+        
+        // Actualizar selectores de nodos
+        function updateNodeSelectors() {
+            const sourceSelect = document.getElementById('source-node');
+            const targetSelect = document.getElementById('target-node');
             
-            function fitToScreen() {
-                // Calcular bounding box de todos los elementos
-                const bbox = svg.node().getBBox();
-                
-                if (bbox.width === 0 || bbox.height === 0) return;
-                
-                // Calcular escala y traslación
-                const padding = 80;
-                const scaleX = (width - padding * 2) / bbox.width;
-                const scaleY = (height - padding * 2) / bbox.height;
-                const scale = Math.min(scaleX, scaleY, 2); // Máximo zoom 2x
-                
-                const translateX = (width - bbox.width * scale) / 2 - bbox.x * scale;
-                const translateY = (height - bbox.height * scale) / 2 - bbox.y * scale;
-                
-                // Aplicar transformación
-                svg.transition()
-                    .duration(500)
-                    .call(zoom.transform, d3.zoomIdentity
-                        .translate(translateX, translateY)
-                        .scale(scale));
-            }
+            // Limpiar opciones actuales
+            sourceSelect.innerHTML = '';
+            targetSelect.innerHTML = '';
             
-            function saveData() {
-                const data = {nodes, links};
-                localStorage.setItem('vnaData', JSON.stringify(data));
-            }
+            // Añadir opciones para cada nodo
+            vnaData.nodes.forEach(node => {
+                const sourceOption = document.createElement('option');
+                sourceOption.value = node.id;
+                sourceOption.textContent = node.label;
+                sourceSelect.appendChild(sourceOption);
+                
+                const targetOption = document.createElement('option');
+                targetOption.value = node.id;
+                targetOption.textContent = node.label;
+                targetSelect.appendChild(targetOption);
+            });
+        }
+        
+        // Actualizar visualización
+        function updateVisualization() {
+            const container = document.getElementById('network-container');
             
-            function loadSavedData() {
-                const saved = localStorage.getItem('vnaData');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    nodes = data.nodes || [];
-                    links = data.links || [];
-                    
-                    if (nodes.length > 0 || links.length > 0) {
-                        document.getElementById('empty-state').style.display = 'none';
-                    }
-                    
-                    // Actualizar lista de transacciones después de cargar
-                    updateTransactionsList();
-                }
-            }
-            
-            function exportPNG() {
-                if (nodes.length === 0) {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'No hi ha dades per exportar' : 
-                        'No hay datos para exportar');
-                    return;
-                }
-                
-                // Mostrar estado de carga
-                const originalText = document.getElementById('export-png').innerHTML;
-                document.getElementById('export-png').innerHTML = '<span>⏳</span> ' + (document.documentElement.lang === 'ca' ? 'Generant PNG...' : 'Generando PNG...');
-                document.getElementById('export-png').disabled = true;
-                
-                // Crear un contenedor temporal para la exportación
-                const exportContainer = document.createElement('div');
-                exportContainer.style.width = '1600px';
-                exportContainer.style.height = '1200px';
-                exportContainer.style.position = 'absolute';
-                exportContainer.style.left = '-9999px';
-                exportContainer.style.backgroundColor = 'white';
-                exportContainer.style.padding = '40px';
-                document.body.appendChild(exportContainer);
-                
-                // Crear SVG para exportación
-                const exportSvg = d3.select(exportContainer)
-                    .append('svg')
-                    .attr('width', 1600)
-                    .attr('height', 1200)
-                    .style('background', 'white');
-                
-                // Copiar contenido del SVG actual
-                const svgNode = document.querySelector('#vna-svg svg');
-                const clone = svgNode.cloneNode(true);
-                exportSvg.node().appendChild(clone);
-                
-                // Ajustar estilos para exportación
-                exportSvg.selectAll('circle')
-                    .attr('stroke', '#fff')
-                    .attr('stroke-width', 4);
-                
-                exportSvg.selectAll('text')
-                    .attr('fill', '#0f172a')
-                    .attr('font-family', 'Arial, sans-serif');
-                
-                // Agregar título y leyenda
-                exportSvg.append('text')
-                    .attr('x', 800)
-                    .attr('y', 40)
-                    .attr('text-anchor', 'middle')
-                    .attr('font-size', '24')
-                    .attr('font-weight', 'bold')
-                    .attr('fill', '#1e3a8a')
-                    .text('Value Network Analysis - TeamTowers Humà');
-                
-                exportSvg.append('text')
-                    .attr('x', 800)
-                    .attr('y', 80)
-                    .attr('text-anchor', 'middle')
-                    .attr('font-size', '16')
-                    .attr('fill', '#4b5563')
-                    .text(`Roles: ${nodes.length} | Transacciones: ${links.length} | Tangibles: ${links.filter(l => l.type === 'tangible').length} | Intangibles: ${links.filter(l => l.type === 'intangible').length}`);
-                
-                // Agregar leyenda
-                exportSvg.append('rect')
-                    .attr('x', 50)
-                    .attr('y', 1100)
-                    .attr('width', 250)
-                    .attr('height', 70)
-                    .attr('fill', '#f8fafc')
-                    .attr('stroke', '#e2e8f0');
-                
-                exportSvg.append('line')
-                    .attr('x1', 60)
-                    .attr('y1', 1120)
-                    .attr('x2', 100)
-                    .attr('y2', 1120)
-                    .attr('stroke', '#1e3a8a')
-                    .attr('stroke-width', 4);
-                
-                exportSvg.append('text')
-                    .attr('x', 110)
-                    .attr('y', 1125)
-                    .attr('font-size', '14')
-                    .attr('fill', '#4b5563')
-                    .text(document.documentElement.lang === 'ca' ? 'Tangible (béns, serveis, dades)' : 'Tangible (bienes, servicios, datos)');
-                
-                exportSvg.append('line')
-                    .attr('x1', 60)
-                    .attr('y1', 1145)
-                    .attr('x2', 100)
-                    .attr('y2', 1145)
-                    .attr('stroke', '#8b5cf6')
-                    .attr('stroke-width', 3)
-                    .attr('stroke-dasharray', '5,5');
-                
-                exportSvg.append('text')
-                    .attr('x', 110)
-                    .attr('y', 1150)
-                    .attr('font-size', '14')
-                    .attr('fill', '#4b5563')
-                    .text(document.documentElement.lang === 'ca' ? 'Intangible (confiança, coneixement)' : 'Intangible (confianza, conocimiento)');
-                
-                // Convertir a canvas y luego a PNG - USANDO html2canvas correctamente
-                html2canvas(exportContainer, {
-                    scale: 2,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    
-                    // Limpiar
-                    document.body.removeChild(exportContainer);
-                    document.getElementById('export-png').innerHTML = originalText;
-                    document.getElementById('export-png').disabled = false;
-                    
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Mapa exportat correctament com a PNG' : 
-                        'Mapa exportado exitosamente como PNG');
-                }).catch(err => {
-                    console.error('Error al exportar PNG:', err);
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Error en generar la imatge. Torna-ho a provar.' : 
-                        'Error al generar la imagen. Por favor intenta de nuevo.');
-                    document.body.removeChild(exportContainer);
-                    document.getElementById('export-png').innerHTML = originalText;
-                    document.getElementById('export-png').disabled = false;
-                });
-            }
-            
-            function exportSVG() {
-                if (nodes.length === 0) {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'No hi ha dades per exportar' : 
-                        'No hay datos para exportar');
-                    return;
-                }
-                
-                // Crear SVG para exportación
-                const exportSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                exportSvg.setAttribute('width', '1600');
-                exportSvg.setAttribute('height', '1200');
-                exportSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-                exportSvg.style.backgroundColor = 'white';
-                
-                // Copiar contenido del SVG actual
-                const svgNode = document.querySelector('#vna-svg svg');
-                const clone = svgNode.cloneNode(true);
-                
-                // Añadir estilos inline para mejor compatibilidad
-                const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-                style.textContent = `
-                    .node { stroke: #fff; stroke-width: 4; }
-                    .link-path { marker-end: url(#arrowhead); stroke-linecap: round; }
-                    .link-tangible { stroke: #1e3a8a; stroke-width: 3; }
-                    .link-intangible { stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 5,5; }
-                    text { fill: #0f172a; font-family: Arial, sans-serif; font-weight: bold; }
-                    .link-label { font-size: 10px; font-weight: 500; fill: #1e3a8a; }
-                    .link-label.intangible { fill: #8b5cf6; }
+            if (vnaData.nodes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <h3 class="lang" data-es="No hay nodos en el mapa aún" data-ca="No hi ha nodes al mapa encara">No hay nodos en el mapa aún</h3>
+                        <p class="lang" data-es="Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo." data-ca="Afegeix rols i transaccions per visualitzar el teu mapa de valor. Comença afegint rols al tauler esquerre.">Añade roles y transacciones para visualizar tu mapa de valor. Comienza añadiendo roles en el panel izquierdo.</p>
+                        <button id="quick-start-vna" class="btn btn-primary">
+                            <span>🚀</span> <span class="lang" data-es="Añadir Roles de Ejemplo" data-ca="Afegir Rols d'Exemple">Añadir Roles de Ejemplo</span>
+                        </button>
+                    </div>
                 `;
-                exportSvg.appendChild(style);
                 
-                // Añadir título y estadísticas
-                const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                title.setAttribute('x', '800');
-                title.setAttribute('y', '40');
-                title.setAttribute('text-anchor', 'middle');
-                title.setAttribute('font-size', '24');
-                title.setAttribute('font-weight', 'bold');
-                title.setAttribute('fill', '#1e3a8a');
-                title.textContent = 'Value Network Analysis - TeamTowers Humà';
-                exportSvg.appendChild(title);
+                // Reattach event listener
+                document.getElementById('quick-start-vna').addEventListener('click', quickStartVNA);
+                return;
+            }
+            
+            // Aquí iría la visualización con vis-network o similar
+            // Para esta demostración, mostramos un resumen
+            container.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <h3 class="lang" data-es="Mapa de Valor Generado" data-ca="Mapa de Valor Generat">Mapa de Valor Generado</h3>
+                    <p style="margin: 20px 0;"><strong class="lang" data-es="Proyecto:" data-ca="Projecte:">Proyecto:</strong> ${vnaData.projectName}</p>
+                    <p style="margin: 10px 0;"><strong class="lang" data-es="Roles/Nodos:" data-ca="Rols/Nodes:">Roles/Nodos:</strong> ${vnaData.nodes.length}</p>
+                    <p style="margin: 10px 0;"><strong class="lang" data-es="Transacciones:" data-ca="Transaccions:">Transacciones:</strong> ${vnaData.links.length}</p>
+                    <div style="margin-top: 30px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                        <p class="lang" data-es="✅ Tu mapa de valor está listo para ser exportado. Haz clic en 'Exportar Roles como CSV' para continuar en la App de Contabilidad de Valor." data-ca="✅ El teu mapa de valor està a punt per ser exportat. Fes clic a 'Exportar Rols com a CSV' per continuar a l'App de Comptabilitat de Valor.">✅ Tu mapa de valor está listo para ser exportado. Haz clic en 'Exportar Roles como CSV' para continuar en la App de Contabilidad de Valor.</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Quick start para VNA
+        function quickStartVNA() {
+            // Añadir roles de ejemplo
+            const exampleRoles = [
+                {id: "Equipo Fundador", label: "Equipo Fundador", group: 1},
+                {id: "Clientes", label: "Clientes", group: 2},
+                {id: "Proveedores", label: "Proveedores", group: 3},
+                {id: "Inversores", label: "Inversores", group: 4},
+                {id: "Comunidad", label: "Comunidad", group: 5}
+            ];
+            
+            // Limpiar nodos existentes
+            vnaData.nodes = [];
+            vnaData.links = [];
+            
+            // Añadir roles de ejemplo
+            exampleRoles.forEach(role => {
+                vnaData.nodes.push(role);
+            });
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualization();
+            updateNodeSelectors();
+            
+            // Feedback al usuario
+            alert(document.documentElement.lang === 'ca' ? 
+                'S\'han afegit 5 rols d\'exemple al teu mapa de valor. Ara pots afegir transaccions entre ells.' : 
+                'Se han añadido 5 roles de ejemplo a tu mapa de valor. Ahora puedes añadir transacciones entre ellos.');
+        }
+        
+        // Exportar JSON
+        function exportJSON() {
+            const dataStr = JSON.stringify(vnaData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `vna-${vnaData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a JSON' : 
+                'Datos exportados correctamente como JSON');
+        }
+        
+        // Exportar Roles como CSV
+        function exportRolesCSV() {
+            if (vnaData.nodes.length === 0) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'No hi ha rols per exportar. Afegeix rols al teu mapa de valor primer.' : 
+                    'No hay roles para exportar. Añade roles a tu mapa de valor primero.');
+                return;
+            }
+            
+            // Crear contenido CSV
+            let csvContent = "Rol\n"; // Header
+            
+            vnaData.nodes.forEach(node => {
+                // Escapar comillas y comas en el nombre del rol
+                let role = node.label || node.id;
+                role = role.replace(/"/g, '""'); // Escapar comillas dobles
+                csvContent += `"${role}"\n`;
+            });
+            
+            // Crear blob y descargar
+            const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `vna-roles-${vnaData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                `S'han exportat ${vnaData.nodes.length} rols com a CSV. Aquest arxiu és compatible amb la importació a l'App de Comptabilitat de Valor.` : 
+                `Se han exportado ${vnaData.nodes.length} roles como CSV. Este archivo es compatible con la importación en la App de Contabilidad de Valor.`);
+        }
+        
+        // Limpiar datos
+        function resetData() {
+            if (confirm(document.documentElement.lang === 'ca' ? 
+                'Estàs segur que vols esborrar totes les dades del mapa de valor?' : 
+                '¿Estás seguro de que quieres borrar todos los datos del mapa de valor?')) {
                 
-                const stats = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                stats.setAttribute('x', '800');
-                stats.setAttribute('y', '80');
-                stats.setAttribute('text-anchor', 'middle');
-                stats.setAttribute('font-size', '16');
-                stats.setAttribute('fill', '#4b5563');
-                stats.textContent = `Roles: ${nodes.length} | Transacciones: ${links.length} | Tangibles: ${links.filter(l => l.type === 'tangible').length} | Intangibles: ${links.filter(l => l.type === 'intangible').length}`;
-                exportSvg.appendChild(stats);
+                vnaData = {
+                    projectName: "Proyecto MASIA",
+                    nodes: [],
+                    links: []
+                };
                 
-                // Añadir leyenda
-                const legendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                legendRect.setAttribute('x', '50');
-                legendRect.setAttribute('y', '1100');
-                legendRect.setAttribute('width', '250');
-                legendRect.setAttribute('height', '70');
-                legendRect.setAttribute('fill', '#f8fafc');
-                legendRect.setAttribute('stroke', '#e2e8f0');
-                exportSvg.appendChild(legendRect);
+                // Limpiar campos de formulario
+                document.getElementById('project-name').value = "Proyecto MASIA";
+                document.getElementById('node-name').value = '';
+                document.getElementById('deliverable-name').value = '';
                 
-                const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line1.setAttribute('x1', '60');
-                line1.setAttribute('y1', '1120');
-                line1.setAttribute('x2', '100');
-                line1.setAttribute('y2', '1120');
-                line1.setAttribute('stroke', '#1e3a8a');
-                line1.setAttribute('stroke-width', '4');
-                exportSvg.appendChild(line1);
-                
-                const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text1.setAttribute('x', '110');
-                text1.setAttribute('y', '1125');
-                text1.setAttribute('font-size', '14');
-                text1.setAttribute('fill', '#4b5563');
-                text1.textContent = document.documentElement.lang === 'ca' ? 'Tangible (béns, serveis, dades)' : 'Tangible (bienes, servicios, datos)';
-                exportSvg.appendChild(text1);
-                
-                const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line2.setAttribute('x1', '60');
-                line2.setAttribute('y1', '1145');
-                line2.setAttribute('x2', '100');
-                line2.setAttribute('y2', '1145');
-                line2.setAttribute('stroke', '#8b5cf6');
-                line2.setAttribute('stroke-width', '3');
-                line2.setAttribute('stroke-dasharray', '5,5');
-                exportSvg.appendChild(line2);
-                
-                const text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text2.setAttribute('x', '110');
-                text2.setAttribute('y', '1150');
-                text2.setAttribute('font-size', '14');
-                text2.setAttribute('fill', '#4b5563');
-                text2.textContent = document.documentElement.lang === 'ca' ? 'Intangible (confiança, coneixement)' : 'Intangible (confianza, conocimiento)';
-                exportSvg.appendChild(text2);
-                
-                // Añadir contenido del grafo
-                exportSvg.appendChild(clone);
-                
-                // Crear enlace de descarga
-                const serializer = new XMLSerializer();
-                let source = serializer.serializeToString(exportSvg);
-                source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-                const url = 'image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
-                
-                const link = document.createElement('a');
-                link.download = `vna-teamtowers-huma-${new Date().toISOString().slice(0,10)}.svg`;
-                link.href = url;
-                link.click();
+                saveData();
+                updateVisualization();
+                updateNodeSelectors();
                 
                 alert(document.documentElement.lang === 'ca' ? 
-                    'Mapa exportat correctament com a SVG' : 
-                    'Mapa exportado exitosamente como SVG');
+                    'Dades esborrades correctament' : 
+                    'Datos borrados correctamente');
             }
-            
-            function exportJSON() {
-    if (nodes.length === 0) {
-        alert(document.documentElement.lang === 'ca' ? 
-            'No hi ha dades per exportar' : 
-            'No hay datos para exportar');
-        return;
-    }
-    
-    // Crear versión limpia de los enlaces para exportación
-    const cleanLinks = links.map(link => {
-        return {
-            source: typeof link.source === 'object' ? link.source.id : link.source,
-            target: typeof link.target === 'object' ? link.target.id : link.target,
-            type: link.type,
-            deliverable: link.deliverable,
-            value: link.value
-        };
-    });
-    
-    // Crear versión limpia de los nodos para exportación
-    const cleanNodes = nodes.map(node => {
-        return {
-            id: node.id,
-            group: node.group
-        };
-    });
-    
-    const dataStr = JSON.stringify({nodes: cleanNodes, links: cleanLinks}, null, 2);
-    const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `vna-data-teamtowers-huma-${new Date().toISOString().slice(0,10)}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    
-    alert(document.documentElement.lang === 'ca' ? 
-        'Dades exportades correctament com a JSON' : 
-        'Datos exportados exitosamente como JSON');
-}
-            
-            function copyData() {
-                if (nodes.length === 0) {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'No hi ha dades per copiar' : 
-                        'No hay datos para copiar');
-                    return;
-                }
+        }
+        
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('vnaData', JSON.stringify(vnaData));
+        }
+        
+        // Cargar datos de localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('vnaData');
+            if (saved) {
+                const parsedData = JSON.parse(saved);
                 
-                // Formatear datos como texto legible
-                let text = 'VALUE NETWORK ANALYSIS - TEAMTOWERS HUMÀ\n';
-                text += `Data: ${new Date().toLocaleDateString()}\n`;
-                text += `Roles: ${nodes.length} | Transaccions: ${links.length}\n\n`;
-                text += 'TRANSACCIONS:\n';
-                text += '='.repeat(80) + '\n';
+                vnaData = {
+                    projectName: parsedData.projectName || "Proyecto MASIA",
+                    nodes: parsedData.nodes || [],
+                    links: parsedData.links || []
+                };
                 
-                links.forEach((link, i) => {
-                    text += `${i+1}. ${link.source.id} → ${link.target.id} | ${link.type} | ${link.deliverable}\n`;
-                });
+                // Restaurar nombre del proyecto en el input
+                document.getElementById('project-name').value = vnaData.projectName;
                 
-                text += '='.repeat(80) + '\n';
-                text += `\nTotal de transaccions: ${links.length}`;
-                
-                // Copiar al portapapeles
-                navigator.clipboard.writeText(text).then(() => {
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Dades copiades al porta-retalls correctament' : 
-                        'Datos copiados al portapapeles exitosamente');
-                    
-                    // Efecto visual de confirmación
-                    const btn = document.getElementById('copy-data');
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '<span>✅</span> ' + (document.documentElement.lang === 'ca' ? '¡Copiat!' : '¡Copiado!');
-                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.style.background = '';
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Error al copiar:', err);
-                    alert(document.documentElement.lang === 'ca' ? 
-                        'Error en copiar les dades. Selecciona i copia manualment.' : 
-                        'Error al copiar los datos. Por favor selecciona y copia manualmente.');
-                });
-            }
-            
-            function updateEmptyState() {
-                if (nodes.length === 0 && links.length === 0) {
-                    document.getElementById('empty-state').style.display = 'flex';
-                } else {
-                    document.getElementById('empty-state').style.display = 'none';
-                }
+                // Actualizar selectores de nodos
+                updateNodeSelectors();
             }
         }
     </script>
