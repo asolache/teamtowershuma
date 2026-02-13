@@ -472,7 +472,7 @@
         
         .export-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
@@ -828,6 +828,64 @@
             from { opacity: 1; }
             to { opacity: 0; transform: translateX(100%); }
         }
+        
+        /* Autocomplete styling */
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+        }
+        
+        .autocomplete-items div:hover {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+        
+        .autocomplete-items div.selected {
+            background-color: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .autocomplete-active {
+            background-color: var(--light) !important;
+            color: var(--primary) !important;
+        }
+        
+        /* Role badge in form */
+        .role-badge {
+            display: inline-block;
+            background: rgba(30, 58, 138, 0.1);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 8px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -851,37 +909,28 @@
     <div class="container">
         <div class="app-container">
             <div class="panel">
-                <h2 class="lang" data-es="➕ Añadir Elementos" data-ca="➕ Afegir Elements">➕ Añadir Elementos</h2>
+                <h2 class="lang" data-es="➕ Añadir Transacción" data-ca="➕ Afegir Transacció">➕ Añadir Transacción</h2>
                 
                 <div class="input-group">
                     <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
                     <input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
                 </div>
                 
-                <div class="input-group">
-                    <label class="lang" data-es="Nuevo Rol" data-ca="Nou Rol">Nuevo Rol</label>
-                    <input type="text" id="node-name" placeholder="Ej: Equipo de Marketing">
-                </div>
-                
-                <div class="btn-group">
-                    <button id="add-node" class="btn btn-primary">
-                        <span>✨</span> <span class="lang" data-es="Añadir Rol" data-ca="Afegir Rol">Añadir Rol</span>
-                    </button>
-                </div>
-                
                 <div class="transaction-form">
                     <h3 class="lang" data-es="Nueva Transacción" data-ca="Nova Transacció">Nueva Transacción</h3>
                     <div class="form-row">
                         <label class="lang" data-es="De:" data-ca="De:">De:</label>
-                        <select id="source-node">
-                            <option class="lang" data-es="Selecciona un rol de origen" data-ca="Selecciona un rol d'origen">Selecciona un rol de origen</option>
-                        </select>
+                        <div class="autocomplete">
+                            <input type="text" id="source-node" placeholder="Escribe un rol o crea uno nuevo...">
+                            <div id="source-node-list" class="autocomplete-items"></div>
+                        </div>
                     </div>
                     <div class="form-row">
                         <label class="lang" data-es="Para:" data-ca="Per a:">Para:</label>
-                        <select id="target-node">
-                            <option class="lang" data-es="Selecciona un rol destino" data-ca="Selecciona un rol destí">Selecciona un rol destino</option>
-                        </select>
+                        <div class="autocomplete">
+                            <input type="text" id="target-node" placeholder="Escribe un rol o crea uno nuevo...">
+                            <div id="target-node-list" class="autocomplete-items"></div>
+                        </div>
                     </div>
                     <div class="form-row">
                         <label class="lang" data-es="Tipo:" data-ca="Tipus:">Tipo:</label>
@@ -899,6 +948,7 @@
                             <span>🔗</span> <span class="lang" data-es="Añadir Transacción" data-ca="Afegir Transacció">Añadir Transacción</span>
                         </button>
                     </div>
+                    <p class="lang" data-es="💡 <strong>Consejo:</strong> Simplemente escribe el nombre de un rol en los campos 'De:' o 'Para:'. Si no existe, se creará automáticamente al añadir la transacción." data-ca="💡 <strong>Consell:</strong> Simplement escriviu el nom d'un rol als camps 'De:' o 'Per a:'. Si no existeix, es crearà automàticament en afegir la transacció." style="margin-top: 15px; font-size: 0.9rem; color: var(--gray);">💡 <strong>Consejo:</strong> Simplemente escribe el nombre de un rol en los campos 'De:' o 'Para:'. Si no existe, se creará automáticamente al añadir la transacción.</p>
                 </div>
                 
                 <div class="quick-add">
@@ -956,7 +1006,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                         <h3 class="lang" data-es="No hay nodos en el mapa aún" data-ca="No hi ha nodes al mapa encara">No hay nodos en el mapa aún</h3>
-                        <p class="lang" data-es="Añade roles y transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo." data-ca="Afegeix rols i transaccions per visualitzar el teu mapa de valor. Utilitza el botó 'Afegir Exemple' per veure un mapa d'exemple.">Añade roles y transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo.</p>
+                        <p class="lang" data-es="Añade transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo." data-ca="Afegeix transaccions per visualitzar el teu mapa de valor. Utilitza el botó 'Afegir Exemple' per veure un mapa d'exemple.">Añade transacciones para visualizar tu mapa de valor. Usa el botón 'Añadir Ejemplo' para ver un mapa de ejemplo.</p>
                     </div>
                 </div>
                 
@@ -1074,80 +1124,63 @@
                 // Test 1: Network container exists
                 this.assert.truthy(document.getElementById('network-container'), "Network container exists");
                 
-                // Test 2: Add node button exists
-                this.assert.truthy(document.getElementById('add-node'), "Add node button exists");
-                
-                // Test 3: Add link button exists
+                // Test 2: Add link button exists
                 this.assert.truthy(document.getElementById('add-link'), "Add link button exists");
                 
-                // Test 4: Export JSON button exists
+                // Test 3: Export JSON button exists
                 this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
                 
-                // Test 5: Export CSV button exists
+                // Test 4: Export CSV button exists
                 this.assert.truthy(document.getElementById('export-roles-csv'), "Export CSV button exists");
                 
-                // Test 6: Export PNG button exists
+                // Test 5: Export PNG button exists
                 this.assert.truthy(document.getElementById('export-png'), "Export PNG button exists");
                 
-                // Test 7: Reset button exists
+                // Test 6: Reset button exists
                 this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
                 
-                // Test 8: Quick start button exists
+                // Test 7: Quick start button exists
                 this.assert.truthy(document.getElementById('quick-start'), "Quick start button exists");
                 
-                // Test 9: Initial state has no nodes
+                // Test 8: Initial state has no nodes
                 this.assert.equals(vnaData.nodes.length, 0, "Initial state has no nodes");
                 
-                // Test 10: Initial state has no edges
+                // Test 9: Initial state has no edges
                 this.assert.equals(vnaData.edges.length, 0, "Initial state has no edges");
                 
-                // Test 11: Add a test node
-                const testNodeName = "Test Node " + Date.now();
-                document.getElementById('node-name').value = testNodeName;
-                document.getElementById('add-node').click();
-                this.assert.equals(vnaData.nodes.length, 1, "Adding a node increases node count");
-                
-                // Test 12: Verify node was added correctly
-                const addedNode = vnaData.nodes.find(n => n.label === testNodeName);
-                this.assert.truthy(addedNode, "Node was added to vnaData");
-                this.assert.truthy(nodes.get(addedNode.id), "Node was added to vis-network dataset");
-                
-                // Test 13: Add a test edge
-                if (vnaData.nodes.length >= 2) {
-                    // Add second node if needed
-                    const testNodeName2 = "Test Node 2 " + Date.now();
-                    document.getElementById('node-name').value = testNodeName2;
-                    document.getElementById('add-node').click();
-                }
-                
-                // Set up edge form
-                document.getElementById('source-node').value = vnaData.nodes[0].id;
-                document.getElementById('target-node').value = vnaData.nodes[1].id;
+                // Test 10: Add a test transaction (which will create nodes)
+                const testSource = "Test Source " + Date.now();
+                const testTarget = "Test Target " + Date.now();
+                document.getElementById('source-node').value = testSource;
+                document.getElementById('target-node').value = testTarget;
                 document.getElementById('deliverable-name').value = "Test Deliverable";
                 document.getElementById('deliverable-type').value = "tangible";
                 document.getElementById('add-link').click();
                 
-                this.assert.equals(vnaData.edges.length, 1, "Adding an edge increases edge count");
+                this.assert.equals(vnaData.nodes.length, 2, "Adding a transaction creates 2 nodes");
+                this.assert.equals(vnaData.edges.length, 1, "Adding a transaction creates 1 edge");
                 
-                // Test 14: Verify edge was added correctly
+                // Test 11: Verify nodes were added correctly
+                const sourceNode = vnaData.nodes.find(n => n.label === testSource);
+                const targetNode = vnaData.nodes.find(n => n.label === testTarget);
+                this.assert.truthy(sourceNode, "Source node was added to vnaData");
+                this.assert.truthy(targetNode, "Target node was added to vnaData");
+                this.assert.truthy(nodes.get(sourceNode.id), "Source node was added to vis-network dataset");
+                this.assert.truthy(nodes.get(targetNode.id), "Target node was added to vis-network dataset");
+                
+                // Test 12: Verify edge was added correctly
                 const addedEdge = vnaData.edges.find(e => e.label === "Test Deliverable");
                 this.assert.truthy(addedEdge, "Edge was added to vnaData");
                 this.assert.truthy(edges.get(addedEdge.id), "Edge was added to vis-network dataset");
                 
-                // Test 15: Export roles CSV function exists
+                // Test 13: Export roles CSV function exists
                 this.assert.truthy(typeof exportRolesCSV === 'function', "exportRolesCSV function exists");
                 
-                // Test 16: Export JSON function exists
+                // Test 14: Export JSON function exists
                 this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
                 
-                // Test 17: Network is initialized
+                // Test 15: Network is initialized
                 this.assert.truthy(network !== null, "Network is initialized");
-                
-                // Test 18: Node selectors are updated
-                const sourceOptions = document.getElementById('source-node').options.length;
-                const targetOptions = document.getElementById('target-node').options.length;
-                this.assert.equals(sourceOptions, vnaData.nodes.length + 1, "Source node selector has correct options");
-                this.assert.equals(targetOptions, vnaData.nodes.length + 1, "Target node selector has correct options");
                 
                 // Clean up test data
                 resetDataWithoutConfirmation();
@@ -1207,6 +1240,9 @@
         let nextNodeId = 1;
         let nextEdgeId = 1;
         
+        // Autocomplete variables
+        let currentAutocompleteField = null;
+        
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar botones de idioma
@@ -1221,12 +1257,12 @@
             // Configurar event listeners
             setupEventListeners();
             
-            // Actualizar selectores de nodos
-            updateNodeSelectors();
+            // Configurar autocompletado
+            setupAutocomplete();
             
             // Mostrar notificación de bienvenida
             setTimeout(() => {
-                showNotification('¡Bienvenido a la Value Network Analysis App! Usa "Añadir Ejemplo" para ver un mapa de valor demostrativo.', 'success');
+                showNotification('¡Bienvenido a la Value Network Analysis App! Escribe roles en los campos "De:" y "Para:" para crear tu mapa de valor.', 'success');
             }, 1000);
         });
         
@@ -1348,9 +1384,6 @@
         
         // Configurar event listeners
         function setupEventListeners() {
-            // Añadir nodo
-            document.getElementById('add-node').addEventListener('click', addNode);
-            
             // Añadir enlace
             document.getElementById('add-link').addEventListener('click', addLink);
             
@@ -1379,27 +1412,126 @@
             });
         }
         
-        // Añadir nodo/rol
-        function addNode() {
-            const nodeName = document.getElementById('node-name').value.trim();
+        // Configurar autocompletado
+        function setupAutocomplete() {
+            const sourceInput = document.getElementById('source-node');
+            const targetInput = document.getElementById('target-node');
+            const sourceList = document.getElementById('source-node-list');
+            const targetList = document.getElementById('target-node-list');
             
-            if (!nodeName) {
-                showNotification('Por favor, introduce un nombre para el rol', 'error');
+            // Set up autocomplete for source field
+            sourceInput.addEventListener('input', function(e) {
+                currentAutocompleteField = 'source';
+                showAutocomplete(this.value, sourceList);
+            });
+            
+            sourceInput.addEventListener('focus', function(e) {
+                currentAutocompleteField = 'source';
+                showAutocomplete(this.value, sourceList);
+            });
+            
+            sourceInput.addEventListener('blur', function(e) {
+                // Delay hiding to allow click on suggestions
+                setTimeout(() => {
+                    sourceList.innerHTML = '';
+                }, 200);
+            });
+            
+            // Set up autocomplete for target field
+            targetInput.addEventListener('input', function(e) {
+                currentAutocompleteField = 'target';
+                showAutocomplete(this.value, targetList);
+            });
+            
+            targetInput.addEventListener('focus', function(e) {
+                currentAutocompleteField = 'target';
+                showAutocomplete(this.value, targetList);
+            });
+            
+            targetInput.addEventListener('blur', function(e) {
+                // Delay hiding to allow click on suggestions
+                setTimeout(() => {
+                    targetList.innerHTML = '';
+                }, 200);
+            });
+            
+            // Close autocomplete when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target !== sourceInput && e.target !== targetInput) {
+                    sourceList.innerHTML = '';
+                    targetList.innerHTML = '';
+                }
+            });
+        }
+        
+        // Show autocomplete suggestions
+        function showAutocomplete(inputValue, container) {
+            // Clear container
+            container.innerHTML = '';
+            
+            if (!inputValue) {
                 return;
             }
             
-            // Verificar si el nodo ya existe
-            const existingNode = vnaData.nodes.find(n => n.label.toLowerCase() === nodeName.toLowerCase());
+            // Find matching roles (case-insensitive)
+            const matches = vnaData.nodes.filter(node => 
+                node.label.toLowerCase().includes(inputValue.toLowerCase())
+            );
+            
+            // Limit to 10 matches
+            matches.slice(0, 10).forEach(node => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = node.label;
+                suggestion.addEventListener('click', function() {
+                    if (currentAutocompleteField === 'source') {
+                        document.getElementById('source-node').value = node.label;
+                    } else {
+                        document.getElementById('target-node').value = node.label;
+                    }
+                    container.innerHTML = '';
+                });
+                container.appendChild(suggestion);
+            });
+            
+            // Add option to create new role if no exact match
+            if (matches.length === 0) {
+                const newOption = document.createElement('div');
+                newOption.innerHTML = `➕ <strong>Crear nuevo rol:</strong> "${inputValue}"`;
+                newOption.style.fontStyle = 'italic';
+                newOption.addEventListener('click', function() {
+                    // The role will be created when the transaction is added
+                    if (currentAutocompleteField === 'source') {
+                        document.getElementById('source-node').value = inputValue;
+                    } else {
+                        document.getElementById('target-node').value = inputValue;
+                    }
+                    container.innerHTML = '';
+                });
+                container.appendChild(newOption);
+            }
+        }
+        
+        // Helper function to find node by label (case-insensitive)
+        function findNodeByLabel(label) {
+            if (!label) return null;
+            return vnaData.nodes.find(n => 
+                n.label.toLowerCase().trim() === label.toLowerCase().trim()
+            );
+        }
+        
+        // Helper function to add a node
+        function addNode(label) {
+            // Check if node already exists (case-insensitive)
+            const existingNode = findNodeByLabel(label);
             if (existingNode) {
-                showNotification(`El rol "${nodeName}" ya existe`, 'error');
-                return;
+                return existingNode;
             }
             
-            // Crear nuevo nodo
+            // Create new node
             const nodeId = `node-${nextNodeId++}`;
             const newNode = {
                 id: nodeId,
-                label: nodeName,
+                label: label.trim(),
                 group: vnaData.nodes.length % 5 + 1 // Cycle through 5 groups
             };
             
@@ -1407,26 +1539,18 @@
             vnaData.nodes.push(newNode);
             nodes.add(newNode);
             
-            // Guardar y actualizar
-            saveData();
-            updateNodeSelectors();
-            
-            // Limpiar formulario
-            document.getElementById('node-name').value = '';
-            
-            // Feedback al usuario
-            showNotification(`Rol "${nodeName}" añadido correctamente`, 'success');
+            return newNode;
         }
         
         // Añadir enlace/transacción
         function addLink() {
-            const sourceNode = document.getElementById('source-node').value;
-            const targetNode = document.getElementById('target-node').value;
+            const sourceInput = document.getElementById('source-node').value.trim();
+            const targetInput = document.getElementById('target-node').value.trim();
             const deliverableName = document.getElementById('deliverable-name').value.trim();
             const deliverableType = document.getElementById('deliverable-type').value;
             
-            if (!sourceNode || !targetNode || sourceNode === "default" || targetNode === "default") {
-                showNotification('Selecciona un rol origen y un rol destino', 'error');
+            if (!sourceInput || !targetInput) {
+                showNotification('Introduce roles en los campos "De:" y "Para:"', 'error');
                 return;
             }
             
@@ -1435,20 +1559,36 @@
                 return;
             }
             
-            if (sourceNode === targetNode) {
+            if (sourceInput.toLowerCase() === targetInput.toLowerCase()) {
                 showNotification('El rol origen y destino no pueden ser el mismo', 'error');
                 return;
             }
             
-            // Verificar si la transacción ya existe entre estos nodos con el mismo entregable
+            // Add or get source node
+            let sourceNode = findNodeByLabel(sourceInput);
+            if (!sourceNode) {
+                sourceNode = addNode(sourceInput);
+            }
+            
+            // Add or get target node
+            let targetNode = findNodeByLabel(targetInput);
+            if (!targetNode) {
+                targetNode = addNode(targetInput);
+            }
+            
+            // Normalize the input fields to the actual node labels
+            document.getElementById('source-node').value = sourceNode.label;
+            document.getElementById('target-node').value = targetNode.label;
+            
+            // Check if the transaction already exists between these nodes with the same deliverable
             const existingEdge = vnaData.edges.find(e => 
-                e.from === sourceNode && 
-                e.to === targetNode && 
-                e.label === deliverableName
+                e.from === sourceNode.id && 
+                e.to === targetNode.id && 
+                e.label.toLowerCase() === deliverableName.toLowerCase()
             );
             
             if (existingEdge) {
-                showNotification(`La transacción de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}" con el entregable "${deliverableName}" ya existe`, 'error');
+                showNotification(`La transacción de "${sourceNode.label}" a "${targetNode.label}" con el entregable "${deliverableName}" ya existe`, 'error');
                 return;
             }
             
@@ -1467,15 +1607,15 @@
             
             // Count edges between these nodes to adjust roundness
             const edgesBetweenNodes = vnaData.edges.filter(e => 
-                (e.from === sourceNode && e.to === targetNode) || 
-                (e.from === targetNode && e.to === sourceNode)
+                (e.from === sourceNode.id && e.to === targetNode.id) || 
+                (e.from === targetNode.id && e.to === sourceNode.id)
             ).length;
             
             // Create new edge with improved styling to avoid overlapping
             const newEdge = {
                 id: edgeId,
-                from: sourceNode,
-                to: targetNode,
+                from: sourceNode.id,
+                to: targetNode.id,
                 label: deliverableName,
                 type: deliverableType,
                 color: edgeColor,
@@ -1508,48 +1648,7 @@
             document.getElementById('deliverable-name').value = '';
             
             // Feedback al usuario
-            showNotification(`Transacción añadida correctamente de "${getNodeLabelById(sourceNode)}" a "${getNodeLabelById(targetNode)}"`, 'success');
-        }
-        
-        // Get node label by ID
-        function getNodeLabelById(nodeId) {
-            const node = vnaData.nodes.find(n => n.id === nodeId);
-            return node ? node.label : nodeId;
-        }
-        
-        // Actualizar selectores de nodos
-        function updateNodeSelectors() {
-            const sourceSelect = document.getElementById('source-node');
-            const targetSelect = document.getElementById('target-node');
-            
-            // Save current selections
-            const currentSource = sourceSelect.value;
-            const currentTarget = targetSelect.value;
-            
-            // Limpiar opciones actuales excepto la primera
-            sourceSelect.innerHTML = '<option value="default" class="lang" data-es="Selecciona un rol de origen" data-ca="Selecciona un rol d\'origen">Selecciona un rol de origen</option>';
-            targetSelect.innerHTML = '<option value="default" class="lang" data-es="Selecciona un rol destino" data-ca="Selecciona un rol destí">Selecciona un rol destino</option>';
-            
-            // Añadir opciones para cada nodo
-            vnaData.nodes.forEach(node => {
-                const sourceOption = document.createElement('option');
-                sourceOption.value = node.id;
-                sourceOption.textContent = node.label;
-                sourceSelect.appendChild(sourceOption);
-                
-                const targetOption = document.createElement('option');
-                targetOption.value = node.id;
-                targetOption.textContent = node.label;
-                targetSelect.appendChild(targetOption);
-            });
-            
-            // Restore selections if they still exist
-            if (vnaData.nodes.some(n => n.id === currentSource)) {
-                sourceSelect.value = currentSource;
-            }
-            if (vnaData.nodes.some(n => n.id === currentTarget)) {
-                targetSelect.value = currentTarget;
-            }
+            showNotification(`Transacción añadida correctamente de "${sourceNode.label}" a "${targetNode.label}"`, 'success');
         }
         
         // Quick start para VNA
@@ -1675,7 +1774,6 @@
             
             // Guardar y actualizar
             saveData();
-            updateNodeSelectors();
             
             // Feedback al usuario
             showNotification('Se han añadido 5 roles y 8 transacciones de ejemplo a tu mapa de valor.', 'success');
@@ -1807,11 +1905,9 @@
             
             // Limpiar campos de formulario
             document.getElementById('project-name').value = "Proyecto MASIA";
-            document.getElementById('node-name').value = '';
+            document.getElementById('source-node').value = '';
+            document.getElementById('target-node').value = '';
             document.getElementById('deliverable-name').value = '';
-            
-            // Update selectors
-            updateNodeSelectors();
             
             // Save
             saveData();
@@ -1899,9 +1995,6 @@
                     }
                     edges.add(edge);
                 });
-                
-                // Update selectors
-                updateNodeSelectors();
             }
         }
         
