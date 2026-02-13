@@ -1005,6 +1005,29 @@
             from { opacity: 1; }
             to { opacity: 0; transform: translateX(100%); }
         }
+        
+        .import-example {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .import-example h4 {
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .import-example code {
+            background: rgba(30, 58, 138, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -1045,6 +1068,12 @@
                 <div class="import-section">
                     <h3 class="lang" data-es="Importar Roles desde VNA App" data-ca="Importar Rols des de VNA App">Importar Roles desde VNA App</h3>
                     <p class="lang" data-es="Importa los roles de tu mapa de valor desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> para pre-poblar los roles disponibles al registrar entregables." data-ca="Importa els rols del teu mapa de valor des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> per pre-omplir els rols disponibles en registrar entregables.">Importa los roles de tu mapa de valor desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a> para pre-poblar los roles disponibles al registrar entregables.</p>
+                    
+                    <div class="import-example">
+                        <h4 class="lang" data-es="Formato CSV Esperado:" data-ca="Format CSV Esperat:">Formato CSV Esperado:</h4>
+                        <p><code>Rol</code><br><code>inversor</code><br><code>fundador</code><br><code>equipo</code></p>
+                    </div>
+                    
                     <div class="input-group">
                         <label class="lang" data-es="Archivo CSV o JSON de Roles" data-ca="Fitxer CSV o JSON de Rols">Archivo CSV o JSON de Roles</label>
                         <input type="file" id="import-roles-file" accept=".csv,.json">
@@ -1067,10 +1096,10 @@
                     </div>
                     <div class="form-row">
                         <label class="lang" data-es="Rol:" data-ca="Rol:">Rol:</label>
-                        <select id="role-select">
-                            <option value="" class="lang" data-es="Selecciona un rol o crea uno nuevo" data-ca="Selecciona un rol o crea un de nou">Selecciona un rol o crea uno nuevo</option>
-                            <!-- Roles will be populated dynamically -->
-                        </select>
+                        <div class="autocomplete">
+                            <input type="text" id="role-name" placeholder="Escribe un rol o crea uno nuevo...">
+                            <div id="role-list" class="autocomplete-items"></div>
+                        </div>
                     </div>
                     <div class="form-row">
                         <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
@@ -1334,33 +1363,38 @@
                 // Test 7: Initial state has no deliverables
                 this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
                 
-                // Test 8: Add a test user and deliverable
+                // Test 8: Initial state has no roles
+                this.assert.equals(accountingData.roles.length, 0, "Initial state has no roles");
+                
+                // Test 9: Add a test user and deliverable
                 const testUser = "Test User " + Date.now();
                 const testRole = "Test Role";
                 document.getElementById('user-name').value = testUser;
-                document.getElementById('role-select').innerHTML = `<option value="${testRole}">${testRole}</option>`;
-                document.getElementById('role-select').value = testRole;
+                document.getElementById('role-name').value = testRole;
                 document.getElementById('deliverable-name').value = "Test Deliverable";
                 document.getElementById('value').value = "100";
                 document.getElementById('add-deliverable').click();
                 
                 this.assert.equals(accountingData.users.length, 1, "Adding a deliverable creates a user");
                 this.assert.equals(accountingData.deliverables.length, 1, "Adding a deliverable creates a deliverable");
+                this.assert.equals(accountingData.roles.length, 1, "Adding a deliverable creates a role");
                 
-                // Test 9: Verify user was added correctly
+                // Test 10: Verify user was added correctly
                 const addedUser = accountingData.users.find(u => u.name === testUser);
                 this.assert.truthy(addedUser, "User was added to accountingData");
                 this.assert.equals(addedUser.totalValue, 100, "User has correct total value");
+                this.assert.equals(addedUser.roles[0], testRole, "User has correct role");
                 
-                // Test 10: Verify deliverable was added correctly
+                // Test 11: Verify deliverable was added correctly
                 const addedDeliverable = accountingData.deliverables.find(d => d.deliverable === "Test Deliverable");
                 this.assert.truthy(addedDeliverable, "Deliverable was added to accountingData");
                 this.assert.equals(addedDeliverable.value, 100, "Deliverable has correct value");
+                this.assert.equals(addedDeliverable.role, testRole, "Deliverable has correct role");
                 
-                // Test 11: Export CSV function exists
+                // Test 12: Export CSV function exists
                 this.assert.truthy(typeof exportCSV === 'function', "exportCSV function exists");
                 
-                // Test 12: Export JSON function exists
+                // Test 13: Export JSON function exists
                 this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
                 
                 // Clean up test data
@@ -1399,7 +1433,7 @@
                 
                 // Alert summary
                 if (failedCount === 0) {
-                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`, 'success');
+                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/{results.length})\n\nLa aplicación está funcionando correctamente en tu navegador.`, 'success');
                 } else {
                     showNotification(`⚠️ Algunas pruebas fallaron (${failedCount}/{results.length}).\n\nRevisa los resultados en la sección de pruebas.`, 'error');
                 }
@@ -1489,10 +1523,10 @@
             const ctx = document.getElementById('valueChart').getContext('2d');
             valueChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
+                 {
                     labels: [],
                     datasets: [{
-                        data: [],
+                         [],
                         backgroundColor: [
                             'rgba(30, 58, 138, 0.85)',
                             'rgba(79, 70, 229, 0.85)',
@@ -1579,28 +1613,42 @@
         function setupAutocomplete() {
             const userInput = document.getElementById('user-name');
             const userList = document.getElementById('user-list');
+            const roleInput = document.getElementById('role-name');
+            const roleList = document.getElementById('role-list');
             
             // Set up autocomplete for user field
             userInput.addEventListener('input', function(e) {
                 currentAutocompleteField = 'user';
-                showAutocomplete(this.value, userList);
+                showAutocomplete(this.value, userList, accountingData.users.map(u => u.name));
             });
             
             userInput.addEventListener('focus', function(e) {
                 currentAutocompleteField = 'user';
-                showAutocomplete(this.value, userList);
+                showAutocomplete(this.value, userList, accountingData.users.map(u => u.name));
+            });
+            
+            // Set up autocomplete for role field
+            roleInput.addEventListener('input', function(e) {
+                currentAutocompleteField = 'role';
+                showAutocomplete(this.value, roleList, accountingData.roles);
+            });
+            
+            roleInput.addEventListener('focus', function(e) {
+                currentAutocompleteField = 'role';
+                showAutocomplete(this.value, roleList, accountingData.roles);
             });
             
             // Close autocomplete when clicking outside
             document.addEventListener('click', function(e) {
-                if (e.target !== userInput) {
+                if (e.target !== userInput && e.target !== roleInput) {
                     userList.innerHTML = '';
+                    roleList.innerHTML = '';
                 }
             });
         }
         
         // Show autocomplete suggestions
-        function showAutocomplete(inputValue, container) {
+        function showAutocomplete(inputValue, container, suggestionsList) {
             // Clear container
             container.innerHTML = '';
             
@@ -1608,29 +1656,37 @@
                 return;
             }
             
-            // Find matching users (case-insensitive)
-            const matches = accountingData.users.filter(user => 
-                user.name.toLowerCase().includes(inputValue.toLowerCase().trim())
+            // Find matching suggestions (case-insensitive)
+            const matches = suggestionsList.filter(item => 
+                item.toLowerCase().includes(inputValue.toLowerCase().trim())
             );
             
             // Limit to 10 matches
-            matches.slice(0, 10).forEach(user => {
+            matches.slice(0, 10).forEach(item => {
                 const suggestion = document.createElement('div');
-                suggestion.textContent = user.name;
+                suggestion.textContent = item;
                 suggestion.addEventListener('click', function() {
-                    document.getElementById('user-name').value = user.name;
+                    if (currentAutocompleteField === 'user') {
+                        document.getElementById('user-name').value = item;
+                    } else if (currentAutocompleteField === 'role') {
+                        document.getElementById('role-name').value = item;
+                    }
                     container.innerHTML = '';
                 });
                 container.appendChild(suggestion);
             });
             
-            // Add option to create new user if no exact match
+            // Add option to create new item if no exact match
             if (matches.length === 0) {
                 const newOption = document.createElement('div');
-                newOption.innerHTML = `➕ <strong>Crear nuevo usuario:</strong> "${inputValue.trim()}"`;
+                newOption.innerHTML = `➕ <strong>Crear nuevo:</strong> "${inputValue.trim()}"`;
                 newOption.style.fontStyle = 'italic';
                 newOption.addEventListener('click', function() {
-                    document.getElementById('user-name').value = inputValue.trim();
+                    if (currentAutocompleteField === 'user') {
+                        document.getElementById('user-name').value = inputValue.trim();
+                    } else if (currentAutocompleteField === 'role') {
+                        document.getElementById('role-name').value = inputValue.trim();
+                    }
                     container.innerHTML = '';
                 });
                 container.appendChild(newOption);
@@ -1660,19 +1716,20 @@
                             throw new Error('El CSV está vacío o no tiene datos');
                         }
                         
-                        // Get headers
+                        // Get headers and find "Rol" column (case-insensitive)
                         const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
-                        const roleIndex = headers.findIndex(h => h === 'rol' || h === 'role');
+                        const roleIndex = headers.findIndex(h => h === 'rol' || h === 'role' || h === 'nombre' || h === 'name');
                         
                         if (roleIndex === -1) {
-                            throw new Error('El CSV debe tener una columna llamada "Rol"');
+                            throw new Error('El CSV debe tener una columna llamada "Rol", "Role", "Nombre" o "Name"');
                         }
                         
-                        // Extract roles
+                        // Extract roles from each row
                         for (let i = 1; i < rows.length; i++) {
                             if (!rows[i].trim()) continue;
                             
-                            const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
+                            // Handle quoted fields with commas
+                            const cells = parseCSVRow(rows[i]);
                             if (cells.length > roleIndex) {
                                 const role = cells[roleIndex].trim();
                                 if (role && !accountingData.roles.includes(role)) {
@@ -1684,22 +1741,40 @@
                         // Parse JSON
                         const data = JSON.parse(content);
                         
-                        // Check if it's VNA format
+                        // Check if it's VNA format (nodes array)
                         if (data.nodes && Array.isArray(data.nodes)) {
                             data.nodes.forEach(node => {
-                                const role = node.label || node.id;
-                                if (role && !accountingData.roles.includes(role)) {
-                                    importedRoles.push(role);
+                                // Handle both {id, label} and string formats
+                                const role = node.label || node.id || node;
+                                if (role && typeof role === 'string' && !accountingData.roles.includes(role)) {
+                                    importedRoles.push(role.trim());
                                 }
                             });
-                        } else if (data.roles && Array.isArray(data.roles)) {
-                            importedRoles = data.roles.filter(r => !accountingData.roles.includes(r));
+                        } 
+                        // Check if it's a simple array of roles
+                        else if (Array.isArray(data)) {
+                            data.forEach(role => {
+                                if (role && typeof role === 'string' && !accountingData.roles.includes(role)) {
+                                    importedRoles.push(role.trim());
+                                }
+                            });
+                        }
+                        // Check if it's an object with a roles array
+                        else if (data.roles && Array.isArray(data.roles)) {
+                            data.roles.forEach(role => {
+                                if (role && typeof role === 'string' && !accountingData.roles.includes(role)) {
+                                    importedRoles.push(role.trim());
+                                }
+                            });
                         } else {
-                            throw new Error('Formato JSON no reconocido. Debe contener "nodes" o "roles"');
+                            throw new Error('Formato JSON no reconocido. Debe contener "nodes", "roles" o ser un array de roles');
                         }
                     } else {
                         throw new Error('Formato de archivo no soportado. Usa CSV o JSON');
                     }
+                    
+                    // Filter out empty roles and duplicates
+                    importedRoles = [...new Set(importedRoles.filter(r => r && r.trim() !== ''))];
                     
                     // Add imported roles to the list
                     importedRoles.forEach(role => {
@@ -1707,9 +1782,6 @@
                             accountingData.roles.push(role);
                         }
                     });
-                    
-                    // Update role dropdown
-                    updateRoleDropdown();
                     
                     // Save and update
                     saveData();
@@ -1725,31 +1797,40 @@
             reader.readAsText(file);
         }
         
-        // Actualizar dropdown de roles
-        function updateRoleDropdown() {
-            const roleSelect = document.getElementById('role-select');
-            roleSelect.innerHTML = '<option value="" class="lang" data-es="Selecciona un rol o crea uno nuevo" data-ca="Selecciona un rol o crea un de nou">Selecciona un rol o crea uno nuevo</option>';
+        // Helper function to parse CSV row with quoted fields
+        function parseCSVRow(row) {
+            const cells = [];
+            let current = '';
+            let inQuotes = false;
             
-            // Add imported roles
-            accountingData.roles.forEach(role => {
-                const option = document.createElement('option');
-                option.value = role;
-                option.textContent = role;
-                roleSelect.appendChild(option);
-            });
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                
+                if (char === '"' && (i === 0 || row[i-1] !== '\\')) {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    cells.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            cells.push(current.trim());
+            return cells;
         }
         
         // Añadir entregable
         function addDeliverable() {
             const userName = document.getElementById('user-name').value.trim();
-            const role = document.getElementById('role-select').value.trim() || document.getElementById('role-select').options[document.getElementById('role-select').selectedIndex].text.trim();
+            const roleName = document.getElementById('role-name').value.trim();
             const deliverableName = document.getElementById('deliverable-name').value.trim();
             const transactionType = document.getElementById('transaction-type').value;
             const description = document.getElementById('description').value.trim();
             const link = document.getElementById('link').value.trim();
             const value = parseInt(document.getElementById('value').value);
             
-            if (!userName || !role || !deliverableName || !value) {
+            if (!userName || !roleName || !deliverableName || !value) {
                 showNotification('Completa todos los campos obligatorios (Persona, Rol, Entregable, Valor)', 'error');
                 return;
             }
@@ -1759,21 +1840,26 @@
                 return;
             }
             
-            // Find or create user
+            // Add role to global roles list if not exists
+            if (!accountingData.roles.includes(roleName)) {
+                accountingData.roles.push(roleName);
+            }
+            
+            // Find or create user (case-insensitive)
             let user = accountingData.users.find(u => u.name.toLowerCase() === userName.toLowerCase());
             if (!user) {
                 user = {
                     id: `user-${Date.now()}`,
                     name: userName,
-                    roles: [role],
+                    roles: [roleName],
                     totalValue: 0,
                     deliverables: []
                 };
                 accountingData.users.push(user);
             } else {
-                // Add role if not exists
-                if (!user.roles.includes(role)) {
-                    user.roles.push(role);
+                // Add role if not exists (case-insensitive check)
+                if (!user.roles.some(r => r.toLowerCase() === roleName.toLowerCase())) {
+                    user.roles.push(roleName);
                 }
             }
             
@@ -1781,7 +1867,7 @@
             const deliverable = {
                 id: `deliverable-${Date.now()}`,
                 userName: userName,
-                role: role,
+                role: roleName,
                 deliverable: deliverableName,
                 transactionType: transactionType,
                 description: description,
@@ -1801,6 +1887,7 @@
             
             // Clear form
             document.getElementById('user-name').value = '';
+            document.getElementById('role-name').value = '';
             document.getElementById('deliverable-name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
@@ -1973,6 +2060,10 @@
             // Remove user if no deliverables left
             accountingData.users = accountingData.users.filter(u => u.deliverables.length > 0);
             
+            // Remove unused roles
+            const usedRoles = [...new Set(accountingData.users.flatMap(u => u.roles))];
+            accountingData.roles = usedRoles;
+            
             // Save and update
             saveData();
             updateVisualizations();
@@ -2018,7 +2109,7 @@
             }
             
             // CSV headers
-            let csv = 'Usuario,Rol,Dirección Wallet,Valor Total,Entregables,Tipo de Rol\n';
+            let csv = 'Usuario,Rol,Dirección Wallet,Valor Total,Entregables,Tipo de Rol,Tokens a Mintar\n';
             
             // Data rows
             accountingData.users.forEach(user => {
@@ -2037,7 +2128,10 @@
                 // For now, wallet is empty (to be added in future version)
                 const wallet = '';
                 
-                csv += `"${user.name}","${user.roles.join(', ')}","${wallet}","${user.totalValue}","${user.deliverables.length}","${roleType}"\n`;
+                // Calculate tokens to mint (1 token per value unit)
+                const tokensToMint = user.totalValue;
+                
+                csv += `"${user.name}","${user.roles.join(', ')}","${wallet}","${user.totalValue}","${user.deliverables.length}","${roleType}","${tokensToMint}"\n`;
             });
             
             // Create blob and download
@@ -2060,7 +2154,7 @@
                 URL.revokeObjectURL(url);
             }, 100);
             
-            showNotification(`Se han exportado ${accountingData.users.length} usuarios como CSV para Tokenomics App.`, 'success');
+            showNotification(`Se han exportado ${accountingData.users.length} usuarios como CSV para Tokenomics App. Incluye tokens a mintar por usuario.`, 'success');
         }
         
         // Limpiar datos
@@ -2085,13 +2179,11 @@
             document.getElementById('project-name').value = "Proyecto MASIA";
             document.getElementById('value-unit').value = "puntos";
             document.getElementById('user-name').value = '';
+            document.getElementById('role-name').value = '';
             document.getElementById('deliverable-name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
             document.getElementById('value').value = '';
-            
-            // Clear role dropdown
-            updateRoleDropdown();
             
             // Save and update
             saveData();
@@ -2145,11 +2237,8 @@
                     // Restore form fields
                     document.getElementById('project-name').value = accountingData.projectName;
                     document.getElementById('value-unit').value = accountingData.valueUnit;
-                    
-                    // Update role dropdown
-                    updateRoleDropdown();
                 } catch (error) {
-                    console.error('Error loading saved data:', error);
+                    console.error('Error loading saved ', error);
                 }
             }
         }
