@@ -1485,20 +1485,32 @@
         
         // Exportar como JSON
         function exportJSON() {
-            const dataStr = JSON.stringify(projectData, null, 2);
-            const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            alert(document.documentElement.lang === 'ca' ? 
-                'Dades exportades correctament com a JSON' : 
-                'Datos exportados correctamente como JSON');
-        }
+    const dataStr = JSON.stringify(projectData, null, 2);
+    
+    // ✅ SOLUCIÓN: Usar Blob en lugar de data URI
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    
+    const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', url);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.style.display = 'none';
+    document.body.appendChild(linkElement);
+    
+    linkElement.click();
+    
+    // Limpiar el objeto URL después de la descarga
+    setTimeout(() => {
+        document.body.removeChild(linkElement);
+        URL.revokeObjectURL(url);
+    }, 100);
+    
+    alert(document.documentElement.lang === 'ca' ? 
+        'Dades exportades correctament com a JSON' : 
+        'Datos exportados correctamente como JSON');
+}
         
         // Exportar como CSV
         function exportCSV() {
