@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema de contabilidad de valor para proyectos con tokenización futura de contribuciones.">
+    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real">
     <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, innovación financiera">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
@@ -11,9 +11,9 @@
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Value Accounting App | TeamTowers Humà">
-    <meta property="og:description" content="Sistema de contabilidad de valor para proyectos con tokenización futura de contribuciones. Visualiza en tiempo real cómo se distribuye el valor entre stakeholders.">
+    <meta property="og:description" content="Sistema de contabilidad de valor para tokenizar contribuciones y visualizar la distribución del valor en tiempo real">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://teamtowershuma.com/contabilidad-valor">
+    <meta property="og:url" content="https://teamtowershuma.com/app_comptabilitat">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="ca_ES">
@@ -136,7 +136,7 @@
         
         .app-container {
             display: grid;
-            grid-template-columns: 350px 1fr;
+            grid-template-columns: 380px 1fr;
             gap: 30px;
             margin-top: 20px;
         }
@@ -308,7 +308,7 @@
             font-weight: 700;
             border-bottom: 2px solid var(--accent);
             display: grid;
-            grid-template-columns: 40px 1fr 150px 100px;
+            grid-template-columns: 40px 1fr 150px 120px 120px;
             gap: 15px;
         }
         
@@ -316,7 +316,7 @@
             padding: 12px 15px;
             border-bottom: 1px solid #e2e8f0;
             display: grid;
-            grid-template-columns: 40px 1fr 150px 100px;
+            grid-template-columns: 40px 1fr 150px 120px 120px;
             gap: 15px;
             align-items: center;
             transition: var(--transition);
@@ -351,6 +351,7 @@
             font-size: 0.85rem;
             font-weight: 600;
             margin-right: 5px;
+            margin-top: 8px;
         }
         
         .role-team {
@@ -373,144 +374,17 @@
             color: #b45309;
         }
         
-        .casteller-base {
-            background: rgba(245, 158, 11, 0.2);
-            color: #b45309;
-        }
-        
-        .casteller-trunk {
-            background: rgba(16, 185, 129, 0.2);
-            color: #0d9488;
-        }
-        
-        .casteller-folre {
-            background: rgba(139, 92, 246, 0.2);
-            color: #7e3af2;
-        }
-        
-        .casteller-pom {
-            background: rgba(30, 58, 138, 0.2);
-            color: #1e3a8a;
-        }
-        
         .value-amount {
             font-weight: 700;
             color: var(--primary);
             font-size: 1.1rem;
         }
         
-        .instructions {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-top: 25px;
-            border-left: 4px solid var(--accent);
-        }
-        
-        .instructions h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .instructions h3::before {
-            content: 'ℹ️';
-            font-size: 1.4rem;
-        }
-        
-        .instructions ol {
-            padding-left: 25px;
-            margin-top: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-            line-height: 1.7;
-        }
-        
-        .instructions code {
-            background: rgba(30, 58, 138, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
+        .wallet-address {
             font-family: monospace;
-            font-weight: 600;
-        }
-        
-        .example-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .example-section h4 {
-            margin-bottom: 12px;
-            color: var(--primary);
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .example-section h4::before {
-            content: '📌';
-        }
-        
-        .example-item {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            font-family: monospace;
-            font-size: 0.95rem;
-            color: var(--primary);
-            position: relative;
-            padding-left: 30px;
-        }
-        
-        .example-item::before {
-            content: '→';
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 20px;
+            font-size: 0.85rem;
             color: var(--gray);
-        }
-        
-        .empty-state svg {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
-            color: var(--accent);
-            opacity: 0.7;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-        
-        .empty-state p {
-            max-width: 500px;
-            margin-bottom: 25px;
-            line-height: 1.7;
+            word-break: break-all;
         }
         
         .stats-bar {
@@ -621,6 +495,97 @@
             color: var(--primary);
         }
         
+        .user-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .user-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .user-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .user-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .user-card .wallet {
+            font-size: 0.8rem;
+            color: var(--gray);
+            word-break: break-all;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        
+        .import-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .import-section h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .import-section h3::before {
+            content: '📊';
+            font-size: 1.4rem;
+        }
+        
         /* Footer */
         footer {
             background: var(--dark);
@@ -706,7 +671,7 @@
             
             .ranking-header,
             .ranking-item {
-                grid-template-columns: 35px 1fr 120px 80px;
+                grid-template-columns: 35px 1fr 120px 100px 100px;
                 font-size: 0.9rem;
             }
             
@@ -750,7 +715,7 @@
             
             .ranking-header,
             .ranking-item {
-                grid-template-columns: 30px 1fr 100px 70px;
+                grid-template-columns: 30px 1fr 100px 80px 80px;
                 font-size: 0.85rem;
                 padding: 8px 10px;
             }
@@ -800,7 +765,7 @@
                 </div>
                 
                 <div class="panel" style="margin-top: 20px;">
-                    <h2 class="lang" data-es="📥 Importar Datos" data-ca="📥 Importar Dades">📥 Importar Datos</h2>
+                    <h2 class="lang" data-es="📥 Importar Mapa de Valor" data-ca="📥 Importar Mapa de Valor">📥 Importar Mapa de Valor</h2>
                     <div class="input-group">
                         <label class="lang" data-es="Importar desde VNA App" data-ca="Importar des de VNA App">Importar desde VNA App</label>
                         <input type="file" id="import-file" accept=".json">
@@ -811,9 +776,14 @@
                         </button>
                     </div>
                     
-                    <div class="instructions" style="margin-top: 20px;">
-                        <h3 class="lang" data-es="Formato de Importación" data-ca="Format de Importació">Formato de Importación</h3>
-                        <p class="lang" data-es="Puedes importar un archivo JSON exportado desde la <a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> o crear transacciones manualmente." data-ca="Pots importar un fitxer JSON exportat des de l'<a href='https://teamtowershuma.com/app' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Value Network Analysis</a> o crear transaccions manualment.">Puedes importar un archivo JSON exportado desde la <a href="https://teamtowershuma.com/app" target="_blank" style="color: var(--primary); font-weight: 600;">App de Value Network Analysis</a> o crear transacciones manualmente.</p>
+                    <div class="import-section">
+                        <h3 class="lang" data-es="Asignación de Usuarios a Roles" data-ca="Assignació d'Usuaris a Rols">Asignación de Usuarios a Roles</h3>
+                        <p class="lang" data-es="Después de importar el mapa de valor, asigna usuarios a cada rol para poder registrar sus entregables y asociar wallets Ethereum para futura tokenización." data-ca="Després d'importar el mapa de valor, assigna usuaris a cada rol per poder registrar els seus entregables i associar wallets Ethereum per a futura tokenització.">Después de importar el mapa de valor, asigna usuarios a cada rol para poder registrar sus entregables y asociar wallets Ethereum para futura tokenización.</p>
+                        
+                        <div id="role-user-assignment" style="display: none; margin-top: 15px;">
+                            <h4 class="lang" data-es="Roles Detectados" data-ca="Rols Detectats">Roles Detectados</h4>
+                            <div id="roles-container"></div>
+                        </div>
                     </div>
                 </div>
                 
@@ -829,7 +799,15 @@
                         <h3 class="lang" data-es="Formulario Detallado" data-ca="Formulari Detallat">Formulario Detallado</h3>
                         <div class="input-group">
                             <label class="lang" data-es="Rol (@nombre)" data-ca="Rol (@nom)">Rol (@nombre)</label>
-                            <input type="text" id="role-input" placeholder="@equipo-marketing">
+                            <select id="role-select">
+                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Usuario" data-ca="Usuari">Usuario</label>
+                            <select id="user-select">
+                                <option class="lang" data-es="Selecciona un usuario" data-ca="Selecciona un usuari">Selecciona un usuario</option>
+                            </select>
                         </div>
                         <div class="input-group">
                             <label class="lang" data-es="Entregable (#etiqueta)" data-ca="Entregable (#etiqueta)">Entregable (#etiqueta)</label>
@@ -854,14 +832,33 @@
                         </div>
                     </div>
                     
-                    <div class="instructions" style="margin-top: 20px;">
-                        <h3 class="lang" data-es="Cómo Funciona" data-ca="Com Funciona">Cómo Funciona</h3>
-                        <ol>
-                            <li class="lang" data-es="Importa tu mapa de valor desde la VNA App o crea roles manualmente" data-ca="Importa el teu mapa de valor des de l'App VNA o crea rols manualment">Importa tu mapa de valor desde la VNA App o crea roles manualmente</li>
-                            <li class="lang" data-es="Registra entregables con valor asignado usando el formato rápido o formulario detallado" data-ca="Registra entregables amb valor assignat usant el format ràpid o formulari detallat">Registra entregables con valor asignado usando el formato rápido o formulario detallado</li>
-                            <li class="lang" data-es="Visualiza en tiempo real cómo se distribuye el valor entre stakeholders" data-ca="Visualitza en temps real com es distribueix el valor entre stakeholders">Visualiza en tiempo real cómo se distribuye el valor entre stakeholders</li>
-                            <li class="lang" data-es="Exporta los datos para futura tokenización de contribuciones" data-ca="Exporta les dades per futura tokenització de contribucions">Exporta los datos para futura tokenización de contribuciones</li>
-                        </ol>
+                    <div class="user-section">
+                        <h3 class="lang" data-es="👥 Gestión de Usuarios" data-ca="👥 Gestió d'Usuaris">👥 Gestión de Usuarios</h3>
+                        <p class="lang" data-es="Añade usuarios a los roles para poder registrar sus entregables y asociar wallets Ethereum." data-ca="Afegeix usuaris als rols per poder registrar els seus entregables i associar wallets Ethereum.">Añade usuarios a los roles para poder registrar sus entregables y asociar wallets Ethereum.</p>
+                        
+                        <div class="input-group">
+                            <label class="lang" data-es="Nombre de Usuario" data-ca="Nom d'Usuari">Nombre de Usuario</label>
+                            <input type="text" id="new-user-name" placeholder="Ej: María García">
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Wallet Ethereum (opcional)" data-ca="Wallet Ethereum (opcional)">Wallet Ethereum (opcional)</label>
+                            <input type="text" id="new-user-wallet" placeholder="0x...">
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Rol Asignado" data-ca="Rol Assignat">Rol Asignado</label>
+                            <select id="new-user-role">
+                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button id="add-user" class="btn btn-success">
+                                <span>👤</span> <span class="lang" data-es="Añadir Usuario" data-ca="Afegir Usuari">Añadir Usuario</span>
+                            </button>
+                        </div>
+                        
+                        <div class="user-grid" id="user-grid">
+                            <!-- Users will be added here dynamically -->
+                        </div>
                     </div>
                 </div>
                 
@@ -897,21 +894,22 @@
                         <div class="stat-label lang" data-es="Entregables" data-ca="Entregables">Entregables</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="total-stakeholders">0</div>
-                        <div class="stat-label lang" data-es="Stakeholders" data-ca="Stakeholders">Stakeholders</div>
+                        <div class="stat-value" id="total-users">0</div>
+                        <div class="stat-label lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="avg-value">0</div>
-                        <div class="stat-label lang" data-es="Valor Promedio" data-ca="Valor Promig">Valor Promedio</div>
+                        <div class="stat-value" id="total-roles">0</div>
+                        <div class="stat-label lang" data-es="Roles" data-ca="Rols">Roles</div>
                     </div>
                 </div>
                 
-                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="🏆 Ranking de Stakeholders por Valor Aportado" data-ca="🏆 Rànquing de Stakeholders per Valor Aportat">🏆 Ranking de Stakeholders por Valor Aportado</h3>
+                <h3 style="margin: 25px 0 15px; color: var(--primary);" class="lang" data-es="🏆 Ranking de Usuarios por Valor Aportado" data-ca="🏆 Rànquing d'Usuaris per Valor Aportat">🏆 Ranking de Usuarios por Valor Aportado</h3>
                 <div class="ranking-container">
                     <div class="ranking-header">
                         <div class="lang" data-es="Pos" data-ca="Pos">Pos</div>
-                        <div class="lang" data-es="Stakeholder" data-ca="Stakeholder">Stakeholder</div>
-                        <div class="lang" data-es="Rol Casteller" data-ca="Rol Casteller">Rol Casteller</div>
+                        <div class="lang" data-es="Usuario" data-ca="Usuari">Usuario</div>
+                        <div class="lang" data-es="Rol" data-ca="Rol">Rol</div>
+                        <div class="lang" data-es="Wallet" data-ca="Wallet">Wallet</div>
                         <div class="lang" data-es="Valor" data-ca="Valor">Valor</div>
                     </div>
                     <div id="ranking-list">
@@ -920,7 +918,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
-                            <p class="lang" data-es="Registra tu primer entregable para ver la distribución del valor" data-ca="Registra el teu primer entregable per veure la distribució del valor">Registra tu primer entregable para ver la distribución del valor</p>
+                            <p class="lang" data-es="Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor" data-ca="Importa el teu mapa de valor o afegeix el primer entregable per començar a construir la teva comptabilitat de valor">Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor</p>
                         </div>
                     </div>
                 </div>
@@ -947,13 +945,13 @@
                 </ul>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <h3 class="lang" data-es="Apps" data-ca="Apps">Apps</h3>
                 <ul class="footer-links">
                     <li><a href="https://teamtowershuma.com/app" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App Contabilidad de Valor" data-ca="App Comptabilitat de Valor">App Contabilidad de Valor</a></li>
+                    <li><a href="https://teamtowershuma.com/app_coops" class="lang" data-es="App Comunidades de Práctica" data-ca="App Comunitats de Pràctica">App Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/tokenomics" class="lang" data-es="App Tokenomics" data-ca="App Tokenomics">App Tokenomics</a></li>
                     <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
-                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
-                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
-                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -982,20 +980,9 @@
         let projectData = {
             name: "Proyecto sin nombre",
             currency: "puntos",
-            stakeholders: {},
+            roles: {}, // { roleName: { users: [{name, wallet}], deliverables: [] } }
             deliverables: [],
-            castellerRoles: {
-                'base': { name: 'Base', multiplier: 1.0 },
-                'trunk': { name: 'Tronco', multiplier: 1.2 },
-                'folre': { name: 'Folre/Manilles', multiplier: 1.5 },
-                'pom': { name: 'Pom de Dalt', multiplier: 2.0 }
-            },
-            stakeholderTypes: {
-                'team': { name: 'Equipo', color: '#10b981' },
-                'client': { name: 'Clientes', color: '#1e3a8a' },
-                'supplier': { name: 'Proveedores', color: '#8b5cf6' },
-                'investor': { name: 'Inversores', color: '#f59e0b' }
-            }
+            vnaData: null
         };
         
         let valueChart = null;
@@ -1016,6 +1003,9 @@
             
             // Actualizar visualizaciones
             updateVisualizations();
+            
+            // Cargar roles en los selects
+            loadRolesInSelects();
         });
         
         // Configurar selector de idioma
@@ -1068,6 +1058,9 @@
             // Añadir entregable detallado
             document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
             
+            // Añadir usuario
+            document.getElementById('add-user').addEventListener('click', addUser);
+            
             // Exportar datos
             document.getElementById('export-json').addEventListener('click', exportJSON);
             document.getElementById('export-csv').addEventListener('click', exportCSV);
@@ -1088,135 +1081,156 @@
                 saveData();
                 updateVisualizations();
             });
+            
+            // Cuando se selecciona un rol, cargar usuarios de ese rol
+            document.getElementById('role-select').addEventListener('change', function() {
+                loadUsersInSelect(this.value);
+            });
         }
         
         // Importar datos desde archivo JSON
         function importData() {
-    const fileInput = document.getElementById('import-file');
-    const file = fileInput.files[0];
-    
-    if (!file) {
-        alert(document.documentElement.lang === 'ca' ? 
-            'Selecciona un archivo JSON primero' : 
-            'Selecciona un archivo JSON primero');
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const importedData = JSON.parse(e.target.result);
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
             
-            // Validar estructura básica
-            if (!importedData.nodes || !importedData.links) {
-                throw new Error('El archivo no tiene la estructura correcta (nodes y links)');
+            if (!file) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Selecciona un archivo JSON primero' : 
+                    'Selecciona un archivo JSON primero');
+                return;
             }
             
-            // Procesar nodos como stakeholders
-            importedData.nodes.forEach(node => {
-                // Manejar tanto objetos como strings
-                const nodeId = typeof node === 'object' ? node.id : node;
-                const roleName = nodeId.toString().toLowerCase();
-                
-                if (!projectData.stakeholders[roleName]) {
-                    projectData.stakeholders[roleName] = {
-                        name: nodeId.toString(),
-                        type: 'team',
-                        castellerRole: 'base',
-                        totalValue: 0,
-                        deliverables: []
-                    };
-                }
-            });
-            
-            // Procesar enlaces como transacciones
-            let importedCount = 0;
-            importedData.links.forEach(link => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
                 try {
-                    // Manejar source como string u objeto
-                    let sourceId = link.source;
-                    if (typeof link.source === 'object' && link.source.id) {
-                        sourceId = link.source.id;
-                    } else if (typeof link.source === 'object' && link.source.index !== undefined) {
-                        // Caso especial: cuando D3 usa el índice
-                        sourceId = link.source.id || `node_${link.source.index}`;
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validar estructura básica
+                    if (!importedData.nodes || !importedData.links) {
+                        throw new Error('El archivo no tiene la estructura correcta (nodes y links)');
                     }
                     
-                    // Manejar target como string u objeto
-                    let targetId = link.target;
-                    if (typeof link.target === 'object' && link.target.id) {
-                        targetId = link.target.id;
-                    } else if (typeof link.target === 'object' && link.target.index !== undefined) {
-                        targetId = link.target.id || `node_${link.target.index}`;
-                    }
+                    // Guardar datos VNA
+                    projectData.vnaData = importedData;
                     
-                    const fromRole = sourceId.toString().toLowerCase();
-                    const toRole = targetId.toString().toLowerCase();
-                    const deliverable = link.deliverable || 'Entregable importado';
-                    const type = link.type || 'tangible';
-                    
-                    // Asegurar que los roles existan
-                    if (!projectData.stakeholders[fromRole]) {
-                        projectData.stakeholders[fromRole] = {
-                            name: sourceId.toString(),
-                            type: 'team',
-                            castellerRole: 'base',
-                            totalValue: 0,
-                            deliverables: []
-                        };
-                    }
-                    
-                    if (!projectData.stakeholders[toRole]) {
-                        projectData.stakeholders[toRole] = {
-                            name: targetId.toString(),
-                            type: 'team',
-                            castellerRole: 'base',
-                            totalValue: 0,
-                            deliverables: []
-                        };
-                    }
-                    
-                    // Añadir entregable
-                    projectData.deliverables.push({
-                        id: Date.now() + Math.random().toString(36).substr(2, 5),
-                        role: fromRole,
-                        deliverable: deliverable,
-                        description: `Transacción: ${sourceId} → ${targetId} (${type})`,
-                        link: '',
-                        value: 100, // Valor por defecto
-                        timestamp: new Date().toISOString(),
-                        type: type
+                    // Procesar nodos como roles
+                    importedData.nodes.forEach(node => {
+                        const roleName = node.id.toLowerCase();
+                        if (!projectData.roles[roleName]) {
+                            projectData.roles[roleName] = {
+                                name: node.id,
+                                users: [],
+                                deliverables: []
+                            };
+                        }
                     });
                     
-                    // Actualizar valor total
-                    projectData.stakeholders[fromRole].totalValue += 100;
-                    importedCount++;
-                } catch (linkError) {
-                    console.warn('Error procesando enlace:', link, linkError);
-                    // Continuar con el siguiente enlace
+                    // Procesar enlaces como transacciones
+                    importedData.links.forEach(link => {
+                        const source = typeof link.source === 'object' ? link.source.id : link.source;
+                        const target = typeof link.target === 'object' ? link.target.id : link.target;
+                        const deliverable = link.deliverable || 'Entregable importado';
+                        
+                        // Añadir entregable de ejemplo
+                        projectData.deliverables.push({
+                            id: Date.now() + Math.random().toString(36).substr(2, 5),
+                            role: source.toLowerCase(),
+                            deliverable: deliverable,
+                            description: `Transacción importada: ${source} → ${target}`,
+                            link: '',
+                            value: 100, // Valor por defecto
+                            timestamp: new Date().toISOString()
+                        });
+                    });
+                    
+                    saveData();
+                    updateVisualizations();
+                    loadRolesInSelects();
+                    
+                    // Mostrar sección de asignación de usuarios
+                    document.getElementById('role-user-assignment').style.display = 'block';
+                    loadRolesForAssignment();
+                    
+                    alert(document.documentElement.lang === 'ca' ? 
+                        'Mapa de valor importado correctamente! Ahora asigna usuarios a cada rol.' : 
+                        'Mapa de valor importado correctamente! Ahora asigna usuarios a cada rol.');
+                } catch (error) {
+                    console.error('Error al importar datos:', error);
+                    alert(document.documentElement.lang === 'ca' ? 
+                        `Error en importar les dades: ${error.message}` : 
+                        `Error al importar los datos: ${error.message}`);
                 }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Cargar roles para asignación de usuarios
+        function loadRolesForAssignment() {
+            const container = document.getElementById('roles-container');
+            container.innerHTML = '';
+            
+            Object.keys(projectData.roles).forEach(roleName => {
+                const role = projectData.roles[roleName];
+                
+                const roleDiv = document.createElement('div');
+                roleDiv.className = 'user-card';
+                roleDiv.innerHTML = `
+                    <h4>${role.name}</h4>
+                    <p><small class="lang" data-es="Usuarios asignados:" data-ca="Usuaris assignats:">Usuarios asignados:</small> ${role.users.length}</p>
+                    <div style="margin-top: 10px;">
+                        <input type="text" placeholder="${document.documentElement.lang === 'ca' ? 'Nom d\'usuari' : 'Nombre de usuario'}" class="user-name-input" data-role="${roleName}">
+                        <input type="text" placeholder="0x..." class="user-wallet-input" data-role="${roleName}" style="margin-top: 5px; font-family: monospace; font-size: 0.85rem;">
+                        <button class="btn btn-success add-user-to-role" style="margin-top: 8px; padding: 6px 12px; font-size: 0.9rem;" data-role="${roleName}">
+                            <span>👤</span> ${document.documentElement.lang === 'ca' ? 'Afegir' : 'Añadir'}
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(roleDiv);
             });
             
-            if (importedCount === 0) {
-                throw new Error('No se pudieron importar transacciones válidas');
-            }
-            
-            saveData();
-            updateVisualizations();
-            
-            alert(`${importedCount} ${document.documentElement.lang === 'ca' ? 
-                'transaccions importades correctament!' : 
-                'transacciones importadas correctamente!'}`);
-        } catch (error) {
-            console.error('Error al importar datos:', error);
-            alert(document.documentElement.lang === 'ca' ? 
-                `Error en importar les dades: ${error.message}. Assegura't que el fitxer sigui exportat des de l'App VNA de TeamTowers Humà.` : 
-                `Error al importar los datos: ${error.message}. Asegúrate de que el archivo sea exportado desde la App VNA de TeamTowers Humà.`);
+            // Añadir event listeners a los botones
+            document.querySelectorAll('.add-user-to-role').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roleName = this.getAttribute('data-role');
+                    const nameInput = this.parentElement.querySelector('.user-name-input');
+                    const walletInput = this.parentElement.querySelector('.user-wallet-input');
+                    
+                    const userName = nameInput.value.trim();
+                    const userWallet = walletInput.value.trim();
+                    
+                    if (!userName) {
+                        alert(document.documentElement.lang === 'ca' ? 
+                            'Introdueix un nom d\'usuari' : 
+                            'Introduce un nombre de usuario');
+                        return;
+                    }
+                    
+                    // Añadir usuario al rol
+                    if (!projectData.roles[roleName]) {
+                        projectData.roles[roleName] = { name: roleName, users: [], deliverables: [] };
+                    }
+                    
+                    projectData.roles[roleName].users.push({
+                        name: userName,
+                        wallet: userWallet || null
+                    });
+                    
+                    saveData();
+                    loadRolesForAssignment();
+                    loadRolesInSelects();
+                    
+                    // Limpiar inputs
+                    nameInput.value = '';
+                    walletInput.value = '';
+                    
+                    alert(document.documentElement.lang === 'ca' ? 
+                        `Usuari ${userName} afegit al rol ${roleName}` : 
+                        `Usuario ${userName} añadido al rol ${roleName}`);
+                });
+            });
         }
-    };
-    
-    reader.readAsText(file);
-}
         
         // Añadir entregable rápido
         function addQuickDeliverable() {
@@ -1239,7 +1253,17 @@
             const deliverable = deliverableMatch[1];
             const value = parseInt(valueMatch[1]);
             
-            addDeliverableToSystem(role, deliverable, `Entregable rápido: ${deliverable}`, '', value);
+            // Obtener primer usuario del rol (o crear uno por defecto)
+            let userName = 'Usuario';
+            let userWallet = null;
+            
+            if (projectData.roles[role] && projectData.roles[role].users.length > 0) {
+                const firstUser = projectData.roles[role].users[0];
+                userName = firstUser.name;
+                userWallet = firstUser.wallet;
+            }
+            
+            addDeliverableToSystem(role, userName, userWallet, deliverable, `Entregable rápido: ${deliverable}`, '', value);
             
             // Limpiar input
             document.getElementById('quick-input').value = '';
@@ -1247,72 +1271,45 @@
         
         // Añadir entregable detallado
         function addDeliverable() {
-            const roleInput = document.getElementById('role-input').value.trim();
+            const roleSelect = document.getElementById('role-select');
+            const userSelect = document.getElementById('user-select');
             const deliverableInput = document.getElementById('deliverable-input').value.trim();
             const descriptionInput = document.getElementById('description-input').value.trim();
             const linkInput = document.getElementById('link-input').value.trim();
             const valueInput = document.getElementById('value-input').value.trim();
             
-            if (!roleInput || !deliverableInput || !valueInput) {
+            if (!roleSelect.value || !userSelect.value || !deliverableInput || !valueInput) {
                 alert(document.documentElement.lang === 'ca' ? 
-                    'Omple tots els camps obligatoris (rol, entregable, valor)' : 
-                    'Completa todos los campos obligatorios (rol, entregable, valor)');
+                    'Omple tots els camps obligatoris (rol, usuari, entregable, valor)' : 
+                    'Completa todos los campos obligatorios (rol, usuario, entregable, valor)');
                 return;
             }
             
-            // Extraer nombre del rol si empieza con @
-            const role = roleInput.startsWith('@') ? roleInput.substring(1).toLowerCase() : roleInput.toLowerCase();
-            const deliverable = deliverableInput.startsWith('#') ? deliverableInput.substring(1) : deliverableInput;
+            const role = roleSelect.value;
+            const userName = userSelect.options[userSelect.selectedIndex].text;
+            const userId = userSelect.value;
+            
+            // Obtener wallet del usuario
+            let userWallet = null;
+            if (projectData.roles[role] && projectData.roles[role].users) {
+                const user = projectData.roles[role].users.find(u => `${u.name}|${u.wallet || ''}` === userId);
+                if (user) userWallet = user.wallet;
+            }
+            
             const value = parseInt(valueInput);
             
-            addDeliverableToSystem(role, deliverable, descriptionInput, linkInput, value);
+            addDeliverableToSystem(role, userName, userWallet, deliverableInput, descriptionInput, linkInput, value);
             
             // Limpiar formulario
-            document.getElementById('role-input').value = '';
             document.getElementById('deliverable-input').value = '';
             document.getElementById('description-input').value = '';
             document.getElementById('link-input').value = '';
             document.getElementById('value-input').value = '';
-        }
-        
-        // Función central para añadir entregable
-        function addDeliverableToSystem(role, deliverable, description, link, value) {
-            // Asegurar que el stakeholder exista
-            if (!projectData.stakeholders[role]) {
-                projectData.stakeholders[role] = {
-                    name: role.charAt(0).toUpperCase() + role.slice(1),
-                    type: 'team', // Por defecto equipo
-                    castellerRole: 'base', // Por defecto base
-                    totalValue: 0,
-                    deliverables: []
-                };
-            }
-            
-            // Crear entregable
-            const deliverableObj = {
-                id: Date.now() + Math.random().toString(36).substr(2, 5),
-                role: role,
-                deliverable: deliverable,
-                description: description,
-                link: link,
-                value: value,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Añadir a la lista de entregables
-            projectData.deliverables.push(deliverableObj);
-            
-            // Actualizar valor total del stakeholder
-            projectData.stakeholders[role].totalValue += value;
-            
-            // Guardar y actualizar
-            saveData();
-            updateVisualizations();
             
             // Feedback al usuario
             const successMsg = document.documentElement.lang === 'ca' ? 
-                `Entregable registrat per @${role} amb valor ${value}` : 
-                `Entregable registrado para @${role} con valor ${value}`;
+                `Entregable registrat per ${userName}` : 
+                `Entregable registrado para ${userName}`;
             
             const btn = document.getElementById('add-deliverable');
             const originalText = btn.innerHTML;
@@ -1325,6 +1322,189 @@
             }, 2000);
         }
         
+        // Función central para añadir entregable
+        function addDeliverableToSystem(role, userName, userWallet, deliverable, description, link, value) {
+            // Asegurar que el rol exista
+            if (!projectData.roles[role]) {
+                projectData.roles[role] = {
+                    name: role.charAt(0).toUpperCase() + role.slice(1),
+                    users: [],
+                    deliverables: []
+                };
+                
+                // Añadir usuario si no existe
+                if (!projectData.roles[role].users.some(u => u.name === userName)) {
+                    projectData.roles[role].users.push({
+                        name: userName,
+                        wallet: userWallet
+                    });
+                }
+            }
+            
+            // Crear entregable
+            const deliverableObj = {
+                id: Date.now() + Math.random().toString(36).substr(2, 5),
+                role: role,
+                user: userName,
+                wallet: userWallet,
+                deliverable: deliverable,
+                description: description,
+                link: link,
+                value: value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Añadir a la lista de entregables
+            projectData.deliverables.push(deliverableObj);
+            
+            // Guardar y actualizar
+            saveData();
+            updateVisualizations();
+        }
+        
+        // Añadir usuario
+        function addUser() {
+            const userName = document.getElementById('new-user-name').value.trim();
+            const userWallet = document.getElementById('new-user-wallet').value.trim();
+            const roleSelect = document.getElementById('new-user-role');
+            const roleName = roleSelect.value;
+            
+            if (!userName || !roleName) {
+                alert(document.documentElement.lang === 'ca' ? 
+                    'Omple tots els camps obligatoris (nom d\'usuari, rol)' : 
+                    'Completa todos los campos obligatorios (nombre de usuario, rol)');
+                return;
+            }
+            
+            // Asegurar que el rol exista
+            if (!projectData.roles[roleName]) {
+                projectData.roles[roleName] = {
+                    name: roleName.charAt(0).toUpperCase() + roleName.slice(1),
+                    users: [],
+                    deliverables: []
+                };
+            }
+            
+            // Añadir usuario al rol
+            projectData.roles[roleName].users.push({
+                name: userName,
+                wallet: userWallet || null
+            });
+            
+            saveData();
+            updateVisualizations();
+            loadRolesInSelects();
+            
+            // Limpiar formulario
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-wallet').value = '';
+            
+            // Feedback al usuario
+            const successMsg = document.documentElement.lang === 'ca' ? 
+                `Usuari ${userName} afegit al rol ${roleName}` : 
+                `Usuario ${userName} añadido al rol ${roleName}`;
+            
+            const btn = document.getElementById('add-user');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span>✅</span> ${successMsg}`;
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        // Cargar roles en los selects
+        function loadRolesInSelects() {
+            const roleSelect = document.getElementById('role-select');
+            const newUserRoleSelect = document.getElementById('new-user-role');
+            
+            // Limpiar opciones actuales (excepto la primera)
+            while (roleSelect.options.length > 1) {
+                roleSelect.remove(1);
+            }
+            
+            while (newUserRoleSelect.options.length > 1) {
+                newUserRoleSelect.remove(1);
+            }
+            
+            // Añadir roles
+            Object.keys(projectData.roles).forEach(roleName => {
+                const role = projectData.roles[roleName];
+                
+                const option1 = document.createElement('option');
+                option1.value = roleName;
+                option1.textContent = role.name;
+                roleSelect.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = roleName;
+                option2.textContent = role.name;
+                newUserRoleSelect.appendChild(option2);
+            });
+            
+            // Si hay roles, cargar usuarios del primer rol
+            if (Object.keys(projectData.roles).length > 0) {
+                loadUsersInSelect(Object.keys(projectData.roles)[0]);
+            }
+        }
+        
+        // Cargar usuarios en el select de usuarios
+        function loadUsersInSelect(roleName) {
+            const userSelect = document.getElementById('user-select');
+            
+            // Limpiar opciones actuales (excepto la primera)
+            while (userSelect.options.length > 1) {
+                userSelect.remove(1);
+            }
+            
+            // Si no hay rol seleccionado, salir
+            if (!roleName || !projectData.roles[roleName]) return;
+            
+            // Añadir usuarios del rol
+            projectData.roles[roleName].users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = `${user.name}|${user.wallet || ''}`;
+                option.textContent = user.name;
+                userSelect.appendChild(option);
+            });
+            
+            // Actualizar grid de usuarios
+            updateUserGrid();
+        }
+        
+        // Actualizar grid de usuarios
+        function updateUserGrid() {
+            const userGrid = document.getElementById('user-grid');
+            userGrid.innerHTML = '';
+            
+            // Contar total de usuarios
+            let totalUsers = 0;
+            
+            // Mostrar usuarios por rol
+            Object.keys(projectData.roles).forEach(roleName => {
+                const role = projectData.roles[roleName];
+                
+                role.users.forEach(user => {
+                    totalUsers++;
+                    
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    userCard.innerHTML = `
+                        <h4>${user.name}</h4>
+                        <p><small class="role-tag role-team">${role.name}</small></p>
+                        ${user.wallet ? `<p class="wallet">${user.wallet}</p>` : ''}
+                    `;
+                    userGrid.appendChild(userCard);
+                });
+            });
+            
+            // Actualizar estadística
+            document.getElementById('total-users').textContent = totalUsers;
+            document.getElementById('total-roles').textContent = Object.keys(projectData.roles).length;
+        }
+        
         // Inicializar gráfico
         function initChart() {
             const ctx = document.getElementById('valueChart').getContext('2d');
@@ -1334,7 +1514,16 @@
                     labels: [],
                     datasets: [{
                         data: [],
-                        backgroundColor: [],
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.85)',
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(245, 158, 11, 0.85)',
+                            'rgba(59, 130, 246, 0.85)',
+                            'rgba(139, 92, 246, 0.85)',
+                            'rgba(22, 163, 74, 0.85)',
+                            'rgba(168, 85, 247, 0.85)',
+                            'rgba(37, 99, 235, 0.85)'
+                        ],
                         borderWidth: 2,
                         borderColor: '#ffffff'
                     }]
@@ -1360,7 +1549,7 @@
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                                     
-                                    return `${label}: ${value} (${percentage}%)`;
+                                    return `${label}: ${percentage}% (${Math.round(value).toLocaleString()} puntos)`;
                                 }
                             }
                         }
@@ -1376,15 +1565,11 @@
         // Actualizar visualizaciones
         function updateVisualizations() {
             // Actualizar estadísticas
-            const totalValue = Object.values(projectData.stakeholders).reduce((sum, s) => sum + s.totalValue, 0);
+            const totalValue = projectData.deliverables.reduce((sum, d) => sum + d.value, 0);
             const totalDeliverables = projectData.deliverables.length;
-            const totalStakeholders = Object.keys(projectData.stakeholders).length;
-            const avgValue = totalDeliverables > 0 ? Math.round(totalValue / totalDeliverables) : 0;
             
-            document.getElementById('total-value').textContent = formatNumber(totalValue);
+            document.getElementById('total-value').textContent = totalValue.toLocaleString();
             document.getElementById('total-deliverables').textContent = totalDeliverables;
-            document.getElementById('total-stakeholders').textContent = totalStakeholders;
-            document.getElementById('avg-value').textContent = formatNumber(avgValue);
             
             // Actualizar gráfico
             updateChart();
@@ -1397,31 +1582,20 @@
         function updateChart() {
             if (!valueChart) return;
             
-            // Preparar datos para el gráfico
-            const labels = [];
-            const data = [];
-            const backgroundColors = [];
-            
-            // Ordenar stakeholders por valor total
-            const sortedStakeholders = Object.entries(projectData.stakeholders)
-                .sort((a, b) => b[1].totalValue - a[1].totalValue)
-                .slice(0, 8); // Mostrar solo los top 8
-            
-            sortedStakeholders.forEach(([role, stakeholder]) => {
-                if (stakeholder.totalValue > 0) {
-                    labels.push(`@${stakeholder.name}`);
-                    data.push(stakeholder.totalValue);
-                    
-                    // Asignar color según tipo de stakeholder
-                    const type = projectData.stakeholderTypes[stakeholder.type];
-                    backgroundColors.push(type ? type.color : '#8b5cf6');
-                }
+            // Calcular valor total por rol
+            const roleValues = {};
+            projectData.deliverables.forEach(deliverable => {
+                const role = deliverable.role;
+                roleValues[role] = (roleValues[role] || 0) + deliverable.value;
             });
+            
+            // Preparar datos para el gráfico
+            const labels = Object.keys(roleValues);
+            const data = Object.values(roleValues);
             
             // Actualizar gráfico
             valueChart.data.labels = labels;
             valueChart.data.datasets[0].data = data;
-            valueChart.data.datasets[0].backgroundColor = backgroundColors;
             valueChart.update();
         }
         
@@ -1429,48 +1603,57 @@
         function updateRanking() {
             const rankingList = document.getElementById('ranking-list');
             
-            if (Object.keys(projectData.stakeholders).length === 0 || 
-                Object.values(projectData.stakeholders).every(s => s.totalValue === 0)) {
+            if (projectData.deliverables.length === 0) {
                 rankingList.innerHTML = `
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                         <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
-                        <p class="lang" data-es="Registra tu primer entregable para ver la distribución del valor" data-ca="Registra el teu primer entregable per veure la distribució del valor">Registra tu primer entregable para ver la distribución del valor</p>
+                        <p class="lang" data-es="Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor" data-ca="Importa el teu mapa de valor o afegeix el primer entregable per començar a construir la teva comptabilitat de valor">Importa tu mapa de valor o añade el primer entregable para comenzar a construir tu contabilidad de valor</p>
                     </div>
                 `;
                 return;
             }
             
-            // Ordenar stakeholders por valor total (descendente)
-            const sortedStakeholders = Object.entries(projectData.stakeholders)
-                .sort((a, b) => b[1].totalValue - a[1].totalValue);
+            // Calcular valor total por usuario
+            const userValues = {};
+            projectData.deliverables.forEach(deliverable => {
+                const userKey = `${deliverable.user}|${deliverable.role}`;
+                if (!userValues[userKey]) {
+                    userValues[userKey] = {
+                        name: deliverable.user,
+                        role: deliverable.role,
+                        wallet: deliverable.wallet,
+                        totalValue: 0
+                    };
+                }
+                userValues[userKey].totalValue += deliverable.value;
+            });
+            
+            // Convertir a array y ordenar
+            const usersArray = Object.values(userValues).sort((a, b) => b.totalValue - a.totalValue);
             
             // Generar HTML para el ranking
             let html = '';
-            sortedStakeholders.forEach(([role, stakeholder], index) => {
-                if (stakeholder.totalValue === 0) return;
-                
-                const stakeholderType = projectData.stakeholderTypes[stakeholder.type];
-                const castellerRole = projectData.castellerRoles[stakeholder.castellerRole];
+            usersArray.forEach((user, index) => {
                 const position = index + 1;
+                const role = projectData.roles[user.role] ? projectData.roles[user.role].name : user.role;
                 
                 html += `
                     <div class="ranking-item">
                         <div class="ranking-badge">${position}</div>
                         <div>
-                            <strong>@${stakeholder.name}</strong><br>
-                            <span class="role-tag role-${stakeholder.type}">${stakeholderType ? stakeholderType.name : 'Equipo'}</span>
-                            <span class="role-tag casteller-${stakeholder.castellerRole}">${castellerRole ? castellerRole.name : 'Base'}</span>
+                            <strong>${user.name}</strong><br>
+                            <span class="role-tag role-team">${role}</span>
                         </div>
                         <div>
-                            <span class="role-tag casteller-${stakeholder.castellerRole}">
-                                ${castellerRole ? castellerRole.name : 'Base'} 
-                                ${castellerRole && castellerRole.multiplier !== 1.0 ? `×${castellerRole.multiplier}` : ''}
-                            </span>
+                            ${user.wallet ? `<div class="wallet-address">${user.wallet.substring(0, 6)}...${user.wallet.substring(user.wallet.length - 4)}</div>` : '<span class="lang" data-es="Sin wallet" data-ca="Sense wallet">Sin wallet</span>'}
                         </div>
-                        <div class="value-amount">${formatNumber(stakeholder.totalValue)}</div>
+                        <div class="wallet-address">
+                            ${user.wallet || '-'}
+                        </div>
+                        <div class="value-amount">${user.totalValue.toLocaleString()}</div>
                     </div>
                 `;
             });
@@ -1478,58 +1661,61 @@
             rankingList.innerHTML = html;
         }
         
-        // Formatear números con separador de miles
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-        
         // Exportar como JSON
         function exportJSON() {
-    const dataStr = JSON.stringify(projectData, null, 2);
-    
-    // ✅ SOLUCIÓN: Usar Blob en lugar de data URI
-    const blob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    
-    const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', url);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.style.display = 'none';
-    document.body.appendChild(linkElement);
-    
-    linkElement.click();
-    
-    // Limpiar el objeto URL después de la descarga
-    setTimeout(() => {
-        document.body.removeChild(linkElement);
-        URL.revokeObjectURL(url);
-    }, 100);
-    
-    alert(document.documentElement.lang === 'ca' ? 
-        'Dades exportades correctament com a JSON' : 
-        'Datos exportados correctamente como JSON');
-}
+            const dataStr = JSON.stringify(projectData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert(document.documentElement.lang === 'ca' ? 
+                'Dades exportades correctament com a JSON' : 
+                'Datos exportados correctamente como JSON');
+        }
         
         // Exportar como CSV
         function exportCSV() {
             // Cabeceras
-            let csv = 'Rol,Entregable,Descripción,Enlace,Valor,Fecha\n';
+            let csv = 'Rol,Usuario,Wallet,Entregable,Descripción,Enlace,Valor,Fecha\n';
             
             // Datos
             projectData.deliverables.forEach(d => {
-                csv += `"${d.role}","${d.deliverable}","${d.description.replace(/"/g, '""')}","${d.link}",${d.value},"${new Date(d.timestamp).toLocaleDateString()}"\n`;
+                csv += `"${d.role}","${d.user}","${d.wallet || ''}","${d.deliverable}","${d.description.replace(/"/g, '""')}","${d.link}",${d.value},"${new Date(d.timestamp).toLocaleDateString()}"\n`;
             });
             
-            const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
             
             const exportFileDefaultName = `value-accounting-${projectData.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
             
             const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('href', url);
             linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            
             linkElement.click();
+            
+            // Limpiar el objeto URL después de la descarga
+            setTimeout(() => {
+                document.body.removeChild(linkElement);
+                URL.revokeObjectURL(url);
+            }, 100);
             
             alert(document.documentElement.lang === 'ca' ? 
                 'Dades exportades correctament com a CSV' : 
@@ -1545,33 +1731,28 @@
                 projectData = {
                     name: "Proyecto sin nombre",
                     currency: "puntos",
-                    stakeholders: {},
+                    roles: {},
                     deliverables: [],
-                    castellerRoles: {
-                        'base': { name: 'Base', multiplier: 1.0 },
-                        'trunk': { name: 'Tronco', multiplier: 1.2 },
-                        'folre': { name: 'Folre/Manilles', multiplier: 1.5 },
-                        'pom': { name: 'Pom de Dalt', multiplier: 2.0 }
-                    },
-                    stakeholderTypes: {
-                        'team': { name: 'Equipo', color: '#10b981' },
-                        'client': { name: 'Clientes', color: '#1e3a8a' },
-                        'supplier': { name: 'Proveedores', color: '#8b5cf6' },
-                        'investor': { name: 'Inversores', color: '#f59e0b' }
-                    }
+                    vnaData: null
                 };
                 
                 saveData();
                 updateVisualizations();
+                loadRolesInSelects();
+                updateUserGrid();
                 
                 // Limpiar campos de formulario
                 document.getElementById('project-name').value = "Proyecto sin nombre";
                 document.getElementById('quick-input').value = '';
-                document.getElementById('role-input').value = '';
                 document.getElementById('deliverable-input').value = '';
                 document.getElementById('description-input').value = '';
                 document.getElementById('link-input').value = '';
                 document.getElementById('value-input').value = '';
+                document.getElementById('new-user-name').value = '';
+                document.getElementById('new-user-wallet').value = '';
+                
+                // Ocultar sección de asignación
+                document.getElementById('role-user-assignment').style.display = 'none';
                 
                 alert(document.documentElement.lang === 'ca' ? 
                     'Dades esborrades correctament' : 
@@ -1590,29 +1771,23 @@
             if (saved) {
                 const parsedData = JSON.parse(saved);
                 
-                // Mantener estructura actualizada
                 projectData = {
                     name: parsedData.name || "Proyecto sin nombre",
                     currency: parsedData.currency || "puntos",
-                    stakeholders: parsedData.stakeholders || {},
+                    roles: parsedData.roles || {},
                     deliverables: parsedData.deliverables || [],
-                    castellerRoles: {
-                        'base': { name: 'Base', multiplier: 1.0 },
-                        'trunk': { name: 'Tronco', multiplier: 1.2 },
-                        'folre': { name: 'Folre/Manilles', multiplier: 1.5 },
-                        'pom': { name: 'Pom de Dalt', multiplier: 2.0 }
-                    },
-                    stakeholderTypes: {
-                        'team': { name: 'Equipo', color: '#10b981' },
-                        'client': { name: 'Clientes', color: '#1e3a8a' },
-                        'supplier': { name: 'Proveedores', color: '#8b5cf6' },
-                        'investor': { name: 'Inversores', color: '#f59e0b' }
-                    }
+                    vnaData: parsedData.vnaData || null
                 };
                 
                 // Restaurar nombre del proyecto en el input
                 document.getElementById('project-name').value = projectData.name;
                 document.getElementById('value-currency').value = projectData.currency;
+                
+                // Cargar roles en selects
+                loadRolesInSelects();
+                
+                // Actualizar grid de usuarios
+                updateUserGrid();
             }
         }
     </script>
