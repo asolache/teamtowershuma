@@ -3,46 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Modelo Integral System | Transformación organizacional completa con TeamTowers Humà. De la experiencia castellera al pensamiento sistémico, pasando por comunidades de práctica, Value Network Analysis y contabilidad de valor.">
-    <meta name="keywords" content="Modelo Integral System, transformación organizacional, TeamTowers Humà, pensamiento sistémico, Value Network Analysis, Comunidades de Práctica, Contabilidad de Valor, Vilafranca del Penedès, Penedès">
+    <meta name="description" content="Sistema Integral TeamTowers Humà | Transformación organizacional completa con Value Network Analysis, Comunidades de Práctica, Contabilidad de Valor y Tokenización.">
+    <meta name="keywords" content="Sistema Integral, transformación organizacional, TeamTowers Humà, Vilafranca del Penedès, Value Network Analysis, tokenización, comunidades práctica, innovación RRHH">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
-    <title>Modelo Integral System | Transformación Organizacional Completa | TeamTowers Humà</title>
+    <title>Sistema Integral | Transformación Organizacional Completa | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Modelo Integral System | Transformación Organizacional Completa">
-    <meta property="og:description" content="El modelo único que integra experiencia castellera, comunidades de práctica, Value Network Analysis y contabilidad de valor para transformar organizaciones desde el corazón del Penedès.">
+    <meta property="og:title" content="Sistema Integral | Transformación Organizacional Completa">
+    <meta property="og:description" content="El primer sistema integral que conecta mapeo de valor, gestión del conocimiento, contabilidad de valor y tokenización de participaciones para transformar organizaciones humanas.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://teamtowershuma.netlify.app/modelo-integral">
+    <meta property="og:url" content="https://teamtowershuma.com/sistema_integral">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="ca_ES">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Modelo Integral System | TeamTowers Humà">
-    <meta name="twitter:description" content="Transformación organizacional completa desde Vilafranca del Penedès">
+    <meta name="twitter:title" content="Sistema Integral | Transformación Organizacional Completa">
+    <meta name="twitter:description" content="Conectamos mapeo de valor, gestión del conocimiento, contabilidad de valor y tokenización en un ecosistema único de innovación organizacional">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
-    
-    <!-- Schema.org structured data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "serviceType": "Modelo Integral System de Transformación Organizacional",
-      "provider": {
-        "@type": "Organization",
-        "name": "TeamTowers Humà"
-      },
-      "areaServed": ["Vilafranca del Penedès", "Alt Penedès", "Garraf", "Barcelona", "Cataluña"],
-      "description": "Modelo único que integra experiencia castellera, comunidades de práctica, Value Network Analysis y contabilidad de valor para transformar organizaciones completas con enfoque sistémico",
-      "offers": {
-        "@type": "Offer",
-        "businessFunction": "Consultoría",
-        "availability": "https://schema.org/InStock"
-      }
-    }
-    </script>
     
     <style>
         :root {
@@ -54,10 +34,14 @@
             --gold: #f59e0b;
             --success: #10b981;
             --warning: #fbbf24;
+            --danger: #ef4444;
             --gray: #64748b;
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
         }
         
         * {
@@ -99,48 +83,78 @@
         }
         
         .lang-btn.active {
-            background: var(--primary);
+            background: var(--gradient-primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
         }
         
-        /* Hero Section with Video Background */
-        .hero {
-            position: relative;
-            height: 100vh;
-            min-height: 700px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+        /* Header */
+        header {
+            background: var(--gradient-dark);
             color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
             overflow: hidden;
         }
         
-        .hero-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: translate(-50%, -50%);
-            z-index: -1;
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
         }
         
-        .hero-overlay {
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        
+        .tagline {
+            font-size: 1.6rem;
+            opacity: 0.95;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%), url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.95) 100%);
-            z-index: -1;
+            background: rgba(15, 23, 42, 0.85);
+            z-index: 1;
         }
         
         .hero-content {
             max-width: 900px;
-            padding: 0 20px;
+            margin: 0 auto;
+            position: relative;
             z-index: 10;
             animation: fadeInUp 1s ease-out;
         }
@@ -156,467 +170,560 @@
             }
         }
         
-        .hero-logo {
-            display: inline-block;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .hero-logo img {
-            height: 80px;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-        }
-        
-        .hero h1 {
-            font-size: 4.8rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
-            line-height: 1.1;
-            letter-spacing: -1px;
-        }
-        
-        .hero-tagline {
-            font-size: 2.2rem;
-            font-weight: 300;
+        .hero h2 {
+            font-size: 3.8rem;
             margin-bottom: 25px;
-            opacity: 0.95;
-            font-style: italic;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            line-height: 1.15;
         }
         
         .hero p {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-bottom: 40px;
-            max-width: 800px;
+            max-width: 850px;
             margin-left: auto;
             margin-right: auto;
-            opacity: 0.9;
+            opacity: 0.95;
+            font-weight: 300;
         }
         
-        /* CTA Buttons */
         .cta-container {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
             margin-top: 30px;
         }
         
         .btn {
-            display: inline-block;
-            padding: 18px 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 45px;
             border-radius: 50px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1.3rem;
             text-decoration: none;
             transition: var(--transition);
             border: none;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(30, 58, 138, 0.4);
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--light);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2);
-        }
-        
-        /* Section Styling */
-        section {
-            padding: 100px 20px;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.8rem;
-            margin-bottom: 20px;
-            position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--primary);
-        }
-        
-        .section-title:after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-        
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.4rem;
-            max-width: 700px;
-            margin: 30px auto 60px;
-            color: var(--gray);
-        }
-        
-        /* Journey Section */
-        .journey-section {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            border-radius: var(--border-radius);
-            padding: 60px;
-            margin: 50px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
+            min-width: 260px;
         }
         
-        .journey-section::before {
+        .btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(30, 58, 138, 0.05) 50%, transparent 100%);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(30, 58, 138, 0.5);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 3px solid white;
+            font-weight: 700;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light);
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(30, 58, 138, 0.3);
+            color: var(--secondary);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary);
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: 3px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.7rem;
+            max-width: 850px;
+            margin: 35px auto 60px;
+            color: var(--gray);
+            font-weight: 300;
+            line-height: 1.75;
+        }
+        
+        /* Integrated System Section */
+        .integrated-section {
+            background: linear-gradient(135deg, var(--light) 0%, #eef2ff 100%);
+            border-radius: var(--border-radius);
+            padding: 60px 40px;
+            margin: 70px 0;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .integrated-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, rgba(255,255,255,0) 70%);
             z-index: 0;
         }
         
-        .journey-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .journey-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            color: var(--primary);
-        }
-        
-        .journey-steps {
+        .workflow-diagram {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 50px 0;
             position: relative;
-            margin: 40px 0;
         }
         
-        .journey-steps::before {
-            content: '';
-            position: absolute;
-            top: 60px;
-            left: 5%;
-            width: 90%;
-            height: 4px;
-            background: var(--accent);
-            z-index: 1;
-        }
-        
-        .step {
+        .workflow-step {
             text-align: center;
+            min-width: 200px;
             position: relative;
-            z-index: 2;
-            flex: 1;
-            padding: 0 10px;
+            z-index: 10;
         }
         
         .step-number {
-            width: 80px;
-            height: 80px;
-            background: var(--primary);
-            color: white;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            font-weight: bold;
+            font-weight: 800;
             margin: 0 auto 20px;
-            border: 4px solid var(--accent);
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+            position: relative;
+        }
+        
+        .step-number::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(79, 70, 229, 0.3);
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
         }
         
         .step-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 15px;
+            font-size: 1.6rem;
+            font-weight: 800;
             color: var(--primary);
+            margin-bottom: 10px;
         }
         
         .step-desc {
             color: var(--gray);
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 1.05rem;
+            max-width: 220px;
+            margin: 0 auto;
+        }
+        
+        .arrow {
+            font-size: 2.5rem;
+            color: var(--accent);
+            min-width: 50px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .arrow::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-accent);
+            z-index: -1;
+        }
+        
+        /* Process Section */
+        .process-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 60px 40px;
+            margin: 70px 0;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .process-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+        }
+        
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .process-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .process-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .process-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-primary);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+        
+        .process-card:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .process-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .process-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 800;
+        }
+        
+        .process-desc {
+            color: var(--gray);
+            line-height: 1.8;
+            font-size: 1.05rem;
         }
         
         /* Integration Section */
         .integration-section {
-            background: white;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
             border-radius: var(--border-radius);
-            padding: 50px;
-            box-shadow: var(--box-shadow);
-            margin: 50px 0;
-        }
-        
-        .integration-section h3 {
-            color: var(--primary);
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.2rem;
+            padding: 60px 40px;
+            margin: 70px 0;
+            position: relative;
+            overflow: hidden;
+            border-left: 4px solid var(--accent);
         }
         
         .integration-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
-            margin-top: 30px;
+            max-width: 1200px;
+            margin: 50px auto 0;
         }
         
         .integration-card {
-            background: var(--light);
-            padding: 25px;
+            background: white;
             border-radius: var(--border-radius);
-            border-left: 4px solid var(--accent);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
             transition: var(--transition);
+            border-top: 4px solid var(--accent);
         }
         
         .integration-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
         }
         
         .integration-card h4 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             margin-bottom: 15px;
             color: var(--primary);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .integration-card h4::before {
+            content: '🔗';
         }
         
         .integration-card p {
             color: var(--gray);
             line-height: 1.7;
+            font-size: 1.05rem;
         }
         
-        .integration-card .link {
+        .integration-card a {
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 15px;
             color: var(--primary);
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
+            position: relative;
+            padding-right: 20px;
         }
         
-        .integration-card .link:hover {
-            text-decoration: underline;
+        .integration-card a::after {
+            content: '→';
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: transform 0.3s ease;
         }
         
-        /* Benefits Grid */
+        .integration-card a:hover::after {
+            transform: translateX(5px);
+        }
+        
+        /* Benefits Section */
         .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-        
-        .benefit-card {
-            background: white;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            border-left: 4px solid var(--accent);
-            transition: var(--transition);
-        }
-        
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-        
-        .benefit-card h4 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-        
-        .benefit-card p {
-            color: var(--gray);
-            line-height: 1.7;
-        }
-        
-        /* Stats Section */
-        .stats-section {
-            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
-            color: white;
-            text-align: center;
-            border-radius: var(--border-radius);
-            padding: 60px;
-            margin: 50px 0;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .stat-item {
-            padding: 20px;
-        }
-        
-        .stat-number {
-            font-size: 3.2rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            display: block;
-            color: var(--accent);
-        }
-        
-        .stat-label {
-            font-size: 1.2rem;
-            font-weight: 300;
-        }
-        
-        /* Testimonials Section */
-        .testimonials-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 35px;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 50px auto 0;
         }
         
-        .testimonial-card {
+        .benefit-card {
             background: white;
             border-radius: var(--border-radius);
-            padding: 40px;
+            padding: 35px;
             box-shadow: var(--box-shadow);
             position: relative;
-            border-top: 4px solid var(--accent);
+            overflow: hidden;
+            border-left: 5px solid var(--primary);
+            transition: var(--transition);
         }
         
-        .testimonial-card::before {
-            content: '"';
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .benefit-card::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 6rem;
-            color: var(--primary);
-            opacity: 0.1;
-            font-family: Georgia, serif;
-            line-height: 1;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-primary);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
         }
         
-        .testimonial-content {
-            margin-top: 20px;
-            font-style: italic;
-            position: relative;
-            z-index: 1;
-            line-height: 1.8;
+        .benefit-card:hover::before {
+            transform: scaleY(1);
         }
         
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        
-        .author-info h4 {
-            font-weight: 700;
-            margin-bottom: 5px;
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
             color: var(--primary);
         }
         
-        .author-info p {
+        .benefit-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 800;
+        }
+        
+        .benefit-desc {
             color: var(--gray);
-            font-size: 0.9rem;
+            line-height: 1.8;
+            font-size: 1.05rem;
         }
         
-        /* Value Proposition */
-        .value-section {
-            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-dark);
             color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 80px 40px;
+            margin: 80px 0;
             position: relative;
             overflow: hidden;
-            border-radius: var(--border-radius);
-            padding: 60px;
-            margin: 50px 0;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.45);
         }
         
-        .value-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-align: center;
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 70%), 
+                        radial-gradient(circle at 70% 70%, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+            z-index: 0;
         }
         
-        .value-content p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
+        .cta-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .cta-content h2 {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .cta-content p {
+            font-size: 1.7rem;
+            margin-bottom: 45px;
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
             opacity: 0.95;
-            text-align: center;
+            line-height: 1.75;
+            font-weight: 300;
         }
         
-        /* Contact Section */
-        .contact-section {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            text-align: center;
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
-            padding: 60px;
-            margin: 50px 0;
+            padding: 25px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .contact-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 50px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+        .stat-item {
+            text-align: center;
+            min-width: 120px;
         }
         
-        /* Footer - COPY THIS SECTION TO OTHER PAGES */
-        .footer-system {
-            background: var(--dark);
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: block;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
             color: rgba(255, 255, 255, 0.85);
-            padding: 60px 20px 30px;
-            margin-top: 80px;
+            padding: 80px 20px 40px;
+            margin-top: 100px;
         }
         
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 50px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
         .footer-col h3 {
             color: white;
-            font-size: 1.6rem;
-            margin-bottom: 25px;
+            font-size: 1.85rem;
+            margin-bottom: 30px;
             position: relative;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
+            font-weight: 800;
         }
         
         .footer-col h3::after {
@@ -624,9 +731,9 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--accent);
+            width: 50px;
+            height: 4px;
+            background: var(--gradient-accent);
         }
         
         .footer-links {
@@ -634,80 +741,80 @@
         }
         
         .footer-links li {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         
         .footer-links a {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.75);
             text-decoration: none;
             transition: var(--transition);
             display: block;
-            padding: 5px 0;
-            font-size: 1.05rem;
+            padding: 6px 0;
+            font-size: 1.12rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
         }
         
         .footer-links a:hover {
-            color: var(--accent);
+            color: white;
             transform: translateX(5px);
+            padding-left: 25px;
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 40px;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        /* Location Badge */
-        .location-badge {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.98);
-            color: var(--primary);
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: 700;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 100;
-            font-size: 1.1rem;
-        }
-        
-        .location-badge::before {
-            content: '📍';
-            font-size: 1.3rem;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
         }
         
         /* Responsive Design */
         @media (max-width: 992px) {
-            .hero h1 {
-                font-size: 3.8rem;
+            h1 {
+                font-size: 2.8rem;
             }
             
-            .hero-tagline {
-                font-size: 1.8rem;
+            .hero h2 {
+                font-size: 3.2rem;
             }
             
             .hero p {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
             
-            section {
-                padding: 80px 20px;
+            .section-title {
+                font-size: 2.7rem;
             }
             
-            .journey-steps {
-                flex-direction: column;
-                align-items: center;
+            .section-subtitle {
+                font-size: 1.55rem;
             }
             
-            .journey-steps::before {
-                display: none;
+            .btn {
+                padding: 16px 40px;
+                font-size: 1.25rem;
+                min-width: 240px;
             }
         }
         
@@ -718,85 +825,96 @@
                 padding: 3px;
             }
             
-            .hero h1 {
-                font-size: 3rem;
+            .hero {
+                padding: 70px 20px;
             }
             
-            .hero-tagline {
-                font-size: 1.5rem;
+            .hero h2 {
+                font-size: 2.7rem;
             }
             
             .hero p {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
             }
             
             .cta-container {
                 flex-direction: column;
                 align-items: center;
+                gap: 15px;
             }
             
             .btn {
                 width: 100%;
-                max-width: 350px;
+                max-width: 380px;
+                padding: 16px 35px;
+                font-size: 1.3rem;
             }
             
             .section-title {
-                font-size: 2.3rem;
+                font-size: 2.5rem;
             }
             
             .section-subtitle {
-                font-size: 1.2rem;
+                font-size: 1.45rem;
             }
             
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            .workflow-diagram {
+                flex-direction: column;
+                gap: 25px;
             }
             
-            .journey-section {
-                padding: 30px 20px;
+            .arrow {
+                transform: rotate(90deg);
             }
         }
         
         @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .language-selector {
+                top: 10px;
+                right: 10px;
+                padding: 2px;
             }
             
-            .hero-tagline {
-                font-size: 1.3rem;
+            .header-logo {
+                height: 50px;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .hero h2 {
+                font-size: 2.3rem;
             }
             
             .hero p {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
+                margin-bottom: 30px;
             }
             
             .section-title {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
-            section {
-                padding: 60px 15px;
+            .section-subtitle {
+                font-size: 1.35rem;
             }
             
-            .journey-section,
-            .stats-section,
-            .value-section,
-            .contact-section {
-                padding: 30px 20px;
+            .container {
+                padding: 40px 15px;
             }
             
-            .step-number {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-            
-            .step-title {
+            .btn {
+                padding: 14px 30px;
                 font-size: 1.2rem;
             }
             
-            .contact-container {
-                padding: 30px 20px;
+            .stat-number {
+                font-size: 2.2rem;
+            }
+            
+            .stat-label {
+                font-size: 1.05rem;
             }
         }
     </style>
@@ -808,266 +926,243 @@
         <button class="lang-btn" data-lang="ca">CA</button>
     </div>
     
-    <!-- Location Badge -->
-    <div class="location-badge">Vilafranca del Penedès</div>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</h1>
+            <p class="tagline lang" data-es="Transformación Organizacional Completa" data-ca="Transformació Organitzativa Completa">Transformación Organizacional Completa</p>
+        </div>
+    </header>
     
-    <!-- Hero Section with Video Background -->
+    <!-- Hero Section -->
     <section class="hero">
-        <video class="hero-video" autoplay muted loop playsinline>
-            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
-        </video>
-        <div class="hero-overlay"></div>
         <div class="hero-content">
-            <div class="hero-logo">
-                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
-            </div>
-            <h1 class="lang" data-es="Modelo Integral System" data-ca="Model Integral System">Modelo Integral System</h1>
-            <p class="hero-tagline lang" data-es="Transformación organizacional completa" data-ca="Transformació organitzativa completa">Transformación organizacional completa</p>
-            <p class="lang" data-es="El modelo único que integra experiencia castellera, comunidades de práctica, Value Network Analysis y contabilidad de valor para transformar organizaciones desde el corazón del Penedès." data-ca="El model únic que integra experiència castellera, comunitats de pràctica, Value Network Analysis i comptabilitat de valor per transformar organitzacions des del cor del Penedès.">El modelo único que integra experiencia castellera, comunidades de práctica, Value Network Analysis y contabilidad de valor para transformar organizaciones desde el corazón del Penedès.</p>
+            <h2 class="lang" data-es="El Primer Sistema Integral de Transformación Organizacional" data-ca="El Primer Sistema Integral de Transformació Organitzativa">El Primer Sistema Integral de Transformación Organizacional</h2>
+            <p class="lang" data-es="Conectamos mapeo de valor, gestión del conocimiento, contabilidad de valor y tokenización en un ecosistema único que transforma organizaciones humanas con impacto medible y sostenible." data-ca="Connectem mapeig de valor, gestió del coneixement, comptabilitat de valor i tokenització en un ecosistema únic que transforma organitzacions humanes amb impacte mesurable i sostenible.">Conectamos mapeo de valor, gestión del conocimiento, contabilidad de valor y tokenización en un ecosistema único que transforma organizaciones humanas con impacto medible y sostenible.</p>
             <div class="cta-container">
-                <a href="javascript:void(0)" onclick="contactService('Modelo Integral System')" class="btn btn-primary lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</a>
-                <a href="#journey" class="btn btn-secondary lang" data-es="Descubrir el Modelo" data-ca="Descobrir el Model">Descubrir el Modelo</a>
+                <a href="#process" class="btn btn-primary lang" data-es="Descubrir el Sistema Integral" data-ca="Descobrir el Sistema Integral">Descubrir el Sistema Integral</a>
+                <a href="#contact" class="btn btn-secondary lang" data-es="Solicitar Consultoría Gratuita" data-ca="Sol·licitar Consultoria Gratuita">Solicitar Consultoría Gratuita</a>
             </div>
         </div>
     </section>
     
-    <!-- Journey Section -->
-    <section id="journey" class="journey-section">
-        <div class="journey-container">
-            <h2 class="journey-title lang" data-es="El Viaje de Transformación Integral" data-ca="El Vi atge de Transformació Integral">El Viaje de Transformación Integral</h2>
-            <p class="section-subtitle lang" data-es="Un recorrido sistémico que transforma organizaciones completas, no solo equipos" data-ca="Un recorregut sistèmic que transforma organitzacions completes, no només equips">Un recorrido sistémico que transforma organizaciones completas, no solo equipos</p>
-            
-            <div class="journey-steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3 class="step-title lang" data-es="Experiencia Castellera" data-ca="Experiència Castellera">Experiencia Castellera</h3>
-                    <p class="step-desc lang" data-es="Taller 'Fent Pinya': Impacto emocional que genera compromiso y cohesión inmediata en equipos de 10 a 1.000 personas." data-ca="Taller 'Fent Pinya': Impacte emocional que genera compromís i cohesió immediata en equips de 10 a 1.000 persones.">Taller 'Fent Pinya': Impacto emocional que genera compromiso y cohesión inmediata en equipos de 10 a 1.000 personas.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3 class="step-title lang" data-es="Pensamiento Sistémico" data-ca="Pensament Sistèmic">Pensamiento Sistémico</h3>
-                    <p class="step-desc lang" data-es="Desarrollo de la capacidad para ver el todo, entender interdependencias y tomar decisiones estratégicas con visión global." data-ca="Desenvolupament de la capacitat per veure el tot, entendre interdependències i prendre decisions estratègiques amb visió global.">Desarrollo de la capacidad para ver el todo, entender interdependencias y tomar decisiones estratégicas con visión global.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3 class="step-title lang" data-es="Trabajo en Red" data-ca="Treball en Xarxa">Trabajo en Red</h3>
-                    <p class="step-desc lang" data-es="Construcción de redes colaborativas internas y externas que potencian la innovación y el aprendizaje continuo." data-ca="Construcció de xarxes col·laboratives internes i externes que potencien la innovació i l'aprenentatge continu.">Construcción de redes colaborativas internas y externas que potencian la innovación y el aprendizaje continuo.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3 class="step-title lang" data-es="Gestión del Conocimiento" data-ca="Gestió del Coneixement">Gestión del Conocimiento</h3>
-                    <p class="step-desc lang" data-es="Comunidades de Práctica que capturan conocimiento tácito y desarrollan competencias críticas de forma sostenible." data-ca="Comunitats de Pràctica que capturen coneixement tàcit i desenvolupen competències crítiques de forma sostenible.">Comunidades de Práctica que capturan conocimiento tácito y desarrollan competencias críticas de forma sostenible.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">5</div>
-                    <h3 class="step-title lang" data-es="Optimización de Valor" data-ca="Optimització de Valor">Optimización de Valor</h3>
-                    <p class="step-desc lang" data-es="Value Network Analysis para mapear flujos, identificar ineficiencias y tomar decisiones basadas en evidencia." data-ca="Value Network Analysis per mapejar fluxos, identificar ineficiències i prendre decisions basades en evidència.">Value Network Analysis para mapear flujos, identificar ineficiencias y tomar decisiones basadas en evidencia.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">6</div>
-                    <h3 class="step-title lang" data-es="Contabilidad de Valor" data-ca="Comptabilitat de Valor">Contabilidad de Valor</h3>
-                    <p class="step-desc lang" data-es="Nuevos modelos de financiación, engagement de stakeholders y distribución justa de beneficios mediante tokenización." data-ca="Nous models de finançament, engagement de stakeholders i distribució justa de beneficis mitjançant tokenització.">Nuevos modelos de financiación, engagement de stakeholders y distribución justa de beneficios mediante tokenización.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Integration Section -->
-    <section class="integration-section">
-        <h3 class="lang" data-es="Las Piezas del Sistema Integrado" data-ca="Les Peces del Sistema Integrat">Las Piezas del Sistema Integrado</h3>
-        <p class="section-subtitle lang" data-es="Cada componente potencia a los demás creando un efecto multiplicador en la transformación organizacional" data-ca="Cada component potencia als altres creant un efecte multiplicador en la transformació organitzativa">Cada componente potencia a los demás creando un efecto multiplicador en la transformación organizacional</p>
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="section-title lang" data-es="¿Qué es el Sistema Integral?" data-ca="Què és el Sistema Integral?">¿Qué es el Sistema Integral?</h2>
+        <p class="section-subtitle lang" data-es="Un enfoque sistémico y único que integra metodologías probadas con innovación disruptiva para transformar organizaciones completas. No es solo una herramienta más, es un ecosistema completo que conecta personas, procesos y valor en un ciclo virtuoso de crecimiento sostenible." data-ca="Un enfocament sistèmic i únic que integra metodologies provades amb innovació disruptiva per transformar organitzacions completes. No és només una eina més, és un ecosistema complet que connecta persones, processos i valor en un cicle virtuós de creixement sostenible.">Un enfoque sistémico y único que integra metodologías probadas con innovación disruptiva para transformar organizaciones completas. No es solo una herramienta más, es un ecosistema completo que conecta personas, procesos y valor en un ciclo virtuoso de crecimiento sostenible.</p>
         
-        <div class="integration-grid">
-            <div class="integration-card">
-                <h4 class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</h4>
-                <p class="lang" data-es="La chispa inicial que genera compromiso emocional y cohesión. El taller 'Fent Pinya' crea el impacto necesario para iniciar el cambio." data-ca="L'espurna inicial que genera compromís emocional i cohesió. El taller 'Fent Pinya' crea l'impacte necessari per iniciar el canvi.">La chispa inicial que genera compromiso emocional y cohesión. El taller 'Fent Pinya' crea el impacto necesario para iniciar el cambio.</p>
-                <a href="https://teamtowershuma.netlify.app/" class="link lang" data-es="Más sobre TeamTowers →" data-ca="Més sobre TeamTowers →">Más sobre TeamTowers →</a>
+        <!-- Integrated System Section -->
+        <section id="process" class="integrated-section">
+            <h3 class="section-title lang" data-es="El Flujo del Sistema Integral" data-ca="El Flux del Sistema Integral">El Flujo del Sistema Integral</h3>
+            <p class="section-subtitle lang" data-es="Cuatro fases interconectadas que transforman organizaciones completas. Cada fase alimenta la siguiente, creando un ecosistema auto-sostenible de innovación y crecimiento." data-ca="Quatre fases interconnectades que transformen organitzacions completes. Cada fase alimenta la següent, creant un ecosistema auto-sostenible d'innovació i creixement.">Cuatro fases interconectadas que transforman organizaciones completas. Cada fase alimenta la siguiente, creando un ecosistema auto-sostenible de innovación y crecimiento.</p>
+            
+            <div class="workflow-diagram">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <h4 class="step-title lang" data-es="Mapear Valor" data-ca="Mapejar Valor">Mapear Valor</h4>
+                    <p class="step-desc lang" data-es="Identifica flujos con VNA App" data-ca="Identifica fluxos amb VNA App">Identifica flujos con VNA App</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <h4 class="step-title lang" data-es="Gestionar Conocimiento" data-ca="Gestionar Coneixement">Gestionar Conocimiento</h4>
+                    <p class="step-desc lang" data-es="Captura con CoPs App" data-ca="Captura amb CoPs App">Captura con CoPs App</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <h4 class="step-title lang" data-es="Contabilizar Valor" data-ca="Comptabilitzar Valor">Contabilizar Valor</h4>
+                    <p class="step-desc lang" data-es="Registra con App Contabilidad" data-ca="Registra amb App Comptabilitat">Registra con App Contabilidad</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="workflow-step">
+                    <div class="step-number">4</div>
+                    <h4 class="step-title lang" data-es="Distribuir Participaciones" data-ca="Distribuir Participacions">Distribuir Participaciones</h4>
+                    <p class="step-desc lang" data-es="Tokeniza con Tokenomics App" data-ca="Tokenitza amb Tokenomics App">Tokeniza con Tokenomics App</p>
+                </div>
             </div>
             
-            <div class="integration-card">
-                <h4 class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h4>
-                <p class="lang" data-es="El motor de aprendizaje continuo que mantiene vivo el cambio. Capturan conocimiento tácito y desarrollan competencias críticas de forma sostenible." data-ca="El motor d'aprenentatge continu que manté viu el canvi. Capturen coneixement tàcit i desenvolupen competències crítiques de forma sostenible.">El motor de aprendizaje continuo que mantiene vivo el cambio. Capturan conocimiento tácito y desarrollan competencias críticas de forma sostenible.</p>
-                <a href="https://teamtowershuma.netlify.app/coops" class="link lang" data-es="Más sobre CoPs →" data-ca="Més sobre CoPs →">Más sobre CoPs →</a>
-            </div>
+            <p class="section-subtitle" style="margin-top: 40px; font-size: 1.5rem;">
+                <span class="lang" data-es="Este ciclo continuo crea una organización que aprende, se adapta y crece de forma orgánica y sostenible, con cada stakeholder alineado hacia objetivos comunes." data-ca="Aquest cicle continu crea una organització que aprèn, s'adapta i creix de forma orgànica i sostenible, amb cada stakeholder alineat cap a objectius comuns.">Este ciclo continuo crea una organización que aprende, se adapta y crece de forma orgánica y sostenible, con cada stakeholder alineado hacia objetivos comunes.</span>
+            </p>
+        </section>
+        
+        <!-- Process Section -->
+        <section class="process-section">
+            <h3 class="section-title lang" data-es="El Proceso de Implementación" data-ca="El Procés d'Implementació">El Proceso de Implementación</h3>
+            <p class="section-subtitle lang" data-es="Un enfoque estructurado y adaptable que garantiza resultados tangibles en cada fase del sistema integral." data-ca="Un enfocament estructurat i adaptable que garanteix resultats tangibles en cada fase del sistema integral.">Un enfoque estructurado y adaptable que garantiza resultados tangibles en cada fase del sistema integral.</p>
             
-            <div class="integration-card">
-                <h4 class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h4>
-                <p class="lang" data-es="El cerebro estratégico que optimiza flujos de valor. Mapea redes organizativas para identificar ineficiencias y oportunidades de mejora." data-ca="El cervell estratègic que optimitza fluxos de valor. Mapeja xarxes organitzatives per identificar ineficiències i oportunitats de millora.">El cerebro estratégico que optimiza flujos de valor. Mapea redes organizativas para identificar ineficiencias y oportunidades de mejora.</p>
-                <a href="https://teamtowershuma.netlify.app/valor" class="link lang" data-es="Más sobre VNA →" data-ca="Més sobre VNA →">Más sobre VNA →</a>
+            <div class="process-grid">
+                <div class="process-card">
+                    <div class="process-icon">🔍</div>
+                    <h4 class="process-title lang" data-es="Diagnóstico Estratégico" data-ca="Diagnòstic Estratègic">Diagnóstico Estratégico</h4>
+                    <p class="process-desc lang" data-es="Analizamos tu organización con Value Network Analysis para identificar flujos de valor, cuellos de botella y oportunidades de mejora. Creamos un mapa visual de tu ecosistema de valor actual." data-ca="Analitzem la teva organització amb Value Network Analysis per identificar fluxos de valor, colls d'ampolla i oportunitats de millora. Creem un mapa visual del teu ecosistema de valor actual.">Analizamos tu organización con Value Network Analysis para identificar flujos de valor, cuellos de botella y oportunidades de mejora. Creamos un mapa visual de tu ecosistema de valor actual.</p>
+                </div>
+                
+                <div class="process-card">
+                    <div class="process-icon">📚</div>
+                    <h4 class="process-title lang" data-es="Diseño de Comunidades" data-ca="Disseny de Comunitats">Diseño de Comunidades</h4>
+                    <p class="process-desc lang" data-es="Creamos Comunidades de Práctica alineadas con tu mapa de valor. Establecemos roles, responsabilidades y mecanismos de captura de conocimiento tácito para cada área crítica." data-ca="Creem Comunitats de Pràctica alineades amb el teu mapa de valor. Establim rols, responsabilitats i mecanismes de captura de coneixement tàcit per a cada àrea crítica.">Creamos Comunidades de Práctica alineadas con tu mapa de valor. Establecemos roles, responsabilidades y mecanismos de captura de conocimiento tácito para cada área crítica.</p>
+                </div>
+                
+                <div class="process-card">
+                    <div class="process-icon">💰</div>
+                    <h4 class="process-title lang" data-es="Implementación de Contabilidad" data-ca="Implementació de Comptabilitat">Implementación de Contabilidad</h4>
+                    <p class="process-desc lang" data-es="Configuramos el sistema de Contabilidad de Valor para registrar y cuantificar las aportaciones de cada stakeholder. Establecemos métricas y unidades de medida alineadas con tus objetivos estratégicos." data-ca="Configurem el sistema de Comptabilitat de Valor per registrar i quantificar les aportacions de cada stakeholder. Establim mètriques i unitats de mesura alineades amb els teus objectius estratègics.">Configuramos el sistema de Contabilidad de Valor para registrar y cuantificar las aportaciones de cada stakeholder. Establecemos métricas y unidades de medida alineadas con tus objetivos estratégicos.</p>
+                </div>
+                
+                <div class="process-card">
+                    <div class="process-icon">🪙</div>
+                    <h4 class="process-title lang" data-es="Tokenización y Gobernanza" data-ca="Tokenització i Governança">Tokenización y Gobernanza</h4>
+                    <p class="process-desc lang" data-es="Diseñamos e implementamos tu modelo tokenómico con distribución justa y transparente. Configuramos smart contracts y mecanismos de gobernanza descentralizada para la toma de decisiones estratégicas." data-ca="Dissenya i implementem el teu model tokenòmic amb distribució justa i transparent. Configurem smart contracts i mecanismes de governança descentralitzada per a la presa de decisions estratègiques.">Diseñamos e implementamos tu modelo tokenómico con distribución justa y transparente. Configuramos smart contracts y mecanismos de gobernanza descentralizada para la toma de decisiones estratégicas.</p>
+                </div>
+                
+                <div class="process-card">
+                    <div class="process-icon">🔄</div>
+                    <h4 class="process-title lang" data-es="Optimización Continua" data-ca="Optimització Contínua">Optimización Continua</h4>
+                    <p class="process-desc lang" data-es="Monitoreamos y ajustamos el sistema integral basándonos en datos reales. Implementamos mejoras iterativas y escalamos el modelo a nuevas áreas de tu organización." data-ca="Monitoregem i ajustem el sistema integral basant-nos en dades reals. Implementem millores iteratives i escalem el model a noves àrees de la teva organització.">Monitoreamos y ajustamos el sistema integral basándonos en datos reales. Implementamos mejoras iterativas y escalamos el modelo a nuevas áreas de tu organización.</p>
+                </div>
+                
+                <div class="process-card">
+                    <div class="process-icon">📈</div>
+                    <h4 class="process-title lang" data-es="Medición de Impacto" data-ca="Mesura d'Impacte">Medición de Impacto</h4>
+                    <p class="process-desc lang" data-es="Evaluamos el impacto del sistema integral en métricas clave: cohesión de equipo, tiempo de onboarding, resolución autónoma de problemas, satisfacción de stakeholders y ROI de la transformación." data-ca="Avalua l'impacte del sistema integral en mètriques clau: cohesió d'equip, temps d'onboarding, resolució autònoma de problemes, satisfacció de stakeholders i ROI de la transformació.">Evaluamos el impacto del sistema integral en métricas clave: cohesión de equipo, tiempo de onboarding, resolución autónoma de problemas, satisfacción de stakeholders y ROI de la transformación.</p>
+                </div>
             </div>
+        </section>
+        
+        <!-- Integration Section -->
+        <section class="integration-section">
+            <h3 class="section-title lang" data-es="Integración con Servicios de TeamTowers Humà" data-ca="Integració amb Serveis de TeamTowers Humà">Integración con Servicios de TeamTowers Humà</h3>
+            <p class="section-subtitle lang" data-es="El Sistema Integral se potencia y complementa con nuestros servicios especializados, creando una solución completa para la transformación organizacional." data-ca="El Sistema Integral es potencia i complementa amb els nostres serveis especialitzats, creant una solució completa per a la transformació organitzativa.">El Sistema Integral se potencia y complementa con nuestros servicios especializados, creando una solución completa para la transformación organizacional.</p>
             
-            <div class="integration-card">
-                <h4 class="lang" data-es="Contabilidad de Valor" data-ca="Comptabilitat de Valor">Contabilidad de Valor</h4>
-                <p class="lang" data-es="El sistema nervioso financiero que alinea incentivos. Tokenización, grunt funding y nuevas formas de distribución de valor entre todos los stakeholders." data-ca="El sistema nerviós financer que alinea incentius. Tokenització, grunt funding i noves formes de distribució de valor entre tots els stakeholders.">El sistema nervioso financiero que alinea incentivos. Tokenización, grunt funding y nuevas formas de distribución de valor entre todos los stakeholders.</p>
-                <a href="https://teamtowershuma.netlify.app/comptabilitat_de_valor" class="link lang" data-es="Más sobre Contabilidad →" data-ca="Més sobre Comptabilitat →">Más sobre Contabilidad →</a>
+            <div class="integration-grid">
+                <div class="integration-card">
+                    <h4 class="lang" data-es="Consultoría RRHH Estratégica" data-ca="Consultoria RRHH Estratègica">Consultoría RRHH Estratégica</h4>
+                    <p class="lang" data-es="Nuestros expertos en RRHH aplican el Sistema Integral para transformar la gestión del talento, desarrollar liderazgo y crear culturas organizativas resilientes y orientadas al valor." data-ca="Els nostres experts en RRHH apliquen el Sistema Integral per transformar la gestió del talent, desenvolupar lideratge i crear cultures organitzatives resilents i orientades al valor.">Nuestros expertos en RRHH aplican el Sistema Integral para transformar la gestión del talento, desarrollar liderazgo y crear culturas organizativas resilientes y orientadas al valor.</p>
+                    <a href="https://teamtowershuma.com/rrhh" target="_blank" class="lang" data-es="Descubrir RRHH" data-ca="Descobrir RRHH">Descubrir RRHH</a>
+                </div>
+                
+                <div class="integration-card">
+                    <h4 class="lang" data-es="La Masia: Comunidad de Aprendizaje" data-ca="La Masia: Comunitat d'Aprenentatge">La Masia: Comunidad de Aprendizaje</h4>
+                    <p class="lang" data-es="Nuestro espacio físico y metodológico donde se desarrollan competencias empresariales mediante aprendizaje experiencial, integrando TeamTowers, VNA y Contabilidad de Valor en un entorno único." data-ca="El nostre espai físic i metodològic on es desenvolupen competències empresarials mitjançant aprenentatge experiencial, integrant TeamTowers, VNA i Comptabilitat de Valor en un entorn únic.">Nuestro espacio físico y metodológico donde se desarrollan competencias empresariales mediante aprendizaje experiencial, integrando TeamTowers, VNA y Contabilidad de Valor en un entorno único.</p>
+                    <a href="https://teamtowershuma.com/masia" target="_blank" class="lang" data-es="Descubrir La Masia" data-ca="Descobrir La Masia">Descubrir La Masia</a>
+                </div>
+                
+                <div class="integration-card">
+                    <h4 class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h4>
+                    <p class="lang" data-es="Metodología estratégica para mapear flujos de valor tangibles e intangibles. Identifica ineficiencias ocultas, optimiza procesos y toma decisiones basadas en evidencia con nuestro análisis de redes de valor." data-ca="Metodologia estratègica per mapejar fluxos de valor tangibles i intangibles. Identifica ineficiències ocultes, optimitza processos i pren decisions basades en evidència amb el nostre anàlisi de xarxes de valor.">Metodología estratégica para mapear flujos de valor tangibles e intangibles. Identifica ineficiencias ocultas, optimiza procesos y toma decisiones basadas en evidencia con nuestro análisis de redes de valor.</p>
+                    <a href="https://teamtowershuma.com/valor" target="_blank" class="lang" data-es="Descubrir VNA" data-ca="Descobrir VNA">Descubrir VNA</a>
+                </div>
+                
+                <div class="integration-card">
+                    <h4 class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h4>
+                    <p class="lang" data-es="Modelos de aprendizaje basados en redes de valor que capturan conocimiento tácito y desarrollan competencias críticas. Creamos culturas de aprendizaje continuo donde el talento florece naturalmente." data-ca="Models d'aprenentatge basats en xarxes de valor que capturen coneixement tàcit i desenvolupen competències crítiques. Creem cultures d'aprenentatge continu on el talent floreix naturalment.">Modelos de aprendizaje basados en redes de valor que capturan conocimiento tácito y desarrollan competencias críticas. Creamos culturas de aprendizaje continuo donde el talento florece naturalmente.</p>
+                    <a href="https://teamtowershuma.com/coops" target="_blank" class="lang" data-es="Descubrir CoPs" data-ca="Descobrir CoPs">Descubrir CoPs</a>
+                </div>
             </div>
-        </div>
-    </section>
-    
-    <!-- Benefits Section -->
-    <section>
-        <h2 class="section-title lang" data-es="Beneficios del Modelo Integral System" data-ca="Beneficis del Model Integral System">Beneficios del Modelo Integral System</h2>
-        <p class="section-subtitle lang" data-es="Transformación completa que aborda todos los niveles de la organización" data-ca="Transformació completa que aborda tots els nivells de l'organització">Transformación completa que aborda todos los niveles de la organización</p>
+        </section>
+        
+        <!-- Benefits Section -->
+        <h3 class="section-title lang" data-es="Beneficios del Sistema Integral" data-ca="Beneficis del Sistema Integral">Beneficios del Sistema Integral</h3>
+        <p class="section-subtitle lang" data-es="Implementa el sistema completo y transforma tu organización con resultados medibles y sostenibles en el tiempo." data-ca="Implementa el sistema complet i transforma la teva organització amb resultats mesurables i sostenibles en el temps.">Implementa el sistema completo y transforma tu organización con resultados medibles y sostenibles en el tiempo.</p>
         
         <div class="benefits-grid">
             <div class="benefit-card">
-                <h4 class="lang" data-es="Impacto Emocional + Racional" data-ca="Impacte Emocional + Racional">Impacto Emocional + Racional</h4>
-                <p class="lang" data-es="Combina la experiencia transformadora de los castellers con el rigor analítico del VNA para un cambio profundo y sostenible." data-ca="Combina l'experiència transformadora dels castellers amb el rigor analític del VNA per un canvi profund i sostenible.">Combina la experiencia transformadora de los castellers con el rigor analítico del VNA para un cambio profundo y sostenible.</p>
+                <div class="benefit-icon">🚀</div>
+                <h4 class="benefit-title lang" data-es="Innovación Acelerada" data-ca="Innovació Accelerada">Innovación Acelerada</h4>
+                <p class="benefit-desc lang" data-es="Reduce el tiempo de desarrollo de nuevos productos/servicios en un 40% al conectar directamente el conocimiento tácito con la toma de decisiones estratégicas." data-ca="Redueix el temps de desenvolupament de nous productes/serveis en un 40% en connectar directament el coneixement tàcit amb la presa de decisions estratègiques.">Reduce el tiempo de desarrollo de nuevos productos/servicios en un 40% al conectar directamente el conocimiento tácito con la toma de decisiones estratégicas.</p>
             </div>
             
             <div class="benefit-card">
-                <h4 class="lang" data-es="Aprendizaje Continuo" data-ca="Aprenentatge Continu">Aprendizaje Continuo</h4>
-                <p class="lang" data-es="Las Comunidades de Práctica garantizan que el conocimiento se capture y desarrolle de forma orgánica, sin depender de formación puntual." data-ca="Les Comunitats de Pràctica garanteixen que el coneixement es capturi i desenvolupi de forma orgànica, sense dependre de formació puntual.">Las Comunidades de Práctica garantizan que el conocimiento se capture y desarrolle de forma orgánica, sin depender de formación puntual.</p>
+                <div class="benefit-icon">💡</div>
+                <h4 class="benefit-title lang" data-es="Toma de Decisiones Basada en Evidencia" data-ca="Pres de Decisions Basada en Evidència">Toma de Decisiones Basada en Evidencia</h4>
+                <p class="benefit-desc lang" data-es="Elimina las suposiciones y toma decisiones estratégicas basadas en datos reales de flujos de valor y contribuciones de valor cuantificadas." data-ca="Elimina les suposicions i pren decisions estratègiques basades en dades reals de fluxos de valor i contribucions de valor quantificades.">Elimina las suposiciones y toma decisiones estratégicas basadas en datos reales de flujos de valor y contribuciones de valor cuantificadas.</p>
             </div>
             
             <div class="benefit-card">
-                <h4 class="lang" data-es="Optimización Sistémica" data-ca="Optimització Sistèmica">Optimización Sistémica</h4>
-                <p class="lang" data-es="No mejora partes aisladas: transforma el sistema completo para que todas las piezas trabajen en sinergia hacia objetivos comunes." data-ca="No millora parts aïllades: transforma el sistema complet perquè totes les peces treballin en sinergia cap a objectius comuns.">No mejora partes aisladas: transforma el sistema completo para que todas las piezas trabajen en sinergia hacia objetivos comunes.</p>
+                <div class="benefit-icon">🤝</div>
+                <h4 class="benefit-title lang" data-es="Alineación de Incentivos" data-ca="Alineació d'Incentius">Alineación de Incentivos</h4>
+                <p class="benefit-desc lang" data-es="Todos los stakeholders (equipo, clientes, proveedores, inversores) están alineados hacia objetivos comunes gracias a la transparencia y recompensas justas." data-ca="Tots els stakeholders (equip, clients, proveïdors, inversors) estan alineats cap a objectius comuns gràcies a la transparència i recompenses justes.">Todos los stakeholders (equipo, clientes, proveedores, inversores) están alineados hacia objetivos comunes gracias a la transparencia y recompensas justas.</p>
             </div>
             
             <div class="benefit-card">
-                <h4 class="lang" data-es="Innovación en Modelos de Negocio" data-ca="Innovació en Models de Negoci">Innovación en Modelos de Negocio</h4>
-                <p class="lang" data-es="La Contabilidad de Valor abre nuevas posibilidades para financiar proyectos, atraer talento y crear ecosistemas de valor compartido." data-ca="La Comptabilitat de Valor obri noves possibilitats per finançar projectes, atreure talent i crear ecosistemes de valor compartit.">La Contabilidad de Valor abre nuevas posibilidades para financiar proyectos, atraer talento y crear ecosistemas de valor compartido.</p>
+                <div class="benefit-icon">📈</div>
+                <h4 class="benefit-title lang" data-es="Crecimiento Sostenible" data-ca="Creixement Sostenible">Crecimiento Sostenible</h4>
+                <p class="benefit-desc lang" data-es="Construye una organización resiliente que crece orgánicamente al capturar, valorar y recompensar el conocimiento y las contribuciones de valor." data-ca="Construeix una organització resilient que creix orgànicament en capturar, valorar i recompensar el coneixement i les contribucions de valor.">Construye una organización resiliente que crece orgánicamente al capturar, valorar y recompensar el conocimiento y las contribuciones de valor.</p>
             </div>
             
             <div class="benefit-card">
-                <h4 class="lang" data-es="ROI Cuantificable" data-ca="ROI Quantificable">ROI Cuantificable</h4>
-                <p class="lang" data-es="Cada etapa del modelo genera métricas claras: +30-50% cohesión, -47% onboarding, -30% ineficiencias, +40% engagement." data-ca="Cada etapa del model genera mètriques clares: +30-50% cohesió, -47% onboarding, -30% ineficiències, +40% engagement.">Cada etapa del modelo genera métricas claras: +30-50% cohesión, -47% onboarding, -30% ineficiencias, +40% engagement.</p>
+                <div class="benefit-icon">🎯</div>
+                <h4 class="benefit-title lang" data-es="Captación de Talento Excepcional" data-ca="Captació de Talent Excepcional">Captación de Talento Excepcional</h4>
+                <p class="benefit-desc lang" data-es="Atrae y retiene al mejor talento con un sistema transparente de reconocimiento y recompensas basado en el valor real aportado." data-ca="Atrau i reté el millor talent amb un sistema transparent de reconeixement i recompenses basat en el valor real aportat.">Atrae y retiene al mejor talento con un sistema transparente de reconocimiento y recompensas basado en el valor real aportado.</p>
             </div>
             
             <div class="benefit-card">
-                <h4 class="lang" data-es="Sostenibilidad a Largo Plazo" data-ca="Sostenibilitat a Llarg Termini">Sostenibilidad a Largo Plazo</h4>
-                <p class="lang" data-es="El modelo crea estructuras auto-sostenibles que continúan generando valor mucho después de la intervención inicial." data-ca="El model crea estructures auto-sostenibles que continuen generant valor molt després de la intervenció inicial.">El modelo crea estructuras auto-sostenibles que continúan generando valor mucho después de la intervención inicial.</p>
+                <div class="benefit-icon">🌐</div>
+                <h4 class="benefit-title lang" data-es="Ventaja Competitiva Sostenible" data-ca="Avantatge Competitiu Sostenible">Ventaja Competitiva Sostenible</h4>
+                <p class="benefit-desc lang" data-es="Crea una ventaja competitiva que no puede ser replicada fácilmente: una organización que aprende, se adapta y evoluciona continuamente." data-ca="Crea una avantatge competitiva que no pot ser replicada fàcilment: una organització que aprèn, s'adapta i evoluciona contínuament.">Crea una ventaja competitiva que no puede ser replicada fácilmente: una organización que aprende, se adapta y evoluciona continuamente.</p>
             </div>
         </div>
-    </section>
+    </div>
     
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <h2 class="lang" data-es="Impacto del Modelo Integral System" data-ca="Impacte del Model Integral System">Impacto del Modelo Integral System</h2>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-number">6x</span>
-                <span class="stat-label lang" data-es="Mayor ROI formativo" data-ca="Major ROI formatiu">Mayor ROI formativo</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">75%</span>
-                <span class="stat-label lang" data-es="Reducción rotación talento" data-ca="Reducció rotació talent">Reducción rotación talento</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">3.5x</span>
-                <span class="stat-label lang" data-es="Innovación sostenida" data-ca="Innovació sostinguda">Innovación sostenida</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">90%</span>
-                <span class="stat-label lang" data-es="Satisfacción stakeholders" data-ca="Satisfacció stakeholders">Satisfacción stakeholders</span>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Testimonials Section -->
-    <section class="testimonials-section">
-        <h2 class="section-title lang" data-es="Testimonios" data-ca="Testimonis">Testimonios</h2>
-        <p class="section-subtitle lang" data-es="Lo que dicen organizaciones que han implementado el Modelo Integral System" data-ca="El que diuen organitzacions que han implementat el Model Integral System">Lo que dicen organizaciones que han implementado el Modelo Integral System</p>
-        
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-content lang" data-es="Implementamos el Modelo Integral System en nuestra organización de 500 empleados. Comenzamos con TeamTowers para generar compromiso, luego creamos Comunidades de Práctica para el aprendizaje continuo, aplicamos VNA para optimizar procesos y finalmente implementamos Contabilidad de Valor para alinear incentivos. El resultado: +45% productividad, -60% rotación y un modelo de negocio completamente renovado que nos ha permitido competir con gigantes del sector." data-ca="Vam implementar el Model Integral System a la nostra organització de 500 empleats. Vam començar amb TeamTowers per generar compromís, després vam crear Comunitats de Pràctica per a l'aprenentatge continu, vam aplicar VNA per optimitzar processos i finalment vam implementar Comptabilitat de Valor per alinear incentius. El resultat: +45% productivitat, -60% rotació i un model de negoci completament renovat que ens ha permès competir amb gegants del sector.">Implementamos el Modelo Integral System en nuestra organización de 500 empleados. Comenzamos con TeamTowers para generar compromiso, luego creamos Comunidades de Práctica para el aprendizaje continuo, aplicamos VNA para optimizar procesos y finalmente implementamos Contabilidad de Valor para alinear incentivos. El resultado: +45% productividad, -60% rotación y un modelo de negocio completamente renovado que nos ha permitido competir con gigantes del sector.</div>
-                <div class="testimonial-author">
-                    <div class="author-info">
-                        <h4>Director General</h4>
-                        <p>Empresa Tecnológica de 500 empleados</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content lang" data-es="Como startup, necesitábamos un modelo que nos permitiera escalar sin perder nuestra cultura. El Modelo Integral System nos dio la estructura perfecta: TeamTowers para crear cohesión desde el inicio, Comunidades de Práctica para mantener el aprendizaje ágil, VNA para optimizar nuestros flujos de valor limitados y Contabilidad de Valor para atraer talento sin grandes salarios iniciales. Hoy somos 10 veces más grandes y mantenemos la misma esencia." data-ca="Com a startup, necessitàvem un model que ens permetés escalar sense perdre la nostra cultura. El Model Integral System ens va donar l'estructura perfecta: TeamTowers per crear cohesió des de l'inici, Comunitats de Pràctica per mantenir l'aprenentatge àgil, VNA per optimitzar els nostres fluxos de valor limitats i Comptabilitat de Valor per atreure talent sense grans salaris inicials. Avui som 10 vegades més grans i mantenim la mateixa essència.">Como startup, necesitábamos un modelo que nos permitiera escalar sin perder nuestra cultura. El Modelo Integral System nos dio la estructura perfecta: TeamTowers para crear cohesión desde el inicio, Comunidades de Práctica para mantener el aprendizaje ágil, VNA para optimizar nuestros flujos de valor limitados y Contabilidad de Valor para atraer talento sin grandes salarios iniciales. Hoy somos 10 veces más grandes y mantenemos la misma esencia.</div>
-                <div class="testimonial-author">
-                    <div class="author-info">
-                        <h4>CEO y Fundador</h4>
-                        <p>Startup de Innovación</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content lang" data-es="Implementar el Modelo Integral System transformó completamente nuestra forma de operar. Pasamos de una estructura jerárquica rígida a una red colaborativa donde el valor fluye libremente. La Contabilidad de Valor fue especialmente revolucionaria: tokenizamos las contribuciones de todos los stakeholders y creamos un ecosistema donde todos ganamos. Nuestra productividad aumentó un 60% y la satisfacción del cliente un 85%." data-ca="Implementar el Model Integral System va transformar completament la nostra forma d'operar. Vam passar d'una estructura jeràrquica rígida a una xarxa col·laborativa on el valor flueix lliurement. La Comptabilitat de Valor va ser especialment revolucionària: vam tokenitzar les contribucions de tots els stakeholders i vam crear un ecosistema on tots guanyem. La nostra productivitat va augmentar un 60% i la satisfacció del client un 85%.">Implementar el Modelo Integral System transformó completamente nuestra forma de operar. Pasamos de una estructura jerárquica rígida a una red colaborativa donde el valor fluye libremente. La Contabilidad de Valor fue especialmente revolucionaria: tokenizamos las contribuciones de todos los stakeholders y creamos un ecosistema donde todos ganamos. Nuestra productividad aumentó un 60% y la satisfacción del cliente un 85%.</div>
-                <div class="testimonial-author">
-                    <div class="author-info">
-                        <h4>Dirección de Transformación</h4>
-                        <p>Corporación Multinacional</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Value Proposition Section -->
-    <section class="value-section">
-        <div class="value-content">
-            <h2 class="lang" data-es="¿Por qué el Modelo Integral System es único?" data-ca="Per què el Model Integral System és únic?">¿Por qué el Modelo Integral System es único?</h2>
-            <p class="lang" data-es="Somos la única consultora que combina 20+ años de experiencia en desarrollo de equipos con metodologías avanzadas de análisis de redes de valor y modelos financieros disruptivos. Nuestro enfoque no es teórico: está probado en más de 150 organizaciones y genera resultados tangibles desde el primer día. Desde Vilafranca del Penedès, conectamos la sabiduría ancestral catalana con la innovación más puntera para crear organizaciones humanas, resilientes y sostenibles." data-ca="Som la única consultora que combina 20+ anys d'experiència en desenvolupament d'equips amb metodologies avançades d'anàlisi de xarxes de valor i models financers disruptius. El nostre enfocament no és teòric: està provat en més de 150 organitzacions i genera resultats tangibles des del primer dia. Des de Vilafranca del Penedès, connectem la saviesa ancestral catalana amb la innovació més puntera per crear organitzacions humanes, resilents i sostenibles.">Somos la única consultora que combina 20+ años de experiencia en desarrollo de equipos con metodologías avanzadas de análisis de redes de valor y modelos financieros disruptivos. Nuestro enfoque no es teórico: está probado en más de 150 organizaciones y genera resultados tangibles desde el primer día. Desde Vilafranca del Penedès, conectamos la sabiduría ancestral catalana con la innovación más puntera para crear organizaciones humanas, resilientes y sostenibles.</p>
-        </div>
-    </section>
-    
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <h2 class="section-title lang" data-es="Transforma tu Organización con el Modelo Integral System" data-ca="Transforma la teva Organització amb el Model Integral System">Transforma tu Organización con el Modelo Integral System</h2>
-        <p class="section-subtitle lang" data-es="Agenda tu diagnóstico gratuito y descubre cómo podemos implementar este modelo transformador en tu organización" data-ca="Agenda el teu diagnòstic gratuït i descobreix com podem implementar aquest model transformador a la teva organització">Agenda tu diagnóstico gratuito y descubre cómo podemos implementar este modelo transformador en tu organización</p>
-        
-        <div class="contact-container">
-            <h3 class="lang" data-es="Solicitud de Diagnóstico Gratuito" data-ca="Sol·licitud de Diagnòstic Gratuit">Solicitud de Diagnóstico Gratuito</h3>
-            <p class="lang" data-es="Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo el Modelo Integral System puede transformar tu organización de forma completa y sostenible." data-ca="Omple aquesta sol·licitud i ens posarem en contacte amb tu en menys de 24 hores per agendar la teva sessió exploratòria sense compromís. Descobreix com el Model Integral System pot transformar la teva organització de forma completa i sostenible.">Completa esta solicitud y nos pondremos en contacto contigo en menos de 24 horas para agendar tu sesión exploratoria sin compromiso. Descubre cómo el Modelo Integral System puede transformar tu organización de forma completa y sostenible.</p>
-            
-            <a href="javascript:void(0)" onclick="contactService('Modelo Integral System')" class="btn btn-primary" style="margin-top: 30px; width: 100%; max-width: 400px;">
-                <span class="lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</span>
+    <!-- CTA Section -->
+    <section id="contact" class="cta-section">
+        <div class="cta-content">
+            <h2 class="lang" data-es="Comienza tu Transformación Integral Hoy" data-ca="Comença la teva Transformació Integral Avui">Comienza tu Transformación Integral Hoy</h2>
+            <p class="lang" data-es="Agenda una consultoría personalizada y descubre cómo el Sistema Integral puede transformar tu organización con un enfoque único, medible y sostenible." data-ca="Agenda una consultoria personalitzada i descobreix com el Sistema Integral pot transformar la teva organització amb un enfocament únic, mesurable i sostenible.">Agenda una consultoría personalizada y descubre cómo el Sistema Integral puede transformar tu organización con un enfoque único, medible y sostenible.</p>
+            <a href="mailto:asolache@mac.com?subject=Solicitud%20de%20Consultoría%20Sistema%20Integral" class="btn btn-primary lang" data-es="Agendar Consultoría Gratuita" data-ca="Agendar Consultoria Gratuita" style="background: white; color: var(--primary); font-size: 1.4rem; padding: 20px 50px; box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);">
+                <span>📅</span> <span class="lang" data-es="Agendar Consultoría Gratuita" data-ca="Agendar Consultoria Gratuita">Agendar Consultoría Gratuita</span>
             </a>
             
-            <p style="margin-top: 25px; font-size: 1.1rem; color: var(--gray);">
-                <span class="lang" data-es="¿Quieres ver el modelo en acción? <a href='https://teamtowershuma.netlify.app/' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Visita nuestra página principal</a> para conocer todos nuestros servicios." data-ca="Vols veure el model en acció? <a href='https://teamtowershuma.netlify.app/' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Visita la nostra pàgina principal</a> per conèixer tots els nostres serveis.">¿Quieres ver el modelo en acción? <a href="https://teamtowershuma.netlify.app/" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Visita nuestra página principal</a> para conocer todos nuestros servicios.</span>
-            </p>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number">25+</span>
+                    <span class="stat-label lang" data-es="Años de experiencia" data-ca="Anys d'experiència">Años de experiencia</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">150+</span>
+                    <span class="stat-label lang" data-es="Organizaciones transformadas" data-ca="Organitzacions transformades">Organizaciones transformadas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label lang" data-es="Satisfacción clientes" data-ca="Satisfacció clients">Satisfacción clientes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4x</span>
+                    <span class="stat-label lang" data-es="Mayor ROI innovación" data-ca="Major ROI innovació">Mayor ROI innovación</span>
+                </div>
+            </div>
         </div>
     </section>
     
-    <!-- Footer - COPY THIS SECTION TO OTHER PAGES -->
-    <footer class="footer-system">
+    <!-- Footer -->
+    <footer>
         <div class="footer-grid">
             <div class="footer-col">
                 <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
-                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès. 20+ anys construint equips sòlids com castells.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos.</p>
-            </div>
-            <div class="footer-col">
-                <h3 class="lang" data-es="Modelo Integral" data-ca="Model Integral">Modelo Integral</h3>
-                <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.netlify.app/modelo-integral" class="lang" data-es="Modelo Integral System" data-ca="Model Integral System">Modelo Integral System</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/comptabilitat_de_valor" class="lang" data-es="Contabilidad de Valor" data-ca="Comptabilitat de Valor">Contabilidad de Valor</a></li>
-                </ul>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
             </div>
             <div class="footer-col">
                 <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
                 <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.netlify.app/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/events" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
-                    <li><a href="https://teamtowershuma.netlify.app/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="La Masia" data-ca="La Masia">La Masia</a></li>
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <h3 class="lang" data-es="Apps del Ecosistema" data-ca="Apps de l'Ecosistema">Apps del Ecosistema</h3>
                 <ul class="footer-links">
-                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
-                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
-                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
-                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                    <li><a href="https://teamtowershuma.com/app" target="_blank" class="lang" data-es="App VNA" data-ca="App VNA">App VNA</a></li>
+                    <li><a href="https://teamtowershuma.com/app_coops" target="_blank" class="lang" data-es="App Comunidades" data-ca="App Comunitats">App Comunidades</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" class="lang" data-es="App Contabilidad" data-ca="App Comptabilitat">App Contabilidad</a></li>
+                    <li><a href="https://teamtowershuma.com/tokenomics" target="_blank" class="lang" data-es="App Tokenomics" data-ca="App Tokenomics">App Tokenomics</a></li>
+                    <li><a href="https://teamtowershuma.com/tokenomics-config" target="_blank" class="lang" data-es="Configurador Smart Contracts" data-ca="Configurador Smart Contracts">Configurador Smart Contracts</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1076,7 +1171,7 @@
                     <li>Vilafranca del Penedès, Barcelona</li>
                     <li>+34 629 86 77 15</li>
                     <li>
-                        <a href="javascript:void(0)" onclick="contactService('Modelo Integral')" style="color: var(--accent); font-weight: 600;">
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
                             <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
                         </a>
                     </li>
@@ -1087,7 +1182,7 @@
             </div>
         </div>
         <div class="copyright">
-            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Consultoria estratègica de RRHH a Vilafranca del Penedès.">© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema Integral de Transformación Organizacional con enfoque en mapeo de valor, gestión del conocimiento, contabilidad de valor y tokenización de participaciones." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema Integral de Transformació Organitzativa amb enfocament en mapeig de valor, gestió del coneixement, comptabilitat de valor i tokenització de participacions.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema Integral de Transformación Organizacional con enfoque en mapeo de valor, gestión del conocimiento, contabilidad de valor y tokenización de participaciones.</p>
         </div>
     </footer>
     
@@ -1113,41 +1208,6 @@
                 });
             });
             
-            // Set active language
-            function setActiveLanguage(lang) {
-                // Update all translatable elements
-                translatableElements.forEach(element => {
-                    if (element.hasAttribute(`data-${lang}`)) {
-                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                            element.placeholder = element.getAttribute(`data-${lang}`);
-                        } else {
-                            // Use innerHTML to allow HTML content in translations
-                            element.innerHTML = element.getAttribute(`data-${lang}`);
-                        }
-                    }
-                });
-                
-                // Update HTML lang attribute
-                document.documentElement.setAttribute('lang', lang);
-            }
-            
-            // Contact function with email obfuscation
-            window.contactService = function(serviceName) {
-                // Obfuscated email construction
-                const emailName = 'asolache';
-                const emailDomain = 'mac.com';
-                const fullEmail = emailName + '@' + emailDomain;
-                
-                // Subject line based on service
-                let subject = 'Consulta sobre ' + serviceName;
-                
-                // Create mailto link
-                const mailtoLink = 'mailto:' + fullEmail + '?subject=' + encodeURIComponent(subject);
-                
-                // Open email client
-                window.location.href = mailtoLink;
-            };
-            
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
@@ -1164,6 +1224,23 @@
                     }
                 });
             });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
         });
     </script>
 </body>
