@@ -1,1 +1,957 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TeamTowers Humà - Nuestro equipo de expertos en transformación organizacional con la metáfora castellera. Conoce a Álvaro Solache y nuestros partners estratégicos.">
+    <meta name="keywords" content="TeamTowers Humà, equipo, fundador, Álvaro Solache, partners, Pantheon.work, transformación organizacional, castellers, Vilafranca del Penedès">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>TeamTowers Humà | Nuestro Equipo</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="TeamTowers Humà | Nuestro Equipo">
+    <meta property="og:description" content="Conoce a nuestro equipo de expertos en transformación organizacional con la metáfora castellera. Fundador, partners estratégicos y especialistas en Value Network Analysis.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/equip">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TeamTowers Humà | Nuestro Equipo">
+    <meta name="twitter:description" content="Expertos en transformación organizacional con la metáfora castellera">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-tagline {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--dark);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Founder Section */
+        .founder-section {
+            background: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .founder-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .founder-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin: 0 auto;
+        }
+        
+        .founder-content {
+            text-align: left;
+        }
+        
+        .founder-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .founder-role {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .founder-content p {
+            margin-bottom: 20px;
+            color: var(--gray);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .founder-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        /* Partners Section */
+        .partners-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .partner-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px 30px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .partner-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            z-index: 1;
+        }
+        
+        .partner-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: rgba(30, 58, 138, 0.3);
+        }
+        
+        .partner-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .partner-card h4 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .partner-card p {
+            margin-bottom: 20px;
+            color: var(--gray);
+            min-height: 60px;
+        }
+        
+        .partner-link {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .partner-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        .partner-description {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: var(--box-shadow);
+            text-align: left;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .partner-description h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            text-align: center;
+        }
+        
+        .partner-description p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-castell);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 3.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 70px 20px 40px;
+            margin-top: 70px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.6rem;
+            }
+            section {
+                padding: 80px 20px;
+            }
+            .founder-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .founder-content {
+                text-align: center;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            .location-badge {
+                top: 15px;
+                left: 15px;
+                padding: 6px 15px;
+                font-size: 1rem;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero-tagline {
+                font-size: 1.6rem;
+            }
+            .hero p {
+                font-size: 1.4rem;
+            }
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            .section-title {
+                font-size: 2.3rem;
+            }
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            .founder-image {
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero-tagline {
+                font-size: 1.4rem;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding: 60px 15px;
+            }
+            .founder-image {
+                max-width: 250px;
+            }
+            .partner-card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="Nuestro Equipo" data-ca="El Nostre Equip">Nuestro Equipo</h1>
+            <p class="hero-tagline lang" data-es="Expertos en Transformación Organizacional" data-ca="Experts en Transformació Organitzativa">Expertos en Transformación Organizacional</p>
+            <p class="lang" data-es="Conoce a los profesionales detrás de TeamTowers Humà, especialistas en Value Network Analysis, Comunidades de Práctica y Tokenomics que transforman organizaciones con la metáfora castellera." data-ca="Coneix els professionals darrere de TeamTowers Humà, especialistes en Value Network Analysis, Comunitats de Pràctica i Tokenomics que transformen organitzacions amb la metàfora castellera.">Conoce a los profesionales detrás de TeamTowers Humà, especialistas en Value Network Analysis, Comunidades de Práctica y Tokenomics que transforman organizaciones con la metáfora castellera.</p>
+            <div class="cta-container">
+                <a href="#founder" class="btn btn-primary lang" data-es="Conocer al Fundador" data-ca="Coneix al Fundador">Conocer al Fundador</a>
+                <a href="#partners" class="btn btn-accent lang" data-es="Nuestros Partners" data-ca="Els Nostres Partners">Nuestros Partners</a>
+                <a href="https://teamtowershuma.com/contacto" class="btn btn-secondary lang" data-es="Contactar con Nosotros" data-ca="Contactar amb Nosaltres">Contactar con Nosotros</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Founder Section -->
+    <section id="founder" class="founder-section">
+        <h2 class="section-title lang" data-es="Nuestro Fundador" data-ca="El Nostre Fundador">Nuestro Fundador</h2>
+        <p class="section-subtitle lang" data-es="Liderando la transformación organizacional con la metáfora castellera desde Vilafranca del Penedès" data-ca="Liderant la transformació organitzativa amb la metàfora castellera des de Vilafranca del Penedès">Liderando la transformación organizacional con la metáfora castellera desde Vilafranca del Penedès</p>
+        
+        <div class="founder-container">
+            <div>
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/Alvaro-Solache-TeamTowers-Huma.jpg" alt="Álvaro Solache" class="founder-image">
+            </div>
+            <div class="founder-content">
+                <h2>Álvaro Solache</h2>
+                <div class="founder-role lang" data-es="Fundador y Director de TeamTowers Humà" data-ca="Fundador i Director de TeamTowers Humà">Fundador y Director de TeamTowers Humà</div>
+                <p class="lang" data-es="Director de RRHH y consultor estratégico con más de 25 años de experiencia. Pionero en la aplicación de Value Network Analysis en España, con formación directa en la metodología creada por Verna Allee. Ha implementado VNA en más de 50 organizaciones, generando mejoras significativas en eficiencia y toma de decisiones. Autor de múltiples artículos y recursos sobre redes de valor en Value Network Lab." data-ca="Director de RRHH i consultor estratègic amb més de 25 anys d'experiència. Pioner en l'aplicació de Value Network Analysis a Espanya, amb formació directa en la metodologia creada per Verna Allee. Ha implementat VNA en més de 50 organitzacions, generant millores significatives en eficiència i presa de decisions. Autor de múltiples articles i recursos sobre xarxes de valor a Value Network Lab.">Director de RRHH y consultor estratégico con más de 25 años de experiencia. Pionero en la aplicación de Value Network Analysis en España, con formación directa en la metodología creada por Verna Allee. Ha implementado VNA en más de 50 organizaciones, generando mejoras significativas en eficiencia y toma de decisiones. Autor de múltiples artículos y recursos sobre redes de valor en Value Network Lab.</p>
+                <p class="lang" data-es="Experto en transformación organizacional con enfoque humanista, especializado en la integración de metodologías innovadoras para construir estructuras más resilientes, colaborativas y orientadas al valor compartido. Combina el rigor analítico con la profundidad del conocimiento organizacional para garantizar resultados tangibles y sostenibles." data-ca="Expert en transformació organitzativa amb enfocament humanista, especialitzat en la integració de metodologies innovadores per construir estructures més resilents, col·laboratives i orientades al valor compartit. Combina el rigor analític amb la profunditat del coneixement organitzatiu per garantir resultats tangibles i sostenibles.">Experto en transformación organizacional con enfoque humanista, especializado en la integración de metodologías innovadoras para construir estructuras más resilientes, colaborativas y orientadas al valor compartido. Combina el rigor analítico con la profundidad del conocimiento organizacional para garantizar resultados tangibles y sostenibles.</p>
+                
+                <div class="founder-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">25+</div>
+                        <div class="stat-label lang" data-es="Años de Experiencia" data-ca="Anys d'Experiència">Años de Experiencia</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label lang" data-es="Organizaciones Transformadas" data-ca="Organitzacions Transformades">Organizaciones Transformadas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label lang" data-es="Enfoque Humanista" data-ca="Enfocament Humanista">Enfoque Humanista</div>
+                    </div>
+                </div>
+                
+                <a href="https://linkedin.com/in/alvarosolache" target="_blank" class="btn btn-primary lang" data-es="Conectar en LinkedIn" data-ca="Connectar a LinkedIn" style="margin-top: 20px;">Conectar en LinkedIn</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Partners Section -->
+    <section id="partners" class="partners-section">
+        <h2 class="section-title lang" data-es="Nuestros Partners Estratégicos" data-ca="Els Nostres Partners Estratègics">Nuestros Partners Estratégicos</h2>
+        <p class="section-subtitle lang" data-es="Colaboramos con las mejores agencias de producción, cáterings y espacios para ofrecerte soluciones integrales y actividades únicas" data-ca="Col·laborem amb les millors agències de producció, càterings i espais per oferir-te solucions integrals i activitats úniques">Colaboramos con las mejores agencias de producción, cáterings y espacios para ofrecerte soluciones integrales y actividades únicas</p>
+        
+        <div class="partners-grid">
+            <div class="partner-card">
+                <div class="partner-icon">🎯</div>
+                <h4 class="lang" data-es="Laeski" data-ca="Laeski">Laeski</h4>
+                <p class="lang" data-es="Producción integral y gestión logística para eventos corporativos de alto impacto." data-ca="Producció integral i gestió logística per a esdeveniments corporatius d'alt impacte.">Producción integral y gestión logística para eventos corporativos de alto impacto.</p>
+                <a href="https://www.laeski.com" target="_blank" class="partner-link lang" data-es="Visitar Site" data-ca="Visitar Site">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">🌍</div>
+                <h4 class="lang" data-es="We Barcelona" data-ca="We Barcelona">We Barcelona</h4>
+                <p class="lang" data-es="Eventos internacionales y MICE con enfoque en la experiencia humana y el networking estratégico." data-ca="Esdeveniments internacionals i MICE amb enfocament en l'experiència humana i el networking estratègic.">Eventos internacionales y MICE con enfoque en la experiencia humana y el networking estratégico.</p>
+                <a href="https://www.webcn.com" target="_blank" class="partner-link lang" data-es="Visitar Site" data-ca="Visitar Site">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">🏰</div>
+                <h4 class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</h4>
+                <p class="lang" data-es="Experiencias castelleras transformadoras para eventos corporativos con la tradición UNESCO." data-ca="Experiències castelleres transformadores per a esdeveniments corporatius amb la tradició UNESCO.">Experiencias castelleras transformadoras para eventos corporativos con la tradición UNESCO.</p>
+                <a href="https://www.teamtowers.eu" target="_blank" class="partner-link lang" data-es="Visitar Site" data-ca="Visitar Site">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">🎮</div>
+                <h4 class="lang" data-es="Kivicom" data-ca="Kivicom">Kivicom</h4>
+                <p class="lang" data-es="Gincanas y actividades interactivas para fortalecer la cohesión y el trabajo en equipo." data-ca="Gincanes i activitats interactives per fortalir la cohesió i el treball en equip.">Gincanas y actividades interactivas para fortalecer la cohesión y el trabajo en equipo.</p>
+                <a href="https://kivicom.com" target="_blank" class="partner-link lang" data-es="Visitar Site" data-ca="Visitar Site">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">👨‍🍳</div>
+                <h4 class="lang" data-es="Cal Blay" data-ca="Cal Blay">Cal Blay</h4>
+                <p class="lang" data-es="Experiencias gastronómicas corporativas que fusionan tradición catalana con innovación culinaria." data-ca="Experiències gastronòmiques corporatives que fusionen tradició catalana amb innovació culinària.">Experiencias gastronómicas corporativas que fusionan tradición catalana con innovación culinaria.</p>
+                <a href="https://calblay.com" target="_blank" class="partner-link lang" data-es="Visitar Site" data-ca="Visitar Site">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">🏨</div>
+                <h4 class="lang" data-es="Hoteles Aliados" data-ca="Hotels Aliats">Hoteles Aliados</h4>
+                <p class="lang" data-es="Alojamiento y servicios premium en los mejores espacios de Vilafranca del Penedès y alrededores." data-ca="Allotjament i serveis premium als millors espais de Vilafranca del Penedès i voltants.">Alojamiento y servicios premium en los mejores espacios de Vilafranca del Penedès y alrededores.</p>
+                <a href="https://teamtowershuma.com/events" class="partner-link lang" data-es="Ver Espacios" data-ca="Veure Espais">Ver Espacios</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">🔬</div>
+                <h4>Pantheon.work</h4>
+                <p class="lang" data-es="Plataforma de investigación y desarrollo en redes de valor. Colaboración en proyectos de I+D y publicaciones académicas sobre Value Network Analysis." data-ca="Plataforma d'investigació i desenvolupament en xarxes de valor. Col·laboració en projectes d'I+D i publicacions acadèmiques sobre Value Network Analysis.">Plataforma de investigación y desarrollo en redes de valor. Colaboración en proyectos de I+D y publicaciones académicas sobre Value Network Analysis.</p>
+                <a href="https://pantheon.work" target="_blank" class="partner-link">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-icon">📊</div>
+                <h4 class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</h4>
+                <p class="lang" data-es="Biblioteca de recursos con artículos de investigación, casos de estudio reales y herramientas para profundizar en la metodología VNA." data-ca="Biblioteca de recursos amb articles d'investigació, casos d'estudi reals i eines per aprofundir en la metodologia VNA.">Biblioteca de recursos con artículos de investigación, casos de estudio reales y herramientas para profundizar en la metodología VNA.</p>
+                <a href="https://valuenetworklab.netlify.app/" target="_blank" class="partner-link lang" data-es="Explorar Recursos" data-ca="Explorar Recursos">Explorar Recursos</a>
+            </div>
+        </div>
+        
+        <div class="partner-description">
+            <h3 class="lang" data-es="Colaboración Estratégica con Pantheon.work" data-ca="Col·laboració Estratègica amb Pantheon.work">Colaboración Estratégica con Pantheon.work</h3>
+            <p class="lang" data-es="Pantheon.work es nuestra plataforma de investigación y desarrollo en redes de valor. Juntos desarrollamos proyectos de I+D, publicamos artículos académicos y creamos herramientas innovadoras para avanzar en la metodología Value Network Analysis. Esta colaboración nos permite ofrecer a nuestros clientes las soluciones más avanzadas y basadas en evidencia para la transformación organizacional." data-ca="Pantheon.work és la nostra plataforma d'investigació i desenvolupament en xarxes de valor. Junts desenvolupem projectes d'I+D, publiquem articles acadèmics i creem eines innovadores per avançar en la metodologia Value Network Analysis. Aquesta col·laboració ens permet oferir als nostres clients les solucions més avançades i basades en evidència per a la transformació organitzativa.">Pantheon.work es nuestra plataforma de investigación y desarrollo en redes de valor. Juntos desarrollamos proyectos de I+D, publicamos artículos académicos y creamos herramientas innovadoras para avanzar en la metodología Value Network Analysis. Esta colaboración nos permite ofrecer a nuestros clientes las soluciones más avanzadas y basadas en evidencia para la transformación organizacional.</p>
+            <p class="lang" data-es="Nuestro Value Network Lab, alojado en Pantheon.work, ofrece recursos gratuitos, casos de estudio y herramientas prácticas para profesionales interesados en profundizar en el análisis de redes de valor y su aplicación en contextos organizativos reales." data-ca="El nostre Value Network Lab, allotjat a Pantheon.work, ofereix recursos gratuïts, casos d'estudi i eines pràctiques per a professionals interessats a aprofundir en l'anàlisi de xarxes de valor i la seva aplicació en contextos organitzatius reals.">Nuestro Value Network Lab, alojado en Pantheon.work, ofrece recursos gratuitos, casos de estudio y herramientas prácticas para profesionales interesados en profundizar en el análisis de redes de valor y su aplicación en contextos organizativos reales.</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <p class="lang" data-es="¿Eres una agencia de producción y quieres colaborar con nosotros? <a href='https://teamtowershuma.com/contacto' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contáctanos para crear una alianza estratégica</a>" data-ca="Ets una agència de producció i vols col·laborar amb nosaltres? <a href='https://teamtowershuma.com/contacto' style='color: var(--primary); font-weight: bold; text-decoration: underline;'>Contacta'ns per crear una aliança estratègica</a>">¿Eres una agencia de producción y quieres colaborar con nosotros? <a href="https://teamtowershuma.com/contacto" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Contáctanos para crear una alianza estratégica</a></p>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="lang" data-es="¿Listo para Transformar tu Organización?" data-ca="Preparat per Transformar la teva Organització?">¿Listo para Transformar tu Organización?</h2>
+        <p class="lang" data-es="Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà." data-ca="Agenda el teu diagnòstic gratuït i descobreix com podem ajudar-te a construir una organització més humana, eficient i resistent amb el Sistema Integral TeamTowers Humà.">Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà.</p>
+        <div class="cta-container">
+            <a href="https://teamtowershuma.com/contacto" class="btn btn-primary lang" data-es="Contactar con Expertos" data-ca="Contactar amb Experts">Contactar con Expertos</a>
+            <a href="https://teamtowershuma.com/masia" class="btn btn-secondary lang" data-es="Explorar Sistema Integral" data-ca="Explorar Sistema Integral">Explorar Sistema Integral</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>METODOLOGÍAS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Talleres de Castellers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Análisis de mapas de valor</a></li>
+                    <li><a href="https://teamtowershuma.com/coops">Aprendizaje y conocimiento</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Reconocimiento y recompensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SERVICIOS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Teambuilding</a></li>
+                    <li><a href="https://teamtowershuma.com/events">Producción de eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh">Gestión de equipos</a></li>
+                    <li><a href="https://teamtowershuma.com/colla">Formación de equipos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SOBRE TEAMTOWERS HUMÀ</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/equip">Equipo</a></li>
+                    <li><a href="https://teamtowershuma.com/clients">Clientes</a></li>
+                    <li><a href="https://teamtowershuma.com/contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Transformació organitzativa amb la metàfora castellera. Vilafranca del Penedès, Barcelona.">© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update language-specific elements
+                document.querySelectorAll(`[lang="es"]`).forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                document.querySelectorAll(`[lang="ca"]`).forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '600';
+                notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '10000';
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 5s forwards';
+                notification.innerHTML = document.documentElement.lang === 'ca' ? 
+                    '✨ Benvingut a la pàgina del nostre equip! Coneix Álvaro Solache i els nostres partners estratègics.' :
+                    '✨ ¡Bienvenido a la página de nuestro equipo! Conoce a Álvaro Solache y nuestros partners estratégicos.';
+                document.body.appendChild(notification);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 5500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
