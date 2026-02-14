@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TeamTowers Humà - Nuestros clientes: Ikea, la Caixa, Novartis, Porsche, BBVA, Infojobs, Vodafone, Telefónica, Zurich, Orange, UPS, Mercedes, UB, UAB, ESADE, IESE, EADA, Laeski, We Barcelona, Kivicom y más.">
+    <meta name="keywords" content="TeamTowers Humà, clientes, empresas, universidades, escuelas de negocio, agencias, Vilafranca del Penedès, consultoría RRHH">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>TeamTowers Humà | Nuestros Clientes</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="TeamTowers Humà | Nuestros Clientes">
+    <meta property="og:description" content="Descubre las empresas, universidades, escuelas de negocio y agencias que confían en TeamTowers Humà para su transformación organizacional con la metáfora castellera.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/clients">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TeamTowers Humà | Nuestros Clientes">
+    <meta name="twitter:description" content="Empresas, universidades y agencias que transforman su organización con TeamTowers Humà">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-tagline {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--dark);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Clients Grid */
+        .clients-section {
+            background: white;
+            padding: 100px 20px;
+        }
+        
+        .clients-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .clients-category {
+            margin-bottom: 60px;
+        }
+        
+        .category-title {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .category-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .client-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(30, 58, 138, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .client-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+            z-index: 1;
+        }
+        
+        .client-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: rgba(30, 58, 138, 0.3);
+        }
+        
+        .client-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .client-card.empresas .client-icon { color: var(--primary); }
+        .client-card.universidades .client-icon { color: var(--success); }
+        .client-card.escuelas .client-icon { color: var(--accent); }
+        .client-card.agencias .client-icon { color: var(--gold); }
+        
+        .client-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .client-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            min-height: 40px;
+        }
+        
+        /* Testimonials Section */
+        .testimonials-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 6rem;
+            color: var(--accent);
+            opacity: 0.2;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        
+        .testimonial-content {
+            margin-top: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+            min-height: 120px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+        
+        .author-info h4 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .author-info p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        .author-info .company {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: var(--gradient-castell);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+        
+        .stat-item {
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 1.3rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 3.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 70px 20px 40px;
+            margin-top: 70px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.6rem;
+            }
+            section {
+                padding: 80px 20px;
+            }
+            .clients-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            .location-badge {
+                top: 15px;
+                left: 15px;
+                padding: 6px 15px;
+                font-size: 1rem;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero-tagline {
+                font-size: 1.6rem;
+            }
+            .hero p {
+                font-size: 1.4rem;
+            }
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            .section-title {
+                font-size: 2.3rem;
+            }
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            .category-title {
+                font-size: 1.9rem;
+            }
+            .clients-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero-tagline {
+                font-size: 1.4rem;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding: 60px 15px;
+            }
+            .category-title {
+                font-size: 1.7rem;
+            }
+            .client-card {
+                padding: 25px 15px;
+            }
+            .client-icon {
+                font-size: 2.8rem;
+            }
+            .client-card h3 {
+                font-size: 1.3rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="Nuestros Clientes" data-ca="Els Nostres Clients">Nuestros Clientes</h1>
+            <p class="hero-tagline lang" data-es="Organizaciones que transforman con la metáfora castellera" data-ca="Organitzacions que transformen amb la metàfora castellera">Organizaciones que transforman con la metáfora castellera</p>
+            <p class="lang" data-es="Descubre las empresas, universidades, escuelas de negocio y agencias que confían en TeamTowers Humà para su transformación organizacional con la metodología única basada en la tradición UNESCO de los castellers." data-ca="Descobreix les empreses, universitats, escoles de negocis i agències que confien en TeamTowers Humà per la seva transformació organitzativa amb la metodologia única basada en la tradició UNESCO dels castellers.">Descubre las empresas, universidades, escuelas de negocio y agencias que confían en TeamTowers Humà para su transformación organizacional con la metodología única basada en la tradición UNESCO de los castellers.</p>
+            <div class="cta-container">
+                <a href="https://teamtowershuma.com/contacto" class="btn btn-primary lang" data-es="Contactar con Nosotros" data-ca="Contactar amb Nosaltres">Contactar con Nosotros</a>
+                <a href="https://teamtowershuma.com/masia" class="btn btn-accent lang" data-es="Explorar Sistema Integral" data-ca="Explorar Sistema Integral">Explorar Sistema Integral</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Clients Section -->
+    <section class="clients-section">
+        <h2 class="section-title lang" data-es="Nuestras Organizaciones Clientes" data-ca="Les Nostres Organitzacions Clients">Nuestras Organizaciones Clientes</h2>
+        <p class="section-subtitle lang" data-es="Más de 100 organizaciones en España y Europa han confiado en TeamTowers Humà para transformar su cultura organizacional y optimizar sus flujos de valor." data-ca="Més de 100 organitzacions a Espanya i Europa han confiat en TeamTowers Humà per transformar la seva cultura organitzativa i optimitzar els seus fluxos de valor.">Más de 100 organizaciones en España y Europa han confiado en TeamTowers Humà para transformar su cultura organizacional y optimizar sus flujos de valor.</p>
+        
+        <div class="clients-container">
+            <!-- Empresas -->
+            <div class="clients-category empresas">
+                <h3 class="category-title lang" data-es="Empresas" data-ca="Empreses">Empresas</h3>
+                <div class="clients-grid">
+                    <div class="client-card empresas">
+                        <div class="client-icon">🏢</div>
+                        <h3>Ikea</h3>
+                        <p class="lang" data-es="Retail y sostenibilidad" data-ca="Retail i sostenibilitat">Retail y sostenibilidad</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">🏦</div>
+                        <h3>la Caixa</h3>
+                        <p class="lang" data-es="Banca y finanzas" data-ca="Banca i finances">Banca y finanzas</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">💊</div>
+                        <h3>Novartis</h3>
+                        <p class="lang" data-es="Farmacéutica" data-ca="Farmacèutica">Farmacéutica</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">🚗</div>
+                        <h3>Porsche</h3>
+                        <p class="lang" data-es="Automoción de lujo" data-ca="Automoció de luxe">Automoción de lujo</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">💳</div>
+                        <h3>BBVA</h3>
+                        <p class="lang" data-es="Banca digital" data-ca="Banca digital">Banca digital</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">💻</div>
+                        <h3>Infojobs</h3>
+                        <p class="lang" data-es="Tecnología y empleo" data-ca="Tecnologia i ocupació">Tecnología y empleo</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">📡</div>
+                        <h3>Vodafone</h3>
+                        <p class="lang" data-es="Telecomunicaciones" data-ca="Telecomunicacions">Telecomunicaciones</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">📞</div>
+                        <h3>Telefónica</h3>
+                        <p class="lang" data-es="Comunicaciones" data-ca="Comunicacions">Comunicaciones</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">🛡️</div>
+                        <h3>Zurich</h3>
+                        <p class="lang" data-es="Seguros" data-ca="Assegurances">Seguros</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">🍊</div>
+                        <h3>Orange</h3>
+                        <p class="lang" data-es="Telecomunicaciones" data-ca="Telecomunicacions">Telecomunicaciones</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">📦</div>
+                        <h3>UPS</h3>
+                        <p class="lang" data-es="Logística" data-ca="Logística">Logística</p>
+                    </div>
+                    <div class="client-card empresas">
+                        <div class="client-icon">⭐</div>
+                        <h3>Mercedes</h3>
+                        <p class="lang" data-es="Automoción premium" data-ca="Automoció premium">Automoción premium</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Universidades -->
+            <div class="clients-category universidades">
+                <h3 class="category-title lang" data-es="Universidades" data-ca="Universitats">Universidades</h3>
+                <div class="clients-grid">
+                    <div class="client-card universidades">
+                        <div class="client-icon">🎓</div>
+                        <h3>UB</h3>
+                        <p class="lang" data-es="Universidad de Barcelona" data-ca="Universitat de Barcelona">Universidad de Barcelona</p>
+                    </div>
+                    <div class="client-card universidades">
+                        <div class="client-icon">🎓</div>
+                        <h3>UAB</h3>
+                        <p class="lang" data-es="Universidad Autónoma de Barcelona" data-ca="Universitat Autònoma de Barcelona">Universidad Autónoma de Barcelona</p>
+                    </div>
+                    <div class="client-card universidades">
+                        <div class="client-icon">🎓</div>
+                        <h3>La Salle</h3>
+                        <p class="lang" data-es="Universidad Ramon Llull" data-ca="Universitat Ramon Llull">Universidad Ramon Llull</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Escuelas de Negocio -->
+            <div class="clients-category escuelas">
+                <h3 class="category-title lang" data-es="Escuelas de Negocio" data-ca="Escoles de Negocis">Escuelas de Negocio</h3>
+                <div class="clients-grid">
+                    <div class="client-card escuelas">
+                        <div class="client-icon">🏫</div>
+                        <h3>ESADE</h3>
+                        <p class="lang" data-es="Business School" data-ca="Escola de Negocis">Business School</p>
+                    </div>
+                    <div class="client-card escuelas">
+                        <div class="client-icon">🏫</div>
+                        <h3>IESE</h3>
+                        <p class="lang" data-es="Business School" data-ca="Escola de Negocis">Business School</p>
+                    </div>
+                    <div class="client-card escuelas">
+                        <div class="client-icon">🏫</div>
+                        <h3>EADA</h3>
+                        <p class="lang" data-es="Business School" data-ca="Escola de Negocis">Business School</p>
+                    </div>
+                    <div class="client-card escuelas">
+                        <div class="client-icon">🏫</div>
+                        <h3>La Salle</h3>
+                        <p class="lang" data-es="Business School" data-ca="Escola de Negocis">Business School</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agencias -->
+            <div class="clients-category agencias">
+                <h3 class="category-title lang" data-es="Agencias y Partners" data-ca="Agències i Partners">Agencias y Partners</h3>
+                <div class="clients-grid">
+                    <div class="client-card agencias">
+                        <div class="client-icon">🎯</div>
+                        <h3>Laeski</h3>
+                        <p class="lang" data-es="Producción integral" data-ca="Producció integral">Producción integral</p>
+                    </div>
+                    <div class="client-card agencias">
+                        <div class="client-icon">🌍</div>
+                        <h3>We Barcelona</h3>
+                        <p class="lang" data-es="Eventos internacionales" data-ca="Esdeveniments internacionals">Eventos internacionales</p>
+                    </div>
+                    <div class="client-card agencias">
+                        <div class="client-icon">🎮</div>
+                        <h3>Kivicom</h3>
+                        <p class="lang" data-es="Gincanas interactivas" data-ca="Gincanes interactives">Gincanas interactivas</p>
+                    </div>
+                    <div class="client-card agencias">
+                        <div class="client-icon">📦</div>
+                        <h3>Box de Ideas</h3>
+                        <p class="lang" data-es="Innovación corporativa" data-ca="Innovació corporativa">Innovación corporativa</p>
+                    </div>
+                    <div class="client-card agencias">
+                        <div class="client-icon">🔬</div>
+                        <h3>Voxel</h3>
+                        <p class="lang" data-es="Tecnología 3D" data-ca="Tecnologia 3D">Tecnología 3D</p>
+                    </div>
+                    <div class="client-card agencias">
+                        <div class="client-icon">⚙️</div>
+                        <h3>Unit Elements</h3>
+                        <p class="lang" data-es="Diseño industrial" data-ca="Disseny industrial">Diseño industrial</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <h2 class="section-title lang" data-es="Testimonios de Nuestros Clientes" data-ca="Testimonis dels Nostres Clients">Testimonios de Nuestros Clientes</h2>
+        <p class="section-subtitle lang" data-es="Lo que dicen las organizaciones que han transformado su cultura con TeamTowers Humà" data-ca="El que diuen les organitzacions que han transformat la seva cultura amb TeamTowers Humà">Lo que dicen las organizaciones que han transformado su cultura con TeamTowers Humà</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="La implementación de Value Network Analysis en nuestra organización revolucionó la forma en que entendemos los flujos de valor. Identificamos cuellos de botella que llevaban años afectando nuestra eficiencia y pudimos optimizar procesos clave en solo tres meses." data-ca="La implementació de Value Network Analysis a la nostra organització va revolucionar la forma en què entenem els fluxos de valor. Vam identificar colls d'ampolla que portaven anys afectant la nostra eficiència i vam poder optimitzar processos clau en només tres mesos.">La implementación de Value Network Analysis en nuestra organización revolucionó la forma en que entendemos los flujos de valor. Identificamos cuellos de botella que llevaban años afectando nuestra eficiencia y pudimos optimizar procesos clave en solo tres meses.</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">JD</div>
+                    <div class="author-info">
+                        <h4 lang="es">Director de Transformación Digital</h4>
+                        <h4 lang="ca" style="display:none">Director de Transformació Digital</h4>
+                        <p class="company">Telefónica</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="Las Comunidades de Práctica implementadas por TeamTowers Humà transformaron completamente nuestra cultura de aprendizaje. Por primera vez, el conocimiento tácito se captura y comparte de forma sistemática, lo que ha acelerado la incorporación de nuevos talentos y mejorado significativamente la innovación interna." data-ca="Les Comunitats de Pràctica implementades per TeamTowers Humà van transformar completament la nostra cultura d'aprenentatge. Per primera vegada, el coneixement tàcit es captura i comparteix de forma sistemàtica, la qual cosa ha accelerat la incorporació de nous talents i millorat significativament la innovació interna.">Las Comunidades de Práctica implementadas por TeamTowers Humà transformaron completamente nuestra cultura de aprendizaje. Por primera vez, el conocimiento tácito se captura y comparte de forma sistemática, lo que ha acelerado la incorporación de nuevos talentos y mejorado significativamente la innovación interna.</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">MG</div>
+                    <div class="author-info">
+                        <h4 lang="es">Directora de Recursos Humanos</h4>
+                        <h4 lang="ca" style="display:none">Directora de Recursos Humans</h4>
+                        <p class="company">Novartis</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content lang" data-es="La experiencia castellera de TeamTowers fue el catalizador perfecto para unir a nuestros equipos directivos dispersos geográficamente. La metáfora castellera nos dio un marco conceptual claro para entender la importancia de la confianza, la comunicación y la colaboración en nuestra transformación organizacional. Hoy somos una organización más resiliente y cohesionada." data-ca="L'experiència castellera de TeamTowers va ser el catalitzador perfecte per unir als nostres equips directius dispersos geogràficament. La metàfora castellera ens va donar un marc conceptual clar per entendre la importància de la confiança, la comunicació i la col·laboració en la nostra transformació organitzativa. Avui som una organització més resistent i cohesionada.">La experiencia castellera de TeamTowers fue el catalizador perfecto para unir a nuestros equipos directivos dispersos geográficamente. La metáfora castellera nos dio un marco conceptual claro para entender la importancia de la confianza, la comunicación y la colaboración en nuestra transformación organizacional. Hoy somos una organización más resiliente y cohesionada.</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">AL</div>
+                    <div class="author-info">
+                        <h4 lang="es">CEO</h4>
+                        <h4 lang="ca" style="display:none">CEO</h4>
+                        <p class="company">BBVA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="lang" data-es="Impacto en Organizaciones" data-ca="Impacte en Organitzacions">Impacto en Organizaciones</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">100+</span>
+                <span class="stat-label lang" data-es="Organizaciones Transformadas" data-ca="Organitzacions Transformades">Organizaciones Transformadas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">25+</span>
+                <span class="stat-label lang" data-es="Países con Presencia" data-ca="Països amb Presència">Países con Presencia</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">94%</span>
+                <span class="stat-label lang" data-es="Satisfacción Clientes" data-ca="Satisfacció Clients">Satisfacción Clientes</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">15</span>
+                <span class="stat-label lang" data-es="Años de Experiencia" data-ca="Anys d'Experiència">Años de Experiencia</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="lang" data-es="¿Listo para Transformar tu Organización?" data-ca="Preparat per Transformar la teva Organització?">¿Listo para Transformar tu Organización?</h2>
+        <p class="lang" data-es="Únete a más de 100 organizaciones que han transformado su cultura y optimizado sus flujos de valor con la metodología única de TeamTowers Humà basada en la metáfora castellera." data-ca="Uneix-te a més de 100 organitzacions que han transformat la seva cultura i optimitzat els seus fluxos de valor amb la metodologia única de TeamTowers Humà basada en la metàfora castellera.">Únete a más de 100 organizaciones que han transformado su cultura y optimizado sus flujos de valor con la metodología única de TeamTowers Humà basada en la metáfora castellera.</p>
+        <div class="cta-container">
+            <a href="https://teamtowershuma.com/contacto" class="btn btn-primary lang" data-es="Solicitar Diagnóstico Gratuito" data-ca="Sol·licitar Diagnòstic Gratuit">Solicitar Diagnóstico Gratuito</a>
+            <a href="https://teamtowershuma.com/masia" class="btn btn-secondary lang" data-es="Explorar Casos de Éxito" data-ca="Explorar Casos d'Èxit">Explorar Casos de Éxito</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>METODOLOGÍAS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Talleres de Castellers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Análisis de mapas de valor</a></li>
+                    <li><a href="https://teamtowershuma.com/coops">Aprendizaje y conocimiento</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Reconocimiento y recompensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SERVICIOS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Teambuilding</a></li>
+                    <li><a href="https://teamtowershuma.com/events">Producción de eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh">Gestión de equipos</a></li>
+                    <li><a href="https://teamtowershuma.com/colla">Formación de equipos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SOBRE TEAMTOWERS HUMÀ</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/equip">Equipo</a></li>
+                    <li><a href="https://teamtowershuma.com/clients">Clientes</a></li>
+                    <li><a href="https://teamtowershuma.com/contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Transformació organitzativa amb la metàfora castellera. Vilafranca del Penedès, Barcelona.">© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show notification
+                    const notification = document.createElement('div');
+                    notification.style.position = 'fixed';
+                    notification.style.top = '20px';
+                    notification.style.right = '20px';
+                    notification.style.padding = '15px 25px';
+                    notification.style.borderRadius = '8px';
+                    notification.style.color = 'white';
+                    notification.style.fontWeight = '600';
+                    notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                    notification.style.zIndex = '10000';
+                    notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                    notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 3s forwards';
+                    notification.innerHTML = selectedLang === 'ca' ? 
+                        '✅ Idioma canviat a Català' : '✅ Idioma cambiado a Español';
+                    document.body.appendChild(notification);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3500);
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update language-specific elements
+                document.querySelectorAll(`[lang="es"]`).forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                document.querySelectorAll(`[lang="ca"]`).forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '600';
+                notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '10000';
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 5s forwards';
+                notification.innerHTML = document.documentElement.lang === 'ca' ? 
+                    '✨ Benvingut a la pàgina de clients de TeamTowers Humà!' :
+                    '✨ ¡Bienvenido a la página de clientes de TeamTowers Humà!';
+                document.body.appendChild(notification);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 5500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
