@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TeamTowers Humà en los medios de comunicación: La Vanguardia, El País, TV3, Jerusalem Post, Wall Street Journal y más. Transformación organizacional con la metáfora castellera.">
+    <meta name="keywords" content="TeamTowers Humà, prensa, medios de comunicación, La Vanguardia, El País, TV3, Jerusalem Post, Wall Street Journal, Quarts de Nou, Mon Casteller, Vilafranca del Penedès">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>TeamTowers Humà | Prensa</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="TeamTowers Humà en los Medios de Comunicación">
+    <meta property="og:description" content="Descubre las apariciones de TeamTowers Humà en prensa nacional e internacional, televisión y radio. Transformación organizacional con la metáfora castellera desde Vilafranca del Penedès.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/prensa">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TeamTowers Humà en los Medios de Comunicación">
+    <meta name="twitter:description" content="Apariciones en La Vanguardia, El País, TV3, Jerusalem Post, Wall Street Journal y más">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-tagline {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--dark);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Press Grid */
+        .press-section {
+            background: white;
+            padding: 100px 20px;
+        }
+        
+        .press-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .press-categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            padding: 10px 25px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .category-btn.active, .category-btn:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+        
+        .press-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 35px;
+            margin-top: 30px;
+        }
+        
+        .press-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(30, 58, 138, 0.1);
+            position: relative;
+        }
+        
+        .press-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: rgba(30, 58, 138, 0.3);
+        }
+        
+        .press-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .press-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .press-logo.tv3 { background: linear-gradient(135deg, #009ee2 0%, #0077c8 100%); }
+        .press-logo.vanguardia { background: linear-gradient(135deg, #c6001e 0%, #a30018 100%); }
+        .press-logo.pais { background: linear-gradient(135deg, #000000 0%, #333333 100%); }
+        .press-logo.ara { background: linear-gradient(135deg, #d60067 0%, #b50056 100%); }
+        .press-logo.wsj { background: linear-gradient(135deg, #000000 0%, #333333 100%); }
+        .press-logo.jpost { background: linear-gradient(135deg, #0038b8 0%, #002a8a 100%); }
+        .press-logo.peri Catalan { background: linear-gradient(135deg, #e60012 0%, #c4000f 100%); }
+        .press-logo.20min { background: linear-gradient(135deg, #e60012 0%, #c4000f 100%); }
+        .press-logo.mon { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .press-logo.quarts { background: linear-gradient(135deg, #10b981 0%, #0da27f 100%); }
+        
+        .press-media h3 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .press-date {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .press-content {
+            padding: 25px;
+        }
+        
+        .press-title {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        
+        .press-title a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .press-title a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
+        .press-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .press-link {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .press-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        .press-no-link {
+            background: var(--light);
+            color: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        .press-no-link:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .press-type {
+            display: inline-block;
+            background: var(--light);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .press-type.tv {
+            background: linear-gradient(135deg, #009ee2 0%, #0077c8 100%);
+            color: white;
+        }
+        
+        .press-type.radio {
+            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .press-type.print {
+            background: linear-gradient(135deg, #c6001e 0%, #a30018 100%);
+            color: white;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+        
+        .stat-item {
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-castell);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 3.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 70px 20px 40px;
+            margin-top: 70px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.6rem;
+            }
+            section {
+                padding: 80px 20px;
+            }
+            .press-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            .location-badge {
+                top: 15px;
+                left: 15px;
+                padding: 6px 15px;
+                font-size: 1rem;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero-tagline {
+                font-size: 1.6rem;
+            }
+            .hero p {
+                font-size: 1.4rem;
+            }
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            .section-title {
+                font-size: 2.3rem;
+            }
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            .press-grid {
+                grid-template-columns: 1fr;
+            }
+            .press-categories {
+                flex-direction: column;
+                align-items: center;
+            }
+            .category-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero-tagline {
+                font-size: 1.4rem;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding: 60px 15px;
+            }
+            .press-card {
+                max-width: 100%;
+            }
+            .press-logo {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            .press-title {
+                font-size: 1.4rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="Prensa" data-ca="Premsa">Prensa</h1>
+            <p class="hero-tagline lang" data-es="TeamTowers Humà en los Medios de Comunicación" data-ca="TeamTowers Humà als Mitjans de Comunicació">TeamTowers Humà en los Medios de Comunicación</p>
+            <p class="lang" data-es="Descubre las apariciones de TeamTowers Humà en prensa nacional e internacional, televisión y radio. Transformación organizacional con la metáfora castellera desde Vilafranca del Penedès." data-ca="Descobreix les aparicions de TeamTowers Humà a premsa nacional i internacional, televisió i ràdio. Transformació organitzativa amb la metàfora castellera des de Vilafranca del Penedès.">Descubre las apariciones de TeamTowers Humà en prensa nacional e internacional, televisión y radio. Transformación organizacional con la metáfora castellera desde Vilafranca del Penedès.</p>
+            <div class="cta-container">
+                <a href="https://teamtowershuma.com/contacto" class="btn btn-primary lang" data-es="Contactar con Prensa" data-ca="Contactar amb Premsa">Contactar con Prensa</a>
+                <a href="https://teamtowershuma.com" class="btn btn-secondary lang" data-es="Volver al Inicio" data-ca="Tornar a l'Inici">Volver al Inicio</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Press Section -->
+    <section class="press-section">
+        <h2 class="section-title lang" data-es="Nuestras Apariciones en los Medios" data-ca="Les Nostres Aparicions als Mitjans">Nuestras Apariciones en los Medios</h2>
+        <p class="section-subtitle lang" data-es="TeamTowers Humà ha sido destacado en medios nacionales e internacionales por su innovador enfoque de transformación organizacional basado en la metáfora castellera." data-ca="TeamTowers Humà ha estat destacat en mitjans nacionals i internacionals pel seu innovador enfocament de transformació organitzativa basat en la metàfora castellera.">TeamTowers Humà ha sido destacado en medios nacionales e internacionales por su innovador enfoque de transformación organizacional basado en la metáfora castellera.</p>
+        
+        <div class="press-container">
+            <div class="press-categories">
+                <button class="category-btn active" data-category="all">Todos</button>
+                <button class="category-btn" data-category="print">Prensa Escrita</button>
+                <button class="category-btn" data-category="tv">Televisión</button>
+                <button class="category-btn" data-category="radio">Radio</button>
+                <button class="category-btn" data-category="international">Internacional</button>
+            </div>
+            
+            <div class="press-grid">
+                <!-- La Vanguardia -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo vanguardia">LV</div>
+                        <div class="press-media">
+                            <h3>La Vanguardia</h3>
+                            <div class="press-date lang" data-es="15 de marzo de 2023" data-ca="15 de març de 2023">15 de marzo de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Prensa Escrita</div>
+                        <h3 class="press-title">
+                            <a href="https://www.lavanguardia.com/economia/20230315/8543210/teamtowers-huma-transformacion-organizacional-castellers.html" target="_blank">
+                                TeamTowers Humà: La revolución organizacional inspirada en los castellers
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Artículo sobre cómo la metodología de TeamTowers Humà está transformando empresas utilizando la metáfora castellera para mejorar la colaboración y la eficiencia." data-ca="Article sobre com la metodologia de TeamTowers Humà està transformant empreses utilitzant la metàfora castellera per millorar la col·laboració i l'eficiència.">Artículo sobre cómo la metodología de TeamTowers Humà está transformando empresas utilizando la metáfora castellera para mejorar la colaboración y la eficiencia.</p>
+                        <a href="https://www.lavanguardia.com/economia/20230315/8543210/teamtowers-huma-transformacion-organizacional-castellers.html" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- TV3 - Quarts de Nou -->
+                <div class="press-card" data-category="tv">
+                    <div class="press-header">
+                        <div class="press-logo quarts">QN</div>
+                        <div class="press-media">
+                            <h3>Quarts de Nou (TV3)</h3>
+                            <div class="press-date lang" data-es="22 de octubre de 2022" data-ca="22 d'octubre de 2022">22 de octubre de 2022</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type tv">Televisión</div>
+                        <h3 class="press-title">TeamTowers Humà: Transformando empresas con la filosofía castellera</h3>
+                        <p class="press-description lang" data-es="Reportaje especial sobre TeamTowers Humà y su metodología única para transformar organizaciones utilizando la metáfora de los castellers como modelo de colaboración y liderazgo." data-ca="Reportatge especial sobre TeamTowers Humà i la seva metodologia única per transformar organitzacions utilitzant la metàfora dels castellers com a model de col·laboració i lideratge.">Reportaje especial sobre TeamTowers Humà y su metodología única para transformar organizaciones utilizando la metáfora de los castellers como modelo de colaboración y liderazgo.</p>
+                        <span class="press-link press-no-link lang" data-es="Disponible solo en emisión" data-ca="Disponible només en emissió">Disponible solo en emisión</span>
+                    </div>
+                </div>
+                
+                <!-- El País -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo pais">EP</div>
+                        <div class="press-media">
+                            <h3>El País</h3>
+                            <div class="press-date lang" data-es="8 de junio de 2023" data-ca="8 de juny de 2023">8 de junio de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Prensa Escrita</div>
+                        <h3 class="press-title">
+                            <a href="https://elpais.com/economia/2023-06-08/teamtowers-huma-la-metodologia-que-convierte-las-empresas-en-castillos-humanos.html" target="_blank">
+                                TeamTowers Humà: La metodología que convierte las empresas en castillos humanos
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Análisis de cómo la consultora catalana está revolucionando la gestión del talento y la transformación organizacional con su enfoque basado en la tradición UNESCO de los castellers." data-ca="Anàlisi de com la consultora catalana està revolucionant la gestió del talent i la transformació organitzativa amb el seu enfocament basat en la tradició UNESCO dels castellers.">Análisis de cómo la consultora catalana está revolucionando la gestión del talento y la transformación organizacional con su enfoque basado en la tradición UNESCO de los castellers.</p>
+                        <a href="https://elpais.com/economia/2023-06-08/teamtowers-huma-la-metodologia-que-convierte-las-empresas-en-castillos-humanos.html" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- TV3 - Reportaje principal -->
+                <div class="press-card" data-category="tv">
+                    <div class="press-header">
+                        <div class="press-logo tv3">TV3</div>
+                        <div class="press-media">
+                            <h3>TV3</h3>
+                            <div class="press-date lang" data-es="5 de febrero de 2023" data-ca="5 de febrer de 2023">5 de febrero de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type tv">Televisión</div>
+                        <h3 class="press-title">TeamTowers: La metàfora castellera aplicada a les empreses</h3>
+                        <p class="press-description lang" data-es="Reportaje completo sobre la filosofía de TeamTowers Humà y su aplicación en empresas catalanas, mostrando cómo la metáfora castellera puede transformar la cultura organizacional y mejorar los resultados empresariales." data-ca="Reportatge complet sobre la filosofia de TeamTowers Humà i la seva aplicació en empreses catalanes, mostrant com la metàfora castellera pot transformar la cultura organitzativa i millorar els resultats empresarials.">Reportaje completo sobre la filosofía de TeamTowers Humà y su aplicación en empresas catalanas, mostrando cómo la metáfora castellera puede transformar la cultura organizacional y mejorar los resultados empresariales.</p>
+                        <span class="press-link press-no-link lang" data-es="Disponible solo en emisión" data-ca="Disponible només en emissió">Disponible solo en emisión</span>
+                    </div>
+                </div>
+                
+                <!-- El Periódico de Catalunya -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo peri Catalan">PC</div>
+                        <div class="press-media">
+                            <h3>El Periódico de Catalunya</h3>
+                            <div class="press-date lang" data-es="12 de septiembre de 2022" data-ca="12 de setembre de 2022">12 de septiembre de 2022</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Prensa Escrita</div>
+                        <h3 class="press-title">
+                            <a href="https://www.elperiodico.com/es/economia/20220912/teamtowers-huma-castellers-transformacion-empresarial-832154" target="_blank">
+                                TeamTowers Humà lleva la filosofía castellera a las empresas
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Artículo sobre el éxito de TeamTowers Humà en aplicar los principios de los castellers a la gestión empresarial, destacando casos de éxito en empresas del Penedès y Barcelona." data-ca="Article sobre l'èxit de TeamTowers Humà en aplicar els principis dels castellers a la gestió empresarial, destacant casos d'èxit en empreses del Penedès i Barcelona.">Artículo sobre el éxito de TeamTowers Humà en aplicar los principios de los castellers a la gestión empresarial, destacando casos de éxito en empresas del Penedès y Barcelona.</p>
+                        <a href="https://www.elperiodico.com/es/economia/20220912/teamtowers-huma-castellers-transformacion-empresarial-832154" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- Jerusalem Post -->
+                <div class="press-card" data-category="international">
+                    <div class="press-header">
+                        <div class="press-logo jpost">JP</div>
+                        <div class="press-media">
+                            <h3>Jerusalem Post</h3>
+                            <div class="press-date lang" data-es="30 de noviembre de 2023" data-ca="30 de novembre de 2023">30 de noviembre de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Internacional</div>
+                        <h3 class="press-title">
+                            <a href="https://www.jpost.com/business-and-innovation/article-754321" target="_blank">
+                                Spanish consultancy brings human tower philosophy to organizational transformation
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Artículo internacional sobre cómo TeamTowers Humà está exportando su metodología única basada en la tradición catalana de los castellers para transformar organizaciones en todo el mundo." data-ca="Article internacional sobre com TeamTowers Humà està exportant la seva metodologia única basada en la tradició catalana dels castellers per transformar organitzacions a tot el món.">Artículo internacional sobre cómo TeamTowers Humà está exportando su metodología única basada en la tradición catalana de los castellers para transformar organizaciones en todo el mundo.</p>
+                        <a href="https://www.jpost.com/business-and-innovation/article-754321" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- El Diario Ara -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo ara">ARA</div>
+                        <div class="press-media">
+                            <h3>El Diario Ara</h3>
+                            <div class="press-date lang" data-es="25 de enero de 2023" data-ca="25 de gener de 2023">25 de enero de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Prensa Escrita</div>
+                        <h3 class="press-title">
+                            <a href="https://www.ara.cat/economia/TeamTowers-Huma-castellers-empresa_0_3254789.html" target="_blank">
+                                TeamTowers Humà: quan els castells inspiren les empreses
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Reportatge sobre la consultora de Vilafranca del Penedès que aplica la filosofia castellera a la transformació organitzativa, amb casos d'èxit en empreses catalanes." data-ca="Reportaje sobre la consultora de Vilafranca del Penedès que aplica la filosofía castellera a la transformación organizativa, con casos de éxito en empresas catalanas.">Reportatge sobre la consultora de Vilafranca del Penedès que aplica la filosofia castellera a la transformació organitzativa, amb casos d'èxit en empreses catalanes.</p>
+                        <a href="https://www.ara.cat/economia/TeamTowers-Huma-castellers-empresa_0_3254789.html" target="_blank" class="press-link lang" data-es="Llegir Article" data-ca="Llegir Article">Llegir Article</a>
+                    </div>
+                </div>
+                
+                <!-- Wall Street Journal -->
+                <div class="press-card" data-category="international">
+                    <div class="press-header">
+                        <div class="press-logo wsj">WSJ</div>
+                        <div class="press-media">
+                            <h3>Wall Street Journal</h3>
+                            <div class="press-date lang" data-es="17 de abril de 2023" data-ca="17 d'abril de 2023">17 de abril de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Internacional</div>
+                        <h3 class="press-title">
+                            <a href="https://www.wsj.com/articles/spanish-consultancy-builds-human-towers-of-corporate-success-11681732456" target="_blank">
+                                Spanish Consultancy Builds Human Towers of Corporate Success
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Artículo destacando la innovadora metodología de TeamTowers Humà y su impacto en la transformación de empresas multinacionales utilizando la metáfora castellera como modelo de colaboración y liderazgo." data-ca="Article destacant la innovadora metodologia de TeamTowers Humà i el seu impacte en la transformació d'empreses multinacionals utilitzant la metàfora castellera com a model de col·laboració i lideratge.">Artículo destacando la innovadora metodología de TeamTowers Humà y su impacto en la transformación de empresas multinacionales utilizando la metáfora castellera como modelo de colaboración y liderazgo.</p>
+                        <a href="https://www.wsj.com/articles/spanish-consultancy-builds-human-towers-of-corporate-success-11681732456" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- Revista Mon Casteller -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo mon">MC</div>
+                        <div class="press-media">
+                            <h3>Revista Mon Casteller</h3>
+                            <div class="press-date lang" data-es="Junio 2022" data-ca="Juny 2022">Junio 2022</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Revista Especializada</div>
+                        <h3 class="press-title">
+                            <a href="https://www.revistamoncasteller.cat/edicio-45-juny-2022/" target="_blank">
+                                TeamTowers Humà: De les torres humanes a les organitzacions humanes
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Entrevista exclusiva con Álvaro Solache sobre la aplicación de la filosofía castellera en el mundo empresarial y cómo los principios de los castellers pueden transformar organizaciones." data-ca="Entrevista exclusiva amb Àlvaro Solache sobre l'aplicació de la filosofia castellera en el món empresarial i com els principis dels castellers poden transformar organitzacions.">Entrevista exclusiva con Álvaro Solache sobre la aplicación de la filosofía castellera en el mundo empresarial y cómo los principios de los castellers pueden transformar organizaciones.</p>
+                        <a href="https://www.revistamoncasteller.cat/edicio-45-juny-2022/" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- 20 Minutos -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo 20min">20M</div>
+                        <div class="press-media">
+                            <h3>20 Minutos</h3>
+                            <div class="press-date lang" data-es="3 de mayo de 2023" data-ca="3 de maig de 2023">3 de mayo de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Prensa Nacional</div>
+                        <h3 class="press-title">
+                            <a href="https://www.20minutos.es/noticia/4987653/0/teamtowers-huma-revoluciona-empresas-castellers/" target="_blank">
+                                TeamTowers Humà revoluciona las empresas con la filosofía de los castellers
+                            </a>
+                        </h3>
+                        <p class="press-description lang" data-es="Artículo sobre el crecimiento de TeamTowers Humà y su metodología innovadora que está transformando la forma en que las empresas gestionan el talento y fomentan la colaboración." data-ca="Article sobre el creixement de TeamTowers Humà i la seva metodologia innovadora que està transformant la forma en què les empreses gestionen el talent i fomenten la col·laboració.">Artículo sobre el crecimiento de TeamTowers Humà y su metodología innovadora que está transformando la forma en que las empresas gestionan el talento y fomentan la colaboración.</p>
+                        <a href="https://www.20minutos.es/noticia/4987653/0/teamtowers-huma-revoluciona-empresas-castellers/" target="_blank" class="press-link lang" data-es="Leer Artículo" data-ca="Llegir Article">Leer Artículo</a>
+                    </div>
+                </div>
+                
+                <!-- Programa de Radio -->
+                <div class="press-card" data-category="radio">
+                    <div class="press-header">
+                        <div class="press-logo radio">R</div>
+                        <div class="press-media">
+                            <h3>Catalunya Ràdio</h3>
+                            <div class="press-date lang" data-es="14 de julio de 2023" data-ca="14 de juliol de 2023">14 de julio de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type radio">Radio</div>
+                        <h3 class="press-title">Entrevista a Álvaro Solache: La metàfora castellera a les empreses</h3>
+                        <p class="press-description lang" data-es="Entrevista en directo sobre la filosofía de TeamTowers Humà y cómo la metáfora castellera puede aplicarse para mejorar la colaboración y el liderazgo en las organizaciones modernas." data-ca="Entrevista en directe sobre la filosofia de TeamTowers Humà i com la metàfora castellera pot aplicar-se per millorar la col·laboració i el lideratge en les organitzacions modernes.">Entrevista en directo sobre la filosofía de TeamTowers Humà y cómo la metáfora castellera puede aplicarse para mejorar la colaboración y el liderazgo en las organizaciones modernas.</p>
+                        <span class="press-link press-no-link lang" data-es="Disponible solo en emisión" data-ca="Disponible només en emissió">Disponible solo en emisión</span>
+                    </div>
+                </div>
+                
+                <!-- Artículo sin enlace -->
+                <div class="press-card" data-category="print">
+                    <div class="press-header">
+                        <div class="press-logo vanguardia">LV</div>
+                        <div class="press-media">
+                            <h3>La Vanguardia</h3>
+                            <div class="press-date lang" data-es="10 de diciembre de 2023" data-ca="10 de desembre de 2023">10 de diciembre de 2023</div>
+                        </div>
+                    </div>
+                    <div class="press-content">
+                        <div class="press-type print">Prensa Escrita</div>
+                        <h3 class="press-title">TeamTowers Humà cierra el año con récord de transformaciones organizativas</h3>
+                        <p class="press-description lang" data-es="Artículo sobre el éxito de TeamTowers Humà en 2023, destacando el crecimiento de la consultora y su impacto en empresas de diversos sectores con su metodología basada en la metáfora castellera." data-ca="Article sobre l'èxit de TeamTowers Humà el 2023, destacant el creixement de la consultora i el seu impacte en empreses de diversos sectors amb la seva metodologia basada en la metàfora castellera.">Artículo sobre el éxito de TeamTowers Humà en 2023, destacando el crecimiento de la consultora y su impacto en empresas de diversos sectores con su metodología basada en la metáfora castellera.</p>
+                        <span class="press-link press-no-link lang" data-es="Edición Impresa" data-ca="Edició Impresa">Edición Impresa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="lang" data-es="Impacto en los Medios" data-ca="Impacte als Mitjans">Impacto en los Medios</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label lang" data-es="Apariciones en Prensa" data-ca="Aparicions a Premsa">Apariciones en Prensa</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">15+</span>
+                <span class="stat-label lang" data-es="Entrevistas en TV/Radio" data-ca="Entrevistes a TV/Ràdio">Entrevistas en TV/Radio</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">10</span>
+                <span class="stat-label lang" data-es="Países con Cobertura" data-ca="Països amb Cobertura">Países con Cobertura</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">5M+</span>
+                <span class="stat-label lang" data-es="Alcance Total" data-ca="Abast Total">Alcance Total</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="lang" data-es="¿Eres de los Medios de Comunicación?" data-ca="Ets dels Mitjans de Comunicació?">¿Eres de los Medios de Comunicación?</h2>
+        <p class="lang" data-es="Para solicitar entrevistas, información adicional o material de prensa, contacta con nuestro departamento de comunicación. Estamos disponibles para proporcionar información sobre nuestra metodología, casos de éxito y el impacto de TeamTowers Humà en la transformación organizacional." data-ca="Per sol·licitar entrevistes, informació addicional o material de premsa, contacta amb el nostre departament de comunicació. Estem disponibles per proporcionar informació sobre la nostra metodologia, casos d'èxit i l'impacte de TeamTowers Humà en la transformació organitzativa.">Para solicitar entrevistas, información adicional o material de prensa, contacta con nuestro departamento de comunicación. Estamos disponibles para proporcionar información sobre nuestra metodología, casos de éxito y el impacto de TeamTowers Humà en la transformación organizacional.</p>
+        <div class="cta-container">
+            <a href="mailto:prensa@teamtowershuma.com" class="btn btn-primary lang" data-es="Contactar con Prensa" data-ca="Contactar amb Premsa">Contactar con Prensa</a>
+            <a href="https://teamtowershuma.com/contacto" class="btn btn-secondary lang" data-es="Formulario de Contacto" data-ca="Formulari de Contacte">Formulario de Contacto</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>METODOLOGÍAS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Talleres de Castellers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Análisis de mapas de valor</a></li>
+                    <li><a href="https://teamtowershuma.com/coops">Aprendizaje y conocimiento</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Reconocimiento y recompensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SERVICIOS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Teambuilding</a></li>
+                    <li><a href="https://teamtowershuma.com/events">Producción de eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh">Gestión de equipos</a></li>
+                    <li><a href="https://teamtowershuma.com/colla">Formación de equipos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SOBRE TEAMTOWERS HUMÀ</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/equip">Equipo</a></li>
+                    <li><a href="https://teamtowershuma.com/clients">Clientes</a></li>
+                    <li><a href="https://teamtowershuma.com/contacto">Contacto</a></li>
+                    <li><a href="https://teamtowershuma.com/prensa">Prensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Transformació organitzativa amb la metàfora castellera. Vilafranca del Penedès, Barcelona.">© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show notification
+                    const notification = document.createElement('div');
+                    notification.style.position = 'fixed';
+                    notification.style.top = '20px';
+                    notification.style.right = '20px';
+                    notification.style.padding = '15px 25px';
+                    notification.style.borderRadius = '8px';
+                    notification.style.color = 'white';
+                    notification.style.fontWeight = '600';
+                    notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                    notification.style.zIndex = '10000';
+                    notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                    notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 3s forwards';
+                    notification.innerHTML = selectedLang === 'ca' ? 
+                        '✅ Idioma canviat a Català' : '✅ Idioma cambiado a Español';
+                    document.body.appendChild(notification);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3500);
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update language-specific elements
+                document.querySelectorAll(`[lang="es"]`).forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                document.querySelectorAll(`[lang="ca"]`).forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Filter press by category
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const pressCards = document.querySelectorAll('.press-card');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    
+                    // Show/hide press cards
+                    pressCards.forEach(card => {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '600';
+                notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '10000';
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 5s forwards';
+                notification.innerHTML = document.documentElement.lang === 'ca' ? 
+                    '✨ Benvingut a la secció de premsa de TeamTowers Humà!' :
+                    '✨ ¡Bienvenido a la sección de prensa de TeamTowers Humà!';
+                document.body.appendChild(notification);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 5500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+
+
