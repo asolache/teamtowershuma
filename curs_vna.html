@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Value Network Analysis Lab | Recurso educativo completo sobre análisis de redes de valor. Aprende a mapear flujos de valor tangibles e intangibles con metodología TeamTowers Humà.">
+    <meta name="keywords" content="Value Network Analysis, VNA, redes de valor, mapas de valor, TeamTowers Humà, análisis organizacional, flujos de valor, Pantheon.work, Vernaa">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Value Network Analysis Lab | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Value Network Analysis Lab | TeamTowers Humà">
+    <meta property="og:description" content="Recurso educativo completo sobre análisis de redes de valor. Aprende a mapear flujos de valor tangibles e intangibles con metodología TeamTowers Humà.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/vna-lab">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Value Network Analysis Lab | TeamTowers Humà">
+    <meta name="twitter:description" content="Aprende Value Network Analysis con recursos educativos completos y herramientas prácticas">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+            --gradient-learning: linear-gradient(135deg, #10b981 0%, #0ea5e9 50%, #8b5cf6 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Header */
+        header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .integration-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-learning);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #10b981 0%, #0ea5e9 30%, #8b5cf6 70%, #4f46e5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            margin-top: 15px;
+            font-weight: 300;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--dark);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Learning Path Section */
+        .learning-path {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(30, 58, 138, 0.05) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .path-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .path-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .path-step {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            transition: var(--transition);
+            border-top: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .path-step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .path-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            z-index: 10;
+        }
+        
+        .path-step.step-1::before { background: linear-gradient(90deg, var(--success) 0%, #0da27f 100%); }
+        .path-step.step-2::before { background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%); }
+        .path-step.step-3::before { background: linear-gradient(90deg, var(--accent) 0%, #7c3aed 100%); }
+        .path-step.step-4::before { background: linear-gradient(90deg, var(--gold) 0%, #d97706 100%); }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .step-1 .step-number { background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%); }
+        .step-2 .step-number { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
+        .step-3 .step-number { background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%); }
+        .step-4 .step-number { background: linear-gradient(135deg, var(--gold) 0%, #d97706 100%); }
+        
+        .path-step h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        /* Concepts Section */
+        .concepts-section {
+            background: white;
+        }
+        
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .concept-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 245, 255, 0.9) 100%);
+            border-radius: var(--border-radius);
+            padding: 35px 30px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(30, 58, 138, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-primary);
+            z-index: 1;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: rgba(30, 58, 138, 0.3);
+        }
+        
+        .concept-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        
+        .concept-card.tangible .concept-icon { color: var(--primary); }
+        .concept-card.intangible .concept-icon { color: var(--accent); }
+        .concept-card.roles .concept-icon { color: var(--success); }
+        .concept-card.transactions .concept-icon { color: var(--gold); }
+        
+        .concept-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .concept-card p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        .concept-example {
+            background: rgba(30, 58, 138, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+        
+        /* Visual Example Section */
+        .visual-section {
+            background: var(--gradient-castell);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visual-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .visual-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        
+        .visual-example {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin: 50px auto;
+            max-width: 900px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            color: var(--dark);
+        }
+        
+        .network-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            position: relative;
+            height: 300px;
+        }
+        
+        .node {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            position: absolute;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        
+        .node.ceo {
+            top: 50%;
+            left: 10%;
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+        }
+        
+        .node.team {
+            top: 30%;
+            left: 40%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .node.clients {
+            top: 70%;
+            left: 40%;
+            background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+        }
+        
+        .node.providers {
+            top: 50%;
+            left: 70%;
+            background: linear-gradient(135deg, var(--gold) 0%, #d97706 100%);
+        }
+        
+        .node.investors {
+            top: 20%;
+            left: 70%;
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+        }
+        
+        .edge {
+            position: absolute;
+            height: 3px;
+            background: var(--dark);
+            transform-origin: 0 50%;
+            z-index: 5;
+        }
+        
+        .edge.tangible {
+            background: var(--primary);
+            box-shadow: 0 0 5px rgba(30, 58, 138, 0.5);
+        }
+        
+        .edge.intangible {
+            background: var(--accent);
+            box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+            border-style: dashed;
+            border-width: 0 0 2px 0;
+        }
+        
+        .edge-label {
+            position: absolute;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 15;
+        }
+        
+        /* Tools Section */
+        .tools-section {
+            background: var(--light);
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tool-img {
+            height: 180px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .tool-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+            opacity: 0.85;
+            z-index: 1;
+        }
+        
+        .tool-img img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        .tool-content {
+            padding: 30px;
+        }
+        
+        .tool-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tool-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .tool-desc {
+            margin-bottom: 20px;
+            color: var(--gray);
+            min-height: 80px;
+        }
+        
+        .tool-link {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        .tool-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Partners Section */
+        .partners-section {
+            background: white;
+            text-align: center;
+        }
+        
+        .partners-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 50px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+        
+        .partner-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            min-width: 250px;
+            max-width: 300px;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .partner-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .partner-logo {
+            height: 80px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .partner-logo img {
+            max-height: 60px;
+            max-width: 150px;
+            object-fit: contain;
+            filter: grayscale(100%) brightness(0.8);
+            transition: var(--transition);
+        }
+        
+        .partner-card:hover .partner-logo img {
+            filter: grayscale(0%) brightness(1);
+            transform: scale(1.1);
+        }
+        
+        .partner-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .partner-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+        
+        .partner-link {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .partner-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Resources Section */
+        .resources-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .resource-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .resource-card.course {
+            border-top-color: var(--success);
+        }
+        
+        .resource-card.lab {
+            border-top-color: var(--accent);
+        }
+        
+        .resource-card.book {
+            border-top-color: var(--gold);
+        }
+        
+        .resource-card.article {
+            border-top-color: var(--secondary);
+        }
+        
+        .resource-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        
+        .resource-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .resource-card p {
+            margin-bottom: 20px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        .resource-link {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            width: 100%;
+            text-align: center;
+        }
+        
+        .resource-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-learning);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 3.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 70px 20px 40px;
+            margin-top: 70px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.6rem;
+            }
+            section {
+                padding: 80px 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero p {
+                font-size: 1.4rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            .section-title {
+                font-size: 2.3rem;
+            }
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+            .path-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            .path-step {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding: 60px 15px;
+            }
+            .tool-content {
+                padding: 20px;
+            }
+            .partner-card {
+                min-width: 100%;
+                max-width: 100%;
+            }
+        }
+        
+        /* Learning badges */
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .badge {
+            background: white;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badge-beginner {
+            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .badge-intermediate {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .badge-advanced {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        /* Table of Contents */
+        .toc-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            margin: 40px auto;
+            max-width: 900px;
+        }
+        
+        .toc-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+            text-align: center;
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toc-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc-list a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        
+        .toc-list a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .toc-list a::after {
+            content: '→';
+            margin-left: 10px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .toc-list a:hover::after {
+            opacity: 1;
+        }
+        
+        /* Knowledge level indicators */
+        .knowledge-level {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(30, 58, 138, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .level-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        
+        .level-dot.active {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Value Network Analysis Lab" data-ca="Laboratori d'Anàlisi de Xarxes de Valor">Value Network Analysis Lab</h1>
+            <p class="tagline lang" data-es="El recurso educativo definitivo para dominar el análisis de redes de valor" data-ca="El recurs educatiu definitiu per dominar l'anàlisi de xarxes de valor">El recurso educativo definitivo para dominar el análisis de redes de valor</p>
+            <div class="integration-badge lang" data-es="Metodología TeamTowers Humà para mapear flujos de valor tangibles e intangibles" data-ca="Metodologia TeamTowers Humà per mapejar fluxos de valor tangibles i intangibles">Metodología TeamTowers Humà para mapear flujos de valor tangibles e intangibles</div>
+        </div>
+    </header>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="lang" data-es="Domina el Análisis de Redes de Valor" data-ca="Domina l'Anàlisi de Xarxes de Valor">Domina el Análisis de Redes de Valor</h1>
+            <p class="lang" data-es="Aprende a mapear, analizar y optimizar los flujos de valor en tu organización con la metodología Value Network Analysis. Transforma la forma en que entiendes las relaciones y transacciones que generan valor." data-ca="Aprèn a mapejar, analitzar i optimitzar els fluxos de valor a la teva organització amb la metodologia Value Network Analysis. Transforma la forma en què entens les relacions i transaccions que generen valor.">Aprende a mapear, analizar y optimizar los flujos de valor en tu organización con la metodología Value Network Analysis. Transforma la forma en que entiendes las relaciones y transacciones que generan valor.</p>
+            <p class="hero-subtitle lang" data-es="Vilafranca del Penedès - El epicentro de la innovación en gestión de personas" data-ca="Vilafranca del Penedès - L'epicentre de la innovació en gestió de persones">Vilafranca del Penedès - El epicentro de la innovación en gestión de personas</p>
+            <div class="cta-container">
+                <a href="#learning-path" class="btn btn-primary lang" data-es="Comenzar Aprendizaje" data-ca="Començar Aprenentatge">Comenzar Aprendizaje</a>
+                <a href="https://teamtowershuma.com/app" class="btn btn-accent lang" data-es="Probar App VNA" data-ca="Provar App VNA">Probar App VNA</a>
+                <a href="https://cursovna.netlify.app/" class="btn btn-success lang" data-es="Curso Completo" data-ca="Curs Complert">Curso Completo</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Table of Contents -->
+    <section class="toc-container">
+        <h2 class="toc-title lang" data-es="Guía de Contenidos" data-ca="Guia de Continguts">Guía de Contenidos</h2>
+        <ul class="toc-list">
+            <li><a href="#learning-path" class="lang" data-es="Ruta de Aprendizaje" data-ca="Ruta d'Aprenentatge">Ruta de Aprendizaje</a></li>
+            <li><a href="#concepts" class="lang" data-es="Conceptos Fundamentales" data-ca="Conceptes Fonamentals">Conceptos Fundamentales</a></li>
+            <li><a href="#visualization" class="lang" data-es="Ejemplo Visual" data-ca="Exemple Visual">Ejemplo Visual</a></li>
+            <li><a href="#tools" class="lang" data-es="Herramientas y Recursos" data-ca="Eines i Recursos">Herramientas y Recursos</a></li>
+            <li><a href="#partners" class="lang" data-es="Nuestros Partners" data-ca="Els Nostres Partners">Nuestros Partners</a></li>
+            <li><a href="#resources" class="lang" data-es="Recursos Adicionales" data-ca="Recursos Addicionals">Recursos Adicionales</a></li>
+        </ul>
+    </section>
+    
+    <!-- Learning Path Section -->
+    <section id="learning-path" class="learning-path">
+        <h2 class="section-title lang" data-es="Tu Ruta de Aprendizaje en VNA" data-ca="La Teva Ruta d'Aprenentatge en VNA">Tu Ruta de Aprendizaje en VNA</h2>
+        <p class="section-subtitle lang" data-es="Sigue estos pasos para dominar el análisis de redes de valor, desde los fundamentos hasta la aplicación avanzada en tu organización." data-ca="Segueix aquests passos per dominar l'anàlisi de xarxes de valor, des dels fonaments fins a l'aplicació avançada a la teva organització.">Sigue estos pasos para dominar el análisis de redes de valor, desde los fundamentos hasta la aplicación avanzada en tu organización.</p>
+        
+        <div class="path-container">
+            <div class="path-steps">
+                <div class="path-step step-1">
+                    <div class="step-number">1</div>
+                    <h3 class="lang" data-es="Fundamentos de VNA" data-ca="Fonaments de VNA">Fundamentos de VNA</h3>
+                    <p class="lang" data-es="Comprende los conceptos básicos: roles, transacciones, entregables y la diferencia entre valor tangible e intangible. Aprende por qué mapear redes de valor transforma la toma de decisiones." data-ca="Comprende els conceptes bàsics: rols, transaccions, entregables i la diferència entre valor tangible i intangible. Aprèn per què mapejar xarxes de valor transforma la presa de decisions.">Comprende los conceptos básicos: roles, transacciones, entregables y la diferencia entre valor tangible e intangible. Aprende por qué mapear redes de valor transforma la toma de decisiones.</p>
+                    <div class="badge-container">
+                        <span class="badge badge-beginner lang" data-es="Nivel: Principiante" data-ca="Nivell: Principiant">Nivel: Principiante</span>
+                    </div>
+                </div>
+                
+                <div class="path-step step-2">
+                    <div class="step-number">2</div>
+                    <h3 class="lang" data-es="Creación de Mapas" data-ca="Creació de Mapes">Creación de Mapas</h3>
+                    <p class="lang" data-es="Aprende a identificar roles clave en tu organización, mapear transacciones entre ellos y visualizar flujos de valor. Domina la herramienta VNA App para crear mapas interactivos." data-ca="Aprèn a identificar rols clau a la teva organització, mapejar transaccions entre ells i visualitzar fluxos de valor. Domina l'eina VNA App per crear mapes interactius.">Aprende a identificar roles clave en tu organización, mapear transacciones entre ellos y visualizar flujos de valor. Domina la herramienta VNA App para crear mapas interactivos.</p>
+                    <div class="badge-container">
+                        <span class="badge badge-intermediate lang" data-es="Nivel: Intermedio" data-ca="Nivell: Intermedi">Nivel: Intermedio</span>
+                    </div>
+                </div>
+                
+                <div class="path-step step-3">
+                    <div class="step-number">3</div>
+                    <h3 class="lang" data-es="Análisis e Interpretación" data-ca="Anàlisi i Interpretació">Análisis e Interpretación</h3>
+                    <p class="lang" data-es="Descubre cómo identificar cuellos de botella, redundancias y oportunidades de mejora en tus redes de valor. Aprende a medir el impacto de las transacciones y priorizar acciones." data-ca="Descobreix com identificar colls d'ampolla, redundàncies i oportunitats de millora a les teves xarxes de valor. Aprèn a mesurar l'impacte de les transaccions i prioritzar accions.">Descubre cómo identificar cuellos de botella, redundancias y oportunidades de mejora en tus redes de valor. Aprende a medir el impacto de las transacciones y priorizar acciones.</p>
+                    <div class="badge-container">
+                        <span class="badge badge-intermediate lang" data-es="Nivel: Intermedio" data-ca="Nivell: Intermedi">Nivel: Intermedio</span>
+                    </div>
+                </div>
+                
+                <div class="path-step step-4">
+                    <div class="step-number">4</div>
+                    <h3 class="lang" data-es="Aplicación Estratégica" data-ca="Aplicació Estratègica">Aplicación Estratégica</h3>
+                    <p class="lang" data-es="Integra VNA en tu estrategia organizacional. Aprende a alinear estructuras, procesos y cultura con los flujos de valor. Prepara el terreno para la contabilidad de valor y tokenización." data-ca="Integra VNA a la teva estratègia organitzativa. Aprèn a alinear estructures, processos i cultura amb els fluxos de valor. Prepara el terreny per a la comptabilitat de valor i tokenització.">Integra VNA en tu estrategia organizacional. Aprende a alinear estructuras, procesos y cultura con los flujos de valor. Prepara el terreno para la contabilidad de valor y tokenización.</p>
+                    <div class="badge-container">
+                        <span class="badge badge-advanced lang" data-es="Nivel: Avanzado" data-ca="Nivell: Avançat">Nivel: Avanzado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Concepts Section -->
+    <section id="concepts" class="concepts-section">
+        <h2 class="section-title lang" data-es="Conceptos Fundamentales de VNA" data-ca="Conceptes Fonamentals de VNA">Conceptos Fundamentales de VNA</h2>
+        <p class="section-subtitle lang" data-es="Entiende los elementos clave que componen una red de valor y cómo interactúan para generar valor en tu organización." data-ca="Entén els elements clau que composen una xarxa de valor i com interactuen per generar valor a la teva organització.">Entiende los elementos clave que componen una red de valor y cómo interactúan para generar valor en tu organización.</p>
+        
+        <div class="concepts-grid">
+            <div class="concept-card roles">
+                <div class="concept-icon">👥</div>
+                <h3 class="lang" data-es="Roles" data-ca="Rols">Roles</h3>
+                <p class="lang" data-es="Los roles representan a las personas, equipos o entidades que participan en la red de valor. Cada rol tiene responsabilidades específicas y contribuye al flujo de valor de manera única." data-ca="Els rols representen les persones, equips o entitats que participen en la xarxa de valor. Cada rol té responsabilitats específiques i contribueix al flux de valor de manera única.">Los roles representan a las personas, equipos o entidades que participan en la red de valor. Cada rol tiene responsabilidades específicas y contribuye al flujo de valor de manera única.</p>
+                <div class="concept-example lang" data-es="Ejemplo: CEO, Equipo de Desarrollo, Clientes, Proveedores, Inversores" data-ca="Exemple: CEO, Equip de Desenvolupament, Clients, Proveïdors, Inversors">Ejemplo: CEO, Equipo de Desarrollo, Clientes, Proveedores, Inversores</div>
+            </div>
+            
+            <div class="concept-card transactions">
+                <div class="concept-icon">🔄</div>
+                <h3 class="lang" data-es="Transacciones" data-ca="Transaccions">Transacciones</h3>
+                <p class="lang" data-es="Las transacciones son los intercambios de valor entre roles. Pueden ser tangibles (bienes, servicios, dinero) o intangibles (confianza, conocimiento, apoyo emocional)." data-ca="Les transaccions són els intercanvis de valor entre rols. Poden ser tangibles (béns, serveis, diners) o intangibles (confiança, coneixement, suport emocional).">Las transacciones son los intercambios de valor entre roles. Pueden ser tangibles (bienes, servicios, dinero) o intangibles (confianza, conocimiento, apoyo emocional).</p>
+                <div class="concept-example lang" data-es="Ejemplo: Pago por servicio, Compartir conocimiento, Brindar apoyo, Entregar producto" data-ca="Exemple: Pagament per servei, Compartir coneixement, Brindar suport, Entregar producte">Ejemplo: Pago por servicio, Compartir conocimiento, Brindar apoyo, Entregar producto</div>
+            </div>
+            
+            <div class="concept-card tangible">
+                <div class="concept-icon">📦</div>
+                <h3 class="lang" data-es="Valor Tangible" data-ca="Valor Tangible">Valor Tangible</h3>
+                <p class="lang" data-es="El valor tangible se refiere a bienes físicos, servicios medibles y transacciones cuantificables que se pueden observar y medir directamente en la red de valor." data-ca="El valor tangible es refereix a béns físics, serveis mesurables i transaccions quantificables que es poden observar i mesurar directament a la xarxa de valor.">El valor tangible se refiere a bienes físicos, servicios medibles y transacciones cuantificables que se pueden observar y medir directamente en la red de valor.</p>
+                <div class="concept-example lang" data-es="Ejemplo: Productos físicos, Horas de trabajo, Pagos monetarios, Servicios profesionales" data-ca="Exemple: Productes físics, Hores de treball, Pagaments monetaris, Serveis professionals">Ejemplo: Productos físicos, Horas de trabajo, Pagos monetarios, Servicios profesionales</div>
+            </div>
+            
+            <div class="concept-card intangible">
+                <div class="concept-icon">💡</div>
+                <h3 class="lang" data-es="Valor Intangible" data-ca="Valor Intangible">Valor Intangible</h3>
+                <p class="lang" data-es="El valor intangible incluye activos no físicos como conocimiento, confianza, relaciones, reputación y apoyo emocional. Aunque no se pueden medir fácilmente, son fundamentales para el éxito organizacional." data-ca="El valor intangible inclou actius no físics com coneixement, confiança, relacions, reputació i suport emocional. Tot i que no es poden mesurar fàcilment, són fonamentals per al èxit organitzatiu.">El valor intangible incluye activos no físicos como conocimiento, confianza, relaciones, reputación y apoyo emocional. Aunque no se pueden medir fácilmente, son fundamentales para el éxito organizacional.</p>
+                <div class="concept-example lang" data-es="Ejemplo: Conocimiento tácito, Confianza mutua, Redes de contactos, Cultura organizacional" data-ca="Exemple: Coneixement tàcit, Confiança mútua, Xarxes de contactes, Cultura organitzativa">Ejemplo: Conocimiento tácito, Confianza mutua, Redes de contactos, Cultura organizacional</div>
+            </div>
+        </div>
+        
+        <div class="knowledge-level">
+            <div class="level-dot active"></div>
+            <div class="level-dot active"></div>
+            <div class="level-dot"></div>
+            <div class="level-dot"></div>
+            <span class="lang" data-es="Nivel de Conocimiento: Principiante - Comprendes los conceptos básicos de VNA" data-ca="Nivell de Coneixement: Principiant - Compreneu els conceptes bàsics de VNA">Nivel de Conocimiento: Principiante - Comprendes los conceptos básicos de VNA</span>
+        </div>
+    </section>
+    
+    <!-- Visual Example Section -->
+    <section id="visualization" class="visual-section">
+        <div class="visual-content">
+            <h2 class="section-title lang" data-es="Ejemplo Visual de una Red de Valor" data-ca="Exemple Visual d'una Xarxa de Valor">Ejemplo Visual de una Red de Valor</h2>
+            <p class="section-subtitle lang" data-es="Observa cómo se estructura una red de valor típica con roles, transacciones tangibles e intangibles" data-ca="Observa com s'estructura una xarxa de valor típica amb rols, transaccions tangibles i intangibles">Observa cómo se estructura una red de valor típica con roles, transacciones tangibles e intangibles</p>
+            
+            <div class="visual-example">
+                <div class="network-diagram">
+                    <div class="node ceo" title="CEO">CEO</div>
+                    <div class="node team" title="Equipo">Equipo</div>
+                    <div class="node clients" title="Clientes">Clientes</div>
+                    <div class="node providers" title="Proveedores">Proveedores</div>
+                    <div class="node investors" title="Inversores">Inversores</div>
+                    
+                    <!-- Edges between nodes -->
+                    <div class="edge tangible" style="width: 200px; top: 45%; left: 15%; transform: rotate(20deg);"></div>
+                    <div class="edge-label" style="top: 40%; left: 25%;">Estrategia</div>
+                    
+                    <div class="edge tangible" style="width: 180px; top: 35%; left: 35%; transform: rotate(-30deg);"></div>
+                    <div class="edge-label" style="top: 25%; left: 45%;">Recursos</div>
+                    
+                    <div class="edge tangible" style="width: 220px; top: 55%; left: 30%; transform: rotate(40deg);"></div>
+                    <div class="edge-label" style="top: 65%; left: 40%;">Producto</div>
+                    
+                    <div class="edge intangible" style="width: 200px; top: 65%; left: 50%; transform: rotate(-20deg);"></div>
+                    <div class="edge-label" style="top: 70%; left: 60%;">Feedback</div>
+                    
+                    <div class="edge tangible" style="width: 180px; top: 50%; left: 60%; transform: rotate(30deg);"></div>
+                    <div class="edge-label" style="top: 45%; left: 70%;">Materiales</div>
+                    
+                    <div class="edge tangible" style="width: 150px; top: 30%; left: 65%; transform: rotate(-50deg);"></div>
+                    <div class="edge-label" style="top: 20%; left: 75%;">Capital</div>
+                    
+                    <div class="edge intangible" style="width: 250px; top: 25%; left: 25%; transform: rotate(10deg); border-style: dashed;"></div>
+                    <div class="edge-label" style="top: 15%; left: 45%;">Reportes</div>
+                </div>
+                
+                <h3 class="lang" data-es="Análisis del Mapa de Valor" data-ca="Anàlisi del Mapa de Valor">Análisis del Mapa de Valor</h3>
+                <p class="lang" data-es="Este mapa de valor muestra una organización típica con cinco roles principales. Las líneas sólidas representan transacciones tangibles (bienes, servicios, dinero), mientras que las líneas punteadas representan transacciones intangibles (conocimiento, información, confianza). Observa cómo el flujo de valor circula entre todos los roles, creando una red interdependiente donde cada transacción contribuye al éxito general." data-ca="Aquest mapa de valor mostra una organització típica amb cinc rols principals. Les línies sòlides representen transaccions tangibles (béns, serveis, diners), mentre que les línies puntejades representen transaccions intangibles (coneixement, informació, confiança). Observa com el flux de valor circula entre tots els rols, creant una xarxa interdependent on cada transacció contribueix a l'èxit general.">Este mapa de valor muestra una organización típica con cinco roles principales. Las líneas sólidas representan transacciones tangibles (bienes, servicios, dinero), mientras que las líneas punteadas representan transacciones intangibles (conocimiento, información, confianza). Observa cómo el flujo de valor circula entre todos los roles, creando una red interdependiente donde cada transacción contribuye al éxito general.</p>
+                
+                <div class="badge-container" style="margin-top: 20px;">
+                    <span class="badge badge-intermediate lang" data-es="Nivel: Intermedio" data-ca="Nivell: Intermedi">Nivel: Intermedio</span>
+                    <span class="badge" style="background: var(--primary); color: white;" data-es="Herramienta: VNA App" data-ca="Eina: VNA App">Herramienta: VNA App</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Tools Section -->
+    <section id="tools" class="tools-section">
+        <h2 class="section-title lang" data-es="Herramientas y Recursos para VNA" data-ca="Eines i Recursos per a VNA">Herramientas y Recursos para VNA</h2>
+        <p class="section-subtitle lang" data-es="Accede a las herramientas digitales y recursos educativos diseñados para facilitar tu aprendizaje y aplicación práctica de Value Network Analysis." data-ca="Accedeix a les eines digitals i recursos educatius dissenyats per facilitar el teu aprenentatge i aplicació pràctica de Value Network Analysis.">Accede a las herramientas digitales y recursos educativos diseñados para facilitar tu aprendizaje y aplicación práctica de Value Network Analysis.</p>
+        
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="VNA App">
+                </div>
+                <div class="tool-content">
+                    <h3 class="tool-title">VNA App <span class="tool-badge">Oficial</span></h3>
+                    <p class="tool-desc lang" data-es="Crea mapas de valor interactivos con nuestra aplicación web. Visualiza roles, transacciones y entregables con facilidad. Exporta tus mapas en múltiples formatos." data-ca="Crea mapes de valor interactius amb la nostra aplicació web. Visualitza rols, transaccions i entregables amb facilitat. Exporta els teus mapes en múltiples formats.">Crea mapas de valor interactivos con nuestra aplicación web. Visualiza roles, transacciones y entregables con facilidad. Exporta tus mapas en múltiples formatos.</p>
+                    <a href="https://teamtowershuma.com/app" class="tool-link lang" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
+                </div>
+            </div>
+            
+            <div class="tool-card">
+                <div class="tool-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Curso VNA">
+                </div>
+                <div class="tool-content">
+                    <h3 class="tool-title">Curso de VNA <span class="tool-badge">Completo</span></h3>
+                    <p class="tool-desc lang" data-es="Curso online completo con módulos progresivos, ejercicios prácticos y certificación oficial. Aprende VNA desde cero hasta nivel experto." data-ca="Curs online complet amb mòduls progressius, exercicis pràctics i certificació oficial. Aprèn VNA des de zero fins a nivell expert.">Curso online completo con módulos progresivos, ejercicios prácticos y certificación oficial. Aprende VNA desde cero hasta nivel experto.</p>
+                    <a href="https://cursovna.netlify.app/" class="tool-link lang" data-es="Acceder al Curso" data-ca="Accedir al Curs">Acceder al Curso</a>
+                </div>
+            </div>
+            
+            <div class="tool-card">
+                <div class="tool-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Lab">
+                </div>
+                <div class="tool-content">
+                    <h3 class="tool-title">Value Network Lab <span class="tool-badge">Recursos</span></h3>
+                    <p class="tool-desc lang" data-es="Biblioteca de recursos, casos de estudio, plantillas descargables y artículos de investigación sobre Value Network Analysis y metodologías relacionadas." data-ca="Biblioteca de recursos, casos d'estudi, plantilles descarregables i articles d'investigació sobre Value Network Analysis i metodologies relacionades.">Biblioteca de recursos, casos de estudio, plantillas descargables y artículos de investigación sobre Value Network Analysis y metodologías relacionadas.</p>
+                    <a href="https://valuenetworklab.netlify.app/" class="tool-link lang" data-es="Visitar Lab" data-ca="Visitar Lab">Visitar Lab</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Partners Section -->
+    <section id="partners" class="partners-section">
+        <h2 class="section-title lang" data-es="Nuestros Partners Estratégicos" data-ca="Els Nostres Partners Estratègics">Nuestros Partners Estratégicos</h2>
+        <p class="section-subtitle lang" data-es="Colaboramos con expertos y organizaciones líderes para ofrecerte una formación y recursos de la más alta calidad en Value Network Analysis." data-ca="Col·laborem amb experts i organitzacions líders per oferir-te una formació i recursos de la més alta qualitat en Value Network Analysis.">Colaboramos con expertos y organizaciones líderes para ofrecerte una formación y recursos de la más alta calidad en Value Network Analysis.</p>
+        
+        <div class="partners-grid">
+            <div class="partner-card">
+                <div class="partner-logo">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+                </div>
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="El creador de la metodología VNA y el ecosistema TeamTowers Humà. Expertos en transformación organizacional con enfoque humanista desde Vilafranca del Penedès." data-ca="El creador de la metodologia VNA i l'ecosistema TeamTowers Humà. Experts en transformació organitzativa amb enfocament humanista des de Vilafranca del Penedès.">El creador de la metodología VNA y el ecosistema TeamTowers Humà. Expertos en transformación organizacional con enfoque humanista desde Vilafranca del Penedès.</p>
+                <a href="https://teamtowershuma.com" class="partner-link lang" data-es="Visitar Site" data-ca="Visitar Site">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-logo">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Pantheon.work">
+                </div>
+                <h3>Pantheon.work</h3>
+                <p class="lang" data-es="Plataforma de investigación y desarrollo en redes de valor. Colaboración en proyectos de I+D y publicaciones académicas sobre Value Network Analysis." data-ca="Plataforma d'investigació i desenvolupament en xarxes de valor. Col·laboració en projectes d'I+D i publicacions acadèmiques sobre Value Network Analysis.">Plataforma de investigación y desarrollo en redes de valor. Colaboración en proyectos de I+D y publicaciones académicas sobre Value Network Analysis.</p>
+                <a href="https://pantheon.work" class="partner-link" target="_blank">Visitar Site</a>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-logo">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Vernaa">
+                </div>
+                <h3>Vernaa</h3>
+                <p class="lang" data-es="Expertos en implementación práctica de VNA en organizaciones. Consultoría especializada y acompañamiento en proyectos de transformación con Value Network Analysis." data-ca="Experts en implementació pràctica de VNA en organitzacions. Consultoria especialitzada i acompanyament en projectes de transformació amb Value Network Analysis.">Expertos en implementación práctica de VNA en organizaciones. Consultoría especializada y acompañamiento en proyectos de transformación con Value Network Analysis.</p>
+                <a href="https://vernaa.com" class="partner-link" target="_blank">Visitar Site</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Resources Section -->
+    <section id="resources" class="resources-section">
+        <h2 class="section-title lang" data-es="Recursos Adicionales" data-ca="Recursos Addicionals">Recursos Adicionales</h2>
+        <p class="section-subtitle lang" data-es="Profundiza en tu aprendizaje con estos recursos complementarios diseñados para diferentes niveles de conocimiento y necesidades específicas." data-ca="Aprofundeix en el teu aprenentatge amb aquests recursos complementaris dissenyats per a diferents nivells de coneixement i necessitats específiques.">Profundiza en tu aprendizaje con estos recursos complementarios diseñados para diferentes niveles de conocimiento y necesidades específicas.</p>
+        
+        <div class="resources-grid">
+            <div class="resource-card course">
+                <div class="resource-icon">🎓</div>
+                <h3 class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</h3>
+                <p class="lang" data-es="Curso completo con 6 módulos progresivos, ejercicios prácticos, casos de estudio y certificación oficial. Incluye acceso a la comunidad de practicantes." data-ca="Curs complet amb 6 mòduls progressius, exercicis pràctics, casos d'estudi i certificació oficial. Inclou accés a la comunitat de practicants.">Curso completo con 6 módulos progresivos, ejercicios prácticos, casos de estudio y certificación oficial. Incluye acceso a la comunidad de practicantes.</p>
+                <a href="https://cursovna.netlify.app/" class="resource-link lang" data-es="Acceder al Curso" data-ca="Accedir al Curs">Acceder al Curso</a>
+            </div>
+            
+            <div class="resource-card lab">
+                <div class="resource-icon">🔬</div>
+                <h3 class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</h3>
+                <p class="lang" data-es="Biblioteca de recursos con artículos de investigación, casos de estudio reales, plantillas descargables y herramientas para profundizar en la metodología VNA." data-ca="Biblioteca de recursos amb articles d'investigació, casos d'estudi reals, plantilles descarregables i eines per aprofundir en la metodologia VNA.">Biblioteca de recursos con artículos de investigación, casos de estudio reales, plantillas descargables y herramientas para profundizar en la metodología VNA.</p>
+                <a href="https://valuenetworklab.netlify.app/" class="resource-link lang" data-es="Explorar el Lab" data-ca="Explorar el Lab">Explorar el Lab</a>
+            </div>
+            
+            <div class="resource-card book">
+                <div class="resource-icon">📚</div>
+                <h3 class="lang" data-es="Guía Práctica de VNA" data-ca="Guia Pràctica de VNA">Guía Práctica de VNA</h3>
+                <p class="lang" data-es="Descarga nuestra guía práctica con ejemplos paso a paso, plantillas editables y checklist para implementar VNA en tu organización desde cero." data-ca="Descarrega la nostra guia pràctica amb exemples pas a pas, plantilles editables i checklist per implementar VNA a la teva organització des de zero.">Descarga nuestra guía práctica con ejemplos paso a paso, plantillas editables y checklist para implementar VNA en tu organización desde cero.</p>
+                <a href="#" class="resource-link lang" data-es="Descargar Guía" data-ca="Descarregar Guia">Descargar Guía</a>
+            </div>
+            
+            <div class="resource-card article">
+                <div class="resource-icon">📰</div>
+                <h3 class="lang" data-es="Blog de Innovación" data-ca="Blog d'Innovació">Blog de Innovación</h3>
+                <p class="lang" data-es="Artículos semanales sobre aplicaciones prácticas de VNA, casos de éxito, entrevistas con expertos y tendencias en gestión del valor organizacional." data-ca="Articles setmanals sobre aplicacions pràctiques de VNA, casos d'èxit, entrevistes amb experts i tendències en gestió del valor organitzatiu.">Artículos semanales sobre aplicaciones prácticas de VNA, casos de éxito, entrevistas con expertos y tendencias en gestión del valor organizacional.</p>
+                <a href="#" class="resource-link lang" data-es="Leer Artículos" data-ca="Llegir Articles">Leer Artículos</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="lang" data-es="¿Listo para Transformar tu Organización con VNA?" data-ca="Preparat per Transformar la teva Organització amb VNA?">¿Listo para Transformar tu Organización con VNA?</h2>
+        <p class="lang" data-es="Comienza hoy mismo tu viaje con Value Network Analysis. Accede a recursos gratuitos, prueba nuestra aplicación o inscríbete en el curso completo para dominar esta metodología transformadora." data-ca="Comença avui mateix el teu viatge amb Value Network Analysis. Accedeix a recursos gratuïts, prova la nostra aplicació o inscriviu-te al curs complet per dominar aquesta metodologia transformadora.">Comienza hoy mismo tu viaje con Value Network Analysis. Accede a recursos gratuitos, prueba nuestra aplicación o inscríbete en el curso completo para dominar esta metodología transformadora.</p>
+        <div class="cta-container">
+            <a href="https://teamtowershuma.com/app" class="btn btn-primary lang" data-es="Probar App VNA Gratuita" data-ca="Provar App VNA Gratuïta">Probar App VNA Gratuita</a>
+            <a href="https://cursovna.netlify.app/" class="btn btn-accent lang" data-es="Inscribirse en el Curso" data-ca="Inscriure's al Curs">Inscribirse en el Curso</a>
+            <a href="#contact" class="btn btn-secondary lang" data-es="Contactar con Expertos" data-ca="Contactar amb Experts">Contactar con Expertos</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h3>
+                <ul class="footer-links">
+                    <li><a href="#learning-path" class="lang" data-es="Ruta de Aprendizaje" data-ca="Ruta d'Aprenentatge">Ruta de Aprendizaje</a></li>
+                    <li><a href="#concepts" class="lang" data-es="Conceptos Fundamentales" data-ca="Conceptes Fonamentals">Conceptos Fundamentales</a></li>
+                    <li><a href="#visualization" class="lang" data-es="Ejemplo Visual" data-ca="Exemple Visual">Ejemplo Visual</a></li>
+                    <li><a href="#tools" class="lang" data-es="Herramientas" data-ca="Eines">Herramientas</a></li>
+                    <li><a href="https://teamtowershuma.com/app" class="lang" data-es="VNA App" data-ca="VNA App">VNA App</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos Educativos" data-ca="Recursos Educatius">Recursos Educativos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="#resources" class="lang" data-es="Recursos Adicionales" data-ca="Recursos Addicionals">Recursos Adicionales</a></li>
+                    <li><a href="https://teamtowershuma.com/masia" class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Experiencias" data-ca="TeamTowers Experiències">TeamTowers Experiencias</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Partners y Contacto" data-ca="Partners i Contacte">Partners y Contacto</h3>
+                <ul class="footer-links">
+                    <li><a href="https://pantheon.work" target="_blank">Pantheon.work</a></li>
+                    <li><a href="https://vernaa.com" target="_blank">Vernaa</a></li>
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Value Network Analysis Lab - Recurso educativo para la transformación organizacional con la metodología VNA. Vilafranca del Penedès, Barcelona." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Value Network Analysis Lab - Recurs educatiu per a la transformació organitzativa amb la metodologia VNA. Vilafranca del Penedès, Barcelona.">© 2026 TeamTowers Humà. Todos los derechos reservados. Value Network Analysis Lab - Recurso educativo para la transformación organizacional con la metodología VNA. Vilafranca del Penedès, Barcelona.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Language switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update language-specific elements
+                document.querySelectorAll(`[lang="es"]`).forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                document.querySelectorAll(`[lang="ca"]`).forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '600';
+                notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '10000';
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 5s forwards';
+                notification.innerHTML = document.documentElement.lang === 'ca' ? 
+                    '✨ Benvingut al Value Network Analysis Lab! Explora els nostres recursos educatius per dominar VNA.' :
+                    '✨ ¡Bienvenido al Value Network Analysis Lab! Explora nuestros recursos educativos para dominar VNA.';
+                document.body.appendChild(notification);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 5500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
