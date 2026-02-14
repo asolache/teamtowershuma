@@ -355,6 +355,28 @@
             padding: 20px;
         }
         
+        .chart-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .chart-tab {
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: var(--light);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .chart-tab.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
         .stats-bar {
             display: flex;
             justify-content: space-around;
@@ -849,31 +871,24 @@
             .app-container {
                 grid-template-columns: 1fr;
             }
-            
             h1 {
                 font-size: 2.3rem;
             }
-            
             .tagline {
                 font-size: 1.2rem;
             }
-            
             .panel {
                 padding: 20px;
             }
-            
             .chart-container {
                 height: 320px;
             }
-            
             .btn-group {
                 grid-template-columns: 1fr;
             }
-            
             .export-buttons {
                 grid-template-columns: 1fr;
             }
-            
             .form-row {
                 grid-template-columns: 1fr;
             }
@@ -885,48 +900,37 @@
                 right: 15px;
                 padding: 3px;
             }
-            
             .header-logo {
                 height: 50px;
             }
-            
             h1 {
                 font-size: 2rem;
             }
-            
             .tagline {
                 font-size: 1.1rem;
             }
-            
             .container {
                 padding: 20px 15px;
             }
-            
             .btn {
                 padding: 12px 15px;
                 font-size: 1rem;
             }
-            
             .chart-container {
                 height: 280px;
             }
-            
             .form-row {
                 grid-template-columns: 1fr;
             }
-            
             .btn-group {
                 grid-template-columns: 1fr;
             }
-            
             .export-buttons {
                 grid-template-columns: 1fr;
             }
-            
             .stat-value {
                 font-size: 1.8rem;
             }
-            
             .stat-label {
                 font-size: 0.9rem;
             }
@@ -1058,6 +1062,54 @@
         .form-feedback.invalid {
             color: var(--danger);
         }
+        
+        /* Test Section */
+        .test-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--gold);
+        }
+        
+        .test-section h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-section h3::before {
+            content: '🧪';
+        }
+        
+        .test-results {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .test-pass {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .test-fail {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .test-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -1117,6 +1169,21 @@
                     <div class="btn-group">
                         <button id="import-roles" class="btn btn-success">
                             <span>📤</span> <span class="lang" data-es="Importar Roles" data-ca="Importar Rols">Importar Roles</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="import-section">
+                    <h3 class="lang" data-es="Importar Datos desde JSON" data-ca="Importar Dades des de JSON">Importar Datos desde JSON</h3>
+                    <p class="lang" data-es="Importa todos los datos de tu proyecto desde un archivo JSON exportado previamente." data-ca="Importa totes les dades del teu projecte des d'un fitxer JSON exportat prèviament.">Importa todos los datos de tu proyecto desde un archivo JSON exportado previamente.</p>
+                    
+                    <div class="input-group">
+                        <label class="lang" data-es="Archivo JSON" data-ca="Fitxer JSON">Archivo JSON</label>
+                        <input type="file" id="import-json-file" accept=".json">
+                    </div>
+                    <div class="btn-group">
+                        <button id="import-json" class="btn btn-primary">
+                            <span>📥</span> <span class="lang" data-es="Importar JSON" data-ca="Importar JSON">Importar JSON</span>
                         </button>
                     </div>
                 </div>
@@ -1191,10 +1258,25 @@
                     <h3 class="lang" data-es="Exportar para Tokenomics App" data-ca="Exportar per a Tokenomics App">Exportar para Tokenomics App</h3>
                     <p class="lang" data-es="Exporta tus datos como CSV para importarlos en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor)." data-ca="Exporta les teves dades com a CSV per importar-les a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà: Usuari, Rol, Valor Total i Tokens a Mintar (1 token = 1 unitat de valor).">Exporta tus datos como CSV para importarlos en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor).</p>
                 </div>
+                
+                <div class="test-section">
+                    <h3 class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</h3>
+                    <p class="lang" data-es="Verifica que la aplicación funcione correctamente en tu navegador." data-ca="Verifica que l'aplicació funcioni correctament al teu navegador.">Verifica que la aplicación funcione correctamente en tu navegador.</p>
+                    <button id="run-tests" class="btn btn-warning" style="width: 100%; margin-top: 10px;">
+                        <span>🔬</span> <span class="lang" data-es="Ejecutar Pruebas" data-ca="Executar Proves">Ejecutar Pruebas</span>
+                    </button>
+                    <div class="test-results" id="test-results"></div>
+                </div>
             </div>
             
             <div class="visualization-container">
                 <h2>📈 <span class="lang" data-es="Distribución de Valor" data-ca="Distribució de Valor">Distribución de Valor</span></h2>
+                
+                <div class="chart-tabs">
+                    <button class="chart-tab active" data-view="user">Por Persona</button>
+                    <button class="chart-tab" data-view="role">Por Rol</button>
+                </div>
+                
                 <div class="chart-container">
                     <canvas id="valueChart"></canvas>
                 </div>
@@ -1328,17 +1410,18 @@
     </footer>
     
     <script>
-        // ========== APPLICATION STATE ==========
+        // ========== W3C COMPLIANT VALUE ACCOUNTING APP ==========
+        // Data structure that can be easily migrated to a database
         let accountingData = {
             projectName: "Proyecto MASIA",
             valueUnit: "puntos",
             roles: [],
-            users: [],
-            deliverables: []
+            deliverables: [] // Each deliverable: { id, userName, role, deliverable, transactionType, description, link, value, timestamp }
         };
         
         // Chart variable
         let valueChart = null;
+        let currentChartView = 'user'; // 'user' or 'role'
         
         // Notification system
         function showNotification(message, type = 'info', duration = 3000) {
@@ -1372,10 +1455,10 @@
             const ctx = document.getElementById('valueChart').getContext('2d');
             valueChart = new Chart(ctx, {
                 type: 'doughnut',
-                 {
+                data: {
                     labels: [],
                     datasets: [{
-                         [],
+                        data: [],
                         backgroundColor: [
                             'rgba(30, 58, 138, 0.85)',
                             'rgba(79, 70, 229, 0.85)',
@@ -1422,6 +1505,54 @@
                     }
                 }
             });
+        }
+        
+        // Update chart based on current view (user or role)
+        function updateChart(view = currentChartView) {
+            if (!valueChart) return;
+            
+            currentChartView = view;
+            
+            let labels = [];
+            let data = [];
+            
+            if (view === 'user') {
+                // Aggregate by user
+                const userTotals = {};
+                
+                accountingData.deliverables.forEach(deliverable => {
+                    const userName = deliverable.userName;
+                    userTotals[userName] = (userTotals[userName] || 0) + deliverable.value;
+                });
+                
+                // Sort users by value (descending) and take top 8
+                const sortedUsers = Object.entries(userTotals)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 8);
+                
+                labels = sortedUsers.map(([user]) => user);
+                data = sortedUsers.map(([, value]) => value);
+            } else {
+                // Aggregate by role
+                const roleTotals = {};
+                
+                accountingData.deliverables.forEach(deliverable => {
+                    const role = deliverable.role;
+                    roleTotals[role] = (roleTotals[role] || 0) + deliverable.value;
+                });
+                
+                // Sort roles by value (descending) and take top 8
+                const sortedRoles = Object.entries(roleTotals)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 8);
+                
+                labels = sortedRoles.map(([role]) => role);
+                data = sortedRoles.map(([, value]) => value);
+            }
+            
+            valueChart.data.labels = labels;
+            valueChart.data.datasets[0].data = data;
+            valueChart.update();
         }
         
         // Setup autocomplete for input fields
@@ -1485,7 +1616,7 @@
             });
         }
         
-        // Import roles from CSV - SIMPLE AND INFALLIBLE
+        // Import roles from CSV
         function importRoles() {
             const fileInput = document.getElementById('import-roles-file');
             const file = fileInput.files[0];
@@ -1566,6 +1697,64 @@
             reader.readAsText(file);
         }
         
+        // Import data from JSON
+        function importJSON() {
+            const fileInput = document.getElementById('import-json-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('⚠️ Selecciona un archivo JSON primero', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            const importBtn = document.getElementById('import-json');
+            const originalHTML = importBtn.innerHTML;
+            importBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Importando...';
+            importBtn.disabled = true;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate structure
+                    if (!importedData.projectName || !importedData.valueUnit || !Array.isArray(importedData.roles) || !Array.isArray(importedData.deliverables)) {
+                        throw new Error('El archivo JSON no tiene la estructura correcta');
+                    }
+                    
+                    // Import data
+                    accountingData = {
+                        projectName: importedData.projectName,
+                        valueUnit: importedData.valueUnit,
+                        roles: [...new Set([...accountingData.roles, ...importedData.roles])], // Merge without duplicates
+                        deliverables: [...accountingData.deliverables, ...importedData.deliverables]
+                    };
+                    
+                    // Save and update
+                    saveData();
+                    updateVisualizations();
+                    
+                    showNotification(`✅ Datos importados correctamente: ${importedData.deliverables.length} entregables`, 'success');
+                } catch (error) {
+                    console.error('Error importing JSON:', error);
+                    showNotification(`❌ Error al importar: ${error.message}`, 'error');
+                } finally {
+                    // Restore button
+                    importBtn.innerHTML = originalHTML;
+                    importBtn.disabled = false;
+                }
+            };
+            
+            reader.onerror = function() {
+                importBtn.innerHTML = originalHTML;
+                importBtn.disabled = false;
+                showNotification('❌ Error al leer el archivo', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+        
         // Add deliverable
         function addDeliverable() {
             const userName = document.getElementById('user-name').value.trim();
@@ -1608,26 +1797,6 @@
                 showNotification(`✨ Nuevo rol creado: ${roleName}`, 'info');
             }
             
-            // Find or create user (case-insensitive)
-            let user = accountingData.users.find(u => u.name.toLowerCase() === userName.toLowerCase());
-            if (!user) {
-                user = {
-                    id: `user-${Date.now()}`,
-                    name: userName,
-                    roles: [roleName],
-                    totalValue: 0,
-                    deliverables: []
-                };
-                accountingData.users.push(user);
-                showNotification(`✨ Nuevo usuario creado: ${userName}`, 'info');
-            } else {
-                // Add role if not exists (case-insensitive)
-                const hasRole = user.roles.some(r => r.toLowerCase() === roleName.toLowerCase());
-                if (!hasRole) {
-                    user.roles.push(roleName);
-                }
-            }
-            
             // Create deliverable
             const deliverable = {
                 id: `deliverable-${Date.now()}`,
@@ -1641,9 +1810,7 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Add to user and global list
-            user.deliverables.push(deliverable);
-            user.totalValue += value;
+            // Add to deliverables list
             accountingData.deliverables.push(deliverable);
             
             // Save and update
@@ -1668,33 +1835,18 @@
                 return;
             }
             
-            // Find deliverable
+            // Find deliverable index
             const deliverableIndex = accountingData.deliverables.findIndex(d => d.id === id);
             if (deliverableIndex === -1) return;
             
             const deliverable = accountingData.deliverables[deliverableIndex];
             const valueToRemove = deliverable.value;
             
-            // Find user and update
-            const user = accountingData.users.find(u => u.name === deliverable.userName);
-            if (user) {
-                // Remove from user's deliverables
-                user.deliverables = user.deliverables.filter(d => d.id !== id);
-                
-                // Update total value
-                user.totalValue -= valueToRemove;
-                
-                // Clean up user if no deliverables left
-                if (user.deliverables.length === 0) {
-                    accountingData.users = accountingData.users.filter(u => u.id !== user.id);
-                }
-            }
-            
-            // Remove from global list
+            // Remove from deliverables list
             accountingData.deliverables.splice(deliverableIndex, 1);
             
             // Clean up unused roles
-            const usedRoles = [...new Set(accountingData.users.flatMap(u => u.roles))];
+            const usedRoles = [...new Set(accountingData.deliverables.map(d => d.role))];
             accountingData.roles = usedRoles;
             
             // Save and update
@@ -1707,10 +1859,10 @@
         // Update visualizations
         function updateVisualizations() {
             // Update stats
-            document.getElementById('total-users').textContent = accountingData.users.length;
+            document.getElementById('total-users').textContent = [...new Set(accountingData.deliverables.map(d => d.userName))].length;
             document.getElementById('total-roles').textContent = accountingData.roles.length;
             document.getElementById('total-deliverables').textContent = accountingData.deliverables.length;
-            document.getElementById('total-value').textContent = accountingData.users.reduce((sum, u) => sum + u.totalValue, 0);
+            document.getElementById('total-value').textContent = accountingData.deliverables.reduce((sum, d) => sum + d.value, 0);
             
             // Update chart
             updateChart();
@@ -1722,25 +1874,11 @@
             updateDeliverablesList();
         }
         
-        // Update chart
-        function updateChart() {
-            if (!valueChart) return;
-            
-            // Get top 8 users by value
-            const topUsers = [...accountingData.users]
-                .sort((a, b) => b.totalValue - a.totalValue)
-                .slice(0, 8);
-            
-            valueChart.data.labels = topUsers.map(u => u.name);
-            valueChart.data.datasets[0].data = topUsers.map(u => u.totalValue);
-            valueChart.update();
-        }
-        
         // Update ranking table
         function updateRankingTable() {
             const tbody = document.getElementById('ranking-body');
             
-            if (accountingData.users.length === 0) {
+            if (accountingData.deliverables.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
@@ -1757,17 +1895,35 @@
                 return;
             }
             
+            // Aggregate by user
+            const userTotals = {};
+            const userRoles = {};
+            
+            accountingData.deliverables.forEach(deliverable => {
+                const userName = deliverable.userName;
+                userTotals[userName] = (userTotals[userName] || 0) + deliverable.value;
+                userRoles[userName] = userRoles[userName] || new Set();
+                userRoles[userName].add(deliverable.role);
+            });
+            
             // Sort users by total value (descending)
-            const sortedUsers = [...accountingData.users].sort((a, b) => b.totalValue - a.totalValue);
+            const sortedUsers = Object.entries(userTotals)
+                .sort((a, b) => b[1] - a[1])
+                .map(([name, total], index) => ({
+                    position: index + 1,
+                    name: name,
+                    roles: Array.from(userRoles[name]),
+                    total: total
+                }));
             
             let html = '';
-            sortedUsers.forEach((user, index) => {
+            sortedUsers.forEach(user => {
                 html += `
                     <tr>
-                        <td><span class="position-badge">${index + 1}</span></td>
+                        <td><span class="position-badge">${user.position}</span></td>
                         <td>${user.name}</td>
                         <td>${user.roles.join(', ')}</td>
-                        <td>${user.totalValue} ${accountingData.valueUnit}</td>
+                        <td>${user.total} ${accountingData.valueUnit}</td>
                     </tr>
                 `;
             });
@@ -1797,7 +1953,7 @@
             }
             
             // Sort deliverables by timestamp (newest first)
-            const sortedDeliverables = [...accountingData.deliverables].sort((a, b) => 
+            const sortedDeliverables = [...accountingData.deliverables].sort((a, b) =>
                 new Date(b.timestamp) - new Date(a.timestamp)
             );
             
@@ -1830,7 +1986,7 @@
         
         // Export JSON
         function exportJSON() {
-            if (accountingData.users.length === 0) {
+            if (accountingData.deliverables.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
                 return;
             }
@@ -1865,20 +2021,32 @@
         
         // Export CSV for Tokenomics
         function exportCSV() {
-            if (accountingData.users.length === 0) {
+            if (accountingData.deliverables.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
                 return;
             }
             
             try {
+                // Aggregate by user
+                const userTotals = {};
+                const userRoles = {};
+                
+                accountingData.deliverables.forEach(deliverable => {
+                    const userName = deliverable.userName;
+                    userTotals[userName] = (userTotals[userName] || 0) + deliverable.value;
+                    userRoles[userName] = userRoles[userName] || new Set();
+                    userRoles[userName].add(deliverable.role);
+                });
+                
                 // CSV headers - MVP format for Tokenomics
                 let csv = 'Usuario,Rol,Valor Total,Tokens a Mintar\n';
                 
                 // Data rows - 1 token = 1 value unit
-                accountingData.users.forEach(user => {
-                    const tokensToMint = user.totalValue; // Simple conversion: 1 token per value unit
+                Object.entries(userTotals).forEach(([userName, totalValue]) => {
+                    const roles = Array.from(userRoles[userName]).join(', ');
+                    const tokensToMint = totalValue; // Simple conversion: 1 token per value unit
                     
-                    csv += `"${user.name}","${user.roles.join(', ')}","${user.totalValue}","${tokensToMint}"\n`;
+                    csv += `"${userName}","${roles}","${totalValue}","${tokensToMint}"\n`;
                 });
                 
                 // Create blob and download
@@ -1901,7 +2069,7 @@
                     URL.revokeObjectURL(url);
                 }, 100);
                 
-                showNotification(`✅ Exportado para Tokenomics: ${accountingData.users.length} usuarios, ${accountingData.users.reduce((sum, u) => sum + u.totalValue, 0)} tokens totales`, 'success');
+                showNotification(`✅ Exportado para Tokenomics: ${Object.keys(userTotals).length} usuarios, ${Object.values(userTotals).reduce((a, b) => a + b, 0)} tokens totales`, 'success');
             } catch (error) {
                 console.error('Error exporting CSV:', error);
                 showNotification(`❌ Error al exportar CSV: ${error.message}`, 'error');
@@ -1922,7 +2090,6 @@
                 projectName: "Proyecto MASIA",
                 valueUnit: "puntos",
                 roles: [],
-                users: [],
                 deliverables: []
             };
             
@@ -1946,7 +2113,7 @@
             try {
                 localStorage.setItem('valueAccountingData', JSON.stringify(accountingData));
             } catch (error) {
-                console.error('Error saving ', error);
+                console.error('Error saving data:', error);
                 showNotification('⚠️ No se pudieron guardar los datos. El almacenamiento local puede estar deshabilitado.', 'warning');
             }
         }
@@ -1958,21 +2125,18 @@
                 if (saved) {
                     const parsedData = JSON.parse(saved);
                     
-                    accountingData = {
-                        projectName: parsedData.projectName || "Proyecto MASIA",
-                        valueUnit: parsedData.valueUnit || "puntos",
-                        roles: parsedData.roles || [],
-                        users: parsedData.users || [],
-                        deliverables: parsedData.deliverables || []
-                    };
-                    
-                    // Restore form fields
-                    document.getElementById('project-name').value = accountingData.projectName;
-                    document.getElementById('value-unit').value = accountingData.valueUnit;
-                    
-                    // Show notification if data was loaded
-                    if (accountingData.users.length > 0) {
-                        showNotification(`✅ Datos cargados: ${accountingData.users.length} usuarios, ${accountingData.deliverables.length} entregables`, 'info');
+                    // Validate structure before loading
+                    if (parsedData.projectName && parsedData.valueUnit && Array.isArray(parsedData.roles) && Array.isArray(parsedData.deliverables)) {
+                        accountingData = parsedData;
+                        
+                        // Restore form fields
+                        document.getElementById('project-name').value = accountingData.projectName;
+                        document.getElementById('value-unit').value = accountingData.valueUnit;
+                        
+                        // Show notification if data was loaded
+                        if (accountingData.deliverables.length > 0) {
+                            showNotification(`✅ Datos cargados: ${accountingData.deliverables.length} entregables`, 'info');
+                        }
                     }
                 }
             } catch (error) {
@@ -1986,6 +2150,7 @@
             // Form elements
             document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
             document.getElementById('import-roles').addEventListener('click', importRoles);
+            document.getElementById('import-json').addEventListener('click', importJSON);
             document.getElementById('export-json').addEventListener('click', exportJSON);
             document.getElementById('export-csv').addEventListener('click', exportCSV);
             document.getElementById('reset-data').addEventListener('click', resetData);
@@ -2019,13 +2184,22 @@
                     feedback.className = 'form-feedback valid';
                 }
             });
+            
+            // Chart tabs
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart(this.getAttribute('data-view'));
+                });
+            });
         }
         
         // Setup autocomplete
         function setupAutocompletes() {
             // User autocomplete - suggests existing users
             setupAutocomplete('user-name', 'user-list', () => 
-                accountingData.users.map(u => u.name)
+                [...new Set(accountingData.deliverables.map(d => d.userName))]
             );
             
             // Role autocomplete - suggests imported/existing roles
@@ -2080,6 +2254,183 @@
             }
         }
         
+        // ========== TEST SUITE ==========
+        const testSuite = {
+            results: [],
+            
+            assert: {
+                equals: function(actual, expected, testName) {
+                    const passed = actual === expected;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: expected
+                    });
+                    return passed;
+                },
+                truthy: function(actual, testName) {
+                    const passed = !!actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'truthy value'
+                    });
+                    return passed;
+                },
+                falsy: function(actual, testName) {
+                    const passed = !actual;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: 'falsy value'
+                    });
+                    return passed;
+                },
+                type: function(actual, expectedType, testName) {
+                    const actualType = typeof actual;
+                    const passed = actualType === expectedType;
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actualType,
+                        expected: expectedType
+                    });
+                    return passed;
+                },
+                includes: function(array, value, testName) {
+                    const passed = array.includes(value);
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: array,
+                        expected: `includes ${value}`
+                    });
+                    return passed;
+                }
+            },
+            
+            runTests: function() {
+                this.results = [];
+                
+                // DOM ELEMENTS TESTS
+                this.assert.truthy(document.getElementById('add-deliverable'), "Add deliverable button exists");
+                this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
+                this.assert.truthy(document.getElementById('export-csv'), "Export CSV button exists");
+                this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
+                this.assert.truthy(document.getElementById('import-roles'), "Import roles button exists");
+                this.assert.truthy(document.getElementById('import-json'), "Import JSON button exists");
+                this.assert.truthy(document.getElementById('user-name'), "User name input exists");
+                this.assert.truthy(document.getElementById('role-name'), "Role name input exists");
+                
+                // INITIAL STATE TESTS
+                this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
+                this.assert.equals(accountingData.roles.length, 0, "Initial state has no roles");
+                this.assert.equals(accountingData.projectName, "Proyecto MASIA", "Initial project name is correct");
+                this.assert.equals(accountingData.valueUnit, "puntos", "Initial value unit is correct");
+                
+                // ADD DELIVERABLE TEST
+                const testUserName = "Test User " + Date.now();
+                const testRole = "Test Role";
+                const testDeliverable = "Test Deliverable";
+                const testValue = 100;
+                
+                // Create a test deliverable
+                const testDeliverableObj = {
+                    id: `deliverable-${Date.now()}`,
+                    userName: testUserName,
+                    role: testRole,
+                    deliverable: testDeliverable,
+                    transactionType: "tangible",
+                    description: "Test description",
+                    link: "",
+                    value: testValue,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Add to accounting data
+                accountingData.deliverables.push(testDeliverableObj);
+                if (!accountingData.roles.includes(testRole)) {
+                    accountingData.roles.push(testRole);
+                }
+                
+                this.assert.equals(accountingData.deliverables.length, 1, "Adding a deliverable increases count");
+                this.assert.equals(accountingData.roles.length, 1, "Adding a deliverable with new role adds role");
+                this.assert.includes(accountingData.deliverables.map(d => d.userName), testUserName, "Deliverable has correct user name");
+                this.assert.includes(accountingData.deliverables.map(d => d.role), testRole, "Deliverable has correct role");
+                this.assert.includes(accountingData.deliverables.map(d => d.value), testValue, "Deliverable has correct value");
+                
+                // AGGREGATION TESTS
+                const userTotals = {};
+                accountingData.deliverables.forEach(d => {
+                    userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
+                });
+                
+                this.assert.equals(userTotals[testUserName], testValue, "User total value is correct");
+                
+                const roleTotals = {};
+                accountingData.deliverables.forEach(d => {
+                    roleTotals[d.role] = (roleTotals[d.role] || 0) + d.value;
+                });
+                
+                this.assert.equals(roleTotals[testRole], testValue, "Role total value is correct");
+                
+                // EXPORT FUNCTIONS TEST
+                this.assert.truthy(typeof exportCSV === 'function', "exportCSV function exists");
+                this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
+                
+                // Clean up test data
+                accountingData.deliverables = [];
+                accountingData.roles = [];
+                
+                return this.results;
+            },
+            
+            displayResults: function(results) {
+                const testResultsDiv = document.getElementById('test-results');
+                testResultsDiv.innerHTML = '';
+                
+                let passedCount = 0;
+                let failedCount = 0;
+                
+                results.forEach(result => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = `test-item ${result.passed ? 'test-pass' : 'test-fail'}`;
+                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
+                        `   Expected: ${result.expected}<br/>` +
+                        `   Actual: ${result.actual}`;
+                    testResultsDiv.appendChild(resultDiv);
+                    
+                    if (result.passed) passedCount++;
+                    else failedCount++;
+                });
+                
+                // Summary
+                const summary = document.createElement('div');
+                summary.style.fontWeight = 'bold';
+                summary.style.marginTop = '15px';
+                summary.style.paddingTop = '10px';
+                summary.style.borderTop = '1px solid #ddd';
+                summary.innerHTML = `Resultados: ${passedCount} pasadas, ${failedCount} fallidas de ${results.length} pruebas`;
+                testResultsDiv.appendChild(summary);
+                
+                // Show notification
+                if (failedCount === 0) {
+                    showNotification(`✅ ¡Todas las pruebas pasaron! (${passedCount}/${results.length})`, 'success');
+                } else {
+                    showNotification(`⚠️ ${failedCount} pruebas fallidas. Revisa los resultados.`, 'error');
+                }
+            }
+        };
+        
+        // Run tests
+        function runTests() {
+            const results = testSuite.runTests();
+            testSuite.displayResults(results);
+        }
+        
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
             // Setup language
@@ -2100,6 +2451,9 @@
             // Update visualizations
             updateVisualizations();
             
+            // Setup test button
+            document.getElementById('run-tests').addEventListener('click', runTests);
+            
             // Show welcome notification
             setTimeout(() => {
                 showNotification('✨ ¡Bienvenido a Value Accounting App! Importa roles o registra entregables para comenzar.', 'success', 5000);
@@ -2107,7 +2461,7 @@
             
             // Show tip after 3 seconds
             setTimeout(() => {
-                if (accountingData.users.length === 0) {
+                if (accountingData.deliverables.length === 0) {
                     showNotification('💡 Consejo: Importa roles desde la VNA App o empieza creando tu primer entregable', 'info', 8000);
                 }
             }, 3000);
@@ -2115,3 +2469,4 @@
     </script>
 </body>
 </html>
+
