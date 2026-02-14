@@ -152,6 +152,15 @@
             animation: fadeInUp 1s ease-out;
         }
         
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -175,6 +184,13 @@
             background-clip: text;
         }
         
+        .hero-tagline {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+        }
+        
         .hero p {
             font-size: 1.8rem;
             margin-bottom: 40px;
@@ -182,14 +198,6 @@
             margin-left: auto;
             margin-right: auto;
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-        
-        .hero-subtitle {
-            font-size: 1.4rem;
-            opacity: 0.95;
-            margin-top: 15px;
-            font-weight: 300;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
         
         /* CTA Buttons */
@@ -279,87 +287,6 @@
             margin: 30px auto 60px;
             color: var(--gray);
         }
-        
-        /* Castell Structure Section */
-        .castell-section {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .castell-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(30, 58, 138, 0.05) 0%, rgba(255,255,255,0) 70%);
-            z-index: 0;
-        }
-        
-        .castell-structure {
-            display: flex;
-            flex-direction: column;
-            max-width: 1000px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .castell-level {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: var(--box-shadow);
-            position: relative;
-            border-left: 6px solid var(--primary);
-            transition: var(--transition);
-        }
-        
-        .castell-level:hover {
-            transform: translateX(10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
-        
-        .castell-level.pinya {
-            border-left-color: var(--success);
-        }
-        
-        .castell-level.tronc {
-            border-left-color: var(--primary);
-        }
-        
-        .castell-level.folre {
-            border-left-color: var(--accent);
-        }
-        
-        .castell-level.pom {
-            border-left-color: var(--gold);
-        }
-        
-        .level-title {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .level-title::before {
-            content: '';
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-        
-        .pinya .level-title::before { background: var(--success); }
-        .tronc .level-title::before { background: var(--primary); }
-        .folre .level-title::before { background: var(--accent); }
-        .pom .level-title::before { background: var(--gold); }
         
         /* Methodologies Section */
         .methodologies-section {
@@ -781,9 +708,6 @@
             section {
                 padding: 80px 20px;
             }
-            .castell-level {
-                padding: 30px 25px;
-            }
         }
         
         @media (max-width: 768px) {
@@ -801,11 +725,11 @@
             .hero h1 {
                 font-size: 3rem;
             }
+            .hero-tagline {
+                font-size: 1.6rem;
+            }
             .hero p {
                 font-size: 1.4rem;
-            }
-            .hero-subtitle {
-                font-size: 1.2rem;
             }
             .cta-container {
                 flex-direction: column;
@@ -821,17 +745,14 @@
             .section-subtitle {
                 font-size: 1.2rem;
             }
-            .castell-level {
-                padding: 25px 20px;
-            }
-            .level-title {
-                font-size: 1.8rem;
-            }
         }
         
         @media (max-width: 480px) {
             .hero h1 {
                 font-size: 2.5rem;
+            }
+            .hero-tagline {
+                font-size: 1.4rem;
             }
             .hero p {
                 font-size: 1.3rem;
@@ -841,9 +762,6 @@
             }
             section {
                 padding: 60px 15px;
-            }
-            .castell-level {
-                padding: 20px 15px;
             }
             .methodology-card, .service-card {
                 padding: 25px 20px;
@@ -871,121 +789,124 @@
         </video>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>TeamTowers Humà</h1>
-            <p>Transformación Organizacional con la Metáfora Castellera</p>
-            <p class="hero-subtitle">Vilafranca del Penedès - El corazón del Penedès donde nace la innovación en gestión de personas</p>
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h1>
+            <p class="hero-tagline lang" data-es="Transformación Organizacional con la Metáfora Castellera" data-ca="Transformació Organitzativa amb la Metàfora Castellera">Transformación Organizacional con la Metáfora Castellera</p>
+            <p class="lang" data-es="Transforma tu organización con la metáfora castellera: de la pinya al pom de dalt. Un modelo replicable que integra Value Network Analysis, Comunidades de Práctica, Tokenomics y más para construir organizaciones humanas altamente eficientes." data-ca="Transforma la teva organització amb la metàfora castellera: de la pinya al pom de dalt. Un model replicable que integra Value Network Analysis, Comunitats de Pràctica, Tokenomics i més per construir organitzacions humanes altament eficients.">Transforma tu organización con la metáfora castellera: de la pinya al pom de dalt. Un modelo replicable que integra Value Network Analysis, Comunidades de Práctica, Tokenomics y más para construir organizaciones humanas altamente eficientes.</p>
             <div class="cta-container">
-                <a href="#methodologies" class="btn btn-primary">Descubrir Metodologías</a>
-                <a href="#services" class="btn btn-accent">Explorar Servicios</a>
-                <a href="#about" class="btn btn-secondary">Conocer Equipo</a>
+                <a href="#methodologies" class="btn btn-primary lang" data-es="Descubrir Metodologías" data-ca="Descobrir Metodologies">Descubrir Metodologías</a>
+                <a href="#services" class="btn btn-accent lang" data-es="Explorar Servicios" data-ca="Explorar Serveis">Explorar Servicios</a>
+                <a href="#about" class="btn btn-secondary lang" data-es="Conocer Equipo" data-ca="Coneix Equip">Conocer Equipo</a>
             </div>
         </div>
     </section>
     
     <!-- Methodologies Section -->
     <section id="methodologies" class="methodologies-section">
-        <h2 class="section-title">Nuestras Metodologías</h2>
-        <p class="section-subtitle">Enfoques innovadores basados en la metáfora castellera para transformar organizaciones</p>
+        <h2 class="section-title lang" data-es="Nuestras Metodologías" data-ca="Les Nostres Metodologies">Nuestras Metodologías</h2>
+        <p class="section-subtitle lang" data-es="Enfoques innovadores basados en la metáfora castellera para transformar organizaciones" data-ca="Enfocaments innovadors basats en la metàfora castellera per transformar organitzacions">Enfoques innovadores basados en la metáfora castellera para transformar organizaciones</p>
         
         <div class="methodologies-grid">
+            <div class="methodology-card castellers">
+                <div class="methodology-icon">🏰</div>
+                <h3 class="lang" data-es="Talleres de Castellers" data-ca="Tallers de Castellers">Talleres de Castellers</h3>
+                <p class="lang" data-es="Experiencias transformadoras basadas en la tradición UNESCO de los castellers. Fortalece la cohesión, comunicación y liderazgo con metáforas vivas." data-ca="Experiències transformadores basades en la tradició UNESCO dels castellers. Fortaleix la cohesió, comunicació i lideratge amb metàfores vives.">Experiencias transformadoras basadas en la tradición UNESCO de los castellers. Fortalece la cohesión, comunicación y liderazgo con metáforas vivas.</p>
+                <a href="https://www.teamtowers.eu" class="methodology-link lang" data-es="TeamTowers Experiencias" data-ca="TeamTowers Experiències">TeamTowers Experiencias →</a>
+            </div>
+            
             <div class="methodology-card value-maps">
                 <div class="methodology-icon">📊</div>
-                <h3>Análisis de Mapas de Valor</h3>
-                <p>Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones, identifica cuellos de botella y optimiza procesos con nuestra metodología VNA.</p>
-                <a href="https://teamtowershuma.com/valor" class="methodology-link">Explorar VNA</a>
+                <h3 class="lang" data-es="Análisis de Mapas de Valor" data-ca="Anàlisi de Mapes de Valor">Análisis de Mapas de Valor</h3>
+                <p class="lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones, identifica cuellos de botella y optimiza procesos con nuestra metodología VNA." data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització. Visualitza connexions, identifica colls d'ampolla i optimitza processos amb la nostra metodologia VNA.">Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones, identifica cuellos de botella y optimiza procesos con nuestra metodología VNA.</p>
+                <a href="https://teamtowershuma.com/valor" class="methodology-link lang" data-es="Explorar VNA" data-ca="Explorar VNA">Explorar VNA →</a>
             </div>
             
             <div class="methodology-card coops">
                 <div class="methodology-icon">🎓</div>
-                <h3>Aprendizaje y Conocimiento</h3>
-                <p>Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo.</p>
-                <a href="https://teamtowershuma.com/coops" class="methodology-link">Comunidades de Práctica</a>
+                <h3 class="lang" data-es="Aprendizaje y Conocimiento" data-ca="Aprenentatge i Coneixement">Aprendizaje y Conocimiento</h3>
+                <p class="lang" data-es="Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo." data-ca="Models d'aprenentatge basats en xarxes de valor. Captura coneixement tàcit, desenvolupa competències crítiques i crea una cultura d'aprenentatge continu.">Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo.</p>
+                <a href="https://teamtowershuma.com/coops" class="methodology-link lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica →</a>
             </div>
             
             <div class="methodology-card recognition">
                 <div class="methodology-icon">🏆</div>
-                <h3>Reconocimiento y Recompensa</h3>
-                <p>Sistemas transparentes de reconocimiento y recompensa basados en el valor aportado. Contabiliza entregables y prepara para la futura tokenización.</p>
-                <a href="https://teamtowershuma.com/valor" class="methodology-link">Sistema de Reconocimiento</a>
-            </div>
-            
-            <div class="methodology-card castellers">
-                <div class="methodology-icon">🏰</div>
-                <h3>Talleres de Castellers</h3>
-                <p>Experiencias transformadoras basadas en la tradición UNESCO de los castellers. Fortalece la cohesión, comunicación y liderazgo con metáforas vivas.</p>
-                <a href="https://www.teamtowers.eu" class="methodology-link">TeamTowers Experiencias</a>
+                <h3 class="lang" data-es="Reconocimiento y Recompensa" data-ca="Reconeixement i Recompensa">Reconocimiento y Recompensa</h3>
+                <p class="lang" data-es="Sistemas transparentes de reconocimiento y recompensa basados en el valor aportado. Contabiliza entregables y prepara para la futura tokenización." data-ca="Sistemes transparents de reconeixement i recompensa basats en el valor aportat. Compta entregables i prepara per a la futura tokenització.">Sistemas transparentes de reconocimiento y recompensa basados en el valor aportado. Contabiliza entregables y prepara para la futura tokenización.</p>
+                <a href="https://teamtowershuma.com/valor" class="methodology-link lang" data-es="Sistema de Reconocimiento" data-ca="Sistema de Reconeixement">Sistema de Reconocimiento →</a>
             </div>
         </div>
     </section>
     
     <!-- Services Section -->
     <section id="services" class="services-section">
-        <h2 class="section-title">Nuestros Servicios</h2>
-        <p class="section-subtitle">Soluciones integrales para la transformación organizacional con enfoque humanista</p>
+        <h2 class="section-title lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</h2>
+        <p class="section-subtitle lang" data-es="Soluciones integrales para la transformación organizacional con enfoque humanista" data-ca="Solucions integrals per a la transformació organitzativa amb enfocament humanista">Soluciones integrales para la transformación organizacional con enfoque humanista</p>
         
         <div class="services-grid">
             <div class="service-card">
                 <div class="service-icon">👥</div>
-                <h3>Teambuilding</h3>
-                <p>Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo con la tradición UNESCO de los castellers.</p>
-                <a href="https://www.teamtowers.eu" class="service-link">Descubrir TeamTowers</a>
+                <h3 class="lang" data-es="Teambuilding" data-ca="Teambuilding">Teambuilding</h3>
+                <p class="lang" data-es="Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo con la tradición UNESCO de los castellers." data-ca="Experiències castelleres transformadores per a esdeveniments corporatius. Fortaleix la cohesió, comunicació i lideratge amb la tradició UNESCO dels castellers.">Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo con la tradición UNESCO de los castellers.</p>
+                <a href="https://www.teamtowers.eu" class="service-link lang" data-es="Descubrir TeamTowers" data-ca="Descobrir TeamTowers">Descubrir TeamTowers →</a>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">🎪</div>
-                <h3>Producción de Eventos</h3>
-                <p>Organización y producción de eventos corporativos con enfoque en la experiencia humana. Creamos momentos memorables que fortalecen la cultura organizacional.</p>
-                <a href="https://teamtowershuma.com/events" class="service-link">Eventos Corporativos</a>
+                <h3 class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</h3>
+                <p class="lang" data-es="Organización y producción de eventos corporativos con enfoque en la experiencia humana. Creamos momentos memorables que fortalecen la cultura organizacional." data-ca="Organització i producció d'esdeveniments corporatius amb enfocament en l'experiència humana. Creem moments memorables que fortaleixen la cultura organitzativa.">Organización y producción de eventos corporativos con enfoque en la experiencia humana. Creamos momentos memorables que fortalecen la cultura organizacional.</p>
+                <a href="https://teamtowershuma.com/events" class="service-link lang" data-es="Eventos Corporativos" data-ca="Esdeveniments Corporatius">Eventos Corporativos →</a>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">👔</div>
-                <h3>Gestión de Equipos</h3>
-                <p>Servicio de consultoría estratégica para implementar prácticas de gestión del talento alineadas con la filosofía TeamTowers Humà y la transformación organizacional.</p>
-                <a href="https://teamtowershuma.com/rrhh" class="service-link">Business Partner RRHH</a>
+                <h3 class="lang" data-es="Gestión de Equipos" data-ca="Gestió d'Equips">Gestión de Equipos</h3>
+                <p class="lang" data-es="Servicio de consultoría estratégica para implementar prácticas de gestión del talento alineadas con la filosofía TeamTowers Humà y la transformación organizacional." data-ca="Servei de consultoria estratègica per implementar pràctiques de gestió del talent alineades amb la filosofia TeamTowers Humà i la transformació organitzativa.">Servicio de consultoría estratégica para implementar prácticas de gestión del talento alineadas con la filosofía TeamTowers Humà y la transformación organizacional.</p>
+                <a href="https://teamtowershuma.com/rrhh" class="service-link lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH →</a>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">📚</div>
-                <h3>Formación de Equipos</h3>
-                <p>Programas formativos para desarrollar habilidades de colaboración, comunicación y liderazgo en equipos. Basados en la metáfora castellera y metodologías innovadoras.</p>
-                <a href="https://teamtowershuma.com/colla" class="service-link">Formación de Equipos</a>
+                <h3 class="lang" data-es="Formación de Equipos" data-ca="Formació d'Equips">Formación de Equipos</h3>
+                <p class="lang" data-es="Programas formativos para desarrollar habilidades de colaboración, comunicación y liderazgo en equipos. Basados en la metáfora castellera y metodologías innovadoras." data-ca="Programes formatius per desenvolupar habilitats de col·laboració, comunicació i lideratge en equips. Basats en la metàfora castellera i metodologies innovadores.">Programas formativos para desarrollar habilidades de colaboración, comunicación y liderazgo en equipos. Basados en la metáfora castellera y metodologías innovadoras.</p>
+                <a href="https://teamtowershuma.com/colla" class="service-link lang" data-es="Formación de Equipos" data-ca="Formació d'Equips">Formación de Equipos →</a>
             </div>
         </div>
     </section>
     
     <!-- About Section -->
     <section id="about" class="about-section">
-        <h2 class="section-title">Sobre TeamTowers Humà</h2>
-        <p class="section-subtitle">De las torres humanas a las organizaciones humanas</p>
+        <h2 class="section-title lang" data-es="Sobre TeamTowers Humà" data-ca="Sobre TeamTowers Humà">Sobre TeamTowers Humà</h2>
+        <p class="section-subtitle lang" data-es="De las torres humanas a las organizaciones humanas" data-ca="De les torres humanes a les organitzacions humanes">De las torres humanas a las organizaciones humanas</p>
         
         <div class="about-content">
-            <p>TeamTowers Humà nace en Vilafranca del Penedès, el corazón del Penedès, donde la tradición de los castellers se fusiona con la innovación en gestión de personas. Somos una consultoría estratégica de RRHH con enfoque humanista que transforma organizaciones mediante la metáfora castellera.</p>
-            <p>Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles. Trabajamos con empresas que buscan construir estructuras más resilientes, colaborativas y orientadas al valor compartido.</p>
+            <p class="lang" data-es="TeamTowers Humà nace en Vilafranca del Penedès, el corazón del Penedès, donde la tradición de los castellers se fusiona con la innovación en gestión de personas. Somos una consultoría estratégica de RRHH con enfoque humanista que transforma organizaciones mediante la metáfora castellera." data-ca="TeamTowers Humà neix a Vilafranca del Penedès, el cor del Penedès, on la tradició dels castellers es fusiona amb la innovació en gestió de persones. Som una consultoria estratègica de RRHH amb enfocament humanista que transforma organitzacions mitjançant la metàfora castellera.">TeamTowers Humà nace en Vilafranca del Penedès, el corazón del Penedès, donde la tradición de los castellers se fusiona con la innovación en gestión de personas. Somos una consultoría estratégica de RRHH con enfoque humanista que transforma organizaciones mediante la metáfora castellera.</p>
+            <p class="lang" data-es="Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles. Trabajamos con empresas que buscan construir estructuras más resilientes, colaborativas y orientadas al valor compartido." data-ca="El nostre enfocament únic combina el rigor analític amb la profunditat del coneixement organitzatiu, garantint resultats tangibles i sostenibles. Treballem amb empreses que busquen construir estructures més resilents, col·laboratives i orientades al valor compartit.">Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles. Trabajamos con empresas que buscan construir estructuras más resilientes, colaborativas y orientadas al valor compartido.</p>
             
             <div class="about-stats">
                 <div class="stat-item">
                     <div class="stat-number">20+</div>
-                    <div class="stat-label">Años de Experiencia</div>
+                    <div class="stat-label lang" data-es="Años de Experiencia" data-ca="Anys d'Experiència">Años de Experiencia</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">50+</div>
-                    <div class="stat-label">Organizaciones Transformadas</div>
+                    <div class="stat-label lang" data-es="Organizaciones Transformadas" data-ca="Organitzacions Transformades">Organizaciones Transformadas</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">100%</div>
-                    <div class="stat-label">Enfoque Humanista</div>
+                    <div class="stat-label lang" data-es="Enfoque Humanista" data-ca="Enfocament Humanista">Enfoque Humanista</div>
                 </div>
             </div>
             
-            <a href="https://teamtowershuma.com/equip" class="btn btn-primary" style="margin-top: 20px;">Conocer a Nuestro Equipo</a>
+            <a href="https://teamtowershuma.com/equip" class="btn btn-primary lang" data-es="Conocer a Nuestro Equipo" data-ca="Coneix al Nostre Equip" style="margin-top: 20px;">Conocer a Nuestro Equipo</a>
         </div>
     </section>
     
     <!-- Apps Showcase Section -->
     <section id="apps" class="apps-section">
-        <h2 class="section-title">Nuestras Aplicaciones</h2>
-        <p class="section-subtitle">Herramientas digitales diseñadas para cada etapa de tu transformación organizacional</p>
+        <h2 class="section-title lang" data-es="Nuestras Aplicaciones" data-ca="Les Nostres Aplicacions">Nuestras Aplicaciones</h2>
+        <p class="section-subtitle lang" data-es="Herramientas digitales diseñadas para cada etapa de tu transformación organizacional" data-ca="Eines digitals dissenyades per a cada etapa de la teva transformació organitzativa">Herramientas digitales diseñadas para cada etapa de tu transformación organizacional</p>
         
         <div class="apps-grid">
             <!-- VNA App -->
@@ -995,8 +916,8 @@
                 </div>
                 <div class="app-content">
                     <h3 class="app-title">VNA App</h3>
-                    <p class="app-desc">Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos con nuestra herramienta interactiva.</p>
-                    <a href="https://teamtowershuma.com/app" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;">Explorar App</a>
+                    <p class="app-desc lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos con nuestra herramienta interactiva." data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització. Visualitza connexions i optimitza processos amb la nostra eina interactiva.">Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos con nuestra herramienta interactiva.</p>
+                    <a href="https://teamtowershuma.com/app" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
                 </div>
             </div>
             
@@ -1007,8 +928,8 @@
                 </div>
                 <div class="app-content">
                     <h3 class="app-title">Accounting App</h3>
-                    <p class="app-desc">Registra entregables, asigna usuarios por rol y cuantifica el valor aportado. Prepara para tokenización con nuestra aplicación de contabilidad de valor.</p>
-                    <a href="https://teamtowershuma.com/app_comptabilitat" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;">Explorar App</a>
+                    <p class="app-desc lang" data-es="Registra entregables, asigna usuarios por rol y cuantifica el valor aportado. Prepara para tokenización con nuestra aplicación de contabilidad de valor." data-ca="Registra entregables, assigna usuaris per rol i quantifica el valor aportat. Prepara per a tokenització amb la nostra aplicació de comptabilitat de valor.">Registra entregables, asigna usuarios por rol y cuantifica el valor aportado. Prepara para tokenización con nuestra aplicación de contabilidad de valor.</p>
+                    <a href="https://teamtowershuma.com/app_comptabilitat" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
                 </div>
             </div>
             
@@ -1019,8 +940,8 @@
                 </div>
                 <div class="app-content">
                     <h3 class="app-title">CoPs App</h3>
-                    <p class="app-desc">Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito y desarrolla competencias con nuestra plataforma colaborativa.</p>
-                    <a href="https://teamtowershuma.com/app_coops" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;">Explorar App</a>
+                    <p class="app-desc lang" data-es="Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito y desarrolla competencias con nuestra plataforma colaborativa." data-ca="Models d'aprenentatge basats en xarxes de valor. Captura coneixement tàcit i desenvolupa competències amb la nostra plataforma col·laborativa.">Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito y desarrolla competencias con nuestra plataforma colaborativa.</p>
+                    <a href="https://teamtowershuma.com/app_coops" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
                 </div>
             </div>
             
@@ -1031,8 +952,8 @@
                 </div>
                 <div class="app-content">
                     <h3 class="app-title">Tokenomics App</h3>
-                    <p class="app-desc">Configura distribución de tokens, parámetros de vesting y genera tu smart contract optimizado para la economía tokenizada.</p>
-                    <a href="https://teamtowershuma.com/tokenomics" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;">Explorar App</a>
+                    <p class="app-desc lang" data-es="Configura distribución de tokens, parámetros de vesting y genera tu smart contract optimizado para la economía tokenizada." data-ca="Configura distribució de tokens, paràmetres de vesting i genera el teu smart contract optimitzat per a l'economia tokenitzada.">Configura distribución de tokens, parámetros de vesting y genera tu smart contract optimizado para la economía tokenizada.</p>
+                    <a href="https://teamtowershuma.com/tokenomics" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
                 </div>
             </div>
         </div>
@@ -1040,11 +961,11 @@
     
     <!-- CTA Section -->
     <section class="cta-section">
-        <h2>¿Listo para Transformar tu Organización?</h2>
-        <p>Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà.</p>
+        <h2 class="lang" data-es="¿Listo para Transformar tu Organización?" data-ca="Preparat per Transformar la teva Organització?">¿Listo para Transformar tu Organización?</h2>
+        <p class="lang" data-es="Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà." data-ca="Agenda el teu diagnòstic gratuït i descobreix com podem ajudar-te a construir una organització més humana, eficient i resistent amb el Sistema Integral TeamTowers Humà.">Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà.</p>
         <div class="cta-container">
-            <a href="https://teamtowershuma.com/contacto" class="btn btn-primary">Contactar con Expertos</a>
-            <a href="https://teamtowershuma.com/masia" class="btn btn-secondary">Explorar Sistema Integral</a>
+            <a href="https://teamtowershuma.com/contacto" class="btn btn-primary lang" data-es="Contactar con Expertos" data-ca="Contactar amb Experts">Contactar con Expertos</a>
+            <a href="https://teamtowershuma.com/masia" class="btn btn-secondary lang" data-es="Explorar Sistema Integral" data-ca="Explorar Sistema Integral">Explorar Sistema Integral</a>
         </div>
     </section>
     
@@ -1054,36 +975,36 @@
             <div class="footer-col">
                 <h3>METODOLOGÍAS</h3>
                 <ul class="footer-links">
-                    <li><a href="https://www.teamtowers.eu">Talleres de Castellers</a></li>
-                    <li><a href="https://teamtowershuma.com/valor">Análisis de mapas de valor</a></li>
-                    <li><a href="https://teamtowershuma.com/coops">Aprendizaje y conocimiento</a></li>
-                    <li><a href="https://teamtowershuma.com/valor">Reconocimiento y recompensa</a></li>
+                    <li><a href="https://www.teamtowers.eu" class="lang" data-es="Talleres de Castellers" data-ca="Tallers de Castellers">Talleres de Castellers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Análisis de mapas de valor" data-ca="Anàlisi de mapes de valor">Análisis de mapas de valor</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Aprendizaje y conocimiento" data-ca="Aprenentatge i coneixement">Aprendizaje y conocimiento</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Reconocimiento y recompensa" data-ca="Reconeixement i recompensa">Reconocimiento y recompensa</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>SERVICIOS</h3>
                 <ul class="footer-links">
-                    <li><a href="https://www.teamtowers.eu">Teambuilding</a></li>
-                    <li><a href="https://teamtowershuma.com/events">Producción de eventos</a></li>
-                    <li><a href="https://teamtowershuma.com/rrhh">Gestión de equipos</a></li>
-                    <li><a href="https://teamtowershuma.com/colla">Formación de equipos</a></li>
+                    <li><a href="https://www.teamtowers.eu" class="lang" data-es="Teambuilding" data-ca="Teambuilding">Teambuilding</a></li>
+                    <li><a href="https://teamtowershuma.com/events" class="lang" data-es="Producción de eventos" data-ca="Producció d'esdeveniments">Producción de eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Gestión de equipos" data-ca="Gestió d'equips">Gestión de equipos</a></li>
+                    <li><a href="https://teamtowershuma.com/colla" class="lang" data-es="Formación de equipos" data-ca="Formació d'equips">Formación de equipos</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>SOBRE TEAMTOWERS HUMÀ</h3>
                 <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.com/equip">Equipo</a></li>
-                    <li><a href="https://teamtowershuma.com/clients">Clientes</a></li>
-                    <li><a href="https://teamtowershuma.com/contacto">Contacto</a></li>
+                    <li><a href="https://teamtowershuma.com/equip" class="lang" data-es="Equipo" data-ca="Equip">Equipo</a></li>
+                    <li><a href="https://teamtowershuma.com/clients" class="lang" data-es="Clientes" data-ca="Clients">Clientes</a></li>
+                    <li><a href="https://teamtowershuma.com/contacto" class="lang" data-es="Contacto" data-ca="Contacte">Contacto</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>TeamTowers Humà</h3>
-                <p>De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
             </div>
         </div>
         <div class="copyright">
-            <p>© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Transformació organitzativa amb la metàfora castellera. Vilafranca del Penedès, Barcelona.">© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona.</p>
         </div>
     </footer>
     
@@ -1091,6 +1012,7 @@
         // Language switching functionality
         document.addEventListener('DOMContentLoaded', function() {
             const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
             
             // Set initial language based on browser settings or default to Spanish
             const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
@@ -1110,6 +1032,19 @@
             
             // Set active language
             function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
                 // Update language-specific elements
                 document.querySelectorAll(`[lang="es"]`).forEach(el => {
                     el.style.display = lang === 'es' ? 'block' : 'none';
@@ -1137,6 +1072,31 @@
                     }
                 });
             });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '600';
+                notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '10000';
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 5s forwards';
+                notification.innerHTML = document.documentElement.lang === 'ca' ? 
+                    '✨ Benvingut a TeamTowers Humà! Descobreix com transformar la teva organització amb la metàfora castellera.' :
+                    '✨ ¡Bienvenido a TeamTowers Humà! Descubre cómo transformar tu organización con la metáfora castellera.';
+                document.body.appendChild(notification);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 5500);
+            }, 1000);
         });
     </script>
 </body>
