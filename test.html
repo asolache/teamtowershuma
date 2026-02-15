@@ -26,6 +26,12 @@
             margin-bottom: 20px;
             border-left: 4px solid #8b5cf6;
         }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
         button {
             background: #1e3a8a;
             color: white;
@@ -34,19 +40,34 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            margin: 5px;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
         }
         button:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         button.secondary { background: #64748b; }
+        button.secondary:hover { background: #475569; }
+        button.danger { background: #dc2626; }
+        button.danger:hover { background: #b91c1c; }
         input, select {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
+            font-size: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #8b5cf6;
         }
         .code {
             background: #1e293b;
@@ -56,6 +77,8 @@
             font-family: monospace;
             white-space: pre-wrap;
             margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
         }
         .status {
             padding: 10px;
@@ -72,6 +95,23 @@
             border-radius: 8px;
             word-break: break-all;
         }
+        .account-info {
+            background: #1e293b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .badge.connected { background: #10b981; color: white; }
+        .badge.disconnected { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
@@ -81,10 +121,14 @@
         <!-- Sección 1: Conexión MetaMask -->
         <div class="section">
             <h2>1️⃣ Conectar MetaMask</h2>
-            <button id="connectBtn">🔌 Conectar MetaMask</button>
-            <button id="switchNetworkBtn">🔄 Cambiar a Sepolia</button>
+            <div class="button-group">
+                <button id="connectBtn">🔌 Conectar MetaMask</button>
+                <button id="disconnectBtn" class="danger" disabled>🔌 Desconectar</button>
+                <button id="switchNetworkBtn" class="secondary" disabled>🔄 Cambiar a Sepolia</button>
+            </div>
             <div id="connectionStatus" class="status info">Esperando conexión...</div>
             <div id="accountInfo"></div>
+            <div id="networkInfo"></div>
         </div>
 
         <!-- Sección 2: Código del Contrato -->
@@ -122,8 +166,9 @@ contract MiToken is ERC20 {
                 <input type="text" id="tokenSymbol" value="MTK" placeholder="Ej: MTK">
             </div>
             <div>
-                <label>Suministro Inicial:</label>
+                <label>Suministro Inicial (unidades):</label>
                 <input type="number" id="tokenSupply" value="1000000" placeholder="1000000">
+                <small style="color: #64748b;">Se multiplicará por 10^18 automáticamente</small>
             </div>
             <button id="deployBtn" disabled>🚀 Desplegar Token</button>
             <div id="deployStatus"></div>
@@ -133,11 +178,18 @@ contract MiToken is ERC20 {
         <div class="section">
             <h2>4️⃣ Resultado del Despliegue</h2>
             <div id="resultArea"></div>
-            <div id="postDeploy" style="display:none;">
-                <button id="viewExplorer">🔍 Ver en Etherscan</button>
-                <button id="copyAddress">📋 Copiar Dirección</button>
-                <button id="addToMetaMask">➕ Añadir a MetaMask</button>
+            <div id="postDeploy" style="display:none; margin-top: 15px;">
+                <div class="button-group">
+                    <button id="viewExplorer" class="secondary">🔍 Ver en Etherscan</button>
+                    <button id="copyAddress" class="secondary">📋 Copiar Dirección</button>
+                    <button id="addToMetaMask" class="secondary">➕ Añadir a MetaMask</button>
+                </div>
             </div>
+        </div>
+
+        <!-- Estado de la conexión -->
+        <div style="margin-top: 20px; text-align: center; color: #64748b;">
+            <span id="connectionBadge" class="badge disconnected">⚫ Desconectado</span>
         </div>
     </div>
 
@@ -150,6 +202,7 @@ contract MiToken is ERC20 {
         let provider, signer, account;
         let compiledContract = null;
         let deployedAddress = null;
+        let isConnected = false;
         
         // Red Sepolia
         const SEPOLIA_CHAIN_ID = '0xaa36a7';
@@ -168,6 +221,9 @@ contract MiToken is ERC20 {
                     throw new Error('MetaMask no está instalado');
                 }
 
+                // Actualizar estado
+                updateConnectionStatus('info', '⏳ Solicitando conexión a MetaMask...');
+                
                 // Solicitar cuentas
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 
@@ -176,37 +232,83 @@ contract MiToken is ERC20 {
                 signer = await provider.getSigner();
                 account = await signer.getAddress();
                 
+                // Marcar como conectado
+                isConnected = true;
+                
                 // Verificar red
                 const network = await provider.getNetwork();
                 const chainId = '0x' + network.chainId.toString(16);
+                const networkName = chainId === SEPOLIA_CHAIN_ID ? 'Sepolia' : 'Otra red';
                 
-                let statusMsg = `✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)}`;
-                
-                if (chainId !== SEPOLIA_CHAIN_ID) {
-                    statusMsg += ' ⚠️ No estás en Sepolia';
-                } else {
-                    statusMsg += ' 📍 Red: Sepolia';
-                }
-                
-                document.getElementById('connectionStatus').className = 'status success';
-                document.getElementById('connectionStatus').textContent = statusMsg;
-                
-                // Habilitar botón de compilación
-                document.getElementById('compileBtn').disabled = false;
-                
-                // Mostrar balance
+                // Obtener balance
                 const balance = await provider.getBalance(account);
                 const ethBalance = ethers.formatEther(balance);
+                
+                // Actualizar UI
+                document.getElementById('connectionStatus').className = 'status success';
+                document.getElementById('connectionStatus').innerHTML = `
+                    ✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)}<br>
+                    <small>Red: ${networkName} | Balance: ${parseFloat(ethBalance).toFixed(4)} ETH</small>
+                `;
+                
                 document.getElementById('accountInfo').innerHTML = `
-                    <div style="background:#1e293b; color:white; padding:10px; border-radius:8px; margin-top:10px;">
-                        <strong>Balance:</strong> ${ethBalance} ETH
+                    <div class="account-info">
+                        <strong>📍 Dirección completa:</strong><br>
+                        ${account}<br><br>
+                        <strong>💰 Balance:</strong> ${ethBalance} ETH
                     </div>
                 `;
+                
+                // Actualizar badge
+                document.getElementById('connectionBadge').className = 'badge connected';
+                document.getElementById('connectionBadge').innerHTML = '🟢 Conectado';
+                
+                // Habilitar botones
+                document.getElementById('compileBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = false;
+                document.getElementById('switchNetworkBtn').disabled = false;
+                document.getElementById('connectBtn').disabled = true;
                 
             } catch (error) {
                 document.getElementById('connectionStatus').className = 'status error';
                 document.getElementById('connectionStatus').textContent = '❌ Error: ' + error.message;
             }
+        });
+
+        // ========== FUNCIÓN DE DESCONEXIÓN ==========
+        document.getElementById('disconnectBtn').addEventListener('click', () => {
+            // Resetear variables
+            provider = null;
+            signer = null;
+            account = null;
+            isConnected = false;
+            compiledContract = null;
+            deployedAddress = null;
+            
+            // Limpiar UI
+            document.getElementById('connectionStatus').className = 'status info';
+            document.getElementById('connectionStatus').textContent = '🔌 Desconectado de MetaMask';
+            
+            document.getElementById('accountInfo').innerHTML = '';
+            document.getElementById('networkInfo').innerHTML = '';
+            document.getElementById('compileStatus').innerHTML = '';
+            document.getElementById('deployStatus').innerHTML = '';
+            document.getElementById('resultArea').innerHTML = '';
+            document.getElementById('postDeploy').style.display = 'none';
+            
+            // Actualizar badge
+            document.getElementById('connectionBadge').className = 'badge disconnected';
+            document.getElementById('connectionBadge').innerHTML = '⚫ Desconectado';
+            
+            // Deshabilitar botones
+            document.getElementById('compileBtn').disabled = true;
+            document.getElementById('deployBtn').disabled = true;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('switchNetworkBtn').disabled = true;
+            document.getElementById('connectBtn').disabled = false;
+            
+            // Opcional: recargar la página para limpiar completamente
+            // window.location.reload();
         });
 
         // ========== CAMBIAR A SEPOLIA ==========
@@ -293,6 +395,11 @@ contract MiToken is ERC20 {
                 const symbol = document.getElementById('tokenSymbol').value;
                 const supply = document.getElementById('tokenSupply').value;
 
+                // Validar que no estén vacíos
+                if (!name || !symbol || !supply) {
+                    throw new Error('Todos los campos son obligatorios');
+                }
+
                 // Crear factoría del contrato
                 const factory = new ethers.ContractFactory(
                     compiledContract.abi,
@@ -305,7 +412,7 @@ contract MiToken is ERC20 {
                 
                 const contract = await factory.deploy(name, symbol, supply);
                 
-                deployStatus.textContent = '⏳ Esperando confirmación en la blockchain...';
+                deployStatus.textContent = '⏳ Esperando confirmación en la blockchain (puede tomar 30-60 segundos)...';
                 
                 await contract.waitForDeployment();
                 
@@ -315,9 +422,9 @@ contract MiToken is ERC20 {
                 // Mostrar resultado
                 document.getElementById('resultArea').innerHTML = `
                     <div class="address-box">
-                        <strong>📌 Dirección:</strong><br>
+                        <strong>📌 Dirección del contrato:</strong><br>
                         ${deployedAddress}<br><br>
-                        <strong>📝 Transacción:</strong><br>
+                        <strong>📝 Hash de transacción:</strong><br>
                         ${txHash}
                     </div>
                 `;
@@ -329,8 +436,9 @@ contract MiToken is ERC20 {
                 document.getElementById('postDeploy').style.display = 'block';
                 
             } catch (error) {
+                console.error('Error completo:', error);
                 deployStatus.className = 'status error';
-                deployStatus.textContent = '❌ Error: ' + (error.reason || error.message);
+                deployStatus.textContent = '❌ Error: ' + (error.reason || error.message || 'Error desconocido');
             }
         });
 
@@ -344,7 +452,7 @@ contract MiToken is ERC20 {
         document.getElementById('copyAddress').addEventListener('click', () => {
             if (deployedAddress) {
                 navigator.clipboard.writeText(deployedAddress);
-                alert('✅ Dirección copiada');
+                alert('✅ Dirección copiada al portapapeles');
             }
         });
 
@@ -358,7 +466,8 @@ contract MiToken is ERC20 {
                             options: {
                                 address: deployedAddress,
                                 symbol: document.getElementById('tokenSymbol').value,
-                                decimals: 18
+                                decimals: 18,
+                                image: 'https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png'
                             }
                         }
                     });
@@ -368,16 +477,45 @@ contract MiToken is ERC20 {
             }
         });
 
-        // ========== DETECCIÓN DE CAMBIOS DE CUENTA ==========
+        // ========== FUNCIÓN AUXILIAR ==========
+        function updateConnectionStatus(type, message) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.className = `status ${type}`;
+            statusEl.textContent = message;
+        }
+
+        // ========== DETECCIÓN DE CAMBIOS DE CUENTA/RED ==========
         if (window.ethereum) {
-            window.ethereum.on('accountsChanged', () => {
-                window.location.reload();
+            // Cuando cambia la cuenta
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    // Usuario desconectó MetaMask
+                    document.getElementById('disconnectBtn').click();
+                } else {
+                    // Cambió de cuenta, actualizar
+                    window.location.reload();
+                }
             });
             
+            // Cuando cambia la red
             window.ethereum.on('chainChanged', () => {
                 window.location.reload();
             });
+            
+            // Cuando se desconecta
+            window.ethereum.on('disconnect', () => {
+                document.getElementById('disconnectBtn').click();
+            });
         }
+
+        // ========== VERIFICAR CONEXIÓN INICIAL ==========
+        window.addEventListener('load', async () => {
+            // Verificar si ya hay una sesión activa
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                // Hay una cuenta conectada, hacer clic automático en conectar
+                document.getElementById('connectBtn').click();
+            }
+        });
     </script>
 </body>
 </html>
