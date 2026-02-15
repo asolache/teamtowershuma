@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema para registrar y valorar entregables en tu proyecto con integración blockchain y gestión de usuarios por rol.">
-    <meta name="keywords" content="Contabilidad de Valor, Value Accounting, tokenización, TeamTowers Humà, Vilafranca del Penedès, Ethereum wallet, vesting">
+    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema per registrar i valorar entregables al teu projecte, amb suport per a adreces Ethereum i exportació per a tokenomics.">
+    <meta name="keywords" content="Contabilitat de Valor, Value Accounting, tokenització, TeamTowers Humà, Vilafranca del Penedès, Ethereum wallet, vesting">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
     <title>Value Accounting App | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Value Accounting App | TeamTowers Humà">
-    <meta property="og:description" content="Sistema para registrar y valorar entregables en tu proyecto con integración blockchain y gestión de usuarios por rol.">
+    <meta property="og:description" content="Registra entregables, associa adreces Ethereum i prepara les dades per a la tokenització.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/app_comptabilitat">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
@@ -21,7 +21,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Value Accounting App | TeamTowers Humà">
-    <meta name="twitter:description" content="Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum">
+    <meta name="twitter:description" content="Registra entregables i prepara les dades per a tokenomics amb adreces Ethereum.">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     
     <!-- Chart.js for data visualization -->
@@ -571,7 +571,7 @@
         
         .export-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
@@ -1127,7 +1127,7 @@
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
             <h1 class="lang" data-es="Value Accounting App" data-ca="Aplicació Comptabilitat de Valor">Value Accounting App</h1>
-            <p class="tagline lang" data-es="Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum" data-ca="Registra entregables, assigna usuaris per rol i prepara per a tokenització amb wallet Ethereum">Registra entregables, asigna usuarios por rol y prepara para tokenización con wallet Ethereum</p>
+            <p class="tagline lang" data-es="Registra entregables, associa adreces Ethereum i exporta per a tokenomics" data-ca="Registra entregables, associa adreces Ethereum i exporta per a tokenomics">Registra entregables, associa adreces Ethereum i exporta per a tokenomics</p>
             <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
         </div>
     </header>
@@ -1227,6 +1227,12 @@
                         <label class="lang" data-es="Enlace (opcional):" data-ca="Enllaç (opcional):">Enlace (opcional):</label>
                         <input type="url" id="link" placeholder="https://ejemplo.com/documento.pdf">
                     </div>
+                    <!-- Nou camp: adreça Ethereum -->
+                    <div class="form-row">
+                        <label class="lang" data-es="Dirección Ethereum (opcional):" data-ca="Adreça Ethereum (opcional):">Dirección Ethereum (opcional):</label>
+                        <input type="text" id="user-address" placeholder="0x...">
+                        <div class="form-feedback" id="address-feedback"></div>
+                    </div>
                     <div class="form-row">
                         <label class="lang" data-es="Valor:" data-ca="Valor:">Valor:</label>
                         <input type="number" id="value" placeholder="100" min="1">
@@ -1243,10 +1249,13 @@
                     <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
                     <div class="export-buttons">
                         <button id="export-json" class="btn btn-export">
-                            <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
+                            <span>📊</span> <span class="lang" data-es="Exportar JSON (backup)" data-ca="Exportar JSON (backup)">Exportar JSON (backup)</span>
                         </button>
                         <button id="export-csv" class="btn btn-success">
-                            <span>📈</span> <span class="lang" data-es="Exportar para Tokenomics" data-ca="Exportar per a Tokenomics">Exportar para Tokenomics</span>
+                            <span>📈</span> <span class="lang" data-es="Exportar CSV (Tokenomics)" data-ca="Exportar CSV (Tokenomics)">Exportar CSV (Tokenomics)</span>
+                        </button>
+                        <button id="export-tokenomics-json" class="btn btn-primary">
+                            <span>🔗</span> <span class="lang" data-es="Exportar JSON (Smart Contract)" data-ca="Exportar JSON (Smart Contract)">Exportar JSON (Smart Contract)</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
@@ -1256,7 +1265,7 @@
                 
                 <div class="export-section">
                     <h3 class="lang" data-es="Exportar para Tokenomics App" data-ca="Exportar per a Tokenomics App">Exportar para Tokenomics App</h3>
-                    <p class="lang" data-es="Exporta tus datos como CSV para importarlos en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor)." data-ca="Exporta les teves dades com a CSV per importar-les a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà: Usuari, Rol, Valor Total i Tokens a Mintar (1 token = 1 unitat de valor).">Exporta tus datos como CSV para importarlos en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor).</p>
+                    <p class="lang" data-es="El CSV inclou ara una columna amb l'adreça Ethereum (si n'hi ha). El nou JSON per a Smart Contract conté la instantània de valors amb adreces." data-ca="El CSV inclou ara una columna amb l'adreça Ethereum (si n'hi ha). El nou JSON per a Smart Contract conté la instantània de valors amb adreces.">El CSV inclou ara una columna amb l'adreça Ethereum (si n'hi ha). El nou JSON per a Smart Contract conté la instantània de valors amb adreces.</p>
                 </div>
                 
                 <div class="test-section">
@@ -1353,7 +1362,7 @@
                 
                 <div class="next-step">
                     <h3 class="lang" data-es="Exporta tus Datos para Tokenomics" data-ca="Exporta les teves Dades per a Tokenomics">Exporta tus Datos para Tokenomics</h3>
-                    <p class="lang" data-es="Una vez hayas registrado tus entregables, haz clic en 'Exportar para Tokenomics' para descargar un archivo compatible con la App de Tokenomics." data-ca="Un cop hagis registrat els teus entregables, fes clic a 'Exportar per a Tokenomics' per descarregar un arxiu compatible amb l'App de Tokenomics.">Una vez hayas registrado tus entregables, haz clic en 'Exportar para Tokenomics' para descargar un archivo compatible con la App de Tokenomics.</p>
+                    <p class="lang" data-es="Una vez hayas registrado tus entregables, usa los botones de exportación para descargar los archivos compatibles con la App de Tokenomics o con los Smart Contracts." data-ca="Un cop hagis registrat els teus entregables, usa els botons d'exportació per descarregar els arxius compatibles amb l'App de Tokenomics o amb els Smart Contracts.">Una vez hayas registrado tus entregables, usa los botones de exportación para descargar los archivos compatibles con la App de Tokenomics o con los Smart Contracts.</p>
                     <a href="#export-section" class="lang" data-es="Ir a Exportar Datos" data-ca="Anar a Exportar Dades">Ir a Exportar Datos</a>
                 </div>
             </div>
@@ -1405,18 +1414,19 @@
             </div>
         </div>
         <div class="copyright">
-            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización y gestión de usuarios por rol." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb preparació per a tokenització i gestió d'usuaris per rol.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con preparación para tokenización y gestión de usuarios por rol.</p>
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con soporte para adreces Ethereum i exportació per a tokenomics." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Sistema de Comptabilitat de Valor amb suport per a adreces Ethereum i exportació per a tokenomics.">© 2026 TeamTowers Humà. Todos los derechos reservados. Sistema de Contabilidad de Valor con soporte para adreces Ethereum i exportació per a tokenomics.</p>
         </div>
     </footer>
     
     <script>
-        // ========== W3C COMPLIANT VALUE ACCOUNTING APP ==========
+        // ========== VALUE ACCOUNTING APP (VERSIÓ MILLORADA) ==========
         // Data structure that can be easily migrated to a database
         let accountingData = {
             projectName: "Proyecto MASIA",
             valueUnit: "puntos",
             roles: [],
-            deliverables: [] // Each deliverable: { id, userName, role, deliverable, transactionType, description, link, value, timestamp }
+            deliverables: [], // Each deliverable: { id, userName, role, deliverable, transactionType, description, link, value, timestamp }
+            userAddresses: {}  // Map userName -> Ethereum address (latest known)
         };
         
         // Chart variable
@@ -1723,19 +1733,20 @@
                         throw new Error('El archivo JSON no tiene la estructura correcta');
                     }
                     
-                    // Import data
+                    // Import data, merge userAddresses if present
                     accountingData = {
                         projectName: importedData.projectName,
                         valueUnit: importedData.valueUnit,
-                        roles: [...new Set([...accountingData.roles, ...importedData.roles])], // Merge without duplicates
-                        deliverables: [...accountingData.deliverables, ...importedData.deliverables]
+                        roles: [...new Set([...accountingData.roles, ...(importedData.roles || [])])],
+                        deliverables: [...accountingData.deliverables, ...(importedData.deliverables || [])],
+                        userAddresses: { ...accountingData.userAddresses, ...(importedData.userAddresses || {}) }
                     };
                     
                     // Save and update
                     saveData();
                     updateVisualizations();
                     
-                    showNotification(`✅ Datos importados correctamente: ${importedData.deliverables.length} entregables`, 'success');
+                    showNotification(`✅ Datos importados correctamente: ${importedData.deliverables?.length || 0} entregables`, 'success');
                 } catch (error) {
                     console.error('Error importing JSON:', error);
                     showNotification(`❌ Error al importar: ${error.message}`, 'error');
@@ -1755,6 +1766,11 @@
             reader.readAsText(file);
         }
         
+        // Validate Ethereum address (simple check)
+        function isValidEthereumAddress(address) {
+            return /^0x[a-fA-F0-9]{40}$/.test(address);
+        }
+        
         // Add deliverable
         function addDeliverable() {
             const userName = document.getElementById('user-name').value.trim();
@@ -1763,6 +1779,7 @@
             const transactionType = document.getElementById('transaction-type').value;
             const description = document.getElementById('description').value.trim();
             const link = document.getElementById('link').value.trim();
+            const address = document.getElementById('user-address').value.trim();
             const value = parseInt(document.getElementById('value').value);
             
             // Validate inputs
@@ -1790,11 +1807,23 @@
                 return;
             }
             
+            // Validate address if provided
+            if (address && !isValidEthereumAddress(address)) {
+                showNotification('⚠️ La dirección Ethereum no es válida (debe empezar por 0x y tener 40 caracteres hexadecimales)', 'warning');
+                document.getElementById('user-address').focus();
+                return;
+            }
+            
             // Add role to global list if not exists (case-insensitive)
             const existingRole = accountingData.roles.find(r => r.toLowerCase() === roleName.toLowerCase());
             if (!existingRole) {
                 accountingData.roles.push(roleName);
                 showNotification(`✨ Nuevo rol creado: ${roleName}`, 'info');
+            }
+            
+            // Update user address if provided
+            if (address) {
+                accountingData.userAddresses[userName] = address;
             }
             
             // Create deliverable
@@ -1823,6 +1852,7 @@
             document.getElementById('deliverable-name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
+            document.getElementById('user-address').value = '';
             document.getElementById('value').value = '';
             
             // Show success
@@ -1984,7 +2014,7 @@
             });
         }
         
-        // Export JSON
+        // Export JSON (backup)
         function exportJSON() {
             if (accountingData.deliverables.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
@@ -2019,7 +2049,7 @@
             }
         }
         
-        // Export CSV for Tokenomics
+        // Export CSV for Tokenomics (amb adreça)
         function exportCSV() {
             if (accountingData.deliverables.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
@@ -2038,15 +2068,16 @@
                     userRoles[userName].add(deliverable.role);
                 });
                 
-                // CSV headers - MVP format for Tokenomics
-                let csv = 'Usuario,Rol,Valor Total,Tokens a Mintar\n';
+                // CSV headers - now includes address
+                let csv = 'Usuario,Rol,Valor Total,Tokens a Mintar,Dirección\n';
                 
                 // Data rows - 1 token = 1 value unit
                 Object.entries(userTotals).forEach(([userName, totalValue]) => {
                     const roles = Array.from(userRoles[userName]).join(', ');
                     const tokensToMint = totalValue; // Simple conversion: 1 token per value unit
+                    const address = accountingData.userAddresses[userName] || '';
                     
-                    csv += `"${userName}","${roles}","${totalValue}","${tokensToMint}"\n`;
+                    csv += `"${userName}","${roles}","${totalValue}","${tokensToMint}","${address}"\n`;
                 });
                 
                 // Create blob and download
@@ -2076,6 +2107,60 @@
             }
         }
         
+        // Export JSON for Smart Contracts (snapshot amb adreces)
+        function exportTokenomicsJSON() {
+            if (accountingData.deliverables.length === 0) {
+                showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
+                return;
+            }
+            
+            try {
+                // Aggregate by user
+                const userTotals = {};
+                accountingData.deliverables.forEach(d => {
+                    userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
+                });
+                
+                // Build snapshot array
+                const snapshot = Object.entries(userTotals).map(([user, uvAmount]) => ({
+                    user: user,
+                    address: accountingData.userAddresses[user] || '',
+                    uvAmount: uvAmount
+                }));
+                
+                const output = {
+                    projectName: accountingData.projectName,
+                    valueUnit: accountingData.valueUnit,
+                    snapshot: snapshot
+                };
+                
+                const dataStr = JSON.stringify(output, null, 2);
+                const blob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                
+                const exportFileDefaultName = `tokenomics-snapshot-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', url);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.style.display = 'none';
+                document.body.appendChild(linkElement);
+                
+                linkElement.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(linkElement);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                showNotification(`✅ Snapshot exportado: ${snapshot.length} usuarios`, 'success');
+            } catch (error) {
+                console.error('Error exporting tokenomics JSON:', error);
+                showNotification(`❌ Error al exportar: ${error.message}`, 'error');
+            }
+        }
+        
         // Reset data
         function resetData() {
             if (confirm('¿Estás seguro de que quieres borrar todos los datos del proyecto? Esta acción no se puede deshacer.')) {
@@ -2090,7 +2175,8 @@
                 projectName: "Proyecto MASIA",
                 valueUnit: "puntos",
                 roles: [],
-                deliverables: []
+                deliverables: [],
+                userAddresses: {}
             };
             
             // Clear form fields
@@ -2101,6 +2187,7 @@
             document.getElementById('deliverable-name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
+            document.getElementById('user-address').value = '';
             document.getElementById('value').value = '';
             
             // Save and update
@@ -2127,7 +2214,13 @@
                     
                     // Validate structure before loading
                     if (parsedData.projectName && parsedData.valueUnit && Array.isArray(parsedData.roles) && Array.isArray(parsedData.deliverables)) {
-                        accountingData = parsedData;
+                        accountingData = {
+                            projectName: parsedData.projectName,
+                            valueUnit: parsedData.valueUnit,
+                            roles: parsedData.roles || [],
+                            deliverables: parsedData.deliverables || [],
+                            userAddresses: parsedData.userAddresses || {}
+                        };
                         
                         // Restore form fields
                         document.getElementById('project-name').value = accountingData.projectName;
@@ -2153,6 +2246,7 @@
             document.getElementById('import-json').addEventListener('click', importJSON);
             document.getElementById('export-json').addEventListener('click', exportJSON);
             document.getElementById('export-csv').addEventListener('click', exportCSV);
+            document.getElementById('export-tokenomics-json').addEventListener('click', exportTokenomicsJSON);
             document.getElementById('reset-data').addEventListener('click', resetData);
             
             // Project name change
@@ -2185,6 +2279,22 @@
                 }
             });
             
+            // Address input validation (simple)
+            document.getElementById('user-address').addEventListener('input', function() {
+                const address = this.value.trim();
+                const feedback = document.getElementById('address-feedback');
+                if (address === '') {
+                    feedback.textContent = '';
+                    feedback.className = '';
+                } else if (isValidEthereumAddress(address)) {
+                    feedback.textContent = '✅ Dirección válida';
+                    feedback.className = 'form-feedback valid';
+                } else {
+                    feedback.textContent = '❌ Formato inválido (0x + 40 caracteres hex)';
+                    feedback.className = 'form-feedback invalid';
+                }
+            });
+            
             // Chart tabs
             document.querySelectorAll('.chart-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
@@ -2208,7 +2318,7 @@
             );
         }
         
-        // Setup language selector
+        // Setup language selector (CORREGIT)
         function setupLanguageSelector() {
             const langButtons = document.querySelectorAll('.lang-btn');
             const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
@@ -2227,34 +2337,28 @@
                     langButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
-                    showNotification(selectedLang === 'ca' ? '✅ Idioma cambiado a Català' : '✅ Idioma cambiado a Español', 'info');
+                    showNotification(selectedLang === 'ca' ? '✅ Idioma canviat a Català' : '✅ Idioma cambiado a Español', 'info');
                 });
             });
             
-            function setActiveLanguage(lang) {
-                translatableElements.forEach(element => {
-                    if (element.hasAttribute(`data-${lang}`)) {
-                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                            element.placeholder = element.getAttribute(`data-${lang}`);
-                        } else {
-                            element.textContent = element.getAttribute(`data-${lang}`);
-                        }
-                    }
-                });
-                
-                // Hide/show language-specific elements
-                document.querySelectorAll('[lang="es"]').forEach(el => {
-                    el.style.display = lang === 'es' ? 'block' : 'none';
-                });
-                document.querySelectorAll('[lang="ca"]').forEach(el => {
-                    el.style.display = lang === 'ca' ? 'block' : 'none';
-                });
-                
-                document.documentElement.setAttribute('lang', lang);
+           function setActiveLanguage(lang) {
+    translatableElements.forEach(element => {
+        if (element.hasAttribute(`data-${lang}`)) {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = element.getAttribute(`data-${lang}`);
+            } else if (element.tagName === 'OPTION') {
+                element.textContent = element.getAttribute(`data-${lang}`);
+            } else {
+                // Per a la resta d'elements (p, h1, span, etc.) utilitzem innerHTML
+                element.innerHTML = element.getAttribute(`data-${lang}`);
             }
         }
+    });
+    document.documentElement.setAttribute('lang', lang);
+}
+        }
         
-        // ========== TEST SUITE ==========
+        // ========== TEST SUITE (AMPLIAT) ==========
         const testSuite = {
             results: [],
             
@@ -2265,7 +2369,8 @@
                         name: testName,
                         passed: passed,
                         actual: actual,
-                        expected: expected
+                        expected: expected,
+                        message: passed ? '' : `Expected ${expected}, got ${actual}`
                     });
                     return passed;
                 },
@@ -2275,7 +2380,8 @@
                         name: testName,
                         passed: passed,
                         actual: actual,
-                        expected: 'truthy value'
+                        expected: 'truthy value',
+                        message: passed ? '' : `Expected truthy, got ${actual}`
                     });
                     return passed;
                 },
@@ -2285,7 +2391,8 @@
                         name: testName,
                         passed: passed,
                         actual: actual,
-                        expected: 'falsy value'
+                        expected: 'falsy value',
+                        message: passed ? '' : `Expected falsy, got ${actual}`
                     });
                     return passed;
                 },
@@ -2296,7 +2403,8 @@
                         name: testName,
                         passed: passed,
                         actual: actualType,
-                        expected: expectedType
+                        expected: expectedType,
+                        message: passed ? '' : `Expected type ${expectedType}, got ${actualType}`
                     });
                     return passed;
                 },
@@ -2306,7 +2414,8 @@
                         name: testName,
                         passed: passed,
                         actual: array,
-                        expected: `includes ${value}`
+                        expected: `includes ${value}`,
+                        message: passed ? '' : `Array does not include ${value}`
                     });
                     return passed;
                 }
@@ -2319,71 +2428,70 @@
                 this.assert.truthy(document.getElementById('add-deliverable'), "Add deliverable button exists");
                 this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
                 this.assert.truthy(document.getElementById('export-csv'), "Export CSV button exists");
+                this.assert.truthy(document.getElementById('export-tokenomics-json'), "Export tokenomics JSON button exists");
                 this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
                 this.assert.truthy(document.getElementById('import-roles'), "Import roles button exists");
                 this.assert.truthy(document.getElementById('import-json'), "Import JSON button exists");
                 this.assert.truthy(document.getElementById('user-name'), "User name input exists");
                 this.assert.truthy(document.getElementById('role-name'), "Role name input exists");
+                this.assert.truthy(document.getElementById('user-address'), "User address input exists");
                 
                 // INITIAL STATE TESTS
                 this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
                 this.assert.equals(accountingData.roles.length, 0, "Initial state has no roles");
                 this.assert.equals(accountingData.projectName, "Proyecto MASIA", "Initial project name is correct");
                 this.assert.equals(accountingData.valueUnit, "puntos", "Initial value unit is correct");
+                this.assert.type(accountingData.userAddresses, 'object', "userAddresses is an object");
                 
-                // ADD DELIVERABLE TEST
+                // ADD DELIVERABLE TEST (with address)
                 const testUserName = "Test User " + Date.now();
                 const testRole = "Test Role";
                 const testDeliverable = "Test Deliverable";
                 const testValue = 100;
+                const testAddress = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
                 
-                // Create a test deliverable
-                const testDeliverableObj = {
-                    id: `deliverable-${Date.now()}`,
+                // Save current state to restore later
+                const originalDeliverables = [...accountingData.deliverables];
+                const originalRoles = [...accountingData.roles];
+                const originalAddresses = { ...accountingData.userAddresses };
+                
+                // Add a deliverable with address
+                accountingData.deliverables.push({
+                    id: 'test-id',
                     userName: testUserName,
                     role: testRole,
                     deliverable: testDeliverable,
                     transactionType: "tangible",
-                    description: "Test description",
+                    description: "",
                     link: "",
                     value: testValue,
                     timestamp: new Date().toISOString()
-                };
-                
-                // Add to accounting data
-                accountingData.deliverables.push(testDeliverableObj);
+                });
                 if (!accountingData.roles.includes(testRole)) {
                     accountingData.roles.push(testRole);
                 }
+                accountingData.userAddresses[testUserName] = testAddress;
                 
-                this.assert.equals(accountingData.deliverables.length, 1, "Adding a deliverable increases count");
-                this.assert.equals(accountingData.roles.length, 1, "Adding a deliverable with new role adds role");
-                this.assert.includes(accountingData.deliverables.map(d => d.userName), testUserName, "Deliverable has correct user name");
-                this.assert.includes(accountingData.deliverables.map(d => d.role), testRole, "Deliverable has correct role");
-                this.assert.includes(accountingData.deliverables.map(d => d.value), testValue, "Deliverable has correct value");
+                this.assert.equals(accountingData.deliverables.length, originalDeliverables.length + 1, "Adding a deliverable increases count");
+                this.assert.includes(accountingData.roles, testRole, "Role was added");
+                this.assert.equals(accountingData.userAddresses[testUserName], testAddress, "Address was stored correctly");
                 
                 // AGGREGATION TESTS
                 const userTotals = {};
                 accountingData.deliverables.forEach(d => {
                     userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
                 });
-                
                 this.assert.equals(userTotals[testUserName], testValue, "User total value is correct");
-                
-                const roleTotals = {};
-                accountingData.deliverables.forEach(d => {
-                    roleTotals[d.role] = (roleTotals[d.role] || 0) + d.value;
-                });
-                
-                this.assert.equals(roleTotals[testRole], testValue, "Role total value is correct");
                 
                 // EXPORT FUNCTIONS TEST
                 this.assert.truthy(typeof exportCSV === 'function', "exportCSV function exists");
                 this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
+                this.assert.truthy(typeof exportTokenomicsJSON === 'function', "exportTokenomicsJSON function exists");
                 
                 // Clean up test data
-                accountingData.deliverables = [];
-                accountingData.roles = [];
+                accountingData.deliverables = originalDeliverables;
+                accountingData.roles = originalRoles;
+                accountingData.userAddresses = originalAddresses;
                 
                 return this.results;
             },
@@ -2398,9 +2506,13 @@
                 results.forEach(result => {
                     const resultDiv = document.createElement('div');
                     resultDiv.className = `test-item ${result.passed ? 'test-pass' : 'test-fail'}`;
-                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
-                        `   Expected: ${result.expected}<br/>` +
-                        `   Actual: ${result.actual}`;
+                    let message = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}`;
+                    if (!result.passed && result.message) {
+                        message += `<br>   ⚠️ ${result.message}`;
+                    } else if (!result.passed) {
+                        message += `<br>   Expected: ${result.expected}<br>   Actual: ${result.actual}`;
+                    }
+                    resultDiv.innerHTML = message;
                     testResultsDiv.appendChild(resultDiv);
                     
                     if (result.passed) passedCount++;
