@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Despliegue de Tokens con Remix API + MetaMask</title>
+    <title>Despliegue de Tokens con MetaMask</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -54,20 +54,14 @@
             box-shadow: none;
         }
         button.secondary { background: #64748b; }
-        button.secondary:hover { background: #475569; }
         button.danger { background: #dc2626; }
-        button.danger:hover { background: #b91c1c; }
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 1rem;
-        }
-        input:focus {
-            outline: none;
-            border-color: #8b5cf6;
         }
         .code {
             background: #1e293b;
@@ -95,13 +89,6 @@
             border-radius: 8px;
             word-break: break-all;
         }
-        .account-info {
-            background: #1e293b;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
         .badge {
             display: inline-block;
             padding: 4px 8px;
@@ -128,7 +115,6 @@
             </div>
             <div id="connectionStatus" class="status info">Esperando conexión...</div>
             <div id="accountInfo"></div>
-            <div id="networkInfo"></div>
         </div>
 
         <!-- Sección 2: Código del Contrato -->
@@ -152,6 +138,7 @@ contract MiToken is ERC20 {
             </div>
             <button id="compileBtn" disabled>⚙️ Compilar Contrato</button>
             <div id="compileStatus"></div>
+            <div id="compilerStatus" style="margin-top: 10px; font-size: 0.9rem; color: #64748b;"></div>
         </div>
 
         <!-- Sección 3: Parámetros y Despliegue -->
@@ -187,22 +174,21 @@ contract MiToken is ERC20 {
             </div>
         </div>
 
-        <!-- Estado de la conexión -->
-        <div style="margin-top: 20px; text-align: center; color: #64748b;">
+        <div style="margin-top: 20px; text-align: center;">
             <span id="connectionBadge" class="badge disconnected">⚫ Desconectado</span>
         </div>
     </div>
 
     <!-- Scripts necesarios -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-    <script src="https://binaries.soliditylang.org/bin/soljson-v0.8.20+commit.a1b79de6.js"></script>
-
+    
     <script>
         // ========== CONFIGURACIÓN ==========
         let provider, signer, account;
         let compiledContract = null;
         let deployedAddress = null;
         let isConnected = false;
+        let solcVersion = null;
         
         // Red Sepolia
         const SEPOLIA_CHAIN_ID = '0xaa36a7';
@@ -214,6 +200,55 @@ contract MiToken is ERC20 {
             blockExplorerUrls: ['https://sepolia.etherscan.io/']
         };
 
+        // ========== CARGAR COMPILADOR DE SOLIDITY ==========
+        async function loadCompiler() {
+            return new Promise((resolve, reject) => {
+                // Si ya está cargado
+                if (window.solc) {
+                    document.getElementById('compilerStatus').textContent = '✅ Compilador Solidity v0.8.20 cargado';
+                    resolve(window.solc);
+                    return;
+                }
+
+                document.getElementById('compilerStatus').textContent = '⏳ Cargando compilador Solidity...';
+                
+                // Cargar el compilador
+                const script = document.createElement('script');
+                script.src = 'https://binaries.soliditylang.org/bin/soljson-v0.8.20+commit.a1b79de6.js';
+                
+                script.onload = () => {
+                    // El compilador se expone como window.Module pero realmente es window.solc
+                    // Verificar cómo se llama
+                    if (window.solc) {
+                        document.getElementById('compilerStatus').textContent = '✅ Compilador Solidity v0.8.20 cargado correctamente';
+                        resolve(window.solc);
+                    } else if (window.Module && typeof window.Module.compile === 'function') {
+                        // Algunas versiones usan Module
+                        window.solc = {
+                            compile: function(input) {
+                                return Module.compile(input);
+                            }
+                        };
+                        document.getElementById('compilerStatus').textContent = '✅ Compilador Solidity cargado (modo compatibilidad)';
+                        resolve(window.solc);
+                    } else {
+                        reject(new Error('No se pudo cargar el compilador'));
+                    }
+                };
+                
+                script.onerror = () => {
+                    reject(new Error('Error cargando el compilador'));
+                };
+                
+                document.head.appendChild(script);
+            });
+        }
+
+        // Cargar compilador al inicio
+        loadCompiler().catch(error => {
+            document.getElementById('compilerStatus').textContent = '❌ Error cargando compilador: ' + error.message;
+        });
+
         // ========== FUNCIÓN DE CONEXIÓN ==========
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
@@ -221,7 +256,6 @@ contract MiToken is ERC20 {
                     throw new Error('MetaMask no está instalado');
                 }
 
-                // Actualizar estado
                 updateConnectionStatus('info', '⏳ Solicitando conexión a MetaMask...');
                 
                 // Solicitar cuentas
@@ -232,7 +266,6 @@ contract MiToken is ERC20 {
                 signer = await provider.getSigner();
                 account = await signer.getAddress();
                 
-                // Marcar como conectado
                 isConnected = true;
                 
                 // Verificar red
@@ -244,22 +277,16 @@ contract MiToken is ERC20 {
                 const balance = await provider.getBalance(account);
                 const ethBalance = ethers.formatEther(balance);
                 
-                // Actualizar UI
-                document.getElementById('connectionStatus').className = 'status success';
-                document.getElementById('connectionStatus').innerHTML = `
-                    ✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)}<br>
-                    <small>Red: ${networkName} | Balance: ${parseFloat(ethBalance).toFixed(4)} ETH</small>
-                `;
+                updateConnectionStatus('success', `✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)} | Red: ${networkName} | Balance: ${parseFloat(ethBalance).toFixed(4)} ETH`);
                 
                 document.getElementById('accountInfo').innerHTML = `
-                    <div class="account-info">
+                    <div style="background:#1e293b; color:white; padding:15px; border-radius:8px; margin-top:10px;">
                         <strong>📍 Dirección completa:</strong><br>
                         ${account}<br><br>
                         <strong>💰 Balance:</strong> ${ethBalance} ETH
                     </div>
                 `;
                 
-                // Actualizar badge
                 document.getElementById('connectionBadge').className = 'badge connected';
                 document.getElementById('connectionBadge').innerHTML = '🟢 Conectado';
                 
@@ -270,8 +297,7 @@ contract MiToken is ERC20 {
                 document.getElementById('connectBtn').disabled = true;
                 
             } catch (error) {
-                document.getElementById('connectionStatus').className = 'status error';
-                document.getElementById('connectionStatus').textContent = '❌ Error: ' + error.message;
+                updateConnectionStatus('error', '❌ Error: ' + error.message);
             }
         });
 
@@ -286,17 +312,13 @@ contract MiToken is ERC20 {
             deployedAddress = null;
             
             // Limpiar UI
-            document.getElementById('connectionStatus').className = 'status info';
-            document.getElementById('connectionStatus').textContent = '🔌 Desconectado de MetaMask';
-            
+            updateConnectionStatus('info', '🔌 Desconectado de MetaMask');
             document.getElementById('accountInfo').innerHTML = '';
-            document.getElementById('networkInfo').innerHTML = '';
             document.getElementById('compileStatus').innerHTML = '';
             document.getElementById('deployStatus').innerHTML = '';
             document.getElementById('resultArea').innerHTML = '';
             document.getElementById('postDeploy').style.display = 'none';
             
-            // Actualizar badge
             document.getElementById('connectionBadge').className = 'badge disconnected';
             document.getElementById('connectionBadge').innerHTML = '⚫ Desconectado';
             
@@ -306,9 +328,6 @@ contract MiToken is ERC20 {
             document.getElementById('disconnectBtn').disabled = true;
             document.getElementById('switchNetworkBtn').disabled = true;
             document.getElementById('connectBtn').disabled = false;
-            
-            // Opcional: recargar la página para limpiar completamente
-            // window.location.reload();
         });
 
         // ========== CAMBIAR A SEPOLIA ==========
@@ -339,28 +358,53 @@ contract MiToken is ERC20 {
             statusDiv.textContent = '⚙️ Compilando...';
             
             try {
+                // Asegurar que el compilador está cargado
+                if (!window.solc) {
+                    await loadCompiler();
+                }
+
                 const contractCode = document.getElementById('contractCode').textContent;
                 
                 // Configurar compilador
                 const input = {
                     language: 'Solidity',
                     sources: {
-                        'MiToken.sol': { content: contractCode }
+                        'MiToken.sol': { 
+                            content: contractCode 
+                        }
                     },
                     settings: {
-                        optimizer: { enabled: true, runs: 200 },
-                        outputSelection: { '*': { '*': ['abi', 'evm.bytecode'] } }
+                        optimizer: { 
+                            enabled: true, 
+                            runs: 200 
+                        },
+                        outputSelection: { 
+                            '*': { 
+                                '*': ['abi', 'evm.bytecode'] 
+                            } 
+                        }
                     }
                 };
 
                 // Compilar
-                const output = JSON.parse(solc.compile(JSON.stringify(input)));
+                const output = JSON.parse(window.solc.compile(JSON.stringify(input)));
                 
                 if (output.errors) {
+                    const warnings = output.errors.filter(e => e.severity === 'warning');
                     const errors = output.errors.filter(e => e.severity === 'error');
+                    
+                    if (warnings.length > 0) {
+                        console.log('Warnings:', warnings);
+                    }
+                    
                     if (errors.length > 0) {
                         throw new Error(errors[0].message);
                     }
+                }
+
+                // Verificar que la compilación fue exitosa
+                if (!output.contracts || !output.contracts['MiToken.sol'] || !output.contracts['MiToken.sol']['MiToken']) {
+                    throw new Error('No se pudo obtener el contrato compilado');
                 }
 
                 // Obtener contrato compilado
@@ -373,6 +417,7 @@ contract MiToken is ERC20 {
                 document.getElementById('deployBtn').disabled = false;
                 
             } catch (error) {
+                console.error('Error compilando:', error);
                 statusDiv.className = 'status error';
                 statusDiv.textContent = '❌ Error compilando: ' + error.message;
             }
@@ -390,12 +435,10 @@ contract MiToken is ERC20 {
             deployStatus.textContent = '🚀 Enviando transacción...';
 
             try {
-                // Obtener parámetros
-                const name = document.getElementById('tokenName').value;
-                const symbol = document.getElementById('tokenSymbol').value;
+                const name = document.getElementById('tokenName').value.trim();
+                const symbol = document.getElementById('tokenSymbol').value.trim();
                 const supply = document.getElementById('tokenSupply').value;
 
-                // Validar que no estén vacíos
                 if (!name || !symbol || !supply) {
                     throw new Error('Todos los campos son obligatorios');
                 }
@@ -407,7 +450,6 @@ contract MiToken is ERC20 {
                     signer
                 );
 
-                // Desplegar
                 deployStatus.textContent = '⏳ Confirmando transacción en MetaMask...';
                 
                 const contract = await factory.deploy(name, symbol, supply);
@@ -419,7 +461,6 @@ contract MiToken is ERC20 {
                 deployedAddress = await contract.getAddress();
                 const txHash = contract.deploymentTransaction().hash;
 
-                // Mostrar resultado
                 document.getElementById('resultArea').innerHTML = `
                     <div class="address-box">
                         <strong>📌 Dirección del contrato:</strong><br>
@@ -432,7 +473,6 @@ contract MiToken is ERC20 {
                 deployStatus.className = 'status success';
                 deployStatus.textContent = '✅ Token desplegado exitosamente';
                 
-                // Mostrar botones post-despliegue
                 document.getElementById('postDeploy').style.display = 'block';
                 
             } catch (error) {
@@ -466,8 +506,7 @@ contract MiToken is ERC20 {
                             options: {
                                 address: deployedAddress,
                                 symbol: document.getElementById('tokenSymbol').value,
-                                decimals: 18,
-                                image: 'https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png'
+                                decimals: 18
                             }
                         }
                     });
@@ -477,42 +516,34 @@ contract MiToken is ERC20 {
             }
         });
 
-        // ========== FUNCIÓN AUXILIAR ==========
         function updateConnectionStatus(type, message) {
             const statusEl = document.getElementById('connectionStatus');
             statusEl.className = `status ${type}`;
             statusEl.textContent = message;
         }
 
-        // ========== DETECCIÓN DE CAMBIOS DE CUENTA/RED ==========
+        // ========== DETECCIÓN DE CAMBIOS ==========
         if (window.ethereum) {
-            // Cuando cambia la cuenta
             window.ethereum.on('accountsChanged', (accounts) => {
                 if (accounts.length === 0) {
-                    // Usuario desconectó MetaMask
                     document.getElementById('disconnectBtn').click();
                 } else {
-                    // Cambió de cuenta, actualizar
                     window.location.reload();
                 }
             });
             
-            // Cuando cambia la red
             window.ethereum.on('chainChanged', () => {
                 window.location.reload();
             });
             
-            // Cuando se desconecta
             window.ethereum.on('disconnect', () => {
                 document.getElementById('disconnectBtn').click();
             });
         }
 
-        // ========== VERIFICAR CONEXIÓN INICIAL ==========
+        // Verificar conexión inicial
         window.addEventListener('load', async () => {
-            // Verificar si ya hay una sesión activa
             if (window.ethereum && window.ethereum.selectedAddress) {
-                // Hay una cuenta conectada, hacer clic automático en conectar
                 document.getElementById('connectBtn').click();
             }
         });
