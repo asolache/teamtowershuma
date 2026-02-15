@@ -134,6 +134,11 @@
             transform: translateY(-2px);
         }
 
+        .nav-menu a.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -907,10 +912,10 @@
                 
                 // 2. Mapas de Valor (mapas.html)
                 try {
-                    this.raw.mapas = JSON.parse(localStorage.getItem(this.keys.mapas) || '{"nodes":[],"edges":[],"roles":[],"deliverables":[],"projectName":"Sense projecte","valueUnit":"punts"}');
+                    this.raw.mapas = JSON.parse(localStorage.getItem(this.keys.mapas) || '{"nodes":[{"id":1,"label":"Projecte"}],"edges":[],"roles":[],"deliverables":[],"projectName":"Sense projecte","valueUnit":"punts"}');
                 } catch (e) {
                     console.warn('Error cargando Mapas data:', e);
-                    this.raw.mapas = { nodes: [], edges: [], roles: [], deliverables: [], projectName: "Sense projecte", valueUnit: "punts" };
+                    this.raw.mapas = { nodes: [{id:1,label:"Projecte"}], edges: [], roles: [], deliverables: [], projectName: "Sense projecte", valueUnit: "punts" };
                 }
                 
                 // 3. Tokenomics (tokenomics.html)
@@ -1070,7 +1075,7 @@
                 
                 // Buscar en Mapas
                 const rolMapas = this.raw.mapas.roles?.find(r => 
-                    r.name.toLowerCase() === roleName.toLowerCase()
+                    r.name && r.name.toLowerCase() === roleName.toLowerCase()
                 );
                 result.inMapas = !!rolMapas;
                 
@@ -1137,6 +1142,8 @@
         // ========== ACTUALITZAR UI AMB DADES ==========
         function updateUIWithData() {
             const data = EcosystemData.processed;
+            if (!data || !data.summary) return;
+            
             const s = data.summary;
             const cross = data.crossAnalysis;
             
@@ -1159,13 +1166,15 @@
             document.getElementById('card-finances').classList.toggle('active', s.finances.projects > 0);
             
             // Actualizar comparativa de valor
-            document.getElementById('compEstimated').textContent = cross.valueComparison.estimated;
-            document.getElementById('compActual').textContent = cross.valueComparison.actual;
-            const diffEl = document.getElementById('compDifference');
-            const diff = cross.valueComparison.difference;
-            diffEl.textContent = (diff > 0 ? '+' : '') + diff + ' UV';
-            diffEl.className = 'value-difference ' + 
-                (diff > 0 ? 'positive' : diff < 0 ? 'negative' : 'zero');
+            if (cross && cross.valueComparison) {
+                document.getElementById('compEstimated').textContent = cross.valueComparison.estimated;
+                document.getElementById('compActual').textContent = cross.valueComparison.actual;
+                const diffEl = document.getElementById('compDifference');
+                const diff = cross.valueComparison.difference;
+                diffEl.textContent = (diff > 0 ? '+' : '') + diff + ' UV';
+                diffEl.className = 'value-difference ' + 
+                    (diff > 0 ? 'positive' : diff < 0 ? 'negative' : 'zero');
+            }
             
             // Generar recomendaciones
             generateRecommendations();
@@ -1180,6 +1189,8 @@
         // ========== GENERAR RECOMANACIONS ==========
         function generateRecommendations() {
             const data = EcosystemData.processed;
+            if (!data || !data.crossAnalysis) return;
+            
             const cross = data.crossAnalysis;
             const lang = document.documentElement.lang;
             const recs = [];
@@ -1347,9 +1358,24 @@
             `).join('');
         }
 
+        // ========== FUNCIÓ PER OBRIR/TANCAR ARBRE ==========
+        window.toggleTree = function(index) {
+            const el = document.getElementById(`tree-${index}`);
+            if (el) {
+                el.classList.toggle('active');
+                const icon = el.previousElementSibling.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
+            }
+        };
+
         // ========== GENERAR LLISTA DE ROLS ==========
         function generateRolesList() {
             const data = EcosystemData.processed;
+            if (!data || !data.crossAnalysis) return;
+            
             const allRoles = data.crossAnalysis.roles.all;
             const container = document.getElementById('rolesList');
             
@@ -1369,15 +1395,6 @@
                 `;
             }).join('');
         }
-
-        // ========== FUNCIÓ PER OBRIR/TANCAR ARBRE ==========
-        window.toggleTree = function(index) {
-            const el = document.getElementById(`tree-${index}`);
-            el.classList.toggle('active');
-            const icon = el.previousElementSibling.querySelector('i');
-            icon.classList.toggle('fa-chevron-down');
-            icon.classList.toggle('fa-chevron-up');
-        };
 
         // ========== OMPLIR PATRONS DE VALOR ==========
         function fillPatterns() {
@@ -1426,10 +1443,14 @@
 
         window.toggleFaq = function(index) {
             const el = document.getElementById(`faq-${index}`);
-            el.classList.toggle('active');
-            const icon = el.previousElementSibling.querySelector('i');
-            icon.classList.toggle('fa-chevron-down');
-            icon.classList.toggle('fa-chevron-up');
+            if (el) {
+                el.classList.toggle('active');
+                const icon = el.previousElementSibling.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
+            }
         };
 
         // ========== OMPLIR INFO INSTITUCIONAL ==========
@@ -1510,6 +1531,8 @@
         }
 
         function formatGeneralSummary(data) {
+            if (!data || !data.summary || !data.crossAnalysis) return "No hi ha dades disponibles.";
+            
             const lang = document.documentElement.lang;
             const s = data.summary;
             
@@ -1532,9 +1555,38 @@
             }
         }
 
+        function formatComparison(comparison) {
+            const lang = document.documentElement.lang;
+            const diff = comparison.difference;
+            
+            if (lang === 'ca') {
+                return `📊 **COMPARATIVA DE VALOR**\n\n` +
+                       `Valor estimat (Mapes): ${comparison.estimated} UV\n` +
+                       `Valor real (Accounting): ${comparison.actual} UV\n` +
+                       `Diferència: ${diff} UV\n\n` +
+                       (diff > 0 
+                           ? `⚠️ Falten per registrar ${diff} UV en entregables` 
+                           : diff < 0 
+                               ? `✅ Has registrat ${Math.abs(diff)} UV més dels estimats`
+                               : `✅ Coincidència perfecta entre estimació i realitat`);
+            } else {
+                return `📊 **COMPARATIVA DE VALOR**\n\n` +
+                       `Valor estimado (Mapas): ${comparison.estimated} UV\n` +
+                       `Valor real (Accounting): ${comparison.actual} UV\n` +
+                       `Diferencia: ${diff} UV\n\n` +
+                       (diff > 0 
+                           ? `⚠️ Faltan por registrar ${diff} UV en entregables` 
+                           : diff < 0 
+                               ? `✅ Has registrado ${Math.abs(diff)} UV más de los estimados`
+                               : `✅ Coincidencia perfecta entre estimación y realidad`);
+            }
+        }
+
         function getAnswerFromEcosystem(question) {
-            const q = question.toLowerCase();
             const data = EcosystemData.processed;
+            if (!data || !data.crossAnalysis) return null;
+            
+            const q = question.toLowerCase();
             
             // Pregunta sobre rol específico
             const rolMatch = q.match(/(?:rol|role) (\w+)/i);
@@ -1550,31 +1602,7 @@
             
             // Pregunta sobre comparativa de valor
             if (q.includes('diferència') || q.includes('diferencia') || q.includes('compar')) {
-                const comp = data.crossAnalysis.valueComparison;
-                const lang = document.documentElement.lang;
-                const diff = comp.difference;
-                
-                if (lang === 'ca') {
-                    return `📊 **COMPARATIVA DE VALOR**\n\n` +
-                           `Valor estimat (Mapes): ${comp.estimated} UV\n` +
-                           `Valor real (Accounting): ${comp.actual} UV\n` +
-                           `Diferència: ${diff} UV\n\n` +
-                           (diff > 0 
-                               ? `⚠️ Falten per registrar ${diff} UV en entregables` 
-                               : diff < 0 
-                                   ? `✅ Has registrat ${Math.abs(diff)} UV més dels estimats`
-                                   : `✅ Coincidència perfecta entre estimació i realitat`);
-                } else {
-                    return `📊 **COMPARATIVA DE VALOR**\n\n` +
-                           `Valor estimado (Mapas): ${comp.estimated} UV\n` +
-                           `Valor real (Accounting): ${comp.actual} UV\n` +
-                           `Diferencia: ${diff} UV\n\n` +
-                           (diff > 0 
-                               ? `⚠️ Faltan por registrar ${diff} UV en entregables` 
-                               : diff < 0 
-                                   ? `✅ Has registrado ${Math.abs(diff)} UV más de los estimados`
-                                   : `✅ Coincidencia perfecta entre estimación y realidad`);
-                }
+                return formatComparison(data.crossAnalysis.valueComparison);
             }
             
             return null;
@@ -1623,7 +1651,7 @@
             // Preguntas sobre Tokenomics
             else if (q.includes('token') || q.includes('distribució') || q.includes('fibonacci')) {
                 const dist = EcosystemData.raw.tokenomics.distribution;
-                if (dist.investors) {
+                if (dist && dist.investors) {
                     response = lang === 'ca'
                         ? `La teva distribució de tokens és: Inversors ${dist.investors}%, Fundadors ${dist.founders}%, Tresoreria ${dist.treasury}%, Comunitat ${dist.community}%. El model Fibonacci recomana 21-13-8-58. Pots ajustar-ho a [tokenomics.html](tokenomics.html).`
                         : `Tu distribución de tokens es: Inversores ${dist.investors}%, Fundadores ${dist.founders}%, Tesorería ${dist.treasury}%, Comunidad ${dist.community}%. El modelo Fibonacci recomienda 21-13-8-58. Puedes ajustarlo en [tokenomics.html](tokenomics.html).`;
@@ -1692,6 +1720,11 @@
         // ========== GENERAR INFORME COMPLET ==========
         function generateFullReport() {
             const data = EcosystemData.processed;
+            if (!data || !data.summary || !data.crossAnalysis) {
+                showNotification('No hi ha dades per generar l\'informe', 'error');
+                return;
+            }
+            
             const lang = document.documentElement.lang;
             const s = data.summary;
             const cross = data.crossAnalysis;
@@ -1888,7 +1921,7 @@
                     // Lógica de análisis (se puede ampliar)
                     return recs;
                 },
-                getEcosystemStats: () => EcosystemData.processed.summary,
+                getEcosystemStats: () => EcosystemData.processed ? EcosystemData.processed.summary : null,
                 findRole: (roleName) => EcosystemData.findRole(roleName),
                 refreshData: () => {
                     EcosystemData.loadAll();
@@ -1921,7 +1954,9 @@
             // Actualizar contenido dinámico
             fillFAQ();
             fillInstitutional();
-            generateRecommendations();
+            if (EcosystemData.processed) {
+                generateRecommendations();
+            }
         }
     </script>
 </body>
