@@ -364,7 +364,7 @@ font-weight: 600;
 }
 .ranking-table {
 width: 100%;
-border-collapse: collapse;
+border-Collapse: Collapse;
 margin: 25px 0;
 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 border-radius: 8px;
@@ -400,7 +400,7 @@ font-weight: 700;
 }
 .deliverables-list {
 width: 100%;
-border-collapse: collapse;
+border-Collapse: Collapse;
 margin: 25px 0;
 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 border-radius: 8px;
@@ -990,7 +990,7 @@ border-bottom: 1px solid #eee;
 <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
 <h1 class="lang" data-es="Value Accounting App" data-ca="Aplicació Comptabilitat de Valor">Value Accounting App</h1>
 <p class="tagline lang" data-es="Registra entregables, associa adreces Ethereum i exporta per a tokenomics" data-ca="Registra entregables, associa adreces Ethereum i exporta per a tokenomics">Registra entregables, associa adreces Ethereum i exporta per a tokenomics</p>
-<div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
+<div class="integration-badge lang" data-es="Parte del Sistema Integral de La Colla" data-ca="Part del Sistema Integral de La Colla">Parte del Sistema Integral de La Colla</div>
 </div>
 </header>
 <!-- Main Content -->
@@ -1000,7 +1000,7 @@ border-bottom: 1px solid #eee;
 <h2 class="lang" data-es="⚙️ Configuración del Proyecto" data-ca="⚙️ Configuració del Projecte">⚙️ Configuración del Proyecto</h2>
 <div class="input-group">
 <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
-<input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
+<input type="text" id="project-name" placeholder="Ej: Proyecto Colla" value="Proyecto Colla">
 </div>
 <div class="input-group">
 <label class="lang" data-es="Unidad de Valor" data-ca="Unitat de Valor">Unidad de Valor</label>
@@ -1273,7 +1273,7 @@ border-bottom: 1px solid #eee;
 // ========== VALUE ACCOUNTING APP (VERSIÓ MILLORADA) ==========
 // Data structure that can be easily migrated to a database
 let accountingData = {
-projectName: "Proyecto MASIA",
+projectName: "Proyecto Colla",
 valueUnit: "puntos",
 roles: [],
 deliverables: [], // Each deliverable: { id, userName, role, deliverable, transactionType, description, link, value, timestamp }
@@ -1901,14 +1901,14 @@ showNotification('🗑️ Todos los datos han sido eliminados', 'info');
 // Reset without confirmation (for tests)
 function resetDataWithoutConfirmation() {
 accountingData = {
-projectName: "Proyecto MASIA",
+projectName: "Proyecto Colla",
 valueUnit: "puntos",
 roles: [],
 deliverables: [],
 userAddresses: {}
 };
 // Clear form fields
-document.getElementById('project-name').value = "Proyecto MASIA";
+document.getElementById('project-name').value = "Proyecto Colla";
 document.getElementById('value-unit').value = "puntos";
 document.getElementById('user-name').value = '';
 document.getElementById('role-name').value = '';
@@ -1971,7 +1971,7 @@ document.getElementById('export-tokenomics-json').addEventListener('click', expo
 document.getElementById('reset-data').addEventListener('click', resetData);
 // Project name change
 document.getElementById('project-name').addEventListener('change', function() {
-accountingData.projectName = this.value || "Proyecto MASIA";
+accountingData.projectName = this.value || "Proyecto Colla";
 saveData();
 });
 // Value unit change
@@ -2141,7 +2141,7 @@ this.assert.truthy(document.getElementById('user-address'), "User address input 
 // INITIAL STATE TESTS
 this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
 this.assert.equals(accountingData.roles.length, 0, "Initial state has no roles");
-this.assert.equals(accountingData.projectName, "Proyecto MASIA", "Initial project name is correct");
+this.assert.equals(accountingData.projectName, "Proyecto Colla", "Initial project name is correct");
 this.assert.equals(accountingData.valueUnit, "puntos", "Initial value unit is correct");
 this.assert.type(accountingData.userAddresses, 'object', "userAddresses is an object");
 // ADD DELIVERABLE TEST (with address)
