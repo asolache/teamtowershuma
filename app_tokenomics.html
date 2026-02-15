@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tokenomics App | TeamTowers Humà. Configura la tokenomics del teu projecte a partir del valor registrat.">
-    <title>Tokenomics App | TeamTowers Humà</title>
+    <title>Tokenomics App · TeamTowers Humà</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ----- VARIABLES Y RESET ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
         :root {
             --primary: #1e3a8a;
             --secondary: #4f46e5;
@@ -25,29 +32,27 @@
             --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fff;
             color: #333;
             line-height: 1.6;
         }
+
+        /* ----- SELECTOR D'IDIOMA ----- */
         .language-selector {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1000;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 50px;
             padding: 5px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
             gap: 5px;
         }
+
         .lang-btn {
             padding: 8px 16px;
             border: none;
@@ -57,26 +62,32 @@
             background: none;
             transition: var(--transition);
         }
+
         .lang-btn.active {
             background: var(--gradient-primary);
             color: white;
         }
+
+        /* ----- CAPÇALERA ----- */
         header {
-            background: var(--gradient-dark, linear-gradient(135deg, #0f172a, #1e293b));
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             color: white;
             padding: 20px 0;
             text-align: center;
         }
+
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
+
         .header-logo {
             height: 60px;
             margin-bottom: 15px;
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
         }
+
         h1 {
             font-size: 2.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -84,22 +95,27 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
+        /* ----- CONTENIDOR PRINCIPAL ----- */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 30px 20px;
         }
+
         .app-container {
             display: grid;
             grid-template-columns: 400px 1fr;
             gap: 30px;
-            margin-top: 20px;
         }
+
         @media (max-width: 992px) {
             .app-container {
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ----- PANELLS (ESQUERRA I DRETA) ----- */
         .panel {
             background: white;
             border-radius: var(--border-radius);
@@ -107,6 +123,7 @@
             box-shadow: var(--box-shadow);
             position: relative;
         }
+
         .panel::before {
             content: '';
             position: absolute;
@@ -117,6 +134,7 @@
             background: var(--gradient-primary);
             border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
+
         .panel h2 {
             color: var(--primary);
             margin-bottom: 20px;
@@ -126,16 +144,40 @@
             align-items: center;
             gap: 10px;
         }
+
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+
+        .visualization-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        /* ----- FORMULARIS ----- */
         .input-group {
             margin-bottom: 20px;
         }
+
         .input-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
             color: var(--dark);
         }
-        .input-group input, .input-group select, .input-group textarea {
+
+        .input-group input,
+        .input-group select {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e2e8f0;
@@ -143,19 +185,23 @@
             font-size: 1rem;
             transition: var(--transition);
         }
-        .input-group input:focus, .input-group select:focus {
+
+        .input-group input:focus,
+        .input-group select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(30,58,138,0.2);
             outline: none;
         }
+
         .btn-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 12px;
             margin: 15px 0;
         }
+
         .btn {
-            padding: 14px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 8px;
             font-weight: 700;
@@ -167,63 +213,162 @@
             gap: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+
         .btn-primary {
             background: var(--gradient-primary);
             color: white;
         }
+
         .btn-secondary {
             background: white;
             color: var(--primary);
             border: 2px solid var(--primary);
         }
+
         .btn-success {
             background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
             color: white;
         }
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
-            color: white;
-        }
+
         .btn-danger {
             background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
             color: white;
         }
+
         .btn-export {
             background: var(--gradient-accent);
             color: white;
         }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
-        .visualization-container {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--box-shadow);
+
+        /* ----- AUTOCOMPLETE ----- */
+        .autocomplete {
+            position: relative;
         }
-        .visualization-container::before {
-            content: '';
+
+        .autocomplete-items {
             position: absolute;
-            top: 0;
+            top: 100%;
             left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .autocomplete-items div {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .autocomplete-items div:hover {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+
+        /* ----- LLISTES DINÀMIQUES (ASSIGNACIONS EQUIP / RONDES) ----- */
+        .dynamic-list {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 10px;
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .dynamic-item input[type="text"],
+        .dynamic-item input[type="number"] {
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .dynamic-item .addr-input {
+            flex: 2;
+        }
+
+        .dynamic-item .num-input {
+            flex: 1;
+        }
+
+        .dynamic-item .btn-small {
+            padding: 8px 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* ----- TAULA ÚNICA (DRETA) ----- */
+        .data-table {
             width: 100%;
-            height: 5px;
-            background: var(--gradient-accent);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-        .chart-container {
-            height: 350px;
-            margin-bottom: 30px;
-            background: var(--light);
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-radius: 8px;
-            padding: 20px;
+            overflow: hidden;
         }
+
+        .data-table th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: var(--light);
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ----- GRÀFIC I PESTANYES ----- */
         .chart-tabs {
             display: flex;
             gap: 15px;
             margin-bottom: 20px;
         }
+
         .chart-tab {
             padding: 8px 20px;
             border-radius: 30px;
@@ -231,11 +376,22 @@
             border: none;
             font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
         }
+
         .chart-tab.active {
             background: var(--gradient-primary);
             color: white;
         }
+
+        .chart-container {
+            height: 300px;
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        /* ----- ESTADÍSTIQUES ----- */
         .stats-bar {
             display: flex;
             flex-wrap: wrap;
@@ -246,88 +402,23 @@
             border-radius: 12px;
             margin: 20px 0;
         }
+
         .stat-item {
             text-align: center;
-            min-width: 110px;
+            min-width: 100px;
             background: white;
-            padding: 12px 15px;
+            padding: 10px 15px;
             border-radius: 10px;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
         }
+
         .stat-value {
             font-size: 2rem;
             font-weight: 800;
             color: var(--primary);
         }
-        .ranking-table, .deliverables-list {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .ranking-table th, .deliverables-list th {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 15px;
-            text-align: left;
-        }
-        .ranking-table td, .deliverables-list td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .ranking-table tr:nth-child(even), .deliverables-list tr:nth-child(even) {
-            background-color: var(--light);
-        }
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 5px;
-            font-weight: 600;
-        }
-        .action-btn.edit {
-            background: var(--warning);
-            color: white;
-        }
-        .action-btn.delete {
-            background: var(--danger);
-            color: white;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            margin-left: 5px;
-            cursor: help;
-        }
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: 250px;
-            background-color: var(--dark);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -125px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
+
+        /* ----- NOTIFICACIONS ----- */
         .notification-container {
             position: fixed;
             top: 20px;
@@ -337,6 +428,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .notification {
             padding: 15px 25px;
             border-radius: 8px;
@@ -345,10 +437,12 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
         }
+
         .notification.success { background: linear-gradient(135deg, #10b981 0%, #0da27f 100%); }
         .notification.error { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
         .notification.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
         .notification.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -357,6 +451,8 @@
             from { opacity: 1; }
             to { opacity: 0; transform: translateX(100%); }
         }
+
+        /* ----- TEST SECTION ----- */
         .test-section {
             margin-top: 30px;
             padding: 20px;
@@ -364,6 +460,7 @@
             border-left: 4px solid var(--gold);
             border-radius: var(--border-radius);
         }
+
         .test-results {
             background: white;
             border-radius: 8px;
@@ -371,16 +468,15 @@
             max-height: 300px;
             overflow-y: auto;
             font-family: monospace;
+            margin-top: 15px;
         }
+
         .test-pass { color: var(--success); font-weight: bold; }
         .test-fail { color: var(--danger); font-weight: bold; }
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--gray);
-        }
+
+        /* ----- FOOTER ----- */
         footer {
-            background: var(--gradient-dark, linear-gradient(135deg, #0f172a, #1e293b));
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             color: rgba(255,255,255,0.85);
             padding: 60px 20px 40px;
             margin-top: 60px;
@@ -448,207 +544,216 @@
     </style>
 </head>
 <body>
+    <!-- SELECTOR D'IDIOMA (per defecte castellà) -->
     <div class="language-selector">
-        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="es">ES</button>
         <button class="lang-btn" data-lang="ca">CA</button>
     </div>
     <div class="notification-container" id="notification-container"></div>
 
+    <!-- CAPÇALERA -->
     <header>
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
             <h1 class="lang" data-es="Tokenomics App" data-ca="App de Tokenomics">Tokenomics App</h1>
-            <p class="lang" data-es="Configura la tokenomics del teu projecte a partir del valor registrat" data-ca="Configura la tokenòmica del teu projecte a partir del valor registrat">Configura la tokenomics del teu projecte a partir del valor registrat</p>
+            <p class="lang" data-es="Configura la tokenomics de tu proyecto" data-ca="Configura la tokenòmica del teu projecte">Configura la tokenomics de tu proyecto</p>
         </div>
     </header>
 
     <div class="container">
         <div class="app-container">
-            <!-- PANEL ESQUERRE: CONFIGURACIÓ -->
+            <!-- PANELL ESQUERRE: FORMULARIS -->
             <div class="panel">
-                <h2><span class="lang" data-es="⚙️ Configuració" data-ca="⚙️ Configuració">⚙️ Configuració</span></h2>
+                <h2><span class="lang" data-es="⚙️ Configuración" data-ca="⚙️ Configuració">⚙️ Configuración</span></h2>
                 
-                <!-- Importació / dades usuari -->
-                <div class="import-section" style="margin-bottom:25px;">
-                    <h3 class="lang" data-es="📥 Dades dels participants" data-ca="📥 Dades dels participants">📥 Dades dels participants</h3>
+                <!-- IMPORTACIÓ JSON -->
+                <div style="margin-bottom:25px;">
+                    <button id="import-snapshot" class="btn btn-primary" style="width:100%;"><span>📂</span> <span class="lang" data-es="Importar desde Value Accounting" data-ca="Importar des de Value Accounting">Importar desde Value Accounting</span></button>
+                </div>
+
+                <!-- FORMULARI D'ALTA MANUAL (amb autocompleta) -->
+                <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:25px;">
+                    <h3 class="lang" data-es="➕ Añadir / Editar participante" data-ca="➕ Afegir / Editar participant">➕ Añadir / Editar participante</h3>
+                    <div class="input-group">
+                        <label class="lang" data-es="Nombre" data-ca="Nom">Nombre</label>
+                        <div class="autocomplete">
+                            <input type="text" id="user-name" placeholder="Escribe un nombre...">
+                            <div id="user-autocomplete" class="autocomplete-items"></div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Dirección Ethereum" data-ca="Adreça Ethereum">Dirección Ethereum</label>
+                        <input type="text" id="user-address" placeholder="0x...">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Valor aportado" data-ca="Valor aportat">Valor aportado</label>
+                        <input type="number" id="user-value" min="1" value="100">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Roles (separados por comas)" data-ca="Rols (separats per comes)">Roles (separados por comas)</label>
+                        <div class="autocomplete">
+                            <input type="text" id="user-roles" placeholder="ej: desarrollador, community">
+                            <div id="roles-autocomplete" class="autocomplete-items"></div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Tipo" data-ca="Tipus">Tipo</label>
+                        <select id="user-type">
+                            <option value="inversor" class="lang" data-es="Inversor" data-ca="Inversor">Inversor</option>
+                            <option value="equipo" class="lang" data-es="Equipo" data-ca="Equip">Equipo</option>
+                            <option value="comunidad" class="lang" data-es="Comunidad" data-ca="Comunitat">Comunidad</option>
+                            <option value="sin" class="lang" data-es="Sin especificar" data-ca="Sense especificar">Sin especificar</option>
+                        </select>
+                    </div>
                     <div class="btn-group">
-                        <button id="import-snapshot" class="btn btn-primary"><span>📂</span> <span class="lang" data-es="Importar JSON" data-ca="Importar JSON">Importar JSON</span></button>
-                        <button id="show-add-user-form" class="btn btn-success"><span>➕</span> <span class="lang" data-es="Afegir manualment" data-ca="Afegir manualment">Afegir manualment</span></button>
-                    </div>
-                    <!-- Formulari d'alta manual (amagat inicialment) -->
-                    <div id="add-user-form" style="display:none; margin-top:15px; padding:15px; background:var(--light); border-radius:8px;">
-                        <h4 class="lang" data-es="Nou participant" data-ca="Nou participant">Nou participant</h4>
-                        <div class="form-row">
-                            <label class="lang" data-es="Nom:" data-ca="Nom:">Nom:</label>
-                            <input type="text" id="new-user-name" placeholder="Nom">
-                        </div>
-                        <div class="form-row">
-                            <label class="lang" data-es="Adreça Ethereum:" data-ca="Adreça Ethereum:">Adreça Ethereum:</label>
-                            <input type="text" id="new-user-address" placeholder="0x...">
-                        </div>
-                        <div class="form-row">
-                            <label class="lang" data-es="Valor aportat:" data-ca="Valor aportat:">Valor aportat:</label>
-                            <input type="number" id="new-user-value" min="1" value="100">
-                        </div>
-                        <div class="form-row">
-                            <label class="lang" data-es="Rols (separats per comes):" data-ca="Rols (separats per comes):">Rols (separats per comes):</label>
-                            <input type="text" id="new-user-roles" placeholder="ex: desenvolupador, community">
-                        </div>
-                        <div class="form-row">
-                            <label class="lang" data-es="Tipus:" data-ca="Tipus:">Tipus:</label>
-                            <select id="new-user-type">
-                                <option value="inversor" class="lang" data-es="Inversor" data-ca="Inversor">Inversor</option>
-                                <option value="equip" class="lang" data-es="Equip" data-ca="Equip">Equip</option>
-                                <option value="comunitat" class="lang" data-es="Comunitat" data-ca="Comunitat">Comunitat</option>
-                                <option value="sense" class="lang" data-es="Sense especificar" data-ca="Sense especificar">Sense especificar</option>
-                            </select>
-                        </div>
-                        <div class="btn-group">
-                            <button id="save-new-user" class="btn btn-primary"><span class="lang" data-es="Guardar" data-ca="Guardar">Guardar</span></button>
-                            <button id="cancel-new-user" class="btn btn-secondary"><span class="lang" data-es="Cancel·lar" data-ca="Cancel·lar">Cancel·lar</span></button>
-                        </div>
-                    </div>
-                    <!-- Taula de participants -->
-                    <div style="max-height:300px; overflow-y:auto; margin-top:15px;">
-                        <table class="ranking-table" style="width:100%;">
-                            <thead><tr><th>Nom</th><th>Adreça</th><th>Valor</th><th>Rols</th><th>Tipus</th><th>Accions</th></tr></thead>
-                            <tbody id="users-table-body"></tbody>
-                        </table>
-                    </div>
-                    <div class="stats-bar" style="margin:15px 0;">
-                        <div class="stat-item"><span class="stat-value" id="total-users">0</span><br><span class="lang" data-es="Usuaris" data-ca="Usuaris">Usuaris</span></div>
-                        <div class="stat-item"><span class="stat-value" id="total-value">0</span><br><span class="lang" data-es="Valor total" data-ca="Valor total">Valor total</span></div>
+                        <button id="save-user" class="btn btn-success"><span>💾</span> <span class="lang" data-es="Guardar" data-ca="Guardar">Guardar</span></button>
+                        <button id="cancel-user" class="btn btn-secondary"><span class="lang" data-es="Cancelar" data-ca="Cancel·lar">Cancelar</span></button>
                     </div>
                 </div>
 
-                <!-- Paràmetres globals -->
-                <h3 class="lang" data-es="📊 Paràmetres globals" data-ca="📊 Paràmetres globals">📊 Paràmetres globals</h3>
+                <!-- PARÀMETRES GLOBALS -->
+                <h3 class="lang" data-es="📊 Parámetros globales" data-ca="📊 Paràmetres globals">📊 Parámetros globales</h3>
                 <div class="input-group">
-                    <label class="lang" data-es="Subministrament total de tokens" data-ca="Subministrament total de tokens">Subministrament total de tokens</label>
+                    <label class="lang" data-es="Suministro total de tokens" data-ca="Subministrament total de tokens">Suministro total de tokens</label>
                     <input type="number" id="total-supply" value="1000000" min="1">
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="input-group">
-                        <label class="lang" data-es="Inversors %" data-ca="Inversors %">Inversors %</label>
+                        <label class="lang" data-es="Inversores %" data-ca="Inversors %">Inversores %</label>
                         <input type="number" id="pct-investors" value="40" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Equip %" data-ca="Equip %">Equip %</label>
+                        <label class="lang" data-es="Equipo %" data-ca="Equip %">Equipo %</label>
                         <input type="number" id="pct-team" value="20" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Reserva comunitat %" data-ca="Reserva comunitat %">Reserva comunitat %</label>
+                        <label class="lang" data-es="Reserva comunidad %" data-ca="Reserva comunitat %">Reserva comunidad %</label>
                         <input type="number" id="pct-community" value="30" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Tresoreria %" data-ca="Tresoreria %">Tresoreria %</label>
+                        <label class="lang" data-es="Tesorería %" data-ca="Tresoreria %">Tesorería %</label>
                         <input type="number" id="pct-treasury" value="10" min="0" max="100">
                     </div>
                 </div>
                 <div id="pct-error" style="color:var(--danger); font-weight:600; margin-bottom:15px;"></div>
 
-                <!-- Assignacions específiques equip -->
-                <div id="team-allocations-section" style="margin-top:20px;">
-                    <h3 class="lang" data-es="👥 Assignacions equip" data-ca="👥 Assignacions equip">👥 Assignacions equip</h3>
-                    <div id="team-allocations-list"></div>
-                    <button id="add-team-allocation" class="btn btn-secondary" style="margin-top:10px;"><span>➕</span> <span class="lang" data-es="Afegir membre" data-ca="Afegir membre">Afegir membre</span></button>
+                <!-- ASSIGNACIONS D'EQUIP (amb tooltip) -->
+                <div style="margin-top:20px;">
+                    <h3 style="display:flex; align-items:center; gap:5px;">
+                        <span class="lang" data-es="👥 Asignaciones equipo" data-ca="👥 Assignacions equip">👥 Asignaciones equipo</span>
+                        <span class="tooltip" style="cursor:help; position:relative;">ℹ️
+                            <span class="tooltip-text" style="visibility:hidden; width:250px; background:var(--dark); color:white; border-radius:6px; padding:8px; position:absolute; margin-left:-125px; bottom:125%; left:50%;">Esta sección permite asignar una cantidad fija de tokens a miembros concretos del equipo. Estas cantidades se descuentan del porcentaje global reservado para el equipo. Si no se quieren asignaciones individuales, se puede dejar vacío.</span>
+                        </span>
+                    </h3>
+                    <div id="team-allocations-list" class="dynamic-list"></div>
+                    <button id="add-team-allocation" class="btn btn-secondary" style="margin-top:5px; width:100%;"><span>➕</span> <span class="lang" data-es="Añadir miembro" data-ca="Afegir membre">Añadir miembro</span></button>
                     <div id="team-error" style="color:var(--danger); margin-top:10px;"></div>
                 </div>
 
-                <!-- Rondes Fibonacci -->
-                <div id="rounds-section" style="margin-top:20px;">
-                    <h3 class="lang" data-es="📈 Rondes Fibonacci" data-ca="📈 Rondes Fibonacci">📈 Rondes Fibonacci</h3>
-                    <div id="rounds-list"></div>
-                    <button id="add-round" class="btn btn-secondary" style="margin-top:10px;"><span>➕</span> <span class="lang" data-es="Afegir ronda" data-ca="Afegir ronda">Afegir ronda</span></button>
+                <!-- RONDES FIBONACCI (amb valors per defecte) -->
+                <div style="margin-top:20px;">
+                    <h3 class="lang" data-es="📈 Rondas Fibonacci" data-ca="📈 Rondes Fibonacci">📈 Rondas Fibonacci</h3>
+                    <div id="rounds-list" class="dynamic-list"></div>
+                    <button id="add-round" class="btn btn-secondary" style="margin-top:5px; width:100%;"><span>➕</span> <span class="lang" data-es="Añadir ronda" data-ca="Afegir ronda">Añadir ronda</span></button>
                     <div id="rounds-error" style="color:var(--danger); margin-top:10px;"></div>
                 </div>
 
-                <!-- Vesting -->
+                <!-- VESTING -->
                 <div style="margin-top:20px;">
-                    <h3 class="lang" data-es="⏳ Vesting (equip)" data-ca="⏳ Vesting (equip)">⏳ Vesting (equip)</h3>
+                    <h3 class="lang" data-es="⏳ Vesting (equipo)" data-ca="⏳ Vesting (equip)">⏳ Vesting (equipo)</h3>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div class="input-group">
-                            <label class="lang" data-es="Cliff (dies)" data-ca="Cliff (dies)">Cliff (dies)</label>
+                            <label class="lang" data-es="Cliff (días)" data-ca="Cliff (dies)">Cliff (días)</label>
                             <input type="number" id="cliff-days" value="365" min="0">
                         </div>
                         <div class="input-group">
-                            <label class="lang" data-es="Vesting (dies)" data-ca="Vesting (dies)">Vesting (dies)</label>
+                            <label class="lang" data-es="Vesting (días)" data-ca="Vesting (dies)">Vesting (días)</label>
                             <input type="number" id="vesting-days" value="1460" min="1">
                         </div>
                     </div>
                 </div>
 
-                <!-- Exportació -->
-                <div style="margin-top:30px;">
-                    <button id="export-config" class="btn btn-export" style="width:100%;"><span>📤</span> <span class="lang" data-es="Exportar configuració per a Smart Contracts" data-ca="Exportar configuració per a Smart Contracts">Exportar configuració per a Smart Contracts</span></button>
-                </div>
+                <!-- EXPORTACIÓ -->
+                <button id="export-config" class="btn btn-export" style="width:100%; margin-top:25px;"><span>📤</span> <span class="lang" data-es="Exportar para Smart Contracts" data-ca="Exportar per a Smart Contracts">Exportar para Smart Contracts</span></button>
             </div>
 
-            <!-- PANEL DRET: VISUALITZACIONS -->
+            <!-- PANELL DRET: VISUALITZACIONS I TAULA ÚNICA -->
             <div class="visualization-container">
-                <h2><span class="lang" data-es="📈 Distribució de valor" data-ca="📈 Distribució de valor">📈 Distribució de valor</span></h2>
+                <h2><span class="lang" data-es="📈 Distribución de valor" data-ca="📈 Distribució de valor">📈 Distribución de valor</span></h2>
                 <div class="chart-tabs">
-                    <button class="chart-tab active" data-view="user"><span class="lang" data-es="Per persona" data-ca="Per persona">Per persona</span></button>
-                    <button class="chart-tab" data-view="role"><span class="lang" data-es="Per rol" data-ca="Per rol">Per rol</span></button>
-                    <button class="chart-tab" data-view="type"><span class="lang" data-es="Per tipus" data-ca="Per tipus">Per tipus</span></button>
+                    <button class="chart-tab active" data-view="user"><span class="lang" data-es="Por persona" data-ca="Per persona">Por persona</span></button>
+                    <button class="chart-tab" data-view="role"><span class="lang" data-es="Por rol" data-ca="Per rol">Por rol</span></button>
+                    <button class="chart-tab" data-view="type"><span class="lang" data-es="Por tipo" data-ca="Per tipus">Por tipo</span></button>
                 </div>
                 <div class="chart-container">
                     <canvas id="valueChart"></canvas>
                 </div>
 
-                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="🏆 Ranking d'usuaris" data-ca="🏆 Rànquing d'usuaris">🏆 Ranking d'usuaris</span></h3>
-                <table class="ranking-table">
-                    <thead><tr><th>Posició</th><th>Usuari</th><th>Adreça</th><th>Rols</th><th>Tipus</th><th>Valor</th></tr></thead>
-                    <tbody id="ranking-body"></tbody>
-                </table>
-
-                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="💰 Simulació reserva comunitat" data-ca="💰 Simulació reserva comunitat">💰 Simulació reserva comunitat</span></h3>
-                <table class="deliverables-list">
-                    <thead><tr><th>Usuari</th><th>Adreça</th><th>Valor</th><th>% del total</th><th>Tokens a rebre</th></tr></thead>
-                    <tbody id="simulation-body"></tbody>
-                </table>
-
-                <div class="next-step" style="background:var(--gradient-primary); color:white; padding:15px; border-radius:var(--border-radius); text-align:center; margin:30px 0;">
-                    <h3><span class="lang" data-es="Configuració llesta per desplegar" data-ca="Configuració llesta per desplegar">Configuració llesta per desplegar</span></h3>
-                    <p><span class="lang" data-es="Utilitza el botó d'exportació per generar el fitxer JSON per als smart contracts." data-ca="Utilitza el botó d'exportació per generar el fitxer JSON per als smart contracts.">Utilitza el botó d'exportació per generar el fitxer JSON per als smart contracts.</span></p>
+                <!-- ESTADÍSTIQUES RÀPIDES -->
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-users">0</div>
+                        <div class="stat-label lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-value">0</div>
+                        <div class="stat-label lang" data-es="Valor total" data-ca="Valor total">Valor total</div>
+                    </div>
                 </div>
+
+                <!-- TAULA ÚNICA (RANKING + SIMULACIÓ) -->
+                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="👥 Participantes y simulación de reserva" data-ca="👥 Participants i simulació de reserva">👥 Participantes y simulación de reserva</span></h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="lang" data-es="Usuario" data-ca="Usuari">Usuario</th>
+                            <th class="lang" data-es="Dirección" data-ca="Adreça">Dirección</th>
+                            <th class="lang" data-es="Valor" data-ca="Valor">Valor</th>
+                            <th class="lang" data-es="% del total" data-ca="% del total">% del total</th>
+                            <th class="lang" data-es="Tokens (reserva)" data-ca="Tokens (reserva)">Tokens (reserva)</th>
+                            <th class="lang" data-es="Tipo" data-ca="Tipus">Tipo</th>
+                            <th class="lang" data-es="Acciones" data-ca="Accions">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
+                </table>
             </div>
         </div>
 
         <!-- TEST SUITE -->
         <div class="test-section">
-            <h3><span class="lang" data-es="🧪 Proves de funcionament" data-ca="🧪 Proves de funcionament">🧪 Proves de funcionament</span></h3>
-            <button id="run-tests" class="btn btn-warning"><span>🔬</span> <span class="lang" data-es="Executar proves" data-ca="Executar proves">Executar proves</span></button>
+            <h3><span class="lang" data-es="🧪 Pruebas de funcionamiento" data-ca="🧪 Proves de funcionament">🧪 Pruebas de funcionamiento</span></h3>
+            <button id="run-tests" class="btn btn-warning"><span>🔬</span> <span class="lang" data-es="Ejecutar pruebas" data-ca="Executar proves">Ejecutar pruebas</span></button>
             <div class="test-results" id="test-results"></div>
         </div>
     </div>
 
+    <!-- FOOTER -->
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
                 <h3>TeamTowers Humà</h3>
-                <p class="lang" data-es="De les torres humanes a les organitzacions humanes." data-ca="De les torres humanes a les organitzacions humanes.">De les torres humanes a les organitzacions humanes.</p>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas." data-ca="De les torres humanes a les organitzacions humanes.">De las torres humanas a las organizaciones humanas.</p>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Enllaços" data-ca="Enllaços">Enllaços</h3>
+                <h3 class="lang" data-es="Enlaces" data-ca="Enllaços">Enlaces</h3>
                 <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App de Comptabilitat" data-ca="App de Comptabilitat">App de Comptabilitat</a></li>
-                    <li><a href="https://teamtowershuma.com/tokenomics" class="lang" data-es="App de Tokenomics" data-ca="App de Tokenomics">App de Tokenomics</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App de Contabilidad" data-ca="App de Comptabilitat">App de Contabilidad</a></li>
+                    <li><a href="#" class="lang" data-es="App de Tokenomics" data-ca="App de Tokenomics">App de Tokenomics</a></li>
                 </ul>
             </div>
         </div>
         <div class="copyright">
-            <p>© 2026 TeamTowers Humà. Tots els drets reservats.</p>
+            <p>© 2026 TeamTowers Humà · Todos los derechos reservados</p>
         </div>
     </footer>
 
     <script>
         // ---------- ESTRUCTURA DE DADES ----------
-        // Aquesta estructura està pensada per poder ser substituïda en un futur per crides a una API / base de dades.
         let tokenomicsData = {
             projectName: "Proyecto MASIA",
             valueUnit: "puntos",
-            users: [],                       // array d'usuaris: { id, name, address, value, roles (array), type }
+            users: [],                       // { id, name, address, value, roles (array), type }
             totalSupply: 1000000,
             allocations: {
                 investors: 40,
@@ -667,7 +772,7 @@
         // Variables globals
         let valueChart = null;
         let currentChartView = 'user';
-        let editingUserId = null; // per a edició
+        let editingUserId = null; // per saber si estem editant un usuari concret
 
         // ---------- FUNCIONS AUXILIARS ----------
         function showNotification(message, type = 'info', duration = 3000) {
@@ -686,48 +791,66 @@
             return /^0x[a-fA-F0-9]{40}$/.test(addr);
         }
 
-        // Genera un ID únic
         function generateId() { return 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9); }
 
-        // Desa a localStorage (puntual)
+        // Persistència a localStorage
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('tokenomicsData', JSON.stringify(tokenomicsData));
             } catch(e) { console.warn('Error saving to localStorage', e); }
         }
 
-        // Carrega de localStorage
         function loadFromLocalStorage() {
             try {
                 const saved = localStorage.getItem('tokenomicsData');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    // Migració bàsica per assegurar estructura
                     tokenomicsData = { ...tokenomicsData, ...parsed };
                     if (!tokenomicsData.users) tokenomicsData.users = [];
                     if (!tokenomicsData.teamAllocations) tokenomicsData.teamAllocations = [];
-                    if (!tokenomicsData.fibonacciRounds) tokenomicsData.fibonacciRounds = [];
+                    if (!tokenomicsData.fibonacciRounds || tokenomicsData.fibonacciRounds.length === 0) {
+                        // Valors per defecte de rondes Fibonacci
+                        tokenomicsData.fibonacciRounds = [
+                            { round: 1, percentage: 5 },
+                            { round: 2, percentage: 8 },
+                            { round: 3, percentage: 13 },
+                            { round: 4, percentage: 21 }
+                        ];
+                    }
+                } else {
+                    // Si no hi ha dades, posem les rondes per defecte
+                    tokenomicsData.fibonacciRounds = [
+                        { round: 1, percentage: 5 },
+                        { round: 2, percentage: 8 },
+                        { round: 3, percentage: 13 },
+                        { round: 4, percentage: 21 }
+                    ];
                 }
             } catch(e) { console.warn('Error loading from localStorage', e); }
         }
 
-        // ---------- FUNCIONS DE RENDERRITZACIÓ DE LA UI ----------
+        // ---------- ACTUALITZACIÓ DE TOTES LES VISTES ----------
         function renderUsersTable() {
             const tbody = document.getElementById('users-table-body');
             if (!tokenomicsData.users.length) {
-                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No hi ha participants</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">No hay participantes</td></tr>`;
                 return;
             }
+            const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
+            const communityTokens = (tokenomicsData.allocations.communityReserve / 100) * tokenomicsData.totalSupply;
             let html = '';
             tokenomicsData.users.forEach(u => {
-                const addr = u.address ? u.address.substr(0,6)+'...'+u.address.substr(-4) : '';
-                const roles = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
+                const addr = u.address ? u.address.substr(0,6)+'…'+u.address.substr(-4) : '';
+                const pct = totalValue > 0 ? ((u.value / totalValue) * 100).toFixed(2) : '0.00';
+                const tokens = totalValue > 0 ? ((u.value / totalValue) * communityTokens).toFixed(2) : '0.00';
+                const roles = Array.isArray(u.roles) ? u.roles.join(', ') : (u.roles || '');
                 html += `<tr>
                     <td>${u.name}</td>
                     <td>${addr}</td>
                     <td>${u.value}</td>
-                    <td>${roles}</td>
-                    <td>${u.type || 'sense'}</td>
+                    <td>${pct}%</td>
+                    <td>${tokens}</td>
+                    <td>${u.type || 'sin'}</td>
                     <td>
                         <button class="action-btn edit" data-id="${u.id}">✏️</button>
                         <button class="action-btn delete" data-id="${u.id}">🗑️</button>
@@ -739,36 +862,58 @@
             document.querySelectorAll('.action-btn.delete').forEach(b => b.addEventListener('click', (e) => deleteUser(e.target.dataset.id)));
         }
 
-        function editUser(id) {
-            const user = tokenomicsData.users.find(u => u.id === id);
-            if (!user) return;
-            document.getElementById('new-user-name').value = user.name;
-            document.getElementById('new-user-address').value = user.address || '';
-            document.getElementById('new-user-value').value = user.value;
-            document.getElementById('new-user-roles').value = Array.isArray(user.roles) ? user.roles.join(', ') : user.roles || '';
-            document.getElementById('new-user-type').value = user.type || 'sense';
-            document.getElementById('add-user-form').style.display = 'block';
-            editingUserId = id;
+        function updateStats() {
+            document.getElementById('total-users').textContent = tokenomicsData.users.length;
+            const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
+            document.getElementById('total-value').textContent = totalValue;
         }
 
-        function deleteUser(id) {
-            tokenomicsData.users = tokenomicsData.users.filter(u => u.id !== id);
-            saveToLocalStorage();
-            updateAll();
+        function updateChart(view = currentChartView) {
+            if (!valueChart) return;
+            currentChartView = view;
+            let labels = [], data = [];
+            if (view === 'user') {
+                const map = {};
+                tokenomicsData.users.forEach(u => { map[u.name] = (map[u.name] || 0) + u.value; });
+                const sorted = Object.entries(map).sort((a,b) => b[1]-a[1]).slice(0,8);
+                labels = sorted.map(e => e[0]);
+                data = sorted.map(e => e[1]);
+            } else if (view === 'role') {
+                const map = {};
+                tokenomicsData.users.forEach(u => {
+                    const roles = Array.isArray(u.roles) ? u.roles : (u.roles ? u.roles.split(',').map(s=>s.trim()) : []);
+                    roles.forEach(r => { map[r] = (map[r] || 0) + u.value; });
+                });
+                const sorted = Object.entries(map).sort((a,b) => b[1]-a[1]).slice(0,8);
+                labels = sorted.map(e => e[0]);
+                data = sorted.map(e => e[1]);
+            } else { // type
+                const map = {};
+                tokenomicsData.users.forEach(u => {
+                    const t = u.type || 'sin';
+                    map[t] = (map[t] || 0) + u.value;
+                });
+                const sorted = Object.entries(map).sort((a,b) => b[1]-a[1]);
+                labels = sorted.map(e => e[0]);
+                data = sorted.map(e => e[1]);
+            }
+            valueChart.data.labels = labels;
+            valueChart.data.datasets[0].data = data;
+            valueChart.update();
         }
 
         function renderTeamAllocations() {
             const container = document.getElementById('team-allocations-list');
             if (!tokenomicsData.teamAllocations.length) {
-                container.innerHTML = '<p class="empty-state">No hi ha assignacions d\'equip</p>';
+                container.innerHTML = '<p class="empty-state" style="color:var(--gray); text-align:center;">No hay asignaciones de equipo</p>';
                 return;
             }
             let html = '';
             tokenomicsData.teamAllocations.forEach((ta, index) => {
-                html += `<div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="text" placeholder="Adreça" value="${ta.address}" class="team-addr" data-index="${index}">
-                    <input type="number" placeholder="Quantitat" value="${ta.allocation}" class="team-alloc" data-index="${index}">
-                    <button class="btn-danger" style="padding:5px 10px;" onclick="removeTeamAllocation(${index})">🗑️</button>
+                html += `<div class="dynamic-item">
+                    <input type="text" placeholder="Dirección" value="${ta.address}" class="addr-input team-addr" data-index="${index}">
+                    <input type="number" placeholder="Cantidad" value="${ta.allocation}" class="num-input team-alloc" data-index="${index}">
+                    <button class="btn-small" onclick="removeTeamAllocation(${index})">🗑️</button>
                 </div>`;
             });
             container.innerHTML = html;
@@ -784,15 +929,15 @@
         function renderRounds() {
             const container = document.getElementById('rounds-list');
             if (!tokenomicsData.fibonacciRounds.length) {
-                container.innerHTML = '<p class="empty-state">No hi ha rondes definides</p>';
+                container.innerHTML = '<p class="empty-state" style="color:var(--gray); text-align:center;">No hay rondas definidas</p>';
                 return;
             }
             let html = '';
             tokenomicsData.fibonacciRounds.forEach((r, index) => {
-                html += `<div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="number" placeholder="Ronda" value="${r.round}" class="round-num" data-index="${index}">
-                    <input type="number" placeholder="%" value="${r.percentage}" class="round-pct" data-index="${index}">
-                    <button class="btn-danger" style="padding:5px 10px;" onclick="removeRound(${index})">🗑️</button>
+                html += `<div class="dynamic-item">
+                    <input type="number" placeholder="Ronda" value="${r.round}" class="num-input round-num" data-index="${index}">
+                    <input type="number" placeholder="%" value="${r.percentage}" class="num-input round-pct" data-index="${index}">
+                    <button class="btn-small" onclick="removeRound(${index})">🗑️</button>
                 </div>`;
             });
             container.innerHTML = html;
@@ -814,7 +959,7 @@
             const sum = inv + team + com + tre;
             const errorDiv = document.getElementById('pct-error');
             if (Math.abs(sum - 100) > 0.01) {
-                errorDiv.textContent = `La suma ha de ser 100 (actual: ${sum})`;
+                errorDiv.textContent = `La suma debe ser 100 (actual: ${sum})`;
                 return false;
             } else {
                 errorDiv.textContent = '';
@@ -830,7 +975,7 @@
             });
             const errorDiv = document.getElementById('team-error');
             if (totalAssigned > maxTeamTokens + 0.01) {
-                errorDiv.textContent = `Les assignacions d'equip (${totalAssigned}) superen el màxim permès (${maxTeamTokens})`;
+                errorDiv.textContent = `Las asignaciones de equipo (${totalAssigned}) superan el máximo permitido (${maxTeamTokens})`;
                 return false;
             } else {
                 errorDiv.textContent = '';
@@ -839,15 +984,13 @@
         }
 
         function validateRounds() {
-            const maxInvestorTokens = (tokenomicsData.allocations.investors / 100) * tokenomicsData.totalSupply;
-            // Suma de percentatges de ronda (sobre el totalSupply)
             let totalRoundPct = 0;
             document.querySelectorAll('.round-pct').forEach(inp => {
                 totalRoundPct += parseFloat(inp.value) || 0;
             });
             const errorDiv = document.getElementById('rounds-error');
             if (totalRoundPct > tokenomicsData.allocations.investors + 0.01) {
-                errorDiv.textContent = `Els percentatges de les rondes (${totalRoundPct}%) superen el percentatge global d'inversors (${tokenomicsData.allocations.investors}%)`;
+                errorDiv.textContent = `Los porcentajes de las rondas (${totalRoundPct}%) superan el porcentaje global de inversores (${tokenomicsData.allocations.investors}%)`;
                 return false;
             } else {
                 errorDiv.textContent = '';
@@ -855,101 +998,183 @@
             }
         }
 
-        // ---------- ACTUALITZACIÓ DE TOTES LES VISUALITZACIONS ----------
-        function updateStats() {
-            document.getElementById('total-users').textContent = tokenomicsData.users.length;
-            const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
-            document.getElementById('total-value').textContent = totalValue;
-        }
-
-        function updateRanking() {
-            const tbody = document.getElementById('ranking-body');
-            if (!tokenomicsData.users.length) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hi dades</td></tr>';
-                return;
-            }
-            const sorted = [...tokenomicsData.users].sort((a,b) => b.value - a.value);
-            let html = '';
-            sorted.forEach((u, i) => {
-                const addr = u.address ? u.address.substr(0,6)+'...'+u.address.substr(-4) : '';
-                const roles = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
-                html += `<tr>
-                    <td>${i+1}</td>
-                    <td>${u.name}</td>
-                    <td>${addr}</td>
-                    <td>${roles}</td>
-                    <td>${u.type || 'sense'}</td>
-                    <td>${u.value}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-        }
-
-        function updateSimulation() {
-            const tbody = document.getElementById('simulation-body');
-            const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
-            if (totalValue === 0 || !tokenomicsData.users.length) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Sense dades per simular</td></tr>';
-                return;
-            }
-            const communityTokens = (tokenomicsData.allocations.communityReserve / 100) * tokenomicsData.totalSupply;
-            let html = '';
-            tokenomicsData.users.forEach(u => {
-                const pct = (u.value / totalValue * 100).toFixed(2);
-                const tokens = (u.value / totalValue * communityTokens).toFixed(2);
-                const addr = u.address ? u.address.substr(0,6)+'...'+u.address.substr(-4) : '';
-                html += `<tr>
-                    <td>${u.name}</td>
-                    <td>${addr}</td>
-                    <td>${u.value}</td>
-                    <td>${pct}%</td>
-                    <td>${tokens}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-        }
-
-        function updateChart(view = currentChartView) {
-            if (!valueChart) return;
-            currentChartView = view;
-            let labels = [], data = [];
-            if (view === 'user') {
-                const userMap = {};
-                tokenomicsData.users.forEach(u => { userMap[u.name] = (userMap[u.name] || 0) + u.value; });
-                const sorted = Object.entries(userMap).sort((a,b) => b[1]-a[1]).slice(0,8);
-                labels = sorted.map(e => e[0]);
-                data = sorted.map(e => e[1]);
-            } else if (view === 'role') {
-                const roleMap = {};
-                tokenomicsData.users.forEach(u => {
-                    const roles = Array.isArray(u.roles) ? u.roles : (u.roles ? u.roles.split(',').map(s=>s.trim()) : []);
-                    roles.forEach(r => { roleMap[r] = (roleMap[r] || 0) + u.value; });
+        // ---------- AUTOCOMPLETA (usuaris i rols) ----------
+        function setupAutocomplete() {
+            // Autocompletar para nombre de usuario
+            const userInput = document.getElementById('user-name');
+            const userList = document.getElementById('user-autocomplete');
+            userInput.addEventListener('input', function() {
+                const val = this.value.trim().toLowerCase();
+                userList.innerHTML = '';
+                if (val === '') return;
+                const matches = tokenomicsData.users.filter(u => u.name.toLowerCase().includes(val)).slice(0,10);
+                matches.forEach(u => {
+                    const div = document.createElement('div');
+                    div.textContent = u.name;
+                    div.addEventListener('click', () => {
+                        userInput.value = u.name;
+                        document.getElementById('user-address').value = u.address || '';
+                        document.getElementById('user-value').value = '';
+                        document.getElementById('user-roles').value = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
+                        document.getElementById('user-type').value = u.type || 'sin';
+                        editingUserId = u.id;
+                        userList.innerHTML = '';
+                    });
+                    userList.appendChild(div);
                 });
-                const sorted = Object.entries(roleMap).sort((a,b) => b[1]-a[1]).slice(0,8);
-                labels = sorted.map(e => e[0]);
-                data = sorted.map(e => e[1]);
-            } else { // type
-                const typeMap = {};
+                if (matches.length === 0) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `➕ <strong>Crear "${this.value}"</strong>`;
+                    div.addEventListener('click', () => {
+                        editingUserId = null;
+                        userList.innerHTML = '';
+                    });
+                    userList.appendChild(div);
+                }
+            });
+            userInput.addEventListener('blur', () => {
+                setTimeout(() => userList.innerHTML = '', 200);
+            });
+
+            // Autocompletar para roles
+            const rolesInput = document.getElementById('user-roles');
+            const rolesList = document.getElementById('roles-autocomplete');
+            rolesInput.addEventListener('input', function() {
+                const val = this.value.trim().toLowerCase();
+                rolesList.innerHTML = '';
+                if (val === '') return;
+
+                // Extraer el último fragmento después de la última coma
+                const parts = this.value.split(',').map(p => p.trim());
+                const lastPart = parts[parts.length-1].toLowerCase();
+                if (lastPart === '') return;
+
+                // Obtener todos los roles existentes de todos los usuarios
+                const allRoles = new Set();
                 tokenomicsData.users.forEach(u => {
-                    const t = u.type || 'sense';
-                    typeMap[t] = (typeMap[t] || 0) + u.value;
+                    if (Array.isArray(u.roles)) {
+                        u.roles.forEach(r => allRoles.add(r));
+                    } else if (u.roles) {
+                        u.roles.split(',').map(s => s.trim()).forEach(r => allRoles.add(r));
+                    }
                 });
-                const sorted = Object.entries(typeMap).sort((a,b) => b[1]-a[1]);
-                labels = sorted.map(e => e[0]);
-                data = sorted.map(e => e[1]);
-            }
-            valueChart.data.labels = labels;
-            valueChart.data.datasets[0].data = data;
-            valueChart.update();
+                const matches = Array.from(allRoles).filter(r => r.toLowerCase().includes(lastPart)).slice(0,10);
+                matches.forEach(role => {
+                    const div = document.createElement('div');
+                    div.textContent = role;
+                    div.addEventListener('click', () => {
+                        parts[parts.length-1] = role;
+                        rolesInput.value = parts.join(', ') + (parts.length > 1 ? '' : '');
+                        rolesList.innerHTML = '';
+                    });
+                    rolesList.appendChild(div);
+                });
+                if (matches.length === 0) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `➕ <strong>Crear "${lastPart}"</strong>`;
+                    div.addEventListener('click', () => {
+                        // Mantener el texto tal cual
+                        rolesList.innerHTML = '';
+                    });
+                    rolesList.appendChild(div);
+                }
+            });
+            rolesInput.addEventListener('blur', () => {
+                setTimeout(() => rolesList.innerHTML = '', 200);
+            });
         }
 
-        function updateAll() {
+        // ---------- GESTIÓ D'USUARIS (AFEGIR/EDITAR/ESBORRAR) ----------
+        function editUser(id) {
+            const u = tokenomicsData.users.find(u => u.id === id);
+            if (!u) return;
+            document.getElementById('user-name').value = u.name;
+            document.getElementById('user-address').value = u.address || '';
+            document.getElementById('user-value').value = u.value;
+            document.getElementById('user-roles').value = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
+            document.getElementById('user-type').value = u.type || 'sin';
+            editingUserId = u.id;
+        }
+
+        function deleteUser(id) {
+            if (!confirm('¿Eliminar este participante?')) return;
+            tokenomicsData.users = tokenomicsData.users.filter(u => u.id !== id);
+            saveToLocalStorage();
+            refreshAll();
+        }
+
+        function saveUser() {
+            const name = document.getElementById('user-name').value.trim();
+            if (!name) { showNotification('El nombre es obligatorio', 'warning'); return; }
+            const value = parseFloat(document.getElementById('user-value').value);
+            if (isNaN(value) || value <= 0) { showNotification('El valor debe ser positivo', 'warning'); return; }
+            const address = document.getElementById('user-address').value.trim();
+            if (address && !isValidEthereumAddress(address)) { showNotification('Dirección Ethereum no válida', 'warning'); return; }
+            const rolesStr = document.getElementById('user-roles').value.trim();
+            const roles = rolesStr ? rolesStr.split(',').map(s => s.trim()).filter(s => s) : [];
+            const type = document.getElementById('user-type').value;
+
+            if (editingUserId) {
+                // Edición: actualizamos el usuario existente
+                const user = tokenomicsData.users.find(u => u.id === editingUserId);
+                if (user) {
+                    user.name = name;
+                    user.address = address;
+                    user.value = value;
+                    user.roles = roles;
+                    user.type = type;
+                }
+            } else {
+                // Comprobamos si ya existe un usuario con el mismo nombre (para acumular)
+                const existing = tokenomicsData.users.find(u => u.name.toLowerCase() === name.toLowerCase());
+                if (existing) {
+                    // Acumular valor
+                    existing.value += value;
+                    // Acumular roles (evitando duplicados)
+                    const newRoles = new Set([...(Array.isArray(existing.roles) ? existing.roles : []), ...roles]);
+                    existing.roles = Array.from(newRoles);
+                    // Si se ha proporcionado una dirección nueva y es diferente, preguntamos
+                    if (address && existing.address !== address) {
+                        if (confirm(`El usuario ya tiene la dirección ${existing.address}. ¿Quieres actualizarla a ${address}?`)) {
+                            existing.address = address;
+                        }
+                    }
+                } else {
+                    // Nuevo usuario
+                    tokenomicsData.users.push({
+                        id: generateId(),
+                        name, address, value, roles, type
+                    });
+                }
+            }
+
+            saveToLocalStorage();
+            // Limpiar formulario
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-address').value = '';
+            document.getElementById('user-value').value = '100';
+            document.getElementById('user-roles').value = '';
+            document.getElementById('user-type').value = 'sin';
+            editingUserId = null;
+            refreshAll();
+            showNotification('Participante guardado', 'success');
+        }
+
+        function cancelUser() {
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-address').value = '';
+            document.getElementById('user-value').value = '100';
+            document.getElementById('user-roles').value = '';
+            document.getElementById('user-type').value = 'sin';
+            editingUserId = null;
+        }
+
+        // Refresca totes les vistes
+        function refreshAll() {
             renderUsersTable();
             updateStats();
-            updateRanking();
-            updateSimulation();
             updateChart();
-            // Actualitzar valors dels inputs globals
+            // Actualizar inputs globales
             document.getElementById('total-supply').value = tokenomicsData.totalSupply;
             document.getElementById('pct-investors').value = tokenomicsData.allocations.investors;
             document.getElementById('pct-team').value = tokenomicsData.allocations.team;
@@ -959,12 +1184,155 @@
             document.getElementById('vesting-days').value = tokenomicsData.vesting.teamVestingDays;
             renderTeamAllocations();
             renderRounds();
+            validateAllocations();
+            validateTeamAllocations();
+            validateRounds();
         }
 
-        // ---------- ESDEVENIMENTS I INICIALITZACIÓ ----------
+        // ---------- IMPORTACIÓ DE SNAPSHOT ----------
+        function importSnapshot() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (!imported.snapshot || !Array.isArray(imported.snapshot)) {
+                            throw new Error('El archivo debe contener un array "snapshot"');
+                        }
+                        const newUsers = imported.snapshot.map(item => ({
+                            id: generateId(),
+                            name: item.user,
+                            address: item.address || '',
+                            value: item.uvAmount,
+                            roles: item.roles || [],
+                            type: item.stakeholderType || 'sin'
+                        }));
+                        tokenomicsData.users = newUsers;
+                        if (imported.projectName) tokenomicsData.projectName = imported.projectName;
+                        if (imported.valueUnit) tokenomicsData.valueUnit = imported.valueUnit;
+                        saveToLocalStorage();
+                        refreshAll();
+                        showNotification(`Importados ${newUsers.length} usuarios`, 'success');
+                    } catch (err) {
+                        showNotification('Error al importar: ' + err.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // ---------- EXPORTACIÓ ----------
+        function exportConfig() {
+            if (!validateAllocations() || !validateTeamAllocations() || !validateRounds()) {
+                showNotification('Corrige los errores antes de exportar', 'error');
+                return;
+            }
+            const output = {
+                projectName: tokenomicsData.projectName,
+                totalSupply: tokenomicsData.totalSupply,
+                valueUnit: tokenomicsData.valueUnit,
+                snapshot: tokenomicsData.users.map(u => ({
+                    user: u.name,
+                    address: u.address || '',
+                    uvAmount: u.value,
+                    roles: u.roles || [],
+                    stakeholderType: u.type || 'sin'
+                })),
+                allocations: { ...tokenomicsData.allocations },
+                teamAllocations: [...tokenomicsData.teamAllocations],
+                fibonacciRounds: [...tokenomicsData.fibonacciRounds],
+                vesting: { ...tokenomicsData.vesting }
+            };
+            const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tokenomics-config-${tokenomicsData.projectName.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Configuración exportada', 'success');
+        }
+
+        // ---------- IDIOMA (per defecte castellà) ----------
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatable = document.querySelectorAll('[data-es],[data-ca]');
+            
+            // Función para cambiar idioma
+            function setLanguage(lang) {
+                translatable.forEach(el => {
+                    if (el.dataset[lang]) {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                            el.placeholder = el.dataset[lang];
+                        } else if (el.tagName === 'OPTION') {
+                            el.textContent = el.dataset[lang];
+                        } else {
+                            el.innerHTML = el.dataset[lang];
+                        }
+                    }
+                });
+                document.documentElement.setAttribute('lang', lang);
+                // Actualizar active button
+                langButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+            }
+
+            // Idioma por defecto: español
+            setLanguage('es');
+
+            // Event listeners
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setLanguage(btn.dataset.lang);
+                    showNotification(btn.dataset.lang === 'ca' ? 'Idioma cambiado a Català' : 'Idioma cambiado a Español', 'info');
+                });
+            });
+        }
+
+        // ---------- TESTS ----------
+        function runTests() {
+            const results = [];
+            const assert = {
+                equals: (a,b,msg) => results.push({ name: msg, passed: a===b, expected: b, actual: a }),
+                truthy: (a,msg) => results.push({ name: msg, passed: !!a, expected: 'truthy', actual: a }),
+                falsy: (a,msg) => results.push({ name: msg, passed: !a, expected: 'falsy', actual: a })
+            };
+
+            // Test 1: validación porcentajes
+            assert.equals(validateAllocations(), true, 'Porcentajes suman 100');
+            // Test 2: añadir usuario manual
+            const oldLen = tokenomicsData.users.length;
+            tokenomicsData.users.push({ id:'test', name:'Test', value:100 });
+            assert.equals(tokenomicsData.users.length, oldLen+1, 'Se puede añadir usuario');
+            tokenomicsData.users.pop();
+            // Test 3: validación dirección
+            assert.truthy(isValidEthereumAddress('0x742d35Cc6634C0532925a3b844Bc454e4438f44e'), 'Dirección válida');
+            assert.falsy(isValidEthereumAddress('0x123'), 'Dirección inválida');
+
+            const div = document.getElementById('test-results');
+            div.innerHTML = '';
+            let passed = 0;
+            results.forEach(r => {
+                const line = document.createElement('div');
+                line.className = r.passed ? 'test-pass' : 'test-fail';
+                line.textContent = `[${r.passed ? 'PASS' : 'FAIL'}] ${r.name} ${r.passed ? '' : `(esperado: ${r.expected}, obtenido: ${r.actual})`}`;
+                div.appendChild(line);
+                if (r.passed) passed++;
+            });
+            div.innerHTML += `<div style="font-weight:bold; margin-top:10px;">Pasadas ${passed}/${results.length}</div>`;
+            showNotification(`Tests: ${passed}/${results.length} pasadas`, passed===results.length ? 'success' : 'warning');
+        }
+
+        // ---------- INICIALITZACIÓ ----------
         document.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
-            // Inicialitzar gràfic
+            // Inicializar gráfico
             const ctx = document.getElementById('valueChart').getContext('2d');
             valueChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -973,120 +1341,46 @@
             });
 
             // Event listeners
-            document.getElementById('show-add-user-form').addEventListener('click', () => {
-                document.getElementById('add-user-form').style.display = 'block';
-                editingUserId = null;
-                document.getElementById('new-user-name').value = '';
-                document.getElementById('new-user-address').value = '';
-                document.getElementById('new-user-value').value = '100';
-                document.getElementById('new-user-roles').value = '';
-                document.getElementById('new-user-type').value = 'sense';
-            });
-            document.getElementById('cancel-new-user').addEventListener('click', () => {
-                document.getElementById('add-user-form').style.display = 'none';
-                editingUserId = null;
-            });
-            document.getElementById('save-new-user').addEventListener('click', () => {
-                const name = document.getElementById('new-user-name').value.trim();
-                if (!name) { showNotification('El nom és obligatori', 'warning'); return; }
-                const value = parseFloat(document.getElementById('new-user-value').value);
-                if (isNaN(value) || value <= 0) { showNotification('El valor ha de ser positiu', 'warning'); return; }
-                const address = document.getElementById('new-user-address').value.trim();
-                if (address && !isValidEthereumAddress(address)) { showNotification('Adreça Ethereum no vàlida', 'warning'); return; }
-                const rolesStr = document.getElementById('new-user-roles').value.trim();
-                const roles = rolesStr ? rolesStr.split(',').map(s => s.trim()).filter(s => s) : [];
-                const type = document.getElementById('new-user-type').value;
-
-                if (editingUserId) {
-                    const user = tokenomicsData.users.find(u => u.id === editingUserId);
-                    if (user) {
-                        user.name = name;
-                        user.address = address;
-                        user.value = value;
-                        user.roles = roles;
-                        user.type = type;
-                    }
-                } else {
-                    tokenomicsData.users.push({
-                        id: generateId(),
-                        name, address, value, roles, type
-                    });
-                }
+            document.getElementById('import-snapshot').addEventListener('click', importSnapshot);
+            document.getElementById('save-user').addEventListener('click', saveUser);
+            document.getElementById('cancel-user').addEventListener('click', cancelUser);
+            document.getElementById('add-team-allocation').addEventListener('click', () => {
+                tokenomicsData.teamAllocations.push({ address: '', allocation: 0 });
+                renderTeamAllocations();
                 saveToLocalStorage();
-                document.getElementById('add-user-form').style.display = 'none';
-                editingUserId = null;
-                updateAll();
-                showNotification('Participant guardat', 'success');
+            });
+            document.getElementById('add-round').addEventListener('click', () => {
+                const nextRound = tokenomicsData.fibonacciRounds.length + 1;
+                tokenomicsData.fibonacciRounds.push({ round: nextRound, percentage: 0 });
+                renderRounds();
+                saveToLocalStorage();
             });
 
-            // Importació JSON
-            document.getElementById('import-snapshot').addEventListener('click', () => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.json';
-                input.onchange = (e) => {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        try {
-                            const imported = JSON.parse(e.target.result);
-                            if (!imported.snapshot || !Array.isArray(imported.snapshot)) {
-                                throw new Error('El fitxer ha de contenir un array "snapshot"');
-                            }
-                            // Convertir snapshot a users
-                            const newUsers = imported.snapshot.map(item => ({
-                                id: generateId(),
-                                name: item.user,
-                                address: item.address || '',
-                                value: item.uvAmount,
-                                roles: item.roles || [],
-                                type: item.stakeholderType || 'sense'
-                            }));
-                            if (imported.projectName) tokenomicsData.projectName = imported.projectName;
-                            if (imported.valueUnit) tokenomicsData.valueUnit = imported.valueUnit;
-                            tokenomicsData.users = newUsers;
-                            saveToLocalStorage();
-                            updateAll();
-                            showNotification(`Importats ${newUsers.length} usuaris`, 'success');
-                        } catch (err) {
-                            showNotification('Error en importar: ' + err.message, 'error');
-                        }
-                    };
-                    reader.readAsText(file);
-                };
-                input.click();
-            });
-
-            // Canvis en inputs globals
+            // Cambios en inputs globales
             document.getElementById('total-supply').addEventListener('input', (e) => {
                 tokenomicsData.totalSupply = parseInt(e.target.value) || 0;
                 saveToLocalStorage();
-                updateSimulation();
-                validateTeamAllocations();
-                validateRounds();
+                refreshAll();
             });
             document.getElementById('pct-investors').addEventListener('input', (e) => {
                 tokenomicsData.allocations.investors = parseFloat(e.target.value) || 0;
                 saveToLocalStorage();
-                validateAllocations();
-                validateRounds();
+                refreshAll();
             });
             document.getElementById('pct-team').addEventListener('input', (e) => {
                 tokenomicsData.allocations.team = parseFloat(e.target.value) || 0;
                 saveToLocalStorage();
-                validateAllocations();
-                validateTeamAllocations();
+                refreshAll();
             });
             document.getElementById('pct-community').addEventListener('input', (e) => {
                 tokenomicsData.allocations.communityReserve = parseFloat(e.target.value) || 0;
                 saveToLocalStorage();
-                validateAllocations();
-                updateSimulation();
+                refreshAll();
             });
             document.getElementById('pct-treasury').addEventListener('input', (e) => {
                 tokenomicsData.allocations.treasury = parseFloat(e.target.value) || 0;
                 saveToLocalStorage();
-                validateAllocations();
+                refreshAll();
             });
             document.getElementById('cliff-days').addEventListener('input', (e) => {
                 tokenomicsData.vesting.teamCliffDays = parseInt(e.target.value) || 0;
@@ -1097,21 +1391,7 @@
                 saveToLocalStorage();
             });
 
-            // Team allocations dinàmiques
-            document.getElementById('add-team-allocation').addEventListener('click', () => {
-                tokenomicsData.teamAllocations.push({ address: '', allocation: 0 });
-                renderTeamAllocations();
-                saveToLocalStorage();
-            });
-            // Rondes
-            document.getElementById('add-round').addEventListener('click', () => {
-                const nextRound = tokenomicsData.fibonacciRounds.length + 1;
-                tokenomicsData.fibonacciRounds.push({ round: nextRound, percentage: 0 });
-                renderRounds();
-                saveToLocalStorage();
-            });
-
-            // Canvis en inputs dinàmics (delegats)
+            // Delegación para los inputs dinámicos
             document.getElementById('team-allocations-list').addEventListener('input', (e) => {
                 if (e.target.classList.contains('team-addr')) {
                     const idx = e.target.dataset.index;
@@ -1135,124 +1415,28 @@
                 validateRounds();
             });
 
-            // Exportació
-            document.getElementById('export-config').addEventListener('click', () => {
-                // Validar tot abans d'exportar
-                if (!validateAllocations() || !validateTeamAllocations() || !validateRounds()) {
-                    showNotification('Corregeix els errors abans d\'exportar', 'error');
-                    return;
-                }
-                // Construir objecte de sortida
-                const output = {
-                    projectName: tokenomicsData.projectName,
-                    totalSupply: tokenomicsData.totalSupply,
-                    valueUnit: tokenomicsData.valueUnit,
-                    snapshot: tokenomicsData.users.map(u => ({
-                        user: u.name,
-                        address: u.address || '',
-                        uvAmount: u.value,
-                        roles: u.roles || [],
-                        stakeholderType: u.type || 'sense'
-                    })),
-                    allocations: { ...tokenomicsData.allocations },
-                    teamAllocations: [...tokenomicsData.teamAllocations],
-                    fibonacciRounds: [...tokenomicsData.fibonacciRounds],
-                    vesting: { ...tokenomicsData.vesting }
-                };
-                const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `tokenomics-config-${tokenomicsData.projectName.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showNotification('Configuració exportada', 'success');
-            });
-
-            // Pestanyes del gràfic
-            document.querySelectorAll('.chart-tab').forEach(tab => {
+            // Pestanyas del gráfico
+            const tabs = document.querySelectorAll('.chart-tab');
+            tabs.forEach(tab => {
                 tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    tabs.forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
                     updateChart(e.target.dataset.view);
                 });
             });
 
+            // Autocompleta
+            setupAutocomplete();
+
             // Tests
             document.getElementById('run-tests').addEventListener('click', runTests);
 
-            // Inicialitzar la UI
-            updateAll();
+            // Inicializar vistas
+            refreshAll();
 
-            // Idiomes
+            // Idioma
             setupLanguageSelector();
         });
-
-        // ---------- IDIOMES ----------
-        function setupLanguageSelector() {
-            const langButtons = document.querySelectorAll('.lang-btn');
-            const translatable = document.querySelectorAll('[data-es],[data-ca]');
-            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
-            setLanguage(userLang);
-            langButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const lang = btn.dataset.lang;
-                    setLanguage(lang);
-                    langButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    showNotification(lang === 'ca' ? 'Idioma canviat a Català' : 'Idioma cambiado a Español', 'info');
-                });
-            });
-            function setLanguage(lang) {
-                translatable.forEach(el => {
-                    if (el.dataset[lang]) {
-                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                            el.placeholder = el.dataset[lang];
-                        } else if (el.tagName === 'OPTION') {
-                            el.textContent = el.dataset[lang];
-                        } else {
-                            el.innerHTML = el.dataset[lang];
-                        }
-                    }
-                });
-                document.documentElement.setAttribute('lang', lang);
-            }
-        }
-
-        // ---------- TESTS ----------
-        function runTests() {
-            const results = [];
-            const assert = {
-                equals: (a,b,msg) => results.push({ name: msg, passed: a===b, expected: b, actual: a }),
-                truthy: (a,msg) => results.push({ name: msg, passed: !!a, expected: 'truthy', actual: a }),
-                falsy: (a,msg) => results.push({ name: msg, passed: !a, expected: 'falsy', actual: a })
-            };
-
-            // Test 1: validació percentatges
-            assert.equals(validateAllocations(), true, 'Percentatges sumen 100');
-            // Test 2: afegir usuari manual
-            const oldLen = tokenomicsData.users.length;
-            tokenomicsData.users.push({ id:'test', name:'Test', value:100 });
-            assert.equals(tokenomicsData.users.length, oldLen+1, 'Es pot afegir usuari');
-            tokenomicsData.users.pop();
-            // Test 3: validació adreça
-            assert.truthy(isValidEthereumAddress('0x742d35Cc6634C0532925a3b844Bc454e4438f44e'), 'Adreça vàlida');
-            assert.falsy(isValidEthereumAddress('0x123'), 'Adreça invàlida');
-
-            // Mostrar resultats
-            const div = document.getElementById('test-results');
-            div.innerHTML = '';
-            let passed = 0;
-            results.forEach(r => {
-                const line = document.createElement('div');
-                line.className = r.passed ? 'test-pass' : 'test-fail';
-                line.textContent = `[${r.passed ? 'PASS' : 'FAIL'}] ${r.name} ${r.passed ? '' : `(esperat: ${r.expected}, obtingut: ${r.actual})`}`;
-                div.appendChild(line);
-                if (r.passed) passed++;
-            });
-            div.innerHTML += `<div style="font-weight:bold; margin-top:10px;">Passades ${passed}/${results.length}</div>`;
-            showNotification(`Tests: ${passed}/${results.length} passades`, passed===results.length ? 'success' : 'warning');
-        }
     </script>
 </body>
 </html>
