@@ -45,6 +45,7 @@
             --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
             --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
         }
         
         * {
@@ -141,6 +142,172 @@
             font-weight: 600;
             margin-top: 10px;
             font-size: 0.95rem;
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            margin-top: 15px;
+            font-weight: 300;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-export {
+            background: var(--gradient-accent);
+            color: white;
+            grid-column: span 2;
         }
         
         /* Main Content */
@@ -258,75 +425,6 @@
             margin-top: 15px;
         }
         
-        .btn {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1.05rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: left 0.6s;
-        }
-        
-        .btn:hover::after {
-            left: 100%;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
-            color: white;
-        }
-        
-        .btn-export {
-            background: var(--gradient-accent);
-            color: white;
-            grid-column: span 2;
-        }
-        
         .visualization-container {
             background: white;
             border-radius: var(--border-radius);
@@ -353,28 +451,6 @@
             background: var(--light);
             border-radius: 8px;
             padding: 20px;
-        }
-        
-        .chart-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-        
-        .chart-tab {
-            padding: 8px 20px;
-            border-radius: 30px;
-            background: var(--light);
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .chart-tab.active {
-            background: var(--gradient-primary);
-            color: white;
         }
         
         .stats-bar {
@@ -1063,6 +1139,41 @@
             color: var(--danger);
         }
         
+        /* Ethereum address styling */
+        .ethereum-address {
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(30, 58, 138, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .ethereum-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+        
+        .ethereum-warning h4 {
+            margin-bottom: 5px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ethereum-warning h4::before {
+            content: '⚠️';
+        }
+        
         /* Test Section */
         .test-section {
             margin-top: 30px;
@@ -1110,6 +1221,41 @@
             padding: 5px 0;
             border-bottom: 1px solid #eee;
         }
+        
+        /* Snapshot section */
+        .snapshot-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .snapshot-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .snapshot-section h3::before {
+            content: '📸';
+            font-size: 1.4rem;
+        }
+        
+        .snapshot-section p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .snapshot-section .ethereum-warning {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -1131,6 +1277,23 @@
             <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
         </div>
     </header>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="lang" data-es="Value Accounting App" data-ca="Aplicació Comptabilitat de Valor">Value Accounting App</h1>
+            <p class="hero-tagline lang" data-es="Registra y contabiliza el valor aportado en tu proyecto" data-ca="Registra i comptabilitza el valor aportat al teu projecte">Registra y contabiliza el valor aportado en tu proyecto</p>
+            <p class="lang" data-es="Sistema para registrar entregables, asignar usuarios por rol y preparar los datos para futura tokenización con wallet Ethereum. Parte del Sistema Integral de La Masia." data-ca="Sistema per registrar entregables, assignar usuaris per rol i preparar les dades per a futura tokenització amb wallet Ethereum. Part del Sistema Integral de La Masia.">Sistema para registrar entregables, asignar usuarios por rol y preparar los datos para futura tokenización con wallet Ethereum. Parte del Sistema Integral de La Masia.</p>
+            <div class="cta-container">
+                <a href="#deliverable-form" class="btn btn-primary lang" data-es="Registrar Entregable" data-ca="Registrar Entregable">Registrar Entregable</a>
+                <a href="#export-section" class="btn btn-accent lang" data-es="Exportar Datos" data-ca="Exportar Dades">Exportar Datos</a>
+            </div>
+        </div>
+    </section>
     
     <!-- Main Content -->
     <div class="container">
@@ -1173,23 +1336,8 @@
                     </div>
                 </div>
                 
-                <div class="import-section">
-                    <h3 class="lang" data-es="Importar Datos desde JSON" data-ca="Importar Dades des de JSON">Importar Datos desde JSON</h3>
-                    <p class="lang" data-es="Importa todos los datos de tu proyecto desde un archivo JSON exportado previamente." data-ca="Importa totes les dades del teu projecte des d'un fitxer JSON exportat prèviament.">Importa todos los datos de tu proyecto desde un archivo JSON exportado previamente.</p>
-                    
-                    <div class="input-group">
-                        <label class="lang" data-es="Archivo JSON" data-ca="Fitxer JSON">Archivo JSON</label>
-                        <input type="file" id="import-json-file" accept=".json">
-                    </div>
-                    <div class="btn-group">
-                        <button id="import-json" class="btn btn-primary">
-                            <span>📥</span> <span class="lang" data-es="Importar JSON" data-ca="Importar JSON">Importar JSON</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="deliverable-form">
-                    <h3 class="lang" data-es="➕ Añadir Entregable" data-ca="➕ Afegir Entregable">➕ Añadir Entregable</h3>
+                <div class="panel" style="margin-top: 25px;" id="deliverable-form">
+                    <h2 class="lang" data-es="➕ Añadir Entregable" data-ca="➕ Afegir Entregable">➕ Añadir Entregable</h2>
                     <div class="form-row">
                         <label class="lang" data-es="Persona:" data-ca="Persona:">Persona:</label>
                         <div class="autocomplete">
@@ -1220,6 +1368,11 @@
                         </span>
                     </div>
                     <div class="form-row">
+                        <label class="lang" data-es="Dirección Ethereum (opcional):" data-ca="Adreça Ethereum (opcional):">Dirección Ethereum (opcional):</label>
+                        <input type="text" id="ethereum-address" placeholder="0x...">
+                        <div class="form-feedback" id="address-feedback"></div>
+                    </div>
+                    <div class="form-row">
                         <label class="lang" data-es="Descripción:" data-ca="Descripció:">Descripción:</label>
                         <textarea id="description" placeholder="Describe el entregable en detalle"></textarea>
                     </div>
@@ -1239,14 +1392,17 @@
                     </div>
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;">
+                <div class="panel" style="margin-top: 25px;" id="export-section">
                     <h2 class="lang" data-es="💾 Exportar Datos" data-ca="💾 Exportar Dades">💾 Exportar Datos</h2>
                     <div class="export-buttons">
                         <button id="export-json" class="btn btn-export">
                             <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
                         </button>
-                        <button id="export-csv" class="btn btn-success">
-                            <span>📈</span> <span class="lang" data-es="Exportar para Tokenomics" data-ca="Exportar per a Tokenomics">Exportar para Tokenomics</span>
+                        <button id="export-snapshot" class="btn btn-success">
+                            <span>📸</span> <span class="lang" data-es="Exportar Snapshot para Tokenomics" data-ca="Exportar Snapshot per a Tokenomics">Exportar Snapshot para Tokenomics</span>
+                        </button>
+                        <button id="export-csv" class="btn btn-accent">
+                            <span>📈</span> <span class="lang" data-es="Exportar CSV con Ethereum" data-ca="Exportar CSV amb Ethereum">Exportar CSV con Ethereum</span>
                         </button>
                         <button id="reset-data" class="btn btn-danger">
                             <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
@@ -1254,9 +1410,19 @@
                     </div>
                 </div>
                 
+                <div class="snapshot-section">
+                    <h3 class="lang" data-es="Snapshot para Tokenomics" data-ca="Snapshot per a Tokenomics">Snapshot para Tokenomics</h3>
+                    <p class="lang" data-es="Este snapshot contiene un resumen de las Unidades de Valor (UV) por participante, incluyendo su dirección Ethereum si está disponible. Este archivo será utilizado por la App de Tokenomics para configurar la distribución de tokens." data-ca="Aquest snapshot conté un resum de les Unitats de Valor (UV) per participant, incloent la seva adreça Ethereum si està disponible. Aquest fitxer serà utilitzat per l'App de Tokenomics per configurar la distribució de tokens.">Este snapshot contiene un resumen de las Unidades de Valor (UV) por participante, incluyendo su dirección Ethereum si está disponible. Este archivo será utilizado por la App de Tokenomics para configurar la distribución de tokens.</p>
+                    
+                    <div class="ethereum-warning">
+                        <h4 class="lang" data-es="Advertencia sobre direcciones Ethereum" data-ca="Avís sobre adreces Ethereum">Advertencia sobre direcciones Ethereum</h4>
+                        <p class="lang" data-es="Para una futura tokenización exitosa, es recomendable que todos los participantes tengan una dirección Ethereum asociada. Los participantes sin dirección no podrán recibir tokens directamente." data-ca="Per a una futura tokenització exitosa, és recomanable que tots els participants tinguin una adreça Ethereum associada. Els participants sense adreça no podran rebre tokens directament.">Para una futura tokenización exitosa, es recomendable que todos los participantes tengan una dirección Ethereum asociada. Los participantes sin dirección no podrán recibir tokens directamente.</p>
+                    </div>
+                </div>
+                
                 <div class="export-section">
                     <h3 class="lang" data-es="Exportar para Tokenomics App" data-ca="Exportar per a Tokenomics App">Exportar para Tokenomics App</h3>
-                    <p class="lang" data-es="Exporta tus datos como CSV para importarlos en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor)." data-ca="Exporta les teves dades com a CSV per importar-les a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà: Usuari, Rol, Valor Total i Tokens a Mintar (1 token = 1 unitat de valor).">Exporta tus datos como CSV para importarlos en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total y Tokens a Mintar (1 token = 1 unidad de valor).</p>
+                    <p class="lang" data-es="Exporta tus datos como CSV para importarlos en la <a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total, Tokens a Mintar (1 token = 1 unidad de valor) y Dirección Ethereum." data-ca="Exporta les teves dades com a CSV per importar-les a l'<a href='https://teamtowershuma.com/tokenomics' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Tokenomics</a>. L'arxiu inclourà: Usuari, Rol, Valor Total, Tokens a Mintar (1 token = 1 unitat de valor) i Adreça Ethereum.">Exporta tus datos como CSV para importarlos en la <a href="https://teamtowershuma.com/tokenomics" target="_blank" style="color: var(--primary); font-weight: 600;">App de Tokenomics</a>. El archivo incluirá: Usuario, Rol, Valor Total, Tokens a Mintar (1 token = 1 unidad de valor) y Dirección Ethereum.</p>
                 </div>
                 
                 <div class="test-section">
@@ -1271,11 +1437,6 @@
             
             <div class="visualization-container">
                 <h2>📈 <span class="lang" data-es="Distribución de Valor" data-ca="Distribució de Valor">Distribución de Valor</span></h2>
-                
-                <div class="chart-tabs">
-                    <button class="chart-tab active" data-view="user">Por Persona</button>
-                    <button class="chart-tab" data-view="role">Por Rol</button>
-                </div>
                 
                 <div class="chart-container">
                     <canvas id="valueChart"></canvas>
@@ -1306,13 +1467,14 @@
                         <tr>
                             <th class="lang" data-es="Posición" data-ca="Posició">Posición</th>
                             <th class="lang" data-es="Usuario" data-ca="Usuari">Usuario</th>
+                            <th class="lang" data-es="Dirección Ethereum" data-ca="Adreça Ethereum">Dirección Ethereum</th>
                             <th class="lang" data-es="Rol(es)" data-ca="Rol(es)">Rol(es)</th>
                             <th class="lang" data-es="Valor" data-ca="Valor">Valor</th>
                         </tr>
                     </thead>
                     <tbody id="ranking-body">
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
                                 <div class="empty-state">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -1353,7 +1515,7 @@
                 
                 <div class="next-step">
                     <h3 class="lang" data-es="Exporta tus Datos para Tokenomics" data-ca="Exporta les teves Dades per a Tokenomics">Exporta tus Datos para Tokenomics</h3>
-                    <p class="lang" data-es="Una vez hayas registrado tus entregables, haz clic en 'Exportar para Tokenomics' para descargar un archivo compatible con la App de Tokenomics." data-ca="Un cop hagis registrat els teus entregables, fes clic a 'Exportar per a Tokenomics' per descarregar un arxiu compatible amb l'App de Tokenomics.">Una vez hayas registrado tus entregables, haz clic en 'Exportar para Tokenomics' para descargar un archivo compatible con la App de Tokenomics.</p>
+                    <p class="lang" data-es="Una vez hayas registrado tus entregables, haz clic en 'Exportar Snapshot para Tokenomics' para descargar un archivo compatible con la App de Tokenomics." data-ca="Un cop hagis registrat els teus entregables, fes clic a 'Exportar Snapshot per a Tokenomics' per descarregar un arxiu compatible amb l'App de Tokenomics.">Una vez hayas registrado tus entregables, haz clic en 'Exportar Snapshot para Tokenomics' para descargar un archivo compatible con la App de Tokenomics.</p>
                     <a href="#export-section" class="lang" data-es="Ir a Exportar Datos" data-ca="Anar a Exportar Dades">Ir a Exportar Datos</a>
                 </div>
             </div>
@@ -1410,18 +1572,18 @@
     </footer>
     
     <script>
-        // ========== W3C COMPLIANT VALUE ACCOUNTING APP ==========
+        // ========== W3C COMPLIANT VALUE ACCOUNTING APP WITH ETHEREUM SUPPORT ==========
         // Data structure that can be easily migrated to a database
         let accountingData = {
             projectName: "Proyecto MASIA",
             valueUnit: "puntos",
             roles: [],
+            users: [], // Each user: { id, name, address, roles: [], totalValue, deliverables: [] }
             deliverables: [] // Each deliverable: { id, userName, role, deliverable, transactionType, description, link, value, timestamp }
         };
         
         // Chart variable
         let valueChart = null;
-        let currentChartView = 'user'; // 'user' or 'role'
         
         // Notification system
         function showNotification(message, type = 'info', duration = 3000) {
@@ -1455,10 +1617,10 @@
             const ctx = document.getElementById('valueChart').getContext('2d');
             valueChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
+                 {
                     labels: [],
                     datasets: [{
-                        data: [],
+                         [],
                         backgroundColor: [
                             'rgba(30, 58, 138, 0.85)',
                             'rgba(79, 70, 229, 0.85)',
@@ -1505,54 +1667,6 @@
                     }
                 }
             });
-        }
-        
-        // Update chart based on current view (user or role)
-        function updateChart(view = currentChartView) {
-            if (!valueChart) return;
-            
-            currentChartView = view;
-            
-            let labels = [];
-            let data = [];
-            
-            if (view === 'user') {
-                // Aggregate by user
-                const userTotals = {};
-                
-                accountingData.deliverables.forEach(deliverable => {
-                    const userName = deliverable.userName;
-                    userTotals[userName] = (userTotals[userName] || 0) + deliverable.value;
-                });
-                
-                // Sort users by value (descending) and take top 8
-                const sortedUsers = Object.entries(userTotals)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 8);
-                
-                labels = sortedUsers.map(([user]) => user);
-                data = sortedUsers.map(([, value]) => value);
-            } else {
-                // Aggregate by role
-                const roleTotals = {};
-                
-                accountingData.deliverables.forEach(deliverable => {
-                    const role = deliverable.role;
-                    roleTotals[role] = (roleTotals[role] || 0) + deliverable.value;
-                });
-                
-                // Sort roles by value (descending) and take top 8
-                const sortedRoles = Object.entries(roleTotals)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 8);
-                
-                labels = sortedRoles.map(([role]) => role);
-                data = sortedRoles.map(([, value]) => value);
-            }
-            
-            valueChart.data.labels = labels;
-            valueChart.data.datasets[0].data = data;
-            valueChart.update();
         }
         
         // Setup autocomplete for input fields
@@ -1614,6 +1728,26 @@
                     list.innerHTML = '';
                 }
             });
+        }
+        
+        // Validate Ethereum address
+        function validateEthereumAddress(address) {
+            if (!address || address.trim() === '') return { valid: true, message: 'Sin dirección' };
+            
+            const trimmed = address.trim();
+            
+            // Basic validation: starts with 0x and has 42 characters
+            if (!trimmed.startsWith('0x') || trimmed.length !== 42) {
+                return { valid: false, message: 'Dirección Ethereum inválida (debe empezar por 0x y tener 42 caracteres)' };
+            }
+            
+            // Check if it's a valid hex string
+            const hexPart = trimmed.substring(2);
+            if (!/^[0-9a-fA-F]+$/.test(hexPart)) {
+                return { valid: false, message: 'Dirección Ethereum inválida (solo caracteres hexadecimales)' };
+            }
+            
+            return { valid: true, message: 'Dirección válida' };
         }
         
         // Import roles from CSV
@@ -1697,70 +1831,13 @@
             reader.readAsText(file);
         }
         
-        // Import data from JSON
-        function importJSON() {
-            const fileInput = document.getElementById('import-json-file');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                showNotification('⚠️ Selecciona un archivo JSON primero', 'warning');
-                return;
-            }
-            
-            // Show loading state
-            const importBtn = document.getElementById('import-json');
-            const originalHTML = importBtn.innerHTML;
-            importBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Importando...';
-            importBtn.disabled = true;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // Validate structure
-                    if (!importedData.projectName || !importedData.valueUnit || !Array.isArray(importedData.roles) || !Array.isArray(importedData.deliverables)) {
-                        throw new Error('El archivo JSON no tiene la estructura correcta');
-                    }
-                    
-                    // Import data
-                    accountingData = {
-                        projectName: importedData.projectName,
-                        valueUnit: importedData.valueUnit,
-                        roles: [...new Set([...accountingData.roles, ...importedData.roles])], // Merge without duplicates
-                        deliverables: [...accountingData.deliverables, ...importedData.deliverables]
-                    };
-                    
-                    // Save and update
-                    saveData();
-                    updateVisualizations();
-                    
-                    showNotification(`✅ Datos importados correctamente: ${importedData.deliverables.length} entregables`, 'success');
-                } catch (error) {
-                    console.error('Error importing JSON:', error);
-                    showNotification(`❌ Error al importar: ${error.message}`, 'error');
-                } finally {
-                    // Restore button
-                    importBtn.innerHTML = originalHTML;
-                    importBtn.disabled = false;
-                }
-            };
-            
-            reader.onerror = function() {
-                importBtn.innerHTML = originalHTML;
-                importBtn.disabled = false;
-                showNotification('❌ Error al leer el archivo', 'error');
-            };
-            
-            reader.readAsText(file);
-        }
-        
         // Add deliverable
         function addDeliverable() {
             const userName = document.getElementById('user-name').value.trim();
             const roleName = document.getElementById('role-name').value.trim();
             const deliverableName = document.getElementById('deliverable-name').value.trim();
             const transactionType = document.getElementById('transaction-type').value;
+            const ethereumAddress = document.getElementById('ethereum-address').value.trim();
             const description = document.getElementById('description').value.trim();
             const link = document.getElementById('link').value.trim();
             const value = parseInt(document.getElementById('value').value);
@@ -1790,11 +1867,55 @@
                 return;
             }
             
+            // Validate Ethereum address if provided
+            if (ethereumAddress) {
+                const validation = validateEthereumAddress(ethereumAddress);
+                if (!validation.valid) {
+                    showNotification(`⚠️ ${validation.message}`, 'warning');
+                    document.getElementById('ethereum-address').focus();
+                    return;
+                }
+            }
+            
             // Add role to global list if not exists (case-insensitive)
             const existingRole = accountingData.roles.find(r => r.toLowerCase() === roleName.toLowerCase());
             if (!existingRole) {
                 accountingData.roles.push(roleName);
                 showNotification(`✨ Nuevo rol creado: ${roleName}`, 'info');
+            }
+            
+            // Find or create user (case-insensitive)
+            let user = accountingData.users.find(u => u.name.toLowerCase() === userName.toLowerCase());
+            if (!user) {
+                user = {
+                    id: `user-${Date.now()}`,
+                    name: userName,
+                    address: ethereumAddress || null,
+                    roles: [roleName],
+                    totalValue: 0,
+                    deliverables: []
+                };
+                accountingData.users.push(user);
+                showNotification(`✨ Nuevo usuario creado: ${userName}`, 'info');
+            } else {
+                // Add role if not exists (case-insensitive)
+                const hasRole = user.roles.some(r => r.toLowerCase() === roleName.toLowerCase());
+                if (!hasRole) {
+                    user.roles.push(roleName);
+                }
+                
+                // Update Ethereum address if provided and different
+                if (ethereumAddress && user.address !== ethereumAddress) {
+                    if (user.address) {
+                        if (confirm(`El usuario ${userName} ya tiene una dirección Ethereum (${user.address}). ¿Quieres actualizarla a ${ethereumAddress}?`)) {
+                            user.address = ethereumAddress;
+                            showNotification(`✅ Dirección Ethereum actualizada para ${userName}`, 'success');
+                        }
+                    } else {
+                        user.address = ethereumAddress;
+                        showNotification(`✅ Dirección Ethereum añadida para ${userName}`, 'success');
+                    }
+                }
             }
             
             // Create deliverable
@@ -1810,7 +1931,9 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Add to deliverables list
+            // Add to user and global list
+            user.deliverables.push(deliverable);
+            user.totalValue += value;
             accountingData.deliverables.push(deliverable);
             
             // Save and update
@@ -1821,9 +1944,16 @@
             document.getElementById('user-name').value = '';
             document.getElementById('role-name').value = '';
             document.getElementById('deliverable-name').value = '';
+            document.getElementById('ethereum-address').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
             document.getElementById('value').value = '';
+            
+            // Clear feedback
+            document.getElementById('address-feedback').textContent = '';
+            document.getElementById('address-feedback').className = 'form-feedback';
+            document.getElementById('value-feedback').textContent = '';
+            document.getElementById('value-feedback').className = 'form-feedback';
             
             // Show success
             showNotification(`✅ Entregable registrado: "${deliverableName}" para ${userName} (+${value} ${accountingData.valueUnit})`, 'success');
@@ -1842,11 +1972,24 @@
             const deliverable = accountingData.deliverables[deliverableIndex];
             const valueToRemove = deliverable.value;
             
-            // Remove from deliverables list
+            // Find user and update
+            const user = accountingData.users.find(u => u.name === deliverable.userName);
+            if (user) {
+                // Remove from user's deliverables
+                user.deliverables = user.deliverables.filter(d => d.id !== id);
+                // Update total value
+                user.totalValue -= valueToRemove;
+                // Clean up user if no deliverables left
+                if (user.deliverables.length === 0) {
+                    accountingData.users = accountingData.users.filter(u => u.id !== user.id);
+                }
+            }
+            
+            // Remove from global list
             accountingData.deliverables.splice(deliverableIndex, 1);
             
             // Clean up unused roles
-            const usedRoles = [...new Set(accountingData.deliverables.map(d => d.role))];
+            const usedRoles = [...new Set(accountingData.users.flatMap(u => u.roles))];
             accountingData.roles = usedRoles;
             
             // Save and update
@@ -1859,10 +2002,10 @@
         // Update visualizations
         function updateVisualizations() {
             // Update stats
-            document.getElementById('total-users').textContent = [...new Set(accountingData.deliverables.map(d => d.userName))].length;
+            document.getElementById('total-users').textContent = accountingData.users.length;
             document.getElementById('total-roles').textContent = accountingData.roles.length;
             document.getElementById('total-deliverables').textContent = accountingData.deliverables.length;
-            document.getElementById('total-value').textContent = accountingData.deliverables.reduce((sum, d) => sum + d.value, 0);
+            document.getElementById('total-value').textContent = accountingData.users.reduce((sum, u) => sum + u.totalValue, 0);
             
             // Update chart
             updateChart();
@@ -1872,16 +2015,33 @@
             
             // Update deliverables list
             updateDeliverablesList();
+            
+            // Check for users without Ethereum address
+            checkUsersWithoutAddress();
+        }
+        
+        // Update chart
+        function updateChart() {
+            if (!valueChart) return;
+            
+            // Get top 8 users by value (descending)
+            const topUsers = [...accountingData.users]
+                .sort((a, b) => b.totalValue - a.totalValue)
+                .slice(0, 8);
+            
+            valueChart.data.labels = topUsers.map(u => u.name);
+            valueChart.data.datasets[0].data = topUsers.map(u => u.totalValue);
+            valueChart.update();
         }
         
         // Update ranking table
         function updateRankingTable() {
             const tbody = document.getElementById('ranking-body');
             
-            if (accountingData.deliverables.length === 0) {
+            if (accountingData.users.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
+                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
                             <div class="empty-state">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -1895,35 +2055,22 @@
                 return;
             }
             
-            // Aggregate by user
-            const userTotals = {};
-            const userRoles = {};
-            
-            accountingData.deliverables.forEach(deliverable => {
-                const userName = deliverable.userName;
-                userTotals[userName] = (userTotals[userName] || 0) + deliverable.value;
-                userRoles[userName] = userRoles[userName] || new Set();
-                userRoles[userName].add(deliverable.role);
-            });
-            
             // Sort users by total value (descending)
-            const sortedUsers = Object.entries(userTotals)
-                .sort((a, b) => b[1] - a[1])
-                .map(([name, total], index) => ({
-                    position: index + 1,
-                    name: name,
-                    roles: Array.from(userRoles[name]),
-                    total: total
-                }));
+            const sortedUsers = [...accountingData.users].sort((a, b) => b.totalValue - a.totalValue);
             
             let html = '';
-            sortedUsers.forEach(user => {
+            sortedUsers.forEach((user, index) => {
+                const addressDisplay = user.address ? 
+                    `<span class="ethereum-address">${user.address}</span>` : 
+                    '<span class="lang" data-es="Sin dirección" data-ca="Sense adreça">Sin dirección</span>';
+                
                 html += `
                     <tr>
-                        <td><span class="position-badge">${user.position}</span></td>
+                        <td><span class="position-badge">${index + 1}</span></td>
                         <td>${user.name}</td>
+                        <td>${addressDisplay}</td>
                         <td>${user.roles.join(', ')}</td>
-                        <td>${user.total} ${accountingData.valueUnit}</td>
+                        <td>${user.totalValue} ${accountingData.valueUnit}</td>
                     </tr>
                 `;
             });
@@ -1984,9 +2131,21 @@
             });
         }
         
+        // Check for users without Ethereum address
+        function checkUsersWithoutAddress() {
+            const usersWithoutAddress = accountingData.users.filter(u => !u.address);
+            const warningElement = document.querySelector('.ethereum-warning');
+            
+            if (usersWithoutAddress.length > 0 && warningElement) {
+                warningElement.style.display = 'block';
+            } else if (warningElement) {
+                warningElement.style.display = 'none';
+            }
+        }
+        
         // Export JSON
         function exportJSON() {
-            if (accountingData.deliverables.length === 0) {
+            if (accountingData.users.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
                 return;
             }
@@ -2019,34 +2178,76 @@
             }
         }
         
-        // Export CSV for Tokenomics
-        function exportCSV() {
-            if (accountingData.deliverables.length === 0) {
+        // Export Snapshot for Tokenomics
+        function exportSnapshot() {
+            if (accountingData.users.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
                 return;
             }
             
             try {
-                // Aggregate by user
-                const userTotals = {};
-                const userRoles = {};
+                // Create snapshot structure
+                const snapshot = {
+                    projectName: accountingData.projectName,
+                    valueUnit: accountingData.valueUnit,
+                    snapshotDate: new Date().toISOString(),
+                    participants: accountingData.users.map(user => ({
+                        name: user.name,
+                        address: user.address,
+                        uv: user.totalValue
+                    }))
+                };
                 
-                accountingData.deliverables.forEach(deliverable => {
-                    const userName = deliverable.userName;
-                    userTotals[userName] = (userTotals[userName] || 0) + deliverable.value;
-                    userRoles[userName] = userRoles[userName] || new Set();
-                    userRoles[userName].add(deliverable.role);
-                });
+                const dataStr = JSON.stringify(snapshot, null, 2);
+                const blob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
                 
-                // CSV headers - MVP format for Tokenomics
-                let csv = 'Usuario,Rol,Valor Total,Tokens a Mintar\n';
+                const exportFileDefaultName = `value-snapshot-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', url);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.style.display = 'none';
+                document.body.appendChild(linkElement);
+                
+                linkElement.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(linkElement);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                // Check if there are users without address
+                const usersWithoutAddress = snapshot.participants.filter(p => !p.address);
+                if (usersWithoutAddress.length > 0) {
+                    showNotification(`⚠️ Snapshot exportado, pero ${usersWithoutAddress.length} participantes no tienen dirección Ethereum.`, 'warning');
+                } else {
+                    showNotification(`✅ Snapshot exportado para Tokenomics: ${exportFileDefaultName}`, 'success');
+                }
+            } catch (error) {
+                console.error('Error exporting snapshot:', error);
+                showNotification(`❌ Error al exportar snapshot: ${error.message}`, 'error');
+            }
+        }
+        
+        // Export CSV with Ethereum addresses
+        function exportCSV() {
+            if (accountingData.users.length === 0) {
+                showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
+                return;
+            }
+            
+            try {
+                // CSV headers - format for Tokenomics with Ethereum addresses
+                let csv = 'Usuario,Rol,Valor Total,Tokens a Mintar,Dirección Ethereum\n';
                 
                 // Data rows - 1 token = 1 value unit
-                Object.entries(userTotals).forEach(([userName, totalValue]) => {
-                    const roles = Array.from(userRoles[userName]).join(', ');
-                    const tokensToMint = totalValue; // Simple conversion: 1 token per value unit
+                accountingData.users.forEach(user => {
+                    const tokensToMint = user.totalValue; // Simple conversion: 1 token per value unit
+                    const address = user.address || '';
                     
-                    csv += `"${userName}","${roles}","${totalValue}","${tokensToMint}"\n`;
+                    csv += `"${user.name}","${user.roles.join(', ')}","${user.totalValue}","${tokensToMint}","${address}"\n`;
                 });
                 
                 // Create blob and download
@@ -2069,7 +2270,13 @@
                     URL.revokeObjectURL(url);
                 }, 100);
                 
-                showNotification(`✅ Exportado para Tokenomics: ${Object.keys(userTotals).length} usuarios, ${Object.values(userTotals).reduce((a, b) => a + b, 0)} tokens totales`, 'success');
+                // Check if there are users without address
+                const usersWithoutAddress = accountingData.users.filter(u => !u.address);
+                if (usersWithoutAddress.length > 0) {
+                    showNotification(`⚠️ CSV exportado, pero ${usersWithoutAddress.length} usuarios no tienen dirección Ethereum.`, 'warning');
+                } else {
+                    showNotification(`✅ Exportado para Tokenomics: ${accountingData.users.length} usuarios, ${accountingData.users.reduce((sum, u) => sum + u.totalValue, 0)} tokens totales`, 'success');
+                }
             } catch (error) {
                 console.error('Error exporting CSV:', error);
                 showNotification(`❌ Error al exportar CSV: ${error.message}`, 'error');
@@ -2090,6 +2297,7 @@
                 projectName: "Proyecto MASIA",
                 valueUnit: "puntos",
                 roles: [],
+                users: [],
                 deliverables: []
             };
             
@@ -2099,9 +2307,16 @@
             document.getElementById('user-name').value = '';
             document.getElementById('role-name').value = '';
             document.getElementById('deliverable-name').value = '';
+            document.getElementById('ethereum-address').value = '';
             document.getElementById('description').value = '';
             document.getElementById('link').value = '';
             document.getElementById('value').value = '';
+            
+            // Clear feedback
+            document.getElementById('address-feedback').textContent = '';
+            document.getElementById('address-feedback').className = 'form-feedback';
+            document.getElementById('value-feedback').textContent = '';
+            document.getElementById('value-feedback').className = 'form-feedback';
             
             // Save and update
             saveData();
@@ -2126,16 +2341,23 @@
                     const parsedData = JSON.parse(saved);
                     
                     // Validate structure before loading
-                    if (parsedData.projectName && parsedData.valueUnit && Array.isArray(parsedData.roles) && Array.isArray(parsedData.deliverables)) {
+                    if (parsedData.projectName && parsedData.valueUnit && Array.isArray(parsedData.roles) && Array.isArray(parsedData.users) && Array.isArray(parsedData.deliverables)) {
                         accountingData = parsedData;
+                        
+                        // Ensure users have address field (for backward compatibility)
+                        accountingData.users.forEach(user => {
+                            if (user.address === undefined) {
+                                user.address = null;
+                            }
+                        });
                         
                         // Restore form fields
                         document.getElementById('project-name').value = accountingData.projectName;
                         document.getElementById('value-unit').value = accountingData.valueUnit;
                         
                         // Show notification if data was loaded
-                        if (accountingData.deliverables.length > 0) {
-                            showNotification(`✅ Datos cargados: ${accountingData.deliverables.length} entregables`, 'info');
+                        if (accountingData.users.length > 0) {
+                            showNotification(`✅ Datos cargados: ${accountingData.users.length} usuarios, ${accountingData.deliverables.length} entregables`, 'info');
                         }
                     }
                 }
@@ -2150,8 +2372,8 @@
             // Form elements
             document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
             document.getElementById('import-roles').addEventListener('click', importRoles);
-            document.getElementById('import-json').addEventListener('click', importJSON);
             document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('export-snapshot').addEventListener('click', exportSnapshot);
             document.getElementById('export-csv').addEventListener('click', exportCSV);
             document.getElementById('reset-data').addEventListener('click', resetData);
             
@@ -2185,13 +2407,25 @@
                 }
             });
             
-            // Chart tabs
-            document.querySelectorAll('.chart-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    updateChart(this.getAttribute('data-view'));
-                });
+            // Ethereum address validation
+            document.getElementById('ethereum-address').addEventListener('input', function() {
+                const address = this.value.trim();
+                const feedback = document.getElementById('address-feedback');
+                
+                if (address === '') {
+                    feedback.textContent = '';
+                    feedback.className = 'form-feedback';
+                    return;
+                }
+                
+                const validation = validateEthereumAddress(address);
+                if (validation.valid) {
+                    feedback.textContent = '✅ Dirección válida';
+                    feedback.className = 'form-feedback valid';
+                } else {
+                    feedback.textContent = validation.message;
+                    feedback.className = 'form-feedback invalid';
+                }
             });
         }
         
@@ -2199,7 +2433,7 @@
         function setupAutocompletes() {
             // User autocomplete - suggests existing users
             setupAutocomplete('user-name', 'user-list', () => 
-                [...new Set(accountingData.deliverables.map(d => d.userName))]
+                accountingData.users.map(u => u.name)
             );
             
             // Role autocomplete - suggests imported/existing roles
@@ -2208,16 +2442,17 @@
             );
         }
         
-        // Setup language selector
+        // Setup language selector - FIXED VERSION
         function setupLanguageSelector() {
             const langButtons = document.querySelectorAll('.lang-btn');
             const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
             
-            // Set initial language based on browser
-            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            // Set initial language based on browser or localStorage
+            const savedLang = localStorage.getItem('selectedLanguage');
+            const userLang = savedLang || (navigator.language.startsWith('ca') ? 'ca' : 'es');
             setActiveLanguage(userLang);
             
-            // Event listeners for language buttons
+            // Add click event to language buttons
             langButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const selectedLang = this.getAttribute('data-lang');
@@ -2227,29 +2462,28 @@
                     langButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
-                    showNotification(selectedLang === 'ca' ? '✅ Idioma cambiado a Català' : '✅ Idioma cambiado a Español', 'info');
+                    // Save selected language
+                    localStorage.setItem('selectedLanguage', selectedLang);
+                    
+                    showNotification(selectedLang === 'ca' ? '✅ Idioma canviat a Català' : '✅ Idioma cambiado a Español', 'info');
                 });
             });
             
             function setActiveLanguage(lang) {
+                // Update all translatable elements
                 translatableElements.forEach(element => {
                     if (element.hasAttribute(`data-${lang}`)) {
                         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                             element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
                         } else {
                             element.textContent = element.getAttribute(`data-${lang}`);
                         }
                     }
                 });
                 
-                // Hide/show language-specific elements
-                document.querySelectorAll('[lang="es"]').forEach(el => {
-                    el.style.display = lang === 'es' ? 'block' : 'none';
-                });
-                document.querySelectorAll('[lang="ca"]').forEach(el => {
-                    el.style.display = lang === 'ca' ? 'block' : 'none';
-                });
-                
+                // Update HTML lang attribute for accessibility
                 document.documentElement.setAttribute('lang', lang);
             }
         }
@@ -2309,6 +2543,16 @@
                         expected: `includes ${value}`
                     });
                     return passed;
+                },
+                matches: function(actual, pattern, testName) {
+                    const passed = pattern.test(actual);
+                    this.results.push({
+                        name: testName,
+                        passed: passed,
+                        actual: actual,
+                        expected: `matches pattern ${pattern}`
+                    });
+                    return passed;
                 }
             },
             
@@ -2318,23 +2562,33 @@
                 // DOM ELEMENTS TESTS
                 this.assert.truthy(document.getElementById('add-deliverable'), "Add deliverable button exists");
                 this.assert.truthy(document.getElementById('export-json'), "Export JSON button exists");
+                this.assert.truthy(document.getElementById('export-snapshot'), "Export Snapshot button exists");
                 this.assert.truthy(document.getElementById('export-csv'), "Export CSV button exists");
                 this.assert.truthy(document.getElementById('reset-data'), "Reset button exists");
                 this.assert.truthy(document.getElementById('import-roles'), "Import roles button exists");
-                this.assert.truthy(document.getElementById('import-json'), "Import JSON button exists");
                 this.assert.truthy(document.getElementById('user-name'), "User name input exists");
                 this.assert.truthy(document.getElementById('role-name'), "Role name input exists");
+                this.assert.truthy(document.getElementById('ethereum-address'), "Ethereum address input exists");
                 
                 // INITIAL STATE TESTS
                 this.assert.equals(accountingData.deliverables.length, 0, "Initial state has no deliverables");
                 this.assert.equals(accountingData.roles.length, 0, "Initial state has no roles");
+                this.assert.equals(accountingData.users.length, 0, "Initial state has no users");
                 this.assert.equals(accountingData.projectName, "Proyecto MASIA", "Initial project name is correct");
                 this.assert.equals(accountingData.valueUnit, "puntos", "Initial value unit is correct");
+                
+                // ETHEREUM ADDRESS VALIDATION TESTS
+                this.assert.truthy(validateEthereumAddress('').valid, "Empty address is valid (optional)");
+                this.assert.truthy(validateEthereumAddress('0x1234567890123456789012345678901234567890').valid, "Valid Ethereum address passes validation");
+                this.assert.falsy(validateEthereumAddress('0x123').valid, "Short address fails validation");
+                this.assert.falsy(validateEthereumAddress('1234567890123456789012345678901234567890').valid, "Address without 0x prefix fails validation");
+                this.assert.falsy(validateEthereumAddress('0x123456789012345678901234567890123456789G').valid, "Address with non-hex character fails validation");
                 
                 // ADD DELIVERABLE TEST
                 const testUserName = "Test User " + Date.now();
                 const testRole = "Test Role";
                 const testDeliverable = "Test Deliverable";
+                const testAddress = "0x1234567890123456789012345678901234567890";
                 const testValue = 100;
                 
                 // Create a test deliverable
@@ -2351,15 +2605,28 @@
                 };
                 
                 // Add to accounting data
-                accountingData.deliverables.push(testDeliverableObj);
-                if (!accountingData.roles.includes(testRole)) {
-                    accountingData.roles.push(testRole);
+                let testUser = accountingData.users.find(u => u.name === testUserName);
+                if (!testUser) {
+                    testUser = {
+                        id: `user-${Date.now()}`,
+                        name: testUserName,
+                        address: testAddress,
+                        roles: [testRole],
+                        totalValue: 0,
+                        deliverables: []
+                    };
+                    accountingData.users.push(testUser);
                 }
                 
+                testUser.deliverables.push(testDeliverableObj);
+                testUser.totalValue += testValue;
+                accountingData.deliverables.push(testDeliverableObj);
+                
                 this.assert.equals(accountingData.deliverables.length, 1, "Adding a deliverable increases count");
-                this.assert.equals(accountingData.roles.length, 1, "Adding a deliverable with new role adds role");
-                this.assert.includes(accountingData.deliverables.map(d => d.userName), testUserName, "Deliverable has correct user name");
-                this.assert.includes(accountingData.deliverables.map(d => d.role), testRole, "Deliverable has correct role");
+                this.assert.equals(accountingData.users.length, 1, "Adding a deliverable creates a user");
+                this.assert.equals(accountingData.users[0].address, testAddress, "User has Ethereum address");
+                this.assert.includes(accountingData.users.map(u => u.name), testUserName, "Deliverable has correct user name");
+                this.assert.includes(accountingData.users.map(u => u.roles), testRole, "Deliverable has correct role");
                 this.assert.includes(accountingData.deliverables.map(d => d.value), testValue, "Deliverable has correct value");
                 
                 // AGGREGATION TESTS
@@ -2370,19 +2637,26 @@
                 
                 this.assert.equals(userTotals[testUserName], testValue, "User total value is correct");
                 
-                const roleTotals = {};
-                accountingData.deliverables.forEach(d => {
-                    roleTotals[d.role] = (roleTotals[d.role] || 0) + d.value;
-                });
+                // SNAPSHOT EXPORT TEST
+                const snapshot = {
+                    projectName: accountingData.projectName,
+                    valueUnit: accountingData.valueUnit,
+                    snapshotDate: new Date().toISOString(),
+                    participants: accountingData.users.map(user => ({
+                        name: user.name,
+                        address: user.address,
+                        uv: user.totalValue
+                    }))
+                };
                 
-                this.assert.equals(roleTotals[testRole], testValue, "Role total value is correct");
-                
-                // EXPORT FUNCTIONS TEST
-                this.assert.truthy(typeof exportCSV === 'function', "exportCSV function exists");
-                this.assert.truthy(typeof exportJSON === 'function', "exportJSON function exists");
+                this.assert.equals(snapshot.participants.length, 1, "Snapshot has correct number of participants");
+                this.assert.equals(snapshot.participants[0].name, testUserName, "Snapshot participant has correct name");
+                this.assert.equals(snapshot.participants[0].address, testAddress, "Snapshot participant has correct address");
+                this.assert.equals(snapshot.participants[0].uv, testValue, "Snapshot participant has correct UV");
                 
                 // Clean up test data
                 accountingData.deliverables = [];
+                accountingData.users = [];
                 accountingData.roles = [];
                 
                 return this.results;
@@ -2398,9 +2672,15 @@
                 results.forEach(result => {
                     const resultDiv = document.createElement('div');
                     resultDiv.className = `test-item ${result.passed ? 'test-pass' : 'test-fail'}`;
-                    resultDiv.innerHTML = `[${result.passed ? '✓ PASS' : '✗ FAIL'}] ${result.name}<br/>` +
-                        `   Expected: ${result.expected}<br/>` +
-                        `   Actual: ${result.actual}`;
+                    
+                    if (result.passed) {
+                        resultDiv.innerHTML = `[✓ PASS] ${result.name}`;
+                    } else {
+                        resultDiv.innerHTML = `[✗ FAIL] ${result.name}<br/>` +
+                            `   Expected: ${result.expected}<br/>` +
+                            `   Actual: ${result.actual}`;
+                    }
+                    
                     testResultsDiv.appendChild(resultDiv);
                     
                     if (result.passed) passedCount++;
@@ -2433,7 +2713,7 @@
         
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup language
+            // Setup language - FIXED
             setupLanguageSelector();
             
             // Load saved data
@@ -2461,8 +2741,8 @@
             
             // Show tip after 3 seconds
             setTimeout(() => {
-                if (accountingData.deliverables.length === 0) {
-                    showNotification('💡 Consejo: Importa roles desde la VNA App o empieza creando tu primer entregable', 'info', 8000);
+                if (accountingData.users.length === 0) {
+                    showNotification('💡 Consejo: Asigna direcciones Ethereum a tus usuarios para preparar la futura tokenización', 'info', 8000);
                 }
             }, 3000);
         });
