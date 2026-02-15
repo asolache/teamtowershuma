@@ -1,1 +1,1258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tokenomics App | TeamTowers Humà. Configura la tokenomics del teu projecte a partir del valor registrat.">
+    <title>Tokenomics App | TeamTowers Humà</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            color: #333;
+            line-height: 1.6;
+        }
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            transition: var(--transition);
+        }
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        header {
+            background: var(--gradient-dark, linear-gradient(135deg, #0f172a, #1e293b));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .app-container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30,58,138,0.2);
+            outline: none;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+            color: white;
+        }
+        .btn-export {
+            background: var(--gradient-accent);
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+        .visualization-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        .chart-container {
+            height: 350px;
+            margin-bottom: 30px;
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .chart-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .chart-tab {
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: var(--light);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .chart-tab.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            text-align: center;
+            min-width: 110px;
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .ranking-table, .deliverables-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .ranking-table th, .deliverables-list th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        .ranking-table td, .deliverables-list td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .ranking-table tr:nth-child(even), .deliverables-list tr:nth-child(even) {
+            background-color: var(--light);
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+        .notification.success { background: linear-gradient(135deg, #10b981 0%, #0da27f 100%); }
+        .notification.error { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
+        .notification.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .notification.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        .test-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(245,158,11,0.1);
+            border-left: 4px solid var(--gold);
+            border-radius: var(--border-radius);
+        }
+        .test-results {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        .test-pass { color: var(--success); font-weight: bold; }
+        .test-fail { color: var(--danger); font-weight: bold; }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+        footer {
+            background: var(--gradient-dark, linear-gradient(135deg, #0f172a, #1e293b));
+            color: rgba(255,255,255,0.85);
+            padding: 60px 20px 40px;
+            margin-top: 60px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+        }
+        .footer-links {
+            list-style: none;
+        }
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        .footer-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding-left: 22px;
+            position: relative;
+        }
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    <div class="notification-container" id="notification-container"></div>
 
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Tokenomics App" data-ca="App de Tokenomics">Tokenomics App</h1>
+            <p class="lang" data-es="Configura la tokenomics del teu projecte a partir del valor registrat" data-ca="Configura la tokenòmica del teu projecte a partir del valor registrat">Configura la tokenomics del teu projecte a partir del valor registrat</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="app-container">
+            <!-- PANEL ESQUERRE: CONFIGURACIÓ -->
+            <div class="panel">
+                <h2><span class="lang" data-es="⚙️ Configuració" data-ca="⚙️ Configuració">⚙️ Configuració</span></h2>
+                
+                <!-- Importació / dades usuari -->
+                <div class="import-section" style="margin-bottom:25px;">
+                    <h3 class="lang" data-es="📥 Dades dels participants" data-ca="📥 Dades dels participants">📥 Dades dels participants</h3>
+                    <div class="btn-group">
+                        <button id="import-snapshot" class="btn btn-primary"><span>📂</span> <span class="lang" data-es="Importar JSON" data-ca="Importar JSON">Importar JSON</span></button>
+                        <button id="show-add-user-form" class="btn btn-success"><span>➕</span> <span class="lang" data-es="Afegir manualment" data-ca="Afegir manualment">Afegir manualment</span></button>
+                    </div>
+                    <!-- Formulari d'alta manual (amagat inicialment) -->
+                    <div id="add-user-form" style="display:none; margin-top:15px; padding:15px; background:var(--light); border-radius:8px;">
+                        <h4 class="lang" data-es="Nou participant" data-ca="Nou participant">Nou participant</h4>
+                        <div class="form-row">
+                            <label class="lang" data-es="Nom:" data-ca="Nom:">Nom:</label>
+                            <input type="text" id="new-user-name" placeholder="Nom">
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Adreça Ethereum:" data-ca="Adreça Ethereum:">Adreça Ethereum:</label>
+                            <input type="text" id="new-user-address" placeholder="0x...">
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Valor aportat:" data-ca="Valor aportat:">Valor aportat:</label>
+                            <input type="number" id="new-user-value" min="1" value="100">
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Rols (separats per comes):" data-ca="Rols (separats per comes):">Rols (separats per comes):</label>
+                            <input type="text" id="new-user-roles" placeholder="ex: desenvolupador, community">
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Tipus:" data-ca="Tipus:">Tipus:</label>
+                            <select id="new-user-type">
+                                <option value="inversor" class="lang" data-es="Inversor" data-ca="Inversor">Inversor</option>
+                                <option value="equip" class="lang" data-es="Equip" data-ca="Equip">Equip</option>
+                                <option value="comunitat" class="lang" data-es="Comunitat" data-ca="Comunitat">Comunitat</option>
+                                <option value="sense" class="lang" data-es="Sense especificar" data-ca="Sense especificar">Sense especificar</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button id="save-new-user" class="btn btn-primary"><span class="lang" data-es="Guardar" data-ca="Guardar">Guardar</span></button>
+                            <button id="cancel-new-user" class="btn btn-secondary"><span class="lang" data-es="Cancel·lar" data-ca="Cancel·lar">Cancel·lar</span></button>
+                        </div>
+                    </div>
+                    <!-- Taula de participants -->
+                    <div style="max-height:300px; overflow-y:auto; margin-top:15px;">
+                        <table class="ranking-table" style="width:100%;">
+                            <thead><tr><th>Nom</th><th>Adreça</th><th>Valor</th><th>Rols</th><th>Tipus</th><th>Accions</th></tr></thead>
+                            <tbody id="users-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="stats-bar" style="margin:15px 0;">
+                        <div class="stat-item"><span class="stat-value" id="total-users">0</span><br><span class="lang" data-es="Usuaris" data-ca="Usuaris">Usuaris</span></div>
+                        <div class="stat-item"><span class="stat-value" id="total-value">0</span><br><span class="lang" data-es="Valor total" data-ca="Valor total">Valor total</span></div>
+                    </div>
+                </div>
+
+                <!-- Paràmetres globals -->
+                <h3 class="lang" data-es="📊 Paràmetres globals" data-ca="📊 Paràmetres globals">📊 Paràmetres globals</h3>
+                <div class="input-group">
+                    <label class="lang" data-es="Subministrament total de tokens" data-ca="Subministrament total de tokens">Subministrament total de tokens</label>
+                    <input type="number" id="total-supply" value="1000000" min="1">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="input-group">
+                        <label class="lang" data-es="Inversors %" data-ca="Inversors %">Inversors %</label>
+                        <input type="number" id="pct-investors" value="40" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Equip %" data-ca="Equip %">Equip %</label>
+                        <input type="number" id="pct-team" value="20" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Reserva comunitat %" data-ca="Reserva comunitat %">Reserva comunitat %</label>
+                        <input type="number" id="pct-community" value="30" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label class="lang" data-es="Tresoreria %" data-ca="Tresoreria %">Tresoreria %</label>
+                        <input type="number" id="pct-treasury" value="10" min="0" max="100">
+                    </div>
+                </div>
+                <div id="pct-error" style="color:var(--danger); font-weight:600; margin-bottom:15px;"></div>
+
+                <!-- Assignacions específiques equip -->
+                <div id="team-allocations-section" style="margin-top:20px;">
+                    <h3 class="lang" data-es="👥 Assignacions equip" data-ca="👥 Assignacions equip">👥 Assignacions equip</h3>
+                    <div id="team-allocations-list"></div>
+                    <button id="add-team-allocation" class="btn btn-secondary" style="margin-top:10px;"><span>➕</span> <span class="lang" data-es="Afegir membre" data-ca="Afegir membre">Afegir membre</span></button>
+                    <div id="team-error" style="color:var(--danger); margin-top:10px;"></div>
+                </div>
+
+                <!-- Rondes Fibonacci -->
+                <div id="rounds-section" style="margin-top:20px;">
+                    <h3 class="lang" data-es="📈 Rondes Fibonacci" data-ca="📈 Rondes Fibonacci">📈 Rondes Fibonacci</h3>
+                    <div id="rounds-list"></div>
+                    <button id="add-round" class="btn btn-secondary" style="margin-top:10px;"><span>➕</span> <span class="lang" data-es="Afegir ronda" data-ca="Afegir ronda">Afegir ronda</span></button>
+                    <div id="rounds-error" style="color:var(--danger); margin-top:10px;"></div>
+                </div>
+
+                <!-- Vesting -->
+                <div style="margin-top:20px;">
+                    <h3 class="lang" data-es="⏳ Vesting (equip)" data-ca="⏳ Vesting (equip)">⏳ Vesting (equip)</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="input-group">
+                            <label class="lang" data-es="Cliff (dies)" data-ca="Cliff (dies)">Cliff (dies)</label>
+                            <input type="number" id="cliff-days" value="365" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label class="lang" data-es="Vesting (dies)" data-ca="Vesting (dies)">Vesting (dies)</label>
+                            <input type="number" id="vesting-days" value="1460" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exportació -->
+                <div style="margin-top:30px;">
+                    <button id="export-config" class="btn btn-export" style="width:100%;"><span>📤</span> <span class="lang" data-es="Exportar configuració per a Smart Contracts" data-ca="Exportar configuració per a Smart Contracts">Exportar configuració per a Smart Contracts</span></button>
+                </div>
+            </div>
+
+            <!-- PANEL DRET: VISUALITZACIONS -->
+            <div class="visualization-container">
+                <h2><span class="lang" data-es="📈 Distribució de valor" data-ca="📈 Distribució de valor">📈 Distribució de valor</span></h2>
+                <div class="chart-tabs">
+                    <button class="chart-tab active" data-view="user"><span class="lang" data-es="Per persona" data-ca="Per persona">Per persona</span></button>
+                    <button class="chart-tab" data-view="role"><span class="lang" data-es="Per rol" data-ca="Per rol">Per rol</span></button>
+                    <button class="chart-tab" data-view="type"><span class="lang" data-es="Per tipus" data-ca="Per tipus">Per tipus</span></button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="valueChart"></canvas>
+                </div>
+
+                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="🏆 Ranking d'usuaris" data-ca="🏆 Rànquing d'usuaris">🏆 Ranking d'usuaris</span></h3>
+                <table class="ranking-table">
+                    <thead><tr><th>Posició</th><th>Usuari</th><th>Adreça</th><th>Rols</th><th>Tipus</th><th>Valor</th></tr></thead>
+                    <tbody id="ranking-body"></tbody>
+                </table>
+
+                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="💰 Simulació reserva comunitat" data-ca="💰 Simulació reserva comunitat">💰 Simulació reserva comunitat</span></h3>
+                <table class="deliverables-list">
+                    <thead><tr><th>Usuari</th><th>Adreça</th><th>Valor</th><th>% del total</th><th>Tokens a rebre</th></tr></thead>
+                    <tbody id="simulation-body"></tbody>
+                </table>
+
+                <div class="next-step" style="background:var(--gradient-primary); color:white; padding:15px; border-radius:var(--border-radius); text-align:center; margin:30px 0;">
+                    <h3><span class="lang" data-es="Configuració llesta per desplegar" data-ca="Configuració llesta per desplegar">Configuració llesta per desplegar</span></h3>
+                    <p><span class="lang" data-es="Utilitza el botó d'exportació per generar el fitxer JSON per als smart contracts." data-ca="Utilitza el botó d'exportació per generar el fitxer JSON per als smart contracts.">Utilitza el botó d'exportació per generar el fitxer JSON per als smart contracts.</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEST SUITE -->
+        <div class="test-section">
+            <h3><span class="lang" data-es="🧪 Proves de funcionament" data-ca="🧪 Proves de funcionament">🧪 Proves de funcionament</span></h3>
+            <button id="run-tests" class="btn btn-warning"><span>🔬</span> <span class="lang" data-es="Executar proves" data-ca="Executar proves">Executar proves</span></button>
+            <div class="test-results" id="test-results"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>TeamTowers Humà</h3>
+                <p class="lang" data-es="De les torres humanes a les organitzacions humanes." data-ca="De les torres humanes a les organitzacions humanes.">De les torres humanes a les organitzacions humanes.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Enllaços" data-ca="Enllaços">Enllaços</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App de Comptabilitat" data-ca="App de Comptabilitat">App de Comptabilitat</a></li>
+                    <li><a href="https://teamtowershuma.com/tokenomics" class="lang" data-es="App de Tokenomics" data-ca="App de Tokenomics">App de Tokenomics</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2026 TeamTowers Humà. Tots els drets reservats.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- ESTRUCTURA DE DADES ----------
+        // Aquesta estructura està pensada per poder ser substituïda en un futur per crides a una API / base de dades.
+        let tokenomicsData = {
+            projectName: "Proyecto MASIA",
+            valueUnit: "puntos",
+            users: [],                       // array d'usuaris: { id, name, address, value, roles (array), type }
+            totalSupply: 1000000,
+            allocations: {
+                investors: 40,
+                team: 20,
+                communityReserve: 30,
+                treasury: 10
+            },
+            teamAllocations: [],              // { address, allocation }
+            fibonacciRounds: [],               // { round, percentage }
+            vesting: {
+                teamCliffDays: 365,
+                teamVestingDays: 1460
+            }
+        };
+
+        // Variables globals
+        let valueChart = null;
+        let currentChartView = 'user';
+        let editingUserId = null; // per a edició
+
+        // ---------- FUNCIONS AUXILIARS ----------
+        function showNotification(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `<span>${message}</span>`;
+            container.appendChild(notif);
+            setTimeout(() => {
+                notif.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => notif.remove(), 500);
+            }, duration);
+        }
+
+        function isValidEthereumAddress(addr) {
+            return /^0x[a-fA-F0-9]{40}$/.test(addr);
+        }
+
+        // Genera un ID únic
+        function generateId() { return 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9); }
+
+        // Desa a localStorage (puntual)
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('tokenomicsData', JSON.stringify(tokenomicsData));
+            } catch(e) { console.warn('Error saving to localStorage', e); }
+        }
+
+        // Carrega de localStorage
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('tokenomicsData');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // Migració bàsica per assegurar estructura
+                    tokenomicsData = { ...tokenomicsData, ...parsed };
+                    if (!tokenomicsData.users) tokenomicsData.users = [];
+                    if (!tokenomicsData.teamAllocations) tokenomicsData.teamAllocations = [];
+                    if (!tokenomicsData.fibonacciRounds) tokenomicsData.fibonacciRounds = [];
+                }
+            } catch(e) { console.warn('Error loading from localStorage', e); }
+        }
+
+        // ---------- FUNCIONS DE RENDERRITZACIÓ DE LA UI ----------
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            if (!tokenomicsData.users.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No hi ha participants</td></tr>`;
+                return;
+            }
+            let html = '';
+            tokenomicsData.users.forEach(u => {
+                const addr = u.address ? u.address.substr(0,6)+'...'+u.address.substr(-4) : '';
+                const roles = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
+                html += `<tr>
+                    <td>${u.name}</td>
+                    <td>${addr}</td>
+                    <td>${u.value}</td>
+                    <td>${roles}</td>
+                    <td>${u.type || 'sense'}</td>
+                    <td>
+                        <button class="action-btn edit" data-id="${u.id}">✏️</button>
+                        <button class="action-btn delete" data-id="${u.id}">🗑️</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+            document.querySelectorAll('.action-btn.edit').forEach(b => b.addEventListener('click', (e) => editUser(e.target.dataset.id)));
+            document.querySelectorAll('.action-btn.delete').forEach(b => b.addEventListener('click', (e) => deleteUser(e.target.dataset.id)));
+        }
+
+        function editUser(id) {
+            const user = tokenomicsData.users.find(u => u.id === id);
+            if (!user) return;
+            document.getElementById('new-user-name').value = user.name;
+            document.getElementById('new-user-address').value = user.address || '';
+            document.getElementById('new-user-value').value = user.value;
+            document.getElementById('new-user-roles').value = Array.isArray(user.roles) ? user.roles.join(', ') : user.roles || '';
+            document.getElementById('new-user-type').value = user.type || 'sense';
+            document.getElementById('add-user-form').style.display = 'block';
+            editingUserId = id;
+        }
+
+        function deleteUser(id) {
+            tokenomicsData.users = tokenomicsData.users.filter(u => u.id !== id);
+            saveToLocalStorage();
+            updateAll();
+        }
+
+        function renderTeamAllocations() {
+            const container = document.getElementById('team-allocations-list');
+            if (!tokenomicsData.teamAllocations.length) {
+                container.innerHTML = '<p class="empty-state">No hi ha assignacions d\'equip</p>';
+                return;
+            }
+            let html = '';
+            tokenomicsData.teamAllocations.forEach((ta, index) => {
+                html += `<div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" placeholder="Adreça" value="${ta.address}" class="team-addr" data-index="${index}">
+                    <input type="number" placeholder="Quantitat" value="${ta.allocation}" class="team-alloc" data-index="${index}">
+                    <button class="btn-danger" style="padding:5px 10px;" onclick="removeTeamAllocation(${index})">🗑️</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.removeTeamAllocation = (index) => {
+            tokenomicsData.teamAllocations.splice(index, 1);
+            saveToLocalStorage();
+            renderTeamAllocations();
+            validateTeamAllocations();
+        };
+
+        function renderRounds() {
+            const container = document.getElementById('rounds-list');
+            if (!tokenomicsData.fibonacciRounds.length) {
+                container.innerHTML = '<p class="empty-state">No hi ha rondes definides</p>';
+                return;
+            }
+            let html = '';
+            tokenomicsData.fibonacciRounds.forEach((r, index) => {
+                html += `<div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="number" placeholder="Ronda" value="${r.round}" class="round-num" data-index="${index}">
+                    <input type="number" placeholder="%" value="${r.percentage}" class="round-pct" data-index="${index}">
+                    <button class="btn-danger" style="padding:5px 10px;" onclick="removeRound(${index})">🗑️</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.removeRound = (index) => {
+            tokenomicsData.fibonacciRounds.splice(index, 1);
+            saveToLocalStorage();
+            renderRounds();
+            validateRounds();
+        };
+
+        // ---------- VALIDACIONS ----------
+        function validateAllocations() {
+            const inv = parseFloat(document.getElementById('pct-investors').value) || 0;
+            const team = parseFloat(document.getElementById('pct-team').value) || 0;
+            const com = parseFloat(document.getElementById('pct-community').value) || 0;
+            const tre = parseFloat(document.getElementById('pct-treasury').value) || 0;
+            const sum = inv + team + com + tre;
+            const errorDiv = document.getElementById('pct-error');
+            if (Math.abs(sum - 100) > 0.01) {
+                errorDiv.textContent = `La suma ha de ser 100 (actual: ${sum})`;
+                return false;
+            } else {
+                errorDiv.textContent = '';
+                return true;
+            }
+        }
+
+        function validateTeamAllocations() {
+            const maxTeamTokens = (tokenomicsData.allocations.team / 100) * tokenomicsData.totalSupply;
+            let totalAssigned = 0;
+            document.querySelectorAll('.team-alloc').forEach(inp => {
+                totalAssigned += parseFloat(inp.value) || 0;
+            });
+            const errorDiv = document.getElementById('team-error');
+            if (totalAssigned > maxTeamTokens + 0.01) {
+                errorDiv.textContent = `Les assignacions d'equip (${totalAssigned}) superen el màxim permès (${maxTeamTokens})`;
+                return false;
+            } else {
+                errorDiv.textContent = '';
+                return true;
+            }
+        }
+
+        function validateRounds() {
+            const maxInvestorTokens = (tokenomicsData.allocations.investors / 100) * tokenomicsData.totalSupply;
+            // Suma de percentatges de ronda (sobre el totalSupply)
+            let totalRoundPct = 0;
+            document.querySelectorAll('.round-pct').forEach(inp => {
+                totalRoundPct += parseFloat(inp.value) || 0;
+            });
+            const errorDiv = document.getElementById('rounds-error');
+            if (totalRoundPct > tokenomicsData.allocations.investors + 0.01) {
+                errorDiv.textContent = `Els percentatges de les rondes (${totalRoundPct}%) superen el percentatge global d'inversors (${tokenomicsData.allocations.investors}%)`;
+                return false;
+            } else {
+                errorDiv.textContent = '';
+                return true;
+            }
+        }
+
+        // ---------- ACTUALITZACIÓ DE TOTES LES VISUALITZACIONS ----------
+        function updateStats() {
+            document.getElementById('total-users').textContent = tokenomicsData.users.length;
+            const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
+            document.getElementById('total-value').textContent = totalValue;
+        }
+
+        function updateRanking() {
+            const tbody = document.getElementById('ranking-body');
+            if (!tokenomicsData.users.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hi dades</td></tr>';
+                return;
+            }
+            const sorted = [...tokenomicsData.users].sort((a,b) => b.value - a.value);
+            let html = '';
+            sorted.forEach((u, i) => {
+                const addr = u.address ? u.address.substr(0,6)+'...'+u.address.substr(-4) : '';
+                const roles = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
+                html += `<tr>
+                    <td>${i+1}</td>
+                    <td>${u.name}</td>
+                    <td>${addr}</td>
+                    <td>${roles}</td>
+                    <td>${u.type || 'sense'}</td>
+                    <td>${u.value}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function updateSimulation() {
+            const tbody = document.getElementById('simulation-body');
+            const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
+            if (totalValue === 0 || !tokenomicsData.users.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Sense dades per simular</td></tr>';
+                return;
+            }
+            const communityTokens = (tokenomicsData.allocations.communityReserve / 100) * tokenomicsData.totalSupply;
+            let html = '';
+            tokenomicsData.users.forEach(u => {
+                const pct = (u.value / totalValue * 100).toFixed(2);
+                const tokens = (u.value / totalValue * communityTokens).toFixed(2);
+                const addr = u.address ? u.address.substr(0,6)+'...'+u.address.substr(-4) : '';
+                html += `<tr>
+                    <td>${u.name}</td>
+                    <td>${addr}</td>
+                    <td>${u.value}</td>
+                    <td>${pct}%</td>
+                    <td>${tokens}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function updateChart(view = currentChartView) {
+            if (!valueChart) return;
+            currentChartView = view;
+            let labels = [], data = [];
+            if (view === 'user') {
+                const userMap = {};
+                tokenomicsData.users.forEach(u => { userMap[u.name] = (userMap[u.name] || 0) + u.value; });
+                const sorted = Object.entries(userMap).sort((a,b) => b[1]-a[1]).slice(0,8);
+                labels = sorted.map(e => e[0]);
+                data = sorted.map(e => e[1]);
+            } else if (view === 'role') {
+                const roleMap = {};
+                tokenomicsData.users.forEach(u => {
+                    const roles = Array.isArray(u.roles) ? u.roles : (u.roles ? u.roles.split(',').map(s=>s.trim()) : []);
+                    roles.forEach(r => { roleMap[r] = (roleMap[r] || 0) + u.value; });
+                });
+                const sorted = Object.entries(roleMap).sort((a,b) => b[1]-a[1]).slice(0,8);
+                labels = sorted.map(e => e[0]);
+                data = sorted.map(e => e[1]);
+            } else { // type
+                const typeMap = {};
+                tokenomicsData.users.forEach(u => {
+                    const t = u.type || 'sense';
+                    typeMap[t] = (typeMap[t] || 0) + u.value;
+                });
+                const sorted = Object.entries(typeMap).sort((a,b) => b[1]-a[1]);
+                labels = sorted.map(e => e[0]);
+                data = sorted.map(e => e[1]);
+            }
+            valueChart.data.labels = labels;
+            valueChart.data.datasets[0].data = data;
+            valueChart.update();
+        }
+
+        function updateAll() {
+            renderUsersTable();
+            updateStats();
+            updateRanking();
+            updateSimulation();
+            updateChart();
+            // Actualitzar valors dels inputs globals
+            document.getElementById('total-supply').value = tokenomicsData.totalSupply;
+            document.getElementById('pct-investors').value = tokenomicsData.allocations.investors;
+            document.getElementById('pct-team').value = tokenomicsData.allocations.team;
+            document.getElementById('pct-community').value = tokenomicsData.allocations.communityReserve;
+            document.getElementById('pct-treasury').value = tokenomicsData.allocations.treasury;
+            document.getElementById('cliff-days').value = tokenomicsData.vesting.teamCliffDays;
+            document.getElementById('vesting-days').value = tokenomicsData.vesting.teamVestingDays;
+            renderTeamAllocations();
+            renderRounds();
+        }
+
+        // ---------- ESDEVENIMENTS I INICIALITZACIÓ ----------
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            // Inicialitzar gràfic
+            const ctx = document.getElementById('valueChart').getContext('2d');
+            valueChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#1e3a8a','#4f46e5','#8b5cf6','#10b981','#f59e01','#ef4444','#3b82f6','#64748b'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // Event listeners
+            document.getElementById('show-add-user-form').addEventListener('click', () => {
+                document.getElementById('add-user-form').style.display = 'block';
+                editingUserId = null;
+                document.getElementById('new-user-name').value = '';
+                document.getElementById('new-user-address').value = '';
+                document.getElementById('new-user-value').value = '100';
+                document.getElementById('new-user-roles').value = '';
+                document.getElementById('new-user-type').value = 'sense';
+            });
+            document.getElementById('cancel-new-user').addEventListener('click', () => {
+                document.getElementById('add-user-form').style.display = 'none';
+                editingUserId = null;
+            });
+            document.getElementById('save-new-user').addEventListener('click', () => {
+                const name = document.getElementById('new-user-name').value.trim();
+                if (!name) { showNotification('El nom és obligatori', 'warning'); return; }
+                const value = parseFloat(document.getElementById('new-user-value').value);
+                if (isNaN(value) || value <= 0) { showNotification('El valor ha de ser positiu', 'warning'); return; }
+                const address = document.getElementById('new-user-address').value.trim();
+                if (address && !isValidEthereumAddress(address)) { showNotification('Adreça Ethereum no vàlida', 'warning'); return; }
+                const rolesStr = document.getElementById('new-user-roles').value.trim();
+                const roles = rolesStr ? rolesStr.split(',').map(s => s.trim()).filter(s => s) : [];
+                const type = document.getElementById('new-user-type').value;
+
+                if (editingUserId) {
+                    const user = tokenomicsData.users.find(u => u.id === editingUserId);
+                    if (user) {
+                        user.name = name;
+                        user.address = address;
+                        user.value = value;
+                        user.roles = roles;
+                        user.type = type;
+                    }
+                } else {
+                    tokenomicsData.users.push({
+                        id: generateId(),
+                        name, address, value, roles, type
+                    });
+                }
+                saveToLocalStorage();
+                document.getElementById('add-user-form').style.display = 'none';
+                editingUserId = null;
+                updateAll();
+                showNotification('Participant guardat', 'success');
+            });
+
+            // Importació JSON
+            document.getElementById('import-snapshot').addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const imported = JSON.parse(e.target.result);
+                            if (!imported.snapshot || !Array.isArray(imported.snapshot)) {
+                                throw new Error('El fitxer ha de contenir un array "snapshot"');
+                            }
+                            // Convertir snapshot a users
+                            const newUsers = imported.snapshot.map(item => ({
+                                id: generateId(),
+                                name: item.user,
+                                address: item.address || '',
+                                value: item.uvAmount,
+                                roles: item.roles || [],
+                                type: item.stakeholderType || 'sense'
+                            }));
+                            if (imported.projectName) tokenomicsData.projectName = imported.projectName;
+                            if (imported.valueUnit) tokenomicsData.valueUnit = imported.valueUnit;
+                            tokenomicsData.users = newUsers;
+                            saveToLocalStorage();
+                            updateAll();
+                            showNotification(`Importats ${newUsers.length} usuaris`, 'success');
+                        } catch (err) {
+                            showNotification('Error en importar: ' + err.message, 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            });
+
+            // Canvis en inputs globals
+            document.getElementById('total-supply').addEventListener('input', (e) => {
+                tokenomicsData.totalSupply = parseInt(e.target.value) || 0;
+                saveToLocalStorage();
+                updateSimulation();
+                validateTeamAllocations();
+                validateRounds();
+            });
+            document.getElementById('pct-investors').addEventListener('input', (e) => {
+                tokenomicsData.allocations.investors = parseFloat(e.target.value) || 0;
+                saveToLocalStorage();
+                validateAllocations();
+                validateRounds();
+            });
+            document.getElementById('pct-team').addEventListener('input', (e) => {
+                tokenomicsData.allocations.team = parseFloat(e.target.value) || 0;
+                saveToLocalStorage();
+                validateAllocations();
+                validateTeamAllocations();
+            });
+            document.getElementById('pct-community').addEventListener('input', (e) => {
+                tokenomicsData.allocations.communityReserve = parseFloat(e.target.value) || 0;
+                saveToLocalStorage();
+                validateAllocations();
+                updateSimulation();
+            });
+            document.getElementById('pct-treasury').addEventListener('input', (e) => {
+                tokenomicsData.allocations.treasury = parseFloat(e.target.value) || 0;
+                saveToLocalStorage();
+                validateAllocations();
+            });
+            document.getElementById('cliff-days').addEventListener('input', (e) => {
+                tokenomicsData.vesting.teamCliffDays = parseInt(e.target.value) || 0;
+                saveToLocalStorage();
+            });
+            document.getElementById('vesting-days').addEventListener('input', (e) => {
+                tokenomicsData.vesting.teamVestingDays = parseInt(e.target.value) || 0;
+                saveToLocalStorage();
+            });
+
+            // Team allocations dinàmiques
+            document.getElementById('add-team-allocation').addEventListener('click', () => {
+                tokenomicsData.teamAllocations.push({ address: '', allocation: 0 });
+                renderTeamAllocations();
+                saveToLocalStorage();
+            });
+            // Rondes
+            document.getElementById('add-round').addEventListener('click', () => {
+                const nextRound = tokenomicsData.fibonacciRounds.length + 1;
+                tokenomicsData.fibonacciRounds.push({ round: nextRound, percentage: 0 });
+                renderRounds();
+                saveToLocalStorage();
+            });
+
+            // Canvis en inputs dinàmics (delegats)
+            document.getElementById('team-allocations-list').addEventListener('input', (e) => {
+                if (e.target.classList.contains('team-addr')) {
+                    const idx = e.target.dataset.index;
+                    tokenomicsData.teamAllocations[idx].address = e.target.value;
+                } else if (e.target.classList.contains('team-alloc')) {
+                    const idx = e.target.dataset.index;
+                    tokenomicsData.teamAllocations[idx].allocation = parseFloat(e.target.value) || 0;
+                }
+                saveToLocalStorage();
+                validateTeamAllocations();
+            });
+            document.getElementById('rounds-list').addEventListener('input', (e) => {
+                if (e.target.classList.contains('round-num')) {
+                    const idx = e.target.dataset.index;
+                    tokenomicsData.fibonacciRounds[idx].round = parseInt(e.target.value) || 0;
+                } else if (e.target.classList.contains('round-pct')) {
+                    const idx = e.target.dataset.index;
+                    tokenomicsData.fibonacciRounds[idx].percentage = parseFloat(e.target.value) || 0;
+                }
+                saveToLocalStorage();
+                validateRounds();
+            });
+
+            // Exportació
+            document.getElementById('export-config').addEventListener('click', () => {
+                // Validar tot abans d'exportar
+                if (!validateAllocations() || !validateTeamAllocations() || !validateRounds()) {
+                    showNotification('Corregeix els errors abans d\'exportar', 'error');
+                    return;
+                }
+                // Construir objecte de sortida
+                const output = {
+                    projectName: tokenomicsData.projectName,
+                    totalSupply: tokenomicsData.totalSupply,
+                    valueUnit: tokenomicsData.valueUnit,
+                    snapshot: tokenomicsData.users.map(u => ({
+                        user: u.name,
+                        address: u.address || '',
+                        uvAmount: u.value,
+                        roles: u.roles || [],
+                        stakeholderType: u.type || 'sense'
+                    })),
+                    allocations: { ...tokenomicsData.allocations },
+                    teamAllocations: [...tokenomicsData.teamAllocations],
+                    fibonacciRounds: [...tokenomicsData.fibonacciRounds],
+                    vesting: { ...tokenomicsData.vesting }
+                };
+                const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tokenomics-config-${tokenomicsData.projectName.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification('Configuració exportada', 'success');
+            });
+
+            // Pestanyes del gràfic
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    updateChart(e.target.dataset.view);
+                });
+            });
+
+            // Tests
+            document.getElementById('run-tests').addEventListener('click', runTests);
+
+            // Inicialitzar la UI
+            updateAll();
+
+            // Idiomes
+            setupLanguageSelector();
+        });
+
+        // ---------- IDIOMES ----------
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatable = document.querySelectorAll('[data-es],[data-ca]');
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setLanguage(userLang);
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const lang = btn.dataset.lang;
+                    setLanguage(lang);
+                    langButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    showNotification(lang === 'ca' ? 'Idioma canviat a Català' : 'Idioma cambiado a Español', 'info');
+                });
+            });
+            function setLanguage(lang) {
+                translatable.forEach(el => {
+                    if (el.dataset[lang]) {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                            el.placeholder = el.dataset[lang];
+                        } else if (el.tagName === 'OPTION') {
+                            el.textContent = el.dataset[lang];
+                        } else {
+                            el.innerHTML = el.dataset[lang];
+                        }
+                    }
+                });
+                document.documentElement.setAttribute('lang', lang);
+            }
+        }
+
+        // ---------- TESTS ----------
+        function runTests() {
+            const results = [];
+            const assert = {
+                equals: (a,b,msg) => results.push({ name: msg, passed: a===b, expected: b, actual: a }),
+                truthy: (a,msg) => results.push({ name: msg, passed: !!a, expected: 'truthy', actual: a }),
+                falsy: (a,msg) => results.push({ name: msg, passed: !a, expected: 'falsy', actual: a })
+            };
+
+            // Test 1: validació percentatges
+            assert.equals(validateAllocations(), true, 'Percentatges sumen 100');
+            // Test 2: afegir usuari manual
+            const oldLen = tokenomicsData.users.length;
+            tokenomicsData.users.push({ id:'test', name:'Test', value:100 });
+            assert.equals(tokenomicsData.users.length, oldLen+1, 'Es pot afegir usuari');
+            tokenomicsData.users.pop();
+            // Test 3: validació adreça
+            assert.truthy(isValidEthereumAddress('0x742d35Cc6634C0532925a3b844Bc454e4438f44e'), 'Adreça vàlida');
+            assert.falsy(isValidEthereumAddress('0x123'), 'Adreça invàlida');
+
+            // Mostrar resultats
+            const div = document.getElementById('test-results');
+            div.innerHTML = '';
+            let passed = 0;
+            results.forEach(r => {
+                const line = document.createElement('div');
+                line.className = r.passed ? 'test-pass' : 'test-fail';
+                line.textContent = `[${r.passed ? 'PASS' : 'FAIL'}] ${r.name} ${r.passed ? '' : `(esperat: ${r.expected}, obtingut: ${r.actual})`}`;
+                div.appendChild(line);
+                if (r.passed) passed++;
+            });
+            div.innerHTML += `<div style="font-weight:bold; margin-top:10px;">Passades ${passed}/${results.length}</div>`;
+            showNotification(`Tests: ${passed}/${results.length} passades`, passed===results.length ? 'success' : 'warning');
+        }
+    </script>
+</body>
+</html>
