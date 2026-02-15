@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IA Assistente · La Teva Colla. Asistente inteligente para analizar y recomendar en tu ecosistema de valor.">
+    <meta name="keywords" content="IA, asistente, TeamTowers Humà, La Teva Colla, análisis, recomendaciones, tokenomics, VNA, mapas de valor">
+    <meta name="author" content="La Teva Colla">
+    <meta name="robots" content="index, follow">
+    <title>IA Assistente · La Teva Colla</title>
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="IA Assistente · La Teva Colla">
+    <meta property="og:description" content="Asistente inteligente para analizar y recomendar en tu ecosistema de valor.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/ia">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ----- MISMAS VARIABLES Y ESTILOS QUE EN EL RESTO DEL ECOSISTEMA ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+        }
+
+        body {
+            background-color: #fff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            transition: var(--transition);
+        }
+
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: var(--transition);
+            background: var(--light);
+        }
+
+        .nav-menu a:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ----- ESTILOS DEL CHAT ----- */
+        .chat-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+
+        .chat-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 20px;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            color: white;
+            border-bottom: none;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9fafc;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .message .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .message.user .avatar {
+            background: var(--primary);
+            color: white;
+        }
+
+        .message.ia .avatar {
+            background: var(--accent);
+            color: white;
+        }
+
+        .message .content {
+            flex: 1;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .message.user .content {
+            background: var(--primary);
+            color: white;
+        }
+
+        .message .content ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 20px;
+            gap: 10px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30,58,138,0.2);
+        }
+
+        .chat-input-area button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        /* ----- ESTILOS DEL DASHBOARD ----- */
+        .dashboard-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            overflow-y: auto;
+            height: 700px;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .app-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+        }
+
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+            border-color: var(--accent);
+        }
+
+        .app-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .app-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .app-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+
+        .app-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .recommendations-list {
+            margin: 15px 0;
+        }
+
+        .recommendation {
+            background: #f0f9ff;
+            border-left: 4px solid var(--accent);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .recommendation.warning {
+            background: #fef2f2;
+            border-left-color: var(--danger);
+        }
+
+        .knowledge-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 10px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 30px;
+            background: var(--light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .patterns-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .pattern-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255,255,255,0.85);
+            padding: 40px 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Notificaciones */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Selector de idioma -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+
+    <!-- Notificaciones -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://via.placeholder.com/60x60/1e3a8a/ffffff?text=IA" alt="IA Assistente" class="header-logo">
+            <h1 data-i18n="title">IA Assistente · La Teva Colla</h1>
+            <p data-i18n="subtitle">El teu assistent intel·ligent per a l'ecosistema</p>
+        </div>
+    </header>
+
+    <!-- Menú de navegación -->
+    <nav class="nav-menu">
+        <a href="index.html" data-i18n="home">Inici</a>
+        <a href="lacolla.html" data-i18n="lacolla">La Colla</a>
+        <a href="app.html" data-i18n="vna">VNA</a>
+        <a href="mapas.html" data-i18n="mapas">Mapes</a>
+        <a href="tokenomics.html" data-i18n="tokenomics">Tokenomics</a>
+        <a href="lacolla-accounting.html" data-i18n="accounting">Accounting</a>
+        <a href="finances.html" data-i18n="finances">Finances</a>
+        <a href="ia.html" class="active" data-i18n="ia">IA</a>
+    </nav>
+
+    <div class="container">
+        <div class="app-container">
+            <!-- Panel izquierdo: CHAT -->
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <h2><i class="fas fa-robot"></i> <span data-i18n="chatTitle">Assistent Virtual</span></h2>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Mensaje de bienvenida (se genera con JS) -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userQuestion" placeholder="Escriu la teva pregunta...">
+                    <button id="sendQuestion" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                    <button id="clearChat" class="btn btn-secondary"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+
+            <!-- Panel derecho: DASHBOARD Y RECOMENDACIONES -->
+            <div class="dashboard-panel">
+                <h2><i class="fas fa-chart-pie"></i> <span data-i18n="dashboardTitle">Estat de l'ecosistema</span></h2>
+                
+                <!-- Tarjetas de aplicaciones -->
+                <div class="apps-grid">
+                    <div class="app-card" onclick="location.href='app.html'">
+                        <span class="app-icon">🌐</span>
+                        <span class="app-name">VNA</span>
+                        <span class="app-value" id="statVnaNodes">0</span>
+                        <span class="app-label" data-i18n="nodes">nodes</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='mapas.html'">
+                        <span class="app-icon">🗺️</span>
+                        <span class="app-name">Mapes</span>
+                        <span class="app-value" id="statMapasRoles">0</span>
+                        <span class="app-label" data-i18n="roles">rols</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='tokenomics.html'">
+                        <span class="app-icon">💰</span>
+                        <span class="app-name">Tokenomics</span>
+                        <span class="app-value" id="statTokenSupply">0</span>
+                        <span class="app-label" data-i18n="tokens">tokens</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='lacolla-accounting.html'">
+                        <span class="app-icon">📝</span>
+                        <span class="app-name">Accounting</span>
+                        <span class="app-value" id="statDeliverables">0</span>
+                        <span class="app-label" data-i18n="deliverables">entregables</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='finances.html'">
+                        <span class="app-icon">💳</span>
+                        <span class="app-name">Finances</span>
+                        <span class="app-value" id="statFinancesValue">0</span>
+                        <span class="app-label" data-i18n="assets">actius</span>
+                    </div>
+                </div>
+
+                <!-- Recomendaciones -->
+                <h3><i class="fas fa-lightbulb"></i> <span data-i18n="recommendations">Recomanacions</span></h3>
+                <div id="recommendations" class="recommendations-list">
+                    <!-- Se llena con JS -->
+                </div>
+
+                <!-- Pestañas de conocimiento -->
+                <div class="knowledge-tabs">
+                    <button class="tab-btn active" data-tab="patterns"><i class="fas fa-chart-bar"></i> <span data-i18n="patterns">Patrons de valor</span></button>
+                    <button class="tab-btn" data-tab="faq"><i class="fas fa-question-circle"></i> <span data-i18n="faq">FAQ</span></button>
+                    <button class="tab-btn" data-tab="institutional"><i class="fas fa-building"></i> <span data-i18n="institutional">Sobre nosaltres</span></button>
+                </div>
+
+                <div id="patterns-tab" class="tab-content active">
+                    <div class="patterns-list" id="patternsList">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+
+                <div id="faq-tab" class="tab-content">
+                    <div id="faqList">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+
+                <div id="institutional-tab" class="tab-content">
+                    <div id="institutionalInfo">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+
+                <button id="generateReport" class="btn btn-primary" style="margin-top: 20px; width: 100%;">
+                    <i class="fas fa-file-alt"></i> <span data-i18n="generateReport">Generar informe complet</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p data-i18n="footer">© 2026 La Teva Colla · Tots els drets reservats</p>
+    </footer>
+
+    <script>
+        // ========== TRADUCCIONS ==========
+        const translations = {
+            es: {
+                title: "IA Asistente · La Teva Colla",
+                subtitle: "Tu asistente inteligente para el ecosistema",
+                home: "Inicio",
+                lacolla: "La Colla",
+                vna: "VNA",
+                mapas: "Mapas",
+                tokenomics: "Tokenomics",
+                accounting: "Accounting",
+                finances: "Finanzas",
+                ia: "IA",
+                chatTitle: "Asistente Virtual",
+                dashboardTitle: "Estado del ecosistema",
+                nodes: "nodos",
+                roles: "roles",
+                tokens: "tokens",
+                deliverables: "entregables",
+                assets: "activos",
+                recommendations: "Recomendaciones",
+                patterns: "Patrones de valor",
+                faq: "FAQ",
+                institutional: "Sobre nosotros",
+                generateReport: "Generar informe completo",
+                footer: "© 2026 La Teva Colla · Todos los derechos reservados"
+            },
+            ca: {
+                title: "IA Assistente · La Teva Colla",
+                subtitle: "El teu assistent intel·ligent per a l'ecosistema",
+                home: "Inici",
+                lacolla: "La Colla",
+                vna: "VNA",
+                mapas: "Mapes",
+                tokenomics: "Tokenomics",
+                accounting: "Accounting",
+                finances: "Finances",
+                ia: "IA",
+                chatTitle: "Assistent Virtual",
+                dashboardTitle: "Estat de l'ecosistema",
+                nodes: "nodes",
+                roles: "rols",
+                tokens: "tokens",
+                deliverables: "entregables",
+                assets: "actius",
+                recommendations: "Recomanacions",
+                patterns: "Patrons de valor",
+                faq: "FAQ",
+                institutional: "Sobre nosaltres",
+                generateReport: "Generar informe complet",
+                footer: "© 2026 La Teva Colla · Tots els drets reservats"
+            }
+        };
+
+        // ========== SISTEMA DE NOTIFICACIONS ==========
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.textContent = message;
+            container.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        // ========== BASE DE CONEIXEMENT INSTITUCIONAL ==========
+        const institutionalKnowledge = {
+            company: {
+                name: "TeamTowers Humà / La Teva Colla",
+                founded: 2006,
+                location: "Vilafranca del Penedès",
+                founder: "Álvaro Solache",
+                mission: "De les torres humanes a les organitzacions humanes",
+                description: "Consultoria estratègica de RRHH amb enfocament humanista des del cor del Penedès."
+            },
+            team: [
+                { name: "Álvaro Solache", role: "Fundador", bio: "Consultor estratègic de RRHH amb 20+ anys d'experiència construint equips." }
+            ],
+            clients: ["IKEA", "Telefónica", "Vodafone", "Novartis", "BBVA", "Porsche"],
+            methodologies: {
+                vna: { name: "Value Network Analysis", description: "Mapeig de fluxos de valor tangibles i intangibles", link: "valor.html" },
+                coops: { name: "Comunitats de Pràctica", description: "Models d'aprenentatge basats en xarxes de valor", link: "coops.html" },
+                castellers: { name: "Tallers de Castellers", description: "Experiències transformadores basades en la tradició UNESCO", link: "https://www.teamtowers.eu" },
+                tokenomics: { name: "Tokenomics", description: "Configuració de tokens amb model Fibonacci", link: "tokenomics.html" }
+            }
+        };
+
+        // ========== BASE DE CONEIXEMENT DE PATRONS ==========
+        const patronesBase = {
+            "CEO": {
+                "Estratègia": { min: 200, max: 500, promedio: 350, frecuencia: 15 },
+                "Visió": { min: 150, max: 400, promedio: 275, frecuencia: 8 }
+            },
+            "Dev": {
+                "MVP": { min: 400, max: 800, promedio: 600, frecuencia: 12 },
+                "Feature": { min: 100, max: 300, promedio: 180, frecuencia: 25 }
+            },
+            "Marketing": {
+                "Campanya": { min: 150, max: 400, promedio: 250, frecuencia: 20 },
+                "Anàlisi": { min: 100, max: 250, promedio: 160, frecuencia: 15 }
+            }
+        };
+
+        // ========== ESTADÍSTIQUES DE L'ECOSISTEMA ==========
+        let ecosystemStats = {
+            vna: { nodes: 0, edges: 0 },
+            mapas: { roles: 0, deliverables: 0, totalValue: 0 },
+            tokenomics: { supply: 0, distribution: {} },
+            accounting: { deliverables: 0 },
+            finances: { totalAssets: 0 }
+        };
+
+        // ========== CARREGAR DADES DE LOCALSTORAGE ==========
+        function loadAllData() {
+            try {
+                // VNA (app.html)
+                const vna = JSON.parse(localStorage.getItem('vnaData') || '{"nodes":[],"edges":[]}');
+                ecosystemStats.vna.nodes = vna.nodes?.length || 0;
+                ecosystemStats.vna.edges = vna.edges?.length || 0;
+
+                // Mapas (mapas.html)
+                const mapas = JSON.parse(localStorage.getItem('valueMapData') || '{"roles":[],"deliverables":[]}');
+                ecosystemStats.mapas.roles = mapas.roles?.length || 0;
+                ecosystemStats.mapas.deliverables = mapas.deliverables?.length || 0;
+                ecosystemStats.mapas.totalValue = mapas.deliverables?.reduce((sum, d) => sum + (d.value || 0), 0) || 0;
+
+                // Tokenomics
+                const tokenomics = JSON.parse(localStorage.getItem('colla_tokenomics') || '{}');
+                ecosystemStats.tokenomics.supply = tokenomics.totalSupply || 0;
+                ecosystemStats.tokenomics.distribution = tokenomics.distribution || {};
+
+                // Accounting
+                const accounting = JSON.parse(localStorage.getItem('colla_accounting') || '{"deliverables":[]}');
+                ecosystemStats.accounting.deliverables = accounting.deliverables?.length || 0;
+
+                // Finances (usuario actual)
+                const finances = JSON.parse(localStorage.getItem('colla_finances_user') || '{"projects":[]}');
+                ecosystemStats.finances.totalAssets = finances.projects?.reduce((sum, p) => sum + (p.totalUserTokens || 0), 0) || 0;
+
+                updateUIStats();
+            } catch (e) {
+                console.error("Error carregant dades:", e);
+            }
+        }
+
+        // ========== ACTUALITZAR INTERFÍCIE AMB ESTADÍSTIQUES ==========
+        function updateUIStats() {
+            document.getElementById('statVnaNodes').textContent = ecosystemStats.vna.nodes;
+            document.getElementById('statMapasRoles').textContent = ecosystemStats.mapas.roles;
+            document.getElementById('statTokenSupply').textContent = ecosystemStats.tokenomics.supply.toLocaleString();
+            document.getElementById('statDeliverables').textContent = ecosystemStats.accounting.deliverables;
+            document.getElementById('statFinancesValue').textContent = ecosystemStats.finances.totalAssets.toLocaleString();
+        }
+
+        // ========== GENERAR RECOMANACIONS ==========
+        function generateRecommendations() {
+            const recs = [];
+            const lang = document.documentElement.lang;
+
+            // Comparar roles entre VNA y Mapas
+            if (ecosystemStats.vna.nodes > ecosystemStats.mapas.roles) {
+                recs.push({
+                    type: 'info',
+                    text: lang === 'ca' 
+                        ? `Tens ${ecosystemStats.vna.nodes} nodes a VNA però només ${ecosystemStats.mapas.roles} rols a Mapes. Pots importar els rols de VNA a Mapes.`
+                        : `Tienes ${ecosystemStats.vna.nodes} nodos en VNA pero solo ${ecosystemStats.mapas.roles} roles en Mapas. Puedes importar los roles de VNA a Mapas.`
+                });
+            }
+
+            // Comparar entregables estimados vs reales
+            if (ecosystemStats.mapas.deliverables > ecosystemStats.accounting.deliverables) {
+                const diff = ecosystemStats.mapas.deliverables - ecosystemStats.accounting.deliverables;
+                recs.push({
+                    type: 'warning',
+                    text: lang === 'ca'
+                        ? `Tens ${diff} entregables estimats a Mapes que encara no estan registrats a Accounting. Registra'ls per tancar el cercle.`
+                        : `Tienes ${diff} entregables estimados en Mapas que aún no están registrados en Accounting. Regístralos para cerrar el círculo.`
+                });
+            }
+
+            // Analizar distribución Fibonacci
+            const dist = ecosystemStats.tokenomics.distribution;
+            if (dist.investors && dist.founders && dist.treasury && dist.community) {
+                const fibInvestors = 21, fibFounders = 13, fibTreasury = 8, fibCommunity = 58;
+                if (Math.abs(dist.investors - fibInvestors) > 5) {
+                    recs.push({
+                        type: 'info',
+                        text: lang === 'ca'
+                            ? `La distribució d'inversors (${dist.investors}%) s'allunya del model Fibonacci (21%). Considera ajustar-la.`
+                            : `La distribución de inversores (${dist.investors}%) se aleja del modelo Fibonacci (21%). Considera ajustarla.`
+                    });
+                }
+            }
+
+            // Mostrar recomendaciones
+            const container = document.getElementById('recommendations');
+            container.innerHTML = recs.map(r => `
+                <div class="recommendation ${r.type}">
+                    <i class="fas fa-${r.type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i> ${r.text}
+                </div>
+            `).join('') || '<p>No hi ha recomanacions per ara.</p>';
+        }
+
+        // ========== OMPLIR PATRONS DE VALOR ==========
+        function fillPatterns() {
+            const container = document.getElementById('patternsList');
+            let html = '';
+            for (const [rol, tipos] of Object.entries(patronesBase)) {
+                html += `<h4>${rol}</h4>`;
+                for (const [tipo, data] of Object.entries(tipos)) {
+                    html += `
+                        <div class="pattern-item">
+                            <span>${tipo}</span>
+                            <span><strong>${data.promedio} UV</strong> (${data.frecuencia} exemples)</span>
+                        </div>
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        // ========== OMPLIR FAQ ==========
+        function fillFAQ() {
+            const lang = document.documentElement.lang;
+            const container = document.getElementById('faqList');
+            
+            const faqs = lang === 'ca' ? [
+                { q: "Què és el Value Network Analysis?", a: "És una metodologia per mapejar fluxos de valor tangibles i intangibles en una organització." },
+                { q: "Com funciona el model Fibonacci?", a: "Distribueix tokens amb percentatges 21-13-8-58 (Inversors, Fundadors, Tresoreria, Comunitat)." },
+                { q: "Com puc registrar un entregable?", a: "Ves a Accounting, omple el formulari i assigna'l a un rol." }
+            ] : [
+                { q: "¿Qué es el Value Network Analysis?", a: "Es una metodología para mapear flujos de valor tangibles e intangibles en una organización." },
+                { q: "¿Cómo funciona el modelo Fibonacci?", a: "Distribuye tokens con porcentajes 21-13-8-58 (Inversores, Fundadores, Tesorería, Comunidad)." },
+                { q: "¿Cómo registro un entregable?", a: "Ve a Accounting, llena el formulario y asígnalo a un rol." }
+            ];
+
+            container.innerHTML = faqs.map(f => `
+                <div class="faq-item">
+                    <div class="faq-question">❓ ${f.q}</div>
+                    <div class="faq-answer">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        // ========== OMPLIR INFO INSTITUCIONAL ==========
+        function fillInstitutional() {
+            const lang = document.documentElement.lang;
+            const container = document.getElementById('institutionalInfo');
+            
+            container.innerHTML = `
+                <h4>${institutionalKnowledge.company.name}</h4>
+                <p><strong>${lang === 'ca' ? 'Fundador' : 'Fundador'}:</strong> ${institutionalKnowledge.company.founder}</p>
+                <p><strong>${lang === 'ca' ? 'Ubicació' : 'Ubicación'}:</strong> ${institutionalKnowledge.company.location}</p>
+                <p><strong>${lang === 'ca' ? 'Missió' : 'Misión'}:</strong> ${institutionalKnowledge.company.mission}</p>
+                <p>${institutionalKnowledge.company.description}</p>
+                <h5>${lang === 'ca' ? 'Clients destacats' : 'Clientes destacados'}:</h5>
+                <p>${institutionalKnowledge.clients.join(', ')}</p>
+            `;
+        }
+
+        // ========== SISTEMA DE CHAT ==========
+        let chatHistory = [];
+
+        function addMessage(text, isUser = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${isUser ? 'user' : 'ia'}`;
+            msgDiv.innerHTML = `
+                <div class="avatar">${isUser ? '👤' : '🤖'}</div>
+                <div class="content">${text.replace(/\n/g, '<br>')}</div>
+            `;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            chatHistory.push({ text, isUser, timestamp: new Date().toISOString() });
+            localStorage.setItem('colla_ia_history', JSON.stringify(chatHistory));
+        }
+
+        async function processQuestion(question) {
+            addMessage(question, true);
+            
+            // Recargar datos por si cambiaron
+            loadAllData();
+            
+            const q = question.toLowerCase();
+            const lang = document.documentElement.lang;
+            let response = '';
+
+            // 1. Preguntas sobre VNA
+            if (q.includes('vna') || q.includes('app.html')) {
+                response = lang === 'ca'
+                    ? `A la teva app VNA tens **${ecosystemStats.vna.nodes} nodes** i **${ecosystemStats.vna.edges} connexions**. Pots veure el mapa complet a [app.html](app.html).`
+                    : `En tu app VNA tienes **${ecosystemStats.vna.nodes} nodos** y **${ecosystemStats.vna.edges} conexiones**. Puedes ver el mapa completo en [app.html](app.html).`;
+            }
+            
+            // 2. Preguntas sobre Mapas
+            else if (q.includes('mapa') || q.includes('mapes') || q.includes('mapas.html')) {
+                response = lang === 'ca'
+                    ? `Al teu mapa de valor tens **${ecosystemStats.mapas.roles} rols** i **${ecosystemStats.mapas.deliverables} entregables** valorats en **${ecosystemStats.mapas.totalValue} UV**. Pots visualitzar-lo a [mapas.html](mapas.html).`
+                    : `En tu mapa de valor tienes **${ecosystemStats.mapas.roles} roles** y **${ecosystemStats.mapas.deliverables} entregables** valorados en **${ecosystemStats.mapas.totalValue} UV**. Puedes visualizarlo en [mapas.html](mapas.html).`;
+            }
+            
+            // 3. Preguntas sobre Accounting
+            else if (q.includes('accounting') || q.includes('comptabilitat') || q.includes('entregable')) {
+                response = lang === 'ca'
+                    ? `Tens **${ecosystemStats.accounting.deliverables} entregables registrats** a l'app de comptabilitat. ${ecosystemStats.accounting.deliverables === 0 ? 'Pots afegir-ne a [lacolla-accounting.html](lacolla-accounting.html).' : ''}`
+                    : `Tienes **${ecosystemStats.accounting.deliverables} entregables registrados** en la app de contabilidad. ${ecosystemStats.accounting.deliverables === 0 ? 'Puedes añadirlos en [lacolla-accounting.html](lacolla-accounting.html).' : ''}`;
+            }
+            
+            // 4. Preguntas sobre Tokenomics
+            else if (q.includes('token') || q.includes('distribució') || q.includes('fibonacci')) {
+                const dist = ecosystemStats.tokenomics.distribution;
+                if (dist.investors) {
+                    response = lang === 'ca'
+                        ? `La teva distribució de tokens és: Inversors ${dist.investors}%, Fundadors ${dist.founders}%, Tresoreria ${dist.treasury}%, Comunitat ${dist.community}%. El model Fibonacci recomana 21-13-8-58. Pots ajustar-ho a [tokenomics.html](tokenomics.html).`
+                        : `Tu distribución de tokens es: Inversores ${dist.investors}%, Fundadores ${dist.founders}%, Tesorería ${dist.treasury}%, Comunidad ${dist.community}%. El modelo Fibonacci recomienda 21-13-8-58. Puedes ajustarlo en [tokenomics.html](tokenomics.html).`;
+                } else {
+                    response = lang === 'ca'
+                        ? 'Encara no has configurat la tokenomics. Ves a [tokenomics.html](tokenomics.html) per començar.'
+                        : 'Aún no has configurado la tokenomics. Ve a [tokenomics.html](tokenomics.html) para empezar.';
+                }
+            }
+            
+            // 5. Preguntas sobre Finanzas personales
+            else if (q.includes('finances') || q.includes('els meus') || q.includes('meus actius')) {
+                response = lang === 'ca'
+                    ? `Actualment tens **${ecosystemStats.finances.totalAssets} tokens** en total entre tots els teus projectes. Pots veure el detall a [finances.html](finances.html).`
+                    : `Actualmente tienes **${ecosystemStats.finances.totalAssets} tokens** en total entre todos tus proyectos. Puedes ver el detalle en [finances.html](finances.html).`;
+            }
+            
+            // 6. Preguntas institucionales
+            else if (q.includes('qui és') || q.includes('fundador') || q.includes('alvaro') || q.includes('solache')) {
+                response = lang === 'ca'
+                    ? `**Álvaro Solache** és el fundador de TeamTowers Humà, consultor estratègic de RRHH amb més de 20 anys d'experiència. Pots conèixer més sobre ell a [equip.html](equip.html).`
+                    : `**Álvaro Solache** es el fundador de TeamTowers Humà, consultor estratégico de RRHH con más de 20 años de experiencia. Puedes conocer más sobre él en [equip.html](equip.html).`;
+            }
+            
+            else if (q.includes('client') || q.includes('empreses')) {
+                const clients = institutionalKnowledge.clients.join(', ');
+                response = lang === 'ca'
+                    ? `Alguns dels nostres clients són: ${clients}. Més detalls a [clients.html](clients.html).`
+                    : `Algunos de nuestros clientes son: ${clients}. Más detalles en [clients.html](clients.html).`;
+            }
+            
+            // 7. Sugerencia de valor para un rol
+            else if (q.includes('quant val') || q.includes('cuánto vale')) {
+                const match = q.match(/(?:quant val|cuánto vale) (?:un entregable de )?(\w+)/i);
+                if (match) {
+                    const rol = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+                    const patron = patronesBase[rol];
+                    if (patron) {
+                        const valores = Object.values(patron);
+                        const promedio = Math.round(valores.reduce((sum, v) => sum + v.promedio, 0) / valores.length);
+                        response = lang === 'ca'
+                            ? `Per al rol "${rol}", un entregable típic sol valorar-se al voltant de **${promedio} UV**.`
+                            : `Para el rol "${rol}", un entregable típico suele valorarse alrededor de **${promedio} UV**.`;
+                    } else {
+                        response = lang === 'ca'
+                            ? `No tinc prou dades per al rol "${rol}". Prova amb CEO, Dev o Marketing.`
+                            : `No tengo suficientes datos para el rol "${rol}". Prueba con CEO, Dev o Marketing.`;
+                    }
+                } else {
+                    response = lang === 'ca'
+                        ? `Pots preguntar "Quant val un entregable de CEO?" per obtenir una estimació.`
+                        : `Puedes preguntar "¿Cuánto vale un entregable de CEO?" para obtener una estimación.`;
+                }
+            }
+            
+            // 8. Respuesta por defecto
+            else {
+                response = lang === 'ca'
+                    ? `No estic segur d'haver entès la pregunta. Pots preguntar sobre:\n- VNA, Mapes, Accounting, Tokenomics o Finances\n- Fundador, equips, clients\n- Sugerències de valor per a un rol (ex: "quant val un entregable de CEO")`
+                    : `No estoy seguro de haber entendido la pregunta. Puedes preguntar sobre:\n- VNA, Mapas, Accounting, Tokenomics o Finanzas\n- Fundador, equipos, clientes\n- Sugerencias de valor para un rol (ej: "¿cuánto vale un entregable de CEO?")`;
+            }
+            
+            addMessage(response);
+        }
+
+        // ========== GENERAR INFORME COMPLET ==========
+        function generateFullReport() {
+            const lang = document.documentElement.lang;
+            const dist = ecosystemStats.tokenomics.distribution;
+            
+            let report = `# INFORME COMPLET DE L'ECOSISTEMA\n\n`;
+            report += `**Data:** ${new Date().toLocaleDateString()}\n\n`;
+            
+            report += `## 📊 Resum per aplicació\n\n`;
+            report += `### VNA App\n`;
+            report += `- Nodes: ${ecosystemStats.vna.nodes}\n`;
+            report += `- Transaccions: ${ecosystemStats.vna.edges}\n\n`;
+            
+            report += `### Mapes de Valor\n`;
+            report += `- Rols: ${ecosystemStats.mapas.roles}\n`;
+            report += `- Entregables: ${ecosystemStats.mapas.deliverables}\n`;
+            report += `- Valor total estimat: ${ecosystemStats.mapas.totalValue} UV\n\n`;
+            
+            report += `### Tokenomics\n`;
+            report += `- Subministrament total: ${ecosystemStats.tokenomics.supply} tokens\n`;
+            if (dist.investors) {
+                report += `- Distribució: Inversors ${dist.investors}%, Fundadors ${dist.founders}%, Tresoreria ${dist.treasury}%, Comunitat ${dist.community}%\n`;
+            } else {
+                report += `- No configurada\n`;
+            }
+            report += `\n`;
+            
+            report += `### Accounting\n`;
+            report += `- Entregables registrats: ${ecosystemStats.accounting.deliverables}\n\n`;
+            
+            report += `### Finances\n`;
+            report += `- Actius totals de l'usuari: ${ecosystemStats.finances.totalAssets} tokens\n\n`;
+            
+            report += `## 🤖 Recomanacions de l'IA\n\n`;
+            
+            if (ecosystemStats.vna.nodes > ecosystemStats.mapas.roles) {
+                report += `- 🔄 Tens ${ecosystemStats.vna.nodes - ecosystemStats.mapas.roles} nodes a VNA que no estan com a rols a Mapes. Importa'ls.\n`;
+            }
+            if (ecosystemStats.mapas.deliverables > ecosystemStats.accounting.deliverables) {
+                report += `- 📝 Tens ${ecosystemStats.mapas.deliverables - ecosystemStats.accounting.deliverables} entregables estimats pendents de registrar a Accounting.\n`;
+            }
+            if (dist.investors && Math.abs(dist.investors - 21) > 5) {
+                report += `- 📊 La distribució d'inversors (${dist.investors}%) s'allunya del model Fibonacci (21%).\n`;
+            }
+            
+            // Descargar
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `informe-${new Date().toISOString().slice(0,10)}.md`;
+            a.click();
+            
+            showNotification(lang === 'ca' ? 'Informe generat correctament' : 'Informe generado correctamente', 'success');
+        }
+
+        // ========== INICIALITZACIÓ ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar idioma
+            let savedLang = localStorage.getItem('preferredLanguage');
+            if (!savedLang) {
+                savedLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            }
+            setLanguage(savedLang);
+
+            // Event listeners idioma
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+
+            // Cargar datos
+            loadAllData();
+            fillPatterns();
+            fillFAQ();
+            fillInstitutional();
+            generateRecommendations();
+
+            // Cargar historial de chat
+            const savedHistory = localStorage.getItem('colla_ia_history');
+            if (savedHistory) {
+                try {
+                    chatHistory = JSON.parse(savedHistory);
+                    chatHistory.forEach(msg => {
+                        addMessage(msg.text, msg.isUser);
+                    });
+                } catch (e) {
+                    console.error("Error carregant historial:", e);
+                }
+            } else {
+                // Mensaje de bienvenida
+                const lang = document.documentElement.lang;
+                const welcome = lang === 'ca' 
+                    ? `Hola! Sóc l'assistent de La Teva Colla. Puc respondre preguntes sobre:\n- 📊 VNA i Mapes\n- 💰 Tokenomics i Finances\n- 📝 Entregables registrats\n- 🏢 Sobre TeamTowers Humà\n\nQuè vols saber?`
+                    : `¡Hola! Soy el asistente de La Teva Colla. Puedo responder preguntas sobre:\n- 📊 VNA y Mapas\n- 💰 Tokenomics y Finanzas\n- 📝 Entregables registrados\n- 🏢 Sobre TeamTowers Humà\n\n¿Qué quieres saber?`;
+                addMessage(welcome);
+            }
+
+            // Event listeners
+            document.getElementById('sendQuestion').addEventListener('click', async () => {
+                const input = document.getElementById('userQuestion');
+                if (input.value.trim()) {
+                    await processQuestion(input.value);
+                    input.value = '';
+                }
+            });
+
+            document.getElementById('userQuestion').addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('sendQuestion').click();
+                }
+            });
+
+            document.getElementById('clearChat').addEventListener('click', () => {
+                document.getElementById('chatMessages').innerHTML = '';
+                chatHistory = [];
+                localStorage.removeItem('colla_ia_history');
+                const lang = document.documentElement.lang;
+                const welcome = lang === 'ca' 
+                    ? `Hola! Sóc l'assistent de La Teva Colla. Puc respondre preguntes sobre:\n- 📊 VNA i Mapes\n- 💰 Tokenomics i Finances\n- 📝 Entregables registrats\n- 🏢 Sobre TeamTowers Humà\n\nQuè vols saber?`
+                    : `¡Hola! Soy el asistente de La Teva Colla. Puedo responder preguntas sobre:\n- 📊 VNA y Mapas\n- 💰 Tokenomics y Finanzas\n- 📝 Entregables registrados\n- 🏢 Sobre TeamTowers Humà\n\n¿Qué quieres saber?`;
+                addMessage(welcome);
+            });
+
+            document.getElementById('generateReport').addEventListener('click', generateFullReport);
+
+            // Tabs de conocimiento
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const tabId = btn.dataset.tab;
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+
+            // Exponer API global para otras apps
+            window.TeamTowersIA = {
+                getValorSuggestion: (rol, tipo) => {
+                    const patron = patronesBase[rol]?.[tipo];
+                    if (patron) {
+                        return {
+                            valor: patron.promedio,
+                            confianza: Math.min(95, 70 + patron.frecuencia),
+                            fuente: `Basat en ${patron.frecuencia} entregables similars`
+                        };
+                    }
+                    return { valor: 150, confianza: 60, fuente: "Estimació inicial" };
+                },
+                analyzeMap: (mapData) => {
+                    const recs = [];
+                    // Lógica de análisis
+                    return recs;
+                },
+                getEcosystemStats: () => ecosystemStats
+            };
+
+            // Disparar evento para que otras apps sepan que la IA está lista
+            window.dispatchEvent(new Event('iaReady'));
+        });
+
+        // Función de idioma
+        function setLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            document.documentElement.lang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Actualizar contenido dinámico
+            fillFAQ();
+            fillInstitutional();
+            generateRecommendations();
+        }
+    </script>
+</body>
+</html>
