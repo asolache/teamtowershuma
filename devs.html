@@ -1,0 +1,177 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  background-color: white; /* Ensure the iframe has a white background */
+                }
+
+                /* VARIABLES CSS CENTRALIZADAS (css/sistema-operativo.css) */
+:root {
+  /* COLORES CORPORATIVOS TEAMTOWERS (UNIFICADOS) */
+  --primary: #1e3a8a;      /* Azul base (HERO, BOTONES PRINCIPALES) */
+  --secondary: #4f46e5;    /* Azul claro (GRADIENTES) */
+  --accent: #8b5cf6;       /* Morado (DESTACADOS, ICONOS) */
+  --dark: #0f172a;         /* Fondo oscuro (FOOTER, SECCIONES) */
+  --success: #10b981;      /* Éxito (NOTIFICACIONES, VALIDACIONES) */
+  --warning: #fbbf24;      /* Advertencia (ETHEREUM, PENDIENTES) */
+  --danger: #ef4444;       /* Error (ELIMINAR, ALERTAS) */
+  
+  /* COMPONENTES ESTÁNDAR (APLICAR EN TODAS LAS PÁGINAS) */
+  --border-radius: 12px;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+  --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+  --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+}
+
+/* ESTILOS OBLIGATORIOS PARA TODAS LAS PÁGINAS */
+.hero-section {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+}
+
+.hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-castell); /* ¡UNIFICAR EN TODAS LAS PÁGINAS! */
+  z-index: -1;
+}
+
+.language-selector {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  /* ... estilos consistentes ... */
+}
+
+/* COMPONENTES REUTILIZABLES */
+.panel {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--box-shadow);
+  position: relative;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--gradient-primary); /* ¡MISMO ESTILO EN TODAS! */
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.stats-bar {
+  display: flex;
+  justify-content: space-around;
+  background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+  gap: 15px;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+}
+
+/* ESTILOS PARA ENTIDADES @ Y CONCEPTOS # */
+.entidad {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(30, 58, 138, 0.08);
+  transition: var(--transition);
+}
+
+.entidad:hover {
+  background: rgba(30, 58, 138, 0.2);
+  transform: translateY(-1px);
+}
+
+.concepto {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(139, 92, 246, 0.08);
+  transition: var(--transition);
+}
+
+.concepto:hover {
+  background: rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+
+              </style>
+                        </head>
+                        <body>
+                            
+
+              <script>
+                              // ESTRUCTURA DE DATOS UNIVERSAL (localStorage)
+const LaTevaColla_Data = {
+  proyecto: { nombre, simbolo, suministroTotal, distribucion, vesting },
+  usuarios: [ { id: "@nombre", nombre, wallet, roles, reputacion } ],
+  entregables: [ { id, usuario: "@nombre", concepto: "#concepto", valor, fecha } ],
+  tokens: [ { proyecto, total, vesting } ],
+  // SISTEMA DE VALIDACIÓN P2P
+  certificacion: {
+    hash: "sha256-comprobante",
+    validadores: ["@validador1", "@validador2"],
+    timestamp: "ISO8601"
+  }
+};
+
+// FUNCIÓN NUCLEAR: PROCESAMIENTO @ Y #
+function procesarReferencias(texto) {
+  return texto
+    .replace(/@(\w+)/g, '<a href="mapa.html?usuario=$1" class="entidad">@$1</a>')
+    .replace(/#(\w+)/g, '<a href="mapa.html?concepto=$1" class="concepto">#$1</a>');
+}
+
+// COMUNICACIÓN P2P SIMULADA (localStorage + JSON)
+function sincronizarRedP2P() {
+  // 1. Exportar datos certificados con hash de trazabilidad
+  // 2. Importar datos de otros usuarios (validación W3C + hash)
+  // 3. Fusionar con resolución de conflictos
+}
+
+
+              </script>
+                        </body>
+                        </html>
+                    
