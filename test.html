@@ -2341,22 +2341,21 @@
                 });
             });
             
-            function setActiveLanguage(lang) {
-                // Update text content of elements with data-es/data-ca
-                translatableElements.forEach(element => {
-                    if (element.hasAttribute(`data-${lang}`)) {
-                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                            element.placeholder = element.getAttribute(`data-${lang}`);
-                        } else if (element.tagName === 'OPTION') {
-                            element.textContent = element.getAttribute(`data-${lang}`);
-                        } else {
-                            element.textContent = element.getAttribute(`data-${lang}`);
-                        }
-                    }
-                });
-                
-                document.documentElement.setAttribute('lang', lang);
+           function setActiveLanguage(lang) {
+    translatableElements.forEach(element => {
+        if (element.hasAttribute(`data-${lang}`)) {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = element.getAttribute(`data-${lang}`);
+            } else if (element.tagName === 'OPTION') {
+                element.textContent = element.getAttribute(`data-${lang}`);
+            } else {
+                // Per a la resta d'elements (p, h1, span, etc.) utilitzem innerHTML
+                element.innerHTML = element.getAttribute(`data-${lang}`);
             }
+        }
+    });
+    document.documentElement.setAttribute('lang', lang);
+}
         }
         
         // ========== TEST SUITE (AMPLIAT) ==========
