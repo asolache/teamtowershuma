@@ -275,6 +275,47 @@
             color: var(--primary);
         }
 
+        /* ----- LLISTES DINÀMIQUES (ASSIGNACIONS EQUIP / RONDES) ----- */
+        .dynamic-list {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 10px;
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .dynamic-item input[type="text"],
+        .dynamic-item input[type="number"] {
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .dynamic-item .addr-input {
+            flex: 2;
+        }
+
+        .dynamic-item .num-input {
+            flex: 1;
+        }
+
+        .dynamic-item .btn-small {
+            padding: 8px 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
         /* ----- TAULA ÚNICA (DRETA) ----- */
         .data-table {
             width: 100%;
@@ -335,6 +376,7 @@
             border: none;
             font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
         }
 
         .chart-tab.active {
@@ -502,9 +544,9 @@
     </style>
 </head>
 <body>
-    <!-- SELECTOR D'IDIOMA -->
+    <!-- SELECTOR D'IDIOMA (per defecte castellà) -->
     <div class="language-selector">
-        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="es">ES</button>
         <button class="lang-btn" data-lang="ca">CA</button>
     </div>
     <div class="notification-container" id="notification-container"></div>
@@ -514,7 +556,7 @@
         <div class="header-content">
             <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
             <h1 class="lang" data-es="Tokenomics App" data-ca="App de Tokenomics">Tokenomics App</h1>
-            <p class="lang" data-es="Configura la tokenomics del teu projecte" data-ca="Configura la tokenòmica del teu projecte">Configura la tokenomics del teu projecte</p>
+            <p class="lang" data-es="Configura la tokenomics de tu proyecto" data-ca="Configura la tokenòmica del teu projecte">Configura la tokenomics de tu proyecto</p>
         </div>
     </header>
 
@@ -522,71 +564,74 @@
         <div class="app-container">
             <!-- PANELL ESQUERRE: FORMULARIS -->
             <div class="panel">
-                <h2><span class="lang" data-es="⚙️ Configuració" data-ca="⚙️ Configuració">⚙️ Configuració</span></h2>
+                <h2><span class="lang" data-es="⚙️ Configuración" data-ca="⚙️ Configuració">⚙️ Configuración</span></h2>
                 
                 <!-- IMPORTACIÓ JSON -->
                 <div style="margin-bottom:25px;">
-                    <button id="import-snapshot" class="btn btn-primary" style="width:100%;"><span>📂</span> <span class="lang" data-es="Importar des de Value Accounting" data-ca="Importar des de Value Accounting">Importar des de Value Accounting</span></button>
+                    <button id="import-snapshot" class="btn btn-primary" style="width:100%;"><span>📂</span> <span class="lang" data-es="Importar desde Value Accounting" data-ca="Importar des de Value Accounting">Importar desde Value Accounting</span></button>
                 </div>
 
                 <!-- FORMULARI D'ALTA MANUAL (amb autocompleta) -->
                 <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:25px;">
-                    <h3 class="lang" data-es="➕ Afegir / Editar participant" data-ca="➕ Afegir / Editar participant">➕ Afegir / Editar participant</h3>
+                    <h3 class="lang" data-es="➕ Añadir / Editar participante" data-ca="➕ Afegir / Editar participant">➕ Añadir / Editar participante</h3>
                     <div class="input-group">
-                        <label class="lang" data-es="Nom" data-ca="Nom">Nom</label>
+                        <label class="lang" data-es="Nombre" data-ca="Nom">Nombre</label>
                         <div class="autocomplete">
-                            <input type="text" id="user-name" placeholder="Escriu un nom...">
+                            <input type="text" id="user-name" placeholder="Escribe un nombre...">
                             <div id="user-autocomplete" class="autocomplete-items"></div>
                         </div>
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Adreça Ethereum" data-ca="Adreça Ethereum">Adreça Ethereum</label>
+                        <label class="lang" data-es="Dirección Ethereum" data-ca="Adreça Ethereum">Dirección Ethereum</label>
                         <input type="text" id="user-address" placeholder="0x...">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Valor aportat" data-ca="Valor aportat">Valor aportat</label>
+                        <label class="lang" data-es="Valor aportado" data-ca="Valor aportat">Valor aportado</label>
                         <input type="number" id="user-value" min="1" value="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Rols (separats per comes)" data-ca="Rols (separats per comes)">Rols (separats per comes)</label>
-                        <input type="text" id="user-roles" placeholder="ex: desenvolupador, community">
+                        <label class="lang" data-es="Roles (separados por comas)" data-ca="Rols (separats per comes)">Roles (separados por comas)</label>
+                        <div class="autocomplete">
+                            <input type="text" id="user-roles" placeholder="ej: desarrollador, community">
+                            <div id="roles-autocomplete" class="autocomplete-items"></div>
+                        </div>
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Tipus" data-ca="Tipus">Tipus</label>
+                        <label class="lang" data-es="Tipo" data-ca="Tipus">Tipo</label>
                         <select id="user-type">
                             <option value="inversor" class="lang" data-es="Inversor" data-ca="Inversor">Inversor</option>
-                            <option value="equip" class="lang" data-es="Equip" data-ca="Equip">Equip</option>
-                            <option value="comunitat" class="lang" data-es="Comunitat" data-ca="Comunitat">Comunitat</option>
-                            <option value="sense" class="lang" data-es="Sense especificar" data-ca="Sense especificar">Sense especificar</option>
+                            <option value="equipo" class="lang" data-es="Equipo" data-ca="Equip">Equipo</option>
+                            <option value="comunidad" class="lang" data-es="Comunidad" data-ca="Comunitat">Comunidad</option>
+                            <option value="sin" class="lang" data-es="Sin especificar" data-ca="Sense especificar">Sin especificar</option>
                         </select>
                     </div>
                     <div class="btn-group">
                         <button id="save-user" class="btn btn-success"><span>💾</span> <span class="lang" data-es="Guardar" data-ca="Guardar">Guardar</span></button>
-                        <button id="cancel-user" class="btn btn-secondary"><span class="lang" data-es="Cancel·lar" data-ca="Cancel·lar">Cancel·lar</span></button>
+                        <button id="cancel-user" class="btn btn-secondary"><span class="lang" data-es="Cancelar" data-ca="Cancel·lar">Cancelar</span></button>
                     </div>
                 </div>
 
                 <!-- PARÀMETRES GLOBALS -->
-                <h3 class="lang" data-es="📊 Paràmetres globals" data-ca="📊 Paràmetres globals">📊 Paràmetres globals</h3>
+                <h3 class="lang" data-es="📊 Parámetros globales" data-ca="📊 Paràmetres globals">📊 Parámetros globales</h3>
                 <div class="input-group">
-                    <label class="lang" data-es="Subministrament total de tokens" data-ca="Subministrament total de tokens">Subministrament total de tokens</label>
+                    <label class="lang" data-es="Suministro total de tokens" data-ca="Subministrament total de tokens">Suministro total de tokens</label>
                     <input type="number" id="total-supply" value="1000000" min="1">
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="input-group">
-                        <label class="lang" data-es="Inversors %" data-ca="Inversors %">Inversors %</label>
+                        <label class="lang" data-es="Inversores %" data-ca="Inversors %">Inversores %</label>
                         <input type="number" id="pct-investors" value="40" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Equip %" data-ca="Equip %">Equip %</label>
+                        <label class="lang" data-es="Equipo %" data-ca="Equip %">Equipo %</label>
                         <input type="number" id="pct-team" value="20" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Reserva comunitat %" data-ca="Reserva comunitat %">Reserva comunitat %</label>
+                        <label class="lang" data-es="Reserva comunidad %" data-ca="Reserva comunitat %">Reserva comunidad %</label>
                         <input type="number" id="pct-community" value="30" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label class="lang" data-es="Tresoreria %" data-ca="Tresoreria %">Tresoreria %</label>
+                        <label class="lang" data-es="Tesorería %" data-ca="Tresoreria %">Tesorería %</label>
                         <input type="number" id="pct-treasury" value="10" min="0" max="100">
                     </div>
                 </div>
@@ -595,50 +640,50 @@
                 <!-- ASSIGNACIONS D'EQUIP (amb tooltip) -->
                 <div style="margin-top:20px;">
                     <h3 style="display:flex; align-items:center; gap:5px;">
-                        <span class="lang" data-es="👥 Assignacions equip" data-ca="👥 Assignacions equip">👥 Assignacions equip</span>
-                        <span class="tooltip" style="cursor:help;">ℹ️
-                            <span class="tooltip-text" style="visibility:hidden; width:250px; background:var(--dark); color:white; border-radius:6px; padding:8px; position:absolute; margin-left:-125px; bottom:125%; left:50%;">Aquesta secció permet assignar una quantitat fixa de tokens a membres concrets de l'equip. Aquestes quantitats es descompten del percentatge global reservat per a l'equip. Si no es volen assignacions individuals, es pot deixar buit.</span>
+                        <span class="lang" data-es="👥 Asignaciones equipo" data-ca="👥 Assignacions equip">👥 Asignaciones equipo</span>
+                        <span class="tooltip" style="cursor:help; position:relative;">ℹ️
+                            <span class="tooltip-text" style="visibility:hidden; width:250px; background:var(--dark); color:white; border-radius:6px; padding:8px; position:absolute; margin-left:-125px; bottom:125%; left:50%;">Esta sección permite asignar una cantidad fija de tokens a miembros concretos del equipo. Estas cantidades se descuentan del porcentaje global reservado para el equipo. Si no se quieren asignaciones individuales, se puede dejar vacío.</span>
                         </span>
                     </h3>
-                    <div id="team-allocations-list"></div>
-                    <button id="add-team-allocation" class="btn btn-secondary" style="margin-top:10px;"><span>➕</span> <span class="lang" data-es="Afegir membre" data-ca="Afegir membre">Afegir membre</span></button>
+                    <div id="team-allocations-list" class="dynamic-list"></div>
+                    <button id="add-team-allocation" class="btn btn-secondary" style="margin-top:5px; width:100%;"><span>➕</span> <span class="lang" data-es="Añadir miembro" data-ca="Afegir membre">Añadir miembro</span></button>
                     <div id="team-error" style="color:var(--danger); margin-top:10px;"></div>
                 </div>
 
                 <!-- RONDES FIBONACCI (amb valors per defecte) -->
                 <div style="margin-top:20px;">
-                    <h3 class="lang" data-es="📈 Rondes Fibonacci" data-ca="📈 Rondes Fibonacci">📈 Rondes Fibonacci</h3>
-                    <div id="rounds-list"></div>
-                    <button id="add-round" class="btn btn-secondary" style="margin-top:10px;"><span>➕</span> <span class="lang" data-es="Afegir ronda" data-ca="Afegir ronda">Afegir ronda</span></button>
+                    <h3 class="lang" data-es="📈 Rondas Fibonacci" data-ca="📈 Rondes Fibonacci">📈 Rondas Fibonacci</h3>
+                    <div id="rounds-list" class="dynamic-list"></div>
+                    <button id="add-round" class="btn btn-secondary" style="margin-top:5px; width:100%;"><span>➕</span> <span class="lang" data-es="Añadir ronda" data-ca="Afegir ronda">Añadir ronda</span></button>
                     <div id="rounds-error" style="color:var(--danger); margin-top:10px;"></div>
                 </div>
 
                 <!-- VESTING -->
                 <div style="margin-top:20px;">
-                    <h3 class="lang" data-es="⏳ Vesting (equip)" data-ca="⏳ Vesting (equip)">⏳ Vesting (equip)</h3>
+                    <h3 class="lang" data-es="⏳ Vesting (equipo)" data-ca="⏳ Vesting (equip)">⏳ Vesting (equipo)</h3>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div class="input-group">
-                            <label class="lang" data-es="Cliff (dies)" data-ca="Cliff (dies)">Cliff (dies)</label>
+                            <label class="lang" data-es="Cliff (días)" data-ca="Cliff (dies)">Cliff (días)</label>
                             <input type="number" id="cliff-days" value="365" min="0">
                         </div>
                         <div class="input-group">
-                            <label class="lang" data-es="Vesting (dies)" data-ca="Vesting (dies)">Vesting (dies)</label>
+                            <label class="lang" data-es="Vesting (días)" data-ca="Vesting (dies)">Vesting (días)</label>
                             <input type="number" id="vesting-days" value="1460" min="1">
                         </div>
                     </div>
                 </div>
 
                 <!-- EXPORTACIÓ -->
-                <button id="export-config" class="btn btn-export" style="width:100%; margin-top:25px;"><span>📤</span> <span class="lang" data-es="Exportar per a Smart Contracts" data-ca="Exportar per a Smart Contracts">Exportar per a Smart Contracts</span></button>
+                <button id="export-config" class="btn btn-export" style="width:100%; margin-top:25px;"><span>📤</span> <span class="lang" data-es="Exportar para Smart Contracts" data-ca="Exportar per a Smart Contracts">Exportar para Smart Contracts</span></button>
             </div>
 
             <!-- PANELL DRET: VISUALITZACIONS I TAULA ÚNICA -->
             <div class="visualization-container">
-                <h2><span class="lang" data-es="📈 Distribució de valor" data-ca="📈 Distribució de valor">📈 Distribució de valor</span></h2>
+                <h2><span class="lang" data-es="📈 Distribución de valor" data-ca="📈 Distribució de valor">📈 Distribución de valor</span></h2>
                 <div class="chart-tabs">
-                    <button class="chart-tab active" data-view="user"><span class="lang" data-es="Per persona" data-ca="Per persona">Per persona</span></button>
-                    <button class="chart-tab" data-view="role"><span class="lang" data-es="Per rol" data-ca="Per rol">Per rol</span></button>
-                    <button class="chart-tab" data-view="type"><span class="lang" data-es="Per tipus" data-ca="Per tipus">Per tipus</span></button>
+                    <button class="chart-tab active" data-view="user"><span class="lang" data-es="Por persona" data-ca="Per persona">Por persona</span></button>
+                    <button class="chart-tab" data-view="role"><span class="lang" data-es="Por rol" data-ca="Per rol">Por rol</span></button>
+                    <button class="chart-tab" data-view="type"><span class="lang" data-es="Por tipo" data-ca="Per tipus">Por tipo</span></button>
                 </div>
                 <div class="chart-container">
                     <canvas id="valueChart"></canvas>
@@ -648,7 +693,7 @@
                 <div class="stats-bar">
                     <div class="stat-item">
                         <div class="stat-value" id="total-users">0</div>
-                        <div class="stat-label lang" data-es="Usuaris" data-ca="Usuaris">Usuaris</div>
+                        <div class="stat-label lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="total-value">0</div>
@@ -657,17 +702,17 @@
                 </div>
 
                 <!-- TAULA ÚNICA (RANKING + SIMULACIÓ) -->
-                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="👥 Participants i simulació de reserva" data-ca="👥 Participants i simulació de reserva">👥 Participants i simulació de reserva</span></h3>
+                <h3 style="margin:25px 0 15px;"><span class="lang" data-es="👥 Participantes y simulación de reserva" data-ca="👥 Participants i simulació de reserva">👥 Participantes y simulación de reserva</span></h3>
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="lang" data-es="Usuari" data-ca="Usuari">Usuari</th>
-                            <th class="lang" data-es="Adreça" data-ca="Adreça">Adreça</th>
+                            <th class="lang" data-es="Usuario" data-ca="Usuari">Usuario</th>
+                            <th class="lang" data-es="Dirección" data-ca="Adreça">Dirección</th>
                             <th class="lang" data-es="Valor" data-ca="Valor">Valor</th>
                             <th class="lang" data-es="% del total" data-ca="% del total">% del total</th>
                             <th class="lang" data-es="Tokens (reserva)" data-ca="Tokens (reserva)">Tokens (reserva)</th>
-                            <th class="lang" data-es="Tipus" data-ca="Tipus">Tipus</th>
-                            <th class="lang" data-es="Accions" data-ca="Accions">Accions</th>
+                            <th class="lang" data-es="Tipo" data-ca="Tipus">Tipo</th>
+                            <th class="lang" data-es="Acciones" data-ca="Accions">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="users-table-body"></tbody>
@@ -677,8 +722,8 @@
 
         <!-- TEST SUITE -->
         <div class="test-section">
-            <h3><span class="lang" data-es="🧪 Proves de funcionament" data-ca="🧪 Proves de funcionament">🧪 Proves de funcionament</span></h3>
-            <button id="run-tests" class="btn btn-warning"><span>🔬</span> <span class="lang" data-es="Executar proves" data-ca="Executar proves">Executar proves</span></button>
+            <h3><span class="lang" data-es="🧪 Pruebas de funcionamiento" data-ca="🧪 Proves de funcionament">🧪 Pruebas de funcionamiento</span></h3>
+            <button id="run-tests" class="btn btn-warning"><span>🔬</span> <span class="lang" data-es="Ejecutar pruebas" data-ca="Executar proves">Ejecutar pruebas</span></button>
             <div class="test-results" id="test-results"></div>
         </div>
     </div>
@@ -688,18 +733,18 @@
         <div class="footer-grid">
             <div class="footer-col">
                 <h3>TeamTowers Humà</h3>
-                <p class="lang" data-es="De les torres humanes a les organitzacions humanes." data-ca="De les torres humanes a les organitzacions humanes.">De les torres humanes a les organitzacions humanes.</p>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas." data-ca="De les torres humanes a les organitzacions humanes.">De las torres humanas a las organizaciones humanas.</p>
             </div>
             <div class="footer-col">
-                <h3 class="lang" data-es="Enllaços" data-ca="Enllaços">Enllaços</h3>
+                <h3 class="lang" data-es="Enlaces" data-ca="Enllaços">Enlaces</h3>
                 <ul class="footer-links">
-                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App de Comptabilitat" data-ca="App de Comptabilitat">App de Comptabilitat</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" class="lang" data-es="App de Contabilidad" data-ca="App de Comptabilitat">App de Contabilidad</a></li>
                     <li><a href="#" class="lang" data-es="App de Tokenomics" data-ca="App de Tokenomics">App de Tokenomics</a></li>
                 </ul>
             </div>
         </div>
         <div class="copyright">
-            <p>© 2026 TeamTowers Humà · Tots els drets reservats</p>
+            <p>© 2026 TeamTowers Humà · Todos los derechos reservados</p>
         </div>
     </footer>
 
@@ -788,7 +833,7 @@
         function renderUsersTable() {
             const tbody = document.getElementById('users-table-body');
             if (!tokenomicsData.users.length) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">No hi ha participants</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">No hay participantes</td></tr>`;
                 return;
             }
             const totalValue = tokenomicsData.users.reduce((acc, u) => acc + u.value, 0);
@@ -805,7 +850,7 @@
                     <td>${u.value}</td>
                     <td>${pct}%</td>
                     <td>${tokens}</td>
-                    <td>${u.type || 'sense'}</td>
+                    <td>${u.type || 'sin'}</td>
                     <td>
                         <button class="action-btn edit" data-id="${u.id}">✏️</button>
                         <button class="action-btn delete" data-id="${u.id}">🗑️</button>
@@ -845,7 +890,7 @@
             } else { // type
                 const map = {};
                 tokenomicsData.users.forEach(u => {
-                    const t = u.type || 'sense';
+                    const t = u.type || 'sin';
                     map[t] = (map[t] || 0) + u.value;
                 });
                 const sorted = Object.entries(map).sort((a,b) => b[1]-a[1]);
@@ -860,15 +905,15 @@
         function renderTeamAllocations() {
             const container = document.getElementById('team-allocations-list');
             if (!tokenomicsData.teamAllocations.length) {
-                container.innerHTML = '<p class="empty-state" style="color:var(--gray);">No hi ha assignacions d\'equip</p>';
+                container.innerHTML = '<p class="empty-state" style="color:var(--gray); text-align:center;">No hay asignaciones de equipo</p>';
                 return;
             }
             let html = '';
             tokenomicsData.teamAllocations.forEach((ta, index) => {
-                html += `<div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="text" placeholder="Adreça" value="${ta.address}" class="team-addr" data-index="${index}" style="flex:2;">
-                    <input type="number" placeholder="Quantitat" value="${ta.allocation}" class="team-alloc" data-index="${index}" style="flex:1;">
-                    <button class="btn-danger" style="padding:5px 10px;" onclick="removeTeamAllocation(${index})">🗑️</button>
+                html += `<div class="dynamic-item">
+                    <input type="text" placeholder="Dirección" value="${ta.address}" class="addr-input team-addr" data-index="${index}">
+                    <input type="number" placeholder="Cantidad" value="${ta.allocation}" class="num-input team-alloc" data-index="${index}">
+                    <button class="btn-small" onclick="removeTeamAllocation(${index})">🗑️</button>
                 </div>`;
             });
             container.innerHTML = html;
@@ -884,15 +929,15 @@
         function renderRounds() {
             const container = document.getElementById('rounds-list');
             if (!tokenomicsData.fibonacciRounds.length) {
-                container.innerHTML = '<p class="empty-state">No hi ha rondes definides</p>';
+                container.innerHTML = '<p class="empty-state" style="color:var(--gray); text-align:center;">No hay rondas definidas</p>';
                 return;
             }
             let html = '';
             tokenomicsData.fibonacciRounds.forEach((r, index) => {
-                html += `<div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="number" placeholder="Ronda" value="${r.round}" class="round-num" data-index="${index}" style="flex:1;">
-                    <input type="number" placeholder="%" value="${r.percentage}" class="round-pct" data-index="${index}" style="flex:1;">
-                    <button class="btn-danger" style="padding:5px 10px;" onclick="removeRound(${index})">🗑️</button>
+                html += `<div class="dynamic-item">
+                    <input type="number" placeholder="Ronda" value="${r.round}" class="num-input round-num" data-index="${index}">
+                    <input type="number" placeholder="%" value="${r.percentage}" class="num-input round-pct" data-index="${index}">
+                    <button class="btn-small" onclick="removeRound(${index})">🗑️</button>
                 </div>`;
             });
             container.innerHTML = html;
@@ -914,7 +959,7 @@
             const sum = inv + team + com + tre;
             const errorDiv = document.getElementById('pct-error');
             if (Math.abs(sum - 100) > 0.01) {
-                errorDiv.textContent = `La suma ha de ser 100 (actual: ${sum})`;
+                errorDiv.textContent = `La suma debe ser 100 (actual: ${sum})`;
                 return false;
             } else {
                 errorDiv.textContent = '';
@@ -930,7 +975,7 @@
             });
             const errorDiv = document.getElementById('team-error');
             if (totalAssigned > maxTeamTokens + 0.01) {
-                errorDiv.textContent = `Les assignacions d'equip (${totalAssigned}) superen el màxim permès (${maxTeamTokens})`;
+                errorDiv.textContent = `Las asignaciones de equipo (${totalAssigned}) superan el máximo permitido (${maxTeamTokens})`;
                 return false;
             } else {
                 errorDiv.textContent = '';
@@ -945,7 +990,7 @@
             });
             const errorDiv = document.getElementById('rounds-error');
             if (totalRoundPct > tokenomicsData.allocations.investors + 0.01) {
-                errorDiv.textContent = `Els percentatges de les rondes (${totalRoundPct}%) superen el percentatge global d'inversors (${tokenomicsData.allocations.investors}%)`;
+                errorDiv.textContent = `Los porcentajes de las rondas (${totalRoundPct}%) superan el porcentaje global de inversores (${tokenomicsData.allocations.investors}%)`;
                 return false;
             } else {
                 errorDiv.textContent = '';
@@ -953,44 +998,89 @@
             }
         }
 
-        // ---------- AUTOCOMPLETA ----------
+        // ---------- AUTOCOMPLETA (usuaris i rols) ----------
         function setupAutocomplete() {
-            const input = document.getElementById('user-name');
-            const list = document.getElementById('user-autocomplete');
-            input.addEventListener('input', function() {
+            // Autocompletar para nombre de usuario
+            const userInput = document.getElementById('user-name');
+            const userList = document.getElementById('user-autocomplete');
+            userInput.addEventListener('input', function() {
                 const val = this.value.trim().toLowerCase();
-                list.innerHTML = '';
+                userList.innerHTML = '';
                 if (val === '') return;
                 const matches = tokenomicsData.users.filter(u => u.name.toLowerCase().includes(val)).slice(0,10);
                 matches.forEach(u => {
                     const div = document.createElement('div');
                     div.textContent = u.name;
                     div.addEventListener('click', () => {
-                        input.value = u.name;
+                        userInput.value = u.name;
                         document.getElementById('user-address').value = u.address || '';
-                        document.getElementById('user-value').value = ''; // buit perquè l'usuari posi el nou valor
+                        document.getElementById('user-value').value = '';
                         document.getElementById('user-roles').value = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
-                        document.getElementById('user-type').value = u.type || 'sense';
-                        editingUserId = u.id; // establim com a edició
-                        list.innerHTML = '';
+                        document.getElementById('user-type').value = u.type || 'sin';
+                        editingUserId = u.id;
+                        userList.innerHTML = '';
                     });
-                    list.appendChild(div);
+                    userList.appendChild(div);
                 });
-                // Opció "Crear nou"
                 if (matches.length === 0) {
                     const div = document.createElement('div');
                     div.innerHTML = `➕ <strong>Crear "${this.value}"</strong>`;
                     div.addEventListener('click', () => {
-                        // Netejar edició
                         editingUserId = null;
-                        list.innerHTML = '';
+                        userList.innerHTML = '';
                     });
-                    list.appendChild(div);
+                    userList.appendChild(div);
                 }
             });
-            // Tancar autocomplete en perdre el focus
-            input.addEventListener('blur', () => {
-                setTimeout(() => list.innerHTML = '', 200);
+            userInput.addEventListener('blur', () => {
+                setTimeout(() => userList.innerHTML = '', 200);
+            });
+
+            // Autocompletar para roles
+            const rolesInput = document.getElementById('user-roles');
+            const rolesList = document.getElementById('roles-autocomplete');
+            rolesInput.addEventListener('input', function() {
+                const val = this.value.trim().toLowerCase();
+                rolesList.innerHTML = '';
+                if (val === '') return;
+
+                // Extraer el último fragmento después de la última coma
+                const parts = this.value.split(',').map(p => p.trim());
+                const lastPart = parts[parts.length-1].toLowerCase();
+                if (lastPart === '') return;
+
+                // Obtener todos los roles existentes de todos los usuarios
+                const allRoles = new Set();
+                tokenomicsData.users.forEach(u => {
+                    if (Array.isArray(u.roles)) {
+                        u.roles.forEach(r => allRoles.add(r));
+                    } else if (u.roles) {
+                        u.roles.split(',').map(s => s.trim()).forEach(r => allRoles.add(r));
+                    }
+                });
+                const matches = Array.from(allRoles).filter(r => r.toLowerCase().includes(lastPart)).slice(0,10);
+                matches.forEach(role => {
+                    const div = document.createElement('div');
+                    div.textContent = role;
+                    div.addEventListener('click', () => {
+                        parts[parts.length-1] = role;
+                        rolesInput.value = parts.join(', ') + (parts.length > 1 ? '' : '');
+                        rolesList.innerHTML = '';
+                    });
+                    rolesList.appendChild(div);
+                });
+                if (matches.length === 0) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `➕ <strong>Crear "${lastPart}"</strong>`;
+                    div.addEventListener('click', () => {
+                        // Mantener el texto tal cual
+                        rolesList.innerHTML = '';
+                    });
+                    rolesList.appendChild(div);
+                }
+            });
+            rolesInput.addEventListener('blur', () => {
+                setTimeout(() => rolesList.innerHTML = '', 200);
             });
         }
 
@@ -1002,12 +1092,12 @@
             document.getElementById('user-address').value = u.address || '';
             document.getElementById('user-value').value = u.value;
             document.getElementById('user-roles').value = Array.isArray(u.roles) ? u.roles.join(', ') : u.roles || '';
-            document.getElementById('user-type').value = u.type || 'sense';
+            document.getElementById('user-type').value = u.type || 'sin';
             editingUserId = u.id;
         }
 
         function deleteUser(id) {
-            if (!confirm('Eliminar aquest participant?')) return;
+            if (!confirm('¿Eliminar este participante?')) return;
             tokenomicsData.users = tokenomicsData.users.filter(u => u.id !== id);
             saveToLocalStorage();
             refreshAll();
@@ -1015,17 +1105,17 @@
 
         function saveUser() {
             const name = document.getElementById('user-name').value.trim();
-            if (!name) { showNotification('El nom és obligatori', 'warning'); return; }
+            if (!name) { showNotification('El nombre es obligatorio', 'warning'); return; }
             const value = parseFloat(document.getElementById('user-value').value);
-            if (isNaN(value) || value <= 0) { showNotification('El valor ha de ser positiu', 'warning'); return; }
+            if (isNaN(value) || value <= 0) { showNotification('El valor debe ser positivo', 'warning'); return; }
             const address = document.getElementById('user-address').value.trim();
-            if (address && !isValidEthereumAddress(address)) { showNotification('Adreça Ethereum no vàlida', 'warning'); return; }
+            if (address && !isValidEthereumAddress(address)) { showNotification('Dirección Ethereum no válida', 'warning'); return; }
             const rolesStr = document.getElementById('user-roles').value.trim();
             const roles = rolesStr ? rolesStr.split(',').map(s => s.trim()).filter(s => s) : [];
             const type = document.getElementById('user-type').value;
 
             if (editingUserId) {
-                // Edició: actualitzem l'usuari existent
+                // Edición: actualizamos el usuario existente
                 const user = tokenomicsData.users.find(u => u.id === editingUserId);
                 if (user) {
                     user.name = name;
@@ -1035,22 +1125,22 @@
                     user.type = type;
                 }
             } else {
-                // Comprovem si ja existeix un usuari amb el mateix nom (per acumular)
+                // Comprobamos si ya existe un usuario con el mismo nombre (para acumular)
                 const existing = tokenomicsData.users.find(u => u.name.toLowerCase() === name.toLowerCase());
                 if (existing) {
                     // Acumular valor
                     existing.value += value;
-                    // Acumular rols (evitant duplicats)
+                    // Acumular roles (evitando duplicados)
                     const newRoles = new Set([...(Array.isArray(existing.roles) ? existing.roles : []), ...roles]);
                     existing.roles = Array.from(newRoles);
-                    // Si s'ha proporcionat una adreça nova i és diferent, preguntem
+                    // Si se ha proporcionado una dirección nueva y es diferente, preguntamos
                     if (address && existing.address !== address) {
-                        if (confirm(`L'usuari ja té l'adreça ${existing.address}. Vols actualitzar-la a ${address}?`)) {
+                        if (confirm(`El usuario ya tiene la dirección ${existing.address}. ¿Quieres actualizarla a ${address}?`)) {
                             existing.address = address;
                         }
                     }
                 } else {
-                    // Nou usuari
+                    // Nuevo usuario
                     tokenomicsData.users.push({
                         id: generateId(),
                         name, address, value, roles, type
@@ -1059,15 +1149,15 @@
             }
 
             saveToLocalStorage();
-            // Netejar formulari
+            // Limpiar formulario
             document.getElementById('user-name').value = '';
             document.getElementById('user-address').value = '';
             document.getElementById('user-value').value = '100';
             document.getElementById('user-roles').value = '';
-            document.getElementById('user-type').value = 'sense';
+            document.getElementById('user-type').value = 'sin';
             editingUserId = null;
             refreshAll();
-            showNotification('Participant guardat', 'success');
+            showNotification('Participante guardado', 'success');
         }
 
         function cancelUser() {
@@ -1075,7 +1165,7 @@
             document.getElementById('user-address').value = '';
             document.getElementById('user-value').value = '100';
             document.getElementById('user-roles').value = '';
-            document.getElementById('user-type').value = 'sense';
+            document.getElementById('user-type').value = 'sin';
             editingUserId = null;
         }
 
@@ -1084,7 +1174,7 @@
             renderUsersTable();
             updateStats();
             updateChart();
-            // Actualitzar inputs globals
+            // Actualizar inputs globales
             document.getElementById('total-supply').value = tokenomicsData.totalSupply;
             document.getElementById('pct-investors').value = tokenomicsData.allocations.investors;
             document.getElementById('pct-team').value = tokenomicsData.allocations.team;
@@ -1099,10 +1189,150 @@
             validateRounds();
         }
 
+        // ---------- IMPORTACIÓ DE SNAPSHOT ----------
+        function importSnapshot() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (!imported.snapshot || !Array.isArray(imported.snapshot)) {
+                            throw new Error('El archivo debe contener un array "snapshot"');
+                        }
+                        const newUsers = imported.snapshot.map(item => ({
+                            id: generateId(),
+                            name: item.user,
+                            address: item.address || '',
+                            value: item.uvAmount,
+                            roles: item.roles || [],
+                            type: item.stakeholderType || 'sin'
+                        }));
+                        tokenomicsData.users = newUsers;
+                        if (imported.projectName) tokenomicsData.projectName = imported.projectName;
+                        if (imported.valueUnit) tokenomicsData.valueUnit = imported.valueUnit;
+                        saveToLocalStorage();
+                        refreshAll();
+                        showNotification(`Importados ${newUsers.length} usuarios`, 'success');
+                    } catch (err) {
+                        showNotification('Error al importar: ' + err.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // ---------- EXPORTACIÓ ----------
+        function exportConfig() {
+            if (!validateAllocations() || !validateTeamAllocations() || !validateRounds()) {
+                showNotification('Corrige los errores antes de exportar', 'error');
+                return;
+            }
+            const output = {
+                projectName: tokenomicsData.projectName,
+                totalSupply: tokenomicsData.totalSupply,
+                valueUnit: tokenomicsData.valueUnit,
+                snapshot: tokenomicsData.users.map(u => ({
+                    user: u.name,
+                    address: u.address || '',
+                    uvAmount: u.value,
+                    roles: u.roles || [],
+                    stakeholderType: u.type || 'sin'
+                })),
+                allocations: { ...tokenomicsData.allocations },
+                teamAllocations: [...tokenomicsData.teamAllocations],
+                fibonacciRounds: [...tokenomicsData.fibonacciRounds],
+                vesting: { ...tokenomicsData.vesting }
+            };
+            const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tokenomics-config-${tokenomicsData.projectName.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Configuración exportada', 'success');
+        }
+
+        // ---------- IDIOMA (per defecte castellà) ----------
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatable = document.querySelectorAll('[data-es],[data-ca]');
+            
+            // Función para cambiar idioma
+            function setLanguage(lang) {
+                translatable.forEach(el => {
+                    if (el.dataset[lang]) {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                            el.placeholder = el.dataset[lang];
+                        } else if (el.tagName === 'OPTION') {
+                            el.textContent = el.dataset[lang];
+                        } else {
+                            el.innerHTML = el.dataset[lang];
+                        }
+                    }
+                });
+                document.documentElement.setAttribute('lang', lang);
+                // Actualizar active button
+                langButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+            }
+
+            // Idioma por defecto: español
+            setLanguage('es');
+
+            // Event listeners
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setLanguage(btn.dataset.lang);
+                    showNotification(btn.dataset.lang === 'ca' ? 'Idioma cambiado a Català' : 'Idioma cambiado a Español', 'info');
+                });
+            });
+        }
+
+        // ---------- TESTS ----------
+        function runTests() {
+            const results = [];
+            const assert = {
+                equals: (a,b,msg) => results.push({ name: msg, passed: a===b, expected: b, actual: a }),
+                truthy: (a,msg) => results.push({ name: msg, passed: !!a, expected: 'truthy', actual: a }),
+                falsy: (a,msg) => results.push({ name: msg, passed: !a, expected: 'falsy', actual: a })
+            };
+
+            // Test 1: validación porcentajes
+            assert.equals(validateAllocations(), true, 'Porcentajes suman 100');
+            // Test 2: añadir usuario manual
+            const oldLen = tokenomicsData.users.length;
+            tokenomicsData.users.push({ id:'test', name:'Test', value:100 });
+            assert.equals(tokenomicsData.users.length, oldLen+1, 'Se puede añadir usuario');
+            tokenomicsData.users.pop();
+            // Test 3: validación dirección
+            assert.truthy(isValidEthereumAddress('0x742d35Cc6634C0532925a3b844Bc454e4438f44e'), 'Dirección válida');
+            assert.falsy(isValidEthereumAddress('0x123'), 'Dirección inválida');
+
+            const div = document.getElementById('test-results');
+            div.innerHTML = '';
+            let passed = 0;
+            results.forEach(r => {
+                const line = document.createElement('div');
+                line.className = r.passed ? 'test-pass' : 'test-fail';
+                line.textContent = `[${r.passed ? 'PASS' : 'FAIL'}] ${r.name} ${r.passed ? '' : `(esperado: ${r.expected}, obtenido: ${r.actual})`}`;
+                div.appendChild(line);
+                if (r.passed) passed++;
+            });
+            div.innerHTML += `<div style="font-weight:bold; margin-top:10px;">Pasadas ${passed}/${results.length}</div>`;
+            showNotification(`Tests: ${passed}/${results.length} pasadas`, passed===results.length ? 'success' : 'warning');
+        }
+
         // ---------- INICIALITZACIÓ ----------
         document.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
-            // Inicialitzar gràfic
+            // Inicializar gráfico
             const ctx = document.getElementById('valueChart').getContext('2d');
             valueChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -1126,7 +1356,7 @@
                 saveToLocalStorage();
             });
 
-            // Canvis en inputs globals
+            // Cambios en inputs globales
             document.getElementById('total-supply').addEventListener('input', (e) => {
                 tokenomicsData.totalSupply = parseInt(e.target.value) || 0;
                 saveToLocalStorage();
@@ -1161,7 +1391,7 @@
                 saveToLocalStorage();
             });
 
-            // Delegació per als inputs dinàmics
+            // Delegación para los inputs dinámicos
             document.getElementById('team-allocations-list').addEventListener('input', (e) => {
                 if (e.target.classList.contains('team-addr')) {
                     const idx = e.target.dataset.index;
@@ -1185,13 +1415,11 @@
                 validateRounds();
             });
 
-            // Exportació
-            document.getElementById('export-config').addEventListener('click', exportConfig);
-
-            // Pestanyes del gràfic
-            document.querySelectorAll('.chart-tab').forEach(tab => {
+            // Pestanyas del gráfico
+            const tabs = document.querySelectorAll('.chart-tab');
+            tabs.forEach(tab => {
                 tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    tabs.forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
                     updateChart(e.target.dataset.view);
                 });
@@ -1203,146 +1431,12 @@
             // Tests
             document.getElementById('run-tests').addEventListener('click', runTests);
 
-            // Inicialitzar vistes
+            // Inicializar vistas
             refreshAll();
 
             // Idioma
             setupLanguageSelector();
         });
-
-        // ---------- IMPORTACIÓ DE SNAPSHOT ----------
-        function importSnapshot() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const imported = JSON.parse(e.target.result);
-                        if (!imported.snapshot || !Array.isArray(imported.snapshot)) {
-                            throw new Error('El fitxer ha de contenir un array "snapshot"');
-                        }
-                        const newUsers = imported.snapshot.map(item => ({
-                            id: generateId(),
-                            name: item.user,
-                            address: item.address || '',
-                            value: item.uvAmount,
-                            roles: item.roles || [],
-                            type: item.stakeholderType || 'sense'
-                        }));
-                        tokenomicsData.users = newUsers;
-                        if (imported.projectName) tokenomicsData.projectName = imported.projectName;
-                        if (imported.valueUnit) tokenomicsData.valueUnit = imported.valueUnit;
-                        saveToLocalStorage();
-                        refreshAll();
-                        showNotification(`Importats ${newUsers.length} usuaris`, 'success');
-                    } catch (err) {
-                        showNotification('Error en importar: ' + err.message, 'error');
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        }
-
-        // ---------- EXPORTACIÓ ----------
-        function exportConfig() {
-            if (!validateAllocations() || !validateTeamAllocations() || !validateRounds()) {
-                showNotification('Corregeix els errors abans d\'exportar', 'error');
-                return;
-            }
-            const output = {
-                projectName: tokenomicsData.projectName,
-                totalSupply: tokenomicsData.totalSupply,
-                valueUnit: tokenomicsData.valueUnit,
-                snapshot: tokenomicsData.users.map(u => ({
-                    user: u.name,
-                    address: u.address || '',
-                    uvAmount: u.value,
-                    roles: u.roles || [],
-                    stakeholderType: u.type || 'sense'
-                })),
-                allocations: { ...tokenomicsData.allocations },
-                teamAllocations: [...tokenomicsData.teamAllocations],
-                fibonacciRounds: [...tokenomicsData.fibonacciRounds],
-                vesting: { ...tokenomicsData.vesting }
-            };
-            const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `tokenomics-config-${tokenomicsData.projectName.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showNotification('Configuració exportada', 'success');
-        }
-
-        // ---------- IDIOMA ----------
-        function setupLanguageSelector() {
-            const langButtons = document.querySelectorAll('.lang-btn');
-            const translatable = document.querySelectorAll('[data-es],[data-ca]');
-            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
-            setLanguage(userLang);
-            langButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const lang = btn.dataset.lang;
-                    setLanguage(lang);
-                    langButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    showNotification(lang === 'ca' ? 'Idioma canviat a Català' : 'Idioma cambiado a Español', 'info');
-                });
-            });
-            function setLanguage(lang) {
-                translatable.forEach(el => {
-                    if (el.dataset[lang]) {
-                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                            el.placeholder = el.dataset[lang];
-                        } else if (el.tagName === 'OPTION') {
-                            el.textContent = el.dataset[lang];
-                        } else {
-                            el.innerHTML = el.dataset[lang];
-                        }
-                    }
-                });
-                document.documentElement.setAttribute('lang', lang);
-            }
-        }
-
-        // ---------- TESTS ----------
-        function runTests() {
-            const results = [];
-            const assert = {
-                equals: (a,b,msg) => results.push({ name: msg, passed: a===b, expected: b, actual: a }),
-                truthy: (a,msg) => results.push({ name: msg, passed: !!a, expected: 'truthy', actual: a }),
-                falsy: (a,msg) => results.push({ name: msg, passed: !a, expected: 'falsy', actual: a })
-            };
-
-            // Test 1: validació percentatges
-            assert.equals(validateAllocations(), true, 'Percentatges sumen 100');
-            // Test 2: afegir usuari manual
-            const oldLen = tokenomicsData.users.length;
-            tokenomicsData.users.push({ id:'test', name:'Test', value:100 });
-            assert.equals(tokenomicsData.users.length, oldLen+1, 'Es pot afegir usuari');
-            tokenomicsData.users.pop();
-            // Test 3: validació adreça
-            assert.truthy(isValidEthereumAddress('0x742d35Cc6634C0532925a3b844Bc454e4438f44e'), 'Adreça vàlida');
-            assert.falsy(isValidEthereumAddress('0x123'), 'Adreça invàlida');
-
-            const div = document.getElementById('test-results');
-            div.innerHTML = '';
-            let passed = 0;
-            results.forEach(r => {
-                const line = document.createElement('div');
-                line.className = r.passed ? 'test-pass' : 'test-fail';
-                line.textContent = `[${r.passed ? 'PASS' : 'FAIL'}] ${r.name} ${r.passed ? '' : `(esperat: ${r.expected}, obtingut: ${r.actual})`}`;
-                div.appendChild(line);
-                if (r.passed) passed++;
-            });
-            div.innerHTML += `<div style="font-weight:bold; margin-top:10px;">Passades ${passed}/${results.length}</div>`;
-            showNotification(`Tests: ${passed}/${results.length} passades`, passed===results.length ? 'success' : 'warning');
-        }
     </script>
 </body>
 </html>
