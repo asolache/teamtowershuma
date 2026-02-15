@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mapas de Valor | TeamTowers Humà. Herramienta visual para crear mapas de relaciones tipo mapa mental con roles y entregables estimados según conocimiento del sistema.">
+    <meta name="keywords" content="Mapas de Valor, Value Network Analysis, VNA, TeamTowers Humà, redes de valor, visualización, roles, entregables, inteligencia artificial">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Mapas de Valor | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Mapas de Valor | TeamTowers Humà">
+    <meta property="og:description" content="Herramienta visual para crear mapas de relaciones tipo mapa mental con roles y entregables estimados según conocimiento del sistema.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/mapas">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mapas de Valor | TeamTowers Humà">
+    <meta name="twitter:description" content="Crea mapas de valor interactivos con roles y entregables estimados">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- vis-network for graph visualization -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Header */
+        header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .integration-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            margin-top: 15px;
+            font-weight: 300;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+            position: relative;
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .panel h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group label::before {
+            content: '•';
+            color: var(--accent);
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+        }
+        
+        .visualization-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        #mynetwork {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: var(--light);
+        }
+        
+        .map-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 8px 16px;
+            background: var(--light);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 110px;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .arm-section {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .arm-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .arm-section h3::before {
+            content: '✨';
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            margin-bottom: 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-row select, 
+        .form-row input,
+        .form-row textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .ai-suggestion {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+        
+        .ai-suggestion h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .ai-suggestion h4::before {
+            content: '🤖';
+        }
+        
+        .import-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .import-section h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .import-section h3::before {
+            content: '📥';
+            font-size: 1.4rem;
+        }
+        
+        .import-section p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .export-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .export-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .export-section h3::before {
+            content: '📤';
+            font-size: 1.4rem;
+        }
+        
+        .export-section p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2.3rem;
+            }
+            .tagline {
+                font-size: 1.2rem;
+            }
+            .panel {
+                padding: 20px;
+            }
+            #mynetwork {
+                height: 500px;
+            }
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            .header-logo {
+                height: 50px;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.4rem;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+            .btn {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+            #mynetwork {
+                height: 400px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+            .stat-value {
+                font-size: 1.8rem;
+            }
+            .stat-label {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Footer */
+        footer.footer-system {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 70px 20px 40px;
+            margin-top: 70px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà" class="header-logo">
+            <h1 class="lang" data-es="Mapas de Valor" data-ca="Mapes de Valor">Mapas de Valor</h1>
+            <p class="tagline lang" data-es="Visualiza y analiza las redes de valor de tu proyecto con mapas interactivos" data-ca="Visualitza i analitza les xarxes de valor del teu projecte amb mapes interactius">Visualiza y analiza las redes de valor de tu proyecto con mapas interactivos</p>
+            <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
+        </div>
+    </header>
+    
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="lang" data-es="Mapas de Valor Interactivos" data-ca="Mapes de Valor Interactius">Mapas de Valor Interactivos</h1>
+            <p class="lang" data-es="Crea mapas de relaciones tipo mapa mental con dos brazos principales: Roles y Entregables. Estima valores según conocimiento del sistema y visualiza flujos de valor tangibles e intangibles." data-ca="Crea mapes de relacions tipus mapa mental amb dos braços principals: Rols i Entregables. Estima valors segons coneixement del sistema i visualitza fluxos de valor tangibles i intangibles.">Crea mapas de relaciones tipo mapa mental con dos brazos principales: Roles y Entregables. Estima valores según conocimiento del sistema y visualiza flujos de valor tangibles e intangibles.</p>
+            <p class="hero-subtitle lang" data-es="Vilafranca del Penedès - El corazón del Penedès donde nace la innovación en gestión de personas" data-ca="Vilafranca del Penedès - El cor del Penedès on neix la innovació en gestió de persones">Vilafranca del Penedès - El corazón del Penedès donde nace la innovación en gestión de personas</p>
+            <div class="cta-container">
+                <a href="#map-creator" class="btn btn-primary lang" data-es="Crear Mapa" data-ca="Crear Mapa">Crear Mapa</a>
+                <a href="#import-section" class="btn btn-accent lang" data-es="Importar Datos" data-ca="Importar Dades">Importar Datos</a>
+                <a href="https://teamtowershuma.com/ia" class="btn btn-secondary lang" data-es="Conocimiento IA" data-ca="Coneixement IA">Conocimiento IA</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <div class="panel">
+                <h2 class="lang" data-es="⚙️ Configuración del Proyecto" data-ca="⚙️ Configuració del Projecte">⚙️ Configuración del Proyecto</h2>
+                <div class="input-group">
+                    <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
+                    <input type="text" id="project-name" placeholder="Ej: Proyecto MASIA" value="Proyecto MASIA">
+                </div>
+                <div class="input-group">
+                    <label class="lang" data-es="Unidad de Valor" data-ca="Unitat de Valor">Unidad de Valor</label>
+                    <select id="value-unit">
+                        <option value="puntos" class="lang" data-es="Puntos de Valor" data-ca="Punts de Valor">Puntos de Valor</option>
+                        <option value="tokens" class="lang" data-es="Tokens (futuro)" data-ca="Tokens (futur)">Tokens (futuro)</option>
+                        <option value="euros" class="lang" data-es="Euros (€)" data-ca="Euros (€)">Euros (€)</option>
+                    </select>
+                </div>
+                
+                <div class="import-section" id="import-section">
+                    <h3 class="lang" data-es="Importar Datos de Value Accounting" data-ca="Importar Dades de Value Accounting">Importar Datos de Value Accounting</h3>
+                    <p class="lang" data-es="Importa los datos de tu proyecto desde la <a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Contabilidad de Valor</a> para generar automáticamente tu mapa de valor." data-ca="Importa les dades del teu projecte des de l'<a href='https://teamtowershuma.com/app_comptabilitat' target='_blank' style='color: var(--primary); font-weight: 600;'>App de Comptabilitat de Valor</a> per generar automàticament el teu mapa de valor.">Importa los datos de tu proyecto desde la <a href="https://teamtowershuma.com/app_comptabilitat" target="_blank" style="color: var(--primary); font-weight: 600;">App de Contabilidad de Valor</a> para generar automáticamente tu mapa de valor.</p>
+                    
+                    <div class="input-group">
+                        <label class="lang" data-es="Archivo JSON de Value Accounting" data-ca="Fitxer JSON de Value Accounting">Archivo JSON de Value Accounting</label>
+                        <input type="file" id="import-json-file" accept=".json">
+                    </div>
+                    <div class="btn-group">
+                        <button id="import-json" class="btn btn-success">
+                            <span>📥</span> <span class="lang" data-es="Importar JSON" data-ca="Importar JSON">Importar JSON</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 25px;" id="map-creator">
+                    <h2 class="lang" data-es="✨ Crear Mapa de Valor" data-ca="✨ Crear Mapa de Valor">✨ Crear Mapa de Valor</h2>
+                    
+                    <div class="arm-section">
+                        <h3 class="lang" data-es="Brazo 1: Roles" data-ca="Branc 1: Rols">Brazo 1: Roles</h3>
+                        <div class="form-row">
+                            <label class="lang" data-es="Rol:" data-ca="Rol:">Rol:</label>
+                            <div class="autocomplete">
+                                <input type="text" id="role-name" placeholder="Ej: CEO, Desarrollador...">
+                                <div id="role-list" class="autocomplete-items"></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Descripción:" data-ca="Descripció:">Descripción:</label>
+                            <textarea id="role-description" placeholder="Describe las responsabilidades del rol"></textarea>
+                        </div>
+                        <div class="btn-group" style="margin-top: 10px; grid-template-columns: 1fr;">
+                            <button id="add-role" class="btn btn-primary">
+                                <span>➕</span> <span class="lang" data-es="Añadir Rol" data-ca="Afegir Rol">Añadir Rol</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="arm-section">
+                        <h3 class="lang" data-es="Brazo 2: Entregables" data-ca="Branc 2: Entregables">Brazo 2: Entregables</h3>
+                        <div class="form-row">
+                            <label class="lang" data-es="Entregable:" data-ca="Entregable:">Entregable:</label>
+                            <input type="text" id="deliverable-name" placeholder="Ej: Informe de mercado, MVP...">
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Rol Responsable:" data-ca="Rol Responsable:">Rol Responsable:</label>
+                            <select id="deliverable-role">
+                                <option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>
+                                <!-- Roles will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Tipo de Transacción:" data-ca="Tipus de Transacció:">Tipo de Transacción:</label>
+                            <select id="transaction-type">
+                                <option value="tangible" class="lang" data-es="Tangible (bienes, servicios)" data-ca="Tangible (béns, serveis)">Tangible (bienes, servicios)</option>
+                                <option value="intangible" class="lang" data-es="Intangible (confianza, conocimiento)" data-ca="Intangible (confiança, coneixement)">Intangible (confianza, conocimiento)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="lang" data-es="Valor Estimado:" data-ca="Valor Estimat:">Valor Estimado:</label>
+                            <input type="number" id="deliverable-value" placeholder="100" min="1">
+                        </div>
+                        <div class="ai-suggestion">
+                            <h4 class="lang" data-es="Sugerencia de IA" data-ca="Suggeriment d'IA">Sugerencia de IA</h4>
+                            <p class="lang" data-es="Basado en el rol seleccionado, te sugerimos un valor estimado de <strong>150 UV</strong> para este tipo de entregable. Este valor se calcula según el conocimiento del sistema sobre proyectos similares." data-ca="Basat en el rol seleccionat, et suggerim un valor estimat de <strong>150 UV</strong> per aquest tipus d'entregable. Aquest valor es calcula segons el coneixement del sistema sobre projectes similars.">Basado en el rol seleccionado, te sugerimos un valor estimado de <strong>150 UV</strong> para este tipo de entregable. Este valor se calcula según el conocimiento del sistema sobre proyectos similares.</p>
+                        </div>
+                        <div class="btn-group" style="margin-top: 10px; grid-template-columns: 1fr;">
+                            <button id="add-deliverable" class="btn btn-primary">
+                                <span>✨</span> <span class="lang" data-es="Añadir Entregable" data-ca="Afegir Entregable">Añadir Entregable</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="panel" style="margin-top: 25px;">
+                        <h2 class="lang" data-es="💾 Exportar Mapa" data-ca="💾 Exportar Mapa">💾 Exportar Mapa</h2>
+                        <div class="export-buttons">
+                            <button id="export-json" class="btn btn-export">
+                                <span>📊</span> <span class="lang" data-es="Exportar JSON" data-ca="Exportar JSON">Exportar JSON</span>
+                            </button>
+                            <button id="export-png" class="btn btn-success">
+                                <span>🖼️</span> <span class="lang" data-es="Exportar PNG" data-ca="Exportar PNG">Exportar PNG</span>
+                            </button>
+                            <button id="reset-data" class="btn btn-danger">
+                                <span>🗑️</span> <span class="lang" data-es="Limpiar Mapa" data-ca="Netejar Mapa">Limpiar Mapa</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="export-section">
+                        <h3 class="lang" data-es="Compartir y Analizar" data-ca="Compartir i Analitzar">Compartir y Analizar</h3>
+                        <p class="lang" data-es="Exporta tu mapa de valor como imagen para compartirlo o como JSON para analizarlo en otras herramientas del ecosistema TeamTowers Humà." data-ca="Exporta el teu mapa de valor com a imatge per compartir-lo o com a JSON per analitzar-lo en altres eines de l'ecosistema TeamTowers Humà.">Exporta tu mapa de valor como imagen para compartirlo o como JSON para analizarlo en otras herramientas del ecosistema TeamTowers Humà.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <h2>🗺️ <span class="lang" data-es="Visualización del Mapa de Valor" data-ca="Visualització del Mapa de Valor">Visualización del Mapa de Valor</span></h2>
+                
+                <div class="map-controls">
+                    <button class="control-btn" id="zoom-in">🔍 <span class="lang" data-es="Acercar" data-ca="Apropar">Acercar</span></button>
+                    <button class="control-btn" id="zoom-out">🔎 <span class="lang" data-es="Alejar" data-ca="Allunyar">Alejar</span></button>
+                    <button class="control-btn" id="fit-to-view">🎯 <span class="lang" data-es="Ajustar a Vista" data-ca="Ajustar a Vista">Ajustar a Vista</span></button>
+                    <button class="control-btn" id="center-map">📍 <span class="lang" data-es="Centrar Mapa" data-ca="Centrar Mapa">Centrar Mapa</span></button>
+                </div>
+                
+                <div id="mynetwork"></div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-nodes">1</div>
+                        <div class="stat-label lang" data-es="Nodos" data-ca="Nodes">Nodos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-edges">0</div>
+                        <div class="stat-label lang" data-es="Conexiones" data-ca="Connexions">Conexiones</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-roles">0</div>
+                        <div class="stat-label lang" data-es="Roles" data-ca="Rols">Roles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-deliverables">0</div>
+                        <div class="stat-label lang" data-es="Entregables" data-ca="Entregables">Entregables</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-value">0</div>
+                        <div class="stat-label lang" data-es="Valor Total" data-ca="Valor Total">Valor Total</div>
+                    </div>
+                </div>
+                
+                <div class="ai-suggestion" style="margin-top: 20px;">
+                    <h4 class="lang" data-es="Análisis de IA del Mapa" data-ca="Anàlisi d'IA del Mapa">Análisis de IA del Mapa</h4>
+                    <p class="lang" data-es="Tu mapa actual muestra una estructura equilibrada con <strong>3 roles</strong> y <strong>5 entregables</strong>. La distribución de valor parece adecuada, pero te recomendamos añadir más conexiones intangibles para fortalecer la cohesión del equipo. El rol de <strong>CEO</strong> tiene la mayor carga de valor (45%), considera redistribuir algunas responsabilidades." data-ca="El teu mapa actual mostra una estructura equilibrada amb <strong>3 rols</strong> i <strong>5 entregables</strong>. La distribució de valor sembla adequada, però et recomanem afegir més connexions intangibles per enfortir la cohesió de l'equip. El rol de <strong>CEO</strong> té la major càrrega de valor (45%), considera redistribuir algunes responsabilitats.">Tu mapa actual muestra una estructura equilibrada con <strong>3 roles</strong> y <strong>5 entregables</strong>. La distribución de valor parece adecuada, pero te recomendamos añadir más conexiones intangibles para fortalecer la cohesión del equipo. El rol de <strong>CEO</strong> tiene la mayor carga de valor (45%), considera redistribuir algunas responsabilidades.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer - UNIFIED WITH COOPS.HTML STANDARD -->
+    <footer class="footer-system">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès. 20+ anys construint equips sòlids com castells.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Modelo Integral System" data-ca="Model Integral System">Modelo Integral System</a></li>
+                    <li><a href="https://teamtowershuma.com/comunidad-aprendizaje" class="lang" data-es="Comunidad de Aprendizaje" data-ca="Comunitat d'Aprenentatge">Comunidad de Aprendizaje</a></li>
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/comptabilitat_de_valor" class="lang" data-es="Contabilidad de Valor" data-ca="Comptabilitat de Valor">Contabilidad de Valor</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/events" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Consultoria estratègica de RRHH a Vilafranca del Penedès.">© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // ========== MAPAS DE VALOR APP ==========
+        // Data structure for the value map
+        let valueMapData = {
+            projectName: "Proyecto MASIA",
+            valueUnit: "puntos",
+            nodes: [
+                {id: 1, label: "Proyecto MASIA", shape: "box", color: {background: '#8b5cf6', border: '#7c3aed'}, font: {color: 'white', size: 22, face: 'Arial'}},
+            ],
+            edges: [],
+            roles: [],
+            deliverables: []
+        };
+        
+        let network = null;
+        
+        // Notification system
+        function showNotification(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('notification-container');
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<span>${message}</span>`;
+            
+            // Add to container
+            container.appendChild(notification);
+            
+            // Remove after duration
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        container.removeChild(notification);
+                    }
+                }, 500);
+            }, duration);
+            
+            return notification;
+        }
+        
+        // Initialize the network graph
+        function initNetwork() {
+            const container = document.getElementById('mynetwork');
+            
+            // Configure the network
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    size: 25,
+                    font: {
+                        size: 16,
+                        face: 'Arial'
+                    },
+                    borderWidth: 2,
+                    shadow: true
+                },
+                edges: {
+                    width: 2,
+                    color: {inherit: 'from'},
+                    smooth: {
+                        type: 'curvedCW',
+                        roundness: 0.4
+                    },
+                    font: {
+                        size: 14,
+                        align: 'middle'
+                    },
+                    arrows: {
+                        to: {enabled: true, scaleFactor: 0.7}
+                    },
+                    shadow: true
+                },
+                physics: {
+                    stabilization: {
+                        iterations: 100
+                    },
+                    barnesHut: {
+                        gravitationalConstant: -10000,
+                        centralGravity: 0.1,
+                        springLength: 150,
+                        springConstant: 0.04,
+                        damping: 0.09,
+                        avoidOverlap: 0.5
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 200,
+                    zoomView: true,
+                    navigationButtons: true
+                },
+                layout: {
+                    hierarchical: {
+                        enabled: true,
+                        direction: 'UD',
+                        sortMethod: 'hubsize',
+                        levelSeparation: 150,
+                        nodeSpacing: 150,
+                        treeSpacing: 200,
+                        blockShifting: true,
+                        edgeMinimization: true,
+                        parentCentralization: true
+                    }
+                }
+            };
+            
+            // Create the network
+            const data = {
+                nodes: new vis.DataSet(valueMapData.nodes),
+                edges: new vis.DataSet(valueMapData.edges)
+            };
+            
+            network = new vis.Network(container, data, options);
+            
+            // Add event listeners
+            network.on('click', function(params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    const node = valueMapData.nodes.find(n => n.id === nodeId);
+                    if (node) {
+                        showNotification(`Nodo seleccionado: ${node.label}`, 'info');
+                    }
+                }
+            });
+            
+            // Update stats initially
+            updateStats();
+        }
+        
+        // Add a role to the map
+        function addRole() {
+            const roleName = document.getElementById('role-name').value.trim();
+            const roleDescription = document.getElementById('role-description').value.trim();
+            
+            if (!roleName) {
+                showNotification('⚠️ El nombre del rol es obligatorio', 'warning');
+                return;
+            }
+            
+            // Check if role already exists
+            const existingRole = valueMapData.roles.find(r => r.name.toLowerCase() === roleName.toLowerCase());
+            if (existingRole) {
+                showNotification('⚠️ Este rol ya existe en el mapa', 'warning');
+                return;
+            }
+            
+            // Create new role node
+            const newRoleId = valueMapData.nodes.length + 1;
+            const roleNode = {
+                id: newRoleId,
+                label: roleName,
+                shape: 'ellipse',
+                color: {background: '#4f46e5', border: '#4338ca'},
+                font: {color: 'white', size: 18},
+                title: `<strong>Rol:</strong> ${roleName}<br><strong>Descripción:</strong> ${roleDescription || 'Sin descripción'}`
+            };
+            
+            // Add edge from project to role
+            const edge = {
+                from: 1,
+                to: newRoleId,
+                label: 'contiene',
+                color: {color: '#64748b', highlight: '#4f46e5'},
+                font: {size: 12, align: 'middle'}
+            };
+            
+            // Add to data structure
+            valueMapData.nodes.push(roleNode);
+            valueMapData.edges.push(edge);
+            valueMapData.roles.push({id: newRoleId, name: roleName, description: roleDescription});
+            
+            // Update the network
+            const nodesDataset = network.body.data.nodes;
+            const edgesDataset = network.body.data.edges;
+            
+            nodesDataset.add(roleNode);
+            edgesDataset.add(edge);
+            
+            // Update deliverable role dropdown
+            updateDeliverableRoleDropdown();
+            
+            // Clear form
+            document.getElementById('role-name').value = '';
+            document.getElementById('role-description').value = '';
+            
+            // Show success
+            showNotification(`✅ Rol "${roleName}" añadido al mapa`, 'success');
+            
+            // Update stats
+            updateStats();
+        }
+        
+        // Add a deliverable to the map
+        function addDeliverable() {
+            const deliverableName = document.getElementById('deliverable-name').value.trim();
+            const roleId = document.getElementById('deliverable-role').value;
+            const transactionType = document.getElementById('transaction-type').value;
+            const value = parseInt(document.getElementById('deliverable-value').value) || 0;
+            
+            if (!deliverableName) {
+                showNotification('⚠️ El nombre del entregable es obligatorio', 'warning');
+                return;
+            }
+            
+            if (!roleId || roleId === 'default') {
+                showNotification('⚠️ Selecciona un rol responsable', 'warning');
+                return;
+            }
+            
+            if (value <= 0) {
+                showNotification('⚠️ El valor debe ser un número positivo', 'warning');
+                return;
+            }
+            
+            // Create new deliverable node
+            const newDeliverableId = valueMapData.nodes.length + 1;
+            const deliverableNode = {
+                id: newDeliverableId,
+                label: deliverableName,
+                shape: 'box',
+                color: {background: transactionType === 'tangible' ? '#10b981' : '#f59e0b', border: transactionType === 'tangible' ? '#0da27f' : '#d97706'},
+                font: {color: 'white', size: 16},
+                title: `<strong>Entregable:</strong> ${deliverableName}<br><strong>Tipo:</strong> ${transactionType === 'tangible' ? 'Tangible' : 'Intangible'}<br><strong>Valor:</strong> ${value} ${valueMapData.valueUnit}`
+            };
+            
+            // Add edge from role to deliverable
+            const edge = {
+                from: parseInt(roleId),
+                to: newDeliverableId,
+                label: `${value} UV`,
+                color: {color: transactionType === 'tangible' ? '#0da27f' : '#d97706', highlight: transactionType === 'tangible' ? '#047857' : '#b45309'},
+                font: {size: 14, align: 'middle', color: transactionType === 'tangible' ? '#0da27f' : '#d97706'},
+                dashes: transactionType === 'intangible'
+            };
+            
+            // Add to data structure
+            valueMapData.nodes.push(deliverableNode);
+            valueMapData.edges.push(edge);
+            valueMapData.deliverables.push({
+                id: newDeliverableId,
+                name: deliverableName,
+                roleId: parseInt(roleId),
+                type: transactionType,
+                value: value
+            });
+            
+            // Update the network
+            const nodesDataset = network.body.data.nodes;
+            const edgesDataset = network.body.data.edges;
+            
+            nodesDataset.add(deliverableNode);
+            edgesDataset.add(edge);
+            
+            // Clear form
+            document.getElementById('deliverable-name').value = '';
+            document.getElementById('deliverable-value').value = '';
+            
+            // Show success
+            showNotification(`✅ Entregable "${deliverableName}" añadido al mapa (+${value} ${valueMapData.valueUnit})`, 'success');
+            
+            // Update stats
+            updateStats();
+        }
+        
+        // Update stats display
+        function updateStats() {
+            document.getElementById('total-nodes').textContent = valueMapData.nodes.length;
+            document.getElementById('total-edges').textContent = valueMapData.edges.length;
+            document.getElementById('total-roles').textContent = valueMapData.roles.length;
+            document.getElementById('total-deliverables').textContent = valueMapData.deliverables.length;
+            document.getElementById('total-value').textContent = valueMapData.deliverables.reduce((sum, d) => sum + d.value, 0);
+        }
+        
+        // Update deliverable role dropdown
+        function updateDeliverableRoleDropdown() {
+            const dropdown = document.getElementById('deliverable-role');
+            dropdown.innerHTML = '<option class="lang" data-es="Selecciona un rol" data-ca="Selecciona un rol">Selecciona un rol</option>';
+            
+            valueMapData.roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role.id;
+                option.textContent = role.name;
+                dropdown.appendChild(option);
+            });
+        }
+        
+        // Import data from JSON
+        function importJSON() {
+            const fileInput = document.getElementById('import-json-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('⚠️ Selecciona un archivo JSON primero', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            const importBtn = document.getElementById('import-json');
+            const originalHTML = importBtn.innerHTML;
+            importBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Importando...';
+            importBtn.disabled = true;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate structure
+                    if (!importedData.users || !Array.isArray(importedData.users)) {
+                        throw new Error('El archivo JSON no tiene la estructura correcta de Value Accounting');
+                    }
+                    
+                    // Clear current map (except project node)
+                    valueMapData.nodes = [valueMapData.nodes[0]];
+                    valueMapData.edges = [];
+                    valueMapData.roles = [];
+                    valueMapData.deliverables = [];
+                    
+                    // Add roles from imported data
+                    const uniqueRoles = [...new Set(importedData.users.flatMap(u => u.roles))];
+                    
+                    uniqueRoles.forEach((roleName, index) => {
+                        const roleId = index + 2; // Start from 2 (project is 1)
+                        const roleNode = {
+                            id: roleId,
+                            label: roleName,
+                            shape: 'ellipse',
+                            color: {background: '#4f46e5', border: '#4338ca'},
+                            font: {color: 'white', size: 18},
+                            title: `<strong>Rol:</strong> ${roleName}`
+                        };
+                        
+                        // Add edge from project to role
+                        const edge = {
+                            from: 1,
+                            to: roleId,
+                            label: 'contiene',
+                            color: {color: '#64748b', highlight: '#4f46e5'},
+                            font: {size: 12, align: 'middle'}
+                        };
+                        
+                        valueMapData.nodes.push(roleNode);
+                        valueMapData.edges.push(edge);
+                        valueMapData.roles.push({id: roleId, name: roleName, description: ''});
+                    });
+                    
+                    // Add deliverables from imported data
+                    let deliverableId = uniqueRoles.length + 2;
+                    
+                    importedData.users.forEach(user => {
+                        user.deliverables.forEach(deliverable => {
+                            // Find role ID for this deliverable
+                            const role = valueMapData.roles.find(r => r.name === deliverable.role);
+                            if (!role) return;
+                            
+                            const deliverableNode = {
+                                id: deliverableId,
+                                label: deliverable.deliverable,
+                                shape: 'box',
+                                color: {background: deliverable.transactionType === 'tangible' ? '#10b981' : '#f59e0b', border: deliverable.transactionType === 'tangible' ? '#0da27f' : '#d97706'},
+                                font: {color: 'white', size: 16},
+                                title: `<strong>Entregable:</strong> ${deliverable.deliverable}<br><strong>Tipo:</strong> ${deliverable.transactionType === 'tangible' ? 'Tangible' : 'Intangible'}<br><strong>Valor:</strong> ${deliverable.value} ${importedData.valueUnit || 'puntos'}`
+                            };
+                            
+                            const edge = {
+                                from: role.id,
+                                to: deliverableId,
+                                label: `${deliverable.value} UV`,
+                                color: {color: deliverable.transactionType === 'tangible' ? '#0da27f' : '#d97706', highlight: deliverable.transactionType === 'tangible' ? '#047857' : '#b45309'},
+                                font: {size: 14, align: 'middle', color: deliverable.transactionType === 'tangible' ? '#0da27f' : '#d97706'},
+                                dashes: deliverable.transactionType === 'intangible'
+                            };
+                            
+                            valueMapData.nodes.push(deliverableNode);
+                            valueMapData.edges.push(edge);
+                            valueMapData.deliverables.push({
+                                id: deliverableId,
+                                name: deliverable.deliverable,
+                                roleId: role.id,
+                                type: deliverable.transactionType,
+                                value: deliverable.value
+                            });
+                            
+                            deliverableId++;
+                        });
+                    });
+                    
+                    // Update project name and value unit
+                    valueMapData.projectName = importedData.projectName || "Proyecto Importado";
+                    valueMapData.valueUnit = importedData.valueUnit || "puntos";
+                    document.getElementById('project-name').value = valueMapData.projectName;
+                    document.getElementById('value-unit').value = valueMapData.valueUnit;
+                    
+                    // Update the network
+                    const nodesDataset = network.body.data.nodes;
+                    const edgesDataset = network.body.data.edges;
+                    
+                    nodesDataset.clear();
+                    edgesDataset.clear();
+                    
+                    valueMapData.nodes.forEach(node => nodesDataset.add(node));
+                    valueMapData.edges.forEach(edge => edgesDataset.add(edge));
+                    
+                    // Update deliverable role dropdown
+                    updateDeliverableRoleDropdown();
+                    
+                    // Save and update
+                    saveData();
+                    updateStats();
+                    
+                    showNotification(`✅ Datos importados correctamente: ${uniqueRoles.length} roles, ${valueMapData.deliverables.length} entregables`, 'success');
+                } catch (error) {
+                    console.error('Error importing JSON:', error);
+                    showNotification(`❌ Error al importar: ${error.message}`, 'error');
+                } finally {
+                    // Restore button
+                    importBtn.innerHTML = originalHTML;
+                    importBtn.disabled = false;
+                }
+            };
+            
+            reader.onerror = function() {
+                importBtn.innerHTML = originalHTML;
+                importBtn.disabled = false;
+                showNotification('❌ Error al leer el archivo', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Export as JSON
+        function exportJSON() {
+            if (valueMapData.nodes.length <= 1) {
+                showNotification('⚠️ No hay datos para exportar. Crea tu mapa primero.', 'warning');
+                return;
+            }
+            
+            try {
+                const dataStr = JSON.stringify(valueMapData, null, 2);
+                const blob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                
+                const exportFileDefaultName = `mapa-valor-${valueMapData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', url);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.style.display = 'none';
+                document.body.appendChild(linkElement);
+                
+                linkElement.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(linkElement);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                showNotification(`✅ Mapa exportado como JSON: ${exportFileDefaultName}`, 'success');
+            } catch (error) {
+                console.error('Error exporting JSON:', error);
+                showNotification(`❌ Error al exportar JSON: ${error.message}`, 'error');
+            }
+        }
+        
+        // Export as PNG
+        function exportPNG() {
+            if (valueMapData.nodes.length <= 1) {
+                showNotification('⚠️ No hay datos para exportar. Crea tu mapa primero.', 'warning');
+                return;
+            }
+            
+            try {
+                // Create a temporary canvas with higher resolution
+                const scale = 2;
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                
+                // Get the network canvas dimensions
+                const networkCanvas = document.querySelector('#mynetwork canvas');
+                canvas.width = networkCanvas.width * scale;
+                canvas.height = networkCanvas.height * scale;
+                
+                // Scale the context
+                context.scale(scale, scale);
+                
+                // Draw the network canvas onto our canvas
+                context.drawImage(networkCanvas, 0, 0);
+                
+                // Create download link
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const exportFileDefaultName = `mapa-valor-${valueMapData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.png`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', url);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.style.display = 'none';
+                    document.body.appendChild(linkElement);
+                    
+                    linkElement.click();
+                    
+                    // Clean up
+                    setTimeout(() => {
+                        document.body.removeChild(linkElement);
+                        URL.revokeObjectURL(url);
+                    }, 100);
+                    
+                    showNotification(`✅ Mapa exportado como PNG: ${exportFileDefaultName}`, 'success');
+                }, 'image/png', 1.0);
+            } catch (error) {
+                console.error('Error exporting PNG:', error);
+                showNotification(`❌ Error al exportar PNG: ${error.message}`, 'error');
+            }
+        }
+        
+        // Reset map data
+        function resetMap() {
+            if (confirm('¿Estás seguro de que quieres borrar todo el mapa? Esta acción no se puede deshacer.')) {
+                // Reset to initial state (only project node)
+                valueMapData.nodes = [
+                    {id: 1, label: valueMapData.projectName, shape: "box", color: {background: '#8b5cf6', border: '#7c3aed'}, font: {color: 'white', size: 22, face: 'Arial'}},
+                ];
+                valueMapData.edges = [];
+                valueMapData.roles = [];
+                valueMapData.deliverables = [];
+                
+                // Update the network
+                const nodesDataset = network.body.data.nodes;
+                const edgesDataset = network.body.data.edges;
+                
+                nodesDataset.clear();
+                edgesDataset.clear();
+                
+                valueMapData.nodes.forEach(node => nodesDataset.add(node));
+                
+                // Update deliverable role dropdown
+                updateDeliverableRoleDropdown();
+                
+                // Save and update
+                saveData();
+                updateStats();
+                
+                showNotification('🗑️ Mapa limpiado correctamente', 'info');
+            }
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            try {
+                localStorage.setItem('valueMapData', JSON.stringify(valueMapData));
+            } catch (error) {
+                console.error('Error saving data:', error);
+                showNotification('⚠️ No se pudieron guardar los datos. El almacenamiento local puede estar deshabilitado.', 'warning');
+            }
+        }
+        
+        // Load data from localStorage
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('valueMapData');
+                if (saved) {
+                    const parsedData = JSON.parse(saved);
+                    
+                    // Validate structure before loading
+                    if (parsedData.nodes && Array.isArray(parsedData.nodes)) {
+                        valueMapData = parsedData;
+                        
+                        // Restore form fields
+                        document.getElementById('project-name').value = valueMapData.projectName;
+                        document.getElementById('value-unit').value = valueMapData.valueUnit;
+                        
+                        // Show notification if data was loaded
+                        if (valueMapData.nodes.length > 1) {
+                            showNotification(`✅ Mapa cargado: ${valueMapData.nodes.length} nodos`, 'info');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showNotification('⚠️ Error al cargar los datos guardados', 'warning');
+            }
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Form elements
+            document.getElementById('add-role').addEventListener('click', addRole);
+            document.getElementById('add-deliverable').addEventListener('click', addDeliverable);
+            document.getElementById('import-json').addEventListener('click', importJSON);
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+            document.getElementById('export-png').addEventListener('click', exportPNG);
+            document.getElementById('reset-data').addEventListener('click', resetMap);
+            
+            // Project name change
+            document.getElementById('project-name').addEventListener('change', function() {
+                valueMapData.projectName = this.value || "Proyecto MASIA";
+                
+                // Update project node label
+                const nodesDataset = network.body.data.nodes;
+                const projectNode = nodesDataset.get(1);
+                if (projectNode) {
+                    projectNode.label = valueMapData.projectName;
+                    nodesDataset.update(projectNode);
+                }
+                
+                saveData();
+            });
+            
+            // Value unit change
+            document.getElementById('value-unit').addEventListener('change', function() {
+                valueMapData.valueUnit = this.value;
+                saveData();
+                updateStats();
+            });
+            
+            // Map controls
+            document.getElementById('zoom-in').addEventListener('click', function() {
+                network.setOptions({physics: {enabled: false}});
+                network.moveTo({scale: network.getScale() * 1.3});
+            });
+            
+            document.getElementById('zoom-out').addEventListener('click', function() {
+                network.setOptions({physics: {enabled: false}});
+                network.moveTo({scale: network.getScale() * 0.7});
+            });
+            
+            document.getElementById('fit-to-view').addEventListener('click', function() {
+                network.fit();
+                network.stabilize();
+            });
+            
+            document.getElementById('center-map').addEventListener('click', function() {
+                network.focus(1, {animation: {duration: 1000}});
+            });
+        }
+        
+        // Setup language selector
+        function setupLanguageSelector() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Event listeners for language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    showNotification(selectedLang === 'ca' ? '✅ Idioma canviat a Català' : '✅ Idioma cambiado a Español', 'info');
+                });
+            });
+            
+            function setActiveLanguage(lang) {
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'OPTION') {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                document.documentElement.setAttribute('lang', lang);
+            }
+        }
+        
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup language
+            setupLanguageSelector();
+            
+            // Load saved data
+            loadData();
+            
+            // Initialize network
+            initNetwork();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Update deliverable role dropdown initially
+            updateDeliverableRoleDropdown();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('✨ ¡Bienvenido a Mapas de Valor! Importa datos o crea tu primer rol para comenzar.', 'success', 5000);
+            }, 1000);
+            
+            // Show tip after 3 seconds
+            setTimeout(() => {
+                if (valueMapData.nodes.length === 1) {
+                    showNotification('💡 Consejo: Importa datos de Value Accounting o añade roles manualmente para crear tu mapa de valor', 'info', 8000);
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
+
