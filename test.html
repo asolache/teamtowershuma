@@ -3,321 +3,1100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Value Accounting App | TeamTowers Humà. Sistema per registrar i valorar entregables al teu projecte, amb suport per a adreces Ethereum i exportació per a tokenomics.">
-    <meta name="keywords" content="Contabilitat de Valor, Value Accounting, tokenització, TeamTowers Humà, Vilafranca del Penedès, Ethereum wallet, vesting">
+    <meta name="description" content="TeamTowers Humà: Transformación organizacional mediante la metáfora castellera. De la pinya al pom de dalt. Value Network Analysis, Comunidades de Práctica, Tokenomics y más.">
+    <meta name="keywords" content="TeamTowers Humà, transformación organizacional, castellers, pinya, tronc, folre, pom de dalt, Vilafranca del Penedès, Value Network Analysis, Tokenomics">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
-    <title>Value Accounting App | TeamTowers Humà</title>
+    <title>TeamTowers Humà | Transformación Organizacional con la Metáfora Castellera</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Value Accounting App | TeamTowers Humà">
-    <meta property="og:description" content="Registra entregables, associa adreces Ethereum i prepara les dades per a la tokenització.">
+    <meta property="og:title" content="TeamTowers Humà: Transformación Organizacional con la Metáfora Castellera">
+    <meta property="og:description" content="Descubre cómo transformar tu organización con la metodología única basada en la tradición UNESCO de los castellers. De la pinya al pom de dalt.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://teamtowershuma.com/app_comptabilitat">
+    <meta property="og:url" content="https://teamtowershuma.com">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="ca_ES">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Value Accounting App | TeamTowers Humà">
-    <meta name="twitter:description" content="Registra entregables i prepara les dades per a tokenomics amb adreces Ethereum.">
+    <meta name="twitter:title" content="TeamTowers Humà: Transformación Organizacional">
+    <meta name="twitter:description" content="Metodología única basada en la tradición UNESCO de los castellers">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     
-    <!-- Chart.js for data visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <style>
-        /* ... (estilos sin cambios, igual que tu código original) ... */
-        /* Solo añadimos un estilo extra para los tooltips de los botones */
-        .btn[data-tooltip] {
-            position: relative;
+        :root {
+            --primary: #1e3a8a; /* Azul TeamTowers */
+            --secondary: #4f46e5; /* Azul más claro */
+            --accent: #8b5cf6; /* Morado TeamTowers */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
         }
-        .btn[data-tooltip]:hover::after {
-            content: attr(data-tooltip);
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+        }
+        
+        /* Location Badge */
+        .location-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            font-size: 1.1rem;
+        }
+        
+        .location-badge::before {
+            content: '📍';
+        }
+        
+        /* Hero Section with Video Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-video {
             position: absolute;
-            bottom: 120%;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+        
+        .hero-logo img {
+            height: 80px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-tagline {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+        }
+        
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .btn-accent {
+            background: var(--gradient-accent);
+        }
+        
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--dark);
+            color: var(--dark);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 30px auto 60px;
+            color: var(--gray);
+        }
+        
+        /* Methodologies Section */
+        .methodologies-section {
+            background: white;
+            padding: 100px 20px;
+        }
+        
+        .methodologies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .methodology-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px 30px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(30, 58, 138, 0.1);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .methodology-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            z-index: 1;
+        }
+        
+        .methodology-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: rgba(30, 58, 138, 0.3);
+        }
+        
+        .methodology-card.value-maps::before { background: linear-gradient(90deg, var(--success) 0%, #0da27f 100%); }
+        .methodology-card.coops::before { background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%); }
+        .methodology-card.recognition::before { background: linear-gradient(90deg, var(--accent) 0%, #7c3aed 100%); }
+        .methodology-card.castellers::before { background: linear-gradient(90deg, var(--gold) 0%, #d97706 100%); }
+        
+        .methodology-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .methodology-card.value-maps .methodology-icon { color: var(--success); }
+        .methodology-card.coops .methodology-icon { color: var(--primary); }
+        .methodology-card.recognition .methodology-icon { color: var(--accent); }
+        .methodology-card.castellers .methodology-icon { color: var(--gold); }
+        
+        .methodology-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .methodology-card p {
+            margin-bottom: 20px;
+            color: var(--gray);
+            min-height: 80px;
+        }
+        
+        .methodology-link {
+            display: inline-block;
+            background: var(--gradient-primary);
             color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            z-index: 100;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            pointer-events: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .methodology-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* Services Section */
+        .services-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 100px 20px;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            z-index: 1;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .service-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .service-card p {
+            margin-bottom: 20px;
+            color: var(--gray);
+            min-height: 80px;
+        }
+        
+        .service-link {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .service-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
+        
+        /* About Section */
+        .about-section {
+            background: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .about-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: var(--gray);
+        }
+        
+        .about-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 50px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        /* Apps Showcase Section */
+        .apps-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-img {
+            height: 180px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .app-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%);
+            opacity: 0.85;
+            z-index: 1;
+        }
+        
+        .app-img img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        .app-content {
+            padding: 25px;
+        }
+        
+        .app-title {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .app-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .app-desc {
+            margin-bottom: 20px;
+            color: var(--gray);
+            min-height: 60px;
+            font-size: 0.95rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-castell);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 3.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 70px 20px 40px;
+            margin-top: 70px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.6rem;
+            }
+            section {
+                padding: 80px 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                top: 15px;
+                right: 15px;
+                padding: 3px;
+            }
+            .location-badge {
+                top: 15px;
+                left: 15px;
+                padding: 6px 15px;
+                font-size: 1rem;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero-tagline {
+                font-size: 1.6rem;
+            }
+            .hero p {
+                font-size: 1.4rem;
+            }
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 350px;
+            }
+            .section-title {
+                font-size: 2.3rem;
+            }
+            .section-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero-tagline {
+                font-size: 1.4rem;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding: 60px 15px;
+            }
+            .methodology-card, .service-card {
+                padding: 25px 20px;
+            }
+            .app-content {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Language Selector (sin cambios) -->
+    <!-- Language Selector -->
     <div class="language-selector">
         <button class="lang-btn active" data-lang="es">ES</button>
         <button class="lang-btn" data-lang="ca">CA</button>
     </div>
     
-    <!-- Notification Container -->
-    <div class="notification-container" id="notification-container"></div>
+    <!-- Location Badge -->
+    <div class="location-badge">Vilafranca del Penedès</div>
     
-    <!-- Header (sin cambios) -->
-    <header> ... </header>
-    
-    <!-- Main Content (sin cambios estructurales, solo textos y tooltips) -->
-    <div class="container">
-        <div class="app-container">
-            <!-- Panel izquierdo (configuración y formularios) -->
-            <div class="panel">
-                <h2>⚙️ <span class="lang" data-es="Configuración del Proyecto" data-ca="Configuració del Projecte">Configuración del Proyecto</span></h2>
-                <!-- ... campos existentes ... -->
-
-                <!-- [MEJORA] Sección de importación con explicación más clara -->
-                <div class="import-section">
-                    <h3>📥 <span class="lang" data-es="Importar Datos" data-ca="Importar Dades">Importar Datos</span></h3>
-                    <p class="lang" data-es="Puedes importar roles desde CSV (VNA App) o un JSON completo (backup o snapshot)." data-ca="Pots importar rols des de CSV (VNA App) o un JSON complet (backup o snapshot).">
-                        Puedes importar roles desde CSV (VNA App) o un JSON completo (backup o snapshot).
-                    </p>
-                    <!-- ... botones de importación existentes ... -->
-                </div>
-
-                <!-- Formulario de añadir entregable (sin cambios) -->
-                <div class="deliverable-form"> ... </div>
-
-                <!-- Panel de exportación con tooltips mejorados -->
-                <div class="panel" style="margin-top: 25px;">
-                    <h2>💾 <span class="lang" data-es="Exportar Datos" data-ca="Exportar Dades">Exportar Datos</span></h2>
-                    <div class="export-buttons">
-                        <button id="export-json" class="btn btn-export" data-tooltip="Guarda todos los datos del proyecto (backup completo)">
-                            <span>📊</span> <span class="lang" data-es="Exportar JSON (backup)" data-ca="Exportar JSON (backup)">Exportar JSON (backup)</span>
-                        </button>
-                        <button id="export-csv" class="btn btn-success" data-tooltip="Genera un CSV para tokenomics (agregado por usuario)">
-                            <span>📈</span> <span class="lang" data-es="Exportar CSV (Tokenomics)" data-ca="Exportar CSV (Tokenomics)">Exportar CSV (Tokenomics)</span>
-                        </button>
-                        <button id="export-tokenomics-json" class="btn btn-primary" data-tooltip="Genera un JSON con snapshot (listo para importar en Tokenomics App)">
-                            <span>🔗</span> <span class="lang" data-es="Exportar JSON (Smart Contract)" data-ca="Exportar JSON (Smart Contract)">Exportar JSON (Smart Contract)</span>
-                        </button>
-                        <button id="reset-data" class="btn btn-danger" data-tooltip="Elimina todos los datos del proyecto">
-                            <span>🗑️</span> <span class="lang" data-es="Limpiar Datos" data-ca="Netejar Dades">Limpiar Datos</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Sección de pruebas (sin cambios) -->
-                <div class="test-section"> ... </div>
+    <!-- Hero Section with Video Background -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://github.com/asolache/Teamtowers/raw/main/files/teamtowershome-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
             </div>
-
-            <!-- Panel derecho (visualizaciones) sin cambios -->
-            <div class="visualization-container"> ... </div>
+            <h1 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h1>
+            <p class="hero-tagline lang" data-es="Transformación Organizacional con la Metáfora Castellera" data-ca="Transformació Organitzativa amb la Metàfora Castellera">Transformación Organizacional con la Metáfora Castellera</p>
+            <p class="lang" data-es="Transforma tu organización con la metáfora castellera: de la pinya al pom de dalt. Un modelo replicable que integra Value Network Analysis, Comunidades de Práctica, Tokenomics y más para construir organizaciones humanas altamente eficientes." data-ca="Transforma la teva organització amb la metàfora castellera: de la pinya al pom de dalt. Un model replicable que integra Value Network Analysis, Comunitats de Pràctica, Tokenomics i més per construir organitzacions humanes altament eficients.">Transforma tu organización con la metáfora castellera: de la pinya al pom de dalt. Un modelo replicable que integra Value Network Analysis, Comunidades de Práctica, Tokenomics y más para construir organizaciones humanas altamente eficientes.</p>
+            <div class="cta-container">
+                <a href="#methodologies" class="btn btn-primary lang" data-es="Descubrir Metodologías" data-ca="Descobrir Metodologies">Descubrir Metodologías</a>
+                <a href="#services" class="btn btn-accent lang" data-es="Explorar Servicios" data-ca="Explorar Serveis">Explorar Servicios</a>
+                <a href="#about" class="btn btn-secondary lang" data-es="Conocer Equipo" data-ca="Coneix Equip">Conocer Equipo</a>
+            </div>
         </div>
-    </div>
-
-    <!-- Footer (sin cambios) -->
-    <footer> ... </footer>
-
+    </section>
+    
+    <!-- Methodologies Section -->
+    <section id="methodologies" class="methodologies-section">
+        <h2 class="section-title lang" data-es="Nuestras Metodologías" data-ca="Les Nostres Metodologies">Nuestras Metodologías</h2>
+        <p class="section-subtitle lang" data-es="Enfoques innovadores basados en la metáfora castellera para transformar organizaciones" data-ca="Enfocaments innovadors basats en la metàfora castellera per transformar organitzacions">Enfoques innovadores basados en la metáfora castellera para transformar organizaciones</p>
+        
+        <div class="methodologies-grid">
+            <div class="methodology-card castellers">
+                <div class="methodology-icon">🏰</div>
+                <h3 class="lang" data-es="Talleres de Castellers" data-ca="Tallers de Castellers">Talleres de Castellers</h3>
+                <p class="lang" data-es="Experiencias transformadoras basadas en la tradición UNESCO de los castellers. Fortalece la cohesión, comunicación y liderazgo con metáforas vivas." data-ca="Experiències transformadores basades en la tradició UNESCO dels castellers. Fortaleix la cohesió, comunicació i lideratge amb metàfores vives.">Experiencias transformadoras basadas en la tradición UNESCO de los castellers. Fortalece la cohesión, comunicación y liderazgo con metáforas vivas.</p>
+                <a href="https://www.teamtowers.eu" class="methodology-link lang" data-es="TeamTowers Experiencias" data-ca="TeamTowers Experiències">TeamTowers Experiencias →</a>
+            </div>
+            
+            <div class="methodology-card value-maps">
+                <div class="methodology-icon">📊</div>
+                <h3 class="lang" data-es="Análisis de Mapas de Valor" data-ca="Anàlisi de Mapes de Valor">Análisis de Mapas de Valor</h3>
+                <p class="lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones, identifica cuellos de botella y optimiza procesos con nuestra metodología VNA." data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització. Visualitza connexions, identifica colls d'ampolla i optimitza processos amb la nostra metodologia VNA.">Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones, identifica cuellos de botella y optimiza procesos con nuestra metodología VNA.</p>
+                <a href="https://teamtowershuma.com/valor" class="methodology-link lang" data-es="Explorar VNA" data-ca="Explorar VNA">Explorar VNA →</a>
+            </div>
+            
+            <div class="methodology-card coops">
+                <div class="methodology-icon">🎓</div>
+                <h3 class="lang" data-es="Aprendizaje y Conocimiento" data-ca="Aprenentatge i Coneixement">Aprendizaje y Conocimiento</h3>
+                <p class="lang" data-es="Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo." data-ca="Models d'aprenentatge basats en xarxes de valor. Captura coneixement tàcit, desenvolupa competències crítiques i crea una cultura d'aprenentatge continu.">Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito, desarrolla competencias críticas y crea una cultura de aprendizaje continuo.</p>
+                <a href="https://teamtowershuma.com/coops" class="methodology-link lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica →</a>
+            </div>
+            
+            <div class="methodology-card recognition">
+                <div class="methodology-icon">🏆</div>
+                <h3 class="lang" data-es="Reconocimiento y Recompensa" data-ca="Reconeixement i Recompensa">Reconocimiento y Recompensa</h3>
+                <p class="lang" data-es="Sistemas transparentes de reconocimiento y recompensa basados en el valor aportado. Contabiliza entregables y prepara para la futura tokenización." data-ca="Sistemes transparents de reconeixement i recompensa basats en el valor aportat. Compta entregables i prepara per a la futura tokenització.">Sistemas transparentes de reconocimiento y recompensa basados en el valor aportado. Contabiliza entregables y prepara para la futura tokenización.</p>
+                <a href="https://teamtowershuma.com/valor" class="methodology-link lang" data-es="Sistema de Reconocimiento" data-ca="Sistema de Reconeixement">Sistema de Reconocimiento →</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <h2 class="section-title lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</h2>
+        <p class="section-subtitle lang" data-es="Soluciones integrales para la transformación organizacional con enfoque humanista" data-ca="Solucions integrals per a la transformació organitzativa amb enfocament humanista">Soluciones integrales para la transformación organizacional con enfoque humanista</p>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">👥</div>
+                <h3 class="lang" data-es="Teambuilding" data-ca="Teambuilding">Teambuilding</h3>
+                <p class="lang" data-es="Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo con la tradición UNESCO de los castellers." data-ca="Experiències castelleres transformadores per a esdeveniments corporatius. Fortaleix la cohesió, comunicació i lideratge amb la tradició UNESCO dels castellers.">Experiencias castelleras transformadoras para eventos corporativos. Fortalece la cohesión, comunicación y liderazgo con la tradición UNESCO de los castellers.</p>
+                <a href="https://www.teamtowers.eu" class="service-link lang" data-es="Descubrir TeamTowers" data-ca="Descobrir TeamTowers">Descubrir TeamTowers →</a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🎪</div>
+                <h3 class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</h3>
+                <p class="lang" data-es="Organización y producción de eventos corporativos con enfoque en la experiencia humana. Creamos momentos memorables que fortalecen la cultura organizacional." data-ca="Organització i producció d'esdeveniments corporatius amb enfocament en l'experiència humana. Creem moments memorables que fortaleixen la cultura organitzativa.">Organización y producción de eventos corporativos con enfoque en la experiencia humana. Creamos momentos memorables que fortalecen la cultura organizacional.</p>
+                <a href="https://teamtowershuma.com/events" class="service-link lang" data-es="Eventos Corporativos" data-ca="Esdeveniments Corporatius">Eventos Corporativos →</a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">👔</div>
+                <h3 class="lang" data-es="Gestión de Equipos" data-ca="Gestió d'Equips">Gestión de Equipos</h3>
+                <p class="lang" data-es="Servicio de consultoría estratégica para implementar prácticas de gestión del talento alineadas con la filosofía TeamTowers Humà y la transformación organizacional." data-ca="Servei de consultoria estratègica per implementar pràctiques de gestió del talent alineades amb la filosofia TeamTowers Humà i la transformació organitzativa.">Servicio de consultoría estratégica para implementar prácticas de gestión del talento alineadas con la filosofía TeamTowers Humà y la transformación organizacional.</p>
+                <a href="https://teamtowershuma.com/rrhh" class="service-link lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH →</a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📚</div>
+                <h3 class="lang" data-es="Formación de Equipos" data-ca="Formació d'Equips">Formación de Equipos</h3>
+                <p class="lang" data-es="Programas formativos para desarrollar habilidades de colaboración, comunicación y liderazgo en equipos. Basados en la metáfora castellera y metodologías innovadoras." data-ca="Programes formatius per desenvolupar habilitats de col·laboració, comunicació i lideratge en equips. Basats en la metàfora castellera i metodologies innovadores.">Programas formativos para desarrollar habilidades de colaboración, comunicación y liderazgo en equipos. Basados en la metáfora castellera y metodologías innovadoras.</p>
+                <a href="https://teamtowershuma.com/colla" class="service-link lang" data-es="Formación de Equipos" data-ca="Formació d'Equips">Formación de Equipos →</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <h2 class="section-title lang" data-es="Sobre TeamTowers Humà" data-ca="Sobre TeamTowers Humà">Sobre TeamTowers Humà</h2>
+        <p class="section-subtitle lang" data-es="De las torres humanas a las organizaciones humanas" data-ca="De les torres humanes a les organitzacions humanes">De las torres humanas a las organizaciones humanas</p>
+        
+        <div class="about-content">
+            <p class="lang" data-es="TeamTowers Humà nace en Vilafranca del Penedès, el corazón del Penedès, donde la tradición de los castellers se fusiona con la innovación en gestión de personas. Somos una consultoría estratégica de RRHH con enfoque humanista que transforma organizaciones mediante la metáfora castellera." data-ca="TeamTowers Humà neix a Vilafranca del Penedès, el cor del Penedès, on la tradició dels castellers es fusiona amb la innovació en gestió de persones. Som una consultoria estratègica de RRHH amb enfocament humanista que transforma organitzacions mitjançant la metàfora castellera.">TeamTowers Humà nace en Vilafranca del Penedès, el corazón del Penedès, donde la tradición de los castellers se fusiona con la innovación en gestión de personas. Somos una consultoría estratégica de RRHH con enfoque humanista que transforma organizaciones mediante la metáfora castellera.</p>
+            <p class="lang" data-es="Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles. Trabajamos con empresas que buscan construir estructuras más resilientes, colaborativas y orientadas al valor compartido." data-ca="El nostre enfocament únic combina el rigor analític amb la profunditat del coneixement organitzatiu, garantint resultats tangibles i sostenibles. Treballem amb empreses que busquen construir estructures més resilents, col·laboratives i orientades al valor compartit.">Nuestro enfoque único combina el rigor analítico con la profundidad del conocimiento organizacional, garantizando resultados tangibles y sostenibles. Trabajamos con empresas que buscan construir estructuras más resilientes, colaborativas y orientadas al valor compartido.</p>
+            
+            <div class="about-stats">
+                <div class="stat-item">
+                    <div class="stat-number">20+</div>
+                    <div class="stat-label lang" data-es="Años de Experiencia" data-ca="Anys d'Experiència">Años de Experiencia</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label lang" data-es="Organizaciones Transformadas" data-ca="Organitzacions Transformades">Organizaciones Transformadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label lang" data-es="Enfoque Humanista" data-ca="Enfocament Humanista">Enfoque Humanista</div>
+                </div>
+            </div>
+            
+            <a href="https://teamtowershuma.com/equip" class="btn btn-primary lang" data-es="Conocer a Nuestro Equipo" data-ca="Coneix al Nostre Equip" style="margin-top: 20px;">Conocer a Nuestro Equipo</a>
+        </div>
+    </section>
+    
+    <!-- Apps Showcase Section (enlaces actualizados) -->
+    <section id="apps" class="apps-section">
+        <h2 class="section-title lang" data-es="Nuestras Aplicaciones" data-ca="Les Nostres Aplicacions">Nuestras Aplicaciones</h2>
+        <p class="section-subtitle lang" data-es="Herramientas digitales diseñadas para cada etapa de tu transformación organizacional" data-ca="Eines digitals dissenyades per a cada etapa de la teva transformació organitzativa">Herramientas digitales diseñadas para cada etapa de tu transformación organizacional</p>
+        
+        <div class="apps-grid">
+            <!-- VNA App -->
+            <div class="app-card">
+                <div class="app-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Network Analysis App">
+                </div>
+                <div class="app-content">
+                    <h3 class="app-title">VNA App</h3>
+                    <p class="app-desc lang" data-es="Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos con nuestra herramienta interactiva." data-ca="Mapeja fluxos de valor tangibles i intangibles a la teva organització. Visualitza connexions i optimitza processos amb la nostra eina interactiva.">Mapea flujos de valor tangibles e intangibles en tu organización. Visualiza conexiones y optimiza procesos con nuestra herramienta interactiva.</p>
+                    <a href="app.html" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
+                </div>
+            </div>
+            
+            <!-- Value Accounting App (actualizado a lacolla-accounting.html) -->
+            <div class="app-card">
+                <div class="app-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Value Accounting App">
+                </div>
+                <div class="app-content">
+                    <h3 class="app-title">Accounting App</h3>
+                    <p class="app-desc lang" data-es="Registra entregables, asigna usuarios por rol y cuantifica el valor aportado. Prepara para tokenización con nuestra aplicación de contabilidad de valor." data-ca="Registra entregables, assigna usuaris per rol i quantifica el valor aportat. Prepara per a tokenització amb la nostra aplicació de comptabilitat de valor.">Registra entregables, asigna usuarios por rol y cuantifica el valor aportado. Prepara para tokenización con nuestra aplicación de contabilidad de valor.</p>
+                    <a href="lacolla-accounting.html" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
+                </div>
+            </div>
+            
+            <!-- Comunidades de Práctica App -->
+            <div class="app-card">
+                <div class="app-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Comunidades de Práctica App">
+                </div>
+                <div class="app-content">
+                    <h3 class="app-title">CoPs App</h3>
+                    <p class="app-desc lang" data-es="Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito y desarrolla competencias con nuestra plataforma colaborativa." data-ca="Models d'aprenentatge basats en xarxes de valor. Captura coneixement tàcit i desenvolupa competències amb la nostra plataforma col·laborativa.">Modelos de aprendizaje basados en redes de valor. Captura conocimiento tácito y desarrolla competencias con nuestra plataforma colaborativa.</p>
+                    <a href="app_coops.html" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
+                </div>
+            </div>
+            
+            <!-- Tokenomics App -->
+            <div class="app-card">
+                <div class="app-img">
+                    <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="Tokenomics App">
+                </div>
+                <div class="app-content">
+                    <h3 class="app-title">Tokenomics App</h3>
+                    <p class="app-desc lang" data-es="Configura distribución de tokens, parámetros de vesting y genera tu smart contract optimizado para la economía tokenizada." data-ca="Configura distribució de tokens, paràmetres de vesting i genera el teu smart contract optimitzat per a l'economia tokenitzada.">Configura distribución de tokens, parámetros de vesting y genera tu smart contract optimizado para la economía tokenizada.</p>
+                    <a href="tokenomics.html" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem; width: 100%;" data-es="Explorar App" data-ca="Explorar App">Explorar App</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="lang" data-es="¿Listo para Transformar tu Organización?" data-ca="Preparat per Transformar la teva Organització?">¿Listo para Transformar tu Organización?</h2>
+        <p class="lang" data-es="Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà." data-ca="Agenda el teu diagnòstic gratuït i descobreix com podem ajudar-te a construir una organització més humana, eficient i resistent amb el Sistema Integral TeamTowers Humà.">Agenda tu diagnóstico gratuito y descubre cómo podemos ayudarte a construir una organización más humana, eficiente y resiliente con el Sistema Integral TeamTowers Humà.</p>
+        <div class="cta-container">
+            <a href="https://teamtowershuma.com/contacto" class="btn btn-primary lang" data-es="Contactar con Expertos" data-ca="Contactar amb Experts">Contactar con Expertos</a>
+            <a href="https://teamtowershuma.com/masia" class="btn btn-secondary lang" data-es="Explorar Sistema Integral" data-ca="Explorar Sistema Integral">Explorar Sistema Integral</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>METODOLOGÍAS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Talleres de Castellers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Análisis de mapas de valor</a></li>
+                    <li><a href="https://teamtowershuma.com/coops">Aprendizaje y conocimiento</a></li>
+                    <li><a href="https://teamtowershuma.com/valor">Reconocimiento y recompensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SERVICIOS</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.teamtowers.eu">Teambuilding</a></li>
+                    <li><a href="https://teamtowershuma.com/events">Producción de eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/rrhh">Gestión de equipos</a></li>
+                    <li><a href="https://teamtowershuma.com/colla">Formación de equipos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>SOBRE TEAMTOWERS HUMÀ</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/equip">Equipo</a></li>
+                    <li><a href="https://teamtowershuma.com/clients">Clientes</a></li>
+                    <li><a href="https://teamtowershuma.com/contacto">Contacto</a></li>
+                    <li><a href="https://teamtowershuma.com/prensa">Prensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Transformació organitzativa amb la metàfora castellera. Vilafranca del Penedès, Barcelona.">© 2026 TeamTowers Humà. Todos los derechos reservados. Transformación organizacional con la metáfora castellera. Vilafranca del Penedès, Barcelona.</p>
+        </div>
+    </footer>
+    
     <script>
-        // ========== VALUE ACCOUNTING APP (VERSIÓ REVISADA) ==========
-        // [MEJORA] Añadimos una estructura de datos con versión para facilitar futuras migraciones
-        let accountingData = {
-            version: "1.0",                // [MEJORA] Versión del formato
-            projectName: "Proyecto MASIA",
-            valueUnit: "puntos",
-            roles: [],
-            deliverables: [],
-            userAddresses: {}
-        };
-
-        // ... (resto de variables globales y funciones auxiliares sin cambios) ...
-
-        // [MEJORA] Función mejorada de validación de dirección Ethereum (con soporte para checksum básico)
-        function isValidEthereumAddress(address) {
-            if (!/^0x[a-fA-F0-9]{40}$/.test(address)) return false;
-            // Opcional: validar checksum EIP-55 (si se desea)
-            // Por ahora solo validamos formato
-            return true;
-        }
-
-        // [MEJORA] Función de importación JSON más tolerante (acepta backup y snapshot)
-        function importJSON() {
-            const fileInput = document.getElementById('import-json-file');
-            const file = fileInput.files[0];
-            if (!file) {
-                showNotification('⚠️ Selecciona un archivo JSON primero', 'warning');
-                return;
-            }
-
-            const importBtn = document.getElementById('import-json');
-            const originalHTML = importBtn.innerHTML;
-            importBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> Importando...';
-            importBtn.disabled = true;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    
-                    // [MEJORA] Detección inteligente del formato
-                    if (imported.snapshot && Array.isArray(imported.snapshot)) {
-                        // Formato snapshot (tokenomics)
-                        // Convertir snapshot a deliverables simulados para mantener compatibilidad
-                        const snapshot = imported.snapshot;
-                        const newDeliverables = [];
-                        const newAddresses = { ...accountingData.userAddresses };
-                        
-                        snapshot.forEach(item => {
-                            if (item.user && item.uvAmount) {
-                                // Creamos un entregable ficticio por cada entrada (para poder visualizarlo)
-                                newDeliverables.push({
-                                    id: `imported-${Date.now()}-${Math.random()}`,
-                                    userName: item.user,
-                                    role: "importado",
-                                    deliverable: "Snapshot importado",
-                                    transactionType: "tangible",
-                                    description: "Importado desde snapshot",
-                                    link: "",
-                                    value: item.uvAmount,
-                                    timestamp: new Date().toISOString()
-                                });
-                                if (item.address) {
-                                    newAddresses[item.user] = item.address;
-                                }
-                            }
-                        });
-                        
-                        accountingData.deliverables.push(...newDeliverables);
-                        accountingData.userAddresses = { ...accountingData.userAddresses, ...newAddresses };
-                        
-                        // Añadir rol "importado" si no existe
-                        if (!accountingData.roles.includes("importado")) {
-                            accountingData.roles.push("importado");
-                        }
-                        
-                        showNotification(`✅ Snapshot importado: ${snapshot.length} usuarios`, 'success');
-                    } 
-                    else if (imported.deliverables && Array.isArray(imported.deliverables)) {
-                        // Formato backup completo
-                        accountingData = {
-                            version: imported.version || "1.0",
-                            projectName: imported.projectName || accountingData.projectName,
-                            valueUnit: imported.valueUnit || accountingData.valueUnit,
-                            roles: imported.roles || [],
-                            deliverables: imported.deliverables || [],
-                            userAddresses: imported.userAddresses || {}
-                        };
-                        showNotification(`✅ Backup importado: ${imported.deliverables.length} entregables`, 'success');
-                    }
-                    else {
-                        throw new Error('Formato no reconocido (debe tener snapshot o deliverables)');
-                    }
-
-                    // Actualizar campos de formulario
-                    document.getElementById('project-name').value = accountingData.projectName;
-                    document.getElementById('value-unit').value = accountingData.valueUnit;
-                    
-                    saveData();
-                    updateVisualizations();
-                } catch (error) {
-                    showNotification(`❌ Error al importar: ${error.message}`, 'error');
-                } finally {
-                    importBtn.innerHTML = originalHTML;
-                    importBtn.disabled = false;
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // [MEJORA] Función exportTokenomicsJSON mejorada: incluye versión y metadatos
-        function exportTokenomicsJSON() {
-            if (accountingData.deliverables.length === 0) {
-                showNotification('⚠️ No hay datos para exportar. Registra entregables primero.', 'warning');
-                return;
-            }
-
-            try {
-                // Agregar por usuario
-                const userTotals = {};
-                accountingData.deliverables.forEach(d => {
-                    userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
-                });
-
-                const snapshot = Object.entries(userTotals).map(([user, uvAmount]) => ({
-                    user: user,
-                    address: accountingData.userAddresses[user] || '',
-                    uvAmount: uvAmount
-                }));
-
-                const output = {
-                    version: "1.0",
-                    projectName: accountingData.projectName,
-                    valueUnit: accountingData.valueUnit,
-                    snapshot: snapshot,
-                    exportDate: new Date().toISOString(),
-                    description: "Snapshot generado por Value Accounting App para TeamTowers Humà"
-                };
-
-                const dataStr = JSON.stringify(output, null, 2);
-                const blob = new Blob([dataStr], {type: 'application/json'});
-                const url = URL.createObjectURL(blob);
-                const exportFileDefaultName = `tokenomics-snapshot-${accountingData.projectName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', url);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.style.display = 'none';
-                document.body.appendChild(linkElement);
-                linkElement.click();
-                setTimeout(() => {
-                    document.body.removeChild(linkElement);
-                    URL.revokeObjectURL(url);
-                }, 100);
-
-                showNotification(`✅ Snapshot exportado: ${snapshot.length} usuarios. Listo para importar en Tokenomics App.`, 'success');
-            } catch (error) {
-                showNotification(`❌ Error al exportar: ${error.message}`, 'error');
-            }
-        }
-
-        // [MEJORA] Actualización de visualizaciones para incluir el nuevo rol "importado"
-        function updateVisualizations() {
-            document.getElementById('total-users').textContent = [...new Set(accountingData.deliverables.map(d => d.userName))].length;
-            document.getElementById('total-roles').textContent = accountingData.roles.length;
-            document.getElementById('total-deliverables').textContent = accountingData.deliverables.length;
-            document.getElementById('total-value').textContent = accountingData.deliverables.reduce((sum, d) => sum + d.value, 0);
-            updateChart();
-            updateRankingTable();
-            updateDeliverablesList();
-        }
-
-        // [MEJORA] También podemos añadir un pequeño aviso si la dirección no es válida al añadir entregable
-        function addDeliverable() {
-            // ... (validaciones existentes) ...
-            const address = document.getElementById('user-address').value.trim();
-            if (address && !isValidEthereumAddress(address)) {
-                showNotification('⚠️ La dirección Ethereum no es válida. Debe empezar por 0x y tener 40 caracteres hexadecimales.', 'warning');
-                document.getElementById('user-address').focus();
-                return;
-            }
-            // ... (resto igual) ...
-        }
-
-        // [MEJORA] Aseguramos que los botones tengan tooltips
-        function setupTooltips() {
-            document.querySelectorAll('[data-tooltip]').forEach(btn => {
-                // Los tooltips ya se manejan con CSS :hover::after
-            });
-        }
-
-        // ========== INITIALIZATION ==========
+        // Language switching functionality
         document.addEventListener('DOMContentLoaded', function() {
-            setupLanguageSelector();
-            loadData();
-            initChart();
-            setupEventListeners();
-            setupAutocompletes();
-            updateVisualizations();
-            setupTooltips();  // [MEJORA]
-            document.getElementById('run-tests').addEventListener('click', runTests);
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const translatableElements = document.querySelectorAll('[data-es], [data-ca]');
+            
+            // Set initial language based on browser settings or default to Spanish
+            const userLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            setActiveLanguage(userLang);
+            
+            // Add click event to language buttons
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    setActiveLanguage(selectedLang);
+                    
+                    // Update active button
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set active language
+            function setActiveLanguage(lang) {
+                // Update all translatable elements
+                translatableElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+                
+                // Update language-specific elements
+                document.querySelectorAll(`[lang="es"]`).forEach(el => {
+                    el.style.display = lang === 'es' ? 'block' : 'none';
+                });
+                document.querySelectorAll(`[lang="ca"]`).forEach(el => {
+                    el.style.display = lang === 'ca' ? 'block' : 'none';
+                });
+                
+                // Update HTML lang attribute
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show welcome notification
             setTimeout(() => {
-                showNotification('✨ ¡Bienvenido! Usa el botón "Exportar JSON (Smart Contract)" para generar el snapshot para Tokenomics.', 'success', 6000);
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '600';
+                notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '10000';
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #0da27f 100%)';
+                notification.style.animation = 'slideIn 0.3s, fadeOut 0.5s 5s forwards';
+                notification.innerHTML = document.documentElement.lang === 'ca' ? 
+                    '✨ Benvingut a TeamTowers Humà! Descobreix com transformar la teva organització amb la metàfora castellera.' :
+                    '✨ ¡Bienvenido a TeamTowers Humà! Descubre cómo transformar tu organización con la metáfora castellera.';
+                document.body.appendChild(notification);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 5500);
             }, 1000);
         });
     </script>
