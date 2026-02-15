@@ -3,213 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remix API + MetaMask - Despliegue de Tokens</title>
+    <title>Despliegue de Tokens con Remix API + MetaMask</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: #f5f5f5;
         }
         .container {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: #1e3a8a;
-            margin-bottom: 30px;
-            text-align: center;
-        }
+        h1 { color: #1e3a8a; margin-bottom: 30px; }
         .section {
             background: #f8fafc;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
             border-left: 4px solid #8b5cf6;
         }
-        h2 {
-            color: #1e3a8a;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #0f172a;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        }
         button {
-            background: linear-gradient(135deg, #1e3a8a 0%, #4f46e5 100%);
+            background: #1e3a8a;
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin: 5px;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(30, 58, 138, 0.3);
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
-        button.secondary {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        button.secondary { background: #64748b; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
         }
-        button.success {
-            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
-        }
-        .code-editor {
-            background: #0f172a;
-            color: #e2e8f0;
+        .code {
+            background: #1e293b;
+            color: #fff;
             padding: 15px;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-family: monospace;
             white-space: pre-wrap;
             margin: 10px 0;
-            max-height: 300px;
-            overflow-y: auto;
         }
         .status {
-            background: #e2e8f0;
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
-            margin: 15px 0;
-            font-weight: 600;
+            margin: 10px 0;
         }
-        .status.success {
-            background: #10b981;
-            color: white;
-        }
-        .status.error {
-            background: #ef4444;
-            color: white;
-        }
-        .status.info {
-            background: #3b82f6;
-            color: white;
-        }
-        .deploy-info {
+        .success { background: #10b981; color: white; }
+        .error { background: #ef4444; color: white; }
+        .info { background: #3b82f6; color: white; }
+        .address-box {
             background: #1e293b;
-            color: white;
+            color: #fff;
             padding: 15px;
             border-radius: 8px;
             word-break: break-all;
-        }
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        .step {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background: #e2e8f0;
-            margin: 0 5px;
-            border-radius: 8px;
-            font-weight: 600;
-            color: #64748b;
-        }
-        .step.active {
-            background: #1e3a8a;
-            color: white;
-        }
-        .step.completed {
-            background: #10b981;
-            color: white;
-        }
-        .gas-estimate {
-            background: #f59e0b;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-weight: 600;
-        }
-        .info-box {
-            background: #e0f2fe;
-            border-left: 4px solid #0284c7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-        .info-box a {
-            color: #0284c7;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .info-box a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Despliegue de Tokens con Remix API + MetaMask</h1>
+        <h1>🚀 Despliegue de Token ERC20 en Testnet</h1>
         
-        <!-- Step Indicator -->
-        <div class="step-indicator">
-            <div class="step active" id="step1">1. Conectar MetaMask</div>
-            <div class="step" id="step2">2. Compilar Contrato</div>
-            <div class="step" id="step3">3. Desplegar Token</div>
-            <div class="step" id="step4">4. Verificar</div>
+        <!-- Sección 1: Conexión MetaMask -->
+        <div class="section">
+            <h2>1️⃣ Conectar MetaMask</h2>
+            <button id="connectBtn">🔌 Conectar MetaMask</button>
+            <button id="switchNetworkBtn">🔄 Cambiar a Sepolia</button>
+            <div id="connectionStatus" class="status info">Esperando conexión...</div>
+            <div id="accountInfo"></div>
         </div>
 
-        <!-- MetaMask Connection Section -->
+        <!-- Sección 2: Código del Contrato -->
         <div class="section">
-            <h2>🔌 1. Conectar MetaMask</h2>
-            <div class="form-group">
-                <label>Red de Prueba</label>
-                <select id="network-select">
-                    <option value="sepolia">Sepolia Testnet</option>
-                    <option value="goerli">Goerli Testnet</option>
-                    <option value="holesky">Holesky Testnet</option>
-                </select>
-            </div>
-            <button id="connect-btn" class="success">🔗 Conectar MetaMask</button>
-            <button id="switch-network" class="secondary">🔄 Cambiar Red</button>
-            <div id="wallet-status" class="status info" style="margin-top: 10px;">
-                ⚠️ No conectado
-            </div>
-            <div id="account-info" style="margin-top: 10px;"></div>
-        </div>
-
-        <!-- Contract Source Section -->
-        <div class="section">
-            <h2>📝 2. Código del Token (ERC20)</h2>
-            <div class="info-box">
-                <strong>💡 Contrato básico ERC20 con OpenZeppelin</strong><br>
-                Este token incluye: nombre, símbolo, decimals (18) y mint inicial al deployer.
-            </div>
-            <div class="code-editor" id="contract-code">
+            <h2>2️⃣ Contrato ERC20</h2>
+            <div class="code" id="contractCode">
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/ERC20.sol";
 
 contract MiToken is ERC20 {
     constructor(
@@ -221,302 +106,153 @@ contract MiToken is ERC20 {
     }
 }
             </div>
-            <button id="compile-btn" class="secondary" disabled>⚙️ Compilar Contrato</button>
-            <div id="compilation-status" style="margin-top: 10px;"></div>
+            <button id="compileBtn" disabled>⚙️ Compilar Contrato</button>
+            <div id="compileStatus"></div>
         </div>
 
-        <!-- Deployment Parameters -->
+        <!-- Sección 3: Parámetros y Despliegue -->
         <div class="section">
-            <h2>⚙️ 3. Parámetros del Token</h2>
-            <div class="form-group">
-                <label>Nombre del Token</label>
-                <input type="text" id="token-name" value="Mi Token" placeholder="Ej: Mi Token">
+            <h2>3️⃣ Configurar y Desplegar</h2>
+            <div>
+                <label>Nombre del Token:</label>
+                <input type="text" id="tokenName" value="Mi Token" placeholder="Ej: Mi Token">
             </div>
-            <div class="form-group">
-                <label>Símbolo</label>
-                <input type="text" id="token-symbol" value="MTK" placeholder="Ej: MTK" maxlength="5">
+            <div>
+                <label>Símbolo:</label>
+                <input type="text" id="tokenSymbol" value="MTK" placeholder="Ej: MTK">
             </div>
-            <div class="form-group">
-                <label>Suministro Inicial (en unidades, sin decimals)</label>
-                <input type="number" id="token-supply" value="1000000" min="1">
-                <small style="color: #64748b;">Se multiplicará por 10^18 automáticamente</small>
+            <div>
+                <label>Suministro Inicial:</label>
+                <input type="number" id="tokenSupply" value="1000000" placeholder="1000000">
             </div>
-            
-            <div class="gas-estimate" id="gas-estimate" style="display: none;">
-                ⛽ Gas estimado: <span id="gas-amount">0</span> gwei
-            </div>
-            
-            <button id="deploy-btn" class="success" disabled>🚀 Desplegar Token</button>
-            <button id="estimate-gas" class="secondary" disabled>📊 Estimar Gas</button>
+            <button id="deployBtn" disabled>🚀 Desplegar Token</button>
+            <div id="deployStatus"></div>
         </div>
 
-        <!-- Deployment Results -->
+        <!-- Sección 4: Resultado -->
         <div class="section">
-            <h2>✅ 4. Resultado del Despliegue</h2>
-            <div id="deployment-status"></div>
-            <div id="contract-info" class="deploy-info" style="display: none;"></div>
-            <div id="transaction-hash" style="margin-top: 10px;"></div>
-            
-            <!-- Quick Actions after Deployment -->
-            <div id="post-deploy" style="display: none; margin-top: 20px;">
-                <h3>📋 Acciones Rápidas</h3>
-                <button id="view-on-explorer" class="secondary">🔍 Ver en Explorer</button>
-                <button id="add-to-metamask" class="secondary">➕ Añadir a MetaMask</button>
-                <button id="copy-address" class="secondary">📋 Copiar Dirección</button>
+            <h2>4️⃣ Resultado del Despliegue</h2>
+            <div id="resultArea"></div>
+            <div id="postDeploy" style="display:none;">
+                <button id="viewExplorer">🔍 Ver en Etherscan</button>
+                <button id="copyAddress">📋 Copiar Dirección</button>
+                <button id="addToMetaMask">➕ Añadir a MetaMask</button>
             </div>
-        </div>
-
-        <!-- Remix API Status -->
-        <div class="section">
-            <h2>🔧 Estado de Remix API</h2>
-            <div id="remix-status" class="status info">
-                ⏳ Cargando Remix API...
-            </div>
-            <div id="remix-details"></div>
-        </div>
-
-        <!-- Learning Resources -->
-        <div class="info-box">
-            <h3>📚 Recursos de Aprendizaje</h3>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-                <li><a href="https://remix-project.org/" target="_blank">Documentación de Remix</a></li>
-                <li><a href="https://docs.metamask.io/" target="_blank">Documentación de MetaMask</a></li>
-                <li><a href="https://sepolia.etherscan.io/" target="_blank">Sepolia Etherscan</a></li>
-                <li><a href="https://faucet.chainstack.com/sepolia-faucet" target="_blank">Faucet de Sepolia (ETH gratis)</a></li>
-            </ul>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@remix-project/remixd-client@latest"></script>
+    <!-- Scripts necesarios -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <script src="https://binaries.soliditylang.org/bin/soljson-v0.8.20+commit.a1b79de6.js"></script>
+
     <script>
         // ========== CONFIGURACIÓN ==========
-        let web3 = null;
-        let accounts = [];
-        let networkId = null;
+        let provider, signer, account;
         let compiledContract = null;
-        let remixClient = null;
-        let deployedContract = null;
-
-        // Redes soportadas
-        const networks = {
-            'sepolia': {
-                chainId: '0xaa36a7',
-                chainIdNumber: 11155111,
-                name: 'Sepolia Testnet',
-                rpc: 'https://sepolia.infura.io/v3/',
-                explorer: 'https://sepolia.etherscan.io',
-                faucet: 'https://faucet.chainstack.com/sepolia-faucet'
-            },
-            'goerli': {
-                chainId: '0x5',
-                chainIdNumber: 5,
-                name: 'Goerli Testnet',
-                explorer: 'https://goerli.etherscan.io'
-            },
-            'holesky': {
-                chainId: '0x4268',
-                chainIdNumber: 17000,
-                name: 'Holesky Testnet',
-                explorer: 'https://holesky.etherscan.io'
-            }
+        let deployedAddress = null;
+        
+        // Red Sepolia
+        const SEPOLIA_CHAIN_ID = '0xaa36a7';
+        const SEPOLIA_NETWORK = {
+            chainId: SEPOLIA_CHAIN_ID,
+            chainName: 'Sepolia Testnet',
+            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+            rpcUrls: ['https://sepolia.infura.io/v3/'],
+            blockExplorerUrls: ['https://sepolia.etherscan.io/']
         };
 
-        // ========== INICIALIZACIÓN ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            checkRemixAPI();
-            setupEventListeners();
+        // ========== FUNCIÓN DE CONEXIÓN ==========
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            try {
+                if (!window.ethereum) {
+                    throw new Error('MetaMask no está instalado');
+                }
+
+                // Solicitar cuentas
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                // Configurar provider y signer
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+                account = await signer.getAddress();
+                
+                // Verificar red
+                const network = await provider.getNetwork();
+                const chainId = '0x' + network.chainId.toString(16);
+                
+                let statusMsg = `✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)}`;
+                
+                if (chainId !== SEPOLIA_CHAIN_ID) {
+                    statusMsg += ' ⚠️ No estás en Sepolia';
+                } else {
+                    statusMsg += ' 📍 Red: Sepolia';
+                }
+                
+                document.getElementById('connectionStatus').className = 'status success';
+                document.getElementById('connectionStatus').textContent = statusMsg;
+                
+                // Habilitar botón de compilación
+                document.getElementById('compileBtn').disabled = false;
+                
+                // Mostrar balance
+                const balance = await provider.getBalance(account);
+                const ethBalance = ethers.formatEther(balance);
+                document.getElementById('accountInfo').innerHTML = `
+                    <div style="background:#1e293b; color:white; padding:10px; border-radius:8px; margin-top:10px;">
+                        <strong>Balance:</strong> ${ethBalance} ETH
+                    </div>
+                `;
+                
+            } catch (error) {
+                document.getElementById('connectionStatus').className = 'status error';
+                document.getElementById('connectionStatus').textContent = '❌ Error: ' + error.message;
+            }
         });
 
-        function setupEventListeners() {
-            document.getElementById('connect-btn').addEventListener('click', connectMetaMask);
-            document.getElementById('switch-network').addEventListener('click', switchNetwork);
-            document.getElementById('compile-btn').addEventListener('click', compileContract);
-            document.getElementById('deploy-btn').addEventListener('click', deployContract);
-            document.getElementById('estimate-gas').addEventListener('click', estimateGas);
-            document.getElementById('view-on-explorer').addEventListener('click', viewOnExplorer);
-            document.getElementById('add-to-metamask').addEventListener('click', addToMetaMask);
-            document.getElementById('copy-address').addEventListener('click', copyAddress);
-        }
-
-        // ========== REMIX API ==========
-        async function checkRemixAPI() {
-            const statusDiv = document.getElementById('remix-status');
-            const detailsDiv = document.getElementById('remix-details');
-            
+        // ========== CAMBIAR A SEPOLIA ==========
+        document.getElementById('switchNetworkBtn').addEventListener('click', async () => {
             try {
-                // Intentar cargar la API de Remix
-                if (typeof remix !== 'undefined') {
-                    remixClient = remix;
-                    statusDiv.className = 'status success';
-                    statusDiv.innerHTML = '✅ Remix API disponible';
-                    detailsDiv.innerHTML = 'La API de Remix está lista para compilar y desplegar.';
-                    
-                    // Cargar compilador
-                    await loadCompiler();
-                } else {
-                    // Si no está disponible, usar CDN
-                    await loadRemixScript();
-                }
-            } catch (error) {
-                statusDiv.className = 'status error';
-                statusDiv.innerHTML = '❌ Error cargando Remix API';
-                detailsDiv.innerHTML = error.message;
-            }
-        }
-
-        async function loadRemixScript() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@remix-project/remixd-client@latest';
-                script.onload = async () => {
-                    try {
-                        remixClient = remix;
-                        document.getElementById('remix-status').className = 'status success';
-                        document.getElementById('remix-status').innerHTML = '✅ Remix API cargada desde CDN';
-                        await loadCompiler();
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                };
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        async function loadCompiler() {
-            // Cargar compilador de Solidity
-            const compilerScript = document.createElement('script');
-            compilerScript.src = 'https://binaries.soliditylang.org/bin/soljson-v0.8.20+commit.a1b79de6.js';
-            document.head.appendChild(compilerScript);
-        }
-
-        // ========== METAMASK ==========
-        async function connectMetaMask() {
-            if (typeof window.ethereum === 'undefined') {
-                alert('⚠️ MetaMask no está instalado. Por favor, instálalo desde https://metamask.io/');
-                window.open('https://metamask.io/', '_blank');
-                return;
-            }
-
-            try {
-                // Solicitar conexión
-                accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                web3 = new Web3(ethereum);
-                
-                // Obtener información de la red
-                networkId = await web3.eth.net.getId();
-                const chainId = await web3.eth.getChainId();
-                
-                // Verificar que estamos en testnet
-                const selectedNetwork = document.getElementById('network-select').value;
-                const expectedChainId = networks[selectedNetwork].chainIdNumber;
-                
-                if (chainId !== expectedChainId) {
-                    await switchToTestnet(selectedNetwork);
-                }
-                
-                // Actualizar UI
-                updateWalletUI();
-                
-                // Habilitar botones
-                document.getElementById('compile-btn').disabled = false;
-                document.getElementById('estimate-gas').disabled = false;
-                
-                // Actualizar step
-                updateStep(1, true);
-                updateStep(2, true);
-                
-            } catch (error) {
-                console.error('Error conectando MetaMask:', error);
-                showStatus('wallet-status', 'error', '❌ Error conectando: ' + error.message);
-            }
-        }
-
-        async function switchNetwork() {
-            const network = document.getElementById('network-select').value;
-            await switchToTestnet(network);
-        }
-
-        async function switchToTestnet(networkKey) {
-            const network = networks[networkKey];
-            
-            try {
-                await ethereum.request({
+                await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: network.chainId }],
+                    params: [{ chainId: SEPOLIA_CHAIN_ID }]
                 });
             } catch (switchError) {
-                // Si la red no existe, añadirla
                 if (switchError.code === 4902) {
                     try {
-                        await ethereum.request({
+                        await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
-                            params: [{
-                                chainId: network.chainId,
-                                chainName: network.name,
-                                nativeCurrency: {
-                                    name: 'ETH',
-                                    symbol: 'ETH',
-                                    decimals: 18
-                                },
-                                rpcUrls: ['https://sepolia.infura.io/v3/'],
-                                blockExplorerUrls: [network.explorer]
-                            }],
+                            params: [SEPOLIA_NETWORK]
                         });
                     } catch (addError) {
-                        console.error('Error añadiendo red:', addError);
+                        alert('Error añadiendo red: ' + addError.message);
                     }
                 }
             }
-            
-            // Recargar información de la cuenta
-            await connectMetaMask();
-        }
-
-        function updateWalletUI() {
-            const account = accounts[0];
-            const shortAccount = account.slice(0, 6) + '...' + account.slice(-4);
-            
-            document.getElementById('wallet-status').className = 'status success';
-            document.getElementById('wallet-status').innerHTML = '✅ Conectado: ' + shortAccount;
-            
-            document.getElementById('account-info').innerHTML = `
-                <div style="background: #1e293b; color: white; padding: 10px; border-radius: 8px;">
-                    <strong>📍 Dirección:</strong> ${account}<br>
-                    <strong>🔗 Red:</strong> ${networks[document.getElementById('network-select').value].name}
-                </div>
-            `;
-        }
+        });
 
         // ========== COMPILACIÓN ==========
-        async function compileContract() {
-            showStatus('compilation-status', 'info', '⚙️ Compilando contrato...');
+        document.getElementById('compileBtn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('compileStatus');
+            statusDiv.className = 'status info';
+            statusDiv.textContent = '⚙️ Compilando...';
             
             try {
-                const contractCode = document.getElementById('contract-code').textContent;
+                const contractCode = document.getElementById('contractCode').textContent;
                 
                 // Configurar compilador
-                const compiler = solc;
                 const input = {
                     language: 'Solidity',
                     sources: {
-                        'MiToken.sol': {
-                            content: contractCode
-                        }
+                        'MiToken.sol': { content: contractCode }
                     },
                     settings: {
-                        outputSelection: {
-                            '*': {
-                                '*': ['*']
-                            }
-                        }
+                        optimizer: { enabled: true, runs: 200 },
+                        outputSelection: { '*': { '*': ['abi', 'evm.bytecode'] } }
                     }
                 };
 
                 // Compilar
-                const output = JSON.parse(compiler.compile(JSON.stringify(input)));
+                const output = JSON.parse(solc.compile(JSON.stringify(input)));
                 
                 if (output.errors) {
                     const errors = output.errors.filter(e => e.severity === 'error');
@@ -525,193 +261,123 @@ contract MiToken is ERC20 {
                     }
                 }
 
-                // Obtener el contrato compilado
-                const contractName = 'MiToken';
-                compiledContract = output.contracts['MiToken.sol'][contractName];
+                // Obtener contrato compilado
+                compiledContract = output.contracts['MiToken.sol']['MiToken'];
                 
-                showStatus('compilation-status', 'success', '✅ Contrato compilado exitosamente!');
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Compilación exitosa';
                 
-                // Mostrar detalles de la compilación
-                document.getElementById('remix-details').innerHTML = `
-                    <div style="background: #1e293b; color: white; padding: 10px; border-radius: 8px; margin-top: 10px;">
-                        <strong>📦 Bytecode:</strong> ${compiledContract.evm.bytecode.object.slice(0, 50)}...<br>
-                        <strong>📄 ABI:</strong> Disponible para despliegue
+                // Habilitar botón de despliegue
+                document.getElementById('deployBtn').disabled = false;
+                
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Error compilando: ' + error.message;
+            }
+        });
+
+        // ========== DESPLIEGUE ==========
+        document.getElementById('deployBtn').addEventListener('click', async () => {
+            if (!compiledContract || !signer) {
+                alert('Primero conecta y compila');
+                return;
+            }
+
+            const deployStatus = document.getElementById('deployStatus');
+            deployStatus.className = 'status info';
+            deployStatus.textContent = '🚀 Enviando transacción...';
+
+            try {
+                // Obtener parámetros
+                const name = document.getElementById('tokenName').value;
+                const symbol = document.getElementById('tokenSymbol').value;
+                const supply = document.getElementById('tokenSupply').value;
+
+                // Crear factoría del contrato
+                const factory = new ethers.ContractFactory(
+                    compiledContract.abi,
+                    compiledContract.evm.bytecode.object,
+                    signer
+                );
+
+                // Desplegar
+                deployStatus.textContent = '⏳ Confirmando transacción en MetaMask...';
+                
+                const contract = await factory.deploy(name, symbol, supply);
+                
+                deployStatus.textContent = '⏳ Esperando confirmación en la blockchain...';
+                
+                await contract.waitForDeployment();
+                
+                deployedAddress = await contract.getAddress();
+                const txHash = contract.deploymentTransaction().hash;
+
+                // Mostrar resultado
+                document.getElementById('resultArea').innerHTML = `
+                    <div class="address-box">
+                        <strong>📌 Dirección:</strong><br>
+                        ${deployedAddress}<br><br>
+                        <strong>📝 Transacción:</strong><br>
+                        ${txHash}
                     </div>
                 `;
                 
-                // Habilitar botón de despliegue
-                document.getElementById('deploy-btn').disabled = false;
-                updateStep(2, true);
-                updateStep(3, true);
+                deployStatus.className = 'status success';
+                deployStatus.textContent = '✅ Token desplegado exitosamente';
+                
+                // Mostrar botones post-despliegue
+                document.getElementById('postDeploy').style.display = 'block';
                 
             } catch (error) {
-                console.error('Error compilando:', error);
-                showStatus('compilation-status', 'error', '❌ Error compilando: ' + error.message);
+                deployStatus.className = 'status error';
+                deployStatus.textContent = '❌ Error: ' + (error.reason || error.message);
             }
-        }
+        });
 
-        // ========== ESTIMACIÓN DE GAS ==========
-        async function estimateGas() {
-            if (!compiledContract || !accounts[0]) {
-                alert('Primero conecta MetaMask y compila el contrato');
-                return;
+        // ========== POST-DESPLIEGUE ==========
+        document.getElementById('viewExplorer').addEventListener('click', () => {
+            if (deployedAddress) {
+                window.open(`https://sepolia.etherscan.io/address/${deployedAddress}`, '_blank');
             }
-            
-            try {
-                const name = document.getElementById('token-name').value;
-                const symbol = document.getElementById('token-symbol').value;
-                const supply = document.getElementById('token-supply').value;
-                
-                // Crear el objeto del contrato
-                const contract = new web3.eth.Contract(compiledContract.abi);
-                
-                // Estimar gas
-                const gasEstimate = await contract.deploy({
-                    data: compiledContract.evm.bytecode.object,
-                    arguments: [name, symbol, supply]
-                }).estimateGas({ from: accounts[0] });
-                
-                // Obtener precio del gas
-                const gasPrice = await web3.eth.getGasPrice();
-                const totalGasEth = web3.utils.fromWei((gasEstimate * gasPrice).toString(), 'ether');
-                
-                document.getElementById('gas-estimate').style.display = 'block';
-                document.getElementById('gas-amount').innerHTML = `
-                    ⛽ ${gasEstimate} unidades (≈ ${totalGasEth} ETH)
-                `;
-                
-            } catch (error) {
-                console.error('Error estimando gas:', error);
-                alert('Error estimando gas: ' + error.message);
-            }
-        }
+        });
 
-        // ========== DESPLIEGUE ==========
-        async function deployContract() {
-            if (!compiledContract || !accounts[0]) {
-                alert('Primero conecta MetaMask y compila el contrato');
-                return;
+        document.getElementById('copyAddress').addEventListener('click', () => {
+            if (deployedAddress) {
+                navigator.clipboard.writeText(deployedAddress);
+                alert('✅ Dirección copiada');
             }
-            
-            showStatus('deployment-status', 'info', '🚀 Iniciando despliegue...');
-            
-            try {
-                const name = document.getElementById('token-name').value;
-                const symbol = document.getElementById('token-symbol').value;
-                const supply = document.getElementById('token-supply').value;
-                
-                // Crear instancia del contrato
-                const contract = new web3.eth.Contract(compiledContract.abi);
-                
-                // Preparar despliegue
-                const deployTx = contract.deploy({
-                    data: compiledContract.evm.bytecode.object,
-                    arguments: [name, symbol, supply]
-                });
-                
-                // Estimar gas si no se ha hecho antes
-                const gasEstimate = await deployTx.estimateGas({ from: accounts[0] });
-                
-                // Enviar transacción
-                const deployed = await deployTx.send({
-                    from: accounts[0],
-                    gas: Math.floor(gasEstimate * 1.2), // 20% extra por seguridad
-                    gasPrice: await web3.eth.getGasPrice()
-                });
-                
-                deployedContract = deployed;
-                
-                // Mostrar información del despliegue
-                const contractAddress = deployed.options.address;
-                const txHash = deployed.transactionHash;
-                
-                document.getElementById('deployment-status').className = 'status success';
-                document.getElementById('deployment-status').innerHTML = '✅ ¡Token desplegado exitosamente!';
-                
-                document.getElementById('contract-info').style.display = 'block';
-                document.getElementById('contract-info').innerHTML = `
-                    <strong>📌 Dirección del contrato:</strong><br>
-                    ${contractAddress}<br><br>
-                    <strong>📝 Transacción:</strong><br>
-                    ${txHash}
-                `;
-                
-                document.getElementById('post-deploy').style.display = 'block';
-                
-                // Guardar información para acciones posteriores
-                window.deployedContractAddress = contractAddress;
-                window.deployedContractABI = compiledContract.abi;
-                
-                // Actualizar steps
-                updateStep(3, true);
-                updateStep(4, true);
-                
-            } catch (error) {
-                console.error('Error desplegando:', error);
-                document.getElementById('deployment-status').className = 'status error';
-                document.getElementById('deployment-status').innerHTML = '❌ Error desplegando: ' + error.message;
-            }
-        }
+        });
 
-        // ========== ACCIONES POST-DESPLIEGUE ==========
-        function viewOnExplorer() {
-            if (window.deployedContractAddress) {
-                const network = document.getElementById('network-select').value;
-                const explorer = networks[network].explorer;
-                window.open(`${explorer}/address/${window.deployedContractAddress}`, '_blank');
-            }
-        }
-
-        async function addToMetaMask() {
-            if (window.deployedContractAddress && window.deployedContractABI) {
+        document.getElementById('addToMetaMask').addEventListener('click', async () => {
+            if (deployedAddress) {
                 try {
-                    await ethereum.request({
+                    await window.ethereum.request({
                         method: 'wallet_watchAsset',
                         params: {
                             type: 'ERC20',
                             options: {
-                                address: window.deployedContractAddress,
-                                symbol: document.getElementById('token-symbol').value,
-                                decimals: 18,
-                                image: 'https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png',
-                            },
-                        },
+                                address: deployedAddress,
+                                symbol: document.getElementById('tokenSymbol').value,
+                                decimals: 18
+                            }
+                        }
                     });
                 } catch (error) {
-                    console.error('Error añadiendo token a MetaMask:', error);
+                    alert('Error añadiendo token: ' + error.message);
                 }
             }
-        }
+        });
 
-        function copyAddress() {
-            if (window.deployedContractAddress) {
-                navigator.clipboard.writeText(window.deployedContractAddress);
-                alert('✅ Dirección copiada al portapapeles');
-            }
-        }
-
-        // ========== UTILIDADES ==========
-        function showStatus(elementId, type, message) {
-            const element = document.getElementById(elementId);
-            element.className = `status ${type}`;
-            element.innerHTML = message;
-        }
-
-        function updateStep(step, completed) {
-            for (let i = 1; i <= 4; i++) {
-                const stepEl = document.getElementById(`step${i}`);
-                if (i < step) {
-                    stepEl.className = 'step completed';
-                } else if (i === step) {
-                    stepEl.className = completed ? 'step completed' : 'step active';
-                } else {
-                    stepEl.className = 'step';
-                }
-            }
+        // ========== DETECCIÓN DE CAMBIOS DE CUENTA ==========
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', () => {
+                window.location.reload();
+            });
+            
+            window.ethereum.on('chainChanged', () => {
+                window.location.reload();
+            });
         }
     </script>
-    
-    <!-- Web3.js -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@4.0.1/dist/web3.min.js"></script>
 </body>
 </html>
