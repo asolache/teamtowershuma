@@ -3,35 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Despliegue de Tokens con MetaMask</title>
+    <title>TeamTowers Humà - Despliegue de Tokens</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .container {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        h1 { color: #1e3a8a; margin-bottom: 30px; }
+        h1 { color: #1e3a8a; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1e3a8a; font-size: 1.3rem; margin-top: 0; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
         .section {
             background: #f8fafc;
             border-radius: 10px;
             padding: 20px;
-            margin-bottom: 20px;
             border-left: 4px solid #8b5cf6;
         }
+        
         .button-group {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin: 10px 0;
         }
+        
         button {
             background: #1e3a8a;
             color: white;
@@ -40,7 +49,6 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            margin: 5px 0;
             transition: all 0.3s;
         }
         button:hover {
@@ -51,29 +59,19 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
         button.secondary { background: #64748b; }
-        button.danger { background: #dc2626; }
-        input {
+        button.success { background: #10b981; }
+        
+        input, select, textarea {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
+            margin: 8px 0;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 1rem;
         }
-        .code {
-            background: #1e293b;
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            margin: 10px 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
+        
         .status {
             padding: 10px;
             border-radius: 8px;
@@ -82,6 +80,19 @@
         .success { background: #10b981; color: white; }
         .error { background: #ef4444; color: white; }
         .info { background: #3b82f6; color: white; }
+        
+        .token-data {
+            background: #1e293b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
         .address-box {
             background: #1e293b;
             color: #fff;
@@ -89,415 +100,399 @@
             border-radius: 8px;
             word-break: break-all;
         }
+        
         .badge {
             display: inline-block;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 600;
-            margin-left: 10px;
+            background: #ef4444;
+            color: white;
         }
-        .badge.connected { background: #10b981; color: white; }
-        .badge.disconnected { background: #ef4444; color: white; }
+        .badge.connected { background: #10b981; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Despliegue de Token ERC20 en Testnet</h1>
+        <h1>🏗️ TeamTowers Humà - Despliegue de Tokens</h1>
         
-        <!-- Sección 1: Conexión MetaMask -->
-        <div class="section">
-            <h2>1️⃣ Conectar MetaMask</h2>
-            <div class="button-group">
-                <button id="connectBtn">🔌 Conectar MetaMask</button>
-                <button id="disconnectBtn" class="danger" disabled>🔌 Desconectar</button>
-                <button id="switchNetworkBtn" class="secondary" disabled>🔄 Cambiar a Sepolia</button>
-            </div>
-            <div id="connectionStatus" class="status info">Esperando conexión...</div>
-            <div id="accountInfo"></div>
-        </div>
-
-        <!-- Sección 2: Código del Contrato -->
-        <div class="section">
-            <h2>2️⃣ Contrato ERC20</h2>
-            <div class="code" id="contractCode">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/ERC20.sol";
-
-contract MiToken is ERC20 {
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 initialSupply
-    ) ERC20(name, symbol) {
-        _mint(msg.sender, initialSupply * 10 ** decimals());
-    }
-}
-            </div>
-            <button id="compileBtn" disabled>⚙️ Compilar Contrato</button>
-            <div id="compileStatus"></div>
-            <div id="compilerStatus" style="margin-top: 10px; font-size: 0.9rem; color: #64748b;"></div>
-        </div>
-
-        <!-- Sección 3: Parámetros y Despliegue -->
-        <div class="section">
-            <h2>3️⃣ Configurar y Desplegar</h2>
-            <div>
-                <label>Nombre del Token:</label>
-                <input type="text" id="tokenName" value="Mi Token" placeholder="Ej: Mi Token">
-            </div>
-            <div>
-                <label>Símbolo:</label>
-                <input type="text" id="tokenSymbol" value="MTK" placeholder="Ej: MTK">
-            </div>
-            <div>
-                <label>Suministro Inicial (unidades):</label>
-                <input type="number" id="tokenSupply" value="1000000" placeholder="1000000">
-                <small style="color: #64748b;">Se multiplicará por 10^18 automáticamente</small>
-            </div>
-            <button id="deployBtn" disabled>🚀 Desplegar Token</button>
-            <div id="deployStatus"></div>
-        </div>
-
-        <!-- Sección 4: Resultado -->
-        <div class="section">
-            <h2>4️⃣ Resultado del Despliegue</h2>
-            <div id="resultArea"></div>
-            <div id="postDeploy" style="display:none; margin-top: 15px;">
+        <div class="grid">
+            <!-- Columna Izquierda: Datos de Tokenomics -->
+            <div class="section">
+                <h2>📊 Datos del Proyecto (desde tokenomics.html)</h2>
+                
                 <div class="button-group">
-                    <button id="viewExplorer" class="secondary">🔍 Ver en Etherscan</button>
-                    <button id="copyAddress" class="secondary">📋 Copiar Dirección</button>
-                    <button id="addToMetaMask" class="secondary">➕ Añadir a MetaMask</button>
+                    <button id="loadSampleData" class="secondary">📂 Cargar Datos de Ejemplo</button>
+                    <button id="loadFromTokenomics" class="secondary">📎 Cargar desde tokenomics.json</button>
+                </div>
+                
+                <div>
+                    <label>Nombre del Proyecto:</label>
+                    <input type="text" id="projectName" value="Mi Proyecto Tokenomics">
+                </div>
+                
+                <div>
+                    <label>Nombre del Token:</label>
+                    <input type="text" id="tokenName" value="Token de Comunidad">
+                </div>
+                
+                <div>
+                    <label>Símbolo:</label>
+                    <input type="text" id="tokenSymbol" value="CMTY">
+                </div>
+                
+                <div>
+                    <label>Suministro Total:</label>
+                    <input type="number" id="totalSupply" value="1000000">
+                </div>
+                
+                <div id="tokenomicsPreview" class="token-data">
+                    ⏳ No hay datos cargados
+                </div>
+                
+                <div class="button-group">
+                    <button id="calculateTokens" class="secondary">🧮 Calcular Distribución</button>
+                </div>
+            </div>
+            
+            <!-- Columna Derecha: Despliegue Blockchain -->
+            <div class="section">
+                <h2>⛓️ Despliegue en Testnet</h2>
+                
+                <div class="button-group">
+                    <button id="connectBtn">🔌 Conectar MetaMask</button>
+                    <button id="disconnectBtn" class="secondary" disabled>🔌 Desconectar</button>
+                </div>
+                
+                <div id="connectionStatus" class="status info">Esperando conexión...</div>
+                
+                <div style="margin: 15px 0;">
+                    <label>Red de destino:</label>
+                    <select id="networkSelect">
+                        <option value="sepolia">Sepolia Testnet (recomendada)</option>
+                        <option value="holesky">Holesky Testnet</option>
+                        <option value="goerli">Goerli Testnet</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button id="deployBtn" disabled>🚀 Desplegar Token</button>
+                    <button id="estimateBtn" disabled>⛽ Estimar Gas</button>
+                </div>
+                
+                <div id="deployStatus"></div>
+                <div id="resultArea"></div>
+                
+                <div id="postDeploy" style="display:none; margin-top: 15px;">
+                    <div class="button-group">
+                        <button id="viewExplorer" class="secondary">🔍 Ver en Etherscan</button>
+                        <button id="copyAddress" class="secondary">📋 Copiar Dirección</button>
+                        <button id="addToMetaMask" class="secondary">➕ Añadir a MetaMask</button>
+                    </div>
                 </div>
             </div>
         </div>
-
+        
+        <!-- Estado de conexión -->
         <div style="margin-top: 20px; text-align: center;">
-            <span id="connectionBadge" class="badge disconnected">⚫ Desconectado</span>
+            <span id="connectionBadge" class="badge">⚫ Desconectado</span>
+        </div>
+        
+        <!-- Información de ayuda -->
+        <div style="margin-top: 30px; padding: 15px; background: #e0f2fe; border-radius: 8px;">
+            <strong>ℹ️ Información importante:</strong><br>
+            • Este despliegue usa los RPC públicos de Sepolia (sin API key)<br>
+            • Necesitas ETH de prueba: <a href="https://faucet.chainstack.com/sepolia-faucet" target="_blank">Faucet de Sepolia</a><br>
+            • Los datos de tokenomics se pueden cargar desde el archivo exportado en la app de contabilidad
         </div>
     </div>
 
-    <!-- Scripts necesarios -->
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
     
     <script>
         // ========== CONFIGURACIÓN ==========
         let provider, signer, account;
-        let compiledContract = null;
         let deployedAddress = null;
         let isConnected = false;
-        let solcVersion = null;
         
-        // Red Sepolia
-        const SEPOLIA_CHAIN_ID = '0xaa36a7';
-        const SEPOLIA_NETWORK = {
-            chainId: SEPOLIA_CHAIN_ID,
-            chainName: 'Sepolia Testnet',
-            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-            rpcUrls: ['https://sepolia.infura.io/v3/'],
-            blockExplorerUrls: ['https://sepolia.etherscan.io/']
+        // ABIs y Bytecode predefinidos (para no necesitar compilador)
+        const TOKEN_ABI = [
+            "constructor(string memory name, string memory symbol, uint256 initialSupply)",
+            "function name() view returns (string)",
+            "function symbol() view returns (string)",
+            "function decimals() view returns (uint8)",
+            "function totalSupply() view returns (uint256)",
+            "function balanceOf(address) view returns (uint256)",
+            "function transfer(address to, uint256 amount) returns (bool)",
+            "event Transfer(address indexed from, address indexed to, uint256 value)"
+        ];
+        
+        const TOKEN_BYTECODE = "0x60806040523480156200001157600080fd5b5060405162000be838038062000be88339818101604052810190620000379190620002f2565b828281600390816200004a9190620005c7565b5080600490816200005c9190620005c7565b5050506200007d33620000746200008660201b60201c565b6200008f60201b60201c565b5050506200074d565b60006012905090565b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff160362000101576040517f08c379a00000000000000000000000000000000000000000000000000000008152600401620000f8906200070f565b60405180910390fd5b6200011560008383620001fc60201b60201c565b806002600082825462000129919062000387565b92505081905550806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825401925050819055508173ffffffffffffffffffffffffffffffffffffffff16600073ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef83604051620001dc91906200037a565b60405180910390a3620001f8600083836200020160201b60201c565b5050565b505050565b505050565b6000604051905090565b600080fd5b600080fd5b600080fd5b600080fd5b6000601f19601f8301169050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6200026e8262000223565b810181811067ffffffffffffffff8211171562000290576200028f62000234565b5b80604052505050565b6000620002a562000206565b9050620002b3828262000263565b919050565b600067ffffffffffffffff821115620002d657620002d562000234565b5b620002e18262000223565b9050602081019050919050565b6000806000606084860312156200030e576200030d62000219565b5b600084015167ffffffffffffffff8111156200032f576200032e6200021e565b5b6200033d86828701620002b8565b935050602084015167ffffffffffffffff8111156200036157620003606200021e565b5b6200036f86828701620002b8565b925050604084015190509250925092565b6000819050919050565b6000620003a46200039e6200037a565b62000299565b9050919050565b620003b6816200037a565b82525050565b6000620003cd82620002b8565b620003d981856200037a565b9350620003eb818560208601620003ae565b620003f68162000223565b840191505092915050565b600081519050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b600060028204905060018216806200045457607f821691505b6020821081036200046a57620004696200040c565b5b50919050565b60008190508160005260206000209050919050565b60006020601f8301049050919050565b600082821b905092915050565b600060088302620004d47fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8262000495565b620004e0868362000495565b95508019841693508086168417925050509392505050565b6000819050919050565b6000620005236200051d62000517846200037a565b620004f8565b6200037a565b9050919050565b6000819050919050565b6200053f8362000502565b620005576200054e826200052a565b848454620004a2565b825550505050565b600090565b6200056e6200055f565b6200057b81848462000534565b505050565b5b81811015620005a3576200059760008262000564565b60018101905062000581565b5050565b601f821115620005f257620005bc8162000470565b620005c78462000485565b81016020851015620005d7578190505b620005ef620005e68562000485565b83018262000580565b50505b505050565b600082821c905092915050565b60006200061760001984600802620005f7565b1980831691505092915050565b600062000632838362000604565b9150826002028217905092915050565b6200064d8262000401565b67ffffffffffffffff81111562000669576200066862000234565b5b6200067582546200043b565b62000682828285620005a7565b600060209050601f831160018114620006ba5760008415620006a5578287015190505b620006b1858262000624565b86555062000721565b601f198416620006ca8662000470565b60005b82811015620006f457848901518255600182019150602085019450602081019050620006cd565b8683101562000714578489015162000710601f89168262000604565b8355505b6001600288020188555050505b505050505050565b600062000737601f836200037a565b9150620007448262000731565b602082019050919050565b61048b806200075d6000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806306fdde031461005c578063095ea7b31461007a57806318160ddd146100aa57806323b872dd146100c8578063313ce567146100f857806370a0823114610116575b600080fd5b610064610146565b60405161007191906102ed565b60405180910390f35b610094600480360381019061008f91906103a8565b6101d8565b6040516100a19190610403565b60405180910390f35b6100b26101fb565b6040516100bf919061042d565b60405180910390f35b6100e260048036038101906100dd9190610448565b610205565b6040516100ef9190610403565b60405180910390f35b610100610396565b60405161010d91906104b7565b60405180910390f35b610130600480360381019061012b91906104d2565b61039f565b60405161013d919061042d565b60405180910390f35b6060600380546101559061052e565b80601f01602080910402602001604051908101604052809291908181526020018280546101819061052e565b80156101ce5780601f106101a3576101008083540402835291602001916101ce565b820191906000526020600020905b8154815290600101906020018083116101b157829003601f168201915b5050505050905090565b6000806101e36103c2565b90506101f08185856103e7565b600191505092915050565b6000600254905090565b6000806102106103c2565b905061021d8582856103ed565b61038b576040517f08c379a00000000000000000000000000000000000000000000000000000008152600401610382906105d2565b60405180910390fd5b60008573ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff160361030c576040517f08c379a000000000000000000000000000000000000000000000000000000081526004016102fb9061063e565b60405180910390fd5b836000808873ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825461035a919061068d565b92505081905550826000808773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254019250508190555060019150509392505050565b60006012905090565b600033905090565b60006103f2848484610205565b90509392505050565b505050565b600081519050919050565b600082825260208201905092915050565b600061041f826103ed565b915050919050565b60006020820190506104426000830184610414565b92915050565b600080600060608486031215610461576104606106e8565b5b600084015161046f81610712565b9350602084015161047f81610712565b9250604084015167ffffffffffffffff81111561049f5761049e6106ed565b5b6104ab868287016104b0565b9150509250925092565b60006020820190506104cc6000830184610414565b92915050565b6000602082840312156104e8576104e76106e8565b5b60006104f6848285016104fb565b91505092915050565b60008135905061050a81610712565b92915050565b600082825260208201905092915050565b600082825260208201905092915050565b6000600282049050600182168061054657607f821691505b602082108103610559576105586106b9565b5b50919050565b600061056c602683610510565b9150610577826105f2565b604082019050919050565b600061058f602283610521565b915061059a82610641565b604082019050919050565b60006105b2601f83610510565b91506105bd82610690565b602082019050919050565b6105d18161065e565b82525050565b600060208201905081810360008301526105eb8161055f565b9050919050565b7f45524332303a207472616e7366657220616d6f756e742065786365656473206260008201527f616c616e63650000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a207472616e736665722066726f6d20746865207a65726f20616460008201527f6472657373000000000000000000000000000000000000000000000000000000602082015250565b600061069b8261065e565b91506106a682610668565b602082019050919050565b6000819050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b600080fd5b600080fd5b600080fd5b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b61071b816106fc565b811461072657600080fd5b5056fea2646970667358221220a6b3b4b0b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b64736f6c63430008140033";
+        
+        // Redes soportadas (con RPC públicos)
+        const NETWORKS = {
+            'sepolia': {
+                name: 'Sepolia Testnet',
+                chainId: 11155111,
+                rpc: 'https://rpc.sepolia.org',
+                explorer: 'https://sepolia.etherscan.io'
+            },
+            'holesky': {
+                name: 'Holesky Testnet',
+                chainId: 17000,
+                rpc: 'https://rpc.holesky.ethpandaops.io',
+                explorer: 'https://holesky.etherscan.io'
+            },
+            'goerli': {
+                name: 'Goerli Testnet',
+                chainId: 5,
+                rpc: 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+                explorer: 'https://goerli.etherscan.io'
+            }
         };
 
-        // ========== CARGAR COMPILADOR DE SOLIDITY ==========
-        async function loadCompiler() {
-            return new Promise((resolve, reject) => {
-                // Si ya está cargado
-                if (window.solc) {
-                    document.getElementById('compilerStatus').textContent = '✅ Compilador Solidity v0.8.20 cargado';
-                    resolve(window.solc);
-                    return;
-                }
+        // ========== DATOS DE EJEMPLO (como si vinieran de tokenomics.html) ==========
+        const sampleTokenomicsData = {
+            projectName: "La Masia Community",
+            tokens: [
+                { name: "Token de Gobernanza", symbol: "GOV", supply: 1000000, address: "0x..." },
+                { name: "Token de Recompensas", symbol: "RWD", supply: 500000, address: "0x..." },
+                { name: "Token de Comunidad", symbol: "CMTY", supply: 2000000, address: "0x..." }
+            ],
+            allocations: {
+                team: 20,
+                investors: 30,
+                community: 40,
+                treasury: 10
+            },
+            vesting: {
+                cliff: 365,
+                duration: 1460
+            }
+        };
 
-                document.getElementById('compilerStatus').textContent = '⏳ Cargando compilador Solidity...';
+        // ========== FUNCIONES DE CARGA DE DATOS ==========
+        document.getElementById('loadSampleData').addEventListener('click', () => {
+            document.getElementById('projectName').value = sampleTokenomicsData.projectName;
+            document.getElementById('tokenName').value = sampleTokenomicsData.tokens[2].name;
+            document.getElementById('tokenSymbol').value = sampleTokenomicsData.tokens[2].symbol;
+            document.getElementById('totalSupply').value = sampleTokenomicsData.tokens[2].supply;
+            
+            document.getElementById('tokenomicsPreview').innerHTML = 
+                JSON.stringify(sampleTokenomicsData, null, 2);
+            
+            showNotification('✅ Datos de ejemplo cargados', 'success');
+        });
+
+        document.getElementById('loadFromTokenomics').addEventListener('click', () => {
+            // Simular carga desde archivo (en realidad abriría un file picker)
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
                 
-                // Cargar el compilador
-                const script = document.createElement('script');
-                script.src = 'https://binaries.soliditylang.org/bin/soljson-v0.8.20+commit.a1b79de6.js';
-                
-                script.onload = () => {
-                    // El compilador se expone como window.Module pero realmente es window.solc
-                    // Verificar cómo se llama
-                    if (window.solc) {
-                        document.getElementById('compilerStatus').textContent = '✅ Compilador Solidity v0.8.20 cargado correctamente';
-                        resolve(window.solc);
-                    } else if (window.Module && typeof window.Module.compile === 'function') {
-                        // Algunas versiones usan Module
-                        window.solc = {
-                            compile: function(input) {
-                                return Module.compile(input);
-                            }
-                        };
-                        document.getElementById('compilerStatus').textContent = '✅ Compilador Solidity cargado (modo compatibilidad)';
-                        resolve(window.solc);
-                    } else {
-                        reject(new Error('No se pudo cargar el compilador'));
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        // Actualizar UI con los datos del archivo
+                        document.getElementById('projectName').value = data.projectName || 'Proyecto';
+                        
+                        if (data.tokens && data.tokens.length > 0) {
+                            document.getElementById('tokenName').value = data.tokens[0].name || 'Token';
+                            document.getElementById('tokenSymbol').value = data.tokens[0].symbol || 'TKN';
+                            document.getElementById('totalSupply').value = data.tokens[0].supply || 1000000;
+                        }
+                        
+                        document.getElementById('tokenomicsPreview').innerHTML = 
+                            JSON.stringify(data, null, 2);
+                        
+                        showNotification('✅ Datos cargados desde archivo', 'success');
+                    } catch (error) {
+                        showNotification('❌ Error cargando archivo: ' + error.message, 'error');
                     }
                 };
                 
-                script.onerror = () => {
-                    reject(new Error('Error cargando el compilador'));
-                };
-                
-                document.head.appendChild(script);
-            });
-        }
-
-        // Cargar compilador al inicio
-        loadCompiler().catch(error => {
-            document.getElementById('compilerStatus').textContent = '❌ Error cargando compilador: ' + error.message;
+                reader.readAsText(file);
+            };
+            
+            input.click();
         });
 
-        // ========== FUNCIÓN DE CONEXIÓN ==========
+        document.getElementById('calculateTokens').addEventListener('click', () => {
+            const totalSupply = parseFloat(document.getElementById('totalSupply').value) || 1000000;
+            
+            // Calcular distribución según porcentajes de ejemplo
+            const allocations = sampleTokenomicsData.allocations;
+            
+            const teamTokens = totalSupply * allocations.team / 100;
+            const investorTokens = totalSupply * allocations.investors / 100;
+            const communityTokens = totalSupply * allocations.community / 100;
+            const treasuryTokens = totalSupply * allocations.treasury / 100;
+            
+            const calculation = {
+                totalSupply: totalSupply,
+                distribucion: {
+                    equipo: `${teamTokens.toLocaleString()} tokens (${allocations.team}%)`,
+                    inversores: `${investorTokens.toLocaleString()} tokens (${allocations.investors}%)`,
+                    comunidad: `${communityTokens.toLocaleString()} tokens (${allocations.community}%)`,
+                    tesoreria: `${treasuryTokens.toLocaleString()} tokens (${allocations.treasury}%)`
+                },
+                vesting: sampleTokenomicsData.vesting
+            };
+            
+            document.getElementById('tokenomicsPreview').innerHTML = 
+                JSON.stringify(calculation, null, 2);
+        });
+
+        // ========== FUNCIONES DE CONEXIÓN ==========
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 if (!window.ethereum) {
                     throw new Error('MetaMask no está instalado');
                 }
 
-                updateConnectionStatus('info', '⏳ Solicitando conexión a MetaMask...');
+                updateStatus('connectionStatus', 'info', '⏳ Conectando...');
                 
-                // Solicitar cuentas
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 
-                // Configurar provider y signer
                 provider = new ethers.BrowserProvider(window.ethereum);
                 signer = await provider.getSigner();
                 account = await signer.getAddress();
                 
                 isConnected = true;
                 
-                // Verificar red
-                const network = await provider.getNetwork();
-                const chainId = '0x' + network.chainId.toString(16);
-                const networkName = chainId === SEPOLIA_CHAIN_ID ? 'Sepolia' : 'Otra red';
-                
-                // Obtener balance
                 const balance = await provider.getBalance(account);
                 const ethBalance = ethers.formatEther(balance);
                 
-                updateConnectionStatus('success', `✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)} | Red: ${networkName} | Balance: ${parseFloat(ethBalance).toFixed(4)} ETH`);
-                
-                document.getElementById('accountInfo').innerHTML = `
-                    <div style="background:#1e293b; color:white; padding:15px; border-radius:8px; margin-top:10px;">
-                        <strong>📍 Dirección completa:</strong><br>
-                        ${account}<br><br>
-                        <strong>💰 Balance:</strong> ${ethBalance} ETH
-                    </div>
-                `;
+                updateStatus('connectionStatus', 'success', 
+                    `✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)} | Balance: ${parseFloat(ethBalance).toFixed(4)} ETH`);
                 
                 document.getElementById('connectionBadge').className = 'badge connected';
                 document.getElementById('connectionBadge').innerHTML = '🟢 Conectado';
                 
-                // Habilitar botones
-                document.getElementById('compileBtn').disabled = false;
+                document.getElementById('deployBtn').disabled = false;
+                document.getElementById('estimateBtn').disabled = false;
                 document.getElementById('disconnectBtn').disabled = false;
-                document.getElementById('switchNetworkBtn').disabled = false;
                 document.getElementById('connectBtn').disabled = true;
                 
             } catch (error) {
-                updateConnectionStatus('error', '❌ Error: ' + error.message);
+                updateStatus('connectionStatus', 'error', '❌ Error: ' + error.message);
             }
         });
 
-        // ========== FUNCIÓN DE DESCONEXIÓN ==========
         document.getElementById('disconnectBtn').addEventListener('click', () => {
-            // Resetear variables
             provider = null;
             signer = null;
             account = null;
             isConnected = false;
-            compiledContract = null;
-            deployedAddress = null;
             
-            // Limpiar UI
-            updateConnectionStatus('info', '🔌 Desconectado de MetaMask');
-            document.getElementById('accountInfo').innerHTML = '';
-            document.getElementById('compileStatus').innerHTML = '';
-            document.getElementById('deployStatus').innerHTML = '';
-            document.getElementById('resultArea').innerHTML = '';
-            document.getElementById('postDeploy').style.display = 'none';
-            
-            document.getElementById('connectionBadge').className = 'badge disconnected';
+            updateStatus('connectionStatus', 'info', '🔌 Desconectado');
+            document.getElementById('connectionBadge').className = 'badge';
             document.getElementById('connectionBadge').innerHTML = '⚫ Desconectado';
             
-            // Deshabilitar botones
-            document.getElementById('compileBtn').disabled = true;
             document.getElementById('deployBtn').disabled = true;
+            document.getElementById('estimateBtn').disabled = true;
             document.getElementById('disconnectBtn').disabled = true;
-            document.getElementById('switchNetworkBtn').disabled = true;
             document.getElementById('connectBtn').disabled = false;
+            
+            document.getElementById('resultArea').innerHTML = '';
+            document.getElementById('postDeploy').style.display = 'none';
         });
 
-        // ========== CAMBIAR A SEPOLIA ==========
-        document.getElementById('switchNetworkBtn').addEventListener('click', async () => {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: SEPOLIA_CHAIN_ID }]
-                });
-            } catch (switchError) {
-                if (switchError.code === 4902) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [SEPOLIA_NETWORK]
-                        });
-                    } catch (addError) {
-                        alert('Error añadiendo red: ' + addError.message);
-                    }
-                }
-            }
-        });
-
-        // ========== COMPILACIÓN ==========
-        document.getElementById('compileBtn').addEventListener('click', async () => {
-            const statusDiv = document.getElementById('compileStatus');
-            statusDiv.className = 'status info';
-            statusDiv.textContent = '⚙️ Compilando...';
+        // ========== ESTIMACIÓN DE GAS ==========
+        document.getElementById('estimateBtn').addEventListener('click', async () => {
+            if (!signer) return;
             
             try {
-                // Asegurar que el compilador está cargado
-                if (!window.solc) {
-                    await loadCompiler();
-                }
-
-                const contractCode = document.getElementById('contractCode').textContent;
+                const name = document.getElementById('tokenName').value;
+                const symbol = document.getElementById('tokenSymbol').value;
+                const supply = document.getElementById('totalSupply').value;
                 
-                // Configurar compilador
-                const input = {
-                    language: 'Solidity',
-                    sources: {
-                        'MiToken.sol': { 
-                            content: contractCode 
-                        }
-                    },
-                    settings: {
-                        optimizer: { 
-                            enabled: true, 
-                            runs: 200 
-                        },
-                        outputSelection: { 
-                            '*': { 
-                                '*': ['abi', 'evm.bytecode'] 
-                            } 
-                        }
-                    }
-                };
-
-                // Compilar
-                const output = JSON.parse(window.solc.compile(JSON.stringify(input)));
+                const factory = new ethers.ContractFactory(TOKEN_ABI, TOKEN_BYTECODE, signer);
                 
-                if (output.errors) {
-                    const warnings = output.errors.filter(e => e.severity === 'warning');
-                    const errors = output.errors.filter(e => e.severity === 'error');
+                const deployTx = await factory.getDeployTransaction(name, symbol, supply);
+                const gasEstimate = await provider.estimateGas(deployTx);
+                
+                const feeData = await provider.getFeeData();
+                const gasCost = gasEstimate * (feeData.gasPrice || 0n);
+                
+                updateStatus('deployStatus', 'info', 
+                    `⛽ Gas estimado: ${gasEstimate.toString()} unidades (≈ ${ethers.formatEther(gasCost)} ETH)`);
                     
-                    if (warnings.length > 0) {
-                        console.log('Warnings:', warnings);
-                    }
-                    
-                    if (errors.length > 0) {
-                        throw new Error(errors[0].message);
-                    }
-                }
-
-                // Verificar que la compilación fue exitosa
-                if (!output.contracts || !output.contracts['MiToken.sol'] || !output.contracts['MiToken.sol']['MiToken']) {
-                    throw new Error('No se pudo obtener el contrato compilado');
-                }
-
-                // Obtener contrato compilado
-                compiledContract = output.contracts['MiToken.sol']['MiToken'];
-                
-                statusDiv.className = 'status success';
-                statusDiv.textContent = '✅ Compilación exitosa';
-                
-                // Habilitar botón de despliegue
-                document.getElementById('deployBtn').disabled = false;
-                
             } catch (error) {
-                console.error('Error compilando:', error);
-                statusDiv.className = 'status error';
-                statusDiv.textContent = '❌ Error compilando: ' + error.message;
+                updateStatus('deployStatus', 'error', '❌ Error estimando: ' + error.message);
             }
         });
 
         // ========== DESPLIEGUE ==========
         document.getElementById('deployBtn').addEventListener('click', async () => {
-            if (!compiledContract || !signer) {
-                alert('Primero conecta y compila');
-                return;
-            }
-
-            const deployStatus = document.getElementById('deployStatus');
-            deployStatus.className = 'status info';
-            deployStatus.textContent = '🚀 Enviando transacción...';
-
+            if (!signer) return;
+            
+            updateStatus('deployStatus', 'info', '🚀 Preparando despliegue...');
+            
             try {
-                const name = document.getElementById('tokenName').value.trim();
-                const symbol = document.getElementById('tokenSymbol').value.trim();
-                const supply = document.getElementById('tokenSupply').value;
-
+                const name = document.getElementById('tokenName').value;
+                const symbol = document.getElementById('tokenSymbol').value;
+                const supply = document.getElementById('totalSupply').value;
+                
                 if (!name || !symbol || !supply) {
                     throw new Error('Todos los campos son obligatorios');
                 }
-
-                // Crear factoría del contrato
-                const factory = new ethers.ContractFactory(
-                    compiledContract.abi,
-                    compiledContract.evm.bytecode.object,
-                    signer
-                );
-
-                deployStatus.textContent = '⏳ Confirmando transacción en MetaMask...';
+                
+                const factory = new ethers.ContractFactory(TOKEN_ABI, TOKEN_BYTECODE, signer);
+                
+                updateStatus('deployStatus', 'info', '⏳ Confirmando en MetaMask...');
                 
                 const contract = await factory.deploy(name, symbol, supply);
                 
-                deployStatus.textContent = '⏳ Esperando confirmación en la blockchain (puede tomar 30-60 segundos)...';
+                updateStatus('deployStatus', 'info', '⏳ Esperando confirmación en blockchain...');
                 
                 await contract.waitForDeployment();
                 
                 deployedAddress = await contract.getAddress();
                 const txHash = contract.deploymentTransaction().hash;
-
+                
                 document.getElementById('resultArea').innerHTML = `
                     <div class="address-box">
-                        <strong>📌 Dirección del contrato:</strong><br>
+                        <strong>📌 Dirección del token:</strong><br>
                         ${deployedAddress}<br><br>
-                        <strong>📝 Hash de transacción:</strong><br>
+                        <strong>📝 Transacción:</strong><br>
                         ${txHash}
                     </div>
                 `;
                 
-                deployStatus.className = 'status success';
-                deployStatus.textContent = '✅ Token desplegado exitosamente';
-                
+                updateStatus('deployStatus', 'success', '✅ Token desplegado exitosamente');
                 document.getElementById('postDeploy').style.display = 'block';
                 
             } catch (error) {
-                console.error('Error completo:', error);
-                deployStatus.className = 'status error';
-                deployStatus.textContent = '❌ Error: ' + (error.reason || error.message || 'Error desconocido');
+                updateStatus('deployStatus', 'error', '❌ Error: ' + (error.reason || error.message));
             }
         });
 
         // ========== POST-DESPLIEGUE ==========
         document.getElementById('viewExplorer').addEventListener('click', () => {
             if (deployedAddress) {
-                window.open(`https://sepolia.etherscan.io/address/${deployedAddress}`, '_blank');
+                const network = document.getElementById('networkSelect').value;
+                const explorer = NETWORKS[network].explorer;
+                window.open(`${explorer}/address/${deployedAddress}`, '_blank');
             }
         });
 
         document.getElementById('copyAddress').addEventListener('click', () => {
             if (deployedAddress) {
                 navigator.clipboard.writeText(deployedAddress);
-                alert('✅ Dirección copiada al portapapeles');
+                showNotification('✅ Dirección copiada', 'success');
             }
         });
 
         document.getElementById('addToMetaMask').addEventListener('click', async () => {
-            if (deployedAddress) {
+            if (deployedAddress && window.ethereum) {
                 try {
                     await window.ethereum.request({
                         method: 'wallet_watchAsset',
@@ -511,18 +506,36 @@ contract MiToken is ERC20 {
                         }
                     });
                 } catch (error) {
-                    alert('Error añadiendo token: ' + error.message);
+                    showNotification('❌ Error añadiendo token: ' + error.message, 'error');
                 }
             }
         });
 
-        function updateConnectionStatus(type, message) {
-            const statusEl = document.getElementById('connectionStatus');
-            statusEl.className = `status ${type}`;
-            statusEl.textContent = message;
+        // ========== UTILIDADES ==========
+        function updateStatus(elementId, type, message) {
+            const el = document.getElementById(elementId);
+            el.className = `status ${type}`;
+            el.textContent = message;
         }
 
-        // ========== DETECCIÓN DE CAMBIOS ==========
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `status ${type}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.maxWidth = '300px';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // ========== EVENTOS DE METAMASK ==========
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', (accounts) => {
                 if (accounts.length === 0) {
@@ -535,18 +548,7 @@ contract MiToken is ERC20 {
             window.ethereum.on('chainChanged', () => {
                 window.location.reload();
             });
-            
-            window.ethereum.on('disconnect', () => {
-                document.getElementById('disconnectBtn').click();
-            });
         }
-
-        // Verificar conexión inicial
-        window.addEventListener('load', async () => {
-            if (window.ethereum && window.ethereum.selectedAddress) {
-                document.getElementById('connectBtn').click();
-            }
-        });
     </script>
 </body>
 </html>
