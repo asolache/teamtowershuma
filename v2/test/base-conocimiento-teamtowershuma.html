@@ -623,7 +623,44 @@
             font-style: italic;
             color: var(--gray);
         }
-        
+        /* Indicador de nivel de zoom */
+.zoom-level-indicator {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--primary);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.zoom-level-indicator::before {
+    content: '🔍';
+}
+
+/* Badge de optimización */
+.optimization-badge {
+    background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* Efecto suave al aparecer nodos */
+.vis-network {
+    transition: opacity 0.3s ease;
+}
+</div>
         /* ========== FORMULARIOS ========== */
         .form-grid {
             display: grid;
@@ -1350,7 +1387,25 @@
                             Visualización interactiva de las relaciones entre entidades y conceptos del ecosistema TeamTowers Humà.
                         </p>
                         
-                        <div id="graph-container" class="graph-container"></div>
+                        <div id="graph-container" class="graph-container"> <div id="graph-container" class="graph-container">
+    <div id="graph-loading" style="display:none; position:absolute; top:50%; left:50%; 
+         transform:translate(-50%,-50%); background:white; padding:25px; 
+         border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.2); z-index:100; text-align:center;">
+        <div style="border:5px solid #e2e8f0; border-top:5px solid var(--primary); 
+             border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; 
+             margin:0 auto 15px;"></div>
+        <p style="font-weight:600; color:var(--dark); margin:0;">Optimizando visualización...</p>
+        <p style="font-size:0.9rem; color:var(--gray); margin-top:5px;">Mostrando solo elementos visibles</p>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+                        </div>
                         
                         <div style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%); border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid var(--primary);">
                             <h4 style="color: var(--primary); margin-top: 0;"><i class="fas fa-chart-line"></i> Valor del Grafo de Conocimiento</h4>
@@ -2519,6 +2574,347 @@
             
             showNotification(`🔍 ${totalResults} resultados encontrados`, 'info');
         }
+        // En la función renderKnowledgeGraph()
+function renderKnowledgeGraph() {
+    const container = document.getElementById('graph-container');
+    const loadingIndicator = document.getElementById('graph-loading');
+    
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    
+    // Solo renderizar nodos visibles (texto >= 8px)
+    const calculateVisibleNodes = () => {
+        const scale = window.kb.graphInstance ? 
+            window.kb.graphInstance.getScale() : 1;
+        
+        // Solo mostrar nodos cuando el texto sería legible (>=8px)
+        const minScaleForVisibility = 0.3; // Ajustar según tamaño de fuente base
+        
+        if (scale < minScaleForVisibility) {
+            // Mostrar solo nodos principales (top 20 por conexiones)
+            return getTopNodes(20);
+        } else if (scale < 0.6) {
+            // Mostrar nodos principales + conexiones directas
+            return getTopNodes(50);
+        }
+        // Mostrar todos los nodos
+        return getAllNodes();
+    };
+    
+    // Obtener nodos visibles según zoom actual
+    const visibleNodes = calculateVisibleNodes();
+    const visibleEdges = getEdgesForNodes(visibleNodes);
+    
+    // Configurar opciones con optimización de rendimiento
+    const options = {
+        // ... opciones existentes ...
+        physics: {
+            stabilization: {
+                iterations: 50, // Reducido para carga inicial rápida
+                updateInterval: 25
+            },
+            // ... resto de física ...
+        },
+        interaction: {
+            // ... interacción ...
+            zoomView: true,
+            navigationButtons: true
+        }
+    };
+    
+    // Crear red SOLO con nodos visibles
+    const data = {
+        nodes: new vis.DataSet(visibleNodes),
+        edges: new vis.DataSet(visibleEdges)
+    };
+    
+    if (window.kb.graphInstance) {
+        window.kb.graphInstance.destroy();
+    }
+    
+    window.kb.graphInstance = new vis.Network(container, data, options);
+    
+    // Escuchar cambios de zoom para actualizar nodos visibles
+    window.kb.graphInstance.on('zoom', () => {
+        const currentScale = window.kb.graphInstance.getScale();
+        const newVisibleNodes = calculateVisibleNodes();
+        const newVisibleEdges = getEdgesForNodes(newVisibleNodes);
+        
+        // Actualizar dataset sin destruir la instancia
+        window.kb.graphInstance.setData({
+            nodes: newVisibleNodes,
+            edges: newVisibleEdges
+        });
+    });
+    
+    // Esconder indicador de carga cuando esté estable
+    window.kb.graphInstance.on('stabilizationIterationsDone', () => {
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+    });
+    
+    // Fallback: esconder después de 2 segundos
+    setTimeout(() => {
+        if (loadingIndicator && loadingIndicator.style.display !== 'none') {
+            loadingIndicator.style.display = 'none';
+        }
+    }, 2000);
+}
+
+// Funciones auxiliares para optimización
+function getTopNodes(limit) {
+    // Obtener nodos con más conexiones
+    const nodeConnections = new Map();
+    
+    for (const [sourceId, refs] of window.kb.data.index.semanticRefs) {
+        nodeConnections.set(sourceId, (nodeConnections.get(sourceId) || 0) + refs.length);
+        
+        refs.forEach(ref => {
+            nodeConnections.set(ref.id, (nodeConnections.get(ref.id) || 0) + 1);
+        });
+    }
+    
+    // Ordenar y limitar
+    return Array.from(nodeConnections.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([id]) => {
+            const node = window.kb.data.index.byId.get(id);
+            if (!node) return null;
+            
+            return {
+                id: node.id,
+                label: node.name || node.id,
+                group: node.type === 'entity' ? 'entity' : 'concept',
+                title: `<div class="tooltip-title">${node.name || node.id}</div>
+                        <div>${node.description || ''}</div>
+                        <div class="tooltip-type ${node.type}">${node.type.charAt(0).toUpperCase() + node.type.slice(1)}</div>`,
+                shape: 'dot',
+                size: 15 + (nodeConnections.get(node.id) || 0) * 0.5
+            };
+        }).filter(n => n);
+}
+
+function getEdgesForNodes(nodes) {
+    const nodeIds = new Set(nodes.map(n => n.id));
+    const edges = [];
+    
+    for (const [sourceId, refs] of window.kb.data.index.semanticRefs) {
+        if (!nodeIds.has(sourceId)) continue;
+        
+        refs.forEach(ref => {
+            if (nodeIds.has(ref.id)) {
+                edges.push({
+                    from: sourceId,
+                    to: ref.id,
+                    arrows: 'to',
+                    color: { 
+                        color: ref.type === 'entity' ? '#4f46e5' : '#8b5cf6', 
+                        highlight: '#3b82f6' 
+                    },
+                    width: 1.5
+                });
+            }
+        });
+    }
+    
+    return edges;
+}
+
+function getAllNodes() {
+    // Versión optimizada para obtener todos los nodos
+    const nodes = [];
+    
+    for (const entity of window.kb.data.entities.values()) {
+        nodes.push(createGraphNode(entity, 'entity'));
+    }
+    
+    for (const concept of window.kb.data.concepts.values()) {
+        nodes.push(createGraphNode(concept, 'concept'));
+    }
+    
+    return nodes;
+}
+
+function createGraphNode(item, type) {
+    return {
+        id: item.id,
+        label: item.name || item.id,
+        group: type,
+        title: `<div class="tooltip-title">${item.name || item.id}</div>
+                <div>${item.description || ''}</div>
+                <div class="tooltip-type ${type}">${type.charAt(0).toUpperCase() + type.slice(1)}</div>`,
+        shape: 'dot',
+        size: 15 + (window.kb.getSemanticReferences(item.id).length * 0.5)
+    };
+}
+
+        // En la clase KnowledgeBase
+class KnowledgeBase {
+    // ... constructor y métodos existentes ...
+    
+    // Nuevo método: Guardar estadísticas en localStorage con timestamp
+    saveStats() {
+        const stats = {
+            totalEntities: this.data.entities.size,
+            totalConcepts: this.data.concepts.size,
+            totalProjects: this.data.projects.size,
+            totalRelationships: this.data.index.semanticRefs.size,
+            indexedItems: this.data.metadata.totalItems,
+            lastUpdate: this.data.metadata.indexedAt,
+            // Timestamp para detectar datos obsoletos
+            savedAt: new Date().toISOString()
+        };
+        
+        try {
+            localStorage.setItem('tt_knowledge_base_stats', JSON.stringify(stats));
+            console.log('✅ Estadísticas guardadas en localStorage');
+        } catch (e) {
+            console.error('❌ Error guardando estadísticas:', e);
+            // Fallback: guardar en sessionStorage como respaldo
+            try {
+                sessionStorage.setItem('tt_knowledge_base_stats_backup', JSON.stringify(stats));
+            } catch (e2) {
+                console.error('❌ Error guardando respaldo de estadísticas:', e2);
+            }
+        }
+    }
+    
+    // Modificar updateStats para guardar estadísticas
+    updateStats() {
+        // ... código existente para actualizar DOM ...
+        
+        // Guardar estadísticas inmediatamente
+        this.saveStats();
+    }
+    
+    // Nuevo método: Cargar estadísticas rápidas al inicio
+    loadQuickStats() {
+        try {
+            // Intentar cargar de localStorage primero
+            const savedStats = localStorage.getItem('tt_knowledge_base_stats');
+            if (savedStats) {
+                const stats = JSON.parse(savedStats);
+                
+                // Verificar que no estén obsoletas (máx 5 minutos)
+                const savedTime = new Date(stats.savedAt).getTime();
+                const now = Date.now();
+                const isFresh = (now - savedTime) < 5 * 60 * 1000;
+                
+                if (isFresh) {
+                    this.applyStats(stats);
+                    console.log('⚡ Estadísticas cargadas rápidamente desde localStorage');
+                    return true;
+                }
+            }
+            
+            // Fallback: intentar cargar respaldo de sessionStorage
+            const backupStats = sessionStorage.getItem('tt_knowledge_base_stats_backup');
+            if (backupStats) {
+                const stats = JSON.parse(backupStats);
+                this.applyStats(stats);
+                console.log('⚡ Estadísticas cargadas desde respaldo (sessionStorage)');
+                return true;
+            }
+        } catch (e) {
+            console.error('Error cargando estadísticas rápidas:', e);
+        }
+        
+        return false; // Indica que se deben calcular desde cero
+    }
+    
+    // Aplicar estadísticas al DOM
+    applyStats(stats) {
+        document.getElementById('total-entities').textContent = stats.totalEntities || 0;
+        document.getElementById('total-concepts').textContent = stats.totalConcepts || 0;
+        document.getElementById('total-projects').textContent = stats.totalProjects || 0;
+        document.getElementById('total-relationships').textContent = stats.totalRelationships || 0;
+        document.getElementById('indexed-items').textContent = stats.indexedItems || 0;
+        document.getElementById('last-update').textContent = 
+            stats.lastUpdate ? new Date(stats.lastUpdate).toLocaleTimeString() : 'Nunca';
+    }
+}
+
+// En la inicialización (DOMContentLoaded)
+document.addEventListener('DOMContentLoaded', function() {
+    window.kb = new KnowledgeBase();
+    
+    // 1. Cargar estadísticas RÁPIDAS antes de inicializar KB completo
+    if (!window.kb.loadQuickStats()) {
+        // Mostrar estado de carga si no hay estadísticas guardadas
+        document.getElementById('total-entities').textContent = '...';
+        document.getElementById('total-concepts').textContent = '...';
+        document.getElementById('total-projects').textContent = '...';
+        document.getElementById('total-relationships').textContent = '...';
+        document.getElementById('indexed-items').textContent = 'Cargando...';
+        document.getElementById('last-update').textContent = 'Iniciando sistema...';
+    }
+    
+    // 2. Inicializar KB completo (esto actualizará las estadísticas)
+    window.kb.init();
+    
+    // 3. Agregar evento beforeunload para guardar estado antes de cerrar
+    window.addEventListener('beforeunload', () => {
+        if (window.kb) {
+            window.kb.saveStats();
+            console.log('💾 Estadísticas guardadas antes de cerrar');
+        }
+    });
+    
+    // 4. Sincronización entre pestañas
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'tt_knowledge_base_v2' && window.kb) {
+            console.log('🔄 Detectado cambio en otra pestaña, recargando datos...');
+            window.kb.init();
+        }
+    });
+});
+
+        // Agregar indicador de nivel de zoom al grafo
+function addZoomIndicator() {
+    const container = document.getElementById('graph-container');
+    if (!container) return;
+    
+    let indicator = document.getElementById('zoom-level-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'zoom-level-indicator';
+        indicator.className = 'zoom-level-indicator';
+        container.appendChild(indicator);
+    }
+    
+    if (window.kb?.graphInstance) {
+        window.kb.graphInstance.on('zoom', () => {
+            const scale = window.kb.graphInstance.getScale();
+            const percentage = Math.round(scale * 100);
+            
+            // Determinar nivel de detalle
+            let detailLevel = '';
+            if (scale < 0.3) detailLevel = 'Básico';
+            else if (scale < 0.6) detailLevel = 'Medio';
+            else detailLevel = 'Completo';
+            
+            indicator.innerHTML = `${percentage}% - ${detailLevel} <span class="optimization-badge">Optimizado</span>`;
+        });
+    }
+}
+
+// Llamar después de renderizar el grafo
+renderKnowledgeGraph();
+addZoomIndicator();
+
+        // Para proyectos muy grandes (>50k nodos), añadir en KnowledgeBase:
+enableProgressiveLoading() {
+    if (this.data.metadata.totalItems > 10000) {
+        // Activar modo ultra-optimizado
+        this.maxNodesPerRender = 100;
+        this.zoomThresholds = {
+            low: 0.15,
+            medium: 0.4,
+            high: 0.7
+        };
+    }
+}
+
+        
     </script>
 </body>
 </html>
