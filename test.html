@@ -1,1163 +1,559 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers Humà - Value Accounting + Token Deployment</title>
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #4f46e5;
-            --accent: #8b5cf6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --gray: #64748b;
-        }
-        
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-        
-        .tab {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .panel {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-        
-        .panel h2 {
-            color: var(--primary);
-            margin-top: 0;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent);
-        }
-        
-        .panel h3 {
-            color: var(--primary);
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
-            font-size: 1rem;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
-        }
-        
-        button.success { background: var(--success); }
-        button.danger { background: var(--danger); }
-        button.warning { background: var(--warning); }
-        button.secondary { background: var(--gray); }
-        
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        tr:hover {
-            background: #f8fafc;
-        }
-        
-        .delete-btn {
-            background: var(--danger);
-            padding: 5px 10px;
-            font-size: 0.9rem;
-        }
-        
-        .code-block {
-            background: #1e293b;
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            margin: 10px 0;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .status {
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-weight: 600;
-        }
-        
-        .status.success { background: var(--success); color: white; }
-        .status.error { background: var(--danger); color: white; }
-        .status.info { background: var(--accent); color: white; }
-        .status.warning { background: var(--warning); color: white; }
-        
-        .address-box {
-            background: #1e293b;
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            word-break: break-all;
-            margin: 10px 0;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-        
-        .badge.connected {
-            background: var(--success);
-            color: white;
-        }
-        
-        .badge.disconnected {
-            background: var(--gray);
-            color: white;
-        }
-        
-        .info-box {
-            background: #e0f2fe;
-            border-left: 4px solid var(--accent);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-        
-        .token-data-preview {
-            background: #1e293b;
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            margin: 10px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🏗️ TeamTowers Humà - Value Accounting + Token Deployment</h1>
-        
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" data-tab="accounting">📊 Value Accounting</button>
-            <button class="tab" data-tab="deploy">⛓️ Desplegar Token</button>
-            <button class="tab" data-tab="config">⚙️ Configuración</button>
-        </div>
-        
-        <!-- TAB 1: VALUE ACCOUNTING -->
-        <div id="tab-accounting" class="tab-content active">
-            <div class="grid-2">
-                <!-- Panel Izquierdo: Formulario -->
-                <div class="panel">
-                    <h2>➕ Nuevo Entregable</h2>
-                    
-                    <div class="form-group">
-                        <label>Persona:</label>
-                        <input type="text" id="userName" placeholder="Nombre de la persona">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Rol:</label>
-                        <input type="text" id="roleName" placeholder="Rol (ej: desarrollador)">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Entregable:</label>
-                        <input type="text" id="deliverableName" placeholder="Nombre del entregable">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Descripción:</label>
-                        <textarea id="description" placeholder="Descripción detallada" rows="2"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Valor (UV):</label>
-                        <input type="number" id="value" placeholder="100" min="1">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Dirección Ethereum:</label>
-                        <input type="text" id="address" placeholder="0x... (opcional)">
-                        <small style="color: var(--gray);">Necesaria para recibir tokens</small>
-                    </div>
-                    
-                    <button id="addBtn" class="success">✅ Registrar Entregable</button>
-                    <button id="resetBtn" class="danger">🗑️ Limpiar Todo</button>
-                </div>
-                
-                <!-- Panel Derecho: Visualización -->
-                <div class="panel">
-                    <h2>📈 Distribución de Valor</h2>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalUsers">0</div>
-                            <div class="stat-label">Personas</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalRoles">0</div>
-                            <div class="stat-label">Roles</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalDeliverables">0</div>
-                            <div class="stat-label">Entregables</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalValue">0</div>
-                            <div class="stat-label">Valor Total</div>
-                        </div>
-                    </div>
-                    
-                    <div style="height: 250px; margin-bottom: 20px;">
-                        <canvas id="valueChart"></canvas>
-                    </div>
-                    
-                    <h3>📋 Entregables Recientes</h3>
-                    <table id="deliverablesTable">
-                        <thead>
-                            <tr>
-                                <th>Persona</th>
-                                <th>Rol</th>
-                                <th>Entregable</th>
-                                <th>Valor</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- TAB 2: DEPLOY TOKEN -->
-        <div id="tab-deploy" class="tab-content">
-            <div class="grid-2">
-                <!-- Panel Izquierdo: Datos del Token -->
-                <div class="panel">
-                    <h2>📝 Datos del Token</h2>
-                    
-                    <div class="form-group">
-                        <label>Nombre del Token:</label>
-                        <input type="text" id="tokenName" value="Community Token" placeholder="Ej: Community Token">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Símbolo:</label>
-                        <input type="text" id="tokenSymbol" value="CMTY" placeholder="Ej: CMTY" maxlength="5">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Suministro Inicial:</label>
-                        <input type="number" id="tokenSupply" value="1000000" min="1">
-                        <small>Se multiplicará por 10^18 (decimals)</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Seleccionar Red:</label>
-                        <select id="networkSelect">
-                            <option value="sepolia">Sepolia Testnet</option>
-                            <option value="holesky">Holesky Testnet</option>
-                            <option value="goerli">Goerli Testnet</option>
-                        </select>
-                    </div>
-                    
-                    <h3>📊 Vista Previa del Snapshot</h3>
-                    <div class="token-data-preview" id="snapshotPreview">
-                        No hay datos de entregables
-                    </div>
-                    
-                    <button id="refreshSnapshot" class="secondary">🔄 Actualizar Preview</button>
-                </div>
-                
-                <!-- Panel Derecho: Conexión y Despliegue -->
-                <div class="panel">
-                    <h2>⛓️ Conexión y Despliegue</h2>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <button id="connectBtn">🔌 Conectar MetaMask</button>
-                        <button id="disconnectBtn" class="secondary" disabled>🔌 Desconectar</button>
-                        <span id="connectionBadge" class="badge disconnected">⚫ Desconectado</span>
-                    </div>
-                    
-                    <div id="connectionStatus" class="status info">
-                        Esperando conexión...
-                    </div>
-                    
-                    <div id="accountInfo" style="margin: 15px 0;"></div>
-                    
-                    <h3>🚀 Despliegue</h3>
-                    
-                    <div style="margin: 15px 0;">
-                        <button id="estimateBtn" disabled>⛽ Estimar Gas</button>
-                        <button id="deployBtn" class="success" disabled>🚀 Desplegar Token</button>
-                    </div>
-                    
-                    <div id="deployStatus"></div>
-                    
-                    <div id="resultArea"></div>
-                    
-                    <div id="postDeploy" style="display: none; margin-top: 20px;">
-                        <h3>✅ Token Desplegado</h3>
-                        <div class="address-box" id="deployedAddress"></div>
-                        <div style="margin-top: 10px;">
-                            <button id="viewExplorer" class="secondary">🔍 Ver en Etherscan</button>
-                            <button id="copyAddress" class="secondary">📋 Copiar Dirección</button>
-                            <button id="addToMetaMask" class="secondary">➕ Añadir a MetaMask</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Información del Snapshot -->
-            <div class="panel" style="margin-top: 20px;">
-                <h2>📋 Distribución de Tokens por Usuario</h2>
-                <table id="distributionTable">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Dirección</th>
-                            <th>Valor (UV)</th>
-                            <th>Tokens a Recibir</th>
-                            <th>% del Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="distributionBody"></tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- TAB 3: CONFIGURACIÓN -->
-        <div id="tab-config" class="tab-content">
-            <div class="grid-2">
-                <div class="panel">
-                    <h2>⚙️ Configuración del Proyecto</h2>
-                    
-                    <div class="form-group">
-                        <label>Nombre del Proyecto:</label>
-                        <input type="text" id="projectName" value="Mi Proyecto Tokenomics">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Unidad de Valor:</label>
-                        <select id="valueUnit">
-                            <option value="puntos">Puntos de Valor</option>
-                            <option value="horas">Horas</option>
-                            <option value="euros">Euros (€)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Asignación por Defecto:</label>
-                        <div class="form-row">
-                            <span>Equipo:</span>
-                            <input type="number" id="teamAlloc" value="20" min="0" max="100">
-                        </div>
-                        <div class="form-row">
-                            <span>Comunidad:</span>
-                            <input type="number" id="communityAlloc" value="80" min="0" max="100">
-                        </div>
-                        <small>Total debe sumar 100%</small>
-                    </div>
-                    
-                    <button id="saveConfig" class="success">💾 Guardar Configuración</button>
-                </div>
-                
-                <div class="panel">
-                    <h2>📤 Exportar Datos</h2>
-                    
-                    <button id="exportCSV" class="secondary" style="width: 100%; margin-bottom: 10px;">📊 Exportar CSV</button>
-                    <button id="exportJSON" class="secondary" style="width: 100%; margin-bottom: 10px;">📄 Exportar JSON</button>
-                    <button id="exportDeployJSON" class="success" style="width: 100%;">🔗 Exportar para Despliegue</button>
-                    
-                    <div class="info-box" style="margin-top: 20px;">
-                        <strong>ℹ️ Formato para despliegue:</strong><br>
-                        El archivo JSON contiene el snapshot de valor con las direcciones Ethereum para mintear los tokens.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  background-color: white; /* Ensure the iframe has a white background */
+                }
 
-    <script>
-        // ========== DATA LAYER ==========
-        let deliverables = [];
-        let projectConfig = {
-            projectName: "Mi Proyecto Tokenomics",
-            valueUnit: "puntos",
-            teamAllocation: 20,
-            communityAllocation: 80
-        };
-        
-        // Blockchain variables
-        let provider, signer, account;
-        let isConnected = false;
-        let deployedAddress = null;
-        
-        // ABIs y Bytecode
-        const TOKEN_ABI = [
-            "constructor(string memory name, string memory symbol, uint256 initialSupply)",
-            "function name() view returns (string)",
-            "function symbol() view returns (string)",
-            "function decimals() view returns (uint8)",
-            "function totalSupply() view returns (uint256)",
-            "function balanceOf(address) view returns (uint256)",
-            "function transfer(address to, uint256 amount) returns (bool)",
-            "function mint(address to, uint256 amount) external",
-            "event Transfer(address indexed from, address indexed to, uint256 value)"
-        ];
-        
-        const TOKEN_BYTECODE = "0x608060405234801561001057600080fd5b5060405162000be838038062000be83339818101604052810190620000369190620002f2565b82828160039081620000499190620005c7565b5080600490816200005b9190620005c7565b5050506200007b33620000736200008460201b60201c565b6200008d60201b60201c565b5050506200074d565b60006012905090565b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1603620000ff576040517f08c379a00000000000000000000000000000000000000000000000000000008152600401620000f6906200070f565b60405180910390fd5b6200011360008383620001fa60201b60201c565b806002600082825462000127919062000387565b92505081905550806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825401925050819055508173ffffffffffffffffffffffffffffffffffffffff16600073ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef83604051620001da91906200037a565b60405180910390a3620001f660008383620001ff60201b60201c565b5050565b505050565b505050565b6000604051905090565b600080fd5b600080fd5b600080fd5b600080fd5b6000601f19601f8301169050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6200026c8262000221565b810181811067ffffffffffffffff821117156200028e576200028d62000232565b5b80604052505050565b6000620002a362000204565b9050620002b1828262000261565b919050565b600067ffffffffffffffff821115620002d457620002d262000232565b5b620002df8262000221565b9050602081019050919050565b6000806000606084860312156200030e576200030d62000217565b5b600084015167ffffffffffffffff8111156200032f576200032e6200021c565b5b6200033d86828701620002b6565b935050602084015167ffffffffffffffff8111156200036157620003606200021c565b5b6200036f86828701620002b6565b925050604084015190509250925092565b6000819050919050565b6000620003a26200039c6200037a565b62000297565b9050919050565b620003b4816200037a565b82525050565b6000620003cb82620002b6565b620003d781856200037a565b9350620003e9818560208601620003ac565b620003f48162000221565b840191505092915050565b600081519050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b600060028204905060018216806200045257607f821691505b6020821081036200046857620004676200040a565b5b50919050565b60008190508160005260206000209050919050565b60006020601f8301049050919050565b600082821b905092915050565b600060088302620004d27fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8262000493565b620004de868362000493565b95508019841693508086168417925050509392505050565b6000819050919050565b6000620005216200051b62000515846200037a565b620004f6565b6200037a565b9050919050565b6000819050919050565b6200053d8362000500565b620005556200054c8262000528565b848454620004a0565b825550505050565b600090565b6200056c6200055d565b6200057981848462000532565b505050565b5b818110156200059d576200059560008262000562565b6001810190506200057f565b5050565b601f821115620005f257620005b6816200046e565b620005c18462000483565b81016020851015620005d1578190505b620005e9620005e08562000483565b8301826200057e565b50505b505050565b600082821c905092915050565b60006200061660001984600802620005f7565b1980831691505092915050565b600062000631838362000604565b9150826002028217905092915050565b6200064c82620003ff565b67ffffffffffffffff81111562000668576200066762000232565b5b62000674825462000439565b62000681828285620005a5565b600060209050601f831160018114620006b85760008415620006a4578287015190505b620006b0858262000623565b86555062000720565b601f198416620006c9866200046e565b60005b82811015620006f357848901518255600182019150602085019450602081019050620006cc565b868310156200071357848901516200070f601f89168262000604565b8355505b6001600288020188555050505b505050505050565b600062000737601f836200037a565b915062000744826200072f565b602082019050919050565b61048b806200075d6000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806306fdde031461005c578063095ea7b31461007a57806318160ddd146100aa57806323b872dd146100c8578063313ce567146100f857806370a0823114610116575b600080fd5b610064610146565b60405161007191906102ed565b60405180910390f35b610094600480360381019061008f91906103a8565b6101d8565b6040516100a19190610403565b60405180910390f35b6100b26101fb565b6040516100bf919061042d565b60405180910390f35b6100e260048036038101906100dd9190610448565b610205565b6040516100ef9190610403565b60405180910390f35b610100610396565b60405161010d91906104b7565b60405180910390f35b610130600480360381019061012b91906104d2565b61039f565b60405161013d919061042d565b60405180910390f35b6060600380546101559061052e565b80601f01602080910402602001604051908101604052809291908181526020018280546101819061052e565b80156101ce5780601f106101a3576101008083540402835291602001916101ce565b820191906000526020600020905b8154815290600101906020018083116101b157829003601f168201915b5050505050905090565b6000806101e36103c2565b90506101f08185856103e7565b600191505092915050565b6000600254905090565b6000806102106103c2565b905061021d8582856103ed565b61038b576040517f08c379a00000000000000000000000000000000000000000000000000000008152600401610382906105d2565b60405180910390fd5b60008573ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff160361030c576040517f08c379a000000000000000000000000000000000000000000000000000000081526004016102fb9061063e565b60405180910390fd5b836000808873ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825461035a919061068d565b92505081905550826000808773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254019250508190555060019150509392505050565b60006012905090565b600033905090565b60006103f2848484610205565b90509392505050565b505050565b600081519050919050565b600082825260208201905092915050565b600061041f826103ed565b915050919050565b60006020820190506104426000830184610414565b92915050565b600080600060608486031215610461576104606106e8565b5b600084015161046f81610712565b9350602084015161047f81610712565b9250604084015167ffffffffffffffff81111561049f5761049e6106ed565b5b6104ab868287016104b0565b9150509250925092565b60006020820190506104cc6000830184610414565b92915050565b6000602082840312156104e8576104e76106e8565b5b60006104f6848285016104fb565b91505092915050565b60008135905061050a81610712565b92915050565b600082825260208201905092915050565b600082825260208201905092915050565b6000600282049050600182168061054657607f821691505b602082108103610559576105586106b9565b5b50919050565b600061056c602683610510565b9150610577826105f2565b604082019050919050565b600061058f602283610521565b915061059a82610641565b604082019050919050565b60006105b2601f83610510565b91506105bd82610690565b602082019050919050565b6105d18161065e565b82525050565b600060208201905081810360008301526105eb8161055f565b9050919050565b7f45524332303a207472616e7366657220616d6f756e742065786365656473206260008201527f616c616e63650000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a207472616e736665722066726f6d20746865207a65726f20616460008201527f6472657373000000000000000000000000000000000000000000000000000000602082015250565b600061069b8261065e565b91506106a682610668565b602082019050919050565b6000819050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b600080fd5b600080fd5b600080fd5b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b61071b816106fc565b811461072657600080fd5b5056fea2646970667358221220a6b3b4b0b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b64736f6c63430008140033";
+                
+              </style>
+                        </head>
+                        <body>
+                            <!-- AÑADIR EN EL PANEL DERECHO (dashboard-panel), antes de las recomendaciones -->
+<div class="search-section" style="margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f8fafc;">
+  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+    <h3 style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 10px;">
+      <i class="fas fa-search"></i> 
+      <span class="lang" data-es="Buscar en Todo el Ecosistema" data-ca="Cercar a Tot l'Ecosistema">Buscar en Todo el Ecosistema</span>
+    </h3>
+    <button id="refresh-index" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.9rem;">
+      <i class="fas fa-sync"></i> <span class="lang" data-es="Actualizar Índice" data-ca="Actualitzar Índex">Actualizar Índice</span>
+      <span id="index-timestamp" style="font-size: 0.8rem; margin-left: 8px; opacity: 0.7;"></span>
+    </button>
+  </div>
+  
+  <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+    <input type="text" id="ecosystem-search" 
+           placeholder="Buscar usuarios, roles, entregables, proyectos..." 
+           style="flex: 1; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1.05rem;"
+           autofocus>
+    <select id="search-filter" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+      <option value="all" class="lang" data-es="Todo" data-ca="Tot">Todo</option>
+      <option value="users" class="lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</option>
+      <option value="roles" class="lang" data-es="Roles" data-ca="Rols">Roles</option>
+      <option value="deliverables" class="lang" data-es="Entregables" data-ca="Entregables">Entregables</option>
+      <option value="projects" class="lang" data-es="Proyectos" data-ca="Projectes">Proyectos</option>
+      <option value="knowledge" class="lang" data-es="Conocimiento" data-ca="Coneixement">Conocimiento</option>
+    </select>
+    <button id="search-btn" class="btn btn-primary" style="padding: 0 25px;">
+      <i class="fas fa-search"></i>
+    </button>
+  </div>
+  
+  <div id="search-stats" style="display: flex; justify-content: space-around; background: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+    <span><i class="fas fa-users"></i> <span id="stat-search-users">0</span> <span class="lang" data-es="usuarios" data-ca="usuaris">usuarios</span></span>
+    <span><i class="fas fa-user-tag"></i> <span id="stat-search-roles">0</span> <span class="lang" data-es="roles" data-ca="rols">roles</span></span>
+    <span><i class="fas fa-tasks"></i> <span id="stat-search-deliverables">0</span> <span class="lang" data-es="entregables" data-ca="entregables">entregables</span></span>
+    <span><i class="fas fa-project-diagram"></i> <span id="stat-search-projects">0</span> <span class="lang" data-es="proyectos" data-ca="projectes">proyectos</span></span>
+  </div>
+  
+  <div id="search-results" style="max-height: 400px; overflow-y: auto; display: none;">
+    <!-- Los resultados se insertarán aquí dinámicamente -->
+  </div>
+  
+  <div id="index-summary" style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+    <p style="margin: 0; font-size: 0.95rem; color: var(--gray);">
+      <span class="lang" data-es="Índice actualizado:" data-ca="Índex actualitzat:">Índice actualizado:</span> 
+      <span id="index-last-update">-</span>
+    </p>
+    <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--gray);">
+      <span class="lang" data-es="Fuentes indexadas:" data-ca="Fonts indexades:">Fuentes indexadas:</span> 
+      <span id="index-sources">VNA, Mapas, Accounting</span>
+    </p>
+  </div>
+</div>
 
-        // ========== INICIALIZACIÓN ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cargar datos guardados
-            loadData();
-            
-            // Inicializar UI
-            initChart();
-            updateUI();
-            
-            // Configurar event listeners
-            setupEventListeners();
+
+
+              <script>
+                                ecosystemStats = {
+    vna: { nodes: 5, edges: 8 },
+    mapas: { roles: 3, deliverables: 12, totalValue: 4500 },
+    tokenomics: { supply: 1000000, distribution: {...} },
+    accounting: { deliverables: 15 },
+    finances: { totalAssets: 25000 }
+  }
+  
+window.TeamTowersIA = {
+  getValorSuggestion(rol, tipo) { ... }, // Sugerencias de valor
+  analyzeMap(mapData) { ... },          // Análisis de salud
+  getEcosystemStats() { ... },          // Estadísticas globales
+  ready: true                           // Evento 'iaReady' para sincronización
+};
+
+// NUEVA FUNCIÓN: Construir índice unificado de TODO el ecosistema
+function buildEcosystemIndex() {
+  const index = {
+    timestamp: new Date().toISOString(),
+    sources: {},
+    entities: {
+      users: new Map(),      // Mapa: userId → { name, roles, totalValue, apps }
+      roles: new Map(),      // Mapa: roleId → { name, deliverables, value, apps }
+      deliverables: [],      // Array de todos los entregables
+      projects: new Map(),   // Mapa: projectId → { name, apps, lastUpdate }
+      tokens: new Map()      // Mapa: tokenId → { symbol, supply, distribution }
+    },
+    knowledge: {
+      patterns: patronesBase, // Patrones de valor existentes
+      faq: getFAQContent(),   // FAQ actual
+      institutional: institutionalKnowledge
+    },
+    stats: {
+      totalUsers: 0,
+      totalRoles: 0,
+      totalDeliverables: 0,
+      totalProjects: 0,
+      lastUpdated: new Date().toISOString()
+    }
+  };
+
+  // 1. Indexar datos de VNA (app.html)
+  try {
+    const vnaData = JSON.parse(localStorage.getItem('vnaData') || '{"nodes":[],"edges":[]}');
+    index.sources.vna = { lastUpdate: new Date().toISOString(), itemCount: vnaData.nodes.length };
+    
+    vnaData.nodes.forEach(node => {
+      if (node.label) {
+        const roleId = node.id || node.label;
+        if (!index.entities.roles.has(roleId)) {
+          index.entities.roles.set(roleId, {
+            id: roleId,
+            name: node.label,
+            type: 'vna-node',
+            deliverables: [],
+            value: 0,
+            apps: ['vna'],
+            sourceData: node
+          });
+        }
+      }
+    });
+  } catch(e) { console.error('Error indexando VNA:', e); }
+
+  // 2. Indexar datos de Mapas (mapas.html)
+  try {
+    const mapasData = JSON.parse(localStorage.getItem('valueMapData') || '{"roles":[],"deliverables":[]}');
+    index.sources.mapas = { lastUpdate: new Date().toISOString(), itemCount: mapasData.deliverables.length };
+    
+    mapasData.roles.forEach(role => {
+      const roleId = role.id || role.name;
+      if (!index.entities.roles.has(roleId)) {
+        index.entities.roles.set(roleId, {
+          id: roleId,
+          name: role.name,
+          type: 'mapa-role',
+          deliverables: [],
+          value: 0,
+          apps: ['mapas'],
+          sourceData: role
         });
+      } else {
+        const existing = index.entities.roles.get(roleId);
+        existing.apps.push('mapas');
+      }
+    });
+    
+    mapasData.deliverables.forEach(del => {
+      index.entities.deliverables.push({
+        id: del.id,
+        name: del.name,
+        role: del.roleId,
+        value: del.value,
+        type: del.type,
+        app: 'mapas',
+        timestamp: del.timestamp
+      });
+      
+      // Vincular entregable al rol
+      if (index.entities.roles.has(del.roleId)) {
+        const role = index.entities.roles.get(del.roleId);
+        role.deliverables.push(del.id);
+        role.value += del.value;
+      }
+    });
+  } catch(e) { console.error('Error indexando Mapas:', e); }
 
-        function loadData() {
-            try {
-                const saved = localStorage.getItem('deliverables');
-                if (saved) deliverables = JSON.parse(saved);
-                
-                const savedConfig = localStorage.getItem('projectConfig');
-                if (savedConfig) projectConfig = JSON.parse(savedConfig);
-            } catch (e) {
-                console.error('Error loading:', e);
-            }
+  // 3. Indexar datos de Accounting (lacolla-accounting.html)
+  try {
+    const accountingData = JSON.parse(localStorage.getItem('colla_accounting') || '{"deliverables":[]}');
+    index.sources.accounting = { lastUpdate: new Date().toISOString(), itemCount: accountingData.deliverables.length };
+    
+    accountingData.deliverables.forEach(del => {
+      // Agregar entregable si no existe
+      const existingDel = index.entities.deliverables.find(d => d.id === del.id);
+      if (!existingDel) {
+        index.entities.deliverables.push({
+          id: del.id,
+          name: del.deliverable,
+          role: del.role,
+          value: del.value,
+          type: del.transactionType,
+          app: 'accounting',
+          timestamp: del.timestamp,
+          user: del.userName
+        });
+      }
+      
+      // Indexar usuario
+      if (del.userName && !index.entities.users.has(del.userName)) {
+        index.entities.users.set(del.userName, {
+          name: del.userName,
+          roles: [del.role],
+          totalValue: del.value,
+          apps: ['accounting'],
+          deliverables: [del.id]
+        });
+      } else if (del.userName) {
+        const user = index.entities.users.get(del.userName);
+        if (!user.roles.includes(del.role)) user.roles.push(del.role);
+        user.totalValue += del.value;
+        if (!user.deliverables.includes(del.id)) user.deliverables.push(del.id);
+        if (!user.apps.includes('accounting')) user.apps.push('accounting');
+      }
+      
+      // Vincular al rol
+      if (del.role) {
+        const roleId = `role-${del.role.replace(/\s+/g, '-')}`;
+        if (!index.entities.roles.has(roleId)) {
+          index.entities.roles.set(roleId, {
+            id: roleId,
+            name: del.role,
+            type: 'accounting-role',
+            deliverables: [del.id],
+            value: del.value,
+            apps: ['accounting']
+          });
+        } else {
+          const role = index.entities.roles.get(roleId);
+          if (!role.deliverables.includes(del.id)) role.deliverables.push(del.id);
+          role.value += del.value;
+          if (!role.apps.includes('accounting')) role.apps.push('accounting');
         }
+      }
+    });
+  } catch(e) { console.error('Error indexando Accounting:', e); }
 
-        function saveData() {
-            try {
-                localStorage.setItem('deliverables', JSON.stringify(deliverables));
-                localStorage.setItem('projectConfig', JSON.stringify(projectConfig));
-            } catch (e) {
-                console.error('Error saving:', e);
-            }
-        }
+  // 4. Indexar Tokenomics, Finances, etc. (similar a los anteriores)
+  // ... [código para tokenomics, finances, etc.]
 
-        // ========== VALUE ACCOUNTING ==========
-        function addDeliverable() {
-            const userName = document.getElementById('userName').value.trim();
-            const roleName = document.getElementById('roleName').value.trim();
-            const deliverableName = document.getElementById('deliverableName').value.trim();
-            const description = document.getElementById('description').value.trim();
-            const value = parseInt(document.getElementById('value').value);
-            const address = document.getElementById('address').value.trim();
+  // Actualizar estadísticas
+  index.stats.totalUsers = index.entities.users.size;
+  index.stats.totalRoles = index.entities.roles.size;
+  index.stats.totalDeliverables = index.entities.deliverables.length;
+  index.stats.totalProjects = index.entities.projects.size;
+  
+  // Guardar índice en localStorage para acceso rápido
+  localStorage.setItem('colla_ecosystem_index', JSON.stringify(index));
+  return index;
+}
 
-            if (!userName || !roleName || !deliverableName || !value || value <= 0) {
-                showNotification('⚠️ Todos los campos obligatorios', 'error');
-                return;
-            }
+// Variables globales para el índice
+let ecosystemIndex = null;
+const INDEX_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
-            // Validar dirección Ethereum si se proporciona
-            if (address && !isValidEthereumAddress(address)) {
-                showNotification('⚠️ Dirección Ethereum inválida', 'error');
-                return;
-            }
+// Inicializar índice al cargar
+function initEcosystemSearch() {
+  // Cargar índice desde caché si existe y es reciente
+  const cachedIndex = localStorage.getItem('colla_ecosystem_index');
+  const lastUpdate = localStorage.getItem('colla_ecosystem_index_timestamp');
+  
+  if (cachedIndex && lastUpdate && (Date.now() - new Date(lastUpdate).getTime() < INDEX_CACHE_DURATION)) {
+    ecosystemIndex = JSON.parse(cachedIndex);
+    updateIndexSummary();
+  } else {
+    rebuildIndex();
+  }
+  
+  // Event listeners
+  document.getElementById('search-btn').addEventListener('click', performSearch);
+  document.getElementById('ecosystem-search').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+  });
+  document.getElementById('refresh-index').addEventListener('click', rebuildIndex);
+  document.getElementById('search-filter').addEventListener('change', performSearch);
+  
+  // Actualizar resumen inicial
+  updateIndexSummary();
+}
 
-            const deliverable = {
-                id: Date.now(),
-                userName,
-                roleName,
-                deliverableName,
-                description,
-                value,
-                address: address || '',
-                timestamp: new Date().toISOString()
-            };
+// Reconstruir índice completo
+function rebuildIndex() {
+  showNotification('🔄 Actualizando índice del ecosistema...', 'info', 2000);
+  
+  try {
+    ecosystemIndex = buildEcosystemIndex();
+    localStorage.setItem('colla_ecosystem_index_timestamp', new Date().toISOString());
+    updateIndexSummary();
+    showNotification('✅ Índice actualizado correctamente', 'success');
+    
+    // Si hay búsqueda activa, reejecutar
+    if (document.getElementById('ecosystem-search').value.trim()) {
+      performSearch();
+    }
+  } catch (error) {
+    console.error('Error reconstruyendo índice:', error);
+    showNotification(`❌ Error al actualizar el índice: ${error.message}`, 'error');
+  }
+}
 
-            deliverables.push(deliverable);
-            saveData();
-            updateUI();
-            clearForm();
-            
-            showNotification(`✅ Entregable añadido: ${deliverableName}`);
-        }
+// Actualizar resumen del índice en UI
+function updateIndexSummary() {
+  if (!ecosystemIndex) return;
+  
+  document.getElementById('index-last-update').textContent = 
+    new Date(ecosystemIndex.timestamp).toLocaleString();
+  
+  const sources = Object.keys(ecosystemIndex.sources).join(', ');
+  document.getElementById('index-sources').textContent = sources || 'Ninguna';
+  
+  // Actualizar stats de búsqueda
+  document.getElementById('stat-search-users').textContent = ecosystemIndex.stats.totalUsers;
+  document.getElementById('stat-search-roles').textContent = ecosystemIndex.stats.totalRoles;
+  document.getElementById('stat-search-deliverables').textContent = ecosystemIndex.stats.totalDeliverables;
+  document.getElementById('stat-search-projects').textContent = ecosystemIndex.stats.totalProjects;
+  
+  // Actualizar timestamp en botón
+  document.getElementById('index-timestamp').textContent = 
+    `(${new Date(ecosystemIndex.timestamp).toLocaleTimeString()})`;
+}
 
-        function deleteDeliverable(id) {
-            if (confirm('¿Eliminar este entregable?')) {
-                deliverables = deliverables.filter(d => d.id !== id);
-                saveData();
-                updateUI();
-                showNotification('🗑️ Entregable eliminado', 'error');
-            }
-        }
+// Ejecutar búsqueda
+function performSearch() {
+  const query = document.getElementById('ecosystem-search').value.trim().toLowerCase();
+  const filter = document.getElementById('search-filter').value;
+  const resultsContainer = document.getElementById('search-results');
+  
+  if (!query) {
+    resultsContainer.style.display = 'none';
+    return;
+  }
+  
+  if (!ecosystemIndex) {
+    showNotification('⚠️ El índice no está cargado. Actualiza primero.', 'warning');
+    return;
+  }
+  
+  // Buscar según filtro
+  let results = { users: [], roles: [], deliverables: [], projects: [], knowledge: [] };
+  
+  if (filter === 'all' || filter === 'users') {
+    results.users = Array.from(ecosystemIndex.entities.users.values())
+      .filter(u => u.name.toLowerCase().includes(query) || u.roles.some(r => r.toLowerCase().includes(query)));
+  }
+  
+  if (filter === 'all' || filter === 'roles') {
+    results.roles = Array.from(ecosystemIndex.entities.roles.values())
+      .filter(r => r.name.toLowerCase().includes(query) || r.type.includes(query));
+  }
+  
+  if (filter === 'all' || filter === 'deliverables') {
+    results.deliverables = ecosystemIndex.entities.deliverables
+      .filter(d => d.name.toLowerCase().includes(query) || 
+                  (d.role && d.role.toString().toLowerCase().includes(query)) ||
+                  (d.user && d.user.toLowerCase().includes(query)));
+  }
+  
+  if (filter === 'all' || filter === 'projects') {
+    results.projects = Array.from(ecosystemIndex.entities.projects.values())
+      .filter(p => p.name.toLowerCase().includes(query));
+  }
+  
+  if (filter === 'all' || filter === 'knowledge') {
+    // Buscar en patrones
+    results.knowledge = Object.entries(ecosystemIndex.knowledge.patterns)
+      .flatMap(([role, tipos]) => 
+        Object.entries(tipos).map(([tipo, data]) => ({
+          type: 'pattern',
+          role,
+          deliverableType: tipo,
+          value: data.promedio,
+          frequency: data.frecuencia,
+          match: `${role} ${tipo}`.toLowerCase().includes(query)
+        }))
+      )
+      .filter(item => item.match);
+    
+    // Buscar en FAQ
+    const lang = document.documentElement.lang;
+    const faqs = lang === 'ca' ? [
+      { q: "Què és el Value Network Analysis?", a: "És una metodologia..." },
+      // ... más FAQs
+    ] : [
+      { q: "¿Qué es el Value Network Analysis?", a: "Es una metodología..." },
+      // ... más FAQs
+    ];
+    
+    faqs.forEach(faq => {
+      if (faq.q.toLowerCase().includes(query) || faq.a.toLowerCase().includes(query)) {
+        results.knowledge.push({
+          type: 'faq',
+          question: faq.q,
+          answer: faq.a.substring(0, 100) + '...'
+        });
+      }
+    });
+  }
+  
+  // Mostrar resultados
+  displaySearchResults(results, query);
+}
 
-        function clearForm() {
-            document.getElementById('userName').value = '';
-            document.getElementById('roleName').value = '';
-            document.getElementById('deliverableName').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('value').value = '';
-            document.getElementById('address').value = '';
-        }
+// Mostrar resultados en UI
+function displaySearchResults(results, query) {
+  const container = document.getElementById('search-results');
+  container.style.display = 'block';
+  
+  // Contar resultados totales
+  const totalResults = results.users.length + results.roles.length + 
+                       results.deliverables.length + results.projects.length +
+                       results.knowledge.length;
+  
+  if (totalResults === 0) {
+    container.innerHTML = `
+      <div style="padding: 20px; text-align: center; color: var(--gray);">
+        <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 10px;"></i>
+        <p class="lang" data-es="No se encontraron resultados para" data-ca="No s'han trobat resultats per">No se encontraron resultados para</p>
+        <strong>"${query}"</strong>
+        <p style="margin-top: 10px; font-size: 0.9rem;" class="lang" 
+           data-es="Prueba con otro término o actualiza el índice" 
+           data-ca="Prova amb un altre terme o actualitza l'índex">
+          Prueba con otro término o actualiza el índice
+        </p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Construir HTML de resultados
+  let html = `<div style="padding: 10px 0;">`;
+  
+  // Usuarios
+  if (results.users.length > 0) {
+    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+              👥 <span class="lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</span> (${results.users.length})
+             </h4>`;
+    results.users.forEach(user => {
+      html += `
+        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--primary);">
+          <strong>${user.name}</strong> 
+          <span style="background: var(--light); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-left: 8px;">
+            ${user.totalValue} UV
+          </span>
+          <div style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">
+            <i class="fas fa-tag"></i> ${user.roles.join(', ')} | 
+            <i class="fas fa-cube"></i> ${user.deliverables.length} entregables | 
+            <i class="fas fa-layer-group"></i> ${user.apps.join(', ')}
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  // Roles
+  if (results.roles.length > 0) {
+    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+              👤 <span class="lang" data-es="Roles" data-ca="Rols">Roles</span> (${results.roles.length})
+             </h4>`;
+    results.roles.forEach(role => {
+      html += `
+        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--secondary);">
+          <strong>${role.name}</strong>
+          <span style="background: rgba(79, 70, 229, 0.15); color: var(--secondary); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-left: 8px;">
+            ${role.value} UV
+          </span>
+          <div style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">
+            <i class="fas fa-tasks"></i> ${role.deliverables.length} entregables | 
+            <i class="fas fa-layer-group"></i> ${role.apps.join(', ')} |
+            <span style="background: var(--light); padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${role.type}</span>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  // Entregables
+  if (results.deliverables.length > 0) {
+    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+              📋 <span class="lang" data-es="Entregables" data-ca="Entregables">Entregables</span> (${results.deliverables.length})
+             </h4>`;
+    results.deliverables.slice(0, 10).forEach(del => { // Limitar a 10 resultados
+      html += `
+        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid ${del.type === 'tangible' ? '#10b981' : '#f59e0b'};">
+          <strong>${del.name}</strong>
+          <span style="background: ${del.type === 'tangible' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; 
+                    color: ${del.type === 'tangible' ? '#0da27f' : '#d97706'}; 
+                    padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-left: 8px;">
+            ${del.type === 'tangible' ? 'Tangible' : 'Intangible'}
+          </span>
+          <div style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">
+            <i class="fas fa-user"></i> ${del.user || 'N/A'} | 
+            <i class="fas fa-user-tag"></i> ${del.role || 'N/A'} | 
+            <i class="fas fa-coins"></i> ${del.value} UV |
+            <i class="fas fa-layer-group"></i> ${del.app}
+          </div>
+        </div>
+      `;
+    });
+    if (results.deliverables.length > 10) {
+      html += `<div style="text-align: center; padding: 10px; color: var(--accent); font-weight: 600;">
+                +${results.deliverables.length - 10} resultados más
+               </div>`;
+    }
+  }
+  
+  // Conocimiento
+  if (results.knowledge.length > 0) {
+    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+              🧠 <span class="lang" data-es="Conocimiento" data-ca="Coneixement">Conocimiento</span> (${results.knowledge.length})
+             </h4>`;
+    results.knowledge.slice(0, 5).forEach(item => {
+      if (item.type === 'pattern') {
+        html += `
+          <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent);">
+            <strong>${item.role} → ${item.deliverableType}</strong>
+            <div style="font-size: 0.9rem; margin-top: 5px;">
+              <span style="background: rgba(139, 92, 246, 0.15); padding: 3px 10px; border-radius: 20px; font-weight: 600;">
+                ${item.value} UV
+              </span>
+              <span style="margin-left: 10px; color: var(--gray);">
+                <i class="fas fa-chart-line"></i> Basado en ${item.frequency} entregables
+              </span>
+            </div>
+          </div>
+        `;
+      } else if (item.type === 'faq') {
+        html += `
+          <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--warning);">
+            <strong>❓ ${item.question}</strong>
+            <div style="font-size: 0.9rem; margin-top: 5px; color: var(--gray);">
+              ${item.answer}
+            </div>
+          </div>
+        `;
+      }
+    });
+  }
+  
+  html += `</div>`;
+  container.innerHTML = html;
+}
 
-        function resetAllData() {
-            if (confirm('¿Eliminar TODOS los datos?')) {
-                deliverables = [];
-                saveData();
-                updateUI();
-                showNotification('🗑️ Todos los datos eliminados', 'error');
-            }
-        }
+// Inicializar al cargar la página (añadir al final de init)
+document.addEventListener('DOMContentLoaded', () => {
+  // ... código existente ...
+  
+  // Inicializar buscador del ecosistema
+  initEcosystemSearch();
+  
+  // ... resto del código ...
+});
 
-        function isValidEthereumAddress(address) {
-            return /^0x[a-fA-F0-9]{40}$/.test(address);
-        }
 
-        // ========== UI UPDATE ==========
-        function updateUI() {
-            // Estadísticas
-            const uniqueUsers = [...new Set(deliverables.map(d => d.userName))];
-            const uniqueRoles = [...new Set(deliverables.map(d => d.roleName))];
-            const totalValue = deliverables.reduce((sum, d) => sum + d.value, 0);
-
-            document.getElementById('totalUsers').textContent = uniqueUsers.length;
-            document.getElementById('totalRoles').textContent = uniqueRoles.length;
-            document.getElementById('totalDeliverables').textContent = deliverables.length;
-            document.getElementById('totalValue').textContent = totalValue;
-
-            // Tabla de entregables
-            updateDeliverablesTable();
-            
-            // Gráfico
-            updateChart();
-            
-            // Snapshot preview
-            updateSnapshotPreview();
-            
-            // Distribución
-            updateDistributionTable();
-        }
-
-        function updateDeliverablesTable() {
-            const tbody = document.getElementById('tableBody');
-            
-            if (deliverables.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--gray);">No hay entregables registrados</td></tr>';
-                return;
-            }
-
-            const recent = [...deliverables].reverse().slice(0, 10);
-
-            tbody.innerHTML = recent.map(d => `
-                <tr>
-                    <td>${d.userName}</td>
-                    <td>${d.roleName}</td>
-                    <td>${d.deliverableName}</td>
-                    <td>${d.value}</td>
-                    <td>
-                        <button class="delete-btn" onclick="deleteDeliverable(${d.id})">🗑️</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function updateSnapshotPreview() {
-            const preview = document.getElementById('snapshotPreview');
-            
-            if (deliverables.length === 0) {
-                preview.textContent = 'No hay datos de entregables';
-                return;
-            }
-
-            // Agrupar por usuario
-            const userTotals = {};
-            const userAddresses = {};
-            
-            deliverables.forEach(d => {
-                userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
-                if (d.address && !userAddresses[d.userName]) {
-                    userAddresses[d.userName] = d.address;
-                }
-            });
-
-            const snapshot = Object.entries(userTotals).map(([user, uv]) => ({
-                user,
-                address: userAddresses[user] || '',
-                uvAmount: uv
-            }));
-
-            preview.innerHTML = JSON.stringify(snapshot.slice(0, 3), null, 2) + 
-                (snapshot.length > 3 ? `\n... y ${snapshot.length - 3} más` : '');
-        }
-
-        function updateDistributionTable() {
-            const tbody = document.getElementById('distributionBody');
-            
-            if (deliverables.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay datos</td></tr>';
-                return;
-            }
-
-            // Agrupar por usuario
-            const userTotals = {};
-            const userAddresses = {};
-            
-            deliverables.forEach(d => {
-                userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
-                if (d.address && !userAddresses[d.userName]) {
-                    userAddresses[d.userName] = d.address;
-                }
-            });
-
-            const totalValue = Object.values(userTotals).reduce((a, b) => a + b, 0);
-            
-            const sorted = Object.entries(userTotals)
-                .sort((a, b) => b[1] - a[1]);
-
-            tbody.innerHTML = sorted.map(([user, value]) => `
-                <tr>
-                    <td>${user}</td>
-                    <td>${userAddresses[user] || '⛔ No asignada'}</td>
-                    <td>${value}</td>
-                    <td>${value}</td>
-                    <td>${((value / totalValue) * 100).toFixed(2)}%</td>
-                </tr>
-            `).join('');
-        }
-
-        // ========== GRÁFICO ==========
-        let chart = null;
-
-        function initChart() {
-            const ctx = document.getElementById('valueChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: ['#1e3a8a', '#4f46e5', '#8b5cf6', '#10b981', '#f59e0b']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-        }
-
-        function updateChart() {
-            if (!chart) return;
-
-            const userTotals = {};
-            deliverables.forEach(d => {
-                userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
-            });
-
-            const sorted = Object.entries(userTotals)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5);
-
-            chart.data.labels = sorted.map(([user]) => user);
-            chart.data.datasets[0].data = sorted.map(([, value]) => value);
-            chart.update();
-        }
-
-        // ========== BLOCKCHAIN ==========
-        async function connectWallet() {
-            try {
-                if (!window.ethereum) {
-                    throw new Error('MetaMask no está instalado');
-                }
-
-                updateConnectionStatus('info', '⏳ Conectando...');
-                
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                
-                provider = new ethers.BrowserProvider(window.ethereum);
-                signer = await provider.getSigner();
-                account = await signer.getAddress();
-                
-                isConnected = true;
-                
-                const balance = await provider.getBalance(account);
-                const ethBalance = ethers.formatEther(balance);
-                
-                updateConnectionStatus('success', `✅ Conectado: ${account.slice(0,6)}...${account.slice(-4)}`);
-                
-                document.getElementById('accountInfo').innerHTML = `
-                    <div style="background: #1e293b; color: white; padding: 15px; border-radius: 8px;">
-                        <strong>📍 Dirección:</strong> ${account}<br>
-                        <strong>💰 Balance:</strong> ${parseFloat(ethBalance).toFixed(4)} ETH
-                    </div>
-                `;
-                
-                document.getElementById('connectionBadge').className = 'badge connected';
-                document.getElementById('connectionBadge').innerHTML = '🟢 Conectado';
-                
-                document.getElementById('deployBtn').disabled = false;
-                document.getElementById('estimateBtn').disabled = false;
-                document.getElementById('disconnectBtn').disabled = false;
-                document.getElementById('connectBtn').disabled = true;
-                
-            } catch (error) {
-                updateConnectionStatus('error', '❌ Error: ' + error.message);
-            }
-        }
-
-        function disconnectWallet() {
-            provider = null;
-            signer = null;
-            account = null;
-            isConnected = false;
-            
-            updateConnectionStatus('info', '🔌 Desconectado');
-            document.getElementById('accountInfo').innerHTML = '';
-            document.getElementById('connectionBadge').className = 'badge disconnected';
-            document.getElementById('connectionBadge').innerHTML = '⚫ Desconectado';
-            
-            document.getElementById('deployBtn').disabled = true;
-            document.getElementById('estimateBtn').disabled = true;
-            document.getElementById('disconnectBtn').disabled = true;
-            document.getElementById('connectBtn').disabled = false;
-            
-            document.getElementById('resultArea').innerHTML = '';
-            document.getElementById('postDeploy').style.display = 'none';
-        }
-
-        async function estimateGas() {
-            if (!signer) return;
-            
-            try {
-                const name = document.getElementById('tokenName').value;
-                const symbol = document.getElementById('tokenSymbol').value;
-                const supply = document.getElementById('tokenSupply').value;
-                
-                const factory = new ethers.ContractFactory(TOKEN_ABI, TOKEN_BYTECODE, signer);
-                
-                const deployTx = await factory.getDeployTransaction(name, symbol, supply);
-                const gasEstimate = await provider.estimateGas(deployTx);
-                
-                const feeData = await provider.getFeeData();
-                const gasCost = gasEstimate * (feeData.gasPrice || 0n);
-                
-                showNotification(`⛽ Gas estimado: ${gasEstimate.toString()} unidades (≈ ${ethers.formatEther(gasCost)} ETH)`, 'info');
-                
-            } catch (error) {
-                showNotification('❌ Error estimando gas: ' + error.message, 'error');
-            }
-        }
-
-        async function deployToken() {
-            if (!signer) return;
-            
-            const deployStatus = document.getElementById('deployStatus');
-            deployStatus.className = 'status info';
-            deployStatus.textContent = '🚀 Preparando despliegue...';
-            
-            try {
-                const name = document.getElementById('tokenName').value;
-                const symbol = document.getElementById('tokenSymbol').value;
-                const supply = document.getElementById('tokenSupply').value;
-                
-                if (!name || !symbol || !supply) {
-                    throw new Error('Todos los campos son obligatorios');
-                }
-                
-                const factory = new ethers.ContractFactory(TOKEN_ABI, TOKEN_BYTECODE, signer);
-                
-                deployStatus.textContent = '⏳ Confirmando en MetaMask...';
-                
-                const contract = await factory.deploy(name, symbol, supply);
-                
-                deployStatus.textContent = '⏳ Esperando confirmación en blockchain...';
-                
-                await contract.waitForDeployment();
-                
-                deployedAddress = await contract.getAddress();
-                const txHash = contract.deploymentTransaction().hash;
-                
-                document.getElementById('deployedAddress').textContent = deployedAddress;
-                document.getElementById('resultArea').innerHTML = `
-                    <div class="address-box">
-                        <strong>📌 Token desplegado en:</strong><br>
-                        ${deployedAddress}<br><br>
-                        <strong>📝 Transacción:</strong><br>
-                        ${txHash}
-                    </div>
-                `;
-                
-                deployStatus.className = 'status success';
-                deployStatus.textContent = '✅ Token desplegado exitosamente';
-                
-                document.getElementById('postDeploy').style.display = 'block';
-                
-            } catch (error) {
-                deployStatus.className = 'status error';
-                deployStatus.textContent = '❌ Error: ' + (error.reason || error.message);
-            }
-        }
-
-        // ========== EXPORTACIONES ==========
-        function exportCSV() {
-            if (deliverables.length === 0) {
-                showNotification('No hay datos para exportar', 'error');
-                return;
-            }
-
-            const userTotals = {};
-            deliverables.forEach(d => {
-                userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
-            });
-
-            let csv = 'Usuario,Valor\n';
-            Object.entries(userTotals).forEach(([user, value]) => {
-                csv += `"${user}",${value}\n`;
-            });
-
-            downloadFile(csv, 'value-accounting.csv', 'text/csv');
-        }
-
-        function exportJSON() {
-            if (deliverables.length === 0) {
-                showNotification('No hay datos para exportar', 'error');
-                return;
-            }
-
-            const data = {
-                projectName: projectConfig.projectName,
-                valueUnit: projectConfig.valueUnit,
-                deliverables: deliverables,
-                config: projectConfig
-            };
-
-            downloadFile(
-                JSON.stringify(data, null, 2),
-                `value-accounting-${Date.now()}.json`,
-                'application/json'
-            );
-        }
-
-        function exportDeployJSON() {
-            if (deliverables.length === 0) {
-                showNotification('No hay datos para exportar', 'error');
-                return;
-            }
-
-            // Agrupar por usuario
-            const userTotals = {};
-            const userAddresses = {};
-            
-            deliverables.forEach(d => {
-                userTotals[d.userName] = (userTotals[d.userName] || 0) + d.value;
-                if (d.address && !userAddresses[d.userName]) {
-                    userAddresses[d.userName] = d.address;
-                }
-            });
-
-            const snapshot = Object.entries(userTotals).map(([user, uv]) => ({
-                user,
-                address: userAddresses[user] || '',
-                uvAmount: uv
-            }));
-
-            const deployData = {
-                projectName: projectConfig.projectName,
-                timestamp: new Date().toISOString(),
-                totalValue: Object.values(userTotals).reduce((a, b) => a + b, 0),
-                tokenParams: {
-                    name: document.getElementById('tokenName').value,
-                    symbol: document.getElementById('tokenSymbol').value,
-                    supply: document.getElementById('tokenSupply').value
-                },
-                snapshot: snapshot
-            };
-
-            downloadFile(
-                JSON.stringify(deployData, null, 2),
-                `token-deploy-${Date.now()}.json`,
-                'application/json'
-            );
-        }
-
-        function downloadFile(content, fileName, mimeType) {
-            const blob = new Blob([content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // ========== UTILIDADES ==========
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `status ${type}`;
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.zIndex = '1000';
-            notification.style.maxWidth = '300px';
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => notification.remove(), 3000);
-        }
-
-        function updateConnectionStatus(type, message) {
-            const statusEl = document.getElementById('connectionStatus');
-            statusEl.className = `status ${type}`;
-            statusEl.textContent = message;
-        }
-
-        // ========== EVENT LISTENERS ==========
-        function setupEventListeners() {
-            // Tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+              </script>
+                        </body>
+                        </html>
                     
-                    this.classList.add('active');
-                    document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
-                });
-            });
-
-            // Value Accounting
-            document.getElementById('addBtn').addEventListener('click', addDeliverable);
-            document.getElementById('resetBtn').addEventListener('click', resetAllData);
-            
-            // Blockchain
-            document.getElementById('connectBtn').addEventListener('click', connectWallet);
-            document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
-            document.getElementById('deployBtn').addEventListener('click', deployToken);
-            document.getElementById('estimateBtn').addEventListener('click', estimateGas);
-            
-            // Post-deploy
-            document.getElementById('viewExplorer').addEventListener('click', () => {
-                if (deployedAddress) {
-                    const network = document.getElementById('networkSelect').value;
-                    const explorers = {
-                        sepolia: 'https://sepolia.etherscan.io',
-                        holesky: 'https://holesky.etherscan.io',
-                        goerli: 'https://goerli.etherscan.io'
-                    };
-                    window.open(`${explorers[network]}/address/${deployedAddress}`, '_blank');
-                }
-            });
-            
-            document.getElementById('copyAddress').addEventListener('click', () => {
-                if (deployedAddress) {
-                    navigator.clipboard.writeText(deployedAddress);
-                    showNotification('✅ Dirección copiada');
-                }
-            });
-            
-            document.getElementById('addToMetaMask').addEventListener('click', async () => {
-                if (deployedAddress && window.ethereum) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_watchAsset',
-                            params: {
-                                type: 'ERC20',
-                                options: {
-                                    address: deployedAddress,
-                                    symbol: document.getElementById('tokenSymbol').value,
-                                    decimals: 18
-                                }
-                            }
-                        });
-                    } catch (error) {
-                        showNotification('❌ Error: ' + error.message, 'error');
-                    }
-                }
-            });
-            
-            // Exports
-            document.getElementById('exportCSV').addEventListener('click', exportCSV);
-            document.getElementById('exportJSON').addEventListener('click', exportJSON);
-            document.getElementById('exportDeployJSON').addEventListener('click', exportDeployJSON);
-            
-            // Config
-            document.getElementById('saveConfig').addEventListener('click', () => {
-                projectConfig = {
-                    projectName: document.getElementById('projectName').value,
-                    valueUnit: document.getElementById('valueUnit').value,
-                    teamAllocation: parseInt(document.getElementById('teamAlloc').value),
-                    communityAllocation: parseInt(document.getElementById('communityAlloc').value)
-                };
-                saveData();
-                showNotification('✅ Configuración guardada');
-            });
-            
-            // Snapshot refresh
-            document.getElementById('refreshSnapshot').addEventListener('click', updateSnapshotPreview);
-        }
-
-        // Hacer deleteDeliverable global
-        window.deleteDeliverable = deleteDeliverable;
-    </script>
-</body>
-</html>
