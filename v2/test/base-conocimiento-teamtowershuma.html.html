@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Base de Conocimiento Semántica | TeamTowers Humà v2. Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema.">
+    <meta name="description" content="Base de Conocimiento Semántica | TeamTowers Humà v0.3. Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema.">
     <meta name="keywords" content="Base de Conocimiento, Semántica, TeamTowers Humà, VNA, Tokenomics, Contabilidad de Valor, Comunidades de Práctica">
-    <title>Base de Conocimiento Semántica | TeamTowers Humà v2</title>
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Base de Conocimiento Semántica v0.3 | TeamTowers Humà</title>
+    
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Base de Conocimiento Semántica | TeamTowers Humà v2">
+    <meta property="og:title" content="Base de Conocimiento Semántica v0.3 | TeamTowers Humà">
     <meta property="og:description" content="Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema TeamTowers Humà">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/knowledge-base">
     <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="ca_ES">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- vis-network for graph visualization -->
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    
     <style>
+        /* ========== ESTÁNDARES W3C - VARIABLES CSS ========== */
         :root {
+            /* Colores TeamTowers Humà */
             --primary: #1e3a8a;
             --secondary: #4f46e5;
             --accent: #8b5cf6;
@@ -33,29 +41,208 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
-            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
-            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+            
+            /* Tipografía W3C */
+            --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'Courier New', monospace;
+            
+            /* Espaciado consistente */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            /* Breakpoints responsivos */
+            --breakpoint-sm: 576px;
+            --breakpoint-md: 768px;
+            --breakpoint-lg: 992px;
+            --breakpoint-xl: 1200px;
+            
+            /* Accesibilidad WCAG 2.1 AA */
+            --contrast-min: 4.5; /* Relación mínimo de contraste */
+            --focus-outline: 3px solid var(--accent);
+            --reduced-motion: 0.1s;
         }
         
+        /* ========== RESET Y BASE ========== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
         
         body {
-            background-color: #f5f7fb;
-            color: #333;
+            font-family: var(--font-sans);
             line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fb;
             padding-top: 4rem;
         }
         
-        /* ========== HEADER ========== */
+        /* ========== COMPONENTES REUTILIZABLES ========== */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .section {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .card:hover {
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #1a3275;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #f8fafc;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #0da27f;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+        
+        .btn-warning:hover {
+            background: #eab308;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background: #7c3aed;
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* ========== HEADER Y NAVEGACIÓN ========== */
         header {
-            background: var(--gradient-dark);
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
             color: white;
             padding: 1rem 0;
             position: fixed;
@@ -67,38 +254,33 @@
         }
         
         .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--spacing-sm);
         }
         
         .logo img {
-            height: 45px;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+            height: 40px;
         }
         
         .logo-text {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         
         nav ul {
             display: flex;
             list-style: none;
-            gap: 15px;
+            gap: var(--spacing-md);
         }
         
         nav a {
@@ -106,7 +288,7 @@
             text-decoration: none;
             font-weight: 500;
             padding: 0.5rem 1rem;
-            border-radius: 30px;
+            border-radius: var(--border-radius);
             transition: var(--transition);
         }
         
@@ -115,13 +297,7 @@
             color: white;
         }
         
-        /* ========== CONTAINER ========== */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
+        /* ========== GRID RESPONSIVO ========== */
         .app-container {
             display: grid;
             grid-template-columns: 320px 1fr;
@@ -135,145 +311,141 @@
             }
         }
         
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 25px;
-            height: fit-content;
-            position: sticky;
-            top: 90px;
+        /* ========== TIPOGRAFÍA SEMÁNTICA ========== */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-sans);
+            line-height: 1.3;
+            margin-bottom: var(--spacing-sm);
+            color: var(--dark);
         }
         
-        .sidebar h2 {
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.25rem; }
+        h6 { font-size: 1.1rem; }
+        
+        p {
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        a {
             color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+            color: var(--secondary);
+        }
+        
+        /* ========== COMPONENTES ESPECÍFICOS ========== */
+        .knowledge-unit {
+            border-left: 4px solid var(--accent);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            background: #f8fafc;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            transition: var(--transition);
+        }
+        
+        .knowledge-unit:hover {
+            background: #f1f5f9;
+            transform: translateX(5px);
+        }
+        
+        .knowledge-unit-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .knowledge-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .type-entity { 
+            background: rgba(30, 58, 138, 0.1); 
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .type-concept { 
+            background: rgba(139, 92, 246, 0.1); 
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+        
+        .type-project { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .type-pattern { 
+            background: rgba(245, 158, 11, 0.1); 
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: var(--light);
+            color: var(--gray);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
         }
         
         .stat-card {
-            background: var(--light);
-            border-radius: 8px;
-            padding: 15px;
             text-align: center;
-            border-left: 3px solid var(--accent);
-        }
-        
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 5px 0;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--gray);
-            font-weight: 500;
-        }
-        
-        .knowledge-types {
-            margin-top: 25px;
-        }
-        
-        .type-group {
-            margin-bottom: 15px;
-        }
-        
-        .type-title {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .type-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .type-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            background: var(--light);
-            color: var(--gray);
-        }
-        
-        .type-badge.entity {
-            background: rgba(30, 58, 138, 0.1);
-            color: var(--primary);
-        }
-        
-        .type-badge.concept {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--accent);
-        }
-        
-        /* ========== MAIN CONTENT ========== */
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .panel {
+            padding: var(--spacing-lg);
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 25px;
+            border: 1px solid #e2e8f0;
         }
         
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .panel-title {
-            font-size: 1.8rem;
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
             color: var(--primary);
+            margin: var(--spacing-sm) 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .search-bar {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+            position: relative;
         }
         
-        /* ========== SEARCH BAR ========== */
-        .search-section {
-            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(30, 58, 138, 0.1);
-        }
-        
-        .search-controls {
-            display: flex;
-            gap: 15px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-        
-        .search-input {
+        .search-bar input {
             flex: 1;
             min-width: 250px;
             padding: 12px 15px;
@@ -281,18 +453,28 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: var(--transition);
+            padding-left: 40px;
         }
         
-        .search-input:focus {
-            outline: none;
+        .search-bar input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.2rem;
         }
         
         .search-filters {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-top: 10px;
         }
         
         .filter-btn {
@@ -319,117 +501,7 @@
             border-radius: 8px;
             margin-top: 15px;
             font-weight: 500;
-        }
-        
-        /* ========== KNOWLEDGE GRID ========== */
-        .knowledge-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-        
-        .knowledge-card {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 20px;
-            transition: var(--transition);
-            border-left: 4px solid var(--accent);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .knowledge-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .knowledge-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-primary);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease;
-        }
-        
-        .knowledge-card:hover::before {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--primary);
-            word-break: break-word;
-        }
-        
-        .card-type {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .type-entity {
-            background: rgba(30, 58, 138, 0.1);
-            color: var(--primary);
-        }
-        
-        .type-concept {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--accent);
-        }
-        
-        .type-project {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-        
-        .type-pattern {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-        
-        .card-description {
-            color: var(--gray);
-            margin-bottom: 15px;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-        
-        .card-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding-top: 12px;
-            border-top: 1px solid #f1f5f9;
-            font-size: 0.85rem;
-        }
-        
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray);
+            border: 1px solid #e2e8f0;
         }
         
         .reference-link {
@@ -438,135 +510,64 @@
             color: var(--primary);
             padding: 2px 8px;
             border-radius: 4px;
-            font-family: monospace;
+            font-family: var(--font-mono);
             font-size: 0.9rem;
             margin-right: 5px;
             margin-bottom: 5px;
             text-decoration: none;
             transition: var(--transition);
+            border: 1px solid rgba(30, 58, 138, 0.2);
         }
         
         .reference-link:hover {
             background: rgba(30, 58, 138, 0.15);
-            text-decoration: underline;
+            border-color: var(--primary);
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .reference-link.entity {
             background: rgba(30, 58, 138, 0.08);
             color: var(--primary);
+            border-color: rgba(30, 58, 138, 0.3);
         }
         
         .reference-link.concept {
             background: rgba(139, 92, 246, 0.08);
             color: var(--accent);
+            border-color: rgba(139, 92, 246, 0.3);
         }
         
-        /* ========== GRAPH VISUALIZATION ========== */
-        .graph-container {
-            height: 500px;
-            background: var(--light);
-            border-radius: 8px;
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* ========== FORMS ========== */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
-        }
-        
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 1rem;
-        }
-        
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
-            color: white;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* ========== TABS ========== */
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 25px;
             flex-wrap: wrap;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
         }
         
         .tab-btn {
             padding: 10px 20px;
             border: none;
             background: var(--light);
-            border-radius: 30px;
+            border-radius: 30px 30px 0 0;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            border: 1px solid #e2e8f0;
+            border-bottom: none;
         }
         
         .tab-btn.active {
-            background: var(--gradient-primary);
-            color: white;
+            background: white;
+            color: var(--primary);
+            border-color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            font-weight: 700;
+            position: relative;
+            top: 1px;
         }
         
         .tab-content {
@@ -577,9 +578,484 @@
             display: block;
         }
         
+        /* ========== GRAFO DE CONOCIMIENTO ========== */
+        .graph-container {
+            height: 550px;
+            background: var(--light);
+            border-radius: 8px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .graph-tip {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        
+        .graph-tip strong {
+            color: var(--success);
+        }
+        
+        .graph-meme {
+            text-align: center;
+            margin: 25px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed var(--accent);
+        }
+        
+        .graph-meme img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .graph-meme p {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--gray);
+        }
+        
+        /* ========== FORMULARIOS ========== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .sidebar h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .knowledge-types {
+            margin-top: 25px;
+        }
+        
+        .type-group {
+            margin-bottom: 15px;
+        }
+        
+        .type-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .type-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        /* ========== MODAL ========== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .entity-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .entity-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .detail-section h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .detail-value {
+            background: var(--light);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+        }
+        
+        .related-entities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        /* ========== NOTIFICACIONES ========== */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .notification.success { 
+            background: linear-gradient(135deg, #10b981 0%, #0da27f 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .notification.error { 
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .notification.warning { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #000;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        
+        .notification.info { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        
+        /* ========== ACCESIBILIDAD WCAG 2.1 AA ========== */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+            
+            .btn, .card, .reference-link {
+                transition: none !important;
+            }
+        }
+        
+        @media (prefers-contrast: high) {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .card, .stat-card, .sidebar {
+                border: 2px solid #000;
+            }
+            
+            a {
+                text-decoration: underline;
+            }
+        }
+        
+        /* Focus visible for accessibility */
+        a:focus-visible, 
+        button:focus-visible, 
+        .form-control:focus-visible,
+        .tab-btn:focus-visible {
+            outline: var(--focus-outline);
+            outline-offset: 2px;
+        }
+        
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary: #00008b;
+                --secondary: #0000cd;
+                --accent: #8b008b;
+                --success: #006400;
+                --warning: #8b8b00;
+                --danger: #8b0000;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .card, .sidebar, .stat-card {
+                border: 2px solid #000;
+                box-shadow: none;
+            }
+            
+            a {
+                text-decoration: underline;
+            }
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: relative;
+                top: 0;
+                width: 100%;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-bar input {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .graph-container {
+                height: 400px;
+            }
+            
+            .entity-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                border-radius: 8px;
+                margin-bottom: 5px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ========== GRAFO ESTILOS PERSONALIZADOS ========== */
+        .vis-network {
+            border-radius: 8px;
+        }
+        
+        .vis-tooltip {
+            background: white !important;
+            border: 1px solid var(--primary) !important;
+            border-radius: 8px !important;
+            padding: 12px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            font-family: var(--font-sans) !important;
+            max-width: 300px !important;
+        }
+        
+        .vis-tooltip .tooltip-title {
+            font-weight: 700 !important;
+            color: var(--primary) !important;
+            margin-bottom: 5px !important;
+            font-size: 1.1rem !important;
+        }
+        
+        .vis-tooltip .tooltip-type {
+            display: inline-block !important;
+            padding: 2px 8px !important;
+            border-radius: 12px !important;
+            font-size: 0.8rem !important;
+            margin-top: 5px !important;
+            font-weight: 600 !important;
+        }
+        
+        .vis-tooltip .tooltip-type.entity {
+            background: rgba(30, 58, 138, 0.1) !important;
+            color: var(--primary) !important;
+        }
+        
+        .vis-tooltip .tooltip-type.concept {
+            background: rgba(139, 92, 246, 0.1) !important;
+            color: var(--accent) !important;
+        }
+        
+        /* ========== NUEVO: Formulario de creación desde búsqueda ========== */
+        .create-entity-form {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border: 2px dashed var(--warning);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .create-entity-form h3 {
+            color: var(--warning);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .create-entity-form p {
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+        
+        .search-no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .search-no-results i {
+            font-size: 3.5rem;
+            opacity: 0.3;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .search-no-results h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .search-no-results p {
+            max-width: 500px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+        
         /* ========== FOOTER ========== */
         footer {
-            background: var(--gradient-dark);
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
             color: rgba(255, 255, 255, 0.85);
             padding: 40px 20px;
             margin-top: 60px;
@@ -645,114 +1121,7 @@
             max-width: 1000px;
             margin-left: auto;
             margin-right: auto;
-        }
-        
-        /* ========== NOTIFICATIONS ========== */
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 400px;
-        }
-        
-        .notification {
-            padding: 15px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .notification.success { background: linear-gradient(135deg, #10b981 0%, #0da27f 100%); }
-        .notification.error { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
-        .notification.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; }
-        .notification.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; transform: translateX(100%); }
-        }
-        
-        /* ========== PERFORMANCE BADGE ========== */
-        .performance-badge {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            border: 2px solid var(--success);
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-weight: 700;
-            color: var(--success);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-        }
-        
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {
-            .app-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                position: relative;
-                top: 0;
-                width: 100%;
-            }
-            
-            .search-controls {
-                flex-direction: column;
-            }
-            
-            .search-input {
-                width: 100%;
-            }
-            
-            .graph-container {
-                height: 350px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            nav ul {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .knowledge-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+            line-height: 1.7;
         }
     </style>
 </head>
@@ -760,10 +1129,60 @@
     <!-- Notification Container -->
     <div class="notification-container" id="notification-container"></div>
     
-    <!-- Performance Badge -->
-    <div class="performance-badge">
-        <i class="fas fa-bolt"></i>
-        <span>Optimizado para 10,000+ registros</span>
+    <!-- Modal para detalles de entidad/concepto -->
+    <div class="modal" id="entityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-info-circle"></i> <span id="modalEntityTitle">@Entidad</span></h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="entity-details">
+                    <div>
+                        <div class="detail-section">
+                            <h4>Información Básica</h4>
+                            <div><strong>ID:</strong> <span id="modalEntityId" class="detail-value">@anna</span></div>
+                            <div><strong>Nombre:</strong> <span id="modalEntityName" class="detail-value">Anna</span></div>
+                            <div><strong>Tipo:</strong> <span id="modalEntityType" class="detail-value">Persona</span></div>
+                            <div><strong>Categoría:</strong> <span id="modalEntityCategory" class="detail-value">Experta en Tokenomics</span></div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Descripción</h4>
+                            <p id="modalEntityDescription" class="detail-value">Experta en tokenomics y contabilidad de valor. Fundadora de proyectos blockchain en el Penedès.</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="detail-section">
+                            <h4>Atributos</h4>
+                            <div id="modalEntityAttributes" class="detail-value">
+                                <div><strong>Wallet:</strong> 0x742d35Cc6634C0532925a3b844Bc454e4438f44e</div>
+                                <div><strong>Especialización:</strong> Tokenomics</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Relaciones Semánticas</h4>
+                            <div class="related-entities" id="modalRelatedEntities">
+                                <!-- Se llenará dinámicamente -->
+                                <a href="#" class="reference-link entity">@ceo</a>
+                                <a href="#" class="reference-link concept">#tokenomics</a>
+                                <a href="#" class="reference-link concept">#contabilidad-valor</a>
+                                <a href="#" class="reference-link">@proyecto-masia</a>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Metadatos</h4>
+                            <div><strong>Creado:</strong> <span id="modalEntityCreatedAt" class="detail-value">17/02/2026 10:30</span></div>
+                            <div><strong>Actualizado:</strong> <span id="modalEntityUpdatedAt" class="detail-value">17/02/2026 14:45</span></div>
+                            <div><strong>Referencias:</strong> <span id="modalEntityReferences" class="detail-value">5</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Header -->
@@ -771,7 +1190,7 @@
         <div class="header-content container">
             <div class="logo">
                 <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
-                <div class="logo-text">Base de Conocimiento Semántica v2</div>
+                <div class="logo-text">Base de Conocimiento Semántica v0.3</div>
             </div>
             <nav>
                 <ul>
@@ -836,7 +1255,7 @@
                     
                     <div class="type-group" style="margin-top: 25px;">
                         <h3 style="margin-bottom: 15px;"><i class="fas fa-project-diagram"></i> Integración con Apps</h3>
-                        <ul style="font-size: 0.95rem; line-height: 1.6; color: var(--gray);">
+                        <ul style="font-size: 0.95rem; line-height: 1.6; color: var(--gray); padding-left: 20px;">
                             <li>✅ VNA App: Roles y transacciones</li>
                             <li>✅ Mapas: Entregables y valores</li>
                             <li>✅ Accounting: UV y direcciones</li>
@@ -850,21 +1269,33 @@
             <!-- Main Content -->
             <div class="main-content">
                 <!-- Search Section -->
-                <div class="search-section">
+                <div class="search-section card">
                     <h2><i class="fas fa-search"></i> Buscar en la Base de Conocimiento</h2>
-                    <div class="search-controls">
-                        <input type="text" id="knowledge-search" class="search-input" placeholder="Buscar @entidades, #conceptos, proyectos...">
-                        <div class="search-filters">
-                            <button class="filter-btn active" data-filter="all">Todo</button>
-                            <button class="filter-btn" data-filter="entity">@Entidades</button>
-                            <button class="filter-btn" data-filter="concept">#Conceptos</button>
-                            <button class="filter-btn" data-filter="project">Proyectos</button>
-                        </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="knowledge-search" class="form-control" placeholder="Buscar @entidades, #conceptos, proyectos...">
                         <button id="search-btn" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+                    </div>
+                    <div class="search-filters">
+                        <button class="filter-btn active" data-filter="all">Todo</button>
+                        <button class="filter-btn" data-filter="entity">@Entidades</button>
+                        <button class="filter-btn" data-filter="concept">#Conceptos</button>
+                        <button class="filter-btn" data-filter="project">Proyectos</button>
                     </div>
                     <div class="search-stats">
                         <span><i class="fas fa-database"></i> <span id="indexed-items">0</span> elementos indexados</span>
                         <span><i class="fas fa-clock"></i> Última actualización: <span id="last-update">-</span></span>
+                    </div>
+                    <div id="search-results" style="margin-top: 20px;">
+                        <!-- Los resultados se insertarán aquí dinámicamente -->
+                        <div class="search-no-results">
+                            <i class="fas fa-search"></i>
+                            <h3>Realiza una búsqueda para explorar el conocimiento</h3>
+                            <p>Busca entidades como <strong>@anna</strong> o conceptos como <strong>#vna</strong> para descubrir conexiones en el ecosistema TeamTowers Humà.</p>
+                            <button id="show-graph-btn" class="btn btn-accent">
+                                <i class="fas fa-project-diagram"></i> Ver Grafo de Conocimiento
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -878,9 +1309,9 @@
                 
                 <!-- Browse Tab -->
                 <div id="browse-tab" class="tab-content active">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2 class="panel-title"><i class="fas fa-book-open"></i> Base de Conocimiento</h2>
+                    <div class="panel card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="section-title" style="margin-bottom: 0;"><i class="fas fa-book-open"></i> Base de Conocimiento</h2>
                             <div>
                                 <button id="refresh-index" class="btn btn-secondary"><i class="fas fa-sync"></i> Actualizar Índice</button>
                             </div>
@@ -898,26 +1329,50 @@
                 
                 <!-- Graph Tab -->
                 <div id="graph-tab" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2 class="panel-title"><i class="fas fa-project-diagram"></i> Grafo de Conocimiento</h2>
+                    <div class="panel card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="section-title" style="margin-bottom: 0;"><i class="fas fa-project-diagram"></i> Grafo de Conocimiento</h2>
                             <div>
                                 <button id="reset-graph" class="btn btn-secondary"><i class="fas fa-expand"></i> Zoom Automático</button>
                             </div>
                         </div>
-                        <p style="margin-bottom: 20px; color: var(--gray);">
-                            Visualización interactiva de las relaciones entre entidades y conceptos. 
-                            <strong>Haz clic y arrastra</strong> para mover nodos, <strong>rueda del ratón</strong> para hacer zoom.
+                        
+                        <div class="graph-tip">
+                            <strong>💡 Consejo:</strong> Haz clic y arrastra los nodos para reorganizar el grafo. Usa la rueda del ratón para hacer zoom. Haz clic en cualquier nodo para ver sus detalles.
+                        </div>
+                        
+                        <div class="graph-meme">
+                            <img src="https://httpstatusdogs.com/img/200.jpg" alt="Meme sobre grafos de conocimiento" style="max-width: 300px;">
+                            <p>"Cuando finalmente entiendes cómo todas las piezas de tu proyecto se conectan... 🧠✨"</p>
+                        </div>
+                        
+                        <p style="margin-bottom: 20px; color: var(--gray); text-align: center; font-weight: 500;">
+                            Visualización interactiva de las relaciones entre entidades y conceptos del ecosistema TeamTowers Humà.
                         </p>
+                        
                         <div id="graph-container" class="graph-container"></div>
+                        
+                        <div style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%); border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid var(--primary);">
+                            <h4 style="color: var(--primary); margin-top: 0;"><i class="fas fa-chart-line"></i> Valor del Grafo de Conocimiento</h4>
+                            <p>Este grafo no es solo una visualización bonita. Es una <strong>representación semántica</strong> de cómo se relacionan los elementos de tu proyecto:</p>
+                            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.7;">
+                                <li><strong>Identifica conexiones críticas:</strong> Descubre relaciones no evidentes entre roles y conceptos</li>
+                                <li><strong>Visualiza dependencias:</strong> Entiende cómo fluye el valor entre entidades</li>
+                                <li><strong>Descubre patrones:</strong> Reconoce estructuras recurrentes en tu ecosistema</li>
+                                <li><strong>Optimiza decisiones:</strong> Toma decisiones basadas en la topología real de tu proyecto</li>
+                            </ul>
+                            <p style="margin-top: 15px; font-style: italic; color: var(--primary);">
+                                "El conocimiento no está en los nodos, sino en las conexiones entre ellos." - TeamTowers Humà
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Add Knowledge Tab -->
                 <div id="add-tab" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2 class="panel-title"><i class="fas fa-plus-circle"></i> Añadir Unidad de Conocimiento</h2>
+                    <div class="panel card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="section-title" style="margin-bottom: 0;"><i class="fas fa-plus-circle"></i> Añadir Unidad de Conocimiento</h2>
                         </div>
                         <p style="margin-bottom: 20px; color: var(--gray);">
                             Crea nuevas entidades (@) o conceptos (#) para enriquecer la base de conocimiento. 
@@ -927,7 +1382,7 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="knowledge-type">Tipo de Conocimiento</label>
-                                <select id="knowledge-type" class="form-control">
+                                <select id="knowledge-type" class="form-select">
                                     <option value="entity">@ Entidad</option>
                                     <option value="concept"># Concepto</option>
                                     <option value="project">Proyecto</option>
@@ -952,7 +1407,7 @@
                             
                             <div class="form-group">
                                 <label for="knowledge-category">Categoría</label>
-                                <select id="knowledge-category" class="form-control">
+                                <select id="knowledge-category" class="form-select">
                                     <option value="">Selecciona una categoría</option>
                                     <optgroup label="Entidades">
                                         <option value="person">Persona</option>
@@ -998,9 +1453,9 @@
                 
                 <!-- Import/Export Tab -->
                 <div id="import-tab" class="tab-content">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2 class="panel-title"><i class="fas fa-file-import"></i> Importar y Exportar</h2>
+                    <div class="panel card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="section-title" style="margin-bottom: 0;"><i class="fas fa-file-import"></i> Importar y Exportar</h2>
                         </div>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
@@ -1014,7 +1469,7 @@
                                 </button>
                                 <div style="background: #f0f9ff; border-left: 4px solid var(--primary); padding: 15px; border-radius: 8px; margin-top: 20px;">
                                     <h4 style="margin-top: 0;">Estructura del JSON:</h4>
-                                    <pre style="font-family: monospace; font-size: 0.85rem; background: white; padding: 10px; border-radius: 4px; overflow-x: auto; margin-top: 10px;">
+                                    <pre style="font-family: var(--font-mono); font-size: 0.85rem; background: white; padding: 10px; border-radius: 4px; overflow-x: auto; margin-top: 10px; line-height: 1.4;">
 {
   "metadata": {
     "version": "2.0",
@@ -1103,15 +1558,13 @@
             </div>
         </div>
         <div class="copyright">
-            <p>© 2026 TeamTowers Humà. Base de Conocimiento Semántica v2.0. Optimizada para 10,000+ registros con indexación avanzada y referencias semánticas @/#.</p>
+            <p>© 2026 TeamTowers Humà. Base de Conocimiento Semántica v0.3. Optimizada para 10,000+ registros con indexación avanzada y referencias semánticas @/#.</p>
             <p>Estándar TTKB-v2.0 compatible con todo el ecosistema TeamTowers Humà. Datos almacenados localmente con soberanía del usuario.</p>
         </div>
     </footer>
     
     <script>
         // ========== ARQUITECTURA DE BASE DE CONOCIMIENTO SEMÁNTICA ==========
-        // Sistema optimizado para grandes volúmenes de datos con indexación avanzada
-        
         class KnowledgeBase {
             constructor() {
                 this.data = {
@@ -1122,42 +1575,39 @@
                         totalItems: 0,
                         indexSize: 0
                     },
-                    entities: new Map(),    // @entidades
-                    concepts: new Map(),    // #conceptos
-                    projects: new Map(),    // proyectos
-                    patterns: new Map(),    // patrones
+                    entities: new Map(),
+                    concepts: new Map(),
+                    projects: new Map(),
+                    patterns: new Map(),
                     index: {
-                        byId: new Map(),        // Búsqueda rápida por ID
-                        byType: new Map(),      // Búsqueda por tipo
-                        byTag: new Map(),       // Búsqueda por etiquetas
-                        semanticRefs: new Map() // Referencias semánticas @ y #
+                        byId: new Map(),
+                        byType: new Map(),
+                        byTag: new Map(),
+                        semanticRefs: new Map()
                     }
                 };
                 this.isIndexed = false;
-                this.maxItemsForFullScan = 5000; // Umbral para usar indexación
+                this.maxItemsForFullScan = 5000;
+                this.graphInstance = null;
             }
             
-            // Inicializar base de conocimiento desde localStorage
             init() {
                 try {
                     const saved = localStorage.getItem('tt_knowledge_base_v2');
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         
-                        // Convertir arrays a Maps para mejor rendimiento
                         this.data.entities = new Map(Object.entries(parsed.entities || {}));
                         this.data.concepts = new Map(Object.entries(parsed.concepts || {}));
                         this.data.projects = new Map(Object.entries(parsed.projects || {}));
                         this.data.patterns = new Map(Object.entries(parsed.patterns || {}));
                         
-                        // Reconstruir índices
                         this.rebuildIndex();
                         this.data.metadata.indexedAt = new Date().toISOString();
                         this.isIndexed = true;
                         
                         showNotification(`✅ Base de conocimiento cargada: ${this.data.metadata.totalItems} elementos`, 'success');
                     } else {
-                        // Inicializar con datos de ejemplo
                         this.initializeSampleData();
                         this.rebuildIndex();
                         this.save();
@@ -1171,31 +1621,24 @@
                 }
             }
             
-            // Guardar en localStorage (optimizado para grandes volúmenes)
             save() {
                 try {
-                    // Convertir Maps a objetos planos para JSON
                     const saveData = {
                         metadata: this.data.metadata,
                         entities: Object.fromEntries(this.data.entities),
                         concepts: Object.fromEntries(this.data.concepts),
                         projects: Object.fromEntries(this.data.projects),
                         patterns: Object.fromEntries(this.data.patterns)
-                        // No guardamos el índice, se reconstruye al cargar
                     };
                     
-                    // Comprimir datos si son muy grandes (opcional)
                     const dataStr = JSON.stringify(saveData);
                     
-                    // Verificar tamaño antes de guardar
-                    if (dataStr.length > 5 * 1024 * 1024) { // 5MB
+                    if (dataStr.length > 5 * 1024 * 1024) {
                         showNotification('⚠️ La base de conocimiento es muy grande. Considera exportar y limpiar datos antiguos.', 'warning');
                     }
                     
                     localStorage.setItem('tt_knowledge_base_v2', dataStr);
                     this.data.metadata.indexedAt = new Date().toISOString();
-                    
-                    // Actualizar estadísticas
                     this.updateStats();
                     
                     return true;
@@ -1206,27 +1649,21 @@
                 }
             }
             
-            // Reconstruir índices para búsquedas rápidas
             rebuildIndex() {
                 console.time('Rebuilding index');
                 
-                // Reiniciar índices
                 this.data.index.byId = new Map();
                 this.data.index.byType = new Map();
                 this.data.index.byTag = new Map();
                 this.data.index.semanticRefs = new Map();
                 
-                // Indexar entidades
                 for (const [id, entity] of this.data.entities) {
                     this.data.index.byId.set(id, { ...entity, type: 'entity' });
-                    
-                    // Indexar por tipo
                     if (!this.data.index.byType.has(entity.category)) {
                         this.data.index.byType.set(entity.category, []);
                     }
                     this.data.index.byType.get(entity.category).push(id);
                     
-                    // Indexar por etiquetas
                     if (entity.tags) {
                         entity.tags.forEach(tag => {
                             if (!this.data.index.byTag.has(tag)) {
@@ -1236,14 +1673,11 @@
                         });
                     }
                     
-                    // Extraer referencias semánticas de la descripción
                     this.extractSemanticReferences(id, entity.description, 'entity');
                 }
                 
-                // Indexar conceptos (similar a entidades)
                 for (const [id, concept] of this.data.concepts) {
                     this.data.index.byId.set(id, { ...concept, type: 'concept' });
-                    
                     if (!this.data.index.byType.has(concept.category)) {
                         this.data.index.byType.set(concept.category, []);
                     }
@@ -1261,7 +1695,6 @@
                     this.extractSemanticReferences(id, concept.description, 'concept');
                 }
                 
-                // Indexar proyectos y patrones (similar)
                 for (const [id, project] of this.data.projects) {
                     this.data.index.byId.set(id, { ...project, type: 'project' });
                     this.extractSemanticReferences(id, project.description, 'project');
@@ -1272,7 +1705,6 @@
                     this.extractSemanticReferences(id, pattern.description, 'pattern');
                 }
                 
-                // Actualizar metadatos
                 this.data.metadata.totalItems = 
                     this.data.entities.size + 
                     this.data.concepts.size + 
@@ -1291,11 +1723,9 @@
                 showNotification(`✅ Índice reconstruido: ${this.data.metadata.totalItems} elementos indexados`, 'success');
             }
             
-            // Extraer referencias semánticas de texto (@entidad y #concepto)
             extractSemanticReferences(id, text, type) {
                 if (!text) return;
                 
-                // Extraer @entidades
                 const entityRegex = /@[\w-]+/g;
                 let match;
                 while ((match = entityRegex.exec(text)) !== null) {
@@ -1306,7 +1736,6 @@
                     this.data.index.semanticRefs.get(refId).push({ id, type });
                 }
                 
-                // Extraer #conceptos
                 const conceptRegex = /#[\w-]+/g;
                 while ((match = conceptRegex.exec(text)) !== null) {
                     const refId = match[0];
@@ -1317,9 +1746,7 @@
                 }
             }
             
-            // Añadir nueva unidad de conocimiento
             addKnowledge(knowledge) {
-                // Validar ID único y formato
                 if (!knowledge.id || (!knowledge.id.startsWith('@') && !knowledge.id.startsWith('#'))) {
                     throw new Error('El ID debe comenzar con @ para entidades o # para conceptos');
                 }
@@ -1328,13 +1755,11 @@
                     throw new Error(`Ya existe un elemento con el ID ${knowledge.id}`);
                 }
                 
-                // Procesar etiquetas
                 let tags = [];
                 if (knowledge.tags) {
                     tags = knowledge.tags.split(',').map(t => t.trim()).filter(t => t);
                 }
                 
-                // Procesar atributos JSON
                 let attributes = {};
                 if (knowledge.attributes) {
                     try {
@@ -1344,7 +1769,6 @@
                     }
                 }
                 
-                // Crear objeto de conocimiento
                 const knowledgeObj = {
                     id: knowledge.id,
                     name: knowledge.name,
@@ -1352,16 +1776,14 @@
                     description: knowledge.description,
                     tags: tags,
                     attributes: attributes,
-                    type: knowledge.type, // entity, concept, project, pattern
+                    type: knowledge.type,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
-                    references: [] // Se llenará con las referencias extraídas
+                    references: []
                 };
                 
-                // Extraer referencias semánticas
                 this.extractSemanticReferences(knowledge.id, knowledge.description, knowledge.type);
                 
-                // Añadir a la colección correspondiente
                 if (knowledge.type === 'entity' || knowledge.id.startsWith('@')) {
                     this.data.entities.set(knowledge.id, knowledgeObj);
                 } else if (knowledge.type === 'concept' || knowledge.id.startsWith('#')) {
@@ -1372,16 +1794,12 @@
                     this.data.patterns.set(knowledge.id, knowledgeObj);
                 }
                 
-                // Reconstruir índices (incremental sería mejor, pero para simplicidad reconstruimos)
                 this.rebuildIndex();
-                
-                // Guardar
                 this.save();
                 
                 return knowledgeObj;
             }
             
-            // Buscar en la base de conocimiento (optimizado)
             search(query, filter = 'all') {
                 if (!this.isIndexed) {
                     this.rebuildIndex();
@@ -1394,14 +1812,10 @@
                     patterns: []
                 };
                 
-                // Si la consulta es corta (<3 caracteres) y hay muchos items, usar solo índices
                 const useFullScan = query.length >= 3 || this.data.metadata.totalItems < this.maxItemsForFullScan;
-                
-                // Normalizar consulta
                 const q = query.toLowerCase().trim();
                 
                 if (useFullScan) {
-                    // Búsqueda completa en todos los campos
                     if (filter === 'all' || filter === 'entity') {
                         for (const entity of this.data.entities.values()) {
                             if (this.matchesQuery(entity, q)) {
@@ -1417,20 +1831,14 @@
                             }
                         }
                     }
-                    
-                    // ... proyectos y patrones (similar)
                 } else {
-                    // Usar índices para búsquedas rápidas
                     if (q.startsWith('@') || q.startsWith('#')) {
-                        // Búsqueda directa por ID
                         const item = this.data.index.byId.get(q);
                         if (item) {
                             if (item.type === 'entity') results.entities.push(item);
                             else if (item.type === 'concept') results.concepts.push(item);
-                            // ... otros tipos
                         }
                     } else {
-                        // Búsqueda por etiquetas
                         for (const [tag, ids] of this.data.index.byTag) {
                             if (tag.includes(q)) {
                                 ids.forEach(id => {
@@ -1445,18 +1853,15 @@
                     }
                 }
                 
-                // Eliminar duplicados y limitar resultados
                 results.entities = [...new Map(results.entities.map(item => [item.id, item])).values()].slice(0, 50);
                 results.concepts = [...new Map(results.concepts.map(item => [item.id, item])).values()].slice(0, 50);
                 
                 return results;
             }
             
-            // Verificar si un elemento coincide con la consulta
             matchesQuery(item, query) {
                 if (!query) return true;
                 
-                // Buscar en campos relevantes
                 const searchable = [
                     item.id?.toLowerCase(),
                     item.name?.toLowerCase(),
@@ -1467,19 +1872,15 @@
                 return searchable.includes(query);
             }
             
-            // Obtener elemento por ID
             getById(id) {
                 return this.data.index.byId.get(id);
             }
             
-            // Obtener referencias semánticas de un elemento
             getSemanticReferences(id) {
                 return this.data.index.semanticRefs.get(id) || [];
             }
             
-            // Generar datos de ejemplo
             initializeSampleData() {
-                // Entidades de ejemplo
                 this.data.entities.set('@ceo', {
                     id: '@ceo',
                     name: 'CEO',
@@ -1504,7 +1905,6 @@
                     updatedAt: new Date().toISOString()
                 });
                 
-                // Conceptos de ejemplo
                 this.data.concepts.set('#vna', {
                     id: '#vna',
                     name: 'Value Network Analysis',
@@ -1529,7 +1929,6 @@
                     updatedAt: new Date().toISOString()
                 });
                 
-                // Proyecto de ejemplo
                 this.data.projects.set('proyecto-masia', {
                     id: 'proyecto-masia',
                     name: 'Proyecto MASIA',
@@ -1542,7 +1941,6 @@
                     updatedAt: new Date().toISOString()
                 });
                 
-                // Patrón de ejemplo
                 this.data.patterns.set('patron-vesting-4-anos', {
                     id: 'patron-vesting-4-anos',
                     name: 'Vesting 4 años con cliff de 1 año',
@@ -1558,7 +1956,6 @@
                 showNotification('✨ Datos de ejemplo cargados. ¡Explora la base de conocimiento!', 'info');
             }
             
-            // Exportar a JSON
             exportJSON() {
                 return {
                     metadata: this.data.metadata,
@@ -1569,15 +1966,12 @@
                 };
             }
             
-            // Importar desde JSON
             importJSON(data) {
                 try {
-                    // Validar estructura
                     if (!data.entities || !data.concepts) {
                         throw new Error('El archivo no tiene la estructura correcta de TTKB-v2.0');
                     }
                     
-                    // Fusionar datos (sobreescribir IDs existentes)
                     for (const [id, entity] of Object.entries(data.entities)) {
                         this.data.entities.set(id, entity);
                     }
@@ -1598,10 +1992,7 @@
                         }
                     }
                     
-                    // Reconstruir índices
                     this.rebuildIndex();
-                    
-                    // Guardar
                     this.save();
                     
                     showNotification(`✅ Datos importados: ${Object.keys(data.entities).length + Object.keys(data.concepts).length} elementos`, 'success');
@@ -1613,7 +2004,6 @@
                 }
             }
             
-            // Actualizar estadísticas
             updateStats() {
                 document.getElementById('total-entities').textContent = this.data.entities.size;
                 document.getElementById('total-concepts').textContent = this.data.concepts.size;
@@ -1649,16 +2039,13 @@
             }, 3000);
         }
         
-        // Convertir texto con @ y # en enlaces HTML
         function parseSemanticText(text) {
             if (!text) return '';
             
-            // Reemplazar @entidades
             text = text.replace(/(@[\w-]+)/g, match => {
                 return `<a href="#" class="reference-link entity" data-id="${match}">${match}</a>`;
             });
             
-            // Reemplazar #conceptos
             text = text.replace(/(#[\w-]+)/g, match => {
                 return `<a href="#" class="reference-link concept" data-id="${match}">${match}</a>`;
             });
@@ -1666,11 +2053,9 @@
             return text;
         }
         
-        // Renderizar tarjetas de conocimiento
         function renderKnowledgeCards(results) {
             const grid = document.getElementById('knowledge-grid');
             
-            // Contar resultados totales
             const totalResults = 
                 (results.entities?.length || 0) + 
                 (results.concepts?.length || 0) + 
@@ -1679,18 +2064,31 @@
             
             if (totalResults === 0) {
                 grid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
-                        <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
-                        <p>No se encontraron resultados para tu búsqueda</p>
-                        <p style="margin-top: 8px; font-size: 0.9rem;">Prueba con otro término o explora las categorías</p>
+                    <div class="search-no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No se encontraron resultados para tu búsqueda</h3>
+                        <p>Prueba con otro término o explora las categorías. Si crees que debería existir, ¡puedes crearlo!</p>
+                        
+                        <div class="create-entity-form">
+                            <h3><i class="fas fa-magic"></i> ¿No encuentras lo que buscas?</h3>
+                            <p>¡Crea una nueva entidad o concepto directamente desde aquí!</p>
+                            <button id="create-from-search" class="btn btn-warning">
+                                <i class="fas fa-plus"></i> Crear "@${document.getElementById('knowledge-search').value.trim()}"
+                            </button>
+                        </div>
                     </div>
                 `;
+                
+                document.getElementById('create-from-search').addEventListener('click', () => {
+                    const searchTerm = document.getElementById('knowledge-search').value.trim();
+                    openCreateForm(searchTerm);
+                });
+                
                 return;
             }
             
             let html = '';
             
-            // Entidades
             if (results.entities && results.entities.length > 0) {
                 html += `<div style="grid-column: 1 / -1;"><h3 style="color: var(--primary); margin: 20px 0 15px;"><i class="fas fa-user"></i> @Entidades (${results.entities.length})</h3></div>`;
                 results.entities.forEach(item => {
@@ -1698,7 +2096,6 @@
                 });
             }
             
-            // Conceptos
             if (results.concepts && results.concepts.length > 0) {
                 html += `<div style="grid-column: 1 / -1;"><h3 style="color: var(--primary); margin: 20px 0 15px;"><i class="fas fa-lightbulb"></i> #Conceptos (${results.concepts.length})</h3></div>`;
                 results.concepts.forEach(item => {
@@ -1706,132 +2103,170 @@
                 });
             }
             
-            // Proyectos y patrones (similar)
-            
             grid.innerHTML = html;
             
-            // Añadir eventos a los enlaces de referencia
             document.querySelectorAll('.reference-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const id = link.getAttribute('data-id');
-                    showKnowledgeDetail(id);
+                    showEntityDetails(id);
                 });
             });
         }
         
-        // Crear tarjeta de conocimiento HTML
         function createKnowledgeCard(item, type) {
             const isEntity = type === 'entity' || item.id.startsWith('@');
             const typeClass = isEntity ? 'entity' : 'concept';
             const typeLabel = isEntity ? '@Entidad' : '#Concepto';
             
             return `
-                <div class="knowledge-card">
-                    <div class="card-header">
-                        <div class="card-title">${item.name || item.id}</div>
-                        <span class="card-type type-${typeClass}">${typeLabel}</span>
+                <div class="knowledge-unit">
+                    <div class="knowledge-unit-header">
+                        <div class="knowledge-unit-title" style="font-weight: 700; font-size: 1.2rem; color: var(--primary);">
+                            ${item.name || item.id}
+                        </div>
+                        <span class="knowledge-type type-${typeClass}">${typeLabel}</span>
                     </div>
-                    <div class="card-description">
+                    <div class="knowledge-unit-description" style="margin: 10px 0; line-height: 1.6;">
                         ${parseSemanticText(item.description || 'Sin descripción')}
                     </div>
-                    <div class="card-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-tag"></i>
-                            <span>${item.category || 'Sin categoría'}</span>
-                        </div>
-                        ${item.tags && item.tags.length > 0 ? `
-                        <div class="meta-item">
-                            <i class="fas fa-tags"></i>
-                            <span>${item.tags.slice(0, 3).join(', ')}${item.tags.length > 3 ? '...' : ''}</span>
-                        </div>
-                        ` : ''}
-                        <div class="meta-item">
-                            <i class="fas fa-clock"></i>
-                            <span>${new Date(item.updatedAt).toLocaleDateString()}</span>
-                        </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+                        ${item.tags && item.tags.length > 0 ? item.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                        <span class="tag" style="background: ${isEntity ? 'rgba(30, 58, 138, 0.1)' : 'rgba(139, 92, 246, 0.1)'}; color: ${isEntity ? 'var(--primary)' : 'var(--accent)'};">
+                            <i class="fas fa-${isEntity ? 'user' : 'lightbulb'}"></i> ${item.category || 'Sin categoría'}
+                        </span>
+                        <span class="tag">
+                            <i class="fas fa-clock"></i> ${new Date(item.updatedAt).toLocaleDateString()}
+                        </span>
                     </div>
                 </div>
             `;
         }
         
-        // Mostrar detalle de conocimiento (modal o navegación)
-        function showKnowledgeDetail(id) {
+        function showEntityDetails(id) {
             const item = window.kb.getById(id);
             if (!item) {
                 showNotification(`No se encontró el elemento ${id}`, 'warning');
                 return;
             }
             
-            // En una implementación real, esto abriría un modal o navegaría a una página de detalle
-            showNotification(`Mostrando detalle de ${item.name || item.id}`, 'info');
-            console.log('Detalle de conocimiento:', item);
+            document.getElementById('modalEntityTitle').textContent = item.name || item.id;
+            document.getElementById('modalEntityId').textContent = item.id;
+            document.getElementById('modalEntityName').textContent = item.name || 'Sin nombre';
+            document.getElementById('modalEntityType').textContent = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+            document.getElementById('modalEntityCategory').textContent = item.category || 'Sin categoría';
+            document.getElementById('modalEntityDescription').textContent = item.description || 'Sin descripción';
+            document.getElementById('modalEntityCreatedAt').textContent = new Date(item.createdAt).toLocaleString();
+            document.getElementById('modalEntityUpdatedAt').textContent = new Date(item.updatedAt).toLocaleString();
+            document.getElementById('modalEntityReferences').textContent = window.kb.getSemanticReferences(item.id).length;
             
-            // Mostrar referencias semánticas
-            const refs = window.kb.getSemanticReferences(id);
-            if (refs.length > 0) {
-                console.log(`Referencias de ${id}:`, refs);
+            const attributesDiv = document.getElementById('modalEntityAttributes');
+            if (item.attributes && Object.keys(item.attributes).length > 0) {
+                attributesDiv.innerHTML = Object.entries(item.attributes).map(([key, value]) => 
+                    `<div><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${value}</div>`
+                ).join('');
+            } else {
+                attributesDiv.innerHTML = '<div>Sin atributos adicionales</div>';
             }
+            
+            const relatedDiv = document.getElementById('modalRelatedEntities');
+            const refs = window.kb.getSemanticReferences(item.id);
+            if (refs.length > 0) {
+                relatedDiv.innerHTML = refs.map(ref => {
+                    const refItem = window.kb.getById(ref.id);
+                    return `<a href="#" class="reference-link ${ref.type === 'entity' ? 'entity' : 'concept'}" data-id="${ref.id}">${ref.id}</a>`;
+                }).join('');
+                
+                relatedDiv.querySelectorAll('.reference-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showEntityDetails(link.getAttribute('data-id'));
+                    });
+                });
+            } else {
+                relatedDiv.innerHTML = '<div style="color: var(--gray);">Sin relaciones semánticas</div>';
+            }
+            
+            document.getElementById('entityModal').classList.add('active');
         }
         
-        // Renderizar grafo de conocimiento
         function renderKnowledgeGraph() {
             const container = document.getElementById('graph-container');
             
-            // Preparar datos para vis-network
             const nodes = [];
             const edges = [];
             
-            // Añadir nodos de entidades
             for (const entity of window.kb.data.entities.values()) {
                 nodes.push({
                     id: entity.id,
                     label: entity.name || entity.id,
                     group: 'entity',
-                    title: entity.description || ''
+                    title: `<div class="tooltip-title">${entity.name || entity.id}</div>
+                            <div>${entity.description || ''}</div>
+                            <div class="tooltip-type entity">Entidad</div>`,
+                    shape: 'dot',
+                    size: 25 + (window.kb.getSemanticReferences(entity.id).length * 2)
                 });
             }
             
-            // Añadir nodos de conceptos
             for (const concept of window.kb.data.concepts.values()) {
                 nodes.push({
                     id: concept.id,
                     label: concept.name || concept.id,
                     group: 'concept',
-                    title: concept.description || ''
+                    title: `<div class="tooltip-title">${concept.name || concept.id}</div>
+                            <div>${concept.description || ''}</div>
+                            <div class="tooltip-type concept">Concepto</div>`,
+                    shape: 'dot',
+                    size: 25 + (window.kb.getSemanticReferences(concept.id).length * 2)
                 });
             }
             
-            // Añadir aristas desde las referencias semánticas
             for (const [sourceId, refs] of window.kb.data.index.semanticRefs) {
                 refs.forEach(ref => {
                     edges.push({
                         from: sourceId,
                         to: ref.id,
                         arrows: 'to',
-                        color: { color: ref.type === 'entity' ? '#4f46e5' : '#8b5cf6' }
+                        color: { color: ref.type === 'entity' ? '#4f46e5' : '#8b5cf6', highlight: '#3b82f6' },
+                        width: 1.5,
+                        smooth: { type: 'continuous' }
                     });
                 });
             }
             
-            // Configurar opciones del grafo
             const options = {
                 nodes: {
                     shape: 'dot',
                     scaling: {
                         min: 10,
-                        max: 30
+                        max: 40
                     },
                     font: {
                         size: 16,
-                        face: 'Tahoma'
-                    }
+                        face: 'Tahoma',
+                        multi: 'html'
+                    },
+                    borderWidth: 2,
+                    shadow: true
                 },
                 edges: {
                     width: 2,
                     smooth: {
                         type: 'continuous'
-                    }
+                    },
+                    font: {
+                        size: 12,
+                        align: 'middle'
+                    },
+                    color: {
+                        color: '#97C2FC',
+                        highlight: '#3b82f6'
+                    },
+                    arrows: {
+                        to: { enabled: true, scaleFactor: 0.7 }
+                    },
+                    shadow: true
                 },
                 groups: {
                     entity: {
@@ -1872,54 +2307,77 @@
                 },
                 interaction: {
                     hover: true,
-                    tooltipDelay: 200
+                    tooltipDelay: 200,
+                    zoomView: true,
+                    navigationButtons: true
                 }
             };
             
-            // Crear red
             const data = {
                 nodes: new vis.DataSet(nodes),
                 edges: new vis.DataSet(edges)
             };
             
-            window.knowledgeGraph = new vis.Network(container, data, options);
+            if (window.kb.graphInstance) {
+                window.kb.graphInstance.destroy();
+            }
             
-            // Añadir evento de clic
-            window.knowledgeGraph.on('click', function(properties) {
+            window.kb.graphInstance = new vis.Network(container, data, options);
+            
+            window.kb.graphInstance.on('click', function(properties) {
                 if (properties.nodes.length > 0) {
                     const nodeId = properties.nodes[0];
-                    showKnowledgeDetail(nodeId);
+                    showEntityDetails(nodeId);
                 }
             });
         }
         
+        function openCreateForm(searchTerm) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector('.tab-btn[data-tab="add"]').classList.add('active');
+            document.getElementById('add-tab').classList.add('active');
+            
+            const type = searchTerm.startsWith('@') ? 'entity' : (searchTerm.startsWith('#') ? 'concept' : 'entity');
+            document.getElementById('knowledge-type').value = type;
+            document.getElementById('knowledge-id').value = searchTerm;
+            document.getElementById('knowledge-name').value = searchTerm.replace(/^[@#]/, '').replace(/-/g, ' ');
+            
+            document.getElementById('knowledge-id').focus();
+            
+            showNotification(`✨ Formulario prellenado para "${searchTerm}". Completa los detalles y guarda.`, 'info');
+        }
+        
         // ========== INICIALIZACIÓN ==========
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar base de conocimiento
             window.kb = new KnowledgeBase();
             window.kb.init();
             
-            // Actualizar estadísticas
-            window.kb.updateStats();
-            
-            // Renderizar grafo (con retraso para que se cargue el DOM)
-            setTimeout(renderKnowledgeGraph, 500);
-            
-            // Event listeners para búsqueda
-            document.getElementById('search-btn').addEventListener('click', performSearch);
-            document.getElementById('knowledge-search').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') performSearch();
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('entityModal').classList.remove('active');
             });
             
-            // Event listeners para filtros
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
+            window.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('entityModal')) {
+                    document.getElementById('entityModal').classList.remove('active');
+                }
             });
             
-            // Event listeners para tabs
+            document.getElementById('show-graph-btn').addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab-btn[data-tab="graph"]').classList.add('active');
+                document.getElementById('graph-tab').classList.add('active');
+                
+                if (!window.kb.graphInstance) {
+                    renderKnowledgeGraph();
+                }
+            });
+            
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1928,14 +2386,24 @@
                     btn.classList.add('active');
                     document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
                     
-                    // Si es la pestaña del grafo, renderizarlo
-                    if (btn.dataset.tab === 'graph' && !window.knowledgeGraph) {
+                    if (btn.dataset.tab === 'graph' && !window.kb.graphInstance) {
                         renderKnowledgeGraph();
                     }
                 });
             });
             
-            // Event listener para guardar conocimiento
+            document.getElementById('search-btn').addEventListener('click', performSearch);
+            document.getElementById('knowledge-search').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            
             document.getElementById('save-knowledge').addEventListener('click', function() {
                 try {
                     const knowledge = {
@@ -1948,14 +2416,12 @@
                         attributes: document.getElementById('knowledge-attributes').value.trim()
                     };
                     
-                    // Validar campos requeridos
                     if (!knowledge.id || !knowledge.name || !knowledge.category) {
                         throw new Error('Los campos ID, Nombre y Categoría son obligatorios');
                     }
                     
                     window.kb.addKnowledge(knowledge);
                     
-                    // Limpiar formulario
                     document.getElementById('knowledge-id').value = '';
                     document.getElementById('knowledge-name').value = '';
                     document.getElementById('knowledge-description').value = '';
@@ -1968,7 +2434,6 @@
                 }
             });
             
-            // Event listener para exportar
             document.getElementById('export-btn').addEventListener('click', function() {
                 const data = window.kb.exportJSON();
                 const dataStr = JSON.stringify(data, null, 2);
@@ -1989,7 +2454,6 @@
                 showNotification('✅ Base de conocimiento exportada correctamente', 'success');
             });
             
-            // Event listener para importar
             document.getElementById('import-btn').addEventListener('click', function() {
                 const fileInput = document.getElementById('import-file');
                 const file = fileInput.files[0];
@@ -2021,30 +2485,25 @@
                 reader.readAsText(file);
             });
             
-            // Event listener para actualizar índice
             document.getElementById('refresh-index').addEventListener('click', function() {
                 window.kb.rebuildIndex();
                 window.kb.updateStats();
                 showNotification('✅ Índice actualizado correctamente', 'success');
             });
             
-            // Event listener para resetear grafo
             document.getElementById('reset-graph').addEventListener('click', function() {
-                if (window.knowledgeGraph) {
-                    window.knowledgeGraph.fit();
+                if (window.kb.graphInstance) {
+                    window.kb.graphInstance.fit();
                 }
             });
             
-            // Realizar búsqueda inicial (vacía para mostrar todo)
             performSearch();
             
-            // Mostrar notificación de bienvenida
             setTimeout(() => {
-                showNotification('✨ ¡Bienvenido a la Base de Conocimiento Semántica v2! Busca @entidades y #conceptos o explora el grafo de relaciones.', 'success');
+                showNotification('✨ ¡Bienvenido a la Base de Conocimiento Semántica v0.3! Busca @entidades y #conceptos o explora el grafo de relaciones.', 'success');
             }, 1000);
         });
         
-        // Función para realizar búsqueda
         function performSearch() {
             const query = document.getElementById('knowledge-search').value.trim();
             const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
@@ -2052,7 +2511,6 @@
             const results = window.kb.search(query, activeFilter);
             renderKnowledgeCards(results);
             
-            // Actualizar contador de resultados
             const totalResults = 
                 (results.entities?.length || 0) + 
                 (results.concepts?.length || 0) + 
