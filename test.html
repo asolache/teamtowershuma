@@ -314,7 +314,7 @@
             transform: scale(1.05);
         }
         
-        /* Main Content */
+        /* Main Content - NEW LAYOUT */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -323,7 +323,7 @@
         
         .app-container {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 1fr 1.5fr;
             gap: 30px;
             margin-top: 20px;
         }
@@ -334,7 +334,7 @@
             }
         }
         
-        .panel {
+        .forms-panel {
             background: white;
             border-radius: var(--border-radius);
             padding: 25px;
@@ -343,7 +343,7 @@
             position: relative;
         }
         
-        .panel::before {
+        .forms-panel::before {
             content: '';
             position: absolute;
             top: 0;
@@ -354,7 +354,7 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
         
-        .panel h2 {
+        .forms-panel h2 {
             color: var(--primary);
             margin-bottom: 20px;
             padding-bottom: 10px;
@@ -367,7 +367,7 @@
             z-index: 10;
         }
         
-        .panel h2::before {
+        .forms-panel h2::before {
             content: '';
             display: inline-block;
             width: 8px;
@@ -448,13 +448,37 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
         
+        .project-title-bar {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .project-title-bar h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .project-title-bar h2::before {
+            content: '📌';
+        }
+        
         #mynetwork {
             width: 100%;
-            height: 700px;
+            height: 500px;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             background: var(--light);
             position: relative;
+            margin-bottom: 25px;
         }
         
         .map-controls {
@@ -898,6 +922,87 @@
             50% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
         }
         
+        /* Deliverables List Section */
+        .deliverables-section {
+            margin-top: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .deliverables-section h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .deliverables-section h3::before {
+            content: '📋';
+        }
+        
+        .deliverables-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .deliverables-table th {
+            background: var(--gradient-accent);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        .deliverables-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .deliverables-table tr:nth-child(even) {
+            background-color: var(--light);
+        }
+        
+        .deliverables-table tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 5px;
+            transition: var(--transition);
+        }
+        
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .action-btn.connect {
+            background: var(--connect-mode);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
         /* Footer */
         footer.footer-system {
             background: var(--gradient-dark);
@@ -998,11 +1103,12 @@
             .tagline {
                 font-size: 1.2rem;
             }
-            .panel {
+            .forms-panel,
+            .visualization-container {
                 padding: 20px;
             }
             #mynetwork {
-                height: 500px;
+                height: 400px;
             }
             .btn-group {
                 grid-template-columns: 1fr;
@@ -1038,7 +1144,7 @@
                 font-size: 1rem;
             }
             #mynetwork {
-                height: 400px;
+                height: 350px;
             }
             .form-row {
                 grid-template-columns: 1fr;
@@ -1054,6 +1160,9 @@
             }
             .stat-label {
                 font-size: 0.9rem;
+            }
+            .project-title-bar h2 {
+                font-size: 1.5rem;
             }
         }
         
@@ -1107,6 +1216,45 @@
         .form-feedback.invalid {
             color: var(--danger);
         }
+        
+        /* Loading indicator */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        /* Project title editable */
+        .project-title-editable {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .project-title-editable:hover {
+            background: rgba(30, 58, 138, 0.1);
+        }
+        
+        .project-title-editable input {
+            width: 200px;
+            padding: 5px;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -1152,10 +1300,11 @@
         </div>
     </section>
     
-    <!-- Main Content -->
+    <!-- Main Content - NEW LAYOUT -->
     <div class="container">
         <div class="app-container">
-            <div class="panel">
+            <!-- LEFT COLUMN: Forms -->
+            <div class="forms-panel">
                 <h2 class="lang" data-es="⚙️ Configuración del Proyecto" data-ca="⚙️ Configuració del Projecte">⚙️ Configuración del Proyecto</h2>
                 <div class="input-group">
                     <label class="lang" data-es="Nombre del Proyecto" data-ca="Nom del Projecte">Nombre del Proyecto</label>
@@ -1185,7 +1334,7 @@
                     </div>
                 </div>
                 
-                <div class="panel" style="margin-top: 25px;" id="map-creator">
+                <div class="forms-panel" style="margin-top: 25px;" id="map-creator">
                     <h2 class="lang" data-es="✨ Crear Mapa de Valor" data-ca="✨ Crear Mapa de Valor">✨ Crear Mapa de Valor</h2>
                     
                     <div class="arm-section">
@@ -1258,7 +1407,7 @@
                         </div>
                     </div>
                     
-                    <div class="panel" style="margin-top: 25px;">
+                    <div class="forms-panel" style="margin-top: 25px;">
                         <h2 class="lang" data-es="💾 Exportar Mapa" data-ca="💾 Exportar Mapa">💾 Exportar Mapa</h2>
                         <div class="export-buttons">
                             <button id="export-json" class="btn btn-export">
@@ -1280,8 +1429,11 @@
                 </div>
             </div>
             
+            <!-- RIGHT COLUMN: Visualization and Deliverables List -->
             <div class="visualization-container">
-                <h2>🗺️ <span class="lang" data-es="Visualización del Mapa de Valor" data-ca="Visualització del Mapa de Valor">Visualización del Mapa de Valor</span></h2>
+                <div class="project-title-bar">
+                    <h2 id="project-title-display">Proyecto MASIA</h2>
+                </div>
                 
                 <div class="map-controls">
                     <button class="control-btn" id="zoom-in">🔍 <span class="lang" data-es="Acercar" data-ca="Apropar">Acercar</span></button>
@@ -1295,7 +1447,7 @@
                 
                 <div class="stats-bar">
                     <div class="stat-item">
-                        <div class="stat-value" id="total-nodes">1</div>
+                        <div class="stat-value" id="total-nodes">0</div>
                         <div class="stat-label lang" data-es="Nodos" data-ca="Nodes">Nodos</div>
                     </div>
                     <div class="stat-item">
@@ -1316,20 +1468,33 @@
                     </div>
                 </div>
                 
-                <!-- IA Analysis Section -->
-                <div class="ia-section" id="ia-analysis-section" style="display: none;">
-                    <h4 class="lang" data-es="Análisis de Salud del Mapa por IA" data-ca="Anàlisi de Salut del Mapa per IA">Análisis de Salud del Mapa por IA</h4>
-                    <p class="lang" data-es="La IA ha analizado tu mapa de valor y ha detectado las siguientes oportunidades de mejora:" data-ca="La IA ha analitzat el teu mapa de valor i ha detectat les següents oportunitats de millora:">La IA ha analizado tu mapa de valor y ha detectado las siguientes oportunidades de mejora:</p>
-                    <div class="ia-analysis" id="ia-analysis-content">
-                        <!-- Analysis content will be inserted here dynamically -->
-                        <div class="empty-state">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <h3 class="lang" data-es="Crea tu primer rol para activar el análisis de IA" data-ca="Crea el teu primer rol per activar l'anàlisi d'IA">Crea tu primer rol para activar el análisis de IA</h3>
-                            <p class="lang" data-es="Añade roles y entregables para que la IA pueda analizar la estructura de tu mapa de valor." data-ca="Afegeix rols i entregables perquè la IA pugui analitzar l'estructura del teu mapa de valor.">Añade roles y entregables para que la IA pueda analizar la estructura de tu mapa de valor.</p>
-                        </div>
-                    </div>
+                <!-- Deliverables List Section -->
+                <div class="deliverables-section">
+                    <h3 class="lang" data-es="📋 Lista de Entregables" data-ca="📋 Llista d'Entregables">📋 Lista de Entregables</h3>
+                    <table class="deliverables-table">
+                        <thead>
+                            <tr>
+                                <th class="lang" data-es="Entregable" data-ca="Entregable">Entregable</th>
+                                <th class="lang" data-es="Rol" data-ca="Rol">Rol</th>
+                                <th class="lang" data-es="Tipo" data-ca="Tipus">Tipo</th>
+                                <th class="lang" data-es="Valor" data-ca="Valor">Valor</th>
+                                <th class="lang" data-es="Acciones" data-ca="Accions">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deliverables-list-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                                    <div class="empty-state">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                                        <p class="lang" data-es="Añade entregables para verlos en esta lista" data-ca="Afegeix entregables per veure'ls en aquesta llista">Añade entregables para verlos en esta lista</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1393,18 +1558,16 @@
     </footer>
     
     <script>
-        // ========== MAPAS DE VALOR MEJORADOS CON VISUALIZACIÓN DE MAPA MENTAL ==========
-        // Data structure for the value map (graph structure)
+        // ========== MAPAS DE VALOR MEJORADOS CON IA CONTEXTUAL ==========
+        // Data structure for the value map (graph structure without central node)
         let valueMapData = {
             projectName: "Proyecto MASIA",
             valueUnit: "puntos",
-            nodes: [
-                {id: 1, label: "Proyecto MASIA", shape: "box", color: {background: '#8b5cf6', border: '#7c3aed'}, font: {color: 'white', size: 22, face: 'Arial'}, title: '<strong>Proyecto Central</strong>'}
-            ],
+            nodes: [], // No central node - just roles and deliverables
             edges: [],
             roles: [],
             deliverables: [],
-            nextNodeId: 2, // Counter for new node IDs
+            nextNodeId: 1, // Counter for new node IDs (starts at 1)
             nextEdgeId: 1 // Counter for new edge IDs
         };
         
@@ -1510,26 +1673,6 @@
             
             network = new vis.Network(container, data, options);
             
-            // Fix project node at center after stabilization
-            network.once("stabilized", function(params) {
-                // Get canvas dimensions
-                const canvas = document.getElementById('mynetwork');
-                const centerX = canvas.offsetWidth / 2;
-                const centerY = canvas.offsetHeight / 2;
-                
-                // Move project node (id=1) to center
-                network.moveNode(1, centerX, centerY);
-                
-                // Fix the position of the project node
-                const nodesDataset = network.body.data.nodes;
-                const projectNode = nodesDataset.get(1);
-                projectNode.fixed = {x: true, y: true};
-                nodesDataset.update(projectNode);
-                
-                // Disable physics after stabilization to keep layout
-                network.setOptions({ physics: false });
-            });
-            
             // Add event listeners for node selection (for VNA connections)
             network.on('select', function(params) {
                 if (connectMode && params.nodes.length > 0) {
@@ -1579,14 +1722,26 @@
                 return;
             }
             
+            // Ask user for edge type and label
+            const edgeType = prompt('¿Qué tipo de conexión es?\n1. Tangible (bienes, servicios)\n2. Intangible (confianza, conocimiento)', '1');
+            const edgeLabel = prompt('Etiqueta de la conexión (ej: "Soporte", "Feedback")', 'Conexión');
+            
+            if (!edgeLabel || edgeLabel.trim() === '') {
+                showNotification('⚠️ La etiqueta no puede estar vacía', 'warning');
+                return;
+            }
+            
+            const isTangible = edgeType.trim() === '1';
+            
             // Create new edge
             const newEdge = {
                 id: `edge-${valueMapData.nextEdgeId++}`,
                 from: fromNodeId,
                 to: toNodeId,
-                label: 'Conexión VNA',
-                color: {color: '#f43f5e', highlight: '#dc2626'},
-                font: {size: 12, align: 'middle'},
+                label: edgeLabel.trim(),
+                color: {color: isTangible ? '#10b981' : '#f59e0b', highlight: isTangible ? '#047857' : '#b45309'},
+                font: {size: 12, align: 'middle', color: isTangible ? '#0da27f' : '#d97706'},
+                dashes: !isTangible,
                 smooth: { enabled: true, type: 'curvedCW' }
             };
             
@@ -1601,7 +1756,7 @@
             saveData();
             updateStats();
             
-            showNotification(`✅ Conexión VNA creada entre nodos ${fromNodeId} y ${toNodeId}`, 'success');
+            showNotification(`✅ Conexión ${isTangible ? 'tangible' : 'intangible'} creada entre nodos`, 'success');
         }
         
         // Toggle connection mode
@@ -1664,28 +1819,13 @@
                 title: `<strong>Rol:</strong> ${roleName}<br><strong>Descripción:</strong> ${roleDescription || 'Sin descripción'}`
             };
             
-            // Add edge from project to role
-            const edge = {
-                id: `edge-${valueMapData.nextEdgeId++}`,
-                from: 1,
-                to: newRoleId,
-                label: 'contiene',
-                color: {color: '#64748b', highlight: '#4f46e5'},
-                font: {size: 12, align: 'middle'},
-                smooth: { enabled: true }
-            };
-            
             // Add to data structure
             valueMapData.nodes.push(roleNode);
-            valueMapData.edges.push(edge);
             valueMapData.roles.push({id: newRoleId, name: roleName, description: roleDescription});
             
             // Update the network
             const nodesDataset = network.body.data.nodes;
-            const edgesDataset = network.body.data.edges;
-            
             nodesDataset.add(roleNode);
-            edgesDataset.add(edge);
             
             // Update deliverable role dropdown
             updateDeliverableRoleDropdown();
@@ -1744,21 +1884,8 @@
                 title: `<strong>Entregable:</strong> ${deliverableName}<br><strong>Tipo:</strong> ${transactionType === 'tangible' ? 'Tangible' : 'Intangible'}<br><strong>Valor:</strong> ${value} ${valueMapData.valueUnit}`
             };
             
-            // Add edge from role to deliverable
-            const edge = {
-                id: `edge-${valueMapData.nextEdgeId++}`,
-                from: parseInt(roleId),
-                to: newDeliverableId,
-                label: `${value} UV`,
-                color: {color: transactionType === 'tangible' ? '#0da27f' : '#d97706', highlight: transactionType === 'tangible' ? '#047857' : '#b45309'},
-                font: {size: 14, align: 'middle', color: transactionType === 'tangible' ? '#0da27f' : '#d97706'},
-                dashes: transactionType === 'intangible',
-                smooth: { enabled: true }
-            };
-            
             // Add to data structure
             valueMapData.nodes.push(deliverableNode);
-            valueMapData.edges.push(edge);
             valueMapData.deliverables.push({
                 id: newDeliverableId,
                 name: deliverableName,
@@ -1769,20 +1896,20 @@
             
             // Update the network
             const nodesDataset = network.body.data.nodes;
-            const edgesDataset = network.body.data.edges;
-            
             nodesDataset.add(deliverableNode);
-            edgesDataset.add(edge);
             
             // Clear form
             document.getElementById('deliverable-name').value = '';
             document.getElementById('deliverable-value').value = '';
             
             // Show success
-            showNotification(`✅ Entregable "${deliverableName}" añadido al rol ${role.name} (+${value} ${valueMapData.valueUnit})`, 'success');
+            showNotification(`✅ Entregable "${deliverableName}" añadido (+${value} ${valueMapData.valueUnit})`, 'success');
             
             // Update stats
             updateStats();
+            
+            // Update deliverables list
+            updateDeliverablesList();
             
             // Trigger IA analysis if available
             triggerIAAnalysis();
@@ -1795,6 +1922,9 @@
             document.getElementById('total-roles').textContent = valueMapData.roles.length;
             document.getElementById('total-deliverables').textContent = valueMapData.deliverables.length;
             document.getElementById('total-value').textContent = valueMapData.deliverables.reduce((sum, d) => sum + d.value, 0);
+            
+            // Update project title display
+            document.getElementById('project-title-display').textContent = valueMapData.projectName;
         }
         
         // Update deliverable role dropdown
@@ -1808,6 +1938,142 @@
                 option.textContent = role.name;
                 dropdown.appendChild(option);
             });
+        }
+        
+        // Update deliverables list
+        function updateDeliverablesList() {
+            const tbody = document.getElementById('deliverables-list-body');
+            
+            if (valueMapData.deliverables.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <div class="empty-state">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h3 class="lang" data-es="No hay entregables registrados aún" data-ca="No hi ha entregables registrats encara">No hay entregables registrados aún</h3>
+                                <p class="lang" data-es="Añade entregables para verlos en esta lista" data-ca="Afegeix entregables per veure'ls en aquesta llista">Añade entregables para verlos en esta lista</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort deliverables by value (descending)
+            const sortedDeliverables = [...valueMapData.deliverables].sort((a, b) => b.value - a.value);
+            
+            let html = '';
+            sortedDeliverables.forEach(deliverable => {
+                const role = valueMapData.roles.find(r => r.id === deliverable.roleId);
+                html += `
+                    <tr>
+                        <td>${deliverable.name}</td>
+                        <td>${role ? role.name : 'Desconocido'}</td>
+                        <td>
+                            <span style="display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; background: ${deliverable.type === 'tangible' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${deliverable.type === 'tangible' ? '#0da27f' : '#d97706'};">
+                                ${deliverable.type === 'tangible' ? 'Tangible' : 'Intangible'}
+                            </span>
+                        </td>
+                        <td>${deliverable.value} ${valueMapData.valueUnit}</td>
+                        <td>
+                            <button class="action-btn edit" data-id="${deliverable.id}" title="Editar">
+                                <span>✏️</span>
+                            </button>
+                            <button class="action-btn delete" data-id="${deliverable.id}" title="Eliminar">
+                                <span>🗑️</span>
+                            </button>
+                            <button class="action-btn connect" data-id="${deliverable.id}" title="Conectar">
+                                <span>🔗</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.action-btn.edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    editDeliverable(id);
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deleteDeliverable(id);
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.connect').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    // Select this node for connection mode
+                    if (!connectMode) {
+                        toggleConnectMode();
+                    }
+                    // Select the node in the network
+                    network.selectNodes([id]);
+                    firstNodeSelected = id;
+                    showNotification(`Nodo ${id} seleccionado. Selecciona otro nodo para conectar.`, 'connect', 3000);
+                });
+            });
+        }
+        
+        // Edit deliverable
+        function editDeliverable(id) {
+            const deliverable = valueMapData.deliverables.find(d => d.id === id);
+            if (!deliverable) return;
+            
+            const newName = prompt('Nuevo nombre del entregable:', deliverable.name);
+            if (newName && newName.trim() !== '') {
+                deliverable.name = newName.trim();
+                
+                // Update node label in network
+                const nodesDataset = network.body.data.nodes;
+                const node = nodesDataset.get(id);
+                if (node) {
+                    node.label = newName.trim();
+                    nodesDataset.update(node);
+                }
+                
+                saveData();
+                updateStats();
+                updateDeliverablesList();
+                showNotification(`✅ Entregable actualizado`, 'success');
+            }
+        }
+        
+        // Delete deliverable
+        function deleteDeliverable(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este entregable?')) {
+                return;
+            }
+            
+            // Remove from data structure
+            valueMapData.deliverables = valueMapData.deliverables.filter(d => d.id !== id);
+            valueMapData.nodes = valueMapData.nodes.filter(n => n.id !== id);
+            
+            // Remove edges connected to this node
+            valueMapData.edges = valueMapData.edges.filter(e => e.from !== id && e.to !== id);
+            
+            // Update the network
+            const nodesDataset = network.body.data.nodes;
+            const edgesDataset = network.body.data.edges;
+            
+            nodesDataset.remove(id);
+            edgesDataset.update(valueMapData.edges);
+            
+            // Save and update
+            saveData();
+            updateStats();
+            updateDeliverablesList();
+            
+            showNotification(`🗑️ Entregable eliminado`, 'info');
         }
         
         // Import data from JSON
@@ -1836,12 +2102,12 @@
                         throw new Error('El archivo JSON no tiene la estructura correcta de Contabilidad de Valor');
                     }
                     
-                    // Clear current map (except project node)
-                    valueMapData.nodes = [valueMapData.nodes[0]];
+                    // Clear current map
+                    valueMapData.nodes = [];
                     valueMapData.edges = [];
                     valueMapData.roles = [];
                     valueMapData.deliverables = [];
-                    valueMapData.nextNodeId = 2;
+                    valueMapData.nextNodeId = 1;
                     valueMapData.nextEdgeId = 1;
                     
                     // Add roles from imported data
@@ -1868,17 +2134,6 @@
                                     title: `<strong>Rol:</strong> ${deliverable.role}`
                                 });
                                 
-                                // Add edge from project to role
-                                valueMapData.edges.push({
-                                    id: `edge-${valueMapData.nextEdgeId++}`,
-                                    from: 1,
-                                    to: roleId,
-                                    label: 'contiene',
-                                    color: {color: '#64748b', highlight: '#4f46e5'},
-                                    font: {size: 12, align: 'middle'},
-                                    smooth: { enabled: true }
-                                });
-                                
                                 valueMapData.roles.push(rolesMap[deliverable.role]);
                             }
                         });
@@ -1900,19 +2155,7 @@
                                 title: `<strong>Entregable:</strong> ${deliverable.deliverable}<br><strong>Tipo:</strong> ${deliverable.transactionType === 'tangible' ? 'Tangible' : 'Intangible'}<br><strong>Valor:</strong> ${deliverable.value} ${importedData.valueUnit || 'puntos'}`
                             };
                             
-                            const edge = {
-                                id: `edge-${valueMapData.nextEdgeId++}`,
-                                from: role.id,
-                                to: deliverableId,
-                                label: `${deliverable.value} UV`,
-                                color: {color: deliverable.transactionType === 'tangible' ? '#0da27f' : '#d97706', highlight: deliverable.transactionType === 'tangible' ? '#047857' : '#b45309'},
-                                font: {size: 14, align: 'middle', color: deliverable.transactionType === 'tangible' ? '#0da27f' : '#d97706'},
-                                dashes: deliverable.transactionType === 'intangible',
-                                smooth: { enabled: true }
-                            };
-                            
                             valueMapData.nodes.push(deliverableNode);
-                            valueMapData.edges.push(edge);
                             valueMapData.deliverables.push({
                                 id: deliverableId,
                                 name: deliverable.deliverable,
@@ -1945,6 +2188,7 @@
                     // Save and update
                     saveData();
                     updateStats();
+                    updateDeliverablesList();
                     
                     showNotification(`✅ Datos importados correctamente: ${valueMapData.roles.length} roles, ${valueMapData.deliverables.length} entregables`, 'success');
                 } catch (error) {
@@ -1968,7 +2212,7 @@
         
         // Export as JSON
         function exportJSON() {
-            if (valueMapData.nodes.length <= 1) {
+            if (valueMapData.nodes.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Crea tu mapa primero.', 'warning');
                 return;
             }
@@ -2003,7 +2247,7 @@
         
         // Export for Accounting app
         function exportForAccounting() {
-            if (valueMapData.nodes.length <= 1) {
+            if (valueMapData.nodes.length === 0) {
                 showNotification('⚠️ No hay datos para exportar. Crea tu mapa primero.', 'warning');
                 return;
             }
@@ -2065,14 +2309,12 @@
         // Reset map data
         function resetMap() {
             if (confirm('¿Estás seguro de que quieres borrar todo el mapa? Esta acción no se puede deshacer.')) {
-                // Reset to initial state (only project node)
-                valueMapData.nodes = [
-                    {id: 1, label: valueMapData.projectName, shape: "box", color: {background: '#8b5cf6', border: '#7c3aed'}, font: {color: 'white', size: 22, face: 'Arial'}, title: '<strong>Proyecto Central</strong>'}
-                ];
+                // Reset to initial state (empty)
+                valueMapData.nodes = [];
                 valueMapData.edges = [];
                 valueMapData.roles = [];
                 valueMapData.deliverables = [];
-                valueMapData.nextNodeId = 2;
+                valueMapData.nextNodeId = 1;
                 valueMapData.nextEdgeId = 1;
                 
                 // Update the network
@@ -2082,14 +2324,13 @@
                 nodesDataset.clear();
                 edgesDataset.clear();
                 
-                valueMapData.nodes.forEach(node => nodesDataset.add(node));
-                
                 // Update deliverable role dropdown
                 updateDeliverableRoleDropdown();
                 
                 // Save and update
                 saveData();
                 updateStats();
+                updateDeliverablesList();
                 
                 showNotification('🗑️ Mapa limpiado correctamente', 'info');
             }
@@ -2100,7 +2341,7 @@
             try {
                 localStorage.setItem('valueMapData', JSON.stringify(valueMapData));
             } catch (error) {
-                console.error('Error saving data:', error);
+                console.error('Error saving ', error);
                 showNotification('⚠️ No se pudieron guardar los datos. El almacenamiento local puede estar deshabilitado.', 'warning');
             }
         }
@@ -2121,13 +2362,13 @@
                         document.getElementById('value-unit').value = valueMapData.valueUnit || "puntos";
                         
                         // Show notification if data was loaded
-                        if (valueMapData.nodes.length > 1) {
+                        if (valueMapData.nodes.length > 0) {
                             showNotification(`✅ Mapa cargado: ${valueMapData.nodes.length} nodos`, 'info');
                         }
                     }
                 }
             } catch (error) {
-                console.error('Error loading data:', error);
+                console.error('Error loading ', error);
                 showNotification('⚠️ Error al cargar los datos guardados', 'warning');
             }
         }
@@ -2147,17 +2388,7 @@
             // Project name change
             document.getElementById('project-name').addEventListener('change', function() {
                 valueMapData.projectName = this.value || "Proyecto MASIA";
-                
-                // Update project node label in network
-                if (network) {
-                    const nodesDataset = network.body.data.nodes;
-                    const projectNode = nodesDataset.get(1);
-                    if (projectNode) {
-                        projectNode.label = valueMapData.projectName;
-                        nodesDataset.update(projectNode);
-                    }
-                }
-                
+                document.getElementById('project-title-display').textContent = valueMapData.projectName;
                 saveData();
             });
             
@@ -2205,7 +2436,13 @@
             });
             
             document.getElementById('center-map').addEventListener('click', function() {
-                network.focus(1, {animation: {duration: 1000}});
+                // Get canvas dimensions
+                const canvas = document.getElementById('mynetwork');
+                const centerX = canvas.offsetWidth / 2;
+                const centerY = canvas.offsetHeight / 2;
+                
+                // Move view to center
+                network.moveTo({position: {x: centerX, y: centerY}, scale: 1, animation: {duration: 1000}});
             });
             
             document.getElementById('apply-ia-suggestion').addEventListener('click', applyIASuggestion);
@@ -2268,40 +2505,6 @@
         
         function triggerIAAnalysis() {
             // Stub for IA analysis
-            const analysisSection = document.getElementById('ia-analysis-section');
-            const analysisContent = document.getElementById('ia-analysis-content');
-            
-            if (valueMapData.roles.length === 0) {
-                analysisContent.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <h3 class="lang" data-es="IA no disponible o mapa vacío" data-ca="IA no disponible o mapa buit">IA no disponible o mapa vacío</h3>
-                        <p class="lang" data-es="La IA contextual mejorará cuando esté disponible y tengas roles en tu mapa." data-ca="La IA contextual millorarà quan estigui disponible i tinguis rols al teu mapa.">La IA contextual mejorará cuando esté disponible y tengas roles en tu mapa.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Generate recommendations HTML (stub)
-            let html = `
-                <div class="recommendation info">
-                    <div class="recommendation-title">
-                        💡 <span class="lang" data-es="Mapa en construcción" data-ca="Mapa en construcció">Mapa en construcción</span>
-                    </div>
-                    <p class="lang" data-es="Tu mapa tiene una estructura inicial. Añade más entregables y conexiones VNA para un análisis más completo." data-ca="El teu mapa té una estructura inicial. Afegeix més entregables i connexions VNA per a un anàlisi més complet.">Tu mapa tiene una estructura inicial. Añade más entregables y conexiones VNA para un análisis más completo.</p>
-                </div>
-                <div class="recommendation action">
-                    <div class="recommendation-title">
-                        ✨ <span class="lang" data-es="Conexiones VNA" data-ca="Connexions VNA">Conexiones VNA</span>
-                    </div>
-                    <p class="lang" data-es="Activa el modo Conexión VNA para crear flujos de valor entre nodos y visualizar tu red completa." data-ca="Activa el mode Connexió VNA per crear fluxos de valor entre nodes i visualitzar la teva xarxa completa.">Activa el modo Conexión VNA para crear flujos de valor entre nodos y visualizar tu red completa.</p>
-                </div>
-            `;
-            
-            analysisContent.innerHTML = html;
-            analysisSection.style.display = 'block';
         }
         
         // Setup language selector (CORREGIDO)
@@ -2378,7 +2581,7 @@
             
             // Show tip after 3 seconds
             setTimeout(() => {
-                if (valueMapData.nodes.length === 1) {
+                if (valueMapData.nodes.length === 0) {
                     showNotification('💡 Consejo: Empieza creando roles o importa datos de Contabilidad de Valor para comenzar rápidamente', 'info', 8000);
                 }
             }, 3000);
