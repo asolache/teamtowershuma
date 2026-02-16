@@ -13,545 +13,2033 @@
               </style>
                         </head>
                         <body>
-                            <!-- AÑADIR EN EL PANEL DERECHO (dashboard-panel), antes de las recomendaciones -->
-<div class="search-section" style="margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f8fafc;">
-  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-    <h3 style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 10px;">
-      <i class="fas fa-search"></i> 
-      <span class="lang" data-es="Buscar en Todo el Ecosistema" data-ca="Cercar a Tot l'Ecosistema">Buscar en Todo el Ecosistema</span>
-    </h3>
-    <button id="refresh-index" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.9rem;">
-      <i class="fas fa-sync"></i> <span class="lang" data-es="Actualizar Índice" data-ca="Actualitzar Índex">Actualizar Índice</span>
-      <span id="index-timestamp" style="font-size: 0.8rem; margin-left: 8px; opacity: 0.7;"></span>
-    </button>
-  </div>
-  
-  <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-    <input type="text" id="ecosystem-search" 
-           placeholder="Buscar usuarios, roles, entregables, proyectos..." 
-           style="flex: 1; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1.05rem;"
-           autofocus>
-    <select id="search-filter" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
-      <option value="all" class="lang" data-es="Todo" data-ca="Tot">Todo</option>
-      <option value="users" class="lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</option>
-      <option value="roles" class="lang" data-es="Roles" data-ca="Rols">Roles</option>
-      <option value="deliverables" class="lang" data-es="Entregables" data-ca="Entregables">Entregables</option>
-      <option value="projects" class="lang" data-es="Proyectos" data-ca="Projectes">Proyectos</option>
-      <option value="knowledge" class="lang" data-es="Conocimiento" data-ca="Coneixement">Conocimiento</option>
-    </select>
-    <button id="search-btn" class="btn btn-primary" style="padding: 0 25px;">
-      <i class="fas fa-search"></i>
-    </button>
-  </div>
-  
-  <div id="search-stats" style="display: flex; justify-content: space-around; background: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
-    <span><i class="fas fa-users"></i> <span id="stat-search-users">0</span> <span class="lang" data-es="usuarios" data-ca="usuaris">usuarios</span></span>
-    <span><i class="fas fa-user-tag"></i> <span id="stat-search-roles">0</span> <span class="lang" data-es="roles" data-ca="rols">roles</span></span>
-    <span><i class="fas fa-tasks"></i> <span id="stat-search-deliverables">0</span> <span class="lang" data-es="entregables" data-ca="entregables">entregables</span></span>
-    <span><i class="fas fa-project-diagram"></i> <span id="stat-search-projects">0</span> <span class="lang" data-es="proyectos" data-ca="projectes">proyectos</span></span>
-  </div>
-  
-  <div id="search-results" style="max-height: 400px; overflow-y: auto; display: none;">
-    <!-- Los resultados se insertarán aquí dinámicamente -->
-  </div>
-  
-  <div id="index-summary" style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
-    <p style="margin: 0; font-size: 0.95rem; color: var(--gray);">
-      <span class="lang" data-es="Índice actualizado:" data-ca="Índex actualitzat:">Índice actualizado:</span> 
-      <span id="index-last-update">-</span>
-    </p>
-    <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--gray);">
-      <span class="lang" data-es="Fuentes indexadas:" data-ca="Fonts indexades:">Fuentes indexadas:</span> 
-      <span id="index-sources">VNA, Mapas, Accounting</span>
-    </p>
-  </div>
-</div>
+                            <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IA Assistente · La Teva Colla. Asistente inteligente para analizar y recomendar en tu ecosistema de valor con índice buscable de todo el ecosistema.">
+    <meta name="keywords" content="IA, asistente, TeamTowers Humà, La Teva Colla, análisis, recomendaciones, tokenomics, VNA, mapas de valor, índice buscable">
+    <meta name="author" content="La Teva Colla">
+    <meta name="robots" content="index, follow">
+    <title>IA Assistente · La Teva Colla</title>
+    <!-- Open Graph -->
+    <meta property="og:title" content="IA Assistente · La Teva Colla">
+    <meta property="og:description" content="Asistente inteligente con índice buscable de todo tu ecosistema de valor.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/ia">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ----- MISMAS VARIABLES Y ESTILOS QUE EN EL RESTO DEL ECOSISTEMA ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e01;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+        body {
+            background-color: #fff;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            transition: var(--transition);
+        }
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .header-logo {
+            height: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        .integration-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: var(--transition);
+            background: var(--light);
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .app-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        /* ----- ESTILOS DEL CHAT ----- */
+        .chat-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 650px;
+        }
+        .chat-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 20px;
+        }
+        .chat-header h2 {
+            margin: 0;
+            color: white;
+            border-bottom: none;
+            font-size: 1.8rem;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9fafc;
+        }
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .message .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .message.user .avatar {
+            background: var(--primary);
+            color: white;
+        }
+        .message.ia .avatar {
+            background: var(--accent);
+            color: white;
+        }
+        .message .content {
+            flex: 1;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            word-break: break-word;
+        }
+        .message.user .content {
+            background: var(--primary);
+            color: white;
+        }
+        .message .content ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 20px;
+            gap: 10px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30,58,138,0.2);
+        }
+        .chat-input-area button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        /* ----- ESTILOS DEL DASHBOARD ----- */
+        .dashboard-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            overflow-y: auto;
+            height: 650px;
+            display: flex;
+            flex-direction: column;
+        }
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .app-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+        }
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+            border-color: var(--accent);
+        }
+        .app-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .app-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        .app-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        .app-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        .recommendations-list {
+            margin: 15px 0;
+        }
+        .recommendation {
+            background: #f0f9ff;
+            border-left: 4px solid var(--accent);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .recommendation.warning {
+            background: #fef2f2;
+            border-left-color: var(--danger);
+        }
+        .knowledge-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 30px;
+            background: var(--light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .patterns-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        .pattern-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+        }
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        .faq-answer {
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255,255,255,0.85);
+            padding: 40px 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+        /* Notificaciones */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            margin-bottom: 10px;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        /* Índice buscable */
+        .search-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        .search-section h3 {
+            margin-top: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .search-controls input, .search-controls select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .search-controls input {
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-stats {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            background: white;
+        }
+        .result-item:hover {
+            background: #f8fafc;
+        }
+        .result-item .result-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .result-item .result-meta {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        .result-item .result-app {
+            display: inline-block;
+            background: var(--light);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .test-section {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .test-section h4 {
+            margin-top: 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .test-section h4::before {
+            content: '🧪';
+        }
+        .test-log {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .test-log .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .log-success { color: var(--success); }
+        .log-warning { color: var(--warning); }
+        .log-error { color: var(--danger); }
+        .log-info { color: var(--primary); }
+        /* Footer */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 45px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .footer-col h3 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 28px;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        .footer-links {
+            list-style: none;
+        }
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 6px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 22px;
+        }
+        .footer-links a::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+        }
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 50px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            .chat-panel, .dashboard-panel {
+                height: auto;
+                min-height: 500px;
+            }
+            .search-controls {
+                flex-direction: column;
+            }
+            .search-controls input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Selector de idioma -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    <!-- Notificaciones -->
+    <div class="notification-container" id="notification-container"></div>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="IA Assistente" class="header-logo">
+            <h1 class="lang" data-es="IA Assistente · La Teva Colla" data-ca="IA Assistente · La Teva Colla">IA Assistente · La Teva Colla</h1>
+            <p class="tagline lang" data-es="Tu asistente inteligente con índice buscable de todo el ecosistema" data-ca="El teu assistent intel·ligent amb índex cercable de tot l'ecosistema">Tu asistente inteligente con índice buscable de todo el ecosistema</p>
+            <div class="integration-badge lang" data-es="Parte del Sistema Integral de La Masia" data-ca="Part del Sistema Integral de La Masia">Parte del Sistema Integral de La Masia</div>
+        </div>
+    </header>
+    <!-- Menú de navegación -->
+    <nav class="nav-menu">
+        <a href="index.html" class="lang" data-es="Inicio" data-ca="Inici">Inicio</a>
+        <a href="lacolla.html" class="lang" data-es="La Colla" data-ca="La Colla">La Colla</a>
+        <a href="app.html" class="lang" data-es="VNA" data-ca="VNA">VNA</a>
+        <a href="mapas.html" class="lang" data-es="Mapas" data-ca="Mapes">Mapas</a>
+        <a href="tokenomics.html" class="lang" data-es="Tokenomics" data-ca="Tokenomics">Tokenomics</a>
+        <a href="lacolla-accounting.html" class="lang" data-es="Accounting" data-ca="Accounting">Accounting</a>
+        <a href="finances.html" class="lang" data-es="Finances" data-ca="Finances">Finances</a>
+        <a href="ia.html" class="active" class="lang" data-es="IA" data-ca="IA">IA</a>
+    </nav>
+    <div class="container">
+        <div class="app-container">
+            <!-- Panel izquierdo: CHAT -->
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <h2><i class="fas fa-robot"></i> <span class="lang" data-es="Asistente Virtual" data-ca="Assistent Virtual">Asistente Virtual</span></h2>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Mensaje de bienvenida (se genera con JS) -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userQuestion" placeholder="Escribe tu pregunta...">
+                    <button id="sendQuestion" class="btn btn-primary"><i class="fas fa-paper-plane"></i> <span class="lang" data-es="Enviar" data-ca="Enviar">Enviar</span></button>
+                    <button id="clearChat" class="btn btn-secondary"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <!-- Panel derecho: DASHBOARD Y ÍNDICE -->
+            <div class="dashboard-panel">
+                <h2><i class="fas fa-chart-pie"></i> <span class="lang" data-es="Estado del Ecosistema" data-ca="Estat de l'Ecosistema">Estado del Ecosistema</span></h2>
+                <!-- Tarjetas de aplicaciones -->
+                <div class="apps-grid">
+                    <div class="app-card" onclick="location.href='app.html'">
+                        <span class="app-icon">🌐</span>
+                        <span class="app-name">VNA</span>
+                        <span class="app-value" id="statVnaNodes">0</span>
+                        <span class="app-label" class="lang" data-es="nodos" data-ca="nodes">nodos</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='mapas.html'">
+                        <span class="app-icon">🗺️</span>
+                        <span class="app-name">Mapas</span>
+                        <span class="app-value" id="statMapasRoles">0</span>
+                        <span class="app-label" class="lang" data-es="roles" data-ca="rols">roles</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='tokenomics.html'">
+                        <span class="app-icon">💰</span>
+                        <span class="app-name">Tokenomics</span>
+                        <span class="app-value" id="statTokenSupply">0</span>
+                        <span class="app-label" class="lang" data-es="tokens" data-ca="tokens">tokens</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='lacolla-accounting.html'">
+                        <span class="app-icon">📝</span>
+                        <span class="app-name">Accounting</span>
+                        <span class="app-value" id="statDeliverables">0</span>
+                        <span class="app-label" class="lang" data-es="entregables" data-ca="entregables">entregables</span>
+                    </div>
+                    <div class="app-card" onclick="location.href='finances.html'">
+                        <span class="app-icon">💳</span>
+                        <span class="app-name">Finances</span>
+                        <span class="app-value" id="statFinancesValue">0</span>
+                        <span class="app-label" class="lang" data-es="activos" data-ca="actius">activos</span>
+                    </div>
+                </div>
+                
+                <!-- Índice Buscable -->
+                <div class="search-section">
+                    <h3><i class="fas fa-search"></i> <span class="lang" data-es="Índice Buscable del Ecosistema" data-ca="Índex Cercable de l'Ecosistema">Índice Buscable del Ecosistema</span></h3>
+                    <div class="search-controls">
+                        <input type="text" id="ecosystem-search" placeholder="Buscar usuarios, roles, entregables, proyectos...">
+                        <select id="search-filter">
+                            <option value="all" class="lang" data-es="Todo" data-ca="Tot">Todo</option>
+                            <option value="users" class="lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</option>
+                            <option value="roles" class="lang" data-es="Roles" data-ca="Rols">Roles</option>
+                            <option value="deliverables" class="lang" data-es="Entregables" data-ca="Entregables">Entregables</option>
+                            <option value="projects" class="lang" data-es="Proyectos" data-ca="Projectes">Proyectos</option>
+                            <option value="tokens" class="lang" data-es="Tokens" data-ca="Tokens">Tokens</option>
+                        </select>
+                        <button id="search-btn" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                        <button id="refresh-index" class="btn btn-secondary"><i class="fas fa-sync"></i> <span class="lang" data-es="Actualizar" data-ca="Actualitzar">Actualizar</span></button>
+                    </div>
+                    <div class="search-stats">
+                        <span><i class="fas fa-users"></i> <span id="stat-search-users">0</span> <span class="lang" data-es="usuarios" data-ca="usuaris">usuarios</span></span>
+                        <span><i class="fas fa-user-tag"></i> <span id="stat-search-roles">0</span> <span class="lang" data-es="roles" data-ca="rols">roles</span></span>
+                        <span><i class="fas fa-tasks"></i> <span id="stat-search-deliverables">0</span> <span class="lang" data-es="entregables" data-ca="entregables">entregables</span></span>
+                        <span><i class="fas fa-project-diagram"></i> <span id="stat-search-projects">0</span> <span class="lang" data-es="proyectos" data-ca="projectes">proyectos</span></span>
+                    </div>
+                    <div class="search-results" id="search-results">
+                        <!-- Los resultados se insertarán aquí dinámicamente -->
+                        <div style="padding: 20px; text-align: center; color: var(--gray);">
+                            <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 10px;"></i>
+                            <p class="lang" data-es="Actualiza el índice para ver todos los datos del ecosistema" data-ca="Actualitza l'índex per veure totes les dades de l'ecosistema">Actualiza el índice para ver todos los datos del ecosistema</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Section -->
+                <div class="test-section">
+                    <h4 class="lang" data-es="Depuración del Índice" data-ca="Depuració de l'Índex">Depuración del Índice</h4>
+                    <p class="lang" data-es="Esta sección muestra información detallada sobre el proceso de indexación para ayudar a identificar problemas." data-ca="Aquesta secció mostra informació detallada sobre el procés d'indexació per ajudar a identificar problemes.">Esta sección muestra información detallada sobre el proceso de indexación para ayudar a identificar problemas.</p>
+                    <button id="run-index-test" class="btn btn-warning" style="margin-top: 10px; width: 100%;">
+                        <i class="fas fa-vial"></i> <span class="lang" data-es="Ejecutar Test de Índice" data-ca="Executar Test d'Índex">Ejecutar Test de Índice</span>
+                    </button>
+                    <div class="test-log" id="test-log">
+                        <!-- Los logs de test se insertarán aquí -->
+                        <div class="log-entry log-info">ℹ️ Presiona "Ejecutar Test de Índice" para ver información detallada</div>
+                    </div>
+                </div>
+                
+                <!-- Pestañas de conocimiento -->
+                <div class="knowledge-tabs">
+                    <button class="tab-btn active" data-tab="patterns"><i class="fas fa-chart-bar"></i> <span class="lang" data-es="Patrones de Valor" data-ca="Patrons de Valor">Patrones de Valor</span></button>
+                    <button class="tab-btn" data-tab="faq"><i class="fas fa-question-circle"></i> <span class="lang" data-es="FAQ" data-ca="FAQ">FAQ</span></button>
+                    <button class="tab-btn" data-tab="institutional"><i class="fas fa-building"></i> <span class="lang" data-es="Sobre Nosotros" data-ca="Sobre Nosaltres">Sobre Nosotros</span></button>
+                </div>
+                <div id="patterns-tab" class="tab-content active">
+                    <div class="patterns-list" id="patternsList">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+                <div id="faq-tab" class="tab-content">
+                    <div id="faqList">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+                <div id="institutional-tab" class="tab-content">
+                    <div id="institutionalInfo">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+                <button id="generateReport" class="btn btn-primary" style="margin-top: 20px; width: 100%;">
+                    <i class="fas fa-file-alt"></i> <span class="lang" data-es="Generar Informe Completo" data-ca="Generar Informe Complet">Generar Informe Completo</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer-system">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h3>
+                <p class="lang" data-es="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos." data-ca="De les torres humanes a les organitzacions humanes. Consultoria estratègica de RRHH amb enfocament humanista des de Vilafranca del Penedès. 20+ anys construint equips sòlids com castells.">De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès. 20+ años construyendo equipos sólidos como castillos.</p>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Sistema Integral" data-ca="Sistema Integral">Sistema Integral</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/sistema_integral" class="lang" data-es="Modelo Integral System" data-ca="Model Integral System">Modelo Integral System</a></li>
+                    <li><a href="https://teamtowershuma.com/comunidad-aprendizaje" class="lang" data-es="Comunidad de Aprendizaje" data-ca="Comunitat d'Aprenentatge">Comunidad de Aprendizaje</a></li>
+                    <li><a href="https://teamtowershuma.com/" class="lang" data-es="TeamTowers" data-ca="TeamTowers">TeamTowers</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="https://teamtowershuma.com/comptabilitat_de_valor" class="lang" data-es="Contabilidad de Valor" data-ca="Comptabilitat de Valor">Contabilidad de Valor</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/rrhh" class="lang" data-es="Business Partner RRHH" data-ca="Business Partner RRHH">Business Partner RRHH</a></li>
+                    <li><a href="https://teamtowershuma.com/events" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                    <li><a href="https://teamtowershuma.com/valor" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="https://teamtowershuma.com/coops" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/cv2" target="_blank" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li>
+                        <a href="mailto:asolache@mac.com" style="color: var(--accent); font-weight: 600;">
+                            <span class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent); font-weight: 600;">LinkedIn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p class="lang" data-es="© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès." data-ca="© 2026 TeamTowers Humà. Tots els drets reservats. Consultoria estratègica de RRHH a Vilafranca del Penedès.">© 2026 TeamTowers Humà. Todos los derechos reservados. Consultoría estratégica de RRHH en Vilafranca del Penedès.</p>
+        </div>
+    </footer>
+    <script>
+        // ========== TRADUCCIONES ==========
+        const translations = {
+            es: {
+                title: "IA Asistente · La Teva Colla",
+                subtitle: "Tu asistente inteligente para el ecosistema",
+                home: "Inicio",
+                lacolla: "La Colla",
+                vna: "VNA",
+                mapas: "Mapas",
+                tokenomics: "Tokenomics",
+                accounting: "Accounting",
+                finances: "Finanzas",
+                ia: "IA",
+                chatTitle: "Asistente Virtual",
+                dashboardTitle: "Estado del ecosistema",
+                nodes: "nodos",
+                roles: "roles",
+                tokens: "tokens",
+                deliverables: "entregables",
+                assets: "activos",
+                recommendations: "Recomendaciones",
+                patterns: "Patrones de valor",
+                faq: "FAQ",
+                institutional: "Sobre nosotros",
+                generateReport: "Generar informe completo",
+                footer: "© 2026 La Teva Colla · Todos los derechos reservados",
+                searchPlaceholder: "Buscar usuarios, roles, entregables, proyectos...",
+                searchButton: "Buscar",
+                refreshIndex: "Actualizar Índice",
+                testIndex: "Ejecutar Test de Índice",
+                indexStatus: "Índice actualizado:",
+                indexSources: "Fuentes indexadas:",
+                noResults: "No se encontraron resultados",
+                tryAnotherTerm: "Prueba con otro término o actualiza el índice",
+                users: "usuarios",
+                projects: "proyectos",
+                debugTitle: "Depuración del Índice",
+                debugDescription: "Esta sección muestra información detallada sobre el proceso de indexación para ayudar a identificar problemas."
+            },
+            ca: {
+                title: "IA Assistente · La Teva Colla",
+                subtitle: "El teu assistent intel·ligent per a l'ecosistema",
+                home: "Inici",
+                lacolla: "La Colla",
+                vna: "VNA",
+                mapas: "Mapes",
+                tokenomics: "Tokenomics",
+                accounting: "Accounting",
+                finances: "Finances",
+                ia: "IA",
+                chatTitle: "Assistent Virtual",
+                dashboardTitle: "Estat de l'ecosistema",
+                nodes: "nodes",
+                roles: "rols",
+                tokens: "tokens",
+                deliverables: "entregables",
+                assets: "actius",
+                recommendations: "Recomanacions",
+                patterns: "Patrons de valor",
+                faq: "FAQ",
+                institutional: "Sobre nosaltres",
+                generateReport: "Generar informe complet",
+                footer: "© 2026 La Teva Colla · Tots els drets reservats",
+                searchPlaceholder: "Cercar usuaris, rols, entregables, projectes...",
+                searchButton: "Cercar",
+                refreshIndex: "Actualitzar Índex",
+                testIndex: "Executar Test d'Índex",
+                indexStatus: "Índex actualitzat:",
+                indexSources: "Fonts indexades:",
+                noResults: "No s'han trobat resultats",
+                tryAnotherTerm: "Prova amb un altre terme o actualitza l'índex",
+                users: "usuaris",
+                projects: "projectes",
+                debugTitle: "Depuració de l'Índex",
+                debugDescription: "Aquesta secció mostra informació detallada sobre el procés d'indexació per ajudar a identificar problemes."
+            }
+        };
+
+        // ========== SISTEMA DE NOTIFICACIONES ==========
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i> ${message}`;
+            container.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        // ========== BASE DE CONOCIMIENTO INSTITUCIONAL ==========
+        const institutionalKnowledge = {
+            company: {
+                name: "TeamTowers Humà / La Teva Colla",
+                founded: 2006,
+                location: "Vilafranca del Penedès",
+                founder: "Álvaro Solache",
+                mission: "De les torres humanes a les organitzacions humanes",
+                description: "Consultoria estratègica de RRHH amb enfocament humanista des del cor del Penedès."
+            },
+            team: [
+                { name: "Álvaro Solache", role: "Fundador", bio: "Consultor estratègic de RRHH amb 20+ anys d'experiència construint equips." }
+            ],
+            clients: ["IKEA", "Telefónica", "Vodafone", "Novartis", "BBVA", "Porsche"],
+            methodologies: {
+                vna: { name: "Value Network Analysis", description: "Mapeig de fluxos de valor tangibles i intangibles", link: "valor.html" },
+                coops: { name: "Comunitats de Pràctica", description: "Models d'aprenentatge basats en xarxes de valor", link: "coops.html" },
+                castellers: { name: "Tallers de Castellers", description: "Experiències transformadores basades en la tradició UNESCO", link: "https://www.teamtowers.eu" },
+                tokenomics: { name: "Tokenomics", description: "Configuració de tokens amb model Fibonacci", link: "tokenomics.html" }
+            }
+        };
+
+        // ========== BASE DE CONOCIMIENTO DE PATRONES ==========
+        const patronesBase = {
+            "CEO": {
+                "Estrategia": { min: 200, max: 500, promedio: 350, frecuencia: 15 },
+                "Visión": { min: 150, max: 400, promedio: 275, frecuencia: 8 }
+            },
+            "Dev": {
+                "MVP": { min: 400, max: 800, promedio: 600, frecuencia: 12 },
+                "Feature": { min: 100, max: 300, promedio: 180, frecuencia: 25 }
+            },
+            "Marketing": {
+                "Campaña": { min: 150, max: 400, promedio: 250, frecuencia: 20 },
+                "Análisis": { min: 100, max: 250, promedio: 160, frecuencia: 15 }
+            }
+        };
+
+        // ========== ÍNDICE DEL ECOSISTEMA ==========
+        let ecosystemIndex = null;
+        const INDEX_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+        // Función para registrar logs de test
+        function logTest(message, type = 'info') {
+            const logDiv = document.getElementById('test-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Función para construir el índice del ecosistema
+        function buildEcosystemIndex() {
+            logTest("🚀 Iniciando construcción del índice del ecosistema...", 'info');
+            
+            const index = {
+                timestamp: new Date().toISOString(),
+                sources: {},
+                entities: {
+                    users: new Map(),
+                    roles: new Map(),
+                    deliverables: [],
+                    projects: new Map(),
+                    tokens: new Map()
+                },
+                knowledge: {
+                    patterns: patronesBase,
+                    faq: getFAQContent(),
+                    institutional: institutionalKnowledge
+                },
+                stats: {
+                    totalUsers: 0,
+                    totalRoles: 0,
+                    totalDeliverables: 0,
+                    totalProjects: 0,
+                    lastUpdated: new Date().toISOString()
+                },
+                debug: {
+                    localStorageKeys: [],
+                    errors: [],
+                    warnings: []
+                }
+            };
+
+            // Registrar todas las claves de localStorage
+            index.debug.localStorageKeys = Object.keys(localStorage);
+            logTest(`🔍 Encontradas ${index.debug.localStorageKeys.length} claves en localStorage`, 'info');
+
+            // 1. Indexar datos de VNA (app.html)
+            try {
+                const vnaDataRaw = localStorage.getItem('vnaData');
+                if (vnaDataRaw) {
+                    const vnaData = JSON.parse(vnaDataRaw);
+                    index.sources.vna = { 
+                        lastUpdate: new Date().toISOString(), 
+                        itemCount: vnaData.nodes?.length || 0,
+                        edgesCount: vnaData.edges?.length || 0
+                    };
+                    
+                    if (vnaData.nodes && Array.isArray(vnaData.nodes)) {
+                        vnaData.nodes.forEach(node => {
+                            if (node.label) {
+                                const roleId = node.id || node.label;
+                                if (!index.entities.roles.has(roleId)) {
+                                    index.entities.roles.set(roleId, {
+                                        id: roleId,
+                                        name: node.label,
+                                        type: 'vna-node',
+                                        deliverables: [],
+                                        value: 0,
+                                        apps: ['vna'],
+                                        sourceData: node
+                                    });
+                                    logTest(`✅ Rol indexado desde VNA: ${node.label}`, 'success');
+                                }
+                            }
+                        });
+                    }
+                    logTest(`✅ Datos de VNA indexados: ${vnaData.nodes?.length || 0} nodos, ${vnaData.edges?.length || 0} conexiones`, 'success');
+                } else {
+                    logTest("⚠️ No se encontraron datos de VNA en localStorage", 'warning');
+                    index.debug.warnings.push("No se encontraron datos de VNA en localStorage");
+                }
+            } catch(e) {
+                logTest(`❌ Error indexando VNA: ${e.message}`, 'error');
+                index.debug.errors.push(`Error indexando VNA: ${e.message}`);
+            }
+
+            // 2. Indexar datos de Mapas (mapas.html)
+            try {
+                const mapasDataRaw = localStorage.getItem('valueMapData');
+                if (mapasDataRaw) {
+                    const mapasData = JSON.parse(mapasDataRaw);
+                    index.sources.mapas = { 
+                        lastUpdate: new Date().toISOString(), 
+                        rolesCount: mapasData.roles?.length || 0,
+                        deliverablesCount: mapasData.deliverables?.length || 0
+                    };
+                    
+                    if (mapasData.roles && Array.isArray(mapasData.roles)) {
+                        mapasData.roles.forEach(role => {
+                            const roleId = role.id || role.name;
+                            if (!index.entities.roles.has(roleId)) {
+                                index.entities.roles.set(roleId, {
+                                    id: roleId,
+                                    name: role.name,
+                                    type: 'mapa-role',
+                                    deliverables: [],
+                                    value: 0,
+                                    apps: ['mapas'],
+                                    sourceData: role
+                                });
+                                logTest(`✅ Rol indexado desde Mapas: ${role.name}`, 'success');
+                            } else {
+                                const existing = index.entities.roles.get(roleId);
+                                existing.apps.push('mapas');
+                            }
+                        });
+                    }
+                    
+                    if (mapasData.deliverables && Array.isArray(mapasData.deliverables)) {
+                        mapasData.deliverables.forEach(del => {
+                            index.entities.deliverables.push({
+                                id: del.id,
+                                name: del.name,
+                                role: del.roleId,
+                                value: del.value,
+                                type: del.type,
+                                app: 'mapas',
+                                timestamp: del.timestamp
+                            });
+                            
+                            // Vincular entregable al rol
+                            if (index.entities.roles.has(del.roleId)) {
+                                const role = index.entities.roles.get(del.roleId);
+                                role.deliverables.push(del.id);
+                                role.value += del.value;
+                            }
+                        });
+                        logTest(`✅ ${mapasData.deliverables.length} entregables indexados desde Mapas`, 'success');
+                    }
+                } else {
+                    logTest("⚠️ No se encontraron datos de Mapas en localStorage", 'warning');
+                    index.debug.warnings.push("No se encontraron datos de Mapas en localStorage");
+                }
+            } catch(e) {
+                logTest(`❌ Error indexando Mapas: ${e.message}`, 'error');
+                index.debug.errors.push(`Error indexando Mapas: ${e.message}`);
+            }
+
+            // 3. Indexar datos de Accounting (lacolla-accounting.html)
+            try {
+                const accountingDataRaw = localStorage.getItem('colla_accounting');
+                if (accountingDataRaw) {
+                    const accountingData = JSON.parse(accountingDataRaw);
+                    index.sources.accounting = { 
+                        lastUpdate: new Date().toISOString(), 
+                        deliverablesCount: accountingData.deliverables?.length || 0
+                    };
+                    
+                    if (accountingData.deliverables && Array.isArray(accountingData.deliverables)) {
+                        accountingData.deliverables.forEach(del => {
+                            // Agregar entregable si no existe
+                            const existingDel = index.entities.deliverables.find(d => d.id === del.id);
+                            if (!existingDel) {
+                                index.entities.deliverables.push({
+                                    id: del.id,
+                                    name: del.deliverable,
+                                    role: del.role,
+                                    value: del.value,
+                                    type: del.transactionType,
+                                    app: 'accounting',
+                                    timestamp: del.timestamp,
+                                    user: del.userName
+                                });
+                                logTest(`✅ Entregable indexado desde Accounting: ${del.deliverable}`, 'success');
+                            }
+                            
+                            // Indexar usuario
+                            if (del.userName && !index.entities.users.has(del.userName)) {
+                                index.entities.users.set(del.userName, {
+                                    name: del.userName,
+                                    roles: [del.role],
+                                    totalValue: del.value,
+                                    apps: ['accounting'],
+                                    deliverables: [del.id]
+                                });
+                                logTest(`✅ Usuario indexado desde Accounting: ${del.userName}`, 'success');
+                            } else if (del.userName) {
+                                const user = index.entities.users.get(del.userName);
+                                if (!user.roles.includes(del.role)) user.roles.push(del.role);
+                                user.totalValue += del.value;
+                                if (!user.deliverables.includes(del.id)) user.deliverables.push(del.id);
+                                if (!user.apps.includes('accounting')) user.apps.push('accounting');
+                            }
+                            
+                            // Vincular al rol
+                            if (del.role) {
+                                const roleId = `role-${del.role.replace(/\s+/g, '-')}`;
+                                if (!index.entities.roles.has(roleId)) {
+                                    index.entities.roles.set(roleId, {
+                                        id: roleId,
+                                        name: del.role,
+                                        type: 'accounting-role',
+                                        deliverables: [del.id],
+                                        value: del.value,
+                                        apps: ['accounting']
+                                    });
+                                    logTest(`✅ Rol creado desde Accounting: ${del.role}`, 'success');
+                                } else {
+                                    const role = index.entities.roles.get(roleId);
+                                    if (!role.deliverables.includes(del.id)) role.deliverables.push(del.id);
+                                    role.value += del.value;
+                                    if (!role.apps.includes('accounting')) role.apps.push('accounting');
+                                }
+                            }
+                        });
+                        logTest(`✅ ${accountingData.deliverables.length} entregables procesados desde Accounting`, 'success');
+                    }
+                } else {
+                    logTest("⚠️ No se encontraron datos de Accounting en localStorage", 'warning');
+                    index.debug.warnings.push("No se encontraron datos de Accounting en localStorage");
+                }
+            } catch(e) {
+                logTest(`❌ Error indexando Accounting: ${e.message}`, 'error');
+                index.debug.errors.push(`Error indexando Accounting: ${e.message}`);
+            }
+
+            // 4. Indexar datos de Tokenomics
+            try {
+                const tokenomicsDataRaw = localStorage.getItem('colla_tokenomics');
+                if (tokenomicsDataRaw) {
+                    const tokenomicsData = JSON.parse(tokenomicsDataRaw);
+                    index.sources.tokenomics = { 
+                        lastUpdate: new Date().toISOString(),
+                        totalSupply: tokenomicsData.totalSupply || 0,
+                        distribution: tokenomicsData.distribution || {}
+                    };
+                    
+                    if (tokenomicsData.distribution) {
+                        Object.entries(tokenomicsData.distribution).forEach(([key, value]) => {
+                            index.entities.tokens.set(key, {
+                                name: key,
+                                percentage: value,
+                                app: 'tokenomics'
+                            });
+                        });
+                        logTest(`✅ Datos de Tokenomics indexados`, 'success');
+                    }
+                } else {
+                    logTest("⚠️ No se encontraron datos de Tokenomics en localStorage", 'warning');
+                    index.debug.warnings.push("No se encontraron datos de Tokenomics en localStorage");
+                }
+            } catch(e) {
+                logTest(`❌ Error indexando Tokenomics: ${e.message}`, 'error');
+                index.debug.errors.push(`Error indexando Tokenomics: ${e.message}`);
+            }
+
+            // 5. Indexar datos de Finances
+            try {
+                const financesDataRaw = localStorage.getItem('colla_finances_user');
+                if (financesDataRaw) {
+                    const financesData = JSON.parse(financesDataRaw);
+                    index.sources.finances = { 
+                        lastUpdate: new Date().toISOString(),
+                        projectsCount: financesData.projects?.length || 0
+                    };
+                    
+                    if (financesData.projects && Array.isArray(financesData.projects)) {
+                        financesData.projects.forEach(project => {
+                            if (project.name && !index.entities.projects.has(project.name)) {
+                                index.entities.projects.set(project.name, {
+                                    name: project.name,
+                                    totalTokens: project.totalUserTokens || 0,
+                                    app: 'finances'
+                                });
+                                logTest(`✅ Proyecto indexado desde Finances: ${project.name}`, 'success');
+                            }
+                        });
+                    }
+                } else {
+                    logTest("⚠️ No se encontraron datos de Finances en localStorage", 'warning');
+                    index.debug.warnings.push("No se encontraron datos de Finances en localStorage");
+                }
+            } catch(e) {
+                logTest(`❌ Error indexando Finances: ${e.message}`, 'error');
+                index.debug.errors.push(`Error indexando Finances: ${e.message}`);
+            }
+
+            // Actualizar estadísticas
+            index.stats.totalUsers = index.entities.users.size;
+            index.stats.totalRoles = index.entities.roles.size;
+            index.stats.totalDeliverables = index.entities.deliverables.length;
+            index.stats.totalProjects = index.entities.projects.size;
+            
+            // Guardar índice en localStorage para acceso rápido
+            try {
+                localStorage.setItem('colla_ecosystem_index', JSON.stringify(index));
+                localStorage.setItem('colla_ecosystem_index_timestamp', index.timestamp);
+                logTest(`✅ Índice guardado en localStorage con ${index.stats.totalUsers} usuarios, ${index.stats.totalRoles} roles, ${index.stats.totalDeliverables} entregables`, 'success');
+            } catch(e) {
+                logTest(`⚠️ No se pudo guardar el índice en localStorage: ${e.message}`, 'warning');
+                index.debug.warnings.push(`No se pudo guardar el índice en localStorage: ${e.message}`);
+            }
+            
+            logTest("🎉 Construcción del índice completada exitosamente", 'success');
+            return index;
+        }
+
+        // Función para cargar el índice (con caché)
+        function loadEcosystemIndex() {
+            logTest("🔄 Cargando índice del ecosistema...", 'info');
+            
+            const cachedIndex = localStorage.getItem('colla_ecosystem_index');
+            const lastUpdate = localStorage.getItem('colla_ecosystem_index_timestamp');
+            
+            if (cachedIndex && lastUpdate && (Date.now() - new Date(lastUpdate).getTime() < INDEX_CACHE_DURATION)) {
+                logTest("✅ Usando índice en caché (menos de 5 minutos)", 'success');
+                return JSON.parse(cachedIndex);
+            }
+            
+            logTest("🔄 Construyendo nuevo índice (caché caducado o no existe)", 'info');
+            return buildEcosystemIndex();
+        }
+
+        // Función para actualizar el resumen del índice en UI
+        function updateIndexSummary() {
+            if (!ecosystemIndex) return;
+            
+            document.getElementById('stat-search-users').textContent = ecosystemIndex.stats.totalUsers;
+            document.getElementById('stat-search-roles').textContent = ecosystemIndex.stats.totalRoles;
+            document.getElementById('stat-search-deliverables').textContent = ecosystemIndex.stats.totalDeliverables;
+            document.getElementById('stat-search-projects').textContent = ecosystemIndex.stats.totalProjects;
+            
+            // Actualizar estadísticas del ecosistema
+            document.getElementById('statVnaNodes').textContent = ecosystemIndex.sources.vna?.itemCount || 0;
+            document.getElementById('statMapasRoles').textContent = ecosystemIndex.sources.mapas?.rolesCount || 0;
+            document.getElementById('statTokenSupply').textContent = ecosystemIndex.sources.tokenomics?.totalSupply?.toLocaleString() || 0;
+            document.getElementById('statDeliverables').textContent = ecosystemIndex.sources.accounting?.deliverablesCount || 0;
+            document.getElementById('statFinancesValue').textContent = ecosystemIndex.sources.finances?.projectsCount || 0;
+        }
+
+        // Función para buscar en el índice
+        function searchEcosystem(query, filter = 'all') {
+            if (!ecosystemIndex) {
+                showNotification('⚠️ El índice no está cargado. Actualiza primero.', 'warning');
+                return [];
+            }
+            
+            if (!query.trim()) {
+                return [];
+            }
+            
+            const results = { users: [], roles: [], deliverables: [], projects: [], tokens: [] };
+            const q = query.toLowerCase();
+            
+            // Buscar usuarios
+            if (filter === 'all' || filter === 'users') {
+                results.users = Array.from(ecosystemIndex.entities.users.values())
+                    .filter(u => u.name.toLowerCase().includes(q) || u.roles.some(r => r.toLowerCase().includes(q)));
+            }
+            
+            // Buscar roles
+            if (filter === 'all' || filter === 'roles') {
+                results.roles = Array.from(ecosystemIndex.entities.roles.values())
+                    .filter(r => r.name.toLowerCase().includes(q) || r.type.includes(q));
+            }
+            
+            // Buscar entregables
+            if (filter === 'all' || filter === 'deliverables') {
+                results.deliverables = ecosystemIndex.entities.deliverables
+                    .filter(d => d.name.toLowerCase().includes(q) || 
+                                (d.role && d.role.toString().toLowerCase().includes(q)) ||
+                                (d.user && d.user.toLowerCase().includes(q)));
+            }
+            
+            // Buscar proyectos
+            if (filter === 'all' || filter === 'projects') {
+                results.projects = Array.from(ecosystemIndex.entities.projects.values())
+                    .filter(p => p.name.toLowerCase().includes(q));
+            }
+            
+            // Buscar tokens
+            if (filter === 'all' || filter === 'tokens') {
+                results.tokens = Array.from(ecosystemIndex.entities.tokens.values())
+                    .filter(t => t.name.toLowerCase().includes(q));
+            }
+            
+            return results;
+        }
+
+        // Función para mostrar resultados de búsqueda
+        function displaySearchResults(results, query) {
+            const container = document.getElementById('search-results');
+            
+            // Contar resultados totales
+            const totalResults = results.users.length + results.roles.length + 
+                               results.deliverables.length + results.projects.length +
+                               results.tokens.length;
+            
+            if (totalResults === 0) {
+                container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--gray);">
+                        <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 10px;"></i>
+                        <p><strong>${query}</strong></p>
+                        <p class="lang" data-es="${translations.es.noResults}" data-ca="${translations.ca.noResults}">${translations.es.noResults}</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;" class="lang" 
+                           data-es="${translations.es.tryAnotherTerm}" 
+                           data-ca="${translations.ca.tryAnotherTerm}">
+                            ${translations.es.tryAnotherTerm}
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Construir HTML de resultados
+            let html = `<div style="padding: 10px 0;">`;
+            
+            // Usuarios
+            if (results.users.length > 0) {
+                html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+                          👥 <span class="lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</span> (${results.users.length})
+                         </h4>`;
+                results.users.forEach(user => {
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title">${user.name}</div>
+                            <div class="result-meta">
+                                <span style="background: var(--light); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-right: 5px;">
+                                    ${user.totalValue} UV
+                                </span>
+                                <span>${user.roles.join(', ')}</span>
+                            </div>
+                            <div class="result-app">${user.apps.join(', ')}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Roles
+            if (results.roles.length > 0) {
+                html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+                          👤 <span class="lang" data-es="Roles" data-ca="Rols">Roles</span> (${results.roles.length})
+                         </h4>`;
+                results.roles.forEach(role => {
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title">${role.name}</div>
+                            <div class="result-meta">
+                                <span style="background: rgba(79, 70, 229, 0.15); color: var(--secondary); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-right: 5px;">
+                                    ${role.value} UV
+                                </span>
+                                <span>${role.deliverables.length} entregables</span>
+                            </div>
+                            <div class="result-app">${role.apps.join(', ')}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Entregables
+            if (results.deliverables.length > 0) {
+                html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+                          📋 <span class="lang" data-es="Entregables" data-ca="Entregables">Entregables</span> (${results.deliverables.length})
+                         </h4>`;
+                results.deliverables.slice(0, 10).forEach(del => {
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title">${del.name}</div>
+                            <div class="result-meta">
+                                <span style="background: ${del.type === 'tangible' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; 
+                                          color: ${del.type === 'tangible' ? '#0da27f' : '#d97706'}; 
+                                          padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-right: 5px;">
+                                    ${del.type === 'tangible' ? 'Tangible' : 'Intangible'}
+                                </span>
+                                <span>${del.value} UV</span>
+                            </div>
+                            <div class="result-app">${del.app} | Rol: ${del.role || 'N/A'}${del.user ? ` | Usuario: ${del.user}` : ''}</div>
+                        </div>
+                    `;
+                });
+                if (results.deliverables.length > 10) {
+                    html += `<div style="text-align: center; padding: 10px; color: var(--accent); font-weight: 600;">
+                              +${results.deliverables.length - 10} resultados más
+                             </div>`;
+                }
+            }
+            
+            // Proyectos
+            if (results.projects.length > 0) {
+                html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+                          🏗️ <span class="lang" data-es="Proyectos" data-ca="Projectes">Proyectos</span> (${results.projects.length})
+                         </h4>`;
+                results.projects.forEach(project => {
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title">${project.name}</div>
+                            <div class="result-meta">
+                                <span style="background: var(--light); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem;">
+                                    ${project.totalTokens} tokens
+                                </span>
+                            </div>
+                            <div class="result-app">${project.app}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Tokens
+            if (results.tokens.length > 0) {
+                html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
+                          💰 <span class="lang" data-es="Tokens" data-ca="Tokens">Tokens</span> (${results.tokens.length})
+                         </h4>`;
+                results.tokens.forEach(token => {
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title">${token.name}</div>
+                            <div class="result-meta">
+                                <span style="background: rgba(139, 92, 246, 0.15); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem;">
+                                    ${token.percentage}%
+                                </span>
+                            </div>
+                            <div class="result-app">${token.app}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // ========== ESTADÍSTICAS DEL ECOSISTEMA ==========
+        let ecosystemStats = {
+            vna: { nodes: 0, edges: 0 },
+            mapas: { roles: 0, deliverables: 0, totalValue: 0 },
+            tokenomics: { supply: 0, distribution: {} },
+            accounting: { deliverables: 0 },
+            finances: { totalAssets: 0 }
+        };
+
+        // ========== CARGAR DATOS DE LOCALSTORAGE ==========
+        function loadAllData() {
+            try {
+                // VNA (app.html)
+                const vna = JSON.parse(localStorage.getItem('vnaData') || '{"nodes":[],"edges":[]}');
+                ecosystemStats.vna.nodes = vna.nodes?.length || 0;
+                ecosystemStats.vna.edges = vna.edges?.length || 0;
+                
+                // Mapas (mapas.html)
+                const mapas = JSON.parse(localStorage.getItem('valueMapData') || '{"roles":[],"deliverables":[]}');
+                ecosystemStats.mapas.roles = mapas.roles?.length || 0;
+                ecosystemStats.mapas.deliverables = mapas.deliverables?.length || 0;
+                ecosystemStats.mapas.totalValue = mapas.deliverables?.reduce((sum, d) => sum + (d.value || 0), 0) || 0;
+                
+                // Tokenomics
+                const tokenomics = JSON.parse(localStorage.getItem('colla_tokenomics') || '{}');
+                ecosystemStats.tokenomics.supply = tokenomics.totalSupply || 0;
+                ecosystemStats.tokenomics.distribution = tokenomics.distribution || {};
+                
+                // Accounting
+                const accounting = JSON.parse(localStorage.getItem('colla_accounting') || '{"deliverables":[]}');
+                ecosystemStats.accounting.deliverables = accounting.deliverables?.length || 0;
+                
+                // Finances (usuario actual)
+                const finances = JSON.parse(localStorage.getItem('colla_finances_user') || '{"projects":[]}');
+                ecosystemStats.finances.totalAssets = finances.projects?.reduce((sum, p) => sum + (p.totalUserTokens || 0), 0) || 0;
+                
+                updateUIStats();
+            } catch (e) {
+                console.error("Error cargando datos:", e);
+                logTest(`❌ Error cargando datos: ${e.message}`, 'error');
+            }
+        }
+
+        // ========== ACTUALIZAR INTERFAZ CON ESTADÍSTICAS ==========
+        function updateUIStats() {
+            document.getElementById('statVnaNodes').textContent = ecosystemStats.vna.nodes;
+            document.getElementById('statMapasRoles').textContent = ecosystemStats.mapas.roles;
+            document.getElementById('statTokenSupply').textContent = ecosystemStats.tokenomics.supply.toLocaleString();
+            document.getElementById('statDeliverables').textContent = ecosystemStats.accounting.deliverables;
+            document.getElementById('statFinancesValue').textContent = ecosystemStats.finances.totalAssets.toLocaleString();
+        }
+
+        // ========== SISTEMA DE CHAT ==========
+        let chatHistory = [];
+        
+        function addMessage(text, isUser = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${isUser ? 'user' : 'ia'}`;
+            msgDiv.innerHTML = `
+                <div class="avatar">${isUser ? '👤' : '🤖'}</div>
+                <div class="content">${text.replace(/\n/g, '<br>')}</div>
+            `;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            chatHistory.push({ text, isUser, timestamp: new Date().toISOString() });
+            localStorage.setItem('colla_ia_history', JSON.stringify(chatHistory));
+        }
+        
+        async function processQuestion(question) {
+            addMessage(question, true);
+            
+            // Recargar datos por si cambiaron
+            loadAllData();
+            
+            const q = question.toLowerCase();
+            const lang = document.documentElement.lang;
+            let response = '';
+            
+            // 1. Preguntas sobre VNA
+            if (q.includes('vna') || q.includes('app.html')) {
+                response = lang === 'ca'
+                    ? `A la teva app VNA tens **${ecosystemStats.vna.nodes} nodes** i **${ecosystemStats.vna.edges} connexions**. Pots veure el mapa complet a [app.html](app.html).`
+                    : `En tu app VNA tienes **${ecosystemStats.vna.nodes} nodos** y **${ecosystemStats.vna.edges} conexiones**. Puedes ver el mapa completo en [app.html](app.html).`;
+            }
+            // 2. Preguntas sobre Mapas
+            else if (q.includes('mapa') || q.includes('mapes') || q.includes('mapas.html')) {
+                response = lang === 'ca'
+                    ? `Al teu mapa de valor tens **${ecosystemStats.mapas.roles} rols** i **${ecosystemStats.mapas.deliverables} entregables** valorats en **${ecosystemStats.mapas.totalValue} UV**. Pots visualitzar-lo a [mapas.html](mapas.html).`
+                    : `En tu mapa de valor tienes **${ecosystemStats.mapas.roles} roles** y **${ecosystemStats.mapas.deliverables} entregables** valorados en **${ecosystemStats.mapas.totalValue} UV**. Puedes visualizarlo en [mapas.html](mapas.html).`;
+            }
+            // 3. Preguntas sobre Accounting
+            else if (q.includes('accounting') || q.includes('comptabilitat') || q.includes('entregable')) {
+                response = lang === 'ca'
+                    ? `Tens **${ecosystemStats.accounting.deliverables} entregables registrats** a l'app de comptabilitat. ${ecosystemStats.accounting.deliverables === 0 ? 'Pots afegir-ne a [lacolla-accounting.html](lacolla-accounting.html).' : ''}`
+                    : `Tienes **${ecosystemStats.accounting.deliverables} entregables registrados** en la app de contabilidad. ${ecosystemStats.accounting.deliverables === 0 ? 'Puedes añadirlos en [lacolla-accounting.html](lacolla-accounting.html).' : ''}`;
+            }
+            // 4. Preguntas sobre Tokenomics
+            else if (q.includes('token') || q.includes('distribució') || q.includes('fibonacci')) {
+                const dist = ecosystemStats.tokenomics.distribution;
+                if (dist.investors) {
+                    response = lang === 'ca'
+                        ? `La teva distribució de tokens és: Inversors ${dist.investors}%, Fundadors ${dist.founders}%, Tresoreria ${dist.treasury}%, Comunitat ${dist.community}%. El model Fibonacci recomana 21-13-8-58. Pots ajustar-ho a [tokenomics.html](tokenomics.html).`
+                        : `Tu distribución de tokens es: Inversores ${dist.investors}%, Fundadores ${dist.founders}%, Tesorería ${dist.treasury}%, Comunidad ${dist.community}%. El modelo Fibonacci recomienda 21-13-8-58. Puedes ajustarlo en [tokenomics.html](tokenomics.html).`;
+                } else {
+                    response = lang === 'ca'
+                        ? 'Encara no has configurat la tokenomics. Ves a [tokenomics.html](tokenomics.html) per començar.'
+                        : 'Aún no has configurado la tokenomics. Ve a [tokenomics.html](tokenomics.html) para empezar.';
+                }
+            }
+            // 5. Preguntas sobre Finanzas personales
+            else if (q.includes('finances') || q.includes('els meus') || q.includes('meus actius')) {
+                response = lang === 'ca'
+                    ? `Actualment tens **${ecosystemStats.finances.totalAssets} tokens** en total entre tots els teus projectes. Pots veure el detall a [finances.html](finances.html).`
+                    : `Actualmente tienes **${ecosystemStats.finances.totalAssets} tokens** en total entre todos tus proyectos. Puedes ver el detalle en [finances.html](finances.html).`;
+            }
+            // 6. Preguntas institucionales
+            else if (q.includes('qui és') || q.includes('fundador') || q.includes('alvaro') || q.includes('solache')) {
+                response = lang === 'ca'
+                    ? `**Álvaro Solache** és el fundador de TeamTowers Humà, consultor estratègic de RRHH amb més de 20 anys d'experiència. Pots conèixer més sobre ell a [equip.html](equip.html).`
+                    : `**Álvaro Solache** es el fundador de TeamTowers Humà, consultor estratégico de RRHH con más de 20 años de experiencia. Puedes conocer más sobre él en [equip.html](equip.html).`;
+            }
+            else if (q.includes('client') || q.includes('empreses')) {
+                const clients = institutionalKnowledge.clients.join(', ');
+                response = lang === 'ca'
+                    ? `Alguns dels nostres clients són: ${clients}. Més detalls a [clients.html](clients.html).`
+                    : `Algunos de nuestros clientes son: ${clients}. Más detalles en [clients.html](clients.html).`;
+            }
+            // 7. Sugerencia de valor para un rol
+            else if (q.includes('quant val') || q.includes('cuánto vale')) {
+                const match = q.match(/(?:quant val|cuánto vale) (?:un entregable de )?(\w+)/i);
+                if (match) {
+                    const rol = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+                    const patron = patronesBase[rol];
+                    if (patron) {
+                        const valores = Object.values(patron);
+                        const promedio = Math.round(valores.reduce((sum, v) => sum + v.promedio, 0) / valores.length);
+                        response = lang === 'ca'
+                            ? `Per al rol "${rol}", un entregable típic sol valorar-se al voltant de **${promedio} UV**.`
+                            : `Para el rol "${rol}", un entregable típico suele valorarse alrededor de **${promedio} UV**.`;
+                    } else {
+                        response = lang === 'ca'
+                            ? `No tinc prou dades per al rol "${rol}". Prova amb CEO, Dev o Marketing.`
+                            : `No tengo suficientes datos para el rol "${rol}". Prueba con CEO, Dev o Marketing.`;
+                    }
+                } else {
+                    response = lang === 'ca'
+                        ? `Pots preguntar "Quant val un entregable de CEO?" per obtenir una estimació.`
+                        : `Puedes preguntar "¿Cuánto vale un entregable de CEO?" para obtener una estimación.`;
+                }
+            }
+            // 8. Respuesta por defecto
+            else {
+                response = lang === 'ca'
+                    ? `No estic segur d'haver entès la pregunta. Pots preguntar sobre:
+- VNA, Mapes, Accounting, Tokenomics o Finances
+- Fundador, equips, clients
+- Sugerències de valor per a un rol (ex: "quant val un entregable de CEO")`
+                    : `No estoy seguro de haber entendido la pregunta. Puedes preguntar sobre:
+- VNA, Mapas, Accounting, Tokenomics o Finanzas
+- Fundador, equipos, clientes
+- Sugerencias de valor para un rol (ej: "¿cuánto vale un entregable de CEO?")`;
+            }
+            
+            addMessage(response);
+        }
+
+        // ========== GENERAR INFORME COMPLETO ==========
+        function generateFullReport() {
+            const lang = document.documentElement.lang;
+            const dist = ecosystemStats.tokenomics.distribution;
+            let report = `# INFORME COMPLET DE L'ECOSISTEMA\n`;
+            report += `**Data:** ${new Date().toLocaleDateString()}\n\n`;
+            report += `## 📊 Resum per aplicació\n`;
+            report += `### VNA App\n`;
+            report += `- Nodes: ${ecosystemStats.vna.nodes}\n`;
+            report += `- Transaccions: ${ecosystemStats.vna.edges}\n\n`;
+            report += `### Mapes de Valor\n`;
+            report += `- Rols: ${ecosystemStats.mapas.roles}\n`;
+            report += `- Entregables: ${ecosystemStats.mapas.deliverables}\n`;
+            report += `- Valor total estimat: ${ecosystemStats.mapas.totalValue} UV\n\n`;
+            report += `### Tokenomics\n`;
+            report += `- Subministrament total: ${ecosystemStats.tokenomics.supply} tokens\n`;
+            if (dist.investors) {
+                report += `- Distribució: Inversors ${dist.investors}%, Fundadors ${dist.founders}%, Tresoreria ${dist.treasury}%, Comunitat ${dist.community}%\n`;
+            } else {
+                report += `- No configurada\n`;
+            }
+            report += `\n`;
+            report += `### Accounting\n`;
+            report += `- Entregables registrats: ${ecosystemStats.accounting.deliverables}\n\n`;
+            report += `### Finances\n`;
+            report += `- Actius totals de l'usuari: ${ecosystemStats.finances.totalAssets} tokens\n\n`;
+            report += `## 🤖 Recomanacions de l'IA\n`;
+            if (ecosystemStats.vna.nodes > ecosystemStats.mapas.roles) {
+                report += `- 🔄 Tens ${ecosystemStats.vna.nodes - ecosystemStats.mapas.roles} nodes a VNA que no estan com a rols a Mapes. Importa'ls.\n`;
+            }
+            if (ecosystemStats.mapas.deliverables > ecosystemStats.accounting.deliverables) {
+                report += `- 📝 Tens ${ecosystemStats.mapas.deliverables - ecosystemStats.accounting.deliverables} entregables estimats pendents de registrar a Accounting.\n`;
+            }
+            if (dist.investors && Math.abs(dist.investors - 21) > 5) {
+                report += `- 📊 La distribució d'inversors (${dist.investors}%) s'allunya del model Fibonacci (21%).\n`;
+            }
+            
+            // Descargar
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `informe-${new Date().toISOString().slice(0,10)}.md`;
+            a.click();
+            showNotification(lang === 'ca' ? 'Informe generat correctament' : 'Informe generado correctamente', 'success');
+        }
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar idioma
+            let savedLang = localStorage.getItem('preferredLanguage');
+            if (!savedLang) {
+                savedLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+            }
+            setLanguage(savedLang);
+            
+            // Event listeners idioma
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+            
+            // Cargar datos
+            loadAllData();
+            
+            // Cargar índice del ecosistema
+            ecosystemIndex = loadEcosystemIndex();
+            updateIndexSummary();
+            
+            // Cargar historial de chat
+            const savedHistory = localStorage.getItem('colla_ia_history');
+            if (savedHistory) {
+                try {
+                    chatHistory = JSON.parse(savedHistory);
+                    chatHistory.forEach(msg => {
+                        addMessage(msg.text, msg.isUser);
+                    });
+                } catch (e) {
+                    console.error("Error cargando historial:", e);
+                }
+            } else {
+                // Mensaje de bienvenida
+                const lang = document.documentElement.lang;
+                const welcome = lang === 'ca'
+                    ? `Hola! Sóc l'assistent de La Teva Colla. Puc respondre preguntes sobre:
+- 📊 VNA i Mapes
+- 💰 Tokenomics i Finances
+- 📝 Entregables registrats
+- 🏢 Sobre TeamTowers Humà
+Què vols saber?`
+                    : `¡Hola! Soy el asistente de La Teva Colla. Puedo responder preguntas sobre:
+- 📊 VNA y Mapas
+- 💰 Tokenomics y Finanzas
+- 📝 Entregables registrados
+- 🏢 Sobre TeamTowers Humà
+¿Qué quieres saber?`;
+                addMessage(welcome);
+            }
+            
+            // Event listeners
+            document.getElementById('sendQuestion').addEventListener('click', async () => {
+                const input = document.getElementById('userQuestion');
+                if (input.value.trim()) {
+                    await processQuestion(input.value);
+                    input.value = '';
+                }
+            });
+            
+            document.getElementById('userQuestion').addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('sendQuestion').click();
+                }
+            });
+            
+            document.getElementById('clearChat').addEventListener('click', () => {
+                document.getElementById('chatMessages').innerHTML = '';
+                chatHistory = [];
+                localStorage.removeItem('colla_ia_history');
+                const lang = document.documentElement.lang;
+                const welcome = lang === 'ca'
+                    ? `Hola! Sóc l'assistent de La Teva Colla. Puc respondre preguntes sobre:
+- 📊 VNA i Mapes
+- 💰 Tokenomics i Finances
+- 📝 Entregables registrats
+- 🏢 Sobre TeamTowers Humà
+Què vols saber?`
+                    : `¡Hola! Soy el asistente de La Teva Colla. Puedo responder preguntas sobre:
+- 📊 VNA y Mapas
+- 💰 Tokenomics y Finanzas
+- 📝 Entregables registrados
+- 🏢 Sobre TeamTowers Humà
+¿Qué quieres saber?`;
+                addMessage(welcome);
+            });
+            
+            document.getElementById('generateReport').addEventListener('click', generateFullReport);
+            
+            // Event listeners para búsqueda
+            document.getElementById('search-btn').addEventListener('click', () => {
+                const query = document.getElementById('ecosystem-search').value.trim();
+                const filter = document.getElementById('search-filter').value;
+                const results = searchEcosystem(query, filter);
+                displaySearchResults(results, query);
+            });
+            
+            document.getElementById('ecosystem-search').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('search-btn').click();
+                }
+            });
+            
+            document.getElementById('refresh-index').addEventListener('click', () => {
+                logTest("🔄 Actualizando índice del ecosistema...", 'info');
+                ecosystemIndex = buildEcosystemIndex();
+                updateIndexSummary();
+                showNotification('✅ Índice actualizado correctamente', 'success');
+                
+                // Si hay búsqueda activa, reejecutar
+                const query = document.getElementById('ecosystem-search').value.trim();
+                if (query) {
+                    const filter = document.getElementById('search-filter').value;
+                    const results = searchEcosystem(query, filter);
+                    displaySearchResults(results, query);
+                }
+            });
+            
+            document.getElementById('run-index-test').addEventListener('click', () => {
+                // Limpiar logs anteriores
+                document.getElementById('test-log').innerHTML = '';
+                logTest("🧪 Iniciando test de índice...", 'info');
+                
+                // Reconstruir índice para ver logs en tiempo real
+                ecosystemIndex = buildEcosystemIndex();
+                updateIndexSummary();
+                
+                // Mostrar resumen final
+                logTest(`📊 Resumen del índice:`, 'info');
+                logTest(`   - Usuarios: ${ecosystemIndex.stats.totalUsers}`, 'success');
+                logTest(`   - Roles: ${ecosystemIndex.stats.totalRoles}`, 'success');
+                logTest(`   - Entregables: ${ecosystemIndex.stats.totalDeliverables}`, 'success');
+                logTest(`   - Proyectos: ${ecosystemIndex.stats.totalProjects}`, 'success');
+                logTest(`   - Fuentes: ${Object.keys(ecosystemIndex.sources).join(', ')}`, 'success');
+                
+                if (ecosystemIndex.debug.errors.length > 0) {
+                    logTest(`❌ Errores encontrados: ${ecosystemIndex.debug.errors.length}`, 'error');
+                    ecosystemIndex.debug.errors.forEach(err => logTest(`   - ${err}`, 'error'));
+                }
+                
+                if (ecosystemIndex.debug.warnings.length > 0) {
+                    logTest(`⚠️ Advertencias: ${ecosystemIndex.debug.warnings.length}`, 'warning');
+                    ecosystemIndex.debug.warnings.forEach(warn => logTest(`   - ${warn}`, 'warning'));
+                }
+                
+                showNotification('✅ Test de índice completado. Revisa los logs para detalles.', 'success');
+            });
+            
+            // Tabs de conocimiento
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const tabId = btn.dataset.tab;
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Exponer API global para otras apps
+            window.TeamTowersIA = {
+                getValorSuggestion: (rol, tipo) => {
+                    const patron = patronesBase[rol]?.[tipo];
+                    if (patron) {
+                        return {
+                            valor: patron.promedio,
+                            confianza: Math.min(95, 70 + patron.frecuencia),
+                            fuente: `Basat en ${patron.frecuencia} entregables similars`
+                        };
+                    }
+                    return { valor: 150, confianza: 60, fuente: "Estimació inicial" };
+                },
+                analyzeMap: (mapData) => {
+                    const recs = [];
+                    // Lógica de análisis
+                    return recs;
+                },
+                getEcosystemStats: () => ecosystemStats,
+                getEcosystemIndex: () => ecosystemIndex,
+                searchEcosystem: searchEcosystem
+            };
+            
+            // Disparar evento para que otras apps sepan que la IA está lista
+            window.dispatchEvent(new Event('iaReady'));
+            
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('✨ ¡Bienvenido a la IA Assistente! Actualiza el índice para ver todos los datos del ecosistema.', 'success');
+            }, 1000);
+        });
+
+        // Función de idioma
+        function setLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Actualizar placeholders específicos
+            const searchInput = document.getElementById('ecosystem-search');
+            if (searchInput) {
+                searchInput.placeholder = translations[lang].searchPlaceholder;
+            }
+            
+            document.documentElement.lang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Actualizar contenido dinámico
+            fillFAQ();
+            fillInstitutional();
+        }
+
+        // Funciones auxiliares para contenido
+        function getFAQContent() {
+            const lang = document.documentElement.lang;
+            return lang === 'ca' ? [
+                { q: "Què és el Value Network Analysis?", a: "És una metodologia per mapejar fluxos de valor tangibles i intangibles en una organització." },
+                { q: "Com funciona el model Fibonacci?", a: "Distribueix tokens amb percentatges 21-13-8-58 (Inversors, Fundadors, Tresoreria, Comunitat)." },
+                { q: "Com puc registrar un entregable?", a: "Ves a Accounting, omple el formulari i assigna'l a un rol." }
+            ] : [
+                { q: "¿Qué es el Value Network Analysis?", a: "Es una metodología para mapear flujos de valor tangibles e intangibles en una organización." },
+                { q: "¿Cómo funciona el modelo Fibonacci?", a: "Distribuye tokens con porcentajes 21-13-8-58 (Inversores, Fundadores, Tesorería, Comunidad)." },
+                { q: "¿Cómo registro un entregable?", a: "Ve a Accounting, llena el formulario y asígnalo a un rol." }
+            ];
+        }
+
+        function fillFAQ() {
+            const lang = document.documentElement.lang;
+            const container = document.getElementById('faqList');
+            const faqs = getFAQContent();
+            container.innerHTML = faqs.map(f => `
+                <div class="faq-item">
+                    <div class="faq-question">❓ ${f.q}</div>
+                    <div class="faq-answer">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        function fillInstitutional() {
+            const lang = document.documentElement.lang;
+            const container = document.getElementById('institutionalInfo');
+            container.innerHTML = `
+                <h4>${institutionalKnowledge.company.name}</h4>
+                <p><strong>${lang === 'ca' ? 'Fundador' : 'Fundador'}:</strong> ${institutionalKnowledge.company.founder}</p>
+                <p><strong>${lang === 'ca' ? 'Ubicació' : 'Ubicación'}:</strong> ${institutionalKnowledge.company.location}</p>
+                <p><strong>${lang === 'ca' ? 'Missió' : 'Misión'}:</strong> ${institutionalKnowledge.company.mission}</p>
+                <p>${institutionalKnowledge.company.description}</p>
+                <h5>${lang === 'ca' ? 'Clients destacats' : 'Clientes destacados'}:</h5>
+                <p>${institutionalKnowledge.clients.join(', ')}</p>
+            `;
+        }
+
+        function fillPatterns() {
+            const container = document.getElementById('patternsList');
+            let html = '';
+            for (const [rol, tipos] of Object.entries(patronesBase)) {
+                html += `<h4>${rol}</h4>`;
+                for (const [tipo, data] of Object.entries(tipos)) {
+                    html += `
+                        <div class="pattern-item">
+                            <span>${tipo}</span>
+                            <span><strong>${data.promedio} UV</strong> (${data.frecuencia} exemples)</span>
+                        </div>
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        // Llenar patrones al inicio
+        fillPatterns();
+        fillFAQ();
+        fillInstitutional();
+    </script>
+</body>
+</html>
 
 
 
               <script>
-                                ecosystemStats = {
-    vna: { nodes: 5, edges: 8 },
-    mapas: { roles: 3, deliverables: 12, totalValue: 4500 },
-    tokenomics: { supply: 1000000, distribution: {...} },
-    accounting: { deliverables: 15 },
-    finances: { totalAssets: 25000 }
-  }
-  
-window.TeamTowersIA = {
-  getValorSuggestion(rol, tipo) { ... }, // Sugerencias de valor
-  analyzeMap(mapData) { ... },          // Análisis de salud
-  getEcosystemStats() { ... },          // Estadísticas globales
-  ready: true                           // Evento 'iaReady' para sincronización
-};
-
-// NUEVA FUNCIÓN: Construir índice unificado de TODO el ecosistema
-function buildEcosystemIndex() {
-  const index = {
-    timestamp: new Date().toISOString(),
-    sources: {},
-    entities: {
-      users: new Map(),      // Mapa: userId → { name, roles, totalValue, apps }
-      roles: new Map(),      // Mapa: roleId → { name, deliverables, value, apps }
-      deliverables: [],      // Array de todos los entregables
-      projects: new Map(),   // Mapa: projectId → { name, apps, lastUpdate }
-      tokens: new Map()      // Mapa: tokenId → { symbol, supply, distribution }
-    },
-    knowledge: {
-      patterns: patronesBase, // Patrones de valor existentes
-      faq: getFAQContent(),   // FAQ actual
-      institutional: institutionalKnowledge
-    },
-    stats: {
-      totalUsers: 0,
-      totalRoles: 0,
-      totalDeliverables: 0,
-      totalProjects: 0,
-      lastUpdated: new Date().toISOString()
-    }
-  };
-
-  // 1. Indexar datos de VNA (app.html)
-  try {
-    const vnaData = JSON.parse(localStorage.getItem('vnaData') || '{"nodes":[],"edges":[]}');
-    index.sources.vna = { lastUpdate: new Date().toISOString(), itemCount: vnaData.nodes.length };
-    
-    vnaData.nodes.forEach(node => {
-      if (node.label) {
-        const roleId = node.id || node.label;
-        if (!index.entities.roles.has(roleId)) {
-          index.entities.roles.set(roleId, {
-            id: roleId,
-            name: node.label,
-            type: 'vna-node',
-            deliverables: [],
-            value: 0,
-            apps: ['vna'],
-            sourceData: node
-          });
-        }
-      }
-    });
-  } catch(e) { console.error('Error indexando VNA:', e); }
-
-  // 2. Indexar datos de Mapas (mapas.html)
-  try {
-    const mapasData = JSON.parse(localStorage.getItem('valueMapData') || '{"roles":[],"deliverables":[]}');
-    index.sources.mapas = { lastUpdate: new Date().toISOString(), itemCount: mapasData.deliverables.length };
-    
-    mapasData.roles.forEach(role => {
-      const roleId = role.id || role.name;
-      if (!index.entities.roles.has(roleId)) {
-        index.entities.roles.set(roleId, {
-          id: roleId,
-          name: role.name,
-          type: 'mapa-role',
-          deliverables: [],
-          value: 0,
-          apps: ['mapas'],
-          sourceData: role
-        });
-      } else {
-        const existing = index.entities.roles.get(roleId);
-        existing.apps.push('mapas');
-      }
-    });
-    
-    mapasData.deliverables.forEach(del => {
-      index.entities.deliverables.push({
-        id: del.id,
-        name: del.name,
-        role: del.roleId,
-        value: del.value,
-        type: del.type,
-        app: 'mapas',
-        timestamp: del.timestamp
-      });
-      
-      // Vincular entregable al rol
-      if (index.entities.roles.has(del.roleId)) {
-        const role = index.entities.roles.get(del.roleId);
-        role.deliverables.push(del.id);
-        role.value += del.value;
-      }
-    });
-  } catch(e) { console.error('Error indexando Mapas:', e); }
-
-  // 3. Indexar datos de Accounting (lacolla-accounting.html)
-  try {
-    const accountingData = JSON.parse(localStorage.getItem('colla_accounting') || '{"deliverables":[]}');
-    index.sources.accounting = { lastUpdate: new Date().toISOString(), itemCount: accountingData.deliverables.length };
-    
-    accountingData.deliverables.forEach(del => {
-      // Agregar entregable si no existe
-      const existingDel = index.entities.deliverables.find(d => d.id === del.id);
-      if (!existingDel) {
-        index.entities.deliverables.push({
-          id: del.id,
-          name: del.deliverable,
-          role: del.role,
-          value: del.value,
-          type: del.transactionType,
-          app: 'accounting',
-          timestamp: del.timestamp,
-          user: del.userName
-        });
-      }
-      
-      // Indexar usuario
-      if (del.userName && !index.entities.users.has(del.userName)) {
-        index.entities.users.set(del.userName, {
-          name: del.userName,
-          roles: [del.role],
-          totalValue: del.value,
-          apps: ['accounting'],
-          deliverables: [del.id]
-        });
-      } else if (del.userName) {
-        const user = index.entities.users.get(del.userName);
-        if (!user.roles.includes(del.role)) user.roles.push(del.role);
-        user.totalValue += del.value;
-        if (!user.deliverables.includes(del.id)) user.deliverables.push(del.id);
-        if (!user.apps.includes('accounting')) user.apps.push('accounting');
-      }
-      
-      // Vincular al rol
-      if (del.role) {
-        const roleId = `role-${del.role.replace(/\s+/g, '-')}`;
-        if (!index.entities.roles.has(roleId)) {
-          index.entities.roles.set(roleId, {
-            id: roleId,
-            name: del.role,
-            type: 'accounting-role',
-            deliverables: [del.id],
-            value: del.value,
-            apps: ['accounting']
-          });
-        } else {
-          const role = index.entities.roles.get(roleId);
-          if (!role.deliverables.includes(del.id)) role.deliverables.push(del.id);
-          role.value += del.value;
-          if (!role.apps.includes('accounting')) role.apps.push('accounting');
-        }
-      }
-    });
-  } catch(e) { console.error('Error indexando Accounting:', e); }
-
-  // 4. Indexar Tokenomics, Finances, etc. (similar a los anteriores)
-  // ... [código para tokenomics, finances, etc.]
-
-  // Actualizar estadísticas
-  index.stats.totalUsers = index.entities.users.size;
-  index.stats.totalRoles = index.entities.roles.size;
-  index.stats.totalDeliverables = index.entities.deliverables.length;
-  index.stats.totalProjects = index.entities.projects.size;
-  
-  // Guardar índice en localStorage para acceso rápido
-  localStorage.setItem('colla_ecosystem_index', JSON.stringify(index));
-  return index;
-}
-
-// Variables globales para el índice
-let ecosystemIndex = null;
-const INDEX_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
-
-// Inicializar índice al cargar
-function initEcosystemSearch() {
-  // Cargar índice desde caché si existe y es reciente
-  const cachedIndex = localStorage.getItem('colla_ecosystem_index');
-  const lastUpdate = localStorage.getItem('colla_ecosystem_index_timestamp');
-  
-  if (cachedIndex && lastUpdate && (Date.now() - new Date(lastUpdate).getTime() < INDEX_CACHE_DURATION)) {
-    ecosystemIndex = JSON.parse(cachedIndex);
-    updateIndexSummary();
-  } else {
-    rebuildIndex();
-  }
-  
-  // Event listeners
-  document.getElementById('search-btn').addEventListener('click', performSearch);
-  document.getElementById('ecosystem-search').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') performSearch();
-  });
-  document.getElementById('refresh-index').addEventListener('click', rebuildIndex);
-  document.getElementById('search-filter').addEventListener('change', performSearch);
-  
-  // Actualizar resumen inicial
-  updateIndexSummary();
-}
-
-// Reconstruir índice completo
-function rebuildIndex() {
-  showNotification('🔄 Actualizando índice del ecosistema...', 'info', 2000);
-  
-  try {
-    ecosystemIndex = buildEcosystemIndex();
-    localStorage.setItem('colla_ecosystem_index_timestamp', new Date().toISOString());
-    updateIndexSummary();
-    showNotification('✅ Índice actualizado correctamente', 'success');
-    
-    // Si hay búsqueda activa, reejecutar
-    if (document.getElementById('ecosystem-search').value.trim()) {
-      performSearch();
-    }
-  } catch (error) {
-    console.error('Error reconstruyendo índice:', error);
-    showNotification(`❌ Error al actualizar el índice: ${error.message}`, 'error');
-  }
-}
-
-// Actualizar resumen del índice en UI
-function updateIndexSummary() {
-  if (!ecosystemIndex) return;
-  
-  document.getElementById('index-last-update').textContent = 
-    new Date(ecosystemIndex.timestamp).toLocaleString();
-  
-  const sources = Object.keys(ecosystemIndex.sources).join(', ');
-  document.getElementById('index-sources').textContent = sources || 'Ninguna';
-  
-  // Actualizar stats de búsqueda
-  document.getElementById('stat-search-users').textContent = ecosystemIndex.stats.totalUsers;
-  document.getElementById('stat-search-roles').textContent = ecosystemIndex.stats.totalRoles;
-  document.getElementById('stat-search-deliverables').textContent = ecosystemIndex.stats.totalDeliverables;
-  document.getElementById('stat-search-projects').textContent = ecosystemIndex.stats.totalProjects;
-  
-  // Actualizar timestamp en botón
-  document.getElementById('index-timestamp').textContent = 
-    `(${new Date(ecosystemIndex.timestamp).toLocaleTimeString()})`;
-}
-
-// Ejecutar búsqueda
-function performSearch() {
-  const query = document.getElementById('ecosystem-search').value.trim().toLowerCase();
-  const filter = document.getElementById('search-filter').value;
-  const resultsContainer = document.getElementById('search-results');
-  
-  if (!query) {
-    resultsContainer.style.display = 'none';
-    return;
-  }
-  
-  if (!ecosystemIndex) {
-    showNotification('⚠️ El índice no está cargado. Actualiza primero.', 'warning');
-    return;
-  }
-  
-  // Buscar según filtro
-  let results = { users: [], roles: [], deliverables: [], projects: [], knowledge: [] };
-  
-  if (filter === 'all' || filter === 'users') {
-    results.users = Array.from(ecosystemIndex.entities.users.values())
-      .filter(u => u.name.toLowerCase().includes(query) || u.roles.some(r => r.toLowerCase().includes(query)));
-  }
-  
-  if (filter === 'all' || filter === 'roles') {
-    results.roles = Array.from(ecosystemIndex.entities.roles.values())
-      .filter(r => r.name.toLowerCase().includes(query) || r.type.includes(query));
-  }
-  
-  if (filter === 'all' || filter === 'deliverables') {
-    results.deliverables = ecosystemIndex.entities.deliverables
-      .filter(d => d.name.toLowerCase().includes(query) || 
-                  (d.role && d.role.toString().toLowerCase().includes(query)) ||
-                  (d.user && d.user.toLowerCase().includes(query)));
-  }
-  
-  if (filter === 'all' || filter === 'projects') {
-    results.projects = Array.from(ecosystemIndex.entities.projects.values())
-      .filter(p => p.name.toLowerCase().includes(query));
-  }
-  
-  if (filter === 'all' || filter === 'knowledge') {
-    // Buscar en patrones
-    results.knowledge = Object.entries(ecosystemIndex.knowledge.patterns)
-      .flatMap(([role, tipos]) => 
-        Object.entries(tipos).map(([tipo, data]) => ({
-          type: 'pattern',
-          role,
-          deliverableType: tipo,
-          value: data.promedio,
-          frequency: data.frecuencia,
-          match: `${role} ${tipo}`.toLowerCase().includes(query)
-        }))
-      )
-      .filter(item => item.match);
-    
-    // Buscar en FAQ
-    const lang = document.documentElement.lang;
-    const faqs = lang === 'ca' ? [
-      { q: "Què és el Value Network Analysis?", a: "És una metodologia..." },
-      // ... más FAQs
-    ] : [
-      { q: "¿Qué es el Value Network Analysis?", a: "Es una metodología..." },
-      // ... más FAQs
-    ];
-    
-    faqs.forEach(faq => {
-      if (faq.q.toLowerCase().includes(query) || faq.a.toLowerCase().includes(query)) {
-        results.knowledge.push({
-          type: 'faq',
-          question: faq.q,
-          answer: faq.a.substring(0, 100) + '...'
-        });
-      }
-    });
-  }
-  
-  // Mostrar resultados
-  displaySearchResults(results, query);
-}
-
-// Mostrar resultados en UI
-function displaySearchResults(results, query) {
-  const container = document.getElementById('search-results');
-  container.style.display = 'block';
-  
-  // Contar resultados totales
-  const totalResults = results.users.length + results.roles.length + 
-                       results.deliverables.length + results.projects.length +
-                       results.knowledge.length;
-  
-  if (totalResults === 0) {
-    container.innerHTML = `
-      <div style="padding: 20px; text-align: center; color: var(--gray);">
-        <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 10px;"></i>
-        <p class="lang" data-es="No se encontraron resultados para" data-ca="No s'han trobat resultats per">No se encontraron resultados para</p>
-        <strong>"${query}"</strong>
-        <p style="margin-top: 10px; font-size: 0.9rem;" class="lang" 
-           data-es="Prueba con otro término o actualiza el índice" 
-           data-ca="Prova amb un altre terme o actualitza l'índex">
-          Prueba con otro término o actualiza el índice
-        </p>
-      </div>
-    `;
-    return;
-  }
-  
-  // Construir HTML de resultados
-  let html = `<div style="padding: 10px 0;">`;
-  
-  // Usuarios
-  if (results.users.length > 0) {
-    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
-              👥 <span class="lang" data-es="Usuarios" data-ca="Usuaris">Usuarios</span> (${results.users.length})
-             </h4>`;
-    results.users.forEach(user => {
-      html += `
-        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--primary);">
-          <strong>${user.name}</strong> 
-          <span style="background: var(--light); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-left: 8px;">
-            ${user.totalValue} UV
-          </span>
-          <div style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">
-            <i class="fas fa-tag"></i> ${user.roles.join(', ')} | 
-            <i class="fas fa-cube"></i> ${user.deliverables.length} entregables | 
-            <i class="fas fa-layer-group"></i> ${user.apps.join(', ')}
-          </div>
-        </div>
-      `;
-    });
-  }
-  
-  // Roles
-  if (results.roles.length > 0) {
-    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
-              👤 <span class="lang" data-es="Roles" data-ca="Rols">Roles</span> (${results.roles.length})
-             </h4>`;
-    results.roles.forEach(role => {
-      html += `
-        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--secondary);">
-          <strong>${role.name}</strong>
-          <span style="background: rgba(79, 70, 229, 0.15); color: var(--secondary); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-left: 8px;">
-            ${role.value} UV
-          </span>
-          <div style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">
-            <i class="fas fa-tasks"></i> ${role.deliverables.length} entregables | 
-            <i class="fas fa-layer-group"></i> ${role.apps.join(', ')} |
-            <span style="background: var(--light); padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${role.type}</span>
-          </div>
-        </div>
-      `;
-    });
-  }
-  
-  // Entregables
-  if (results.deliverables.length > 0) {
-    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
-              📋 <span class="lang" data-es="Entregables" data-ca="Entregables">Entregables</span> (${results.deliverables.length})
-             </h4>`;
-    results.deliverables.slice(0, 10).forEach(del => { // Limitar a 10 resultados
-      html += `
-        <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid ${del.type === 'tangible' ? '#10b981' : '#f59e0b'};">
-          <strong>${del.name}</strong>
-          <span style="background: ${del.type === 'tangible' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; 
-                    color: ${del.type === 'tangible' ? '#0da27f' : '#d97706'}; 
-                    padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; margin-left: 8px;">
-            ${del.type === 'tangible' ? 'Tangible' : 'Intangible'}
-          </span>
-          <div style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">
-            <i class="fas fa-user"></i> ${del.user || 'N/A'} | 
-            <i class="fas fa-user-tag"></i> ${del.role || 'N/A'} | 
-            <i class="fas fa-coins"></i> ${del.value} UV |
-            <i class="fas fa-layer-group"></i> ${del.app}
-          </div>
-        </div>
-      `;
-    });
-    if (results.deliverables.length > 10) {
-      html += `<div style="text-align: center; padding: 10px; color: var(--accent); font-weight: 600;">
-                +${results.deliverables.length - 10} resultados más
-               </div>`;
-    }
-  }
-  
-  // Conocimiento
-  if (results.knowledge.length > 0) {
-    html += `<h4 style="margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 2px solid var(--accent); color: var(--primary);">
-              🧠 <span class="lang" data-es="Conocimiento" data-ca="Coneixement">Conocimiento</span> (${results.knowledge.length})
-             </h4>`;
-    results.knowledge.slice(0, 5).forEach(item => {
-      if (item.type === 'pattern') {
-        html += `
-          <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent);">
-            <strong>${item.role} → ${item.deliverableType}</strong>
-            <div style="font-size: 0.9rem; margin-top: 5px;">
-              <span style="background: rgba(139, 92, 246, 0.15); padding: 3px 10px; border-radius: 20px; font-weight: 600;">
-                ${item.value} UV
-              </span>
-              <span style="margin-left: 10px; color: var(--gray);">
-                <i class="fas fa-chart-line"></i> Basado en ${item.frequency} entregables
-              </span>
-            </div>
-          </div>
-        `;
-      } else if (item.type === 'faq') {
-        html += `
-          <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--warning);">
-            <strong>❓ ${item.question}</strong>
-            <div style="font-size: 0.9rem; margin-top: 5px; color: var(--gray);">
-              ${item.answer}
-            </div>
-          </div>
-        `;
-      }
-    });
-  }
-  
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
-// Inicializar al cargar la página (añadir al final de init)
-document.addEventListener('DOMContentLoaded', () => {
-  // ... código existente ...
-  
-  // Inicializar buscador del ecosistema
-  initEcosystemSearch();
-  
-  // ... resto del código ...
-});
-
+                                 window.TeamTowersIA = {
+     getValorSuggestion(rol, tipo),
+     analyzeMap(mapData),
+     getEcosystemStats(),
+     getEcosystemIndex(),
+     searchEcosystem(query, filter)
+   };
+   
 
               </script>
                         </body>
