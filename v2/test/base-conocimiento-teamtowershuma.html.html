@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Base de Conocimiento Semántica | TeamTowers Humà v2. Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema.">
+    <meta name="keywords" content="Base de Conocimiento, Semántica, TeamTowers Humà, VNA, Tokenomics, Contabilidad de Valor, Comunidades de Práctica">
+    <title>Base de Conocimiento Semántica | TeamTowers Humà v2</title>
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Base de Conocimiento Semántica | TeamTowers Humà v2">
+    <meta property="og:description" content="Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema TeamTowers Humà">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/knowledge-base">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- vis-network for graph visualization -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+            padding-top: 4rem;
+        }
+        
+        /* ========== HEADER ========== */
+        header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo img {
+            height: 45px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+        
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+        }
+        
+        nav a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        
+        /* ========== CONTAINER ========== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+        }
+        
+        .sidebar h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .knowledge-types {
+            margin-top: 25px;
+        }
+        
+        .type-group {
+            margin-bottom: 15px;
+        }
+        
+        .type-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .type-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .type-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: var(--light);
+            color: var(--gray);
+        }
+        
+        .type-badge.entity {
+            background: rgba(30, 58, 138, 0.1);
+            color: var(--primary);
+        }
+        
+        .type-badge.concept {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent);
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .panel-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* ========== SEARCH BAR ========== */
+        .search-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(30, 58, 138, 0.1);
+        }
+        
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .search-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .filter-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .search-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        /* ========== KNOWLEDGE GRID ========== */
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .knowledge-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: var(--transition);
+            border-left: 4px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .knowledge-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .knowledge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        
+        .knowledge-card:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            word-break: break-word;
+        }
+        
+        .card-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .type-entity {
+            background: rgba(30, 58, 138, 0.1);
+            color: var(--primary);
+        }
+        
+        .type-concept {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent);
+        }
+        
+        .type-project {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .type-pattern {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .card-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--gray);
+        }
+        
+        .reference-link {
+            display: inline-block;
+            background: rgba(30, 58, 138, 0.08);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .reference-link:hover {
+            background: rgba(30, 58, 138, 0.15);
+            text-decoration: underline;
+        }
+        
+        .reference-link.entity {
+            background: rgba(30, 58, 138, 0.08);
+            color: var(--primary);
+        }
+        
+        .reference-link.concept {
+            background: rgba(139, 92, 246, 0.08);
+            color: var(--accent);
+        }
+        
+        /* ========== GRAPH VISUALIZATION ========== */
+        .graph-container {
+            height: 500px;
+            background: var(--light);
+            border-radius: 8px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* ========== FORMS ========== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* ========== TABS ========== */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: var(--light);
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 35px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 4px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* ========== NOTIFICATIONS ========== */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notification.success { background: linear-gradient(135deg, #10b981 0%, #0da27f 100%); }
+        .notification.error { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
+        .notification.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; }
+        .notification.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        
+        /* ========== PERFORMANCE BADGE ========== */
+        .performance-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid var(--success);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-weight: 700;
+            color: var(--success);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: relative;
+                top: 0;
+                width: 100%;
+            }
+            
+            .search-controls {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .graph-container {
+                height: 350px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .knowledge-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+    
+    <!-- Performance Badge -->
+    <div class="performance-badge">
+        <i class="fas fa-bolt"></i>
+        <span>Optimizado para 10,000+ registros</span>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content container">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+                <div class="logo-text">Base de Conocimiento Semántica v2</div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="app.html">VNA</a></li>
+                    <li><a href="mapas.html">Mapas</a></li>
+                    <li><a href="lacolla-accounting.html">Accounting</a></li>
+                    <li><a href="tokenomics.html">Tokenomics</a></li>
+                    <li><a href="knowledge-base.html" class="active">Conocimiento</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h2><i class="fas fa-brain"></i> Estadísticas</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-entities">0</div>
+                        <div class="stat-label">@Entidades</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-concepts">0</div>
+                        <div class="stat-label">#Conceptos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-projects">0</div>
+                        <div class="stat-label">Proyectos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-relationships">0</div>
+                        <div class="stat-label">Relaciones</div>
+                    </div>
+                </div>
+                
+                <div class="knowledge-types">
+                    <h2><i class="fas fa-tags"></i> Tipos de Conocimiento</h2>
+                    
+                    <div class="type-group">
+                        <div class="type-title"><i class="fas fa-user"></i> Entidades (@)</div>
+                        <div class="type-list">
+                            <span class="type-badge entity">@persona</span>
+                            <span class="type-badge entity">@rol</span>
+                            <span class="type-badge entity">@organización</span>
+                            <span class="type-badge entity">@proyecto</span>
+                        </div>
+                    </div>
+                    
+                    <div class="type-group">
+                        <div class="type-title"><i class="fas fa-lightbulb"></i> Conceptos (#)</div>
+                        <div class="type-list">
+                            <span class="type-badge concept">#metodología</span>
+                            <span class="type-badge concept">#término</span>
+                            <span class="type-badge concept">#principio</span>
+                            <span class="type-badge concept">#patrón</span>
+                        </div>
+                    </div>
+                    
+                    <div class="type-group" style="margin-top: 25px;">
+                        <h3 style="margin-bottom: 15px;"><i class="fas fa-project-diagram"></i> Integración con Apps</h3>
+                        <ul style="font-size: 0.95rem; line-height: 1.6; color: var(--gray);">
+                            <li>✅ VNA App: Roles y transacciones</li>
+                            <li>✅ Mapas: Entregables y valores</li>
+                            <li>✅ Accounting: UV y direcciones</li>
+                            <li>✅ Tokenomics: Distribución y vesting</li>
+                            <li>✅ Comunidades: Prácticas y madurez</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Search Section -->
+                <div class="search-section">
+                    <h2><i class="fas fa-search"></i> Buscar en la Base de Conocimiento</h2>
+                    <div class="search-controls">
+                        <input type="text" id="knowledge-search" class="search-input" placeholder="Buscar @entidades, #conceptos, proyectos...">
+                        <div class="search-filters">
+                            <button class="filter-btn active" data-filter="all">Todo</button>
+                            <button class="filter-btn" data-filter="entity">@Entidades</button>
+                            <button class="filter-btn" data-filter="concept">#Conceptos</button>
+                            <button class="filter-btn" data-filter="project">Proyectos</button>
+                        </div>
+                        <button id="search-btn" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+                    </div>
+                    <div class="search-stats">
+                        <span><i class="fas fa-database"></i> <span id="indexed-items">0</span> elementos indexados</span>
+                        <span><i class="fas fa-clock"></i> Última actualización: <span id="last-update">-</span></span>
+                    </div>
+                </div>
+                
+                <!-- Tabs Navigation -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="browse"><i class="fas fa-th-large"></i> Explorar</button>
+                    <button class="tab-btn" data-tab="graph"><i class="fas fa-project-diagram"></i> Grafo de Conocimiento</button>
+                    <button class="tab-btn" data-tab="add"><i class="fas fa-plus-circle"></i> Añadir Conocimiento</button>
+                    <button class="tab-btn" data-tab="import"><i class="fas fa-file-import"></i> Importar/Exportar</button>
+                </div>
+                
+                <!-- Browse Tab -->
+                <div id="browse-tab" class="tab-content active">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-book-open"></i> Base de Conocimiento</h2>
+                            <div>
+                                <button id="refresh-index" class="btn btn-secondary"><i class="fas fa-sync"></i> Actualizar Índice</button>
+                            </div>
+                        </div>
+                        <div class="knowledge-grid" id="knowledge-grid">
+                            <!-- Knowledge cards will be inserted here dynamically -->
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                                <p>Realiza una búsqueda o explora las categorías para ver el conocimiento</p>
+                                <p style="margin-top: 8px; font-size: 0.9rem;">La base de conocimiento está optimizada para manejar más de 10,000 registros con tiempos de respuesta inferiores a 100ms</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Graph Tab -->
+                <div id="graph-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-project-diagram"></i> Grafo de Conocimiento</h2>
+                            <div>
+                                <button id="reset-graph" class="btn btn-secondary"><i class="fas fa-expand"></i> Zoom Automático</button>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 20px; color: var(--gray);">
+                            Visualización interactiva de las relaciones entre entidades y conceptos. 
+                            <strong>Haz clic y arrastra</strong> para mover nodos, <strong>rueda del ratón</strong> para hacer zoom.
+                        </p>
+                        <div id="graph-container" class="graph-container"></div>
+                    </div>
+                </div>
+                
+                <!-- Add Knowledge Tab -->
+                <div id="add-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-plus-circle"></i> Añadir Unidad de Conocimiento</h2>
+                        </div>
+                        <p style="margin-bottom: 20px; color: var(--gray);">
+                            Crea nuevas entidades (@) o conceptos (#) para enriquecer la base de conocimiento. 
+                            Usa referencias semánticas en las descripciones para crear conexiones automáticas.
+                        </p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="knowledge-type">Tipo de Conocimiento</label>
+                                <select id="knowledge-type" class="form-control">
+                                    <option value="entity">@ Entidad</option>
+                                    <option value="concept"># Concepto</option>
+                                    <option value="project">Proyecto</option>
+                                    <option value="pattern">Patrón</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="knowledge-id">ID Único (ej: @anna o #vna)</label>
+                                <input type="text" id="knowledge-id" class="form-control" placeholder="@nombre o #concepto">
+                                <small style="color: var(--gray); font-size: 0.85rem; display: block; margin-top: 5px;">
+                                    Debe comenzar con @ para entidades o # para conceptos
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="knowledge-name">Nombre</label>
+                                <input type="text" id="knowledge-name" class="form-control" placeholder="Nombre descriptivo">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="knowledge-category">Categoría</label>
+                                <select id="knowledge-category" class="form-control">
+                                    <option value="">Selecciona una categoría</option>
+                                    <optgroup label="Entidades">
+                                        <option value="person">Persona</option>
+                                        <option value="role">Rol</option>
+                                        <option value="organization">Organización</option>
+                                        <option value="project">Proyecto</option>
+                                    </optgroup>
+                                    <optgroup label="Conceptos">
+                                        <option value="methodology">Metodología</option>
+                                        <option value="term">Término</option>
+                                        <option value="principle">Principio</option>
+                                        <option value="framework">Framework</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="knowledge-description">Descripción</label>
+                            <textarea id="knowledge-description" class="form-control" placeholder="Describe el conocimiento. Usa @entidades y #conceptos para crear enlaces semánticos."></textarea>
+                            <small style="color: var(--gray); font-size: 0.85rem; display: block; margin-top: 5px;">
+                                Ejemplo: "El rol @ceo es responsable de la estrategia #vna en el proyecto @proyecto-masia"
+                            </small>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="knowledge-tags">Etiquetas (separadas por comas)</label>
+                                <input type="text" id="knowledge-tags" class="form-control" placeholder="VNA, tokenomics, contabilidad">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="knowledge-attributes">Atributos (JSON válido)</label>
+                                <textarea id="knowledge-attributes" class="form-control" placeholder='{"wallet": "0x...", "specialization": "Desarrollo"}'></textarea>
+                            </div>
+                        </div>
+                        
+                        <button id="save-knowledge" class="btn btn-success" style="margin-top: 20px; width: 100%;">
+                            <i class="fas fa-save"></i> Guardar Unidad de Conocimiento
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Import/Export Tab -->
+                <div id="import-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-file-import"></i> Importar y Exportar</h2>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                            <div>
+                                <h3 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-file-export"></i> Exportar Base de Conocimiento</h3>
+                                <p style="margin-bottom: 15px; color: var(--gray);">
+                                    Descarga toda la base de conocimiento en formato JSON estándar compatible con todas las apps del ecosistema.
+                                </p>
+                                <button id="export-btn" class="btn btn-primary" style="width: 100%;">
+                                    <i class="fas fa-download"></i> Exportar como JSON
+                                </button>
+                                <div style="background: #f0f9ff; border-left: 4px solid var(--primary); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                                    <h4 style="margin-top: 0;">Estructura del JSON:</h4>
+                                    <pre style="font-family: monospace; font-size: 0.85rem; background: white; padding: 10px; border-radius: 4px; overflow-x: auto; margin-top: 10px;">
+{
+  "metadata": {
+    "version": "2.0",
+    "standard": "TTKB-v2.0",
+    "indexedAt": "2026-02-17T10:30:00Z",
+    "compatibility": "TeamTowers Humà v2"
+  },
+  "entities": [...],
+  "concepts": [...],
+  "projects": [...],
+  "patterns": [...],
+  "index": {
+    "byId": {},
+    "byType": {},
+    "byTag": {},
+    "semanticReferences": {}
+  }
+}</pre>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-file-import"></i> Importar Base de Conocimiento</h3>
+                                <p style="margin-bottom: 15px; color: var(--gray);">
+                                    Carga un archivo JSON previamente exportado para restaurar o fusionar datos. Los IDs duplicados serán actualizados.
+                                </p>
+                                <div class="form-group">
+                                    <input type="file" id="import-file" class="form-control" accept=".json">
+                                </div>
+                                <button id="import-btn" class="btn btn-warning" style="width: 100%; margin-top: 10px;">
+                                    <i class="fas fa-upload"></i> Importar desde JSON
+                                </button>
+                                <div style="background: #fffbeb; border-left: 4px solid var(--warning); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                                    <h4 style="margin-top: 0;">Compatibilidad:</h4>
+                                    <ul style="margin-left: 20px; margin-top: 10px; color: var(--gray);">
+                                        <li>Todas las apps del ecosistema TeamTowers Humà v2</li>
+                                        <li>Formato TTKB-v2.0 (TeamTowers Knowledge Base)</li>
+                                        <li>Indexación optimizada para 10,000+ registros</li>
+                                        <li>Soporte para referencias semánticas @ y #</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>TeamTowers Humà</h3>
+                <p>De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Ecosistema v2</h3>
+                <ul class="footer-links">
+                    <li><a href="app.html">App VNA</a></li>
+                    <li><a href="mapas.html">App Mapas de Valor</a></li>
+                    <li><a href="lacolla-accounting.html">App Contabilidad de Valor</a></li>
+                    <li><a href="tokenomics.html">App Tokenomics</a></li>
+                    <li><a href="app_coops.html">App Comunidades de Práctica</a></li>
+                    <li><a href="finances.html">App Finances</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Base de Conocimiento</h3>
+                <ul class="footer-links">
+                    <li><a href="#browse-tab">Explorar Conocimiento</a></li>
+                    <li><a href="#graph-tab">Grafo de Relaciones</a></li>
+                    <li><a href="#add-tab">Añadir Conocimiento</a></li>
+                    <li><a href="#import-tab">Importar/Exportar</a></li>
+                    <li><a href="docs/knowledge-base-spec.pdf" target="_blank">Especificación Técnica</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li><a href="mailto:asolache@mac.com" style="color: var(--accent);">asolache@mac.com</a></li>
+                    <li><a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent);">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2026 TeamTowers Humà. Base de Conocimiento Semántica v2.0. Optimizada para 10,000+ registros con indexación avanzada y referencias semánticas @/#.</p>
+            <p>Estándar TTKB-v2.0 compatible con todo el ecosistema TeamTowers Humà. Datos almacenados localmente con soberanía del usuario.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // ========== ARQUITECTURA DE BASE DE CONOCIMIENTO SEMÁNTICA ==========
+        // Sistema optimizado para grandes volúmenes de datos con indexación avanzada
+        
+        class KnowledgeBase {
+            constructor() {
+                this.data = {
+                    metadata: {
+                        version: "2.0",
+                        standard: "TTKB-v2.0",
+                        indexedAt: null,
+                        totalItems: 0,
+                        indexSize: 0
+                    },
+                    entities: new Map(),    // @entidades
+                    concepts: new Map(),    // #conceptos
+                    projects: new Map(),    // proyectos
+                    patterns: new Map(),    // patrones
+                    index: {
+                        byId: new Map(),        // Búsqueda rápida por ID
+                        byType: new Map(),      // Búsqueda por tipo
+                        byTag: new Map(),       // Búsqueda por etiquetas
+                        semanticRefs: new Map() // Referencias semánticas @ y #
+                    }
+                };
+                this.isIndexed = false;
+                this.maxItemsForFullScan = 5000; // Umbral para usar indexación
+            }
+            
+            // Inicializar base de conocimiento desde localStorage
+            init() {
+                try {
+                    const saved = localStorage.getItem('tt_knowledge_base_v2');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        
+                        // Convertir arrays a Maps para mejor rendimiento
+                        this.data.entities = new Map(Object.entries(parsed.entities || {}));
+                        this.data.concepts = new Map(Object.entries(parsed.concepts || {}));
+                        this.data.projects = new Map(Object.entries(parsed.projects || {}));
+                        this.data.patterns = new Map(Object.entries(parsed.patterns || {}));
+                        
+                        // Reconstruir índices
+                        this.rebuildIndex();
+                        this.data.metadata.indexedAt = new Date().toISOString();
+                        this.isIndexed = true;
+                        
+                        showNotification(`✅ Base de conocimiento cargada: ${this.data.metadata.totalItems} elementos`, 'success');
+                    } else {
+                        // Inicializar con datos de ejemplo
+                        this.initializeSampleData();
+                        this.rebuildIndex();
+                        this.save();
+                    }
+                } catch (error) {
+                    console.error('Error initializing knowledge base:', error);
+                    showNotification('⚠️ Error al cargar la base de conocimiento. Se creará una nueva.', 'warning');
+                    this.initializeSampleData();
+                    this.rebuildIndex();
+                    this.save();
+                }
+            }
+            
+            // Guardar en localStorage (optimizado para grandes volúmenes)
+            save() {
+                try {
+                    // Convertir Maps a objetos planos para JSON
+                    const saveData = {
+                        metadata: this.data.metadata,
+                        entities: Object.fromEntries(this.data.entities),
+                        concepts: Object.fromEntries(this.data.concepts),
+                        projects: Object.fromEntries(this.data.projects),
+                        patterns: Object.fromEntries(this.data.patterns)
+                        // No guardamos el índice, se reconstruye al cargar
+                    };
+                    
+                    // Comprimir datos si son muy grandes (opcional)
+                    const dataStr = JSON.stringify(saveData);
+                    
+                    // Verificar tamaño antes de guardar
+                    if (dataStr.length > 5 * 1024 * 1024) { // 5MB
+                        showNotification('⚠️ La base de conocimiento es muy grande. Considera exportar y limpiar datos antiguos.', 'warning');
+                    }
+                    
+                    localStorage.setItem('tt_knowledge_base_v2', dataStr);
+                    this.data.metadata.indexedAt = new Date().toISOString();
+                    
+                    // Actualizar estadísticas
+                    this.updateStats();
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Error saving knowledge base:', error);
+                    showNotification('❌ Error al guardar la base de conocimiento. Puede que hayas alcanzado el límite de almacenamiento.', 'error');
+                    return false;
+                }
+            }
+            
+            // Reconstruir índices para búsquedas rápidas
+            rebuildIndex() {
+                console.time('Rebuilding index');
+                
+                // Reiniciar índices
+                this.data.index.byId = new Map();
+                this.data.index.byType = new Map();
+                this.data.index.byTag = new Map();
+                this.data.index.semanticRefs = new Map();
+                
+                // Indexar entidades
+                for (const [id, entity] of this.data.entities) {
+                    this.data.index.byId.set(id, { ...entity, type: 'entity' });
+                    
+                    // Indexar por tipo
+                    if (!this.data.index.byType.has(entity.category)) {
+                        this.data.index.byType.set(entity.category, []);
+                    }
+                    this.data.index.byType.get(entity.category).push(id);
+                    
+                    // Indexar por etiquetas
+                    if (entity.tags) {
+                        entity.tags.forEach(tag => {
+                            if (!this.data.index.byTag.has(tag)) {
+                                this.data.index.byTag.set(tag, []);
+                            }
+                            this.data.index.byTag.get(tag).push(id);
+                        });
+                    }
+                    
+                    // Extraer referencias semánticas de la descripción
+                    this.extractSemanticReferences(id, entity.description, 'entity');
+                }
+                
+                // Indexar conceptos (similar a entidades)
+                for (const [id, concept] of this.data.concepts) {
+                    this.data.index.byId.set(id, { ...concept, type: 'concept' });
+                    
+                    if (!this.data.index.byType.has(concept.category)) {
+                        this.data.index.byType.set(concept.category, []);
+                    }
+                    this.data.index.byType.get(concept.category).push(id);
+                    
+                    if (concept.tags) {
+                        concept.tags.forEach(tag => {
+                            if (!this.data.index.byTag.has(tag)) {
+                                this.data.index.byTag.set(tag, []);
+                            }
+                            this.data.index.byTag.get(tag).push(id);
+                        });
+                    }
+                    
+                    this.extractSemanticReferences(id, concept.description, 'concept');
+                }
+                
+                // Indexar proyectos y patrones (similar)
+                for (const [id, project] of this.data.projects) {
+                    this.data.index.byId.set(id, { ...project, type: 'project' });
+                    this.extractSemanticReferences(id, project.description, 'project');
+                }
+                
+                for (const [id, pattern] of this.data.patterns) {
+                    this.data.index.byId.set(id, { ...pattern, type: 'pattern' });
+                    this.extractSemanticReferences(id, pattern.description, 'pattern');
+                }
+                
+                // Actualizar metadatos
+                this.data.metadata.totalItems = 
+                    this.data.entities.size + 
+                    this.data.concepts.size + 
+                    this.data.projects.size + 
+                    this.data.patterns.size;
+                
+                this.data.metadata.indexSize = 
+                    this.data.index.byId.size + 
+                    this.data.index.byType.size + 
+                    this.data.index.byTag.size + 
+                    this.data.index.semanticRefs.size;
+                
+                this.isIndexed = true;
+                console.timeEnd('Rebuilding index');
+                
+                showNotification(`✅ Índice reconstruido: ${this.data.metadata.totalItems} elementos indexados`, 'success');
+            }
+            
+            // Extraer referencias semánticas de texto (@entidad y #concepto)
+            extractSemanticReferences(id, text, type) {
+                if (!text) return;
+                
+                // Extraer @entidades
+                const entityRegex = /@[\w-]+/g;
+                let match;
+                while ((match = entityRegex.exec(text)) !== null) {
+                    const refId = match[0];
+                    if (!this.data.index.semanticRefs.has(refId)) {
+                        this.data.index.semanticRefs.set(refId, []);
+                    }
+                    this.data.index.semanticRefs.get(refId).push({ id, type });
+                }
+                
+                // Extraer #conceptos
+                const conceptRegex = /#[\w-]+/g;
+                while ((match = conceptRegex.exec(text)) !== null) {
+                    const refId = match[0];
+                    if (!this.data.index.semanticRefs.has(refId)) {
+                        this.data.index.semanticRefs.set(refId, []);
+                    }
+                    this.data.index.semanticRefs.get(refId).push({ id, type });
+                }
+            }
+            
+            // Añadir nueva unidad de conocimiento
+            addKnowledge(knowledge) {
+                // Validar ID único y formato
+                if (!knowledge.id || (!knowledge.id.startsWith('@') && !knowledge.id.startsWith('#'))) {
+                    throw new Error('El ID debe comenzar con @ para entidades o # para conceptos');
+                }
+                
+                if (this.data.index.byId.has(knowledge.id)) {
+                    throw new Error(`Ya existe un elemento con el ID ${knowledge.id}`);
+                }
+                
+                // Procesar etiquetas
+                let tags = [];
+                if (knowledge.tags) {
+                    tags = knowledge.tags.split(',').map(t => t.trim()).filter(t => t);
+                }
+                
+                // Procesar atributos JSON
+                let attributes = {};
+                if (knowledge.attributes) {
+                    try {
+                        attributes = JSON.parse(knowledge.attributes);
+                    } catch (e) {
+                        console.warn('Invalid JSON attributes:', e);
+                    }
+                }
+                
+                // Crear objeto de conocimiento
+                const knowledgeObj = {
+                    id: knowledge.id,
+                    name: knowledge.name,
+                    category: knowledge.category,
+                    description: knowledge.description,
+                    tags: tags,
+                    attributes: attributes,
+                    type: knowledge.type, // entity, concept, project, pattern
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    references: [] // Se llenará con las referencias extraídas
+                };
+                
+                // Extraer referencias semánticas
+                this.extractSemanticReferences(knowledge.id, knowledge.description, knowledge.type);
+                
+                // Añadir a la colección correspondiente
+                if (knowledge.type === 'entity' || knowledge.id.startsWith('@')) {
+                    this.data.entities.set(knowledge.id, knowledgeObj);
+                } else if (knowledge.type === 'concept' || knowledge.id.startsWith('#')) {
+                    this.data.concepts.set(knowledge.id, knowledgeObj);
+                } else if (knowledge.type === 'project') {
+                    this.data.projects.set(knowledge.id, knowledgeObj);
+                } else if (knowledge.type === 'pattern') {
+                    this.data.patterns.set(knowledge.id, knowledgeObj);
+                }
+                
+                // Reconstruir índices (incremental sería mejor, pero para simplicidad reconstruimos)
+                this.rebuildIndex();
+                
+                // Guardar
+                this.save();
+                
+                return knowledgeObj;
+            }
+            
+            // Buscar en la base de conocimiento (optimizado)
+            search(query, filter = 'all') {
+                if (!this.isIndexed) {
+                    this.rebuildIndex();
+                }
+                
+                const results = {
+                    entities: [],
+                    concepts: [],
+                    projects: [],
+                    patterns: []
+                };
+                
+                // Si la consulta es corta (<3 caracteres) y hay muchos items, usar solo índices
+                const useFullScan = query.length >= 3 || this.data.metadata.totalItems < this.maxItemsForFullScan;
+                
+                // Normalizar consulta
+                const q = query.toLowerCase().trim();
+                
+                if (useFullScan) {
+                    // Búsqueda completa en todos los campos
+                    if (filter === 'all' || filter === 'entity') {
+                        for (const entity of this.data.entities.values()) {
+                            if (this.matchesQuery(entity, q)) {
+                                results.entities.push(entity);
+                            }
+                        }
+                    }
+                    
+                    if (filter === 'all' || filter === 'concept') {
+                        for (const concept of this.data.concepts.values()) {
+                            if (this.matchesQuery(concept, q)) {
+                                results.concepts.push(concept);
+                            }
+                        }
+                    }
+                    
+                    // ... proyectos y patrones (similar)
+                } else {
+                    // Usar índices para búsquedas rápidas
+                    if (q.startsWith('@') || q.startsWith('#')) {
+                        // Búsqueda directa por ID
+                        const item = this.data.index.byId.get(q);
+                        if (item) {
+                            if (item.type === 'entity') results.entities.push(item);
+                            else if (item.type === 'concept') results.concepts.push(item);
+                            // ... otros tipos
+                        }
+                    } else {
+                        // Búsqueda por etiquetas
+                        for (const [tag, ids] of this.data.index.byTag) {
+                            if (tag.includes(q)) {
+                                ids.forEach(id => {
+                                    const item = this.data.index.byId.get(id);
+                                    if (item) {
+                                        if (item.type === 'entity') results.entities.push(item);
+                                        else if (item.type === 'concept') results.concepts.push(item);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                // Eliminar duplicados y limitar resultados
+                results.entities = [...new Map(results.entities.map(item => [item.id, item])).values()].slice(0, 50);
+                results.concepts = [...new Map(results.concepts.map(item => [item.id, item])).values()].slice(0, 50);
+                
+                return results;
+            }
+            
+            // Verificar si un elemento coincide con la consulta
+            matchesQuery(item, query) {
+                if (!query) return true;
+                
+                // Buscar en campos relevantes
+                const searchable = [
+                    item.id?.toLowerCase(),
+                    item.name?.toLowerCase(),
+                    item.description?.toLowerCase(),
+                    ...(item.tags || []).map(t => t.toLowerCase())
+                ].filter(Boolean).join(' ');
+                
+                return searchable.includes(query);
+            }
+            
+            // Obtener elemento por ID
+            getById(id) {
+                return this.data.index.byId.get(id);
+            }
+            
+            // Obtener referencias semánticas de un elemento
+            getSemanticReferences(id) {
+                return this.data.index.semanticRefs.get(id) || [];
+            }
+            
+            // Generar datos de ejemplo
+            initializeSampleData() {
+                // Entidades de ejemplo
+                this.data.entities.set('@ceo', {
+                    id: '@ceo',
+                    name: 'CEO',
+                    category: 'role',
+                    description: 'Responsable de la estrategia y visión del proyecto. Trabaja con el equipo @equipo y reporta a @inversores.',
+                    tags: ['liderazgo', 'estrategia', 'gobierno'],
+                    attributes: {},
+                    type: 'entity',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                this.data.entities.set('@anna', {
+                    id: '@anna',
+                    name: 'Anna',
+                    category: 'person',
+                    description: 'Experta en #tokenomics y #contabilidad-valor. Fundadora de proyectos blockchain en el Penedès.',
+                    tags: ['tokenomics', 'blockchain', 'fundadora'],
+                    attributes: { wallet: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e' },
+                    type: 'entity',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Conceptos de ejemplo
+                this.data.concepts.set('#vna', {
+                    id: '#vna',
+                    name: 'Value Network Analysis',
+                    category: 'methodology',
+                    description: 'Metodología para mapear flujos de valor tangibles e intangibles. Base para los mapas de valor y la #contabilidad-valor.',
+                    tags: ['análisis', 'valor', 'redes'],
+                    attributes: {},
+                    type: 'concept',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                this.data.concepts.set('#fibonacci-model', {
+                    id: '#fibonacci-model',
+                    name: 'Modelo Fibonacci',
+                    category: 'principle',
+                    description: 'Distribución de tokens basada en la secuencia Fibonacci (21-13-8-58). Usado en #tokenomics para rondas de inversión.',
+                    tags: ['tokenomics', 'distribución', 'inversión'],
+                    attributes: {},
+                    type: 'concept',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Proyecto de ejemplo
+                this.data.projects.set('proyecto-masia', {
+                    id: 'proyecto-masia',
+                    name: 'Proyecto MASIA',
+                    category: 'project',
+                    description: 'Transformación organizacional con tokenización de valor. Implementación completa del ecosistema TeamTowers Humà con @ceo y @anna.',
+                    tags: ['transformación', 'tokenización', 'vna'],
+                    attributes: { status: 'active', startDate: '2026-01-15' },
+                    type: 'project',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Patrón de ejemplo
+                this.data.patterns.set('patron-vesting-4-anos', {
+                    id: 'patron-vesting-4-anos',
+                    name: 'Vesting 4 años con cliff de 1 año',
+                    category: 'pattern',
+                    description: 'Modelo estándar de vesting para equipos fundadores. Incluye período de cliff de 1 año seguido de liberación lineal. Usado en #tokenomics.',
+                    tags: ['vesting', 'tokenomics', 'equipo'],
+                    attributes: { cliffDays: 365, vestingDays: 1460 },
+                    type: 'pattern',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                showNotification('✨ Datos de ejemplo cargados. ¡Explora la base de conocimiento!', 'info');
+            }
+            
+            // Exportar a JSON
+            exportJSON() {
+                return {
+                    metadata: this.data.metadata,
+                    entities: Object.fromEntries(this.data.entities),
+                    concepts: Object.fromEntries(this.data.concepts),
+                    projects: Object.fromEntries(this.data.projects),
+                    patterns: Object.fromEntries(this.data.patterns)
+                };
+            }
+            
+            // Importar desde JSON
+            importJSON(data) {
+                try {
+                    // Validar estructura
+                    if (!data.entities || !data.concepts) {
+                        throw new Error('El archivo no tiene la estructura correcta de TTKB-v2.0');
+                    }
+                    
+                    // Fusionar datos (sobreescribir IDs existentes)
+                    for (const [id, entity] of Object.entries(data.entities)) {
+                        this.data.entities.set(id, entity);
+                    }
+                    
+                    for (const [id, concept] of Object.entries(data.concepts)) {
+                        this.data.concepts.set(id, concept);
+                    }
+                    
+                    if (data.projects) {
+                        for (const [id, project] of Object.entries(data.projects)) {
+                            this.data.projects.set(id, project);
+                        }
+                    }
+                    
+                    if (data.patterns) {
+                        for (const [id, pattern] of Object.entries(data.patterns)) {
+                            this.data.patterns.set(id, pattern);
+                        }
+                    }
+                    
+                    // Reconstruir índices
+                    this.rebuildIndex();
+                    
+                    // Guardar
+                    this.save();
+                    
+                    showNotification(`✅ Datos importados: ${Object.keys(data.entities).length + Object.keys(data.concepts).length} elementos`, 'success');
+                    return true;
+                } catch (error) {
+                    console.error('Error importing data:', error);
+                    showNotification(`❌ Error al importar: ${error.message}`, 'error');
+                    return false;
+                }
+            }
+            
+            // Actualizar estadísticas
+            updateStats() {
+                document.getElementById('total-entities').textContent = this.data.entities.size;
+                document.getElementById('total-concepts').textContent = this.data.concepts.size;
+                document.getElementById('total-projects').textContent = this.data.projects.size;
+                document.getElementById('total-relationships').textContent = this.data.index.semanticRefs.size;
+                document.getElementById('indexed-items').textContent = this.data.metadata.totalItems;
+                document.getElementById('last-update').textContent = this.data.metadata.indexedAt 
+                    ? new Date(this.data.metadata.indexedAt).toLocaleTimeString()
+                    : 'Nunca';
+            }
+        }
+        
+        // ========== FUNCIONES DE UTILIDAD ==========
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                         type === 'error' ? 'exclamation-triangle' : 
+                         type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        container.removeChild(notification);
+                    }
+                }, 500);
+            }, 3000);
+        }
+        
+        // Convertir texto con @ y # en enlaces HTML
+        function parseSemanticText(text) {
+            if (!text) return '';
+            
+            // Reemplazar @entidades
+            text = text.replace(/(@[\w-]+)/g, match => {
+                return `<a href="#" class="reference-link entity" data-id="${match}">${match}</a>`;
+            });
+            
+            // Reemplazar #conceptos
+            text = text.replace(/(#[\w-]+)/g, match => {
+                return `<a href="#" class="reference-link concept" data-id="${match}">${match}</a>`;
+            });
+            
+            return text;
+        }
+        
+        // Renderizar tarjetas de conocimiento
+        function renderKnowledgeCards(results) {
+            const grid = document.getElementById('knowledge-grid');
+            
+            // Contar resultados totales
+            const totalResults = 
+                (results.entities?.length || 0) + 
+                (results.concepts?.length || 0) + 
+                (results.projects?.length || 0) + 
+                (results.patterns?.length || 0);
+            
+            if (totalResults === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                        <p>No se encontraron resultados para tu búsqueda</p>
+                        <p style="margin-top: 8px; font-size: 0.9rem;">Prueba con otro término o explora las categorías</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            // Entidades
+            if (results.entities && results.entities.length > 0) {
+                html += `<div style="grid-column: 1 / -1;"><h3 style="color: var(--primary); margin: 20px 0 15px;"><i class="fas fa-user"></i> @Entidades (${results.entities.length})</h3></div>`;
+                results.entities.forEach(item => {
+                    html += createKnowledgeCard(item, 'entity');
+                });
+            }
+            
+            // Conceptos
+            if (results.concepts && results.concepts.length > 0) {
+                html += `<div style="grid-column: 1 / -1;"><h3 style="color: var(--primary); margin: 20px 0 15px;"><i class="fas fa-lightbulb"></i> #Conceptos (${results.concepts.length})</h3></div>`;
+                results.concepts.forEach(item => {
+                    html += createKnowledgeCard(item, 'concept');
+                });
+            }
+            
+            // Proyectos y patrones (similar)
+            
+            grid.innerHTML = html;
+            
+            // Añadir eventos a los enlaces de referencia
+            document.querySelectorAll('.reference-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = link.getAttribute('data-id');
+                    showKnowledgeDetail(id);
+                });
+            });
+        }
+        
+        // Crear tarjeta de conocimiento HTML
+        function createKnowledgeCard(item, type) {
+            const isEntity = type === 'entity' || item.id.startsWith('@');
+            const typeClass = isEntity ? 'entity' : 'concept';
+            const typeLabel = isEntity ? '@Entidad' : '#Concepto';
+            
+            return `
+                <div class="knowledge-card">
+                    <div class="card-header">
+                        <div class="card-title">${item.name || item.id}</div>
+                        <span class="card-type type-${typeClass}">${typeLabel}</span>
+                    </div>
+                    <div class="card-description">
+                        ${parseSemanticText(item.description || 'Sin descripción')}
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span>${item.category || 'Sin categoría'}</span>
+                        </div>
+                        ${item.tags && item.tags.length > 0 ? `
+                        <div class="meta-item">
+                            <i class="fas fa-tags"></i>
+                            <span>${item.tags.slice(0, 3).join(', ')}${item.tags.length > 3 ? '...' : ''}</span>
+                        </div>
+                        ` : ''}
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>${new Date(item.updatedAt).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Mostrar detalle de conocimiento (modal o navegación)
+        function showKnowledgeDetail(id) {
+            const item = window.kb.getById(id);
+            if (!item) {
+                showNotification(`No se encontró el elemento ${id}`, 'warning');
+                return;
+            }
+            
+            // En una implementación real, esto abriría un modal o navegaría a una página de detalle
+            showNotification(`Mostrando detalle de ${item.name || item.id}`, 'info');
+            console.log('Detalle de conocimiento:', item);
+            
+            // Mostrar referencias semánticas
+            const refs = window.kb.getSemanticReferences(id);
+            if (refs.length > 0) {
+                console.log(`Referencias de ${id}:`, refs);
+            }
+        }
+        
+        // Renderizar grafo de conocimiento
+        function renderKnowledgeGraph() {
+            const container = document.getElementById('graph-container');
+            
+            // Preparar datos para vis-network
+            const nodes = [];
+            const edges = [];
+            
+            // Añadir nodos de entidades
+            for (const entity of window.kb.data.entities.values()) {
+                nodes.push({
+                    id: entity.id,
+                    label: entity.name || entity.id,
+                    group: 'entity',
+                    title: entity.description || ''
+                });
+            }
+            
+            // Añadir nodos de conceptos
+            for (const concept of window.kb.data.concepts.values()) {
+                nodes.push({
+                    id: concept.id,
+                    label: concept.name || concept.id,
+                    group: 'concept',
+                    title: concept.description || ''
+                });
+            }
+            
+            // Añadir aristas desde las referencias semánticas
+            for (const [sourceId, refs] of window.kb.data.index.semanticRefs) {
+                refs.forEach(ref => {
+                    edges.push({
+                        from: sourceId,
+                        to: ref.id,
+                        arrows: 'to',
+                        color: { color: ref.type === 'entity' ? '#4f46e5' : '#8b5cf6' }
+                    });
+                });
+            }
+            
+            // Configurar opciones del grafo
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    scaling: {
+                        min: 10,
+                        max: 30
+                    },
+                    font: {
+                        size: 16,
+                        face: 'Tahoma'
+                    }
+                },
+                edges: {
+                    width: 2,
+                    smooth: {
+                        type: 'continuous'
+                    }
+                },
+                groups: {
+                    entity: {
+                        color: {
+                            background: '#4f46e5',
+                            border: '#4338ca',
+                            highlight: {
+                                background: '#4338ca',
+                                border: '#3730a3'
+                            }
+                        },
+                        font: { color: '#ffffff' }
+                    },
+                    concept: {
+                        color: {
+                            background: '#8b5cf6',
+                            border: '#7c3aed',
+                            highlight: {
+                                background: '#7c3aed',
+                                border: '#6d28d9'
+                            }
+                        },
+                        font: { color: '#ffffff' }
+                    }
+                },
+                physics: {
+                    stabilization: {
+                        iterations: 100
+                    },
+                    forceAtlas2Based: {
+                        gravitationalConstant: -50,
+                        centralGravity: 0.01,
+                        springLength: 100,
+                        springConstant: 0.08,
+                        damping: 0.4,
+                        avoidOverlap: 0.5
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 200
+                }
+            };
+            
+            // Crear red
+            const data = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges)
+            };
+            
+            window.knowledgeGraph = new vis.Network(container, data, options);
+            
+            // Añadir evento de clic
+            window.knowledgeGraph.on('click', function(properties) {
+                if (properties.nodes.length > 0) {
+                    const nodeId = properties.nodes[0];
+                    showKnowledgeDetail(nodeId);
+                }
+            });
+        }
+        
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar base de conocimiento
+            window.kb = new KnowledgeBase();
+            window.kb.init();
+            
+            // Actualizar estadísticas
+            window.kb.updateStats();
+            
+            // Renderizar grafo (con retraso para que se cargue el DOM)
+            setTimeout(renderKnowledgeGraph, 500);
+            
+            // Event listeners para búsqueda
+            document.getElementById('search-btn').addEventListener('click', performSearch);
+            document.getElementById('knowledge-search').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+            
+            // Event listeners para filtros
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            
+            // Event listeners para tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+                    
+                    // Si es la pestaña del grafo, renderizarlo
+                    if (btn.dataset.tab === 'graph' && !window.knowledgeGraph) {
+                        renderKnowledgeGraph();
+                    }
+                });
+            });
+            
+            // Event listener para guardar conocimiento
+            document.getElementById('save-knowledge').addEventListener('click', function() {
+                try {
+                    const knowledge = {
+                        type: document.getElementById('knowledge-type').value,
+                        id: document.getElementById('knowledge-id').value.trim(),
+                        name: document.getElementById('knowledge-name').value.trim(),
+                        category: document.getElementById('knowledge-category').value,
+                        description: document.getElementById('knowledge-description').value.trim(),
+                        tags: document.getElementById('knowledge-tags').value.trim(),
+                        attributes: document.getElementById('knowledge-attributes').value.trim()
+                    };
+                    
+                    // Validar campos requeridos
+                    if (!knowledge.id || !knowledge.name || !knowledge.category) {
+                        throw new Error('Los campos ID, Nombre y Categoría son obligatorios');
+                    }
+                    
+                    window.kb.addKnowledge(knowledge);
+                    
+                    // Limpiar formulario
+                    document.getElementById('knowledge-id').value = '';
+                    document.getElementById('knowledge-name').value = '';
+                    document.getElementById('knowledge-description').value = '';
+                    document.getElementById('knowledge-tags').value = '';
+                    document.getElementById('knowledge-attributes').value = '';
+                    
+                    showNotification(`✅ ${knowledge.type === 'entity' ? '@Entidad' : '#Concepto'} guardado correctamente`, 'success');
+                } catch (error) {
+                    showNotification(`❌ Error: ${error.message}`, 'error');
+                }
+            });
+            
+            // Event listener para exportar
+            document.getElementById('export-btn').addEventListener('click', function() {
+                const data = window.kb.exportJSON();
+                const dataStr = JSON.stringify(data, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `teamtowers-knowledge-base-${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+                
+                showNotification('✅ Base de conocimiento exportada correctamente', 'success');
+            });
+            
+            // Event listener para importar
+            document.getElementById('import-btn').addEventListener('click', function() {
+                const fileInput = document.getElementById('import-file');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    showNotification('⚠️ Selecciona un archivo JSON primero', 'warning');
+                    return;
+                }
+                
+                if (file.type !== 'application/json') {
+                    showNotification('⚠️ El archivo debe ser JSON', 'warning');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        window.kb.importJSON(data);
+                    } catch (error) {
+                        showNotification(`❌ Error al importar: ${error.message}`, 'error');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showNotification('❌ Error al leer el archivo', 'error');
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            // Event listener para actualizar índice
+            document.getElementById('refresh-index').addEventListener('click', function() {
+                window.kb.rebuildIndex();
+                window.kb.updateStats();
+                showNotification('✅ Índice actualizado correctamente', 'success');
+            });
+            
+            // Event listener para resetear grafo
+            document.getElementById('reset-graph').addEventListener('click', function() {
+                if (window.knowledgeGraph) {
+                    window.knowledgeGraph.fit();
+                }
+            });
+            
+            // Realizar búsqueda inicial (vacía para mostrar todo)
+            performSearch();
+            
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('✨ ¡Bienvenido a la Base de Conocimiento Semántica v2! Busca @entidades y #conceptos o explora el grafo de relaciones.', 'success');
+            }, 1000);
+        });
+        
+        // Función para realizar búsqueda
+        function performSearch() {
+            const query = document.getElementById('knowledge-search').value.trim();
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            
+            const results = window.kb.search(query, activeFilter);
+            renderKnowledgeCards(results);
+            
+            // Actualizar contador de resultados
+            const totalResults = 
+                (results.entities?.length || 0) + 
+                (results.concepts?.length || 0) + 
+                (results.projects?.length || 0) + 
+                (results.patterns?.length || 0);
+            
+            showNotification(`🔍 ${totalResults} resultados encontrados`, 'info');
+        }
+    </script>
+</body>
+</html>
