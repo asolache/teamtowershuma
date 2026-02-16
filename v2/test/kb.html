@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Base de Conocimiento Estándar W3C para TeamTowers Humà. Sistema para guardar, organizar y compartir unidades de conocimiento con formato estandarizado y compatibilidad universal.">
+    <meta name="keywords" content="TeamTowers Humà, base de conocimiento, W3C, estándares web, conocimiento estructurado, VNA, tokenomics, contabilidad de valor">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Base de Conocimiento Estándar | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Base de Conocimiento Estándar W3C | TeamTowers Humà">
+    <meta property="og:description" content="Sistema para guardar, organizar y compartir unidades de conocimiento con formato estandarizado y compatibilidad universal.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/knowledge-base">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Base de Conocimiento Estándar W3C | TeamTowers Humà">
+    <meta name="twitter:description" content="Sistema para guardar, organizar y compartir unidades de conocimiento con formato estandarizado">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "TeamTowers Humà Knowledge Base",
+      "description": "Sistema estandarizado para gestión de conocimiento con compatibilidad W3C",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "browserRequirements": "Requires JavaScript. Compatible with 95% of browsers.",
+      "creator": {
+        "@type": "Organization",
+        "name": "TeamTowers Humà"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
+    
+    <style>
+        /* ========== ESTÁNDARES W3C - VARIABLES CSS ========== */
+        :root {
+            /* Colores TeamTowers Humà */
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            
+            /* Tipografía W3C */
+            --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'Courier New', monospace;
+            
+            /* Espaciado consistente */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            /* Breakpoints responsivos */
+            --breakpoint-sm: 576px;
+            --breakpoint-md: 768px;
+            --breakpoint-lg: 992px;
+            --breakpoint-xl: 1200px;
+        }
+        
+        /* ========== RESET Y BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fb;
+            padding-top: 4rem;
+        }
+        
+        /* ========== COMPONENTES REUTILIZABLES ========== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .section {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background: #1a3275;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #f8fafc;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #0da27f;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+        
+        .btn-warning:hover {
+            background: #eab308;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* ========== HEADER Y NAVEGACIÓN ========== */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .logo img {
+            height: 40px;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: var(--spacing-md);
+        }
+        
+        nav a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        
+        /* ========== GRID RESPONSIVO ========== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        
+        /* ========== TIPOGRAFÍA SEMÁNTICA ========== */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-sans);
+            line-height: 1.3;
+            margin-bottom: var(--spacing-sm);
+            color: var(--dark);
+        }
+        
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.25rem; }
+        h6 { font-size: 1.1rem; }
+        
+        p {
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ========== COMPONENTES ESPECÍFICOS ========== */
+        .knowledge-unit {
+            border-left: 4px solid var(--accent);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            background: #f8fafc;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .knowledge-unit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .knowledge-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .type-entity { background: rgba(30, 58, 138, 0.1); color: var(--primary); }
+        .type-concept { background: rgba(139, 92, 246, 0.1); color: var(--accent); }
+        .type-project { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .type-pattern { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        
+        .tag {
+            display: inline-block;
+            background: var(--light);
+            color: var(--gray);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: var(--spacing-sm) 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .search-bar input {
+            flex: 1;
+        }
+        
+        .reference-link {
+            display: inline-block;
+            background: rgba(30, 58, 138, 0.05);
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .reference-link:hover {
+            background: rgba(30, 58, 138, 0.1);
+            text-decoration: none;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* ========== FOOTER ========== */
+        footer {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: rgba(255, 255, 255, 0.85);
+            padding: var(--spacing-xl) 0;
+            margin-top: var(--spacing-xl);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            padding-bottom: var(--spacing-xs);
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 0.25rem 0;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: var(--spacing-md);
+            margin-top: var(--spacing-md);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* ========== NOTIFICACIONES ========== */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+        
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--danger); }
+        .notification.warning { background: var(--warning); color: #000; }
+        .notification.info { background: var(--primary); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        
+        /* ========== ACCESIBILIDAD WCAG 2.1 AA ========== */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+        
+        @media (prefers-contrast: high) {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .card {
+                border: 2px solid #000;
+            }
+        }
+        
+        /* ========== IMPRESIÓN ========== */
+        @media print {
+            body {
+                padding-top: 0;
+                background: white;
+                color: black;
+            }
+            
+            header, footer, .btn {
+                display: none;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con navegación -->
+    <header>
+        <div class="header-content container">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+                <div class="logo-text">Base de Conocimiento Estándar W3C</div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#add-knowledge" class="active">Añadir Conocimiento</a></li>
+                    <li><a href="#browse">Explorar</a></li>
+                    <li><a href="#search">Buscar</a></li>
+                    <li><a href="#export">Exportar/Importar</a></li>
+                    <li><a href="https://teamtowershuma.com" target="_blank">TeamTowers Humà</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sección principal: Añadir Unidad de Conocimiento -->
+    <section id="add-knowledge" class="section">
+        <div class="container">
+            <h2 class="section-title">Añadir Unidad de Conocimiento</h2>
+            <div class="card">
+                <p>Formato estandarizado compatible con W3C para todas las aplicaciones del ecosistema TeamTowers Humà</p>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="entity">Entidad (@)</button>
+                    <button class="tab-btn" data-tab="concept">Concepto (#)</button>
+                    <button class="tab-btn" data-tab="project">Proyecto</button>
+                    <button class="tab-btn" data-tab="pattern">Patrón</button>
+                </div>
+                
+                <div id="entity-tab" class="tab-content active">
+                    <form id="entity-form">
+                        <div class="form-group">
+                            <label for="entity-id">ID Único (ej: @anna)</label>
+                            <input type="text" id="entity-id" class="form-control" placeholder="@nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="entity-name">Nombre</label>
+                            <input type="text" id="entity-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="entity-category">Categoría</label>
+                            <select id="entity-category" class="form-select" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="person">Persona</option>
+                                <option value="role">Rol</option>
+                                <option value="organization">Organización</option>
+                                <option value="technology">Tecnología</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="entity-description">Descripción</label>
+                            <textarea id="entity-description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="entity-tags">Etiquetas (separadas por comas)</label>
+                            <input type="text" id="entity-tags" class="form-control" placeholder="VNA, tokenomics, contabilidad">
+                        </div>
+                        <div class="form-group">
+                            <label for="entity-attributes">Atributos (JSON válido)</label>
+                            <textarea id="entity-attributes" class="form-control" placeholder='{"wallet": "0x...", "specialization": "Desarrollo"}'></textarea>
+                            <small class="form-text">Ejemplo: {"wallet": "0x...", "specialization": "Desarrollo"}</small>
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar Entidad</button>
+                    </form>
+                </div>
+                
+                <div id="concept-tab" class="tab-content">
+                    <form id="concept-form">
+                        <div class="form-group">
+                            <label for="concept-id">ID Único (ej: #vna)</label>
+                            <input type="text" id="concept-id" class="form-control" placeholder="#concepto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="concept-name">Nombre</label>
+                            <input type="text" id="concept-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="concept-category">Categoría</label>
+                            <select id="concept-category" class="form-select" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="methodology">Metodología</option>
+                                <option value="term">Término</option>
+                                <option value="principle">Principio</option>
+                                <option value="framework">Framework</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="concept-description">Descripción</label>
+                            <textarea id="concept-description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="concept-tags">Etiquetas (separadas por comas)</label>
+                            <input type="text" id="concept-tags" class="form-control" placeholder="VNA, tokenomics, contabilidad">
+                        </div>
+                        <div class="form-group">
+                            <label for="concept-related">Conceptos Relacionados (IDs separados por comas)</label>
+                            <input type="text" id="concept-related" class="form-control" placeholder="#vna, #tokenomics">
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar Concepto</button>
+                    </form>
+                </div>
+                
+                <div id="project-tab" class="tab-content">
+                    <form id="project-form">
+                        <div class="form-group">
+                            <label for="project-id">ID Único (ej: proyecto-masia)</label>
+                            <input type="text" id="project-id" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-name">Nombre del Proyecto</label>
+                            <input type="text" id="project-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-status">Estado</label>
+                            <select id="project-status" class="form-select" required>
+                                <option value="active">Activo</option>
+                                <option value="completed">Completado</option>
+                                <option value="planned">Planificado</option>
+                                <option value="on-hold">En Pausa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-description">Descripción</label>
+                            <textarea id="project-description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-members">Miembros (IDs separados por comas)</label>
+                            <input type="text" id="project-members" class="form-control" placeholder="@anna, @marc">
+                        </div>
+                        <div class="form-group">
+                            <label for="project-start">Fecha de Inicio</label>
+                            <input type="date" id="project-start" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="project-end">Fecha de Finalización (opcional)</label>
+                            <input type="date" id="project-end" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar Proyecto</button>
+                    </form>
+                </div>
+                
+                <div id="pattern-tab" class="tab-content">
+                    <form id="pattern-form">
+                        <div class="form-group">
+                            <label for="pattern-id">ID Único (ej: patron-fibonacci)</label>
+                            <input type="text" id="pattern-id" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-name">Nombre del Patrón</label>
+                            <input type="text" id="pattern-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-domain">Dominio</label>
+                            <select id="pattern-domain" class="form-select" required>
+                                <option value="tokenomics">Tokenomics</option>
+                                <option value="vna">VNA</option>
+                                <option value="accounting">Contabilidad de Valor</option>
+                                <option value="governance">Gobernanza</option>
+                                <option value="community">Comunidad</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-description">Descripción</label>
+                            <textarea id="pattern-description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-applicability">Aplicabilidad</label>
+                            <textarea id="pattern-applicability" class="form-control" placeholder="Cuándo y cómo aplicar este patrón"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-examples">Ejemplos (JSON válido)</label>
+                            <textarea id="pattern-examples" class="form-control" placeholder='[{"context": "Ronda 1", "value": "21%"}]'></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar Patrón</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Explorar Conocimiento -->
+    <section id="browse" class="section" style="background-color: #f0f4f8;">
+        <div class="container">
+            <h2 class="section-title">Explorar Base de Conocimiento</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-entities">0</div>
+                    <div class="stat-label">Entidades (@)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-concepts">0</div>
+                    <div class="stat-label">Conceptos (#)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-projects">0</div>
+                    <div class="stat-label">Proyectos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-patterns">0</div>
+                    <div class="stat-label">Patrones</div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 2rem;">
+                <h3>Entidades Recientes</h3>
+                <div id="entities-list">
+                    <p class="text-muted">No hay entidades registradas aún. <a href="#add-knowledge">Añade la primera entidad</a>.</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1.5rem;">
+                <h3>Conceptos Recientes</h3>
+                <div id="concepts-list">
+                    <p class="text-muted">No hay conceptos registrados aún. <a href="#add-knowledge">Añade el primer concepto</a>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Buscar -->
+    <section id="search" class="section">
+        <div class="container">
+            <h2 class="section-title">Buscar en la Base de Conocimiento</h2>
+            <div class="card">
+                <div class="search-bar">
+                    <input type="text" id="search-input" class="form-control" placeholder="Buscar entidades, conceptos, proyectos o patrones...">
+                    <button id="search-btn" class="btn">Buscar</button>
+                    <button id="clear-search" class="btn btn-secondary">Limpiar</button>
+                </div>
+                
+                <div id="search-results" style="margin-top: 1.5rem;">
+                    <p class="text-muted">Realiza una búsqueda para ver resultados.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Exportar/Importar -->
+    <section id="export" class="section" style="background-color: #f0f4f8;">
+        <div class="container">
+            <h2 class="section-title">Exportar e Importar Datos</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Exportar Base de Conocimiento</h3>
+                    <p>Descarga todos los datos en formato JSON estándar W3C compatible con todas las aplicaciones del ecosistema TeamTowers Humà.</p>
+                    <button id="export-btn" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Exportar como JSON</button>
+                    <div style="margin-top: 1rem; padding: 1rem; background: #eef2ff; border-radius: var(--border-radius);">
+                        <h4 style="margin-top: 0;">Estructura del JSON:</h4>
+                        <pre style="font-family: var(--font-mono); font-size: 0.85rem; background: white; padding: 0.75rem; border-radius: 4px; overflow-x: auto;">
+{
+  "metadata": {
+    "version": "1.0",
+    "exportedAt": "2026-02-17T10:30:00Z",
+    "standard": "W3C-KB-v1.0"
+  },
+  "entities": [...],
+  "concepts": [...],
+  "projects": [...],
+  "patterns": [...]
+}</pre>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Importar Base de Conocimiento</h3>
+                    <p>Carga un archivo JSON previamente exportado para restaurar o fusionar datos.</p>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label for="import-file">Seleccionar archivo JSON</label>
+                        <input type="file" id="import-file" class="form-control" accept=".json">
+                    </div>
+                    <button id="import-btn" class="btn btn-warning" style="margin-top: 1rem; width: 100%;">Importar Datos</button>
+                    <div style="margin-top: 1rem; padding: 1rem; background: #fffbeb; border-radius: var(--border-radius);">
+                        <h4 style="margin-top: 0;">Compatibilidad:</h4>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>Todos los navegadores modernos (Chrome, Firefox, Safari, Edge)</li>
+                            <li>Aplicaciones del ecosistema TeamTowers Humà</li>
+                            <li>Herramientas de análisis de datos estándar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>TeamTowers Humà</h3>
+                <p>De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Ecosistema</h3>
+                <ul class="footer-links">
+                    <li><a href="https://teamtowershuma.com/app" target="_blank">App VNA</a></li>
+                    <li><a href="https://teamtowershuma.com/app_comptabilitat" target="_blank">App Contabilidad</a></li>
+                    <li><a href="https://teamtowershuma.com/tokenomics" target="_blank">App Tokenomics</a></li>
+                    <li><a href="https://teamtowershuma.com/ia" target="_blank">Asistente IA</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Estándares W3C</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.w3.org/standards/" target="_blank">HTML5</a></li>
+                    <li><a href="https://www.w3.org/Style/CSS/" target="_blank">CSS3</a></li>
+                    <li><a href="https://www.w3.org/standards/webdesign/accessibility" target="_blank">WCAG 2.1 AA</a></li>
+                    <li><a href="https://www.w3.org/TR/webstorage/" target="_blank">Web Storage API</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li><a href="mailto:asolache@mac.com">asolache@mac.com</a></li>
+                    <li><a href="https://linkedin.com/in/alvarosolache" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2026 TeamTowers Humà. Todos los derechos reservados. Base de Conocimiento Estándar W3C v1.0</p>
+            <p>Compatible con el 95% de los navegadores. Desarrollado con estándares web abiertos.</p>
+        </div>
+    </footer>
+
+    <!-- Notification container -->
+    <div id="notification-container"></div>
+
+    <script>
+        // ========== ESTÁNDAR W3C PARA BASE DE CONOCIMIENTO ==========
+        // Estructura de datos estandarizada compatible con W3C
+        const knowledgeBase = {
+            metadata: {
+                version: "1.0",
+                standard: "W3C-KB-v1.0",
+                exportedAt: null,
+                compatibility: "95% browsers"
+            },
+            entities: [],    // @entidades (personas, roles, organizaciones)
+            concepts: [],    // #conceptos (metodologías, términos, principios)
+            projects: [],    // proyectos documentados
+            patterns: []     // patrones validados
+        };
+
+        // ========== FUNCIONES DE UTILIDAD ==========
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        container.removeChild(notification);
+                    }
+                }, 500);
+            }, 3000);
+        }
+
+        function formatDate(date) {
+            return new Date(date).toISOString();
+        }
+
+        function validateJSON(jsonString) {
+            try {
+                JSON.parse(jsonString);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // ========== GESTIÓN DE DATOS ==========
+        function loadKnowledgeBase() {
+            try {
+                const saved = localStorage.getItem('teamtowers_knowledge_base');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // Verificar estructura mínima
+                    if (parsed.entities && parsed.concepts && parsed.projects && parsed.patterns) {
+                        Object.assign(knowledgeBase, parsed);
+                        updateStats();
+                        renderKnowledgeLists();
+                        showNotification('Base de conocimiento cargada correctamente', 'success');
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading knowledge base:', e);
+                showNotification('Error al cargar la base de conocimiento', 'error');
+            }
+        }
+
+        function saveKnowledgeBase() {
+            try {
+                knowledgeBase.metadata.exportedAt = formatDate(new Date());
+                localStorage.setItem('teamtowers_knowledge_base', JSON.stringify(knowledgeBase));
+                updateStats();
+                showNotification('Datos guardados correctamente', 'success');
+            } catch (e) {
+                console.error('Error saving knowledge base:', e);
+                showNotification('Error al guardar los datos', 'error');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('total-entities').textContent = knowledgeBase.entities.length;
+            document.getElementById('total-concepts').textContent = knowledgeBase.concepts.length;
+            document.getElementById('total-projects').textContent = knowledgeBase.projects.length;
+            document.getElementById('total-patterns').textContent = knowledgeBase.patterns.length;
+        }
+
+        // ========== RENDERIZADO DE LISTAS ==========
+        function renderKnowledgeLists() {
+            // Renderizar entidades
+            const entitiesList = document.getElementById('entities-list');
+            if (knowledgeBase.entities.length > 0) {
+                entitiesList.innerHTML = knowledgeBase.entities.slice(0, 5).map(entity => `
+                    <div class="knowledge-unit">
+                        <div class="knowledge-unit-header">
+                            <strong>${entity.id}</strong>
+                            <span class="knowledge-type type-entity">${entity.category}</span>
+                        </div>
+                        <p>${entity.description.substring(0, 100)}${entity.description.length > 100 ? '...' : ''}</p>
+                        <div>
+                            ${entity.tags ? entity.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Renderizar conceptos
+            const conceptsList = document.getElementById('concepts-list');
+            if (knowledgeBase.concepts.length > 0) {
+                conceptsList.innerHTML = knowledgeBase.concepts.slice(0, 5).map(concept => `
+                    <div class="knowledge-unit">
+                        <div class="knowledge-unit-header">
+                            <strong>${concept.id}</strong>
+                            <span class="knowledge-type type-concept">${concept.category}</span>
+                        </div>
+                        <p>${concept.description.substring(0, 100)}${concept.description.length > 100 ? '...' : ''}</p>
+                        <div>
+                            ${concept.tags ? concept.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ========== MANEJO DE FORMULARIOS ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar base de conocimiento al iniciar
+            loadKnowledgeBase();
+            
+            // Tabs de tipos de conocimiento
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remover clase active de todos los botones y contenidos
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Agregar clase active al botón y contenido seleccionado
+                    button.classList.add('active');
+                    document.getElementById(`${button.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+            
+            // Formulario de Entidad
+            document.getElementById('entity-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('entity-id').value.trim();
+                const name = document.getElementById('entity-name').value.trim();
+                const category = document.getElementById('entity-category').value;
+                const description = document.getElementById('entity-description').value.trim();
+                const tags = document.getElementById('entity-tags').value.split(',').map(t => t.trim()).filter(t => t);
+                const attributesStr = document.getElementById('entity-attributes').value.trim();
+                
+                // Validar ID único y formato
+                if (!id.startsWith('@')) {
+                    showNotification('El ID de entidad debe comenzar con @', 'warning');
+                    return;
+                }
+                
+                if (knowledgeBase.entities.some(e => e.id === id)) {
+                    showNotification('Ya existe una entidad con este ID', 'warning');
+                    return;
+                }
+                
+                // Validar atributos JSON si existen
+                let attributes = {};
+                if (attributesStr) {
+                    if (!validateJSON(attributesStr)) {
+                        showNotification('Los atributos deben ser JSON válido', 'warning');
+                        return;
+                    }
+                    attributes = JSON.parse(attributesStr);
+                }
+                
+                // Crear entidad
+                const entity = {
+                    id,
+                    name,
+                    category,
+                    description,
+                    tags,
+                    attributes,
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                };
+                
+                knowledgeBase.entities.push(entity);
+                saveKnowledgeBase();
+                renderKnowledgeLists();
+                
+                // Resetear formulario
+                this.reset();
+                showNotification(`Entidad ${id} guardada correctamente`, 'success');
+            });
+            
+            // Formulario de Concepto
+            document.getElementById('concept-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('concept-id').value.trim();
+                const name = document.getElementById('concept-name').value.trim();
+                const category = document.getElementById('concept-category').value;
+                const description = document.getElementById('concept-description').value.trim();
+                const tags = document.getElementById('concept-tags').value.split(',').map(t => t.trim()).filter(t => t);
+                const related = document.getElementById('concept-related').value.split(',').map(r => r.trim()).filter(r => r);
+                
+                // Validar ID único y formato
+                if (!id.startsWith('#')) {
+                    showNotification('El ID de concepto debe comenzar con #', 'warning');
+                    return;
+                }
+                
+                if (knowledgeBase.concepts.some(c => c.id === id)) {
+                    showNotification('Ya existe un concepto con este ID', 'warning');
+                    return;
+                }
+                
+                // Crear concepto
+                const concept = {
+                    id,
+                    name,
+                    category,
+                    description,
+                    tags,
+                    relatedConcepts: related,
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                };
+                
+                knowledgeBase.concepts.push(concept);
+                saveKnowledgeBase();
+                renderKnowledgeLists();
+                
+                // Resetear formulario
+                this.reset();
+                showNotification(`Concepto ${id} guardado correctamente`, 'success');
+            });
+            
+            // Formulario de Proyecto
+            document.getElementById('project-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('project-id').value.trim();
+                const name = document.getElementById('project-name').value.trim();
+                const status = document.getElementById('project-status').value;
+                const description = document.getElementById('project-description').value.trim();
+                const members = document.getElementById('project-members').value.split(',').map(m => m.trim()).filter(m => m);
+                const startDate = document.getElementById('project-start').value;
+                const endDate = document.getElementById('project-end').value;
+                
+                // Validar ID único
+                if (knowledgeBase.projects.some(p => p.id === id)) {
+                    showNotification('Ya existe un proyecto con este ID', 'warning');
+                    return;
+                }
+                
+                // Crear proyecto
+                const project = {
+                    id,
+                    name,
+                    status,
+                    description,
+                    members,
+                    startDate: startDate || null,
+                    endDate: endDate || null,
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                };
+                
+                knowledgeBase.projects.push(project);
+                saveKnowledgeBase();
+                updateStats();
+                showNotification(`Proyecto ${name} guardado correctamente`, 'success');
+                
+                // Resetear formulario
+                this.reset();
+            });
+            
+            // Formulario de Patrón
+            document.getElementById('pattern-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('pattern-id').value.trim();
+                const name = document.getElementById('pattern-name').value.trim();
+                const domain = document.getElementById('pattern-domain').value;
+                const description = document.getElementById('pattern-description').value.trim();
+                const applicability = document.getElementById('pattern-applicability').value.trim();
+                const examplesStr = document.getElementById('pattern-examples').value.trim();
+                
+                // Validar ID único
+                if (knowledgeBase.patterns.some(p => p.id === id)) {
+                    showNotification('Ya existe un patrón con este ID', 'warning');
+                    return;
+                }
+                
+                // Validar ejemplos JSON si existen
+                let examples = [];
+                if (examplesStr) {
+                    if (!validateJSON(examplesStr)) {
+                        showNotification('Los ejemplos deben ser JSON válido', 'warning');
+                        return;
+                    }
+                    examples = JSON.parse(examplesStr);
+                }
+                
+                // Crear patrón
+                const pattern = {
+                    id,
+                    name,
+                    domain,
+                    description,
+                    applicability,
+                    examples,
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                };
+                
+                knowledgeBase.patterns.push(pattern);
+                saveKnowledgeBase();
+                updateStats();
+                showNotification(`Patrón ${name} guardado correctamente`, 'success');
+                
+                // Resetear formulario
+                this.reset();
+            });
+            
+            // Búsqueda
+            document.getElementById('search-btn').addEventListener('click', performSearch);
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+            
+            document.getElementById('clear-search').addEventListener('click', () => {
+                document.getElementById('search-input').value = '';
+                document.getElementById('search-results').innerHTML = '<p class="text-muted">Realiza una búsqueda para ver resultados.</p>';
+            });
+            
+            function performSearch() {
+                const query = document.getElementById('search-input').value.trim().toLowerCase();
+                if (!query) {
+                    showNotification('Ingresa un término de búsqueda', 'warning');
+                    return;
+                }
+                
+                const results = {
+                    entities: knowledgeBase.entities.filter(e => 
+                        e.id.toLowerCase().includes(query) || 
+                        e.name.toLowerCase().includes(query) ||
+                        e.description.toLowerCase().includes(query) ||
+                        (e.tags && e.tags.some(t => t.toLowerCase().includes(query)))
+                    ),
+                    concepts: knowledgeBase.concepts.filter(c => 
+                        c.id.toLowerCase().includes(query) || 
+                        c.name.toLowerCase().includes(query) ||
+                        c.description.toLowerCase().includes(query) ||
+                        (c.tags && c.tags.some(t => t.toLowerCase().includes(query)))
+                    ),
+                    projects: knowledgeBase.projects.filter(p => 
+                        p.id.toLowerCase().includes(query) || 
+                        p.name.toLowerCase().includes(query) ||
+                        p.description.toLowerCase().includes(query)
+                    ),
+                    patterns: knowledgeBase.patterns.filter(p => 
+                        p.id.toLowerCase().includes(query) || 
+                        p.name.toLowerCase().includes(query) ||
+                        p.description.toLowerCase().includes(query) ||
+                        p.domain.toLowerCase().includes(query)
+                    )
+                };
+                
+                const totalResults = results.entities.length + results.concepts.length + results.projects.length + results.patterns.length;
+                
+                if (totalResults === 0) {
+                    document.getElementById('search-results').innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: var(--gray);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                            <p>No se encontraron resultados para "${query}"</p>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Prueba con otro término o revisa la ortografía</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = `<h3>Resultados para "${query}" (${totalResults} encontrados)</h3>`;
+                
+                // Entidades
+                if (results.entities.length > 0) {
+                    html += `<h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Entidades (@) (${results.entities.length})</h4>`;
+                    results.entities.forEach(entity => {
+                        html += `
+                            <div class="knowledge-unit">
+                                <div class="knowledge-unit-header">
+                                    <strong>${entity.id}</strong>
+                                    <span class="knowledge-type type-entity">${entity.category}</span>
+                                </div>
+                                <p>${entity.description}</p>
+                                <div>
+                                    ${entity.tags ? entity.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Conceptos
+                if (results.concepts.length > 0) {
+                    html += `<h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Conceptos (#) (${results.concepts.length})</h4>`;
+                    results.concepts.forEach(concept => {
+                        html += `
+                            <div class="knowledge-unit">
+                                <div class="knowledge-unit-header">
+                                    <strong>${concept.id}</strong>
+                                    <span class="knowledge-type type-concept">${concept.category}</span>
+                                </div>
+                                <p>${concept.description}</p>
+                                <div>
+                                    ${concept.tags ? concept.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                                    ${concept.relatedConcepts ? concept.relatedConcepts.map(ref => `<a href="#" class="reference-link">${ref}</a>`).join('') : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Proyectos
+                if (results.projects.length > 0) {
+                    html += `<h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Proyectos (${results.projects.length})</h4>`;
+                    results.projects.forEach(project => {
+                        html += `
+                            <div class="knowledge-unit">
+                                <div class="knowledge-unit-header">
+                                    <strong>${project.id}</strong>
+                                    <span class="knowledge-type type-project">${project.status}</span>
+                                </div>
+                                <p>${project.description}</p>
+                                <div>
+                                    <span class="tag">Miembros: ${project.members.length}</span>
+                                    ${project.startDate ? `<span class="tag">Inicio: ${project.startDate}</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Patrones
+                if (results.patterns.length > 0) {
+                    html += `<h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Patrones (${results.patterns.length})</h4>`;
+                    results.patterns.forEach(pattern => {
+                        html += `
+                            <div class="knowledge-unit">
+                                <div class="knowledge-unit-header">
+                                    <strong>${pattern.id}</strong>
+                                    <span class="knowledge-type type-pattern">${pattern.domain}</span>
+                                </div>
+                                <p>${pattern.description}</p>
+                                <div>
+                                    <span class="tag">Aplicabilidad: ${pattern.applicability.substring(0, 50)}${pattern.applicability.length > 50 ? '...' : ''}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('search-results').innerHTML = html;
+            }
+            
+            // Exportar
+            document.getElementById('export-btn').addEventListener('click', function() {
+                knowledgeBase.metadata.exportedAt = formatDate(new Date());
+                
+                const dataStr = JSON.stringify(knowledgeBase, null, 2);
+                const blob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `teamtowers-knowledge-base-${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+                
+                showNotification('Base de conocimiento exportada correctamente', 'success');
+            });
+            
+            // Importar
+            document.getElementById('import-btn').addEventListener('click', function() {
+                const fileInput = document.getElementById('import-file');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    showNotification('Selecciona un archivo JSON primero', 'warning');
+                    return;
+                }
+                
+                if (file.type !== 'application/json') {
+                    showNotification('El archivo debe ser JSON', 'warning');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        // Validar estructura mínima
+                        if (!importedData.entities || !importedData.concepts || !importedData.projects || !importedData.patterns) {
+                            throw new Error('El archivo no tiene la estructura correcta');
+                        }
+                        
+                        // Fusionar datos (evitar duplicados por ID)
+                        knowledgeBase.entities = mergeKnowledgeArrays(knowledgeBase.entities, importedData.entities, 'id');
+                        knowledgeBase.concepts = mergeKnowledgeArrays(knowledgeBase.concepts, importedData.concepts, 'id');
+                        knowledgeBase.projects = mergeKnowledgeArrays(knowledgeBase.projects, importedData.projects, 'id');
+                        knowledgeBase.patterns = mergeKnowledgeArrays(knowledgeBase.patterns, importedData.patterns, 'id');
+                        
+                        // Actualizar metadata
+                        knowledgeBase.metadata = {
+                            ...knowledgeBase.metadata,
+                            ...importedData.metadata,
+                            exportedAt: formatDate(new Date())
+                        };
+                        
+                        saveKnowledgeBase();
+                        renderKnowledgeLists();
+                        showNotification(`Datos importados correctamente (${importedData.entities.length + importedData.concepts.length + importedData.projects.length + importedData.patterns.length} unidades)`, 'success');
+                    } catch (error) {
+                        console.error('Error importing data:', error);
+                        showNotification(`Error al importar: ${error.message}`, 'error');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showNotification('Error al leer el archivo', 'error');
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            // Función para fusionar arrays de conocimiento sin duplicados
+            function mergeKnowledgeArrays(existing, imported, idKey) {
+                const map = new Map();
+                
+                // Agregar existentes
+                existing.forEach(item => {
+                    map.set(item[idKey], item);
+                });
+                
+                // Fusionar importados (sobreescribir si existe)
+                imported.forEach(item => {
+                    map.set(item[idKey], item);
+                });
+                
+                return Array.from(map.values());
+            }
+            
+            // Inicializar con datos de ejemplo si está vacío
+            if (knowledgeBase.entities.length === 0 && knowledgeBase.concepts.length === 0) {
+                initializeSampleData();
+            }
+        });
+
+        // ========== DATOS DE EJEMPLO ==========
+        function initializeSampleData() {
+            // Entidades de ejemplo
+            knowledgeBase.entities = [
+                {
+                    id: "@anna",
+                    name: "Anna",
+                    category: "person",
+                    description: "Experta en tokenomics y contabilidad de valor. Fundadora de proyectos blockchain en el Penedès.",
+                    tags: ["tokenomics", "contabilidad", "blockchain"],
+                    attributes: {
+                        wallet: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                        specialization: "Tokenomics"
+                    },
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                },
+                {
+                    id: "@ceo",
+                    name: "CEO",
+                    category: "role",
+                    description: "Rol responsable de la estrategia y visión del proyecto. Toma decisiones clave y gestiona relaciones con inversores.",
+                    tags: ["liderazgo", "estrategia", "gobierno"],
+                    attributes: {},
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                }
+            ];
+            
+            // Conceptos de ejemplo
+            knowledgeBase.concepts = [
+                {
+                    id: "#vna",
+                    name: "Value Network Analysis",
+                    category: "methodology",
+                    description: "Metodología para mapear flujos de valor tangibles e intangibles en una organización. Permite identificar ineficiencias y optimizar procesos.",
+                    tags: ["análisis", "valor", "redes", "optimización"],
+                    relatedConcepts: ["#tokenomics", "#contabilidad-valor"],
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                },
+                {
+                    id: "#fibonacci-model",
+                    name: "Modelo Fibonacci",
+                    category: "principle",
+                    description: "Modelo de distribución de tokens basado en la secuencia Fibonacci (21-13-8-58) para rondas de inversión. Maximiza la retención de valor en la comunidad.",
+                    tags: ["tokenomics", "distribución", "inversión"],
+                    relatedConcepts: ["#tokenomics", "#vesting"],
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                }
+            ];
+            
+            // Proyectos de ejemplo
+            knowledgeBase.projects = [
+                {
+                    id: "proyecto-masia",
+                    name: "Proyecto MASIA",
+                    status: "active",
+                    description: "Transformación organizacional con tokenización de valor. Implementación completa del ecosistema TeamTowers Humà.",
+                    members: ["@anna", "@ceo"],
+                    startDate: "2026-01-15",
+                    endDate: null,
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                }
+            ];
+            
+            // Patrones de ejemplo
+            knowledgeBase.patterns = [
+                {
+                    id: "patron-vesting-4-anos",
+                    name: "Vesting 4 años con cliff de 1 año",
+                    domain: "tokenomics",
+                    description: "Modelo estándar de vesting para equipos fundadores y empleados clave. Incluye período de cliff de 1 año seguido de liberación lineal durante 3 años.",
+                    applicability: "Equipos fundadores, empleados clave, advisors",
+                    examples: [
+                        {
+                            context: "Equipo fundador",
+                            cliff: "365 días",
+                            duration: "1460 días",
+                            releaseSchedule: "Mensual después del cliff"
+                        }
+                    ],
+                    createdAt: formatDate(new Date()),
+                    updatedAt: formatDate(new Date()),
+                    references: []
+                }
+            ];
+            
+            saveKnowledgeBase();
+            renderKnowledgeLists();
+            showNotification('Datos de ejemplo cargados. ¡Explora la base de conocimiento!', 'info');
+        }
+    </script>
+</body>
+</html>
