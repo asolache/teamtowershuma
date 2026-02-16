@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinya Digital | TeamTower Humà</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .fibonacci-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <nav class="p-6 bg-white shadow-sm flex justify-between items-center">
+        <div class="font-bold text-2xl text-blue-900">TEAMTOWER HUMÀ <span class="text-blue-500 text-sm">v1.1</span></div>
+        <div class="space-x-4">
+            <button onclick="switchLang('ca')" class="hover:text-blue-600 font-medium">CAT</button>
+            <button onclick="switchLang('es')" class="hover:text-blue-600 font-medium">ESP</button>
+        </div>
+    </nav>
+
+    <header class="fibonacci-gradient text-white py-20 px-6 text-center">
+        <h1 id="hero-title" class="text-5xl font-extrabold mb-4">Pinya Digital</h1>
+        <p id="hero-subtitle" class="text-xl max-w-2xl mx-auto opacity-90">
+            Del valor humà al valor tokenitzat. La base tecnològica per a organitzacions que sumen.
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto py-12 px-6">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <a href="app/index.html" class="bg-white p-6 rounded-xl shadow-md card-hover border-t-4 border-blue-500">
+                <i class="fa-solid fa-network-wired text-3xl mb-4 text-blue-500"></i>
+                <h3 class="font-bold text-lg mb-2">VNA App</h3>
+                <p id="desc-vna" class="text-sm text-gray-600 italic">Mapeig de rols i anàlisi de xarxes de valor.</p>
+            </a>
+
+            <a href="app_comptabilitat/index.html" class="bg-white p-6 rounded-xl shadow-md card-hover border-t-4 border-green-500">
+                <i class="fa-solid fa-calculator text-3xl mb-4 text-green-500"></i>
+                <h3 class="font-bold text-lg mb-2">Comptabilitat</h3>
+                <p id="desc-acc" class="text-sm text-gray-600 italic">Registre d'Unitats de Valor (UV) i entregables.</p>
+            </a>
+
+            <a href="tokenomics/index.html" class="bg-white p-6 rounded-xl shadow-md card-hover border-t-4 border-purple-500">
+                <i class="fa-solid fa-chart-line text-3xl mb-4 text-purple-500"></i>
+                <h3 class="font-bold text-lg mb-2">Tokenomics</h3>
+                <p id="desc-tok" class="text-sm text-gray-600 italic">Rondes Fibonacci, Vesting i Cliff.</p>
+            </a>
+
+            <a href="deploy/index.html" class="bg-white p-6 rounded-xl shadow-md card-hover border-t-4 border-orange-500">
+                <i class="fa-brands fa-ethereum text-3xl mb-4 text-orange-500"></i>
+                <h3 class="font-bold text-lg mb-2">Blockchain</h3>
+                <p id="desc-dep" class="text-sm text-gray-600 italic">Desplegament en Testnets (Sepolia/Holesky).</p>
+            </a>
+        </div>
+
+        <section class="mt-16 bg-blue-50 p-8 rounded-2xl border border-blue-100">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fa-solid fa-robot mr-3"></i> <span id="news-title">Últimes millores del sistema</span>
+            </h2>
+            <div class="prose prose-blue max-w-none text-gray-700">
+                <p class="italic text-gray-500">Escanejant el repositori per actualitzacions...</p>
+                </div>
+        </section>
+    </main>
+
+    <script>
+        const content = {
+            ca: {
+                title: "Pinya Digital",
+                subtitle: "Del valor humà al valor tokenitzat. La base tecnològica per a organitzacions que sumen.",
+                vna: "Mapeig de rols i anàlisi de xarxes de valor.",
+                acc: "Registre d'Unitats de Valor (UV) i entregables.",
+                tok: "Rondes Fibonacci, Vesting i Cliff.",
+                dep: "Desplegament en Testnets (Sepolia/Holesky).",
+                news: "Últimes millores del sistema"
+            },
+            es: {
+                title: "Piña Digital",
+                subtitle: "Del valor humano al valor tokenizado. La base tecnológica para organizaciones que suman.",
+                vna: "Mapeo de roles y análisis de redes de valor.",
+                acc: "Registro de Unidades de Valor (UV) y entregables.",
+                tok: "Rondas Fibonacci, Vesting y Cliff.",
+                dep: "Despliegue en Testnets (Sepolia/Holesky).",
+                news: "Últimas mejoras del sistema"
+            }
+        };
+
+        function switchLang(lang) {
+            document.getElementById('hero-title').innerText = content[lang].title;
+            document.getElementById('hero-subtitle').innerText = content[lang].subtitle;
+            document.getElementById('desc-vna').innerText = content[lang].vna;
+            document.getElementById('desc-acc').innerText = content[lang].acc;
+            document.getElementById('desc-tok').innerText = content[lang].tok;
+            document.getElementById('desc-dep').innerText = content[lang].dep;
+            document.getElementById('news-title').innerText = content[lang].news;
+        }
+    </script>
+</body>
+</html>
