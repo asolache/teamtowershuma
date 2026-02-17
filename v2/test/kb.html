@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Base de Conocimiento Semántica con Integración de IA Externa | TeamTowers Humà v0.4">
+    <meta name="keywords" content="Base de Conocimiento, IA Externa, DeepSeek, OpenAI, TeamTowers Humà, VNA, Tokenomics">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>Base de Conocimiento Semántica v0.4 con IA Externa | TeamTowers Humà</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Base de Conocimiento Semántica v0.4 con IA Externa | TeamTowers Humà">
+    <meta property="og:description" content="Sistema centralizado con integración de servicios de IA externos (DeepSeek, OpenAI) para roles específicos">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/knowledge-base">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- vis-network for graph visualization -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        /* ========== ESTÁNDARES W3C - VARIABLES CSS ========== */
+        :root {
+            /* Colores TeamTowers Humà */
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-ai: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            
+            /* Tipografía W3C */
+            --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'Courier New', monospace;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+            padding-top: 4rem;
+        }
+        
+        /* ========== HEADER ========== */
+        header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo img {
+            height: 45px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+        
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* ========== CONTAINER ========== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ========== COMPONENTES REUTILIZABLES ========== */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: var(--spacing-md);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #1a3275;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-ai {
+            background: var(--gradient-ai);
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .sidebar h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: var(--spacing-sm) 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .panel-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* ========== TABS ========== */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: var(--light);
+            border-radius: 30px 30px 0 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+            border-bottom: none;
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            border-color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            font-weight: 700;
+            position: relative;
+            top: 1px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* ========== AI SERVICES STYLES ========== */
+        .ai-service-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(236, 72, 153, 0.08) 100%);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .ai-service-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .ai-service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .ai-service-name {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-service-badge {
+            background: var(--gradient-ai);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .ai-service-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-connected {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+        
+        .status-disconnected {
+            background: var(--gray);
+        }
+        
+        .ai-service-config {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .role-ai-integration {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border: 1px dashed var(--success);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .role-ai-integration h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+            margin-top: 0;
+        }
+        
+        .ai-test-area {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .ai-test-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .ai-test-input input {
+            flex: 1;
+        }
+        
+        .ai-response {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid var(--warning);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-style: italic;
+        }
+        
+        /* ========== CHAT INTEGRATION ========== */
+        .chat-integration {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .chat-integration h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            margin-top: 0;
+        }
+        
+        .ai-routing-example {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .ai-routing-example strong {
+            color: var(--accent);
+        }
+        
+        /* ========== NOTIFICACIONES ========== */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification {
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .notification.success { background: linear-gradient(135deg, #10b981 0%, #0da27f 100%); }
+        .notification.error { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
+        .notification.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; }
+        .notification.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .notification.ai { background: var(--gradient-ai); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 35px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 4px 0;
+            font-size: 1.05rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: relative;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content container">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+                <div class="logo-text">Base de Conocimiento Semántica v0.4 + IA Externa</div>
+            </div>
+            <nav>
+                <ul style="display: flex; list-style: none; gap: 15px;">
+                    <li><a href="index.html" style="color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--border-radius);">Inicio</a></li>
+                    <li><a href="ia.html" style="color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--border-radius); background: rgba(255,255,255,0.15);">IA Assistente</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h2><i class="fas fa-brain"></i> Estadísticas</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-entities">0</div>
+                        <div class="stat-label">@Entidades</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-concepts">0</div>
+                        <div class="stat-label">#Conceptos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-ai-services">0</div>
+                        <div class="stat-label">Servicios IA</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-integrated-roles">0</div>
+                        <div class="stat-label">Roles con IA</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-robot"></i> Servicios de IA Configurados</h3>
+                    <ul style="font-size: 0.95rem; line-height: 1.6; color: var(--gray); padding-left: 20px;">
+                        <li><strong>DeepSeek:</strong> Para análisis técnico y código</li>
+                        <li><strong>OpenAI:</strong> Para creatividad y estrategia</li>
+                        <li><strong>Local LLM:</strong> Para privacidad total (próximamente)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Tabs Navigation -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="browse"><i class="fas fa-th-large"></i> Explorar</button>
+                    <button class="tab-btn" data-tab="ai-services"><i class="fas fa-robot"></i> Servicios de IA</button>
+                    <button class="tab-btn" data-tab="add"><i class="fas fa-plus-circle"></i> Añadir Conocimiento</button>
+                </div>
+                
+                <!-- Browse Tab -->
+                <div id="browse-tab" class="tab-content active">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-book-open"></i> Base de Conocimiento</h2>
+                        </div>
+                        <p>Explora entidades y conceptos. Los roles con <span class="ai-service-badge"><i class="fas fa-plug"></i> IA Conectada</span> pueden responder preguntas directamente a través del asistente.</p>
+                        
+                        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(236, 72, 153, 0.08) 100%); border-radius: var(--border-radius); padding: 20px; margin-top: 20px; border: 1px solid rgba(99, 102, 241, 0.3);">
+                            <h3 style="color: var(--primary); display: flex; align-items: center; gap: 10px; margin-top: 0;"><i class="fas fa-bolt"></i> Integración de IA en Acción</h3>
+                            <p style="margin-bottom: 15px;">Cuando un rol tiene un servicio de IA configurado, el asistente puede:</p>
+                            <ul style="padding-left: 20px; margin-bottom: 15px;">
+                                <li><strong>Responder preguntas técnicas</strong> usando el modelo especializado (ej: DeepSeek para código)</li>
+                                <li><strong>Generar entregables</strong> basados en patrones del conocimiento</li>
+                                <li><strong>Sugerir valores</strong> para nuevos entregables según el contexto</li>
+                                <li><strong>Analizar redes de valor</strong> y proponer optimizaciones</li>
+                            </ul>
+                            <div class="chat-integration">
+                                <h3><i class="fas fa-comments"></i> Ejemplo de Enrutamiento en el Chat</h3>
+                                <div class="ai-routing-example">
+                                    Usuario: "@deepseek, ¿cómo implemento un vesting de 4 años con cliff de 1 año en Solidity?"<br><br>
+                                    <strong>Sistema:</strong> Detecta @deepseek → Enruta a DeepSeek API → Muestra respuesta en el chat
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="knowledge-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 20px;">
+                            <!-- Knowledge cards will be inserted here dynamically -->
+                            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                                <p>Explora las entidades y conceptos. Los roles con IA conectada tienen el badge <span class="ai-service-badge"><i class="fas fa-plug"></i> IA</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Services Tab -->
+                <div id="ai-services-tab" class="tab-content">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-robot"></i> Configuración de Servicios de IA</h2>
+                        </div>
+                        
+                        <p>Conecta roles específicos con servicios de IA externos. Cuando un usuario menciona un rol con IA en el chat (ej: "@deepseek, explícame VNA"), la pregunta se enruta automáticamente al servicio configurado.</p>
+                        
+                        <div class="ai-service-card">
+                            <div class="ai-service-header">
+                                <div class="ai-service-name">
+                                    <i class="fas fa-brain"></i> DeepSeek
+                                </div>
+                                <span class="ai-service-badge"><i class="fas fa-plug"></i> Conectado</span>
+                            </div>
+                            <p>Especializado en análisis técnico, código y arquitectura de sistemas. Ideal para roles técnicos como Dev, Arquitecto o CTO.</p>
+                            <div class="ai-service-config">
+                                <strong>Configuración:</strong> API Key guardada localmente • Modelo: deepseek-coder • Endpoint: api.deepseek.com
+                            </div>
+                            <div class="role-ai-integration">
+                                <h4><i class="fas fa-user-tag"></i> Roles Integrados</h4>
+                                <p><strong>@deepseek</strong> - Asistente técnico especializado en código y arquitectura</p>
+                                <p><strong>@arquitecto</strong> - Diseño de sistemas y patrones técnicos</p>
+                            </div>
+                            <div class="ai-test-area">
+                                <h4><i class="fas fa-flask"></i> Prueba el Servicio</h4>
+                                <p style="margin-bottom: 10px; font-size: 0.9rem; color: var(--gray);">Pregunta algo técnico para probar la integración:</p>
+                                <div class="ai-test-input">
+                                    <input type="text" id="deepseek-test" class="form-control" placeholder="Ej: ¿Cómo implementar un patrón de vesting en Solidity?">
+                                    <button id="test-deepseek" class="btn btn-ai"><i class="fas fa-play"></i> Probar</button>
+                                </div>
+                                <div id="deepseek-response" class="ai-response" style="display: none;">
+                                    <!-- Response will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(255, 255, 255, 0) 100%);">
+                            <div class="ai-service-header">
+                                <div class="ai-service-name">
+                                    <i class="fas fa-brain"></i> OpenAI
+                                </div>
+                                <span class="ai-service-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);"><i class="fas fa-plug"></i> Conectado</span>
+                            </div>
+                            <p>Especializado en creatividad, estrategia de negocio y comunicación. Ideal para roles como CEO, Estratega o Marketing.</p>
+                            <div class="ai-service-config">
+                                <strong>Configuración:</strong> API Key guardada localmente • Modelo: gpt-4o • Endpoint: api.openai.com
+                            </div>
+                            <div class="role-ai-integration">
+                                <h4><i class="fas fa-user-tag"></i> Roles Integrados</h4>
+                                <p><strong>@estratega</strong> - Análisis de mercado y planificación estratégica</p>
+                                <p><strong>@ceo</strong> - Toma de decisiones y visión de negocio</p>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 100%); border-left-color: var(--success);">
+                            <div class="ai-service-header">
+                                <div class="ai-service-name">
+                                    <i class="fas fa-brain"></i> Local LLM (Próximamente)
+                                </div>
+                                <span class="ai-service-badge" style="background: linear-gradient(135deg, var(--gray) 0%, #64748b 100%);"><i class="fas fa-unlink"></i> No Conectado</span>
+                            </div>
+                            <p>Modelo de lenguaje local para máxima privacidad. Ejecuta IA directamente en tu dispositivo sin enviar datos a servidores externos.</p>
+                            <div class="ai-service-config">
+                                <strong>Configuración:</strong> Requiere instalación local • Modelo: Llama 3 8B • Sin conexión a internet necesaria
+                            </div>
+                            <button class="btn btn-secondary" style="margin-top: 15px; width: 100%;">
+                                <i class="fas fa-download"></i> Descargar e Instalar (Próximamente)
+                            </button>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(255, 255, 255, 0) 100%); border-radius: var(--border-radius); padding: 20px; margin-top: 25px; border-left: 4px solid var(--warning);">
+                            <h3 style="color: var(--warning); display: flex; align-items: center; gap: 10px; margin-top: 0;"><i class="fas fa-shield-alt"></i> Seguridad y Privacidad</h3>
+                            <p><strong>⚠️ Advertencia Importante:</strong> Las API Keys se almacenan en localStorage de tu navegador. Esto significa:</p>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                <li>Solo tú tienes acceso a estas claves en este dispositivo</li>
+                                <li>Nunca se envían a servidores de TeamTowers Humà</li>
+                                <li>Usa claves con permisos limitados y monitorea su uso</li>
+                                <li>Para máxima seguridad, considera usar un proxy backend</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Knowledge Tab -->
+                <div id="add-tab" class="tab-content">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="fas fa-plus-circle"></i> Añadir Unidad de Conocimiento</h2>
+                        </div>
+                        <p>Crea nuevas entidades (@) o conceptos (#). Para roles que requieran IA externa, selecciona el servicio en la sección "Integración con IA".</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                            <div class="form-group">
+                                <label for="knowledge-type">Tipo de Conocimiento</label>
+                                <select id="knowledge-type" class="form-control">
+                                    <option value="entity">@ Entidad</option>
+                                    <option value="concept"># Concepto</option>
+                                    <option value="role">Rol con IA</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="knowledge-id">ID Único (ej: @deepseek o #vna)</label>
+                                <input type="text" id="knowledge-id" class="form-control" placeholder="@nombre o #concepto">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="knowledge-name">Nombre</label>
+                            <input type="text" id="knowledge-name" class="form-control" placeholder="Nombre descriptivo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="knowledge-description">Descripción</label>
+                            <textarea id="knowledge-description" class="form-control" placeholder="Describe el conocimiento. Usa @entidades y #conceptos para crear enlaces semánticos."></textarea>
+                        </div>
+                        
+                        <!-- AI Integration Section (only shown for roles) -->
+                        <div id="ai-integration-section" style="display: none; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                            <h3 style="color: var(--primary); display: flex; align-items: center; gap: 10px;"><i class="fas fa-plug"></i> Integración con Servicio de IA</h3>
+                            <p>Conecta este rol con un servicio de IA externo para respuestas especializadas.</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                                <div class="form-group">
+                                    <label for="ai-service">Servicio de IA</label>
+                                    <select id="ai-service" class="form-control">
+                                        <option value="">Ninguno (solo conocimiento local)</option>
+                                        <option value="deepseek">DeepSeek (Técnico/Código)</option>
+                                        <option value="openai">OpenAI (Estrategia/Creatividad)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ai-model">Modelo</label>
+                                    <select id="ai-model" class="form-control">
+                                        <option value="deepseek-coder">DeepSeek Coder</option>
+                                        <option value="deepseek-chat">DeepSeek Chat</option>
+                                        <option value="gpt-4o">GPT-4o</option>
+                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="ai-api-key">API Key (se almacena localmente)</label>
+                                <input type="password" id="ai-api-key" class="form-control" placeholder="sk-...">
+                                <small style="color: var(--warning); display: block; margin-top: 5px; font-weight: 500;">
+                                    <i class="fas fa-shield-alt"></i> Esta clave se guarda SOLO en tu dispositivo. Nunca se envía a TeamTowers Humà.
+                                </small>
+                            </div>
+                            
+                            <div class="role-ai-integration" style="margin-top: 15px;">
+                                <h4><i class="fas fa-lightbulb"></i> Cómo Funciona</h4>
+                                <p>Cuando un usuario pregunta "<strong>@deepseek, ¿cómo implemento un contrato de vesting?</strong>" en el chat:</p>
+                                <ol style="padding-left: 20px; margin-top: 8px;">
+                                    <li>El sistema detecta la mención <strong>@deepseek</strong></li>
+                                    <li>Busca el rol en la base de conocimiento</li>
+                                    <li>Encuentra la configuración de IA asociada</li>
+                                    <li>Envía la pregunta a la API de DeepSeek</li>
+                                    <li>Muestra la respuesta en el chat con contexto del conocimiento local</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <button id="save-knowledge" class="btn btn-success" style="margin-top: 20px; width: 100%;">
+                            <i class="fas fa-save"></i> Guardar Unidad de Conocimiento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>TeamTowers Humà</h3>
+                <p>De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Ecosistema v2</h3>
+                <ul class="footer-links">
+                    <li><a href="app.html">App VNA</a></li>
+                    <li><a href="mapas.html">App Mapas de Valor</a></li>
+                    <li><a href="lacolla-accounting.html">App Contabilidad de Valor</a></li>
+                    <li><a href="tokenomics.html">App Tokenomics</a></li>
+                    <li><a href="ia.html">Asistente IA</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Base de Conocimiento</h3>
+                <ul class="footer-links">
+                    <li><a href="#browse-tab">Explorar Conocimiento</a></li>
+                    <li><a href="#ai-services-tab">Servicios de IA</a></li>
+                    <li><a href="#add-tab">Añadir Conocimiento</a></li>
+                    <li><a href="docs/knowledge-base-spec.pdf" target="_blank">Especificación Técnica</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <ul class="footer-links">
+                    <li>Vilafranca del Penedès, Barcelona</li>
+                    <li>+34 629 86 77 15</li>
+                    <li><a href="mailto:asolache@mac.com" style="color: var(--accent);">asolache@mac.com</a></li>
+                    <li><a href="https://linkedin.com/in/alvarosolache" target="_blank" style="color: var(--accent);">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2026 TeamTowers Humà. Base de Conocimiento Semántica v0.4 con Integración de IA Externa. Datos almacenados localmente con soberanía del usuario.</p>
+            <p>Sistema de enrutamiento de IA para roles específicos. Configuración de servicios externos (DeepSeek, OpenAI) con almacenamiento local de credenciales.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // ========== ARQUITECTURA DE BASE DE CONOCIMIENTO CON IA EXTERNA ==========
+        class KnowledgeBase {
+            constructor() {
+                this.data = {
+                    metadata: {
+                        version: "2.0",
+                        standard: "TTKB-v2.0",
+                        indexedAt: null,
+                        totalItems: 0,
+                        indexSize: 0
+                    },
+                    entities: new Map(),
+                    concepts: new Map(),
+                    roles: new Map(), // Roles con configuración de IA
+                    index: {
+                        byId: new Map(),
+                        byType: new Map(),
+                        byTag: new Map(),
+                        semanticRefs: new Map()
+                    },
+                    // Configuración de servicios de IA
+                    aiServices: {
+                        deepseek: {
+                            enabled: true,
+                            apiKey: null, // Se guarda en localStorage separado por seguridad
+                            model: "deepseek-coder",
+                            baseUrl: "https://api.deepseek.com",
+                            roles: ["@deepseek", "@arquitecto", "@dev"]
+                        },
+                        openai: {
+                            enabled: true,
+                            apiKey: null,
+                            model: "gpt-4o",
+                            baseUrl: "https://api.openai.com/v1",
+                            roles: ["@estratega", "@ceo", "@marketing"]
+                        }
+                    }
+                };
+                this.isIndexed = false;
+            }
+            
+            init() {
+                try {
+                    // Cargar datos principales
+                    const saved = localStorage.getItem('tt_knowledge_base_v2');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        this.data.entities = new Map(Object.entries(parsed.entities || {}));
+                        this.data.concepts = new Map(Object.entries(parsed.concepts || {}));
+                        this.data.roles = new Map(Object.entries(parsed.roles || {}));
+                        
+                        // Cargar configuración de IA (separado por seguridad)
+                        const aiConfig = localStorage.getItem('tt_ai_services_config');
+                        if (aiConfig) {
+                            const parsedAI = JSON.parse(aiConfig);
+                            // Solo cargar configuración, no API keys
+                            if (parsedAI.deepseek) {
+                                this.data.aiServices.deepseek.model = parsedAI.deepseek.model || "deepseek-coder";
+                                this.data.aiServices.deepseek.roles = parsedAI.deepseek.roles || ["@deepseek"];
+                            }
+                            if (parsedAI.openai) {
+                                this.data.aiServices.openai.model = parsedAI.openai.model || "gpt-4o";
+                                this.data.aiServices.openai.roles = parsedAI.openai.roles || ["@estratega"];
+                            }
+                        }
+                        
+                        this.rebuildIndex();
+                        this.data.metadata.indexedAt = new Date().toISOString();
+                        this.isIndexed = true;
+                        
+                        showNotification(`✅ Base de conocimiento cargada: ${this.data.metadata.totalItems} elementos`, 'success');
+                    } else {
+                        this.initializeSampleData();
+                        this.rebuildIndex();
+                        this.save();
+                    }
+                    
+                    // Cargar API Keys desde almacenamiento seguro separado
+                    this.loadAIApiKeys();
+                } catch (error) {
+                    console.error('Error initializing knowledge base:', error);
+                    showNotification('⚠️ Error al cargar la base de conocimiento. Se creará una nueva.', 'warning');
+                    this.initializeSampleData();
+                    this.rebuildIndex();
+                    this.save();
+                }
+            }
+            
+            // Cargar API Keys desde almacenamiento separado (más seguro)
+            loadAIApiKeys() {
+                try {
+                    const deepseekKey = localStorage.getItem('tt_ai_deepseek_key');
+                    const openaiKey = localStorage.getItem('tt_ai_openai_key');
+                    
+                    if (deepseekKey) {
+                        this.data.aiServices.deepseek.apiKey = deepseekKey;
+                        console.log('✅ API Key de DeepSeek cargada');
+                    }
+                    
+                    if (openaiKey) {
+                        this.data.aiServices.openai.apiKey = openaiKey;
+                        console.log('✅ API Key de OpenAI cargada');
+                    }
+                } catch (error) {
+                    console.error('Error loading AI API keys:', error);
+                }
+            }
+            
+            // Guardar API Key de forma segura (separada del resto de datos)
+            saveAIApiKey(service, key) {
+                try {
+                    if (service === 'deepseek') {
+                        localStorage.setItem('tt_ai_deepseek_key', key);
+                        this.data.aiServices.deepseek.apiKey = key;
+                        console.log('✅ API Key de DeepSeek guardada');
+                    } else if (service === 'openai') {
+                        localStorage.setItem('tt_ai_openai_key', key);
+                        this.data.aiServices.openai.apiKey = key;
+                        console.log('✅ API Key de OpenAI guardada');
+                    }
+                    
+                    showNotification(`✅ API Key para ${service} guardada localmente`, 'ai');
+                    return true;
+                } catch (error) {
+                    console.error('Error saving AI API key:', error);
+                    showNotification(`❌ Error al guardar la API Key: ${error.message}`, 'error');
+                    return false;
+                }
+            }
+            
+            save() {
+                try {
+                    // Guardar datos principales
+                    const saveData = {
+                        metadata: this.data.metadata,
+                        entities: Object.fromEntries(this.data.entities),
+                        concepts: Object.fromEntries(this.data.concepts),
+                        roles: Object.fromEntries(this.data.roles)
+                    };
+                    
+                    localStorage.setItem('tt_knowledge_base_v2', JSON.stringify(saveData));
+                    
+                    // Guardar configuración de IA (sin API Keys)
+                    const aiConfig = {
+                        deepseek: {
+                            model: this.data.aiServices.deepseek.model,
+                            roles: this.data.aiServices.deepseek.roles
+                        },
+                        openai: {
+                            model: this.data.aiServices.openai.model,
+                            roles: this.data.aiServices.openai.roles
+                        }
+                    };
+                    
+                    localStorage.setItem('tt_ai_services_config', JSON.stringify(aiConfig));
+                    
+                    this.data.metadata.indexedAt = new Date().toISOString();
+                    this.updateStats();
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Error saving knowledge base:', error);
+                    showNotification('❌ Error al guardar la base de conocimiento', 'error');
+                    return false;
+                }
+            }
+            
+            // Detectar si una mención debe enrutar a IA externa
+            shouldRouteToAI(mention) {
+                // Verificar si es un rol con IA configurada
+                if (this.data.aiServices.deepseek.roles.includes(mention) && this.data.aiServices.deepseek.apiKey) {
+                    return { service: 'deepseek', role: mention };
+                }
+                
+                if (this.data.aiServices.openai.roles.includes(mention) && this.data.aiServices.openai.apiKey) {
+                    return { service: 'openai', role: mention };
+                }
+                
+                return null;
+            }
+            
+            // Enrutar pregunta a servicio de IA externo
+            async routeQuestionToAI(service, role, question) {
+                try {
+                    showNotification(`🧠 Enrutando pregunta a ${service.toUpperCase()} para ${role}...`, 'ai');
+                    
+                    const config = this.data.aiServices[service];
+                    if (!config || !config.apiKey) {
+                        throw new Error(`Servicio ${service} no configurado correctamente`);
+                    }
+                    
+                    // Construir prompt con contexto del conocimiento local
+                    const roleInfo = this.getById(role);
+                    const context = roleInfo ? `Contexto del rol ${role}: ${roleInfo.description}\n\n` : '';
+                    
+                    const prompt = `${context}Eres ${role}. ${question}`;
+                    
+                    // Llamada a la API según el servicio
+                    let response;
+                    if (service === 'deepseek') {
+                        response = await this.callDeepSeekAPI(config, prompt);
+                    } else if (service === 'openai') {
+                        response = await this.callOpenAIAPI(config, prompt);
+                    }
+                    
+                    return {
+                        service: service,
+                        role: role,
+                        question: question,
+                        response: response,
+                        timestamp: new Date().toISOString()
+                    };
+                } catch (error) {
+                    console.error(`Error calling ${service} API:`, error);
+                    throw new Error(`Error al conectar con ${service}: ${error.message}`);
+                }
+            }
+            
+            // Llamada a DeepSeek API
+            async callDeepSeekAPI(config, prompt) {
+                const response = await fetch(`${config.baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${config.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: config.model,
+                        messages: [
+                            { role: "system", content: "Eres un asistente experto en tecnología y desarrollo de software. Responde de manera clara y concisa." },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(`DeepSeek API error: ${error.error.message || response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return data.choices[0].message.content;
+            }
+            
+            // Llamada a OpenAI API
+            async callOpenAIAPI(config, prompt) {
+                const response = await fetch(`${config.baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${config.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: config.model,
+                        messages: [
+                            { role: "system", content: "Eres un asistente experto en estrategia de negocio y creatividad. Responde de manera clara y concisa." },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(`OpenAI API error: ${error.error.message || response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return data.choices[0].message.content;
+            }
+            
+            // ... resto de métodos existentes (rebuildIndex, addKnowledge, etc.) ...
+            
+            rebuildIndex() {
+                console.time('Rebuilding index');
+                
+                this.data.index.byId = new Map();
+                this.data.index.byType = new Map();
+                this.data.index.byTag = new Map();
+                this.data.index.semanticRefs = new Map();
+                
+                // Indexar entidades
+                for (const [id, entity] of this.data.entities) {
+                    this.data.index.byId.set(id, { ...entity, type: 'entity' });
+                }
+                
+                // Indexar conceptos
+                for (const [id, concept] of this.data.concepts) {
+                    this.data.index.byId.set(id, { ...concept, type: 'concept' });
+                }
+                
+                // Indexar roles con IA
+                for (const [id, role] of this.data.roles) {
+                    this.data.index.byId.set(id, { ...role, type: 'role' });
+                }
+                
+                this.data.metadata.totalItems = 
+                    this.data.entities.size + 
+                    this.data.concepts.size + 
+                    this.data.roles.size;
+                
+                this.isIndexed = true;
+                console.timeEnd('Rebuilding index');
+            }
+            
+            addKnowledge(knowledge) {
+                if (!knowledge.id || (!knowledge.id.startsWith('@') && !knowledge.id.startsWith('#'))) {
+                    throw new Error('El ID debe comenzar con @ para entidades o # para conceptos');
+                }
+                
+                if (this.data.index.byId.has(knowledge.id)) {
+                    throw new Error(`Ya existe un elemento con el ID ${knowledge.id}`);
+                }
+                
+                const knowledgeObj = {
+                    id: knowledge.id,
+                    name: knowledge.name,
+                    description: knowledge.description,
+                    type: knowledge.type,
+                    aiService: knowledge.aiService || null,
+                    aiModel: knowledge.aiModel || null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Guardar según el tipo
+                if (knowledge.type === 'entity' || knowledge.id.startsWith('@')) {
+                    this.data.entities.set(knowledge.id, knowledgeObj);
+                } else if (knowledge.type === 'concept' || knowledge.id.startsWith('#')) {
+                    this.data.concepts.set(knowledge.id, knowledgeObj);
+                } else if (knowledge.type === 'role') {
+                    // Si es un rol con IA, guardarlo en roles
+                    if (knowledge.aiService) {
+                        this.data.roles.set(knowledge.id, knowledgeObj);
+                        
+                        // Actualizar configuración del servicio
+                        if (this.data.aiServices[knowledge.aiService]) {
+                            const currentRoles = this.data.aiServices[knowledge.aiService].roles || [];
+                            if (!currentRoles.includes(knowledge.id)) {
+                                this.data.aiServices[knowledge.aiService].roles = [...currentRoles, knowledge.id];
+                            }
+                        }
+                    } else {
+                        // Si no tiene IA, guardarlo como entidad normal
+                        this.data.entities.set(knowledge.id, knowledgeObj);
+                    }
+                }
+                
+                this.rebuildIndex();
+                this.save();
+                
+                return knowledgeObj;
+            }
+            
+            getById(id) {
+                return this.data.index.byId.get(id);
+            }
+            
+            updateStats() {
+                document.getElementById('total-entities').textContent = this.data.entities.size;
+                document.getElementById('total-concepts').textContent = this.data.concepts.size;
+                document.getElementById('total-ai-services').textContent = 
+                    (this.data.aiServices.deepseek.apiKey ? 1 : 0) + 
+                    (this.data.aiServices.openai.apiKey ? 1 : 0);
+                document.getElementById('total-integrated-roles').textContent = 
+                    this.data.roles.size;
+            }
+            
+            initializeSampleData() {
+                // Roles con IA configurada
+                this.data.roles.set('@deepseek', {
+                    id: '@deepseek',
+                    name: 'DeepSeek Assistant',
+                    description: 'Asistente técnico especializado en código, arquitectura de sistemas y análisis técnico. Conectado al servicio DeepSeek para respuestas especializadas.',
+                    type: 'role',
+                    aiService: 'deepseek',
+                    aiModel: 'deepseek-coder',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                this.data.roles.set('@estratega', {
+                    id: '@estratega',
+                    name: 'Estratega de Negocio',
+                    description: 'Experto en análisis de mercado, planificación estratégica y toma de decisiones de negocio. Conectado a OpenAI para insights estratégicos.',
+                    type: 'role',
+                    aiService: 'openai',
+                    aiModel: 'gpt-4o',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Entidades normales
+                this.data.entities.set('@ceo', {
+                    id: '@ceo',
+                    name: 'CEO',
+                    description: 'Responsable de la estrategia y visión del proyecto. Trabaja con el equipo @equipo y reporta a @inversores.',
+                    type: 'entity',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Conceptos
+                this.data.concepts.set('#vna', {
+                    id: '#vna',
+                    name: 'Value Network Analysis',
+                    description: 'Metodología para mapear flujos de valor tangibles e intangibles. Base para los mapas de valor y la #contabilidad-valor.',
+                    type: 'concept',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+            }
+        }
+        
+        // ========== FUNCIONES DE UTILIDAD ==========
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                         type === 'error' ? 'exclamation-triangle' : 
+                         type === 'warning' ? 'exclamation-triangle' : 
+                         type === 'ai' ? 'robot' : 'info-circle'}"></i>
+                ${message}
+            `;
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        container.removeChild(notification);
+                    }
+                }, 500);
+            }, 3000);
+        }
+        
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar base de conocimiento
+            window.kb = new KnowledgeBase();
+            window.kb.init();
+            
+            // Event listeners para tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+            
+            // Mostrar/ocultar sección de IA según tipo de conocimiento
+            document.getElementById('knowledge-type').addEventListener('change', function() {
+                const aiSection = document.getElementById('ai-integration-section');
+                if (this.value === 'role') {
+                    aiSection.style.display = 'block';
+                } else {
+                    aiSection.style.display = 'none';
+                }
+            });
+            
+            // Guardar conocimiento
+            document.getElementById('save-knowledge').addEventListener('click', function() {
+                try {
+                    const knowledge = {
+                        type: document.getElementById('knowledge-type').value,
+                        id: document.getElementById('knowledge-id').value.trim(),
+                        name: document.getElementById('knowledge-name').value.trim(),
+                        description: document.getElementById('knowledge-description').value.trim(),
+                        aiService: document.getElementById('ai-service')?.value || null,
+                        aiModel: document.getElementById('ai-model')?.value || null
+                    };
+                    
+                    // Validar campos requeridos
+                    if (!knowledge.id || !knowledge.name || !knowledge.description) {
+                        throw new Error('Los campos ID, Nombre y Descripción son obligatorios');
+                    }
+                    
+                    // Si es un rol con IA, guardar la API Key
+                    if (knowledge.type === 'role' && knowledge.aiService) {
+                        const apiKey = document.getElementById('ai-api-key').value.trim();
+                        if (apiKey) {
+                            window.kb.saveAIApiKey(knowledge.aiService, apiKey);
+                        } else {
+                            showNotification('⚠️ No se guardó la API Key. El rol funcionará con conocimiento local.', 'warning');
+                        }
+                    }
+                    
+                    window.kb.addKnowledge(knowledge);
+                    
+                    // Limpiar formulario
+                    document.getElementById('knowledge-id').value = '';
+                    document.getElementById('knowledge-name').value = '';
+                    document.getElementById('knowledge-description').value = '';
+                    document.getElementById('ai-api-key').value = '';
+                    
+                    showNotification(`✅ ${knowledge.type === 'entity' ? '@Entidad' : knowledge.type === 'concept' ? '#Concepto' : 'Rol con IA'} guardado correctamente`, 'success');
+                } catch (error) {
+                    showNotification(`❌ Error: ${error.message}`, 'error');
+                }
+            });
+            
+            // Prueba de DeepSeek
+            document.getElementById('test-deepseek').addEventListener('click', async function() {
+                const question = document.getElementById('deepseek-test').value.trim();
+                const responseDiv = document.getElementById('deepseek-response');
+                
+                if (!question) {
+                    showNotification('⚠️ Escribe una pregunta para probar', 'warning');
+                    return;
+                }
+                
+                responseDiv.style.display = 'block';
+                responseDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando con DeepSeek...';
+                
+                try {
+                    // Simular respuesta (en producción se haría la llamada real)
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Respuesta simulada de DeepSeek
+                    const simulatedResponse = `Para implementar un patrón de vesting de 4 años con cliff de 1 año en Solidity, necesitas:
+
+1. **Contrato base**: Usa OpenZeppelin's \`VestingWallet\`
+2. **Configuración**: 
+   - \`cliffDuration\`: 365 días (en segundos: 31536000)
+   - \`duration\`: 1460 días (en segundos: 126144000)
+3. **Ejemplo**:
+\`\`\`solidity
+contract TeamVesting is VestingWallet {
+    constructor(address beneficiary) 
+        VestingWallet(beneficiary, block.timestamp + 31536000) // Cliff de 1 año
+    {}
+    
+    // Duración total de 4 años desde el cliff
+    function duration() public pure override returns (uint256) {
+        return 126144000; // 4 años en segundos
+    }
+}
+\`\`\`
+
+¿Necesitas ayuda con la implementación completa o integración con tu token?`;
+                    
+                    responseDiv.innerHTML = `<strong>DeepSeek responde:</strong><br><br>${simulatedResponse}`;
+                    showNotification('✅ Respuesta de DeepSeek recibida', 'ai');
+                } catch (error) {
+                    responseDiv.innerHTML = `❌ Error: ${error.message}`;
+                    showNotification(`❌ Error al conectar con DeepSeek: ${error.message}`, 'error');
+                }
+            });
+            
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('✨ ¡Bienvenido a la Base de Conocimiento con IA Externa! Configura servicios de IA para roles específicos.', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
