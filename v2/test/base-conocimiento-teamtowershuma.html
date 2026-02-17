@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Base de Conocimiento Semántica | TeamTowers Humà v0.3. Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema.">
+    <meta name="description" content="Base de Conocimiento Semántica | TeamTowers Humà v0.4. Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema.">
     <meta name="keywords" content="Base de Conocimiento, Semántica, TeamTowers Humà, VNA, Tokenomics, Contabilidad de Valor, Comunidades de Práctica">
     <meta name="author" content="TeamTowers Humà">
     <meta name="robots" content="index, follow">
-    <title>Base de Conocimiento Semántica v0.3 | TeamTowers Humà</title>
+    <title>Base de Conocimiento Semántica v0.4 | TeamTowers Humà</title>
     
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Base de Conocimiento Semántica v0.3 | TeamTowers Humà">
+    <meta property="og:title" content="Base de Conocimiento Semántica v0.4 | TeamTowers Humà">
     <meta property="og:description" content="Sistema centralizado con referencias @entidades y #conceptos para todo el ecosistema TeamTowers Humà">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/knowledge-base">
@@ -41,6 +41,10 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
             
             /* Tipografía W3C */
             --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -60,7 +64,7 @@
             --breakpoint-xl: 1200px;
             
             /* Accesibilidad WCAG 2.1 AA */
-            --contrast-min: 4.5; /* Relación mínimo de contraste */
+            --contrast-min: 4.5;
             --focus-outline: 3px solid var(--accent);
             --reduced-motion: 0.1s;
         }
@@ -70,6 +74,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: var(--font-sans);
         }
         
         html {
@@ -78,10 +83,9 @@
         }
         
         body {
-            font-family: var(--font-sans);
-            line-height: 1.6;
-            color: #333;
             background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
             padding-top: 4rem;
         }
         
@@ -590,6 +594,35 @@
             box-shadow: var(--box-shadow);
         }
         
+        #graph-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            text-align: center;
+            display: none;
+        }
+        
+        #graph-loading .spinner {
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .graph-tip {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
             border-left: 4px solid var(--success);
@@ -622,6 +655,37 @@
             margin-top: 10px;
             font-style: italic;
             color: var(--gray);
+        }
+        
+        .zoom-level-indicator {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .zoom-level-indicator::before {
+            content: '🔍';
+        }
+        
+        .optimization-badge {
+            background: linear-gradient(135deg, var(--success) 0%, #0da27f 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 8px;
         }
         
         /* ========== FORMULARIOS ========== */
@@ -861,8 +925,9 @@
                 color: black;
             }
             
-            .card, .stat-card, .sidebar {
+            .card, .sidebar, .stat-card {
                 border: 2px solid #000;
+                box-shadow: none;
             }
             
             a {
@@ -1190,7 +1255,7 @@
         <div class="header-content container">
             <div class="logo">
                 <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
-                <div class="logo-text">Base de Conocimiento Semántica v0.3</div>
+                <div class="logo-text">Base de Conocimiento Semántica v0.4</div>
             </div>
             <nav>
                 <ul>
@@ -1350,7 +1415,13 @@
                             Visualización interactiva de las relaciones entre entidades y conceptos del ecosistema TeamTowers Humà.
                         </p>
                         
-                        <div id="graph-container" class="graph-container"></div>
+                        <div id="graph-container" class="graph-container">
+                            <div id="graph-loading">
+                                <div class="spinner"></div>
+                                <p>Optimizando visualización...</p>
+                                <p style="font-size: 0.9rem; color: var(--gray); margin-top: 5px;">Mostrando solo elementos visibles</p>
+                            </div>
+                        </div>
                         
                         <div style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0) 100%); border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid var(--primary);">
                             <h4 style="color: var(--primary); margin-top: 0;"><i class="fas fa-chart-line"></i> Valor del Grafo de Conocimiento</h4>
@@ -1558,13 +1629,15 @@
             </div>
         </div>
         <div class="copyright">
-            <p>© 2026 TeamTowers Humà. Base de Conocimiento Semántica v0.3. Optimizada para 10,000+ registros con indexación avanzada y referencias semánticas @/#.</p>
+            <p>© 2026 TeamTowers Humà. Base de Conocimiento Semántica v0.4. Optimizada para 10,000+ registros con indexación avanzada y referencias semánticas @/#.</p>
             <p>Estándar TTKB-v2.0 compatible con todo el ecosistema TeamTowers Humà. Datos almacenados localmente con soberanía del usuario.</p>
         </div>
     </footer>
     
     <script>
-        // ========== ARQUITECTURA DE BASE DE CONOCIMIENTO SEMÁNTICA ==========
+        // ========== ARQUITECTURA DE BASE DE CONOCIMIENTO SEMÁNTICA v0.4 ==========
+        // Sistema optimizado para grandes volúmenes de datos con indexación avanzada y carga diferida
+        
         class KnowledgeBase {
             constructor() {
                 this.data = {
@@ -1589,25 +1662,43 @@
                 this.isIndexed = false;
                 this.maxItemsForFullScan = 5000;
                 this.graphInstance = null;
+                this.graphNodesCache = {
+                    all: null,
+                    top20: null,
+                    top50: null
+                };
+                this.lastZoomLevel = 1;
             }
             
+            // Inicializar base de conocimiento desde localStorage con persistencia de estadísticas
             init() {
+                console.time('Initialize KB');
+                
                 try {
+                    // Intentar cargar estadísticas rápidas primero
+                    const quickStats = this.loadQuickStats();
+                    if (quickStats) {
+                        this.updateStatsUI(quickStats);
+                    }
+                    
                     const saved = localStorage.getItem('tt_knowledge_base_v2');
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         
+                        // Convertir arrays a Maps para mejor rendimiento
                         this.data.entities = new Map(Object.entries(parsed.entities || {}));
                         this.data.concepts = new Map(Object.entries(parsed.concepts || {}));
                         this.data.projects = new Map(Object.entries(parsed.projects || {}));
                         this.data.patterns = new Map(Object.entries(parsed.patterns || {}));
                         
+                        // Reconstruir índices
                         this.rebuildIndex();
                         this.data.metadata.indexedAt = new Date().toISOString();
                         this.isIndexed = true;
                         
                         showNotification(`✅ Base de conocimiento cargada: ${this.data.metadata.totalItems} elementos`, 'success');
                     } else {
+                        // Inicializar con datos de ejemplo
                         this.initializeSampleData();
                         this.rebuildIndex();
                         this.save();
@@ -1619,10 +1710,14 @@
                     this.rebuildIndex();
                     this.save();
                 }
+                
+                console.timeEnd('Initialize KB');
             }
             
+            // Guardar en localStorage con persistencia de estadísticas
             save() {
                 try {
+                    // Convertir Maps a objetos planos para JSON
                     const saveData = {
                         metadata: this.data.metadata,
                         entities: Object.fromEntries(this.data.entities),
@@ -1638,8 +1733,11 @@
                     }
                     
                     localStorage.setItem('tt_knowledge_base_v2', dataStr);
+                    
+                    // Guardar estadísticas por separado para carga rápida
+                    this.saveStats();
+                    
                     this.data.metadata.indexedAt = new Date().toISOString();
-                    this.updateStats();
                     
                     return true;
                 } catch (error) {
@@ -1649,16 +1747,100 @@
                 }
             }
             
+            // Guardar estadísticas en localStorage para carga rápida
+            saveStats() {
+                const stats = {
+                    totalEntities: this.data.entities.size,
+                    totalConcepts: this.data.concepts.size,
+                    totalProjects: this.data.projects.size,
+                    totalRelationships: this.data.index.semanticRefs.size,
+                    indexedItems: this.data.metadata.totalItems,
+                    lastUpdate: this.data.metadata.indexedAt,
+                    savedAt: new Date().toISOString()
+                };
+                
+                try {
+                    localStorage.setItem('tt_knowledge_base_stats', JSON.stringify(stats));
+                    console.log('✅ Estadísticas guardadas en localStorage');
+                } catch (e) {
+                    console.error('❌ Error guardando estadísticas:', e);
+                    // Fallback: guardar en sessionStorage como respaldo
+                    try {
+                        sessionStorage.setItem('tt_knowledge_base_stats_backup', JSON.stringify(stats));
+                    } catch (e2) {
+                        console.error('❌ Error guardando respaldo de estadísticas:', e2);
+                    }
+                }
+            }
+            
+            // Cargar estadísticas rápidas al inicio
+            loadQuickStats() {
+                try {
+                    // Intentar cargar de localStorage primero
+                    const savedStats = localStorage.getItem('tt_knowledge_base_stats');
+                    if (savedStats) {
+                        const stats = JSON.parse(savedStats);
+                        
+                        // Verificar que no estén obsoletas (máx 5 minutos)
+                        const savedTime = new Date(stats.savedAt).getTime();
+                        const now = Date.now();
+                        const isFresh = (now - savedTime) < 5 * 60 * 1000;
+                        
+                        if (isFresh) {
+                            console.log('⚡ Estadísticas cargadas rápidamente desde localStorage');
+                            return stats;
+                        }
+                    }
+                    
+                    // Fallback: intentar cargar respaldo de sessionStorage
+                    const backupStats = sessionStorage.getItem('tt_knowledge_base_stats_backup');
+                    if (backupStats) {
+                        const stats = JSON.parse(backupStats);
+                        console.log('⚡ Estadísticas cargadas desde respaldo (sessionStorage)');
+                        return stats;
+                    }
+                } catch (e) {
+                    console.error('Error cargando estadísticas rápidas:', e);
+                }
+                
+                return null; // Indica que se deben calcular desde cero
+            }
+            
+            // Actualizar estadísticas en UI
+            updateStatsUI(stats) {
+                if (stats) {
+                    document.getElementById('total-entities').textContent = stats.totalEntities || 0;
+                    document.getElementById('total-concepts').textContent = stats.totalConcepts || 0;
+                    document.getElementById('total-projects').textContent = stats.totalProjects || 0;
+                    document.getElementById('total-relationships').textContent = stats.totalRelationships || 0;
+                    document.getElementById('indexed-items').textContent = stats.indexedItems || 0;
+                    document.getElementById('last-update').textContent = 
+                        stats.lastUpdate ? new Date(stats.lastUpdate).toLocaleTimeString() : 'Nunca';
+                } else {
+                    // Si no hay estadísticas rápidas, mostrar estado de carga
+                    document.getElementById('total-entities').textContent = '...';
+                    document.getElementById('total-concepts').textContent = '...';
+                    document.getElementById('total-projects').textContent = '...';
+                    document.getElementById('total-relationships').textContent = '...';
+                    document.getElementById('indexed-items').textContent = 'Cargando...';
+                    document.getElementById('last-update').textContent = 'Iniciando sistema...';
+                }
+            }
+            
+            // Reconstruir índices para búsquedas rápidas
             rebuildIndex() {
                 console.time('Rebuilding index');
                 
+                // Reiniciar índices
                 this.data.index.byId = new Map();
                 this.data.index.byType = new Map();
                 this.data.index.byTag = new Map();
                 this.data.index.semanticRefs = new Map();
                 
+                // Indexar entidades
                 for (const [id, entity] of this.data.entities) {
                     this.data.index.byId.set(id, { ...entity, type: 'entity' });
+                    
                     if (!this.data.index.byType.has(entity.category)) {
                         this.data.index.byType.set(entity.category, []);
                     }
@@ -1676,8 +1858,10 @@
                     this.extractSemanticReferences(id, entity.description, 'entity');
                 }
                 
+                // Indexar conceptos
                 for (const [id, concept] of this.data.concepts) {
                     this.data.index.byId.set(id, { ...concept, type: 'concept' });
+                    
                     if (!this.data.index.byType.has(concept.category)) {
                         this.data.index.byType.set(concept.category, []);
                     }
@@ -1695,6 +1879,7 @@
                     this.extractSemanticReferences(id, concept.description, 'concept');
                 }
                 
+                // Indexar proyectos y patrones
                 for (const [id, project] of this.data.projects) {
                     this.data.index.byId.set(id, { ...project, type: 'project' });
                     this.extractSemanticReferences(id, project.description, 'project');
@@ -1705,6 +1890,7 @@
                     this.extractSemanticReferences(id, pattern.description, 'pattern');
                 }
                 
+                // Actualizar metadatos
                 this.data.metadata.totalItems = 
                     this.data.entities.size + 
                     this.data.concepts.size + 
@@ -1721,11 +1907,16 @@
                 console.timeEnd('Rebuilding index');
                 
                 showNotification(`✅ Índice reconstruido: ${this.data.metadata.totalItems} elementos indexados`, 'success');
+                
+                // Guardar estadísticas
+                this.saveStats();
             }
             
+            // Extraer referencias semánticas de texto (@entidad y #concepto)
             extractSemanticReferences(id, text, type) {
                 if (!text) return;
                 
+                // Extraer @entidades
                 const entityRegex = /@[\w-]+/g;
                 let match;
                 while ((match = entityRegex.exec(text)) !== null) {
@@ -1736,6 +1927,7 @@
                     this.data.index.semanticRefs.get(refId).push({ id, type });
                 }
                 
+                // Extraer #conceptos
                 const conceptRegex = /#[\w-]+/g;
                 while ((match = conceptRegex.exec(text)) !== null) {
                     const refId = match[0];
@@ -1746,6 +1938,7 @@
                 }
             }
             
+            // Añadir nueva unidad de conocimiento
             addKnowledge(knowledge) {
                 if (!knowledge.id || (!knowledge.id.startsWith('@') && !knowledge.id.startsWith('#'))) {
                     throw new Error('El ID debe comenzar con @ para entidades o # para conceptos');
@@ -1794,12 +1987,18 @@
                     this.data.patterns.set(knowledge.id, knowledgeObj);
                 }
                 
+                // Invalidar caché de nodos del grafo
+                this.graphNodesCache.all = null;
+                this.graphNodesCache.top20 = null;
+                this.graphNodesCache.top50 = null;
+                
                 this.rebuildIndex();
                 this.save();
                 
                 return knowledgeObj;
             }
             
+            // Buscar en la base de conocimiento (optimizado)
             search(query, filter = 'all') {
                 if (!this.isIndexed) {
                     this.rebuildIndex();
@@ -1859,6 +2058,7 @@
                 return results;
             }
             
+            // Verificar si un elemento coincide con la consulta
             matchesQuery(item, query) {
                 if (!query) return true;
                 
@@ -1872,15 +2072,143 @@
                 return searchable.includes(query);
             }
             
+            // Obtener elemento por ID
             getById(id) {
                 return this.data.index.byId.get(id);
             }
             
+            // Obtener referencias semánticas de un elemento
             getSemanticReferences(id) {
                 return this.data.index.semanticRefs.get(id) || [];
             }
             
+            // Obtener nodos visibles para el grafo (carga diferida)
+            getVisibleNodes(zoomLevel = this.lastZoomLevel) {
+                // Guardar el nivel de zoom actual
+                this.lastZoomLevel = zoomLevel;
+                
+                // Si ya tenemos caché para este nivel de zoom, usarlo
+                if (zoomLevel < 0.3 && this.graphNodesCache.top20) {
+                    return this.graphNodesCache.top20;
+                } else if (zoomLevel < 0.6 && this.graphNodesCache.top50) {
+                    return this.graphNodesCache.top50;
+                } else if (this.graphNodesCache.all) {
+                    return this.graphNodesCache.all;
+                }
+                
+                // Calcular nodos visibles según nivel de zoom
+                let nodes = [];
+                
+                if (zoomLevel < 0.3) {
+                    // Zoom alejado: solo top 20 nodos por conexiones
+                    nodes = this.getTopNodes(20);
+                    this.graphNodesCache.top20 = nodes;
+                } else if (zoomLevel < 0.6) {
+                    // Zoom medio: top 50 nodos
+                    nodes = this.getTopNodes(50);
+                    this.graphNodesCache.top50 = nodes;
+                } else {
+                    // Zoom cercano: todos los nodos
+                    nodes = this.getAllNodes();
+                    this.graphNodesCache.all = nodes;
+                }
+                
+                return nodes;
+            }
+            
+            // Obtener top N nodos por número de conexiones
+            getTopNodes(limit) {
+                const nodeConnections = new Map();
+                
+                for (const [sourceId, refs] of this.data.index.semanticRefs) {
+                    nodeConnections.set(sourceId, (nodeConnections.get(sourceId) || 0) + refs.length);
+                    
+                    refs.forEach(ref => {
+                        nodeConnections.set(ref.id, (nodeConnections.get(ref.id) || 0) + 1);
+                    });
+                }
+                
+                // Ordenar y limitar
+                return Array.from(nodeConnections.entries())
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, limit)
+                    .map(([id]) => {
+                        const node = this.data.index.byId.get(id);
+                        if (!node) return null;
+                        
+                        return {
+                            id: node.id,
+                            label: node.name || node.id,
+                            group: node.type === 'entity' ? 'entity' : 'concept',
+                            title: `<div class="tooltip-title">${node.name || node.id}</div>
+                                    <div>${node.description || ''}</div>
+                                    <div class="tooltip-type ${node.type}">${node.type.charAt(0).toUpperCase() + node.type.slice(1)}</div>`,
+                            shape: 'dot',
+                            size: 15 + (nodeConnections.get(node.id) || 0) * 0.5
+                        };
+                    }).filter(n => n);
+            }
+            
+            // Obtener todos los nodos
+            getAllNodes() {
+                const nodes = [];
+                
+                for (const entity of this.data.entities.values()) {
+                    nodes.push(this.createGraphNode(entity, 'entity'));
+                }
+                
+                for (const concept of this.data.concepts.values()) {
+                    nodes.push(this.createGraphNode(concept, 'concept'));
+                }
+                
+                return nodes;
+            }
+            
+            // Crear nodo de grafo
+            createGraphNode(item, type) {
+                return {
+                    id: item.id,
+                    label: item.name || item.id,
+                    group: type,
+                    title: `<div class="tooltip-title">${item.name || item.id}</div>
+                            <div>${item.description || ''}</div>
+                            <div class="tooltip-type ${type}">${type.charAt(0).toUpperCase() + type.slice(1)}</div>`,
+                    shape: 'dot',
+                    size: 15 + (this.getSemanticReferences(item.id).length * 0.5)
+                };
+            }
+            
+            // Obtener aristas para nodos dados
+            getEdgesForNodes(nodes) {
+                const nodeIds = new Set(nodes.map(n => n.id));
+                const edges = [];
+                
+                for (const [sourceId, refs] of this.data.index.semanticRefs) {
+                    if (!nodeIds.has(sourceId)) continue;
+                    
+                    refs.forEach(ref => {
+                        if (nodeIds.has(ref.id)) {
+                            edges.push({
+                                from: sourceId,
+                                to: ref.id,
+                                arrows: 'to',
+                                color: { 
+                                    color: ref.type === 'entity' ? '#4f46e5' : '#8b5cf6', 
+                                    highlight: '#3b82f6' 
+                                },
+                                width: 1.5,
+                                smooth: { type: 'continuous' }
+                            });
+                        }
+                    });
+                }
+                
+                return edges;
+            }
+            
+            // Generar datos de ejemplo
             initializeSampleData() {
+                // Entidades de ejemplo
                 this.data.entities.set('@ceo', {
                     id: '@ceo',
                     name: 'CEO',
@@ -1905,6 +2233,7 @@
                     updatedAt: new Date().toISOString()
                 });
                 
+                // Conceptos de ejemplo
                 this.data.concepts.set('#vna', {
                     id: '#vna',
                     name: 'Value Network Analysis',
@@ -1929,6 +2258,7 @@
                     updatedAt: new Date().toISOString()
                 });
                 
+                // Proyecto de ejemplo
                 this.data.projects.set('proyecto-masia', {
                     id: 'proyecto-masia',
                     name: 'Proyecto MASIA',
@@ -1941,6 +2271,7 @@
                     updatedAt: new Date().toISOString()
                 });
                 
+                // Patrón de ejemplo
                 this.data.patterns.set('patron-vesting-4-anos', {
                     id: 'patron-vesting-4-anos',
                     name: 'Vesting 4 años con cliff de 1 año',
@@ -1956,6 +2287,7 @@
                 showNotification('✨ Datos de ejemplo cargados. ¡Explora la base de conocimiento!', 'info');
             }
             
+            // Exportar a JSON
             exportJSON() {
                 return {
                     metadata: this.data.metadata,
@@ -1966,12 +2298,14 @@
                 };
             }
             
+            // Importar desde JSON
             importJSON(data) {
                 try {
                     if (!data.entities || !data.concepts) {
                         throw new Error('El archivo no tiene la estructura correcta de TTKB-v2.0');
                     }
                     
+                    // Fusionar datos (sobreescribir IDs existentes)
                     for (const [id, entity] of Object.entries(data.entities)) {
                         this.data.entities.set(id, entity);
                     }
@@ -1992,6 +2326,11 @@
                         }
                     }
                     
+                    // Invalidar caché de nodos del grafo
+                    this.graphNodesCache.all = null;
+                    this.graphNodesCache.top20 = null;
+                    this.graphNodesCache.top50 = null;
+                    
                     this.rebuildIndex();
                     this.save();
                     
@@ -2002,17 +2341,6 @@
                     showNotification(`❌ Error al importar: ${error.message}`, 'error');
                     return false;
                 }
-            }
-            
-            updateStats() {
-                document.getElementById('total-entities').textContent = this.data.entities.size;
-                document.getElementById('total-concepts').textContent = this.data.concepts.size;
-                document.getElementById('total-projects').textContent = this.data.projects.size;
-                document.getElementById('total-relationships').textContent = this.data.index.semanticRefs.size;
-                document.getElementById('indexed-items').textContent = this.data.metadata.totalItems;
-                document.getElementById('last-update').textContent = this.data.metadata.indexedAt 
-                    ? new Date(this.data.metadata.indexedAt).toLocaleTimeString()
-                    : 'Nunca';
             }
         }
         
@@ -2039,13 +2367,16 @@
             }, 3000);
         }
         
+        // Convertir texto con @ y # en enlaces HTML
         function parseSemanticText(text) {
             if (!text) return '';
             
+            // Reemplazar @entidades
             text = text.replace(/(@[\w-]+)/g, match => {
                 return `<a href="#" class="reference-link entity" data-id="${match}">${match}</a>`;
             });
             
+            // Reemplazar #conceptos
             text = text.replace(/(#[\w-]+)/g, match => {
                 return `<a href="#" class="reference-link concept" data-id="${match}">${match}</a>`;
             });
@@ -2053,6 +2384,7 @@
             return text;
         }
         
+        // Renderizar tarjetas de conocimiento
         function renderKnowledgeCards(results) {
             const grid = document.getElementById('knowledge-grid');
             
@@ -2073,7 +2405,7 @@
                             <h3><i class="fas fa-magic"></i> ¿No encuentras lo que buscas?</h3>
                             <p>¡Crea una nueva entidad o concepto directamente desde aquí!</p>
                             <button id="create-from-search" class="btn btn-warning">
-                                <i class="fas fa-plus"></i> Crear "@${document.getElementById('knowledge-search').value.trim()}"
+                                <i class="fas fa-plus"></i> Crear "${document.getElementById('knowledge-search').value.trim()}"
                             </button>
                         </div>
                     </div>
@@ -2105,6 +2437,7 @@
             
             grid.innerHTML = html;
             
+            // Añadir eventos a los enlaces de referencia
             document.querySelectorAll('.reference-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -2114,6 +2447,7 @@
             });
         }
         
+        // Crear tarjeta de conocimiento HTML
         function createKnowledgeCard(item, type) {
             const isEntity = type === 'entity' || item.id.startsWith('@');
             const typeClass = isEntity ? 'entity' : 'concept';
@@ -2143,6 +2477,7 @@
             `;
         }
         
+        // Mostrar detalle de conocimiento
         function showEntityDetails(id) {
             const item = window.kb.getById(id);
             if (!item) {
@@ -2190,51 +2525,18 @@
             document.getElementById('entityModal').classList.add('active');
         }
         
+        // Renderizar grafo de conocimiento con carga diferida
         function renderKnowledgeGraph() {
             const container = document.getElementById('graph-container');
+            const loadingIndicator = document.getElementById('graph-loading');
             
-            const nodes = [];
-            const edges = [];
+            if (loadingIndicator) loadingIndicator.style.display = 'block';
             
-            for (const entity of window.kb.data.entities.values()) {
-                nodes.push({
-                    id: entity.id,
-                    label: entity.name || entity.id,
-                    group: 'entity',
-                    title: `<div class="tooltip-title">${entity.name || entity.id}</div>
-                            <div>${entity.description || ''}</div>
-                            <div class="tooltip-type entity">Entidad</div>`,
-                    shape: 'dot',
-                    size: 25 + (window.kb.getSemanticReferences(entity.id).length * 2)
-                });
-            }
+            // Obtener nodos visibles según zoom actual (inicialmente 1.0)
+            const visibleNodes = window.kb.getVisibleNodes(1.0);
+            const visibleEdges = window.kb.getEdgesForNodes(visibleNodes);
             
-            for (const concept of window.kb.data.concepts.values()) {
-                nodes.push({
-                    id: concept.id,
-                    label: concept.name || concept.id,
-                    group: 'concept',
-                    title: `<div class="tooltip-title">${concept.name || concept.id}</div>
-                            <div>${concept.description || ''}</div>
-                            <div class="tooltip-type concept">Concepto</div>`,
-                    shape: 'dot',
-                    size: 25 + (window.kb.getSemanticReferences(concept.id).length * 2)
-                });
-            }
-            
-            for (const [sourceId, refs] of window.kb.data.index.semanticRefs) {
-                refs.forEach(ref => {
-                    edges.push({
-                        from: sourceId,
-                        to: ref.id,
-                        arrows: 'to',
-                        color: { color: ref.type === 'entity' ? '#4f46e5' : '#8b5cf6', highlight: '#3b82f6' },
-                        width: 1.5,
-                        smooth: { type: 'continuous' }
-                    });
-                });
-            }
-            
+            // Configurar opciones del grafo
             const options = {
                 nodes: {
                     shape: 'dot',
@@ -2294,7 +2596,8 @@
                 },
                 physics: {
                     stabilization: {
-                        iterations: 100
+                        iterations: 50,
+                        updateInterval: 25
                     },
                     forceAtlas2Based: {
                         gravitationalConstant: -50,
@@ -2314,8 +2617,8 @@
             };
             
             const data = {
-                nodes: new vis.DataSet(nodes),
-                edges: new vis.DataSet(edges)
+                nodes: new vis.DataSet(visibleNodes),
+                edges: new vis.DataSet(visibleEdges)
             };
             
             if (window.kb.graphInstance) {
@@ -2324,6 +2627,38 @@
             
             window.kb.graphInstance = new vis.Network(container, data, options);
             
+            // Añadir indicador de nivel de zoom
+            addZoomIndicator();
+            
+            // Escuchar cambios de zoom para actualizar nodos visibles
+            window.kb.graphInstance.on('zoom', () => {
+                const currentScale = window.kb.graphInstance.getScale();
+                const newVisibleNodes = window.kb.getVisibleNodes(currentScale);
+                const newVisibleEdges = window.kb.getEdgesForNodes(newVisibleNodes);
+                
+                // Actualizar dataset sin destruir la instancia
+                window.kb.graphInstance.setData({
+                    nodes: newVisibleNodes,
+                    edges: newVisibleEdges
+                });
+                
+                // Actualizar indicador de zoom
+                updateZoomIndicator(currentScale);
+            });
+            
+            // Esconder indicador de carga cuando esté estable
+            window.kb.graphInstance.on('stabilizationIterationsDone', () => {
+                if (loadingIndicator) loadingIndicator.style.display = 'none';
+            });
+            
+            // Fallback: esconder después de 2 segundos
+            setTimeout(() => {
+                if (loadingIndicator && loadingIndicator.style.display !== 'none') {
+                    loadingIndicator.style.display = 'none';
+                }
+            }, 2000);
+            
+            // Evento de clic en nodos
             window.kb.graphInstance.on('click', function(properties) {
                 if (properties.nodes.length > 0) {
                     const nodeId = properties.nodes[0];
@@ -2332,6 +2667,39 @@
             });
         }
         
+        // Añadir indicador de nivel de zoom
+        function addZoomIndicator() {
+            const container = document.getElementById('graph-container');
+            if (!container) return;
+            
+            let indicator = document.getElementById('zoom-level-indicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'zoom-level-indicator';
+                indicator.className = 'zoom-level-indicator';
+                container.appendChild(indicator);
+            }
+            
+            updateZoomIndicator(1.0);
+        }
+        
+        // Actualizar indicador de zoom
+        function updateZoomIndicator(scale) {
+            const indicator = document.getElementById('zoom-level-indicator');
+            if (!indicator) return;
+            
+            const percentage = Math.round(scale * 100);
+            
+            // Determinar nivel de detalle
+            let detailLevel = '';
+            if (scale < 0.3) detailLevel = 'Básico';
+            else if (scale < 0.6) detailLevel = 'Medio';
+            else detailLevel = 'Completo';
+            
+            indicator.innerHTML = `${percentage}% - ${detailLevel} <span class="optimization-badge">Optimizado</span>`;
+        }
+        
+        // Abrir formulario de creación con término prellenado
         function openCreateForm(searchTerm) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -2353,9 +2721,14 @@
         
         // ========== INICIALIZACIÓN ==========
         document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar base de conocimiento
             window.kb = new KnowledgeBase();
             window.kb.init();
             
+            // Actualizar estadísticas en UI
+            window.kb.updateStatsUI(window.kb.loadQuickStats());
+            
+            // Event listeners para modal
             document.getElementById('closeModal').addEventListener('click', () => {
                 document.getElementById('entityModal').classList.remove('active');
             });
@@ -2378,6 +2751,7 @@
                 }
             });
             
+            // Event listeners para tabs
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -2392,6 +2766,7 @@
                 });
             });
             
+            // Event listeners para búsqueda
             document.getElementById('search-btn').addEventListener('click', performSearch);
             document.getElementById('knowledge-search').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') performSearch();
@@ -2404,6 +2779,7 @@
                 });
             });
             
+            // Event listener para guardar conocimiento
             document.getElementById('save-knowledge').addEventListener('click', function() {
                 try {
                     const knowledge = {
@@ -2422,6 +2798,7 @@
                     
                     window.kb.addKnowledge(knowledge);
                     
+                    // Limpiar formulario
                     document.getElementById('knowledge-id').value = '';
                     document.getElementById('knowledge-name').value = '';
                     document.getElementById('knowledge-description').value = '';
@@ -2434,6 +2811,7 @@
                 }
             });
             
+            // Event listeners para exportar/importar
             document.getElementById('export-btn').addEventListener('click', function() {
                 const data = window.kb.exportJSON();
                 const dataStr = JSON.stringify(data, null, 2);
@@ -2485,23 +2863,43 @@
                 reader.readAsText(file);
             });
             
+            // Event listener para actualizar índice
             document.getElementById('refresh-index').addEventListener('click', function() {
                 window.kb.rebuildIndex();
-                window.kb.updateStats();
+                window.kb.updateStatsUI(window.kb.loadQuickStats());
                 showNotification('✅ Índice actualizado correctamente', 'success');
             });
             
+            // Event listener para resetear grafo
             document.getElementById('reset-graph').addEventListener('click', function() {
                 if (window.kb.graphInstance) {
                     window.kb.graphInstance.fit();
                 }
             });
             
+            // Realizar búsqueda inicial (vacía para mostrar todo)
             performSearch();
             
+            // Mostrar notificación de bienvenida
             setTimeout(() => {
-                showNotification('✨ ¡Bienvenido a la Base de Conocimiento Semántica v0.3! Busca @entidades y #conceptos o explora el grafo de relaciones.', 'success');
+                showNotification('✨ ¡Bienvenido a la Base de Conocimiento Semántica v0.4! Busca @entidades y #conceptos o explora el grafo de relaciones.', 'success');
             }, 1000);
+            
+            // Guardar estadísticas antes de cerrar la pestaña
+            window.addEventListener('beforeunload', () => {
+                if (window.kb) {
+                    window.kb.saveStats();
+                    console.log('💾 Estadísticas guardadas antes de cerrar');
+                }
+            });
+            
+            // Sincronización entre pestañas
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'tt_knowledge_base_v2' && window.kb) {
+                    console.log('🔄 Detectado cambio en otra pestaña, recargando datos...');
+                    window.kb.init();
+                }
+            });
         });
         
         function performSearch() {
