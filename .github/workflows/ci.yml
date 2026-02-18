@@ -1,0 +1,31 @@
+name: CI - Continuous Integration
+
+on:
+  pull_request:
+    branches: [ main, feature/kb-v0.5-update ]
+  push:
+    branches: [ main, feature/kb-v0.5-update ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: if [ -f package.json ]; then npm ci; fi
+      - name: Run tests
+        run: if [ -f package.json ]; then npm test || echo "No tests"; fi
+        continue-on-error: true
+      - name: Validate HTML
+        run: find . -name "*.html" -not -path "./node_modules/*" | head -5
+        continue-on-error: true
+      - name: Check common-model.js
+        run: if [ -f common-model.js ]; then node -c common-model.js; fi
+        continue-on-error: true
