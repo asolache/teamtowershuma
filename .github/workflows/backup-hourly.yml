@@ -1,0 +1,22 @@
+name: Hourly Backup
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Create Backup
+        run: |
+          tar -czf backup-$(date +%Y-%m-%d_%H-%M-%S).tar.gz .
+          
+      - name: Upload Backup
+        uses: actions/upload-artifact@v2
+        with:
+          name: backup
+          path: backup-*.tar.gz
