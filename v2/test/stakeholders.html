@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stakeholders Dashboard | TeamTowers Humà v2</title>
+    
+    <!-- Meta tags para inversores -->
+    <meta name="description" content="Oportunidad de Inversión Ronda 0 - TeamTowers Humà: 20.000€ para revolucionar la medición de valor">
+    <meta name="keywords" content="inversión, tokenomics, VNA, blockchain, DeFi, TeamTowers">
+    <meta name="author" content="TeamTowers Humà">
+    
+    <!-- Open Graph para compartir -->
+    <meta property="og:title" content="Inversión TeamTowers Humà - Ronda 0">
+    <meta property="og:description" content="Proyecciones: 230K año 1, 711K año 2, 1.47M año 3">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/stakeholders">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js ligero (solo si necesario) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Core Styles -->
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --font-sans: 'Segoe UI', system-ui, -apple-system, 'Roboto', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+        }
+        
+        body {
+            background: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+        
+        /* Header */
+        header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo img {
+            height: 45px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+        
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e01 30%, #c08b11 70%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Selector de proyectos v2 */
+        .project-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .project-select-dropdown {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            min-width: 200px;
+            cursor: pointer;
+        }
+        
+        .project-select-dropdown option {
+            background: var(--dark);
+            color: white;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin: 30px 0;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .investment-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Cards Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .product-name {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .product-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .price-table {
+            margin: 20px 0;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            background: #f8fafc;
+            transition: var(--transition);
+        }
+        
+        .price-row:hover {
+            transform: scale(1.02);
+        }
+        
+        .price-tier {
+            font-weight: 600;
+        }
+        
+        .price-amount {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Revenue Chart (barras manuales para evitar Chart.js si es pesado) */
+        .bars-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 200px;
+            margin: 20px 0;
+            padding: 10px 0;
+        }
+        
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+        }
+        
+        .bar {
+            width: 50px;
+            background: var(--primary);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .bar:hover {
+            opacity: 0.9;
+        }
+        
+        .bar-value {
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .bar-label {
+            margin-top: 5px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: var(--dark);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        
+        .bar:hover .tooltip {
+            opacity: 1;
+        }
+        
+        /* Donut Chart (CSS puro) */
+        .donut-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .donut {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--warning) 0deg 90deg,
+                var(--primary) 90deg 144deg,
+                var(--danger) 144deg 234deg,
+                var(--success) 234deg 360deg
+            );
+            margin: 20px auto;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        
+        .donut:hover {
+            transform: scale(1.05);
+        }
+        
+        .donut-center {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        /* Token Flow */
+        .token-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: var(--border-radius);
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .flow-step:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .flow-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .flow-text {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--accent);
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .token-flow {
+                flex-direction: column;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+        
+        /* Roadmap */
+        .roadmap {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        
+        .roadmap-phase {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-width: 150px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .roadmap-phase.active {
+            border-color: var(--success);
+            transform: scale(1.05);
+        }
+        
+        .roadmap-phase:hover {
+            transform: translateY(-5px);
+        }
+        
+        .phase-name {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .phase-amount {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .phase-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        @media (max-width: 768px) {
+            .roadmap {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .roadmap::before {
+                display: none;
+            }
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            margin: 60px 0;
+            padding: 40px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius);
+            color: white;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+    </style>
+    
+    <!-- Stakeholders CSS específico -->
+    <style id="stakeholders-css"></style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+                <span class="logo-text">TeamTowers Humà</span>
+            </div>
+            
+            <!-- Selector de proyectos v2 -->
+            <div class="project-selector" id="project-selector-container">
+                <i class="fas fa-folder-open" style="color: var(--accent);"></i>
+                <select id="project-select" class="project-select-dropdown">
+                    <option value="">Cargando proyectos...</option>
+                </select>
+                <button class="btn btn-sm btn-primary" onclick="showCreateProjectDialog()" title="Nuevo proyecto">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <nav>
+                <a href="/" class="btn btn-secondary">Home</a>
+                <a href="/knowledge-base" class="btn btn-secondary">KB</a>
+                <a href="/tokenomics" class="btn btn-secondary">Tokenomics</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Oportunidad de Inversión</h1>
+            <div class="subtitle">TeamTowers Humà · Força, Equilibri, Valor, Seny</div>
+            <div class="investment-badge" id="round-badge">Ronda 0 - 20.000€</div>
+        </section>
+
+        <!-- Product Grid -->
+        <h2 style="color: var(--primary); margin: 40px 0 20px;">📦 Productos y Servicios</h2>
+        <div class="products-grid" id="products-grid">
+            <!-- Se llena dinámicamente -->
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Proyecciones Financieras -->
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-line"></i> Proyección Ingresos (3 años)
+                </div>
+                <div class="bars-container" id="revenue-chart">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <p style="text-align: center; color: var(--gray); margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> CAGR: 188% año 1-2, 107% año 2-3
+                </p>
+            </div>
+
+            <!-- Distribución de Fondos Ronda 0 -->
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i> Uso de Fondos (20.000€)
+                </div>
+                <div class="donut-container" id="funds-chart">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tokenomics Flow -->
+        <h2 style="color: var(--primary); margin: 40px 0 20px;">🔄 Flujo de Valor → Token</h2>
+        <div class="token-flow" id="token-flow">
+            <!-- Se llena dinámicamente -->
+        </div>
+
+        <!-- Investment Roadmap -->
+        <h2 style="color: var(--primary); margin: 40px 0 20px;">📅 Roadmap de Inversión</h2>
+        <div class="roadmap" id="roadmap">
+            <!-- Se llena dinámicamente -->
+        </div>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2 class="cta-title">¿Interesado en la Ronda 0?</h2>
+            <p style="margin-bottom: 30px; font-size: 1.2rem;">20.000€ · Participación mínima: 1.000€ · Tokens TTH</p>
+            <button class="cta-button" onclick="contactInvestor()">
+                <i class="fas fa-handshake"></i> Solicitar información
+            </button>
+        </section>
+    </main>
+
+    <footer>
+        <p>TeamTowers Humà · Construyendo el futuro del valor colaborativo · 2026</p>
+        <p style="font-size: 0.9rem; margin-top: 10px;">Força, Equilibri, Valor, Seny</p>
+    </footer>
+
+    <!-- Core JavaScript v2 -->
+    <script src="/js/v2/teamtowers-project.js"></script>
+    
+    <!-- Stakeholders Module -->
+    <script src="/knowledge-base/modules/stakeholders.js"></script>
+</body>
+</html>
