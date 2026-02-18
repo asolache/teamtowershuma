@@ -1,0 +1,41 @@
+name: Auto Backup KB - Hourly
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: feature/kb-v0.5-update
+
+      - name: Create backup directory
+        run: mkdir -p backups/$(date +%Y-%m-%d)
+
+      - name: Backup v2/test
+        run: |
+          if [ -d "v2/test" ]; then
+            cp -r v2/test backups/$(date +%Y-%m-%d)/test-$(date +%H:%M:%S)
+          fi
+
+      - name: Backup common-model.js
+        run: |
+          if [ -f "common-model.js" ]; then
+            cp common-model.js backups/$(date +%Y-%m-%d)/common-model-$(date +%H:%M:%S).js
+          fi
+
+      - name: Create metadata
+        run: |
+          echo "Backup: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" > backups/$(date +%Y-%m-%d)/INFO.txt
+          echo "Branch: feature/kb-v0.5-update" >> backups/$(date +%Y-%m-%d)/INFO.txt
+
+      - name: Git commit
+        run: |
+          git config user.email "github@teamtowers.local"
+          git config user.name "GitHub Automator"
+          git add backups/
+          git commit -m "Auto backup $(date)" || true
+          git push origin feature/kb-v0.5-update
