@@ -67,24 +67,53 @@ TeamTowers Humà nace con un compromiso claro con el **Penedès**:
 📍 Acceso a ayudas de la Generalitat para innovación social y economía social  
 📍 Conexión con el patrimonio cultural catalán como diferencial competitivo
 
-## 🚀 Despliegue
+## 💻 Desarrollo local (localhost)
 
-Este proyecto está diseñado para despliegue rápido en plataformas estáticas:
+Visualiza el proyecto en tu máquina antes de subir cualquier cambio:
 
 ```bash
 # 1. Clona el repositorio
 git clone https://github.com/asolache/teamtowershuma.git
 cd teamtowershuma
 
-# 2. Edita el archivo index.html con tus datos
-nano index.html
+# 2. Arranca un servidor HTTP local (requiere Python 3)
+python3 -m http.server 8080
 
-# 3. Despliega en Netlify (recomendado)
+# 3. Abre en el navegador → http://localhost:8080
+```
+
+> Alternativa rápida con Node.js: `npx serve .`  
+> Con VS Code: instala **Live Server** y haz clic en "Go Live".
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para más opciones y el flujo completo de trabajo.
+
+---
+
+## 🚀 Modelo Ship / Show / Ask
+
+Usamos el modelo **Ship / Show / Ask** para clasificar cada cambio y decidir si necesita revisión:
+
+| Tipo     | Cuándo usarlo                               | Proceso                                |
+|----------|---------------------------------------------|----------------------------------------|
+| 🚀 **Ship** | Cambio trivial (typo, color, texto menor) | Commit directo a `main`                |
+| 👀 **Show** | Cambio pequeño que quieres comunicar      | Abre PR, tú mismo lo fusionas          |
+| ❓ **Ask**  | Cambio grande o con impacto alto          | Abre PR y solicita revisión            |
+
+Nombra tus ramas con el prefijo adecuado: `ship/`, `show/`, `ask/`, `feature/`, `fix/`, `docs/`.
+
+---
+
+## 🚀 Despliegue
+
+Este proyecto está diseñado para despliegue rápido en plataformas estáticas:
+
+```bash
+# Despliega en Netlify (recomendado)
 #    - Conecta tu repositorio GitHub
 #    - Netlify detectará automáticamente el index.html
 #    - ¡Listo en 30 segundos!
 
-# 4. O despliega manualmente en cualquier hosting estático
+# O despliega manualmente en cualquier hosting estático
 scp index.html usuario@tudominio.com:/var/www/html/
 ```
 
@@ -118,10 +147,12 @@ contactService('TeamTowers');
 ¿Eres diseñador, desarrollador o especialista en marketing del Penedès? ¡Nos encantaría colaborar contigo!
 
 1. **Fork** este repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/awesome-feature`)
-3. Haz commit de tus cambios (`git commit -am 'Add awesome feature'`)
-4. Haz push a la rama (`git push origin feature/awesome-feature`)
-5. Abre un **Pull Request**
+2. Crea una rama con el prefijo adecuado (`git checkout -b show/awesome-feature`)
+3. Haz commit de tus cambios (`git commit -m 'show: add awesome feature'`)
+4. Haz push a la rama (`git push origin show/awesome-feature`)
+5. Abre un **Pull Request** (la plantilla te guiará por el modelo Ship/Show/Ask)
+
+Lee la guía completa de contribución en [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📜 Licencia
 
