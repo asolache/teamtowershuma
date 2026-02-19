@@ -1,0 +1,79 @@
+name: Daily Backup to GitHub
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup-to-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Daily Backup
+        run: |
+          BACKUP_DATE=$(date +%Y-%m-%d)
+          BACKUP_FILE="teamtowers-backup-${BACKUP_DATE}.tar.gz"
+          
+          tar -czf "${BACKUP_FILE}" \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=.github \
+            --exclude=.backup* \
+            .
+          
+          echo "BACKUP_FILE=${BACKUP_FILE}" >> $GITHUB_ENV
+          ls -lh "${BACKUP_FILE}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.BACKUP_FILE }}
+          tag_name: backup-${{ github.run_number }}
+          name: "Daily Backup - $(date +%Y-%m-%d)"
+          body: |
+            🔄 **Automated Daily Backup**
+            
+            - **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+            - **Size**: $(du -h ${{ env.BACKUP_FILE }} | cut -f1)
+            - **Status**: ✅ Success
+            
+            **Contents Excluded:**
+            - `.git/` (history)
+            - `node_modules/` (dependencies)
+            - `.github/` (workflows)
+            
+            ⏰ Retention: 30 days
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Keep Only Last 5 Releases
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            
+            const backups = releases.data.filter(r => r.tag_name.startsWith('backup-'));
+            if (backups.length > 5) {
+              const toDelete = backups.slice(5);
+              for (const release of toDelete) {
+                await github.rest.repos.deleteRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release.id
+                });
+                console.log(`Deleted old backup: ${release.tag_name}`);
+              }
+            }
