@@ -3,20 +3,80 @@ name: Hourly Backup
 on:
   schedule:
     - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:  # Manual trigger
+
+permissions:
+  contents: write
+  actions: read
 
 jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4  # ✅ Actualizado a v4
 
-      - name: Create Backup
+      - name: Create Backup Directory
         run: |
-          tar -czf backup-$(date +%Y-%m-%d_%H-%M-%S).tar.gz .
-          
-      - name: Upload Backup
-        uses: actions/upload-artifact@v2
+          mkdir -p backups
+          echo "Backup timestamp: $(date)" > backup-info.txt
+
+      - name: Create Backup Archive
+        run: |
+          BACKUP_NAME="backup-$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
+          tar -czf "backups/${BACKUP_NAME}" \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=.github \
+            .
+          echo "BACKUP_FILE=${BACKUP_NAME}" >> $GITHUB_ENV
+          echo "✅ Backup created: ${BACKUP_NAME}"
+
+      - name: Upload Backup Artifact
+        uses: actions/upload-artifact@v4  # ✅ Actualizado a v4
         with:
-          name: backup
-          path: backup-*.tar.gz
+          name: backup-${{ github.run_id }}
+          path: backups/backup-*.tar.gz
+          retention-days: 30
+
+      - name: Create Release for Latest Backup
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "backups/backup-*.tar.gz"
+          tag: "backup-${{ github.run_number }}"
+          name: "Backup #${{ github.run_number }} - $(date)"
+          body: |
+            **Automatic Hourly Backup**
+            - Timestamp: $(date -u)
+            - Excluded: .git, node_modules, .github
+            - Status: ✅ Success
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Backup Metadata
+        run: |
+          git config --local user.email "backup@teamtowers.com"
+          git config --local user.name "Backup Bot"
+          
+          # Create backup manifest
+          echo "$(date -u): Backup $(basename backups/backup-*.tar.gz)" >> .backups-manifest
+          
+          git add .backups-manifest
+          git commit -m "docs: backup manifest updated [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify on Success
+        if: success()
+        run: |
+          echo "✅ Backup successful at $(date)"
+          echo "File: ${{ env.BACKUP_FILE }}"
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ Backup failed"
+          exit 1
