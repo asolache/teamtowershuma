@@ -548,7 +548,6 @@ function showEntregableForm(projectId, roleId, entregableId = null) {
     renderRequisitos();
 
     document.getElementById('add-requisito-btn').addEventListener('click', () => {
-        // Recoger valores actuales del DOM
         const items = document.querySelectorAll('.requisito-item');
         const nuevosRequisitos = [];
         items.forEach(item => {
@@ -821,7 +820,7 @@ window.showCreateTransactionForm = function(projectId, roleId, entregableId) {
     });
 };
 
-// ===== NUEVO: Función para mostrar formulario de evaluación =====
+// ===== Función para mostrar formulario de evaluación =====
 function showEvaluationForm(projectId, transactionId) {
     const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return;
@@ -830,13 +829,11 @@ function showEvaluationForm(projectId, transactionId) {
 
     const usuarioActual = window.usuarioActual || '@masterproject';
 
-    // Verificar que el usuario actual es el receptor
     if (transaction.recibido_por !== usuarioActual) {
         alert('No eres el receptor de esta transacción');
         return;
     }
 
-    // Valores iniciales
     const uvEstimado = transaction.uv_estimado;
     const uvRealInicial = transaction.uv_real !== null ? transaction.uv_real : '';
 
@@ -884,7 +881,6 @@ function showEvaluationForm(projectId, transactionId) {
             return;
         }
 
-        // Preparar objeto de actualización
         const updates = {
             uv_real: uvReal,
             estado: nuevoEstado,
@@ -895,12 +891,10 @@ function showEvaluationForm(projectId, transactionId) {
             }
         };
 
-        // Llamar al store para actualizar
         if (window.store && window.store.updateTransaction) {
             window.store.updateTransaction(projectId, transactionId, updates);
             console.log('✅ Transacción evaluada:', updates);
             alert('✅ Evaluación guardada correctamente');
-            // Volver a la pestaña de transacciones
             loadTabContent(projectId, 'transacciones');
         } else {
             alert('❌ Error al guardar la evaluación');
@@ -912,7 +906,7 @@ function showEvaluationForm(projectId, transactionId) {
     });
 }
 
-// ----- Pestaña Transacciones (modificada) -----
+// ----- Pestaña Transacciones -----
 function renderTransaccionesTab(projectId) {
     const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return '<p>Proyecto no encontrado</p>';
