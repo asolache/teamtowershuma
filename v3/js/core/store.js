@@ -20,7 +20,7 @@ class Store {
                 this.state = JSON.parse(saved);
                 // Asegurar estructura
                 if (!this.state.transactions) this.state.transactions = [];
-                if (!this.state.users) this.state.users = [];
+                if (!this.state.users) this.state.users = this.getDefaultUsers();
                 console.log('✅ Estado cargado desde localStorage');
             } catch (e) {
                 console.error('Error parsing state', e);
@@ -132,7 +132,19 @@ class Store {
     /**
      * Añade una transacción a un proyecto y al registro global
      * @param {string} projectId - ID del proyecto
-     * @param {object} transaction - Objeto transacción
+     * @param {object} transaction - Objeto transacción con:
+     *   - id: string
+     *   - entregable_id: string
+     *   - nombre: string
+     *   - creado_por: userId (emisor)
+     *   - recibido_por: userId (receptor)
+     *   - rol_emisor: string (rol del emisor)
+     *   - rol_receptor: string (rol del receptor)
+     *   - fecha: string (ISO)
+     *   - contenido: object
+     *   - uv_estimado: number
+     *   - uv_real: number (null si no evaluado)
+     *   - estado: string (pendiente, en_revision, completado, cancelado)
      */
     addTransaction(projectId, transaction) {
         const project = this.state.projects.find(p => p.id === projectId);
@@ -153,6 +165,9 @@ class Store {
         project.transacciones.push(transaction);
 
         // Añadir al registro global
+        if (!this.state.transactions) {
+            this.state.transactions = [];
+        }
         this.state.transactions.push(transaction);
 
         this.saveState();
@@ -169,17 +184,19 @@ class Store {
     }
 
     /**
-     * Obtiene todas las transacciones emitidas por un usuario
+     * Obtiene todas las transacciones donde un usuario es emisor o receptor
      */
     getUserTransactions(userId) {
-        return this.state.transactions.filter(tx => tx.creado_por === userId);
+        return (this.state.transactions || []).filter(tx => 
+            tx.creado_por === userId || tx.recibido_por === userId
+        );
     }
 
     /**
      * Obtiene todas las transacciones (registro público)
      */
     getAllTransactions() {
-        return this.state.transactions;
+        return this.state.transactions || [];
     }
 
     /**
