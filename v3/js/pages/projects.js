@@ -1,6 +1,6 @@
 // /v3/js/pages/projects.js
 // Vista de lista de proyectos y creación de nuevos proyectos (modal)
-// v3.5 - Corregido para evitar errores de sintaxis
+// v3.5 - VERSIÓN CORREGIDA SIN ERRORES DE SINTAXIS
 
 console.log('📦 Cargando projects.js...');
 
@@ -47,7 +47,10 @@ window.renderProjects = function() {
 window.setupProjectsEvents = function() {
     console.log('⚙️ Configurando eventos de projects');
     
-    document.getElementById('new-project-btn')?.addEventListener('click', showNewProjectForm);
+    const newProjectBtn = document.getElementById('new-project-btn');
+    if (newProjectBtn) {
+        newProjectBtn.addEventListener('click', showNewProjectForm);
+    }
     
     document.querySelectorAll('.view-project-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
