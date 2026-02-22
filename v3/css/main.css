@@ -265,3 +265,90 @@ h2 { color: #2d3748; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padd
     color: #666;
     margin-top: 0.25rem;
 }
+
+/* Estilos para transacciones */
+.transacciones-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.filtros {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filtro-select, .filtro-date {
+    padding: 0.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background: var(--bg-card);
+    min-width: 150px;
+}
+
+.transacciones-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-pinya);
+}
+
+.transacciones-table th {
+    background: var(--tt-secondary);
+    color: white;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.transacciones-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.transacciones-table tr:hover {
+    background: rgba(0,0,0,0.02);
+}
+
+.estado-pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.estado-en_revision {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+.estado-completado {
+    background-color: #d4edda;
+    color: #155724;
+}
+.estado-cancelado {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.evaluar-btn {
+    background: var(--tt-accent);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.evaluar-btn:hover {
+    background: var(--tt-primary);
+}
