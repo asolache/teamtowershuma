@@ -2,8 +2,14 @@
 // Export Manager - Placeholder para evitar 404
 
 window.ExportManager = {
-    exportData: () => console.log('Export no implementado'),
-    importData: () => console.log('Import no implementado')
+    exportData: function() {
+        console.log('Export no implementado');
+        alert('Funcionalidad de exportación en desarrollo');
+    },
+    importData: function() {
+        console.log('Import no implementado');
+        alert('Funcionalidad de importación en desarrollo');
+    }
 };
 
 console.log('✅ export-manager.js cargado (placeholder)');
