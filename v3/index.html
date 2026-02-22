@@ -1,10 +1,194 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    ... (todo igual hasta la sección de inicialización) ...
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers Humà v3.5</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Estilos adicionales (sin cambios) */
+        .btn-primary {
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+        .tab-link {
+            transition: all 0.2s;
+        }
+        .tab-link:hover {
+            color: var(--tt-primary) !important;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--tt-secondary);
+            font-size: 1.2rem;
+        }
+        .loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 1rem auto;
+            border: 4px solid var(--border-light);
+            border-top-color: var(--tt-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .error-container {
+            max-width: 600px;
+            margin: 3rem auto;
+            text-align: center;
+        }
+        .error-title {
+            color: var(--status-forca);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--tt-primary);
+            box-shadow: var(--shadow-tronc);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--tt-primary);
+        }
+        .logo-icon {
+            font-size: 2rem;
+        }
+        .main-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: var(--tt-secondary);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background: var(--border-light);
+            color: var(--tt-primary);
+        }
+        .nav-highlight {
+            background: var(--color-testing);
+            color: white !important;
+        }
+        .nav-highlight:hover {
+            background: var(--color-testing);
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+        .breadcrumb {
+            padding: 1rem 2rem;
+            background: var(--bg-app);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .breadcrumb a {
+            color: var(--tt-secondary);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--tt-primary);
+            text-decoration: underline;
+        }
+        #main-content {
+            padding: 2rem;
+            min-height: calc(100vh - 180px);
+        }
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+        }
+        .error-message button {
+            background: #c00;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+        .error-message button:hover {
+            background: #a00;
+        }
+    </style>
 </head>
 <body>
-    ... (todo igual) ...
+    <div class="app">
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">TeamTowers v3.5</span>
+            </div>
+            <nav class="main-nav">
+                <a href="#" data-page="dashboard" class="nav-link">📊 Dashboard</a>
+                <a href="#" data-page="projects" class="nav-link">📋 Proyectos</a>
+                <a href="#" data-page="create-project" class="nav-link nav-highlight">➕ Nuevo Proyecto</a>
+                <a href="#" data-page="users" class="nav-link">👥 Usuarios</a>
+                <a href="#" data-page="castell" class="nav-link">🏰 Castell</a>
+                <a href="#" data-page="value-map" class="nav-link">🗺️ Value Map</a>
+                <a href="#" data-page="value-accounting" class="nav-link">💰 Value Accounting</a>
+            </nav>
+        </header>
+
+        <div class="breadcrumb" id="breadcrumb">
+            <a href="#" data-page="dashboard">Inicio</a>
+        </div>
+
+        <main id="main-content">
+            <div class="loading">Iniciando TeamTowers v3.5...</div>
+        </main>
+    </div>
+
+    <!-- ===== CORE ===== -->
+    <script src="js/core/constants.js"></script>
+    <script src="js/core/event-bus.js"></script>
+    <script src="js/core/store.js"></script>
+    <script src="js/core/selectors.js"></script>
+    <script src="js/core/export-manager.js"></script>
+    <script src="js/core/router.js"></script>
+
+    <!-- ===== COMPONENTES UI ===== -->
+    <script src="js/components/tt-metric-card.js"></script>
+    <script src="js/components/tt-data-table.js"></script>
+    <script src="js/components/tt-filter-bar.js"></script>
+    <script src="js/components/tt-pie-chart.js"></script>
+    <script src="js/components/tt-breadcrumb.js"></script>
+    <script src="js/components/tt-pinya-visual.js"></script>
+    <script src="js/components/tt-form.js"></script>
+    <script src="js/components/tt-role-selector.js"></script>
+
+    <!-- ===== PÁGINAS ===== -->
+    <script src="js/pages/dashboard.js"></script>
+    <script src="js/pages/projects.js"></script>
+    <script src="js/pages/create-project.js"></script>
+    <script src="js/pages/project.js"></script>
+    <script src="js/pages/users.js"></script>
+    <script src="js/pages/user.js"></script>
+    <script src="js/pages/castell-view.js"></script>
+    <script src="js/pages/value-mapping.js"></script>
+    <script src="js/pages/value-accounting.js"></script>
 
     <!-- ===== INICIALIZACIÓN ===== -->
     <script>
@@ -44,7 +228,7 @@
                 
                 console.log('✅ Todas las dependencias cargadas correctamente');
                 
-                // Inicializar router (él mismo manejará la ruta inicial)
+                // Inicializar router (él mismo maneja la ruta inicial)
                 try {
                     window.router = new window.Router();
                     console.log('🔄 Router inicializado y procesando ruta actual');
@@ -83,8 +267,6 @@
                 console.error('🔥 Error global:', e.error?.message || e.message);
             });
 
-            // Los eventos de navegación (popstate, clicks en data-page) ya los maneja el router,
-            // así que no es necesario duplicarlos aquí.
         })();
     </script>
 </body>
