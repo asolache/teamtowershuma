@@ -1,4 +1,6 @@
-// event-bus.js - Comunicación entre componentes
+// /v3/js/core/event-bus.js
+// Sistema de eventos desacoplado (versión global)
+
 class EventBus {
     constructor() {
         this.events = {};
@@ -50,4 +52,7 @@ class EventBus {
     }
 }
 
-export const eventBus = new EventBus();
+// Instancia global
+window.EventBus = new EventBus();
+
+console.log('✅ event-bus.js cargado');
