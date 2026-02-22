@@ -1,0 +1,634 @@
+{
+  "modelId": "casteller-3d10-v1",
+  "name": "Modelo Casteller 3 de 10 amb Folre i Manilles",
+  "description": "Estructura completa de roles para un 3 de 10, la construcción humana más alta. Incluye administración, técnica, soporte y base.",
+  "version": "3.2.0",
+  "metadata": {
+    "author": "@arquitecto",
+    "created": "2026-02-22",
+    "tags": ["castells", "3de10", "folre", "manilles", "cooperación", "jerarquía", "equilibri"],
+    "totalRoles": 67,
+    "altura": "10 pisos",
+    "estructura": "3 de 10 amb folre i manilles"
+  },
+  
+  "jerarquia": {
+    "nivells": [
+      "direcció", "administració", "cim", "pom-de-dalt", "tronc-alt", 
+      "tronc-mig", "tronc-baix", "manilles", "folre", "pinya", "soporte"
+    ]
+  },
+
+  "roles": [
+    // ===== ADMINISTRACIÓN (JUNTA DIRECTIVA) =====
+    {
+      "id": "@cap-de-colles",
+      "name": "Cap de Colles",
+      "level": "direcció",
+      "sublevel": "executiva",
+      "description": "Líder máximo de la colla. Decide qué castells es poden intentar. Responsable de la estratégia i la visió.",
+      "multiplier": 2.5,
+      "color": "#8b0000",
+      "skills": ["liderazgo", "estratègia", "visió", "gestió de riscos"],
+      "fevs": { "F": 0.4, "E": 1.0, "V": 0.9, "S": 0.9 }
+    },
+    {
+      "id": "@president",
+      "name": "President",
+      "level": "administració",
+      "sublevel": "governança",
+      "description": "Representació institucional, relacions externes i sostenibilitat econòmica.",
+      "multiplier": 2.2,
+      "color": "#b22222",
+      "skills": ["governança", "finances", "relacions públiques", "legal"],
+      "fevs": { "F": 0.3, "E": 0.9, "V": 0.8, "S": 0.7 }
+    },
+    {
+      "id": "@tresorer",
+      "name": "Tresorer",
+      "level": "administració",
+      "sublevel": "economia",
+      "description": "Gestió econòmica, pressupostos i tokenomics de la colla.",
+      "multiplier": 1.8,
+      "color": "#cd5c5c",
+      "skills": ["finances", "pressupostos", "tokenomics", "comptabilitat"],
+      "fevs": { "F": 0.5, "E": 0.8, "V": 0.7, "S": 0.8 }
+    },
+    {
+      "id": "@secretari",
+      "name": "Secretari",
+      "level": "administració",
+      "sublevel": "documentació",
+      "description": "Gestió documental, actes i memòria històrica de la colla.",
+      "multiplier": 1.5,
+      "color": "#a0522d",
+      "skills": ["documentació", "arxiu", "comunicació", "organització"],
+      "fevs": { "F": 0.6, "E": 0.7, "V": 0.5, "S": 0.9 }
+    },
+
+    // ===== DIRECCIÓN TÉCNICA =====
+    {
+      "id": "@cap-de-tronc",
+      "name": "Cap de Tronc",
+      "level": "direcció-tècnica",
+      "sublevel": "execució",
+      "description": "Responsable de la tècnica del tronc. Assegura la verticalitat i el ritme de pujada.",
+      "multiplier": 2.1,
+      "color": "#b8860b",
+      "skills": ["coordinació tècnica", "ritme", "verticalitat", "gestió d'equips"],
+      "fevs": { "F": 0.5, "E": 0.8, "V": 0.9, "S": 0.9 }
+    },
+    {
+      "id": "@cap-de-pinyes",
+      "name": "Cap de Pinyes",
+      "level": "direcció-tècnica",
+      "sublevel": "base",
+      "description": "Responsable de la pinya. Gestiona la massa, la cohesió i la seguretat de la base.",
+      "multiplier": 1.9,
+      "color": "#9acd32",
+      "skills": ["gestió de masses", "cohesió", "seguretat", "logística"],
+      "fevs": { "F": 0.8, "E": 0.7, "V": 0.5, "S": 0.9 }
+    },
+    {
+      "id": "@cap-de-folre",
+      "name": "Cap de Folre",
+      "level": "direcció-tècnica",
+      "sublevel": "infra",
+      "description": "Responsable del folre i manilles. Gestió de les capes intermèdies de suport.",
+      "multiplier": 1.8,
+      "color": "#4682b4",
+      "skills": ["infraestructura", "reforç", "estabilitat", "coordinació"],
+      "fevs": { "F": 0.7, "E": 0.8, "V": 0.6, "S": 0.8 }
+    },
+
+    // ===== POM DE DALT (CIMA) =====
+    {
+      "id": "@enxaneta",
+      "name": "Enxaneta",
+      "level": "cim",
+      "sublevel": "coronament",
+      "description": "El que corona el castell. La visió feta realitat. Sense ella, no hi ha valor alliberat.",
+      "multiplier": 2.8,
+      "color": "#ffd700",
+      "skills": ["equilibri", "agilitat", "visió", "execució final"],
+      "fevs": { "F": 0.2, "E": 1.0, "V": 1.0, "S": 0.6 }
+    },
+    {
+      "id": "@aixecador-1",
+      "name": "Aixecador 1",
+      "level": "cim",
+      "sublevel": "suport-cim",
+      "description": "Sosté l'enxaneta. Primer punt de contacte amb el cim.",
+      "multiplier": 2.2,
+      "color": "#daa520",
+      "skills": ["força", "estabilitat", "suport", "coordinació"],
+      "fevs": { "F": 0.5, "E": 0.8, "V": 0.7, "S": 0.9 }
+    },
+    {
+      "id": "@aixecador-2",
+      "name": "Aixecador 2",
+      "level": "cim",
+      "sublevel": "suport-cim",
+      "description": "Segon punt de suport del cim. Garanteix la redundància en l'estabilitat final.",
+      "multiplier": 2.1,
+      "color": "#b8860b",
+      "skills": ["força", "estabilitat", "redundància", "coordinació"],
+      "fevs": { "F": 0.6, "E": 0.7, "V": 0.6, "S": 0.9 }
+    },
+
+    // ===== DOSOS (POM DE DALT - SEGON PIS) =====
+    {
+      "id": "@dosos-esquerra",
+      "name": "Doso Esquerra",
+      "level": "pom-de-dalt",
+      "sublevel": "arquitectura",
+      "description": "Part esquerra del segon pis. Arquitectura de solució.",
+      "multiplier": 1.9,
+      "color": "#9b59b6",
+      "skills": ["arquitectura", "disseny", "estabilitat", "precisió"],
+      "fevs": { "F": 0.5, "E": 0.8, "V": 0.8, "S": 0.8 }
+    },
+    {
+      "id": "@dosos-dreta",
+      "name": "Doso Dreta",
+      "level": "pom-de-dalt",
+      "sublevel": "arquitectura",
+      "description": "Part dreta del segon pis. Arquitectura de solució.",
+      "multiplier": 1.9,
+      "color": "#9b59b6",
+      "skills": ["arquitectura", "disseny", "estabilitat", "precisió"],
+      "fevs": { "F": 0.5, "E": 0.8, "V": 0.8, "S": 0.8 }
+    },
+
+    // ===== TRONC ALT (QUINTS, SISENS, SETENS) =====
+    {
+      "id": "@setens-1",
+      "name": "Setens 1",
+      "level": "tronc-alt",
+      "sublevel": "senior",
+      "description": "Setè pis, posició 1. Altíssima responsabilitat. Desenvolupament sènior.",
+      "multiplier": 1.8,
+      "color": "#3498db",
+      "skills": ["desenvolupament avançat", "precisió", "responsabilitat"],
+      "fevs": { "F": 0.6, "E": 0.7, "V": 0.7, "S": 0.8 }
+    },
+    {
+      "id": "@setens-2",
+      "name": "Setens 2",
+      "level": "tronc-alt",
+      "sublevel": "senior",
+      "description": "Setè pis, posició 2.",
+      "multiplier": 1.8,
+      "color": "#3498db",
+      "skills": ["desenvolupament avançat", "precisió", "responsabilitat"],
+      "fevs": { "F": 0.6, "E": 0.7, "V": 0.7, "S": 0.8 }
+    },
+    {
+      "id": "@setens-3",
+      "name": "Setens 3",
+      "level": "tronc-alt",
+      "sublevel": "senior",
+      "description": "Setè pis, posició 3.",
+      "multiplier": 1.8,
+      "color": "#3498db",
+      "skills": ["desenvolupament avançat", "precisió", "responsabilitat"],
+      "fevs": { "F": 0.6, "E": 0.7, "V": 0.7, "S": 0.8 }
+    },
+    {
+      "id": "@sisens-1",
+      "name": "Sisens 1",
+      "level": "tronc-alt",
+      "sublevel": "senior",
+      "description": "Sisè pis. Desenvolupament sènior amb experiència.",
+      "multiplier": 1.7,
+      "color": "#5dade2",
+      "skills": ["desenvolupament", "mentoria", "estabilitat"],
+      "fevs": { "F": 0.7, "E": 0.6, "V": 0.6, "S": 0.7 }
+    },
+    {
+      "id": "@sisens-2",
+      "name": "Sisens 2",
+      "level": "tronc-alt",
+      "sublevel": "senior",
+      "description": "Sisè pis.",
+      "multiplier": 1.7,
+      "color": "#5dade2",
+      "skills": ["desenvolupament", "mentoria", "estabilitat"],
+      "fevs": { "F": 0.7, "E": 0.6, "V": 0.6, "S": 0.7 }
+    },
+    {
+      "id": "@quints-1",
+      "name": "Quints 1",
+      "level": "tronc-alt",
+      "sublevel": "semi-senior",
+      "description": "Cinquè pis. Fullstack amb capacitat de resolució.",
+      "multiplier": 1.6,
+      "color": "#7fb3d5",
+      "skills": ["fullstack", "resolució", "agilitat"],
+      "fevs": { "F": 0.8, "E": 0.6, "V": 0.5, "S": 0.6 }
+    },
+    {
+      "id": "@quints-2",
+      "name": "Quints 2",
+      "level": "tronc-alt",
+      "sublevel": "semi-senior",
+      "description": "Cinquè pis.",
+      "multiplier": 1.6,
+      "color": "#7fb3d5",
+      "skills": ["fullstack", "resolució", "agilitat"],
+      "fevs": { "F": 0.8, "E": 0.6, "V": 0.5, "S": 0.6 }
+    },
+    {
+      "id": "@quints-3",
+      "name": "Quints 3",
+      "level": "tronc-alt",
+      "sublevel": "semi-senior",
+      "description": "Cinquè pis.",
+      "multiplier": 1.6,
+      "color": "#7fb3d5",
+      "skills": ["fullstack", "resolució", "agilitat"],
+      "fevs": { "F": 0.8, "E": 0.6, "V": 0.5, "S": 0.6 }
+    },
+
+    // ===== TRONC MIG (QUARTS I TERÇOS) =====
+    {
+      "id": "@quarts-1",
+      "name": "Quarts 1",
+      "level": "tronc-mig",
+      "sublevel": "fullstack",
+      "description": "Quart pis. Fullstack developer, execució principal.",
+      "multiplier": 1.5,
+      "color": "#a9cce3",
+      "skills": ["fullstack", "implementació", "tests"],
+      "fevs": { "F": 0.8, "E": 0.5, "V": 0.5, "S": 0.6 }
+    },
+    {
+      "id": "@quarts-2",
+      "name": "Quarts 2",
+      "level": "tronc-mig",
+      "sublevel": "fullstack",
+      "description": "Quart pis.",
+      "multiplier": 1.5,
+      "color": "#a9cce3",
+      "skills": ["fullstack", "implementació", "tests"],
+      "fevs": { "F": 0.8, "E": 0.5, "V": 0.5, "S": 0.6 }
+    },
+    {
+      "id": "@quarts-3",
+      "name": "Quarts 3",
+      "level": "tronc-mig",
+      "sublevel": "fullstack",
+      "description": "Quart pis.",
+      "multiplier": 1.5,
+      "color": "#a9cce3",
+      "skills": ["fullstack", "implementació", "tests"],
+      "fevs": { "F": 0.8, "E": 0.5, "V": 0.5, "S": 0.6 }
+    },
+    {
+      "id": "@terços-1",
+      "name": "Terços 1",
+      "level": "tronc-mig",
+      "sublevel": "fullstack",
+      "description": "Terç pis. Desenvolupament core.",
+      "multiplier": 1.4,
+      "color": "#d4e6f1",
+      "skills": ["desenvolupament", "backend", "frontend"],
+      "fevs": { "F": 0.8, "E": 0.5, "V": 0.4, "S": 0.6 }
+    },
+    {
+      "id": "@terços-2",
+      "name": "Terços 2",
+      "level": "tronc-mig",
+      "sublevel": "fullstack",
+      "description": "Terç pis.",
+      "multiplier": 1.4,
+      "color": "#d4e6f1",
+      "skills": ["desenvolupament", "backend", "frontend"],
+      "fevs": { "F": 0.8, "E": 0.5, "V": 0.4, "S": 0.6 }
+    },
+    {
+      "id": "@terços-3",
+      "name": "Terços 3",
+      "level": "tronc-mig",
+      "sublevel": "fullstack",
+      "description": "Terç pis.",
+      "multiplier": 1.4,
+      "color": "#d4e6f1",
+      "skills": ["desenvolupament", "backend", "frontend"],
+      "fevs": { "F": 0.8, "E": 0.5, "V": 0.4, "S": 0.6 }
+    },
+
+    // ===== TRONC BAIX (SEGONS I BAIXOS) =====
+    {
+      "id": "@segons-1",
+      "name": "Segons 1",
+      "level": "tronc-baix",
+      "sublevel": "core",
+      "description": "Segon pis. Mantenidor core, força bruta tècnica.",
+      "multiplier": 1.3,
+      "color": "#ebf5fb",
+      "skills": ["core", "backend", "base de dades"],
+      "fevs": { "F": 0.9, "E": 0.5, "V": 0.4, "S": 0.5 }
+    },
+    {
+      "id": "@segons-2",
+      "name": "Segons 2",
+      "level": "tronc-baix",
+      "sublevel": "core",
+      "description": "Segon pis.",
+      "multiplier": 1.3,
+      "color": "#ebf5fb",
+      "skills": ["core", "backend", "base de dades"],
+      "fevs": { "F": 0.9, "E": 0.5, "V": 0.4, "S": 0.5 }
+    },
+    {
+      "id": "@segons-3",
+      "name": "Segons 3",
+      "level": "tronc-baix",
+      "sublevel": "core",
+      "description": "Segon pis.",
+      "multiplier": 1.3,
+      "color": "#ebf5fb",
+      "skills": ["core", "backend", "base de dades"],
+      "fevs": { "F": 0.9, "E": 0.5, "V": 0.4, "S": 0.5 }
+    },
+    {
+      "id": "@baixos-1",
+      "name": "Baixos 1",
+      "level": "tronc-baix",
+      "sublevel": "fonaments",
+      "description": "Primer pis. Els fonaments del tronc, base sobre la pinya.",
+      "multiplier": 1.2,
+      "color": "#f8f9f9",
+      "skills": ["fonaments", "estabilitat", "connexió amb base"],
+      "fevs": { "F": 1.0, "E": 0.4, "V": 0.3, "S": 0.5 }
+    },
+    {
+      "id": "@baixos-2",
+      "name": "Baixos 2",
+      "level": "tronc-baix",
+      "sublevel": "fonaments",
+      "description": "Primer pis.",
+      "multiplier": 1.2,
+      "color": "#f8f9f9",
+      "skills": ["fonaments", "estabilitat", "connexió amb base"],
+      "fevs": { "F": 1.0, "E": 0.4, "V": 0.3, "S": 0.5 }
+    },
+    {
+      "id": "@baixos-3",
+      "name": "Baixos 3",
+      "level": "tronc-baix",
+      "sublevel": "fonaments",
+      "description": "Primer pis.",
+      "multiplier": 1.2,
+      "color": "#f8f9f9",
+      "skills": ["fonaments", "estabilitat", "connexió amb base"],
+      "fevs": { "F": 1.0, "E": 0.4, "V": 0.3, "S": 0.5 }
+    },
+
+    // ===== MANILLES (PIS 4 - SOPORTE ESTRUCTURAL) =====
+    {
+      "id": "@manilles-equip-1",
+      "name": "Manilles Equip 1",
+      "level": "manilles",
+      "sublevel": "infra-1",
+      "description": "Quart nivell de suport. Reforç estructural per a les parts altes.",
+      "multiplier": 1.4,
+      "color": "#f4d03f",
+      "skills": ["infraestructura", "reforç", "devops", "estabilitat"],
+      "fevs": { "F": 0.8, "E": 0.8, "V": 0.5, "S": 0.7 }
+    },
+    {
+      "id": "@manilles-equip-2",
+      "name": "Manilles Equip 2",
+      "level": "manilles",
+      "sublevel": "infra-2",
+      "description": "Quart nivell de suport.",
+      "multiplier": 1.4,
+      "color": "#f4d03f",
+      "skills": ["infraestructura", "reforç", "devops", "estabilitat"],
+      "fevs": { "F": 0.8, "E": 0.8, "V": 0.5, "S": 0.7 }
+    },
+
+    // ===== FOLRE (PIS 3 - MIDDLEWARE) =====
+    {
+      "id": "@folre-equip-1",
+      "name": "Folre Equip 1",
+      "level": "folre",
+      "sublevel": "middleware-1",
+      "description": "Tercer nivell de suport. Middleware, framework, capa de serveis.",
+      "multiplier": 1.3,
+      "color": "#f7dc6f",
+      "skills": ["middleware", "framework", "serveis", "API"],
+      "fevs": { "F": 0.7, "E": 0.8, "V": 0.6, "S": 0.7 }
+    },
+    {
+      "id": "@folre-equip-2",
+      "name": "Folre Equip 2",
+      "level": "folre",
+      "sublevel": "middleware-2",
+      "description": "Tercer nivell de suport.",
+      "multiplier": 1.3,
+      "color": "#f7dc6f",
+      "skills": ["middleware", "framework", "serveis", "API"],
+      "fevs": { "F": 0.7, "E": 0.8, "V": 0.6, "S": 0.7 }
+    },
+
+    // ===== PINYA (BASE) =====
+    // Agulles (seguretat interna)
+    {
+      "id": "@agulla-1",
+      "name": "Agulla 1",
+      "level": "pinya",
+      "sublevel": "seguretat",
+      "description": "Protecció interna del baix. Seguretat i auditoria interna.",
+      "multiplier": 0.9,
+      "color": "#f5b041",
+      "skills": ["seguretat", "auditoria", "protecció", "monitoratge"],
+      "fevs": { "F": 0.8, "E": 0.7, "V": 0.4, "S": 0.9 }
+    },
+    {
+      "id": "@agulla-2",
+      "name": "Agulla 2",
+      "level": "pinya",
+      "sublevel": "seguretat",
+      "description": "Protecció interna del baix.",
+      "multiplier": 0.9,
+      "color": "#f5b041",
+      "skills": ["seguretat", "auditoria", "protecció", "monitoratge"],
+      "fevs": { "F": 0.8, "E": 0.7, "V": 0.4, "S": 0.9 }
+    },
+    {
+      "id": "@agulla-3",
+      "name": "Agulla 3",
+      "level": "pinya",
+      "sublevel": "seguretat",
+      "description": "Protecció interna del baix.",
+      "multiplier": 0.9,
+      "color": "#f5b041",
+      "skills": ["seguretat", "auditoria", "protecció", "monitoratge"],
+      "fevs": { "F": 0.8, "E": 0.7, "V": 0.4, "S": 0.9 }
+    },
+
+    // Contraforts (estabilitat estructural)
+    {
+      "id": "@contrafort-1",
+      "name": "Contrafort 1",
+      "level": "pinya",
+      "sublevel": "estabilitat",
+      "description": "Estabilitat estructural posterior. Reforç del darrere.",
+      "multiplier": 0.95,
+      "color": "#f39c12",
+      "skills": ["estabilitat", "reforç", "resistència", "suport posterior"],
+      "fevs": { "F": 0.9, "E": 0.6, "V": 0.3, "S": 0.8 }
+    },
+    {
+      "id": "@contrafort-2",
+      "name": "Contrafort 2",
+      "level": "pinya",
+      "sublevel": "estabilitat",
+      "description": "Estabilitat estructural posterior.",
+      "multiplier": 0.95,
+      "color": "#f39c12",
+      "skills": ["estabilitat", "reforç", "resistència", "suport posterior"],
+      "fevs": { "F": 0.9, "E": 0.6, "V": 0.3, "S": 0.8 }
+    },
+    {
+      "id": "@contrafort-3",
+      "name": "Contrafort 3",
+      "level": "pinya",
+      "sublevel": "estabilitat",
+      "description": "Estabilitat estructural posterior.",
+      "multiplier": 0.95,
+      "color": "#f39c12",
+      "skills": ["estabilitat", "reforç", "resistència", "suport posterior"],
+      "fevs": { "F": 0.9, "E": 0.6, "V": 0.3, "S": 0.8 }
+    },
+
+    // Crosses (suport lateral)
+    {
+      "id": "@crossa-1",
+      "name": "Crossa 1",
+      "level": "pinya",
+      "sublevel": "lateral",
+      "description": "Suport lateral. SRE, equilibri dinàmic.",
+      "multiplier": 0.9,
+      "color": "#e67e22",
+      "skills": ["suport lateral", "SRE", "equilibri", "resiliència"],
+      "fevs": { "F": 0.7, "E": 0.7, "V": 0.4, "S": 0.8 }
+    },
+    {
+      "id": "@crossa-2",
+      "name": "Crossa 2",
+      "level": "pinya",
+      "sublevel": "lateral",
+      "description": "Suport lateral.",
+      "multiplier": 0.9,
+      "color": "#e67e22",
+      "skills": ["suport lateral", "SRE", "equilibri", "resiliència"],
+      "fevs": { "F": 0.7, "E": 0.7, "V": 0.4, "S": 0.8 }
+    },
+    {
+      "id": "@crossa-3",
+      "name": "Crossa 3",
+      "level": "pinya",
+      "sublevel": "lateral",
+      "description": "Suport lateral.",
+      "multiplier": 0.9,
+      "color": "#e67e22",
+      "skills": ["suport lateral", "SRE", "equilibri", "resiliència"],
+      "fevs": { "F": 0.7, "E": 0.7, "V": 0.4, "S": 0.8 }
+    },
+    {
+      "id": "@crossa-4",
+      "name": "Crossa 4",
+      "level": "pinya",
+      "sublevel": "lateral",
+      "description": "Suport lateral.",
+      "multiplier": 0.9,
+      "color": "#e67e22",
+      "skills": ["suport lateral", "SRE", "equilibri", "resiliència"],
+      "fevs": { "F": 0.7, "E": 0.7, "V": 0.4, "S": 0.8 }
+    },
+    {
+      "id": "@crossa-5",
+      "name": "Crossa 5",
+      "level": "pinya",
+      "sublevel": "lateral",
+      "description": "Suport lateral.",
+      "multiplier": 0.9,
+      "color": "#e67e22",
+      "skills": ["suport lateral", "SRE", "equilibri", "resiliència"],
+      "fevs": { "F": 0.7, "E": 0.7, "V": 0.4, "S": 0.8 }
+    },
+    {
+      "id": "@crossa-6",
+      "name": "Crossa 6",
+      "level": "pinya",
+      "sublevel": "lateral",
+      "description": "Suport lateral.",
+      "multiplier": 0.9,
+      "color": "#e67e22",
+      "skills": ["suport lateral", "SRE", "equilibri", "resiliència"],
+      "fevs": { "F": 0.7, "E": 0.7, "V": 0.4, "S": 0.8 }
+    },
+
+    // Vents (equilibri dinàmic)
+    {
+      "id": "@vent-1",
+      "name": "Vent 1",
+      "level": "pinya",
+      "sublevel": "dinàmic",
+      "description": "Ajust dinàmic segons el moviment. Equilibri actiu.",
+      "multiplier": 0.85,
+      "color": "#d35400",
+      "skills": ["equilibri dinàmic", "ajust", "moviment", "adaptació"],
+      "fevs": { "F": 0.6, "E": 0.8, "V": 0.5, "S": 0.7 }
+    },
+    {
+      "id": "@vent-2",
+      "name": "Vent 2",
+      "level": "pinya",
+      "sublevel": "dinàmic",
+      "description": "Ajust dinàmic segons el moviment.",
+      "multiplier": 0.85,
+      "color": "#d35400",
+      "skills": ["equilibri dinàmic", "ajust", "moviment", "adaptació"],
+      "fevs": { "F": 0.6, "E": 0.8, "V": 0.5, "S": 0.7 }
+    },
+
+    // Pinya general (massa)
+    {
+      "id": "@pinya-general-1",
+      "name": "Pinya General 1",
+      "level": "pinya",
+      "sublevel": "massa",
+      "description": "Massa general de la pinya. Suport col·lectiu.",
+      "multiplier": 0.7,
+      "color": "#bdc3c7",
+      "skills": ["suport col·lectiu", "massa", "cohesió"],
+      "fevs": { "F": 0.9, "E": 0.3, "V": 0.2, "S": 0.5 }
+    },
+    {
+      "id": "@pinya-general-2",
+      "name": "Pinya General 2",
+      "level": "pinya",
+      "sublevel": "massa",
+      "description": "Massa general de la pinya.",
+      "multiplier": 0.7,
+      "color": "#bdc3c7",
+      "skills": ["suport col·lectiu", "massa", "cohesió"],
+      "fevs": { "F": 0.9, "E": 0.3, "V": 0.2, "S": 0.5 }
+    },
+
+    // ===== EQUIP D'ACOLLIDA (Onboarding) =====
+    {
+      "id": "@acollida-1",
+      "name": "Equip d'Acollida 1",
+      "level": "soporte",
+      "sublevel": "onboarding",
+      "description": "Captació i formació de nous castellers.",
+      "multiplier": 1.1,
+      "color": "#1abc9c",
+      "skills": ["onboarding", "formació", "mentoria", "acollida"],
+      "fevs": { "F": 0.5, "E

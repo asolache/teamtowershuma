@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Smoke Test - TeamTowers v3.1</title>
+</head>
+<body>
+    <h1>🔍 Smoke Test - Kernel Crítico</h1>
+    
+    <div id="results"></div>
+    
+    <script src="../../js/core/store.js"></script>
+    <script src="../../js/core/selectors.js"></script>
+    <script src="../../js/pages/dashboard.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        let passed = 0;
+        let total = 0;
+        
+        function assert(condition, message) {
+            total++;
+            const div = document.createElement('div');
+            if (condition) {
+                passed++;
+                div.style.color = 'green';
+                div.innerHTML = `✅ ${message}`;
+            } else {
+                div.style.color = 'red';
+                div.innerHTML = `❌ ${message}`;
+            }
+            results.appendChild(div);
+        }
+        
+        // Test 1: Store existe
+        assert(window.store, 'Store debe existir');
+        
+        // Test 2: Selectors existen
+        assert(window.Selectors, 'Selectors deben existir');
+        
+        // Test 3: Dashboard renderiza
+        try {
+            const html = window.renderDashboard();
+            assert(html && html.length > 0, 'Dashboard debe renderizar');
+        } catch (e) {
+            assert(false, 'Dashboard debe renderizar sin errores');
+        }
+        
+        // Test 4: Datos cargados
+        const state = window.store.getState();
+        assert(state.projects.length > 0, 'Debe haber proyectos');
+        assert(state.transactions.length > 0, 'Debe haber transacciones');
+        
+        // Test 5: Métricas calculadas
+        const metrics = window.Selectors.getGlobalMetrics();
+        assert(metrics.totalProjects === state.projects.length, 'Total proyectos correcto');
+        assert(metrics.totalUV > 0, 'UV total debe ser positivo');
+        
+        // Resumen
+        const summary = document.createElement('h2');
+        summary.style.color = passed === total ? 'green' : 'orange';
+        summary.innerHTML = `\n📊 Resultado: ${passed}/${total} tests pasados`;
+        results.appendChild(summary);
+        
+        if (passed === total) {
+            document.body.style.backgroundColor = '#e6ffe6';
+        } else {
+            document.body.style.backgroundColor = '#fff0f0';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>TeamTowers Humà v3.3</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Estilos adicionales específicos del index */
+        .test-link {
+            background: #10b981;
+            color: white !important;
+            border-radius: 30px;
+            padding: 8px 16px !important;
+            transition: all 0.2s;
+        }
+
+        .test-link:hover {
+            background: #059669 !important;
+            transform: scale(1.05);
+        }
+
+        .reputation-badge {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+
+        .skill-card {
+            transition: transform 0.2s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .skill-bar {
+            overflow: hidden;
+        }
+
+        .project-tag {
+            transition: all 0.2s;
+        }
+
+        .project-tag:hover {
+            background: #2563eb !important;
+            color: white;
+        }
+
+        /* Indicador de carga para templates */
+        .template-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #10b981;
+            color: white;
+            text-align: center;
+            padding: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        /* Responsive para móvil */
+        @media (max-width: 768px) {
+            .test-link {
+                padding: 6px 12px !important;
+                font-size: 14px;
+            }
+            
+            .reputation-badge {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HEADER CON MENÚ MEJORADO -->
+        <header class="app-header">
+            <div class="logo">🏗️ TeamTowers v3.3</div>
+            <nav class="main-nav">
+                <a href="#" data-page="dashboard">📊 Dashboard</a>
+                <a href="#" data-page="projects">📋 Proyectos</a>
+                <a href="#" data-page="users">👥 Usuarios</a>
+                <a href="#" data-page="castell">🏰 Castell</a>
+                <a href="#" data-page="value-map">🗺️ Value Map</a>
+                <a href="#" class="test-link" onclick="window.open('/v3/tests/run-tests.html', '_blank')">🧪 Tests</a>
+            </nav>
+        </header>
+
+        <!-- BREADCRUMB DINÁMICO -->
+        <div class="breadcrumb" id="breadcrumb">
+            <a href="#" data-page="dashboard">Inicio</a>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main id="main-content">
+            <div class="loading">Cargando TeamTowers v3.3...</div>
+        </main>
+    </div>
+
+    <!-- CARGA DE TEMPLATES (oculto) -->
+    <div id="template-status" class="template-loading" style="display: none;">Cargando templates...</div>
+
+    <!-- SCRIPTS EN ORDEN CORRECTO -->
+    
+    <!-- Primero: Core puro -->
+    <script src="js/core/event-bus.js"></script>
+    <script src="js/core/store.js"></script>
+    <script src="js/core/selectors.js"></script>
+    <script src="js/core/router.js"></script>
+    <script src="js/core/store.test-helper.js"></script>
+
+    <!-- Segundo: Modelos -->
+    <script src="js/models/role.model.js"></script>
+    <script src="js/models/user.model.js"></script>
+    <script src="js/models/project.model.js"></script>
+    <script src="js/models/transaction.model.js"></script>
+
+    <!-- Tercero: Componentes base -->
+    <script src="js/components/tt-metric-card.js"></script>
+    <script src="js/components/tt-data-table.js"></script>
+    <script src="js/components/tt-filter-bar.js"></script>
+    <script src="js/components/tt-pie-chart.js"></script>
+    <script src="js/components/tt-breadcrumb.js"></script>
+
+    <!-- Cuarto: Value Map Components -->
+    <script src="js/components/value-map/tt-value-map-base.js"></script>
+    <script src="js/components/value-map/tt-role-map.js"></script>
+    <script src="js/components/value-map/tt-user-map.js"></script>
+    <script src="js/components/value-map/tt-network-map.js"></script>
+    <script src="js/components/value-map/tt-map-controls.js"></script>
+
+    <!-- Quinto: Páginas -->
+    <script src="js/pages/dashboard.js"></script>
+    <script src="js/pages/projects.js"></script>
+    <script src="js/pages/project.js"></script>
+    <script src="js/pages/users.js"></script>
+    <script src="js/pages/user.js"></script>
+    <script src="js/pages/value-mapping.js"></script>
+    <script src="js/pages/value-accounting.js"></script>
+    <script src="js/pages/castell-view.js"></script>
+
+    <!-- INICIALIZACIÓN -->
+    <script>
+        // Estado de carga de templates
+        window.templatesLoaded = false;
+        
+        // Mostrar indicador de carga
+        function showTemplateLoading() {
+            const status = document.getElementById('template-status');
+            if (status) status.style.display = 'block';
+        }
+
+        function hideTemplateLoading() {
+            const status = document.getElementById('template-status');
+            if (status) status.style.display = 'none';
+        }
+
+        // Cargar templates al inicio
+        async function loadTemplates() {
+            showTemplateLoading();
+            
+            // Inicializar almacén de templates
+            window.roleTemplates = window.roleTemplates || {};
+            
+            try {
+                // Intentar cargar casteller.json
+                const response = await fetch('/v3/data/role-templates/casteller-complete.json');
+                if (response.ok) {
+                    window.roleTemplates.casteller = await response.json();
+                    console.log('✅ Template casteller cargado:', 
+                        window.roleTemplates.casteller.roles.length, 'roles');
+                } else {
+                    console.warn('⚠️ No se pudo cargar casteller.json, usando datos por defecto');
+                    // Datos por defecto mínimos
+                    window.roleTemplates.casteller = {
+                        roles: [
+                            { id: '@enxaneta', name: 'Enxaneta', multiplier: 2.5, color: '#f59e0b', skills: ['visión', 'equilibrio'] },
+                            { id: '@acotxador', name: 'Acotxador', multiplier: 2.0, color: '#8b5cf6', skills: ['arquitectura', 'soporte'] },
+                            { id: '@terç', name: 'Terç', multiplier: 1.2, color: '#2563eb', skills: ['desarrollo', 'implementación'] }
+                        ]
+                    };
+                }
+            } catch (e) {
+                console.error('❌ Error cargando templates:', e);
+                window.roleTemplates.casteller = { roles: [] };
+            } finally {
+                window.templatesLoaded = true;
+                hideTemplateLoading();
+            }
+        }
+
+        // Inicialización principal
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Inicializando TeamTowers v3.3...');
+            
+            // Cargar templates primero
+            await loadTemplates();
+            
+            // Inicializar router (disponible globalmente)
+            window.router = new Router();
+            
+            // Pequeño retraso para asegurar renderizado
+            setTimeout(() => {
+                window.router.navigate('dashboard');
+            }, 100);
+        });
+
+        // Exponer funciones globales
+        window.showTemplateLoading = showTemplateLoading;
+        window.hideTemplateLoading = hideTemplateLoading;
+        window.loadTemplates = loadTemplates;
+    </script>
+
+    <!-- Script de inicialización del router (separado para claridad) -->
+    <script>
+        // Router - Clase definida en router.js pero la instanciamos aquí
+        class Router {
+            constructor() {
+                this.routes = {
+                    'dashboard': 'dashboard',
+                    'projects': 'projects',
+                    'project': 'project',
+                    'users': 'users',
+                    'user': 'user',
+                    'castell': 'castell',
+                    'value-map': 'value-mapping',
+                    'value-accounting': 'value-accounting'
+                };
+                this.init();
+            }
+
+            init() {
+                // Manejar clicks en navegación
+                document.querySelectorAll('[data-page]').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = e.target.dataset.page;
+                        this.navigate(page);
+                    });
+                });
+
+                // Manejar historial
+                window.addEventListener('popstate', () => {
+                    this.handleLocation();
+                });
+
+                // Escuchar eventos de breadcrumb
+                document.addEventListener('breadcrumb-click', (e) => {
+                    const item = e.detail;
+                    this.navigate(item.path);
+                });
+            }
+
+            handleLocation() {
+                const path = window.location.pathname.substring(1) || 'dashboard';
+                const [base, id] = path.split('/');
+                this.navigate(base, id);
+            }
+
+            navigate(page, param = null) {
+                // Actualizar URL
+                let url = `/${page}`;
+                if (param) {
+                    url += `/${param}`;
+                }
+
+                if (window.location.pathname !== url) {
+                    window.history.pushState({ page, param }, '', url);
+                }
+
+                // Actualizar active en menú
+                document.querySelectorAll('[data-page]').forEach(link => {
+                    if (link.dataset.page === page) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                // Actualizar breadcrumb
+                this.updateBreadcrumb(page, param);
+
+                // Cargar página
+                this.loadPage(page, param);
+            }
+
+            updateBreadcrumb(page, param) {
+                const breadcrumb = document.getElementById('breadcrumb');
+                const pageNames = {
+                    'dashboard': 'Inicio',
+                    'projects': 'Proyectos',
+                    'project': 'Proyecto',
+                    'users': 'Usuarios',
+                    'user': 'Usuario',
+                    'castell': 'Vista Casteller',
+                    'value-map': 'Value Map',
+                    'value-accounting': 'Value Accounting'
+                };
+
+                let html = '<a href="#" data-page="dashboard">Inicio</a>';
+                
+                if (page !== 'dashboard') {
+                    html += '<span class="separator">›</span>';
+                    if (param) {
+                        html += `<a href="#" data-page="${page}">${pageNames[page] || page}</a>`;
+                        html += '<span class="separator">›</span>';
+                        html += `<span class="current">${param}</span>`;
+                    } else {
+                        html += `<span class="current">${pageNames[page] || page}</span>`;
+                    }
+                }
+                
+                breadcrumb.innerHTML = html;
+
+                // Reattached eventos a los nuevos enlaces
+                breadcrumb.querySelectorAll('[data-page]').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.navigate(e.target.dataset.page);
+                    });
+                });
+            }
+
+            loadPage(page, param = null) {
+                const mainContent = document.getElementById('main-content');
+                if (!mainContent) return;
+
+                mainContent.innerHTML = '<div class="loading">Cargando...</div>';
+
+                try {
+                    let content = '';
+                    
+                    switch(page) {
+                        case 'dashboard':
+                            content = window.renderDashboard();
+                            if (window.setupDashboardEvents) setTimeout(window.setupDashboardEvents, 100);
+                            break;
+                            
+                        case 'projects':
+                            content = window.renderProjects();
+                            if (window.setupProjectsEvents) setTimeout(window.setupProjectsEvents, 100);
+                            break;
+                            
+                        case 'project':
+                            if (!param) {
+                                content = '<div class="loading">ID de proyecto no especificado</div>';
+                                break;
+                            }
+                            content = window.renderProject(param);
+                            if (window.setupProjectEvents) setTimeout(window.setupProjectEvents, 100);
+                            break;
+                            
+                        case 'users':
+                            content = window.renderUsers();
+                            if (window.setupUsersEvents) setTimeout(window.setupUsersEvents, 100);
+                            break;
+                            
+                        case 'user':
+                            if (!param) {
+                                content = '<div class="loading">ID de usuario no especificado</div>';
+                                break;
+                            }
+                            content = window.renderUser(param);
+                            if (window.setupUserEvents) setTimeout(window.setupUserEvents, 100);
+                            break;
+                            
+                        case 'castell':
+                            content = window.renderCastellView(param || '#kernel');
+                            if (window.setupCastellViewEvents) setTimeout(window.setupCastellViewEvents, 100);
+                            break;
+                            
+                        case 'value-map':
+                            content = window.renderValueMapping();
+                            if (window.setupValueMappingEvents) setTimeout(window.setupValueMappingEvents, 100);
+                            break;
+                            
+                        case 'value-accounting':
+                            content = window.renderValueAccounting();
+                            if (window.setupValueAccountingEvents) setTimeout(window.setupValueAccountingEvents, 100);
+                            break;
+                            
+                        default:
+                            content = '<div class="loading">Página no encontrada</div>';
+                    }
+
+                    mainContent.innerHTML = content;
+                    
+                } catch (e) {
+                    console.error('Error cargando página:', e);
+                    mainContent.innerHTML = '<div class="loading">Error al cargar la página</div>';
+                }
+            }
+
+            getParams() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return Object.fromEntries(urlParams);
+            }
+        }
+    </script>
+</body>
+</html>
