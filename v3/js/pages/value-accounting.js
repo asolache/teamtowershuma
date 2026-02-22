@@ -1,37 +1,23 @@
-// value-accounting.js - DEFINICIÓN GLOBAL
+// value-accounting.js
 window.renderValueAccounting = function() {
-    console.log('💰 Renderizando value accounting...');
     const state = window.store?.getState?.() || { projects: [], transactions: [] };
-    
     const projectUV = {};
+    
     state.transactions.forEach(t => {
         if (t.project) {
-            projectUV[t.project] = (projectUV[t.project] || 0) + (t.uv || 0);
+            projectUV[t.project] = (projectUV[t.project] || 0) + t.uv;
         }
     });
-    
+
     return `
         <div class="card">
             <h2>💰 Value Accounting</h2>
-            <div style="display: grid; gap: 15px; margin-top: 20px;">
-                ${Object.entries(projectUV).map(([project, uv]) => `
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-                        <div style="font-weight: bold; font-size: 1.1em;">${project}</div>
-                        <div style="font-size: 24px; color: #2563eb; font-weight: bold;">${uv} UV</div>
-                    </div>
-                `).join('')}
-                ${Object.keys(projectUV).length === 0 ? `
-                    <div style="text-align: center; color: #64748b; padding: 40px; background: #f8fafc; border-radius: 16px;">
-                        No hay transacciones para mostrar
-                    </div>
-                ` : ''}
-            </div>
+            ${Object.entries(projectUV).map(([project, uv]) => `
+                <div style="background: #f8fafc; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; justify-content: space-between;">
+                    <span><strong>${project}</strong></span>
+                    <span style="color: #2563eb;">${uv} UV</span>
+                </div>
+            `).join('')}
         </div>
     `;
 };
-
-window.setupValueAccountingEvents = function() {
-    console.log('💰 Value Accounting eventos listos');
-};
-
-console.log('✅ Value Accounting cargado globalmente');
