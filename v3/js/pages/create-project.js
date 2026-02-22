@@ -22,13 +22,13 @@ window.renderCreateProject = function() {
             nombre: "Nombre del Proyecto",
             tipo: "text",
             required: true,
-            placeholder: "Ej: Taller de Castells"
+            placeholder: "Ej: Proyecto Alpha"
         },
         {
             nombre: "ID",
             tipo: "text",
             required: true,
-            placeholder: "#casteller-demo",
+            placeholder: "#proyecto-alpha",
             help: "Debe empezar con # y usar guiones. Ej: #nombre-del-proyecto",
             pattern: "^#[a-z0-9-]+$",
             patternError: "ID debe empezar con # y solo contener minúsculas, números y guiones"
@@ -80,77 +80,89 @@ window.renderCreateProject = function() {
     `;
 };
 
-window.setupCreateProjectEvents = function() {
-    // Pequeño retraso para asegurar que el DOM está listo
-    setTimeout(() => {
-        console.log('📁 Configurando eventos de create project');
-        
-        const form = document.getElementById('create-project-form');
-        if (!form) {
-            console.error('❌ Formulario no encontrado. ¿Está definido tt-form?');
+// Manejador del envío del formulario
+function handleFormSubmit(e) {
+    const data = e.detail;
+    console.log('📝 Datos del formulario:', data);
+    
+    // Validar ID
+    if (!data.ID.startsWith('#')) {
+        alert('❌ El ID debe empezar con #');
+        return;
+    }
+    
+    // Extraer sector (sin el emoji)
+    const sectorSeleccionado = data.Sector;
+    const sectorObj = SECTORES.find(s => sectorSeleccionado.includes(s.nombre));
+    const sectorId = sectorObj ? sectorObj.id : "consultoria";
+    const sectorNombre = sectorObj ? sectorObj.nombre : data.Sector;
+    
+    // Procesar objetivos (convertir texto en lista)
+    const objetivosLista = data.Objetivos ? 
+        data.Objetivos.split('\n').filter(line => line.trim() !== '') : [];
+    
+    // Crear objeto de proyecto
+    const nuevoProyecto = {
+        id: data.ID,
+        nombre: data["Nombre del Proyecto"],
+        sector: sectorId,
+        sector_nombre: sectorNombre,
+        sector_emoji: sectorObj?.emoji || "📁",
+        descripcion: data.Descripción || '',
+        objetivos: objetivosLista,
+        roles: [],
+        creado_por: "@masterproject", // Temporal
+        fecha_creacion: new Date().toISOString()
+    };
+
+    // Añadir al store
+    if (window.store) {
+        // Verificar si ya existe un proyecto con ese ID
+        const existe = window.store.getState().projects.some(p => p.id === data.ID);
+        if (existe) {
+            alert(`❌ Ya existe un proyecto con ID ${data.ID}`);
             return;
         }
+        
+        window.store.addProject(nuevoProyecto);
+        
+        console.log('✅ Proyecto creado:', nuevoProyecto);
+        alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente en sector ${sectorNombre}`);
+        
+        // Redirigir
+        if (window.router) {
+            window.router.navigate(`project-detail?id=${encodeURIComponent(nuevoProyecto.id)}`);
+        } else {
+            window.location.href = `/?page=project-detail&id=${encodeURIComponent(nuevoProyecto.id)}`;
+        }
+    } else {
+        console.error('❌ Store no disponible');
+        alert('❌ Error al guardar el proyecto');
+    }
+}
 
-        form.addEventListener('form-submit', (e) => {
-            const data = e.detail;
-            console.log('📝 Datos del formulario:', data);
-            
-            // Validar ID
-            if (!data.ID.startsWith('#')) {
-                alert('❌ El ID debe empezar con #');
-                return;
-            }
-            
-            // Extraer sector (sin el emoji)
-            const sectorSeleccionado = data.Sector;
-            const sectorObj = SECTORES.find(s => sectorSeleccionado.includes(s.nombre));
-            const sectorId = sectorObj ? sectorObj.id : "consultoria";
-            const sectorNombre = sectorObj ? sectorObj.nombre : data.Sector;
-            
-            // Procesar objetivos (convertir texto en lista)
-            const objetivosLista = data.Objetivos ? 
-                data.Objetivos.split('\n').filter(line => line.trim() !== '') : [];
-            
-            // Crear objeto de proyecto
-            const nuevoProyecto = {
-                id: data.ID,
-                nombre: data["Nombre del Proyecto"],
-                sector: sectorId,
-                sector_nombre: sectorNombre,
-                sector_emoji: sectorObj?.emoji || "📁",
-                descripcion: data.Descripción || '',
-                objetivos: objetivosLista,
-                roles: [],
-                creado_por: "@masterproject", // Temporal
-                fecha_creacion: new Date().toISOString()
-            };
-
-            // Añadir al store
-            if (window.store) {
-                // Verificar si ya existe un proyecto con ese ID
-                const existe = window.store.getState().projects.some(p => p.id === data.ID);
-                if (existe) {
-                    alert(`❌ Ya existe un proyecto con ID ${data.ID}`);
-                    return;
-                }
-                
-                window.store.addProject(nuevoProyecto);
-                
-                console.log('✅ Proyecto creado:', nuevoProyecto);
-                alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente en sector ${sectorNombre}`);
-                
-                // Redirigir
-                if (window.router) {
-                    window.router.navigate(`project-detail?id=${encodeURIComponent(nuevoProyecto.id)}`);
-                } else {
-                    window.location.href = `/?page=project-detail&id=${encodeURIComponent(nuevoProyecto.id)}`;
-                }
+window.setupCreateProjectEvents = function() {
+    console.log('📁 Intentando configurar eventos de create project');
+    
+    // Función con reintento para asegurar que el elemento existe
+    function attachListener(attempts = 0) {
+        const form = document.getElementById('create-project-form');
+        if (form) {
+            // Evitar duplicados: eliminar listener previo si existe
+            form.removeEventListener('form-submit', handleFormSubmit);
+            form.addEventListener('form-submit', handleFormSubmit);
+            console.log('✅ Evento form-submit adjuntado correctamente');
+        } else {
+            if (attempts < 10) {
+                console.warn(`⏳ Elemento no encontrado, reintentando (${attempts + 1}/10)...`);
+                setTimeout(() => attachListener(attempts + 1), 50);
             } else {
-                console.error('❌ Store no disponible');
-                alert('❌ Error al guardar el proyecto');
+                console.error('❌ No se pudo encontrar el elemento #create-project-form después de varios intentos');
             }
-        });
-    }, 0); // Espera mínima para permitir que el DOM se actualice
+        }
+    }
+    
+    attachListener();
 };
 
 console.log('✅ Create Project page loaded con todos los sectores');
