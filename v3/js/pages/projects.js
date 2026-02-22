@@ -1,10 +1,9 @@
 // /v3/js/pages/projects.js
 // Vista de lista de proyectos y creación de nuevos proyectos (modal)
-// v3.5 - Incluye setupProjectsEvents para el router
+// v3.5 - Corregidas llamadas a router.navigate
 
 console.log('📦 Cargando projects.js...');
 
-// ===== FUNCIÓN PRINCIPAL DE RENDERIZADO =====
 window.renderProjects = function() {
     console.log('📋 Renderizando lista de proyectos');
     
@@ -45,40 +44,37 @@ window.renderProjects = function() {
     return html;
 };
 
-// ===== FUNCIÓN DE SETUP (LLAMADA POR EL ROUTER) =====
 window.setupProjectsEvents = function() {
     console.log('⚙️ Configurando eventos de projects');
     
-    // Botón de nuevo proyecto (modal)
     document.getElementById('new-project-btn')?.addEventListener('click', showNewProjectForm);
     
-    // Botones de ver detalle
     document.querySelectorAll('.view-project-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const projectId = e.target.dataset.projectId;
             if (window.router) {
-                window.router.navigate(`project-detail?id=${encodeURIComponent(projectId)}`);
+                // ✅ CORRECCIÓN: pasar objeto de parámetros
+                window.router.navigate('project-detail', { id: projectId });
             } else {
                 window.location.href = `/?page=project-detail&id=${encodeURIComponent(projectId)}`;
             }
         });
     });
 
-    // Hacer clic en toda la tarjeta (excepto en el botón)
     document.querySelectorAll('.project-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.classList.contains('view-project-btn')) return;
             const projectId = card.dataset.projectId;
             if (window.router) {
-                window.router.navigate(`project-detail?id=${encodeURIComponent(projectId)}`);
+                // ✅ CORRECCIÓN: pasar objeto de parámetros
+                window.router.navigate('project-detail', { id: projectId });
             }
         });
     });
 };
 
-// ===== FUNCIÓN PARA MOSTRAR FORMULARIO MODAL DE NUEVO PROYECTO =====
 function showNewProjectForm() {
     console.log('📝 Mostrando formulario de nuevo proyecto');
     
@@ -194,7 +190,7 @@ function showNewProjectForm() {
             } else {
                 const content = window.renderProjects();
                 document.getElementById('main-content').innerHTML = content;
-                window.setupProjectsEvents(); // Volver a configurar eventos
+                window.setupProjectsEvents();
             }
         }
     });
@@ -210,7 +206,6 @@ function showNewProjectForm() {
     });
 }
 
-// Exponer globalmente la función del modal
 window.showNewProjectForm = showNewProjectForm;
 
 console.log('✅ projects.js cargado - setupProjectsEvents definida:', typeof window.setupProjectsEvents);
