@@ -1,15 +1,15 @@
 // /v3/js/core/router.js
-// Router SPA - v3.5 - VERSIÓN CORREGIDA
+// Router SPA - v3.5 - VERSIÓN SIMPLE Y ROBUSTA
 
 class Router {
     constructor() {
-        console.log('🔄 Router inicializado (versión corregida)');
+        console.log('🔄 Router inicializado (versión simple)');
         
         this.routes = {
             'dashboard': window.renderDashboard || (() => '<div>Dashboard no disponible</div>'),
             'projects': window.renderProjects || (() => '<div>Projects no disponible</div>'),
             'create-project': window.renderCreateProject || (() => '<div>Create Project no disponible</div>'),
-            'project-detail': window.renderProjectDetail || (() => '<div>Project Detail no disponible</div>'),
+            'project-detail': window.renderProjectDetail || ((params) => `<div>Project Detail no disponible para ${params?.id || 'unknown'}</div>`),
             'users': window.renderUsers || (() => '<div>Users no disponible</div>'),
             'user': window.renderUser || (() => '<div>User no disponible</div>'),
             'castell': window.renderCastellView || (() => '<div>Castell no disponible</div>'),
@@ -18,6 +18,7 @@ class Router {
         };
 
         window.addEventListener('popstate', () => this.handleRoute());
+        
         document.addEventListener('click', (e) => {
             const link = e.target.closest('[data-page]');
             if (link) {
@@ -79,6 +80,7 @@ class Router {
             return;
         }
         document.getElementById('main-content').innerHTML = renderFn(params);
+        
         // Intentar ejecutar setup si existe
         const setupName = 'setup' + page.charAt(0).toUpperCase() + page.slice(1).replace(/-([a-z])/g, (g) => g[1].toUpperCase()) + 'Events';
         const setupFn = window[setupName];
@@ -87,4 +89,4 @@ class Router {
 }
 
 window.Router = Router;
-console.log('✅ router.js cargado (versión corregida)');
+console.log('✅ router.js cargado (versión simple)');
