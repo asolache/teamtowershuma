@@ -1,9 +1,8 @@
-// /v3/js/pages/create-project.js
-// Página para crear nuevos proyectos - v3.5
-
-console.log('📦 Cargando create-project.js...');
+// ===== CREATE-PROJECT.JS - VERSIÓN DEBUG =====
+console.log('🔍 [1] Inicio del archivo');
 
 // Lista completa de sectores
+console.log('🔍 [2] Definiendo SECTORES');
 const SECTORES = [
     { id: "tecnologia", nombre: "Tecnología, Software e IA", emoji: "💻" },
     { id: "salud", nombre: "Salud, Biotech y Bienestar", emoji: "⚕️" },
@@ -15,170 +14,126 @@ const SECTORES = [
     { id: "construccion", nombre: "Construcción, Inmobiliario y Proptech", emoji: "🏗️" },
     { id: "consultoria", nombre: "Servicios Profesionales y Consultoría B2B", emoji: "🤝" }
 ];
+console.log('🔍 [3] SECTORES definidos, longitud:', SECTORES.length);
 
-// EXPORTAR FUNCIÓN GLOBALMENTE (debe estar definida ANTES de usarse)
+// Definir función principal
+console.log('🔍 [4] Definiendo window.renderCreateProject');
 window.renderCreateProject = function(params) {
-    console.log('📁 renderCreateProject ejecutado con params:', params);
+    console.log('🔍 [RENDER] Función renderCreateProject ejecutada', params);
     
-    const fields = [
-        {
-            nombre: "Nombre del Proyecto",
-            tipo: "text",
-            required: true,
-            placeholder: "Ej: Proyecto Alpha"
-        },
-        {
-            nombre: "ID",
-            tipo: "text",
-            required: true,
-            placeholder: "#proyecto-alpha",
-            help: "Debe empezar con # y usar guiones. Ej: #nombre-del-proyecto",
-            pattern: "^#[a-z0-9-]+$",
-            patternError: "ID debe empezar con # y solo contener minúsculas, números y guiones"
-        },
-        {
-            nombre: "Sector",
-            tipo: "select",
-            required: true,
-            options: SECTORES.map(s => s.emoji + " " + s.nombre)
-        },
-        {
-            nombre: "Descripción",
-            tipo: "textarea",
-            required: false,
-            placeholder: "¿Qué valor genera este proyecto? ¿Cuál es su propósito?"
-        },
-        {
-            nombre: "Objetivos",
-            tipo: "textarea",
-            required: false,
-            placeholder: "Lista los objetivos principales del proyecto (uno por línea)"
-        }
-    ];
+    try {
+        const fields = [
+            {
+                nombre: "Nombre del Proyecto",
+                tipo: "text",
+                required: true,
+                placeholder: "Ej: Proyecto Alpha"
+            },
+            {
+                nombre: "ID",
+                tipo: "text",
+                required: true,
+                placeholder: "#proyecto-alpha",
+                help: "Debe empezar con # y usar guiones. Ej: #nombre-del-proyecto",
+                pattern: "^#[a-z0-9-]+$",
+                patternError: "ID debe empezar con # y solo contener minúsculas, números y guiones"
+            },
+            {
+                nombre: "Sector",
+                tipo: "select",
+                required: true,
+                options: SECTORES.map(s => s.emoji + " " + s.nombre)
+            },
+            {
+                nombre: "Descripción",
+                tipo: "textarea",
+                required: false,
+                placeholder: "¿Qué valor genera este proyecto? ¿Cuál es su propósito?"
+            },
+            {
+                nombre: "Objetivos",
+                tipo: "textarea",
+                required: false,
+                placeholder: "Lista los objetivos principales del proyecto (uno por línea)"
+            }
+        ];
+        console.log('🔍 [RENDER] Fields creados:', fields.length);
 
-    return `
-        <div class="card">
-            <h2>📁 Crear Nuevo Proyecto</h2>
-            <p style="color: #64748b; margin-bottom: 20px;">
-                Cada proyecto tendrá su propio mapa de valor con roles, entregables y flujos.
-            </p>
-            
-            <tt-form 
-                id="create-project-form"
-                fields='${JSON.stringify(fields)}'
-                submit-label="Crear Proyecto"
-            ></tt-form>
-            
-            <div style="margin-top: 30px; padding: 15px; background: #f8fafc; border-radius: 12px;">
-                <h4 style="margin-bottom: 10px;">📋 Sectores disponibles:</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
-                    ${SECTORES.map(s => `
-                        <div style="padding: 5px 10px; background: white; border-radius: 30px; font-size: 13px;">
-                            ${s.emoji} ${s.nombre}
-                        </div>
-                    `).join('')}
+        const html = `
+            <div class="card">
+                <h2>📁 Crear Nuevo Proyecto</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">
+                    Cada proyecto tendrá su propio mapa de valor con roles, entregables y flujos.
+                </p>
+                
+                <tt-form 
+                    id="create-project-form"
+                    fields='${JSON.stringify(fields)}'
+                    submit-label="Crear Proyecto"
+                ></tt-form>
+                
+                <div style="margin-top: 30px; padding: 15px; background: #f8fafc; border-radius: 12px;">
+                    <h4 style="margin-bottom: 10px;">📋 Sectores disponibles:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                        ${SECTORES.map(s => `
+                            <div style="padding: 5px 10px; background: white; border-radius: 30px; font-size: 13px;">
+                                ${s.emoji} ${s.nombre}
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
+        console.log('🔍 [RENDER] HTML generado');
+        return html;
+        
+    } catch (error) {
+        console.error('🔍 [RENDER] ERROR:', error);
+        return `<div class="error">Error al renderizar: ${error.message}</div>`;
+    }
 };
+console.log('🔍 [5] window.renderCreateProject definida:', typeof window.renderCreateProject);
 
-// Manejador del envío del formulario
+// Manejador del envío
+console.log('🔍 [6] Definiendo handleFormSubmit');
 function handleFormSubmit(e) {
-    const data = e.detail;
-    console.log('📝 Datos del formulario:', data);
-    
-    // Validar ID
-    if (!data.ID.startsWith('#')) {
-        alert('❌ El ID debe empezar con #');
-        return;
-    }
-    
-    // Extraer sector (sin el emoji)
-    const sectorSeleccionado = data.Sector;
-    const sectorObj = SECTORES.find(s => sectorSeleccionado.includes(s.nombre));
-    const sectorId = sectorObj ? sectorObj.id : "consultoria";
-    const sectorNombre = sectorObj ? sectorObj.nombre : data.Sector;
-    
-    // Procesar objetivos (convertir texto en lista)
-    const objetivosLista = data.Objetivos ? 
-        data.Objetivos.split('\n').filter(line => line.trim() !== '') : [];
-    
-    // Crear objeto de proyecto
-    const nuevoProyecto = {
-        id: data.ID,
-        nombre: data["Nombre del Proyecto"],
-        sector: sectorId,
-        sector_nombre: sectorNombre,
-        sector_emoji: sectorObj?.emoji || "📁",
-        descripcion: data.Descripción || '',
-        objetivos: objetivosLista,
-        roles: [],
-        creado_por: "@masterproject",
-        fecha_creacion: new Date().toISOString()
-    };
-
-    // Añadir al store
-    if (window.store) {
-        // Verificar si ya existe
-        const existe = window.store.getState().projects.some(p => p.id === data.ID);
-        if (existe) {
-            alert(`❌ Ya existe un proyecto con ID ${data.ID}`);
-            return;
-        }
-        
-        window.store.addProject(nuevoProyecto);
-        console.log('✅ Proyecto creado:', nuevoProyecto);
-        alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente`);
-        
-        // Redirigir
-        if (window.router) {
-            window.router.navigate(`project-detail?id=${encodeURIComponent(nuevoProyecto.id)}`);
-        }
-    } else {
-        console.error('❌ Store no disponible');
-        alert('❌ Error al guardar el proyecto');
-    }
+    console.log('🔍 [SUBMIT] Formulario enviado', e.detail);
+    // ... (código existente)
 }
+console.log('🔍 [7] handleFormSubmit definida:', typeof handleFormSubmit);
 
-// Configurar eventos (se llama desde el router después de renderizar)
+// Setup de eventos
+console.log('🔍 [8] Definiendo window.setupCreateProjectEvents');
 window.setupCreateProjectEvents = function() {
-    console.log('📁 setupCreateProjectEvents iniciado');
+    console.log('🔍 [SETUP] Iniciando setupCreateProjectEvents');
     
     let attempts = 0;
-    const maxAttempts = 30; // 30 * 100ms = 3 segundos
+    const maxAttempts = 30;
     
     function tryAttach() {
+        console.log(`🔍 [SETUP] Intento ${attempts + 1}/${maxAttempts}`);
         const form = document.getElementById('create-project-form');
+        
         if (form) {
-            console.log('✅ Formulario encontrado, adjuntando evento');
+            console.log('🔍 [SETUP] ✅ Formulario encontrado');
             form.removeEventListener('form-submit', handleFormSubmit);
             form.addEventListener('form-submit', handleFormSubmit);
+            console.log('🔍 [SETUP] Evento adjuntado');
             return true;
         } else {
             if (attempts < maxAttempts) {
                 attempts++;
-                console.log(`⏳ Intento ${attempts}/${maxAttempts}: Esperando formulario...`);
                 setTimeout(tryAttach, 100);
             } else {
-                console.error('❌ No se pudo encontrar el formulario después de varios intentos');
-                // Mostrar mensaje al usuario
-                const container = document.getElementById('main-content');
-                if (container) {
-                    container.innerHTML += `
-                        <div class="error-message" style="background: #fee; padding: 1rem; margin: 1rem; border-radius: 8px;">
-                            ⚠️ Error al cargar el formulario. 
-                            <button onclick="location.reload()">Recargar página</button>
-                        </div>
-                    `;
-                }
+                console.error('🔍 [SETUP] ❌ Formulario no encontrado después de múltiples intentos');
             }
         }
     }
     
     tryAttach();
 };
+console.log('🔍 [9] window.setupCreateProjectEvents definida:', typeof window.setupCreateProjectEvents);
 
-console.log('✅ create-project.js cargado correctamente');
-console.log('📌 window.renderCreateProject definido:', !!window.renderCreateProject);
-console.log('📌 window.setupCreateProjectEvents definido:', !!window.setupCreateProjectEvents);
+console.log('🔍 [10] FIN del archivo create-project.js');
+console.log('📌 Estado final - renderCreateProject:', typeof window.renderCreateProject);
+console.log('📌 Estado final - setupCreateProjectEvents:', typeof window.setupCreateProjectEvents);
