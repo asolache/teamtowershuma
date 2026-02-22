@@ -1,172 +1,85 @@
-// router.js - Navegación con eventos y deep linking
+// router.js - Navegación SPA
 class Router {
     constructor() {
         this.routes = {
-            'dashboard': { page: 'dashboard', title: 'Dashboard' },
-            'projects': { page: 'projects', title: 'Proyectos' },
-            'project/:id': { page: 'project', title: 'Proyecto' },
-            'users': { page: 'users', title: 'Usuarios' },
-            'user/:id': { page: 'user', title: 'Usuario' },
-            'value-map': { page: 'value-mapping', title: 'Value Map' },
-            'value-accounting': { page: 'value-accounting', title: 'Value Accounting' }
+            'dashboard': 'dashboard',
+            'projects': 'projects',
+            'project': 'project',
+            'users': 'users',
+            'user': 'user',
+            'castell': 'castell',
+            'value-map': 'value-mapping',
+            'value-accounting': 'value-accounting'
         };
-        
-        this.currentRoute = null;
         this.params = {};
-        this.pageSetupFunctions = {
-            'dashboard': 'setupDashboardEvents',
-            'projects': 'setupProjectsEvents',
-            'project': 'setupProjectEvents',
-            'users': 'setupUsersEvents',
-            'user': 'setupUserEvents',
-            'value-mapping': 'setupValueMappingEvents',
-            'value-accounting': 'setupValueAccountingEvents'
-        };
-        
         this.init();
     }
 
     init() {
-        // Manejar clicks en navegación
         document.querySelectorAll('[data-page]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const page = e.target.dataset.page;
-                this.navigate(page);
+                this.navigate(e.target.dataset.page);
             });
         });
 
-        // Manejar historial
-        window.addEventListener('popstate', () => {
-            this.handleLocation();
-        });
-
-        // Cargar ruta inicial
+        window.addEventListener('popstate', () => this.handleLocation());
         this.handleLocation();
     }
 
     handleLocation() {
         const path = window.location.pathname.substring(1) || 'dashboard';
-        const [base, id] = path.split('/');
-        this.navigate(base, id);
+        const [page, param] = path.split('/');
+        this.navigate(page, param);
     }
 
     navigate(page, param = null) {
-        // Construir URL
-        let url = `/${page}`;
-        if (param) {
-            url += `/${param}`;
-        }
-
-        // Actualizar URL si es diferente
+        const url = param ? `/${page}/${param}` : `/${page}`;
         if (window.location.pathname !== url) {
-            window.history.pushState({ page, param }, '', url);
+            window.history.pushState({}, '', url);
         }
 
-        // Actualizar active en menú
         document.querySelectorAll('[data-page]').forEach(link => {
-            if (link.dataset.page === page) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
+            link.classList.toggle('active', link.dataset.page === page);
         });
 
-        // Disparar evento de navegación
-        const event = new CustomEvent('route-change', {
-            detail: { page, param }
-        });
-        document.dispatchEvent(event);
-
-        // Cargar la página
+        this.params = { page, param };
         this.loadPage(page, param);
     }
 
-    async loadPage(page, param = null) {
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
+    loadPage(page, param = null) {
+        const main = document.getElementById('main-content');
+        if (!main) return;
 
-        mainContent.innerHTML = '<div class="loading">Cargando...</div>';
+        main.innerHTML = '<div class="loading">Cargando...</div>';
 
-        try {
-            let module;
-            let renderFn;
-            let setupFnName = this.pageSetupFunctions[page] || this.pageSetupFunctions[page.split('/')[0]];
-
-            switch(page) {
-                case 'dashboard':
-                    module = await import('../pages/dashboard.js');
-                    renderFn = module.renderDashboard;
-                    break;
-                    
-                case 'projects':
-                    module = await import('../pages/projects.js');
-                    renderFn = module.renderProjects;
-                    break;
-                    
-                case 'project':
-                    if (!param) {
-                        mainContent.innerHTML = '<div class="loading">ID de proyecto no especificado</div>';
-                        return;
-                    }
-                    module = await import('../pages/project.js');
-                    renderFn = () => module.renderProject(param);
-                    break;
-                    
-                case 'users':
-                    module = await import('../pages/users.js');
-                    renderFn = module.renderUsers;
-                    break;
-                    
-                case 'user':
-                    if (!param) {
-                        mainContent.innerHTML = '<div class="loading">ID de usuario no especificado</div>';
-                        return;
-                    }
-                    module = await import('../pages/user.js');
-                    renderFn = () => module.renderUser(param);
-                    break;
-                    
-                case 'value-map':
-                    module = await import('../pages/value-mapping.js');
-                    renderFn = module.renderValueMapping;
-                    break;
-                    
-                case 'value-accounting':
-                    module = await import('../pages/value-accounting.js');
-                    renderFn = module.renderValueAccounting;
-                    break;
-                    
-                default:
-                    mainContent.innerHTML = '<div class="loading">Página no encontrada</div>';
-                    return;
+        setTimeout(() => {
+            try {
+                let content = '';
+                switch(page) {
+                    case 'dashboard': content = window.renderDashboard?.() || '<div class="loading">Error: Dashboard no disponible</div>'; break;
+                    case 'projects': content = window.renderProjects?.() || '<div class="loading">Error: Projects no disponible</div>'; break;
+                    case 'project': content = param ? (window.renderProject?.(param) || '<div class="loading">Error: Project no disponible</div>') : '<div class="loading">ID de proyecto requerido</div>'; break;
+                    case 'users': content = window.renderUsers?.() || '<div class="loading">Error: Users no disponible</div>'; break;
+                    case 'user': content = param ? (window.renderUser?.(param) || '<div class="loading">Error: User no disponible</div>') : '<div class="loading">ID de usuario requerido</div>'; break;
+                    case 'castell': content = window.renderCastellView?.(param || '#kernel') || '<div class="loading">Error: Castell no disponible</div>'; break;
+                    case 'value-map': content = window.renderValueMapping?.() || '<div class="loading">Error: Value Map no disponible</div>'; break;
+                    case 'value-accounting': content = window.renderValueAccounting?.() || '<div class="loading">Error: Value Accounting no disponible</div>'; break;
+                    default: content = '<div class="loading">Página no encontrada</div>';
+                }
+                main.innerHTML = content;
+                
+                // Ejecutar setup si existe
+                const setupFn = window[`setup${page.charAt(0).toUpperCase() + page.slice(1)}Events`];
+                if (setupFn) setTimeout(setupFn, 100);
+                
+            } catch (e) {
+                console.error('Error:', e);
+                main.innerHTML = `<div class="loading">Error: ${e.message}</div>`;
             }
-
-            mainContent.innerHTML = renderFn();
-            
-            // Ejecutar setup de eventos si existe
-            if (setupFnName && module[setupFnName]) {
-                setTimeout(() => {
-                    try {
-                        module[setupFnName]();
-                    } catch (e) {
-                        console.error(`Error en setup de ${page}:`, e);
-                    }
-                }, 100);
-            }
-
-        } catch (error) {
-            console.error('Error cargando página:', error);
-            mainContent.innerHTML = '<div class="loading">Error al cargar la página</div>';
-        }
-    }
-
-    // Método para obtener parámetros de la URL
-    getParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return Object.fromEntries(urlParams);
+        }, 100);
     }
 }
 
-export const router = new Router();
-window.router = router; // Para acceso global
+window.Router = Router;
+console.log('✅ Router cargado');
