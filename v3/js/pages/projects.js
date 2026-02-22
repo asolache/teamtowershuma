@@ -1,6 +1,6 @@
 // /v3/js/pages/projects.js
 // Vista de lista de proyectos y creación de nuevos proyectos (modal)
-// v3.5 - Corregidas llamadas a router.navigate
+// v3.5 - Corregido para evitar errores de sintaxis
 
 console.log('📦 Cargando projects.js...');
 
@@ -55,7 +55,6 @@ window.setupProjectsEvents = function() {
             e.stopPropagation();
             const projectId = e.target.dataset.projectId;
             if (window.router) {
-                // ✅ CORRECCIÓN: pasar objeto de parámetros
                 window.router.navigate('project-detail', { id: projectId });
             } else {
                 window.location.href = `/?page=project-detail&id=${encodeURIComponent(projectId)}`;
@@ -68,7 +67,6 @@ window.setupProjectsEvents = function() {
             if (e.target.classList.contains('view-project-btn')) return;
             const projectId = card.dataset.projectId;
             if (window.router) {
-                // ✅ CORRECCIÓN: pasar objeto de parámetros
                 window.router.navigate('project-detail', { id: projectId });
             }
         });
