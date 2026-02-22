@@ -103,3 +103,165 @@ h2 { color: #2d3748; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padd
     .app-header { flex-direction: column; gap: 15px; }
     .main-nav { flex-wrap: wrap; justify-content: center; }
 }
+/* Estilos para la pestaña de Entregables */
+.entregables-layout {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.role-sidebar {
+    flex: 0 0 200px;
+    border-right: 1px solid var(--border-light);
+    padding-right: 1rem;
+}
+
+.role-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.role-sidebar .role-item {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.role-sidebar .role-item:hover {
+    background: var(--border-light);
+}
+
+.role-sidebar .role-item.active {
+    background: var(--tt-primary);
+    color: white;
+}
+
+.entregables-detail {
+    flex: 1;
+    min-height: 300px;
+}
+
+.entregables-detail .placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.entregable-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-pinya);
+}
+
+.entregable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.entregable-header .actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+}
+
+.entregable-header .actions button:hover {
+    opacity: 0.7;
+}
+
+.form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.form-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-pom-dalt);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+#requisitos-container {
+    margin-bottom: 1rem;
+}
+
+.requisito-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.requisito-item input[type="text"],
+.requisito-item select {
+    flex: 1 1 120px;
+    min-width: 80px;
+}
+
+.requisito-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+}
+
+.remove-requisito {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.help {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
