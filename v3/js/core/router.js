@@ -1,38 +1,51 @@
 // /v3/js/core/router.js
 // Router SPA - v3.5
+// Gestiona la navegación sin recargar la página
 
 class Router {
     constructor() {
+        console.log('🔄 Inicializando Router v3.5');
+        
+        // Definición de rutas y sus funciones renderizadoras
         this.routes = {
-            'dashboard': window.renderDashboard || (() => '<div>Dashboard no disponible</div>'),
-            'projects': window.renderProjects || (() => '<div>Projects no disponible</div>'),
-            'create-project': window.renderCreateProject || (() => '<div>Create Project no disponible</div>'),
-            'project-detail': window.renderProjectDetail || (() => '<div>Project Detail no disponible</div>'),
-            'users': window.renderUsers || (() => '<div>Users no disponible</div>'),
-            'user': window.renderUser || (() => '<div>User no disponible</div>'),
-            'castell': window.renderCastellView || (() => '<div>Castell no disponible</div>'),
-            'value-map': window.renderValueMapping || (() => '<div>Value Map no disponible</div>'),
-            'value-accounting': window.renderValueAccounting || (() => '<div>Value Accounting no disponible</div>')
+            'dashboard': window.renderDashboard || (() => '<div class="error">Dashboard no disponible</div>'),
+            'projects': window.renderProjects || (() => '<div class="error">Projects no disponible</div>'),
+            'create-project': window.renderCreateProject || (() => '<div class="error">Create Project no disponible</div>'),
+            'project-detail': window.renderProjectDetail || ((params) => `<div class="error">Project Detail no disponible para ${params?.id || 'unknown'}</div>`),
+            'users': window.renderUsers || (() => '<div class="error">Users no disponible</div>'),
+            'user': window.renderUser || (() => '<div class="error">User no disponible</div>'),
+            'castell': window.renderCastellView || (() => '<div class="error">Castell no disponible</div>'),
+            'value-map': window.renderValueMapping || (() => '<div class="error">Value Map no disponible</div>'),
+            'value-accounting': window.renderValueAccounting || (() => '<div class="error">Value Accounting no disponible</div>')
         };
 
-        // Manejar navegación inicial
+        // Manejar navegación con botones atrás/adelante
         window.addEventListener('popstate', () => this.handleCurrentRoute());
         
-        // Capturar clics en enlaces
+        // Capturar clics en enlaces con data-page
         document.addEventListener('click', (e) => {
             const link = e.target.closest('[data-page]');
             if (link) {
                 e.preventDefault();
                 const page = link.dataset.page;
-                this.navigate(page);
+                // Si hay dataset.params, pasarlo como parámetros
+                const params = link.dataset.params ? JSON.parse(link.dataset.params) : {};
+                this.navigate(page, params);
             }
         });
+
+        console.log('✅ Router inicializado');
     }
 
+    /**
+     * Navega a una página
+     * @param {string} page - Nombre de la página (ej: 'dashboard', 'create-project')
+     * @param {object} params - Parámetros para la página (ej: { id: '#kernel' })
+     */
     navigate(page, params = {}) {
         console.log(`🔄 Navegando a: ${page}`, params);
         
-        // Construir URL
+        // Construir URL con hash
         let url = `#${page}`;
         if (Object.keys(params).length > 0) {
             const queryString = new URLSearchParams(params).toString();
@@ -46,19 +59,33 @@ class Router {
         this.renderPage(page, params);
     }
 
+    /**
+     * Maneja la ruta actual (desde URL o hash)
+     */
     handleCurrentRoute() {
         const hash = window.location.hash.slice(1); // quitar el #
+        if (!hash) {
+            this.navigate('dashboard');
+            return;
+        }
+        
         const [page, queryString] = hash.split('?');
         const params = queryString ? Object.fromEntries(new URLSearchParams(queryString)) : {};
         
-        this.renderPage(page || 'dashboard', params);
+        this.renderPage(page, params);
     }
 
+    /**
+     * Renderiza una página y ejecuta su setup
+     * @param {string} page - Nombre de la página
+     * @param {object} params - Parámetros
+     */
     renderPage(page, params = {}) {
         console.log(`🎨 Renderizando página: ${page}`);
         
         const renderFn = this.routes[page];
         if (!renderFn) {
+            console.error(`❌ No hay función de render para: ${page}`);
             document.getElementById('main-content').innerHTML = '<div class="error">Página no encontrada</div>';
             return;
         }
@@ -68,53 +95,84 @@ class Router {
         document.getElementById('main-content').innerHTML = content;
 
         // --- PARTE CRÍTICA: Ejecutar setup específico de la página ---
-        // Las funciones de setup deben llamarse así:
-        // setupDashboardEvents, setupProjectsEvents, setupCreateProjectEvents, etc.
-        const setupFnName = `setup${page.charAt(0).toUpperCase() + page.slice(1)}Events`;
+        // Convertir kebab-case a CamelCase (ej: create-project -> CreateProject)
+        const camelCasePage = page.split('-').map((part, index) => {
+            if (index === 0) return part;
+            return part.charAt(0).toUpperCase() + part.slice(1);
+        }).join('');
+
+        // Construir nombre de la función setup (ej: setupCreateProjectEvents)
+        const setupFnName = `setup${camelCasePage.charAt(0).toUpperCase() + camelCasePage.slice(1)}Events`;
         const setupFn = window[setupFnName];
-        
+
+        console.log(`🔍 Buscando función setup: ${setupFnName}`, setupFn ? '✅' : '❌');
+
         if (typeof setupFn === 'function') {
             console.log(`⚙️ Ejecutando ${setupFnName}()`);
-            // Para create-project, necesitamos asegurar que el DOM está listo
-            if (page === 'create-project') {
-                // Esperar un poco más para create-project porque tt-form necesita tiempo
+            
+            // Para páginas que necesitan esperar a que el DOM esté listo
+            if (page === 'create-project' || page === 'project-detail') {
+                // Esperar un poco más para asegurar que los componentes están en el DOM
                 setTimeout(() => {
-                    setupFn();
-                }, 100);
+                    try {
+                        setupFn();
+                    } catch (error) {
+                        console.error(`❌ Error en ${setupFnName}:`, error);
+                    }
+                }, 150);
             } else {
-                setupFn();
+                try {
+                    setupFn();
+                } catch (error) {
+                    console.error(`❌ Error en ${setupFnName}:`, error);
+                }
             }
         } else {
-            console.warn(`⚠️ No se encontró ${setupFnName}`);
+            console.warn(`⚠️ No se encontró la función setup: ${setupFnName}`);
         }
 
         // Actualizar breadcrumb
         this.updateBreadcrumb(page, params);
     }
 
+    /**
+     * Actualiza el breadcrumb de navegación
+     */
     updateBreadcrumb(page, params) {
         const breadcrumb = document.getElementById('breadcrumb');
         if (!breadcrumb) return;
 
+        const pageNames = {
+            'dashboard': 'Dashboard',
+            'projects': 'Proyectos',
+            'create-project': 'Nuevo Proyecto',
+            'users': 'Usuarios',
+            'castell': 'Castell',
+            'value-map': 'Mapa de Valor',
+            'value-accounting': 'Value Accounting'
+        };
+
         let html = '<a href="#" data-page="dashboard">Inicio</a>';
         
         if (page === 'project-detail' && params.id) {
+            html += ` > <a href="#" data-page="projects">Proyectos</a>`;
             html += ` > <span>${params.id}</span>`;
         } else if (page !== 'dashboard') {
-            const pageNames = {
-                'projects': 'Proyectos',
-                'create-project': 'Nuevo Proyecto',
-                'users': 'Usuarios',
-                'castell': 'Castell',
-                'value-map': 'Mapa de Valor',
-                'value-accounting': 'Value Accounting'
-            };
             html += ` > <span>${pageNames[page] || page}</span>`;
         }
         
         breadcrumb.innerHTML = html;
     }
+
+    /**
+     * Recarga la página actual
+     */
+    reload() {
+        this.handleCurrentRoute();
+    }
 }
 
 // Exponer globalmente
 window.Router = Router;
+
+console.log('📦 router.js cargado correctamente');
