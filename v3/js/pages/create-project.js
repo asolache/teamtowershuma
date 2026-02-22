@@ -1,7 +1,7 @@
 // /v3/js/pages/create-project.js
 // Página para crear nuevos proyectos - v3.5
 
-// Lista completa de sectores (también se puede importar de constants.js, pero la mantenemos local por claridad)
+// Lista completa de sectores
 const SECTORES = [
     { id: "tecnologia", nombre: "Tecnología, Software e IA", emoji: "💻" },
     { id: "salud", nombre: "Salud, Biotech y Bienestar", emoji: "⚕️" },
@@ -81,74 +81,76 @@ window.renderCreateProject = function() {
 };
 
 window.setupCreateProjectEvents = function() {
-    console.log('📁 Configurando eventos de create project');
-    
-    const form = document.getElementById('create-project-form');
-    if (!form) {
-        console.error('❌ Formulario no encontrado. ¿Está definido tt-form?');
-        return;
-    }
-
-    form.addEventListener('form-submit', (e) => {
-        const data = e.detail;
-        console.log('📝 Datos del formulario:', data);
+    // Pequeño retraso para asegurar que el DOM está listo
+    setTimeout(() => {
+        console.log('📁 Configurando eventos de create project');
         
-        // Validar ID
-        if (!data.ID.startsWith('#')) {
-            alert('❌ El ID debe empezar con #');
+        const form = document.getElementById('create-project-form');
+        if (!form) {
+            console.error('❌ Formulario no encontrado. ¿Está definido tt-form?');
             return;
         }
-        
-        // Extraer sector (sin el emoji)
-        const sectorSeleccionado = data.Sector;
-        const sectorObj = SECTORES.find(s => sectorSeleccionado.includes(s.nombre));
-        const sectorId = sectorObj ? sectorObj.id : "consultoria";
-        const sectorNombre = sectorObj ? sectorObj.nombre : data.Sector;
-        
-        // Procesar objetivos (convertir texto en lista)
-        const objetivosLista = data.Objetivos ? 
-            data.Objetivos.split('\n').filter(line => line.trim() !== '') : [];
-        
-        // Crear objeto de proyecto
-        const nuevoProyecto = {
-            id: data.ID,
-            nombre: data["Nombre del Proyecto"],  // Cambiado de 'name' a 'nombre' para consistencia
-            sector: sectorId,
-            sector_nombre: sectorNombre,
-            sector_emoji: sectorObj?.emoji || "📁",
-            descripcion: data.Descripción || '',  // Cambiado de 'description' a 'descripcion'
-            objetivos: objetivosLista,
-            roles: [],      // Vacío - se añadirán después
-            creado_por: "@masterproject", // Temporal - luego será el usuario actual
-            fecha_creacion: new Date().toISOString()
-        };
 
-        // Añadir al store USANDO EL MÉTODO CORRECTO
-        if (window.store) {
-            // Verificar si ya existe un proyecto con ese ID
-            const existe = window.store.getState().projects.some(p => p.id === data.ID);
-            if (existe) {
-                alert(`❌ Ya existe un proyecto con ID ${data.ID}`);
+        form.addEventListener('form-submit', (e) => {
+            const data = e.detail;
+            console.log('📝 Datos del formulario:', data);
+            
+            // Validar ID
+            if (!data.ID.startsWith('#')) {
+                alert('❌ El ID debe empezar con #');
                 return;
             }
             
-            // Usar el método addProject del store (modifica el estado real)
-            window.store.addProject(nuevoProyecto);
+            // Extraer sector (sin el emoji)
+            const sectorSeleccionado = data.Sector;
+            const sectorObj = SECTORES.find(s => sectorSeleccionado.includes(s.nombre));
+            const sectorId = sectorObj ? sectorObj.id : "consultoria";
+            const sectorNombre = sectorObj ? sectorObj.nombre : data.Sector;
             
-            console.log('✅ Proyecto creado:', nuevoProyecto);
-            alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente en sector ${sectorNombre}`);
+            // Procesar objetivos (convertir texto en lista)
+            const objetivosLista = data.Objetivos ? 
+                data.Objetivos.split('\n').filter(line => line.trim() !== '') : [];
             
-            // Redirigir a la vista del proyecto (formato correcto para router)
-            if (window.router) {
-                window.router.navigate(`project-detail?id=${encodeURIComponent(nuevoProyecto.id)}`);
+            // Crear objeto de proyecto
+            const nuevoProyecto = {
+                id: data.ID,
+                nombre: data["Nombre del Proyecto"],
+                sector: sectorId,
+                sector_nombre: sectorNombre,
+                sector_emoji: sectorObj?.emoji || "📁",
+                descripcion: data.Descripción || '',
+                objetivos: objetivosLista,
+                roles: [],
+                creado_por: "@masterproject", // Temporal
+                fecha_creacion: new Date().toISOString()
+            };
+
+            // Añadir al store
+            if (window.store) {
+                // Verificar si ya existe un proyecto con ese ID
+                const existe = window.store.getState().projects.some(p => p.id === data.ID);
+                if (existe) {
+                    alert(`❌ Ya existe un proyecto con ID ${data.ID}`);
+                    return;
+                }
+                
+                window.store.addProject(nuevoProyecto);
+                
+                console.log('✅ Proyecto creado:', nuevoProyecto);
+                alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente en sector ${sectorNombre}`);
+                
+                // Redirigir
+                if (window.router) {
+                    window.router.navigate(`project-detail?id=${encodeURIComponent(nuevoProyecto.id)}`);
+                } else {
+                    window.location.href = `/?page=project-detail&id=${encodeURIComponent(nuevoProyecto.id)}`;
+                }
             } else {
-                window.location.href = `/?page=project-detail&id=${encodeURIComponent(nuevoProyecto.id)}`;
+                console.error('❌ Store no disponible');
+                alert('❌ Error al guardar el proyecto');
             }
-        } else {
-            console.error('❌ Store no disponible');
-            alert('❌ Error al guardar el proyecto');
-        }
-    });
+        });
+    }, 0); // Espera mínima para permitir que el DOM se actualice
 };
 
 console.log('✅ Create Project page loaded con todos los sectores');
