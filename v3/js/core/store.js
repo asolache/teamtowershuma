@@ -1,4 +1,4 @@
-// store.js - VERSIÓN COMPLETA CON 71 ROLES Y PERSISTENCIA
+// store.js - VERSIÓN COMPLETA CON 71 ROLES
 const STORAGE_KEY = 'teamtowers-v3-data';
 
 console.log('📦 Cargando store.js...');
@@ -205,4 +205,5 @@ class Store {
     }
 }
 
+// EXPORTAR GLOBALMENTE
 window.store = new Store();
