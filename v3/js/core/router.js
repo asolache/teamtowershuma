@@ -1,201 +1,120 @@
-// router.js - Navegación SPA con soporte para todas las páginas
-// TeamTowers Humà v3.5
+// /v3/js/core/router.js
+// Router SPA - v3.5
 
 class Router {
     constructor() {
-        console.log('🚦 Router inicializando...');
-        
         this.routes = {
-            'dashboard': 'dashboard',
-            'projects': 'projects',
-            'project': 'project',
-            'create-project': 'create-project',
-            'users': 'users',
-            'user': 'user',
-            'castell': 'castell',
-            'value-map': 'value-map',
-            'value-accounting': 'value-accounting'
+            'dashboard': window.renderDashboard || (() => '<div>Dashboard no disponible</div>'),
+            'projects': window.renderProjects || (() => '<div>Projects no disponible</div>'),
+            'create-project': window.renderCreateProject || (() => '<div>Create Project no disponible</div>'),
+            'project-detail': window.renderProjectDetail || (() => '<div>Project Detail no disponible</div>'),
+            'users': window.renderUsers || (() => '<div>Users no disponible</div>'),
+            'user': window.renderUser || (() => '<div>User no disponible</div>'),
+            'castell': window.renderCastellView || (() => '<div>Castell no disponible</div>'),
+            'value-map': window.renderValueMapping || (() => '<div>Value Map no disponible</div>'),
+            'value-accounting': window.renderValueAccounting || (() => '<div>Value Accounting no disponible</div>')
         };
-        
-        this.params = {};
-        this.currentPage = 'dashboard';
-        this.init();
-    }
 
-    init() {
-        // Manejar clicks en enlaces de navegación
-        document.querySelectorAll('[data-page]').forEach(link => {
-            link.addEventListener('click', (e) => {
+        // Manejar navegación inicial
+        window.addEventListener('popstate', () => this.handleCurrentRoute());
+        
+        // Capturar clics en enlaces
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('[data-page]');
+            if (link) {
                 e.preventDefault();
-                const page = e.target.dataset.page;
+                const page = link.dataset.page;
                 this.navigate(page);
-            });
-        });
-
-        // Manejar historial del navegador
-        window.addEventListener('popstate', () => this.handleLocation());
-
-        // Cargar la ruta inicial
-        this.handleLocation();
-        
-        console.log('✅ Router listo');
-    }
-
-    handleLocation() {
-        const path = window.location.pathname.substring(1) || 'dashboard';
-        const parts = path.split('/');
-        const page = parts[0];
-        const param = parts[1] || null;
-        
-        this.navigate(page, param);
-    }
-
-    navigate(page, param = null) {
-        console.log(`🧭 Navegando a: ${page}${param ? '/' + param : ''}`);
-        
-        // Construir URL
-        let url = `/${page}`;
-        if (param) {
-            url += `/${param}`;
-        }
-
-        // Actualizar URL si es diferente (evitar bucles)
-        if (window.location.pathname !== url) {
-            window.history.pushState({ page, param }, '', url);
-        }
-
-        // Actualizar clase active en el menú
-        document.querySelectorAll('[data-page]').forEach(link => {
-            if (link.dataset.page === page) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
             }
         });
-
-        // Guardar parámetros
-        this.params = { page, param };
-        this.currentPage = page;
-
-        // Cargar la página
-        this.loadPage(page, param);
     }
 
-    loadPage(page, param = null) {
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) {
-            console.error('❌ No se encuentra el elemento main-content');
+    navigate(page, params = {}) {
+        console.log(`🔄 Navegando a: ${page}`, params);
+        
+        // Construir URL
+        let url = `#${page}`;
+        if (Object.keys(params).length > 0) {
+            const queryString = new URLSearchParams(params).toString();
+            url += `?${queryString}`;
+        }
+        
+        // Actualizar URL sin recargar
+        history.pushState({ page, params }, '', url);
+        
+        // Renderizar la página
+        this.renderPage(page, params);
+    }
+
+    handleCurrentRoute() {
+        const hash = window.location.hash.slice(1); // quitar el #
+        const [page, queryString] = hash.split('?');
+        const params = queryString ? Object.fromEntries(new URLSearchParams(queryString)) : {};
+        
+        this.renderPage(page || 'dashboard', params);
+    }
+
+    renderPage(page, params = {}) {
+        console.log(`🎨 Renderizando página: ${page}`);
+        
+        const renderFn = this.routes[page];
+        if (!renderFn) {
+            document.getElementById('main-content').innerHTML = '<div class="error">Página no encontrada</div>';
             return;
         }
 
-        // Mostrar loading
-        mainContent.innerHTML = '<div class="loading">Cargando...</div>';
+        // Renderizar el HTML
+        const content = renderFn(params);
+        document.getElementById('main-content').innerHTML = content;
 
-        // Pequeño retraso para asegurar renderizado
-        setTimeout(() => {
-            try {
-                let content = '';
-                let setupFn = null;
-
-                switch(page) {
-                    case 'dashboard':
-                        content = window.renderDashboard?.() || '<div class="loading">Error: Dashboard no disponible</div>';
-                        setupFn = window.setupDashboardEvents;
-                        break;
-                        
-                    case 'projects':
-                        content = window.renderProjects?.() || '<div class="loading">Error: Projects no disponible</div>';
-                        setupFn = window.setupProjectsEvents;
-                        break;
-                        
-                    case 'create-project':
-                        content = window.renderCreateProject?.() || '<div class="loading">Error: Create Project no disponible</div>';
-                        setupFn = window.setupCreateProjectEvents;
-                        break;
-                        
-                    case 'project':
-                        if (!param) {
-                            content = '<div class="loading">ID de proyecto requerido</div>';
-                            break;
-                        }
-                        content = window.renderProject?.(param) || '<div class="loading">Error: Project no disponible</div>';
-                        setupFn = window.setupProjectEvents;
-                        break;
-                        
-                    case 'users':
-                        content = window.renderUsers?.() || '<div class="loading">Error: Users no disponible</div>';
-                        setupFn = window.setupUsersEvents;
-                        break;
-                        
-                    case 'user':
-                        if (!param) {
-                            content = '<div class="loading">ID de usuario requerido</div>';
-                            break;
-                        }
-                        content = window.renderUser?.(param) || '<div class="loading">Error: User no disponible</div>';
-                        setupFn = window.setupUserEvents;
-                        break;
-                        
-                    case 'castell':
-                        content = window.renderCastellView?.(param || '#kernel') || '<div class="loading">Error: Castell no disponible</div>';
-                        setupFn = window.setupCastellViewEvents;
-                        break;
-                        
-                    case 'value-map':
-                        content = window.renderValueMapping?.(param || '#kernel') || '<div class="loading">Error: Value Map no disponible</div>';
-                        setupFn = window.setupValueMappingEvents;
-                        break;
-                        
-                    case 'value-accounting':
-                        content = window.renderValueAccounting?.() || '<div class="loading">Error: Value Accounting no disponible</div>';
-                        setupFn = window.setupValueAccountingEvents;
-                        break;
-                        
-                    default:
-                        content = '<div class="loading">Página no encontrada</div>';
-                }
-
-                // Actualizar contenido
-                mainContent.innerHTML = content;
-                
-                // Ejecutar setup de eventos si existe
-                if (setupFn) {
-                    setTimeout(setupFn, 100);
-                }
-
-                // Actualizar breadcrumb si existe la función
-                if (window.updateBreadcrumb) {
-                    window.updateBreadcrumb(page, param);
-                }
-
-            } catch (e) {
-                console.error('❌ Error cargando página:', e);
-                mainContent.innerHTML = `<div class="loading">Error: ${e.message}</div>`;
+        // --- PARTE CRÍTICA: Ejecutar setup específico de la página ---
+        // Las funciones de setup deben llamarse así:
+        // setupDashboardEvents, setupProjectsEvents, setupCreateProjectEvents, etc.
+        const setupFnName = `setup${page.charAt(0).toUpperCase() + page.slice(1)}Events`;
+        const setupFn = window[setupFnName];
+        
+        if (typeof setupFn === 'function') {
+            console.log(`⚙️ Ejecutando ${setupFnName}()`);
+            // Para create-project, necesitamos asegurar que el DOM está listo
+            if (page === 'create-project') {
+                // Esperar un poco más para create-project porque tt-form necesita tiempo
+                setTimeout(() => {
+                    setupFn();
+                }, 100);
+            } else {
+                setupFn();
             }
-        }, 50);
+        } else {
+            console.warn(`⚠️ No se encontró ${setupFnName}`);
+        }
+
+        // Actualizar breadcrumb
+        this.updateBreadcrumb(page, params);
     }
 
-    // Obtener parámetros actuales
-    getParams() {
-        return { ...this.params };
-    }
+    updateBreadcrumb(page, params) {
+        const breadcrumb = document.getElementById('breadcrumb');
+        if (!breadcrumb) return;
 
-    // Obtener página actual
-    getCurrentPage() {
-        return this.currentPage;
-    }
-
-    // Navegar hacia atrás
-    goBack() {
-        window.history.back();
-    }
-
-    // Recargar página actual
-    reload() {
-        this.loadPage(this.currentPage, this.params.param);
+        let html = '<a href="#" data-page="dashboard">Inicio</a>';
+        
+        if (page === 'project-detail' && params.id) {
+            html += ` > <span>${params.id}</span>`;
+        } else if (page !== 'dashboard') {
+            const pageNames = {
+                'projects': 'Proyectos',
+                'create-project': 'Nuevo Proyecto',
+                'users': 'Usuarios',
+                'castell': 'Castell',
+                'value-map': 'Mapa de Valor',
+                'value-accounting': 'Value Accounting'
+            };
+            html += ` > <span>${pageNames[page] || page}</span>`;
+        }
+        
+        breadcrumb.innerHTML = html;
     }
 }
 
 // Exponer globalmente
 window.Router = Router;
-console.log('✅ Router cargado globalmente');
