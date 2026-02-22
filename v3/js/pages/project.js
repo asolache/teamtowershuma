@@ -1,73 +1,54 @@
 // /v3/js/pages/project.js
 // Vista de detalle de proyecto: incluye pestañas de Información, Roles, Entregables, etc.
+// v3.5 - Actualizado con sectores en pestaña info
 
 // Variable para mantener el proyecto activo mientras se navega
 let currentProjectId = null;
 
-// Renderizador principal de la página de proyectos (lista)
-window.renderProjects = function() {
-    const state = window.store.getState();
-    const projects = state.projects || [];
-
-    let html = `
-        <div class="page-header">
-            <h1>📁 Proyectos</h1>
-            <button id="new-project-btn" class="btn-primary">+ Nuevo Proyecto</button>
-        </div>
-        <div class="projects-grid">
-    `;
-
-    if (projects.length === 0) {
-        html += `<p class="no-data">No hay proyectos aún. Crea uno nuevo.</p>`;
-    } else {
-        projects.forEach(proj => {
-            html += `
-                <div class="project-card" data-project-id="${proj.id}">
-                    <h3>${proj.nombre} <span class="project-id">${proj.id}</span></h3>
-                    <p>${proj.descripcion || 'Sin descripción'}</p>
-                    <p><strong>Sector:</strong> ${proj.sector || 'general'}</p>
-                    <p><strong>Roles:</strong> ${proj.roles?.length || 0}</p>
-                    <button class="view-project-btn" data-project-id="${proj.id}">Ver detalle</button>
-                </div>
-            `;
-        });
-    }
-    html += `</div>`;
-
-    setTimeout(() => {
-        document.getElementById('new-project-btn')?.addEventListener('click', () => {
-            showNewProjectForm();
-        });
-        document.querySelectorAll('.view-project-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const projectId = e.target.dataset.projectId;
-                window.Router.navigate(`project-detail?${projectId}`);
-            });
-        });
-    }, 0);
-
-    return html;
-};
-
 // Renderizar detalle de un proyecto específico (se llama desde router)
-window.renderProjectDetail = function(projectId) {
+window.renderProjectDetail = function(params) {
+    console.log('📄 Renderizando detalle de proyecto', params);
+    
+    // Obtener projectId de los parámetros (puede ser string o query params)
+    let projectId;
+    if (typeof params === 'string') {
+        if (params.includes('?')) {
+            const urlParams = new URLSearchParams(params);
+            projectId = urlParams.get('id');
+        } else {
+            projectId = params;
+        }
+    } else if (params && params.id) {
+        projectId = params.id;
+    }
+    
+    if (!projectId) {
+        return `<div class="error">ID de proyecto no proporcionado</div>`;
+    }
+    
     currentProjectId = projectId;
-    const state = window.store.getState();
+    
+    const state = window.store?.getState?.() || { projects: [] };
     const project = state.projects.find(p => p.id === projectId);
+    
     if (!project) {
-        return `<div class="error">Proyecto no encontrado</div>`;
+        return `<div class="error">Proyecto ${projectId} no encontrado</div>`;
     }
 
     // Obtener pestaña activa de la URL o por defecto 'info'
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeTab = urlParams.get('tab') || 'info';
+    let activeTab = 'info';
+    if (typeof params === 'string' && params.includes('tab=')) {
+        const tabMatch = params.match(/tab=([^&]+)/);
+        if (tabMatch) activeTab = tabMatch[1];
+    }
 
     // Cabecera del proyecto
     let html = `
         <div class="project-detail-header">
-            <button onclick="window.Router.navigate('projects')" class="back-btn">← Volver</button>
+            <button onclick="window.Router?.navigate('projects') || history.back()" class="back-btn">← Volver</button>
             <h2>${project.nombre} <span class="project-id">${project.id}</span></h2>
-            <p>${project.descripcion || ''}</p>
+            <p class="project-sector-badge">🏷️ ${window.APP_CONSTANTS?.SECTORES_MAP[project.sector] || project.sector || 'Sector no especificado'}</p>
+            <p class="project-description">${project.descripcion || ''}</p>
         </div>
         <div class="project-tabs">
             <button class="tab-button ${activeTab === 'info' ? 'active' : ''}" data-tab="info" data-project-id="${projectId}">📋 Información</button>
@@ -89,12 +70,17 @@ window.renderProjectDetail = function(projectId) {
             btn.addEventListener('click', (e) => {
                 const tab = e.target.dataset.tab;
                 const projId = e.target.dataset.projectId;
+                
                 // Actualizar URL sin recargar (opcional)
-                const url = new URL(window.location);
-                url.searchParams.set('tab', tab);
-                window.history.pushState({}, '', url);
+                if (window.history && window.history.pushState) {
+                    const url = new URL(window.location);
+                    url.searchParams.set('tab', tab);
+                    window.history.pushState({}, '', url);
+                }
+                
                 // Cargar contenido
                 loadTabContent(projId, tab);
+                
                 // Marcar activo
                 document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
@@ -131,71 +117,131 @@ function loadTabContent(projectId, tab) {
     }
 }
 
-// ----- Pestañas existentes (Info y Roles) - resumidas -----
+// ----- Pestaña Info (actualizada con sector) -----
 function renderInfoTab(projectId) {
-    const project = window.store.getState().projects.find(p => p.id === projectId);
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return '<p>Proyecto no encontrado</p>';
+    
+    const sectorNombre = window.APP_CONSTANTS?.SECTORES_MAP[project.sector] || project.sector || 'No especificado';
+    
     return `
-        <div class="info-panel">
-            <p><strong>ID:</strong> ${project.id}</p>
-            <p><strong>Nombre:</strong> ${project.nombre}</p>
-            <p><strong>Sector:</strong> ${project.sector || 'No especificado'}</p>
-            <p><strong>Creado por:</strong> ${project.creado_por || 'desconocido'}</p>
-            <p><strong>Fecha creación:</strong> ${project.fecha_creacion ? new Date(project.fecha_creacion).toLocaleString() : 'desconocida'}</p>
-            <p><strong>Descripción:</strong> ${project.descripcion || 'Sin descripción'}</p>
+        <div class="info-panel card">
+            <h3>Información general</h3>
+            <table class="info-table">
+                <tr>
+                    <th>ID:</th>
+                    <td><code>${project.id}</code></td>
+                </tr>
+                <tr>
+                    <th>Nombre:</th>
+                    <td>${project.nombre}</td>
+                </tr>
+                <tr>
+                    <th>Sector:</th>
+                    <td><span class="sector-tag">${sectorNombre}</span></td>
+                </tr>
+                <tr>
+                    <th>Creado por:</th>
+                    <td>${project.creado_por || 'desconocido'}</td>
+                </tr>
+                <tr>
+                    <th>Fecha creación:</th>
+                    <td>${project.fecha_creacion ? new Date(project.fecha_creacion).toLocaleString() : 'desconocida'}</td>
+                </tr>
+                <tr>
+                    <th>Descripción:</th>
+                    <td>${project.descripcion || 'Sin descripción'}</td>
+                </tr>
+                <tr>
+                    <th>Roles:</th>
+                    <td>${project.roles?.length || 0}</td>
+                </tr>
+                <tr>
+                    <th>Entregables totales:</th>
+                    <td>${project.roles?.reduce((acc, rol) => acc + (rol.entregables?.length || 0), 0) || 0}</td>
+                </tr>
+            </table>
         </div>
     `;
 }
 
+// ----- Pestaña Roles (resumida, existente) -----
 function renderRolesTab(projectId) {
-    const project = window.store.getState().projects.find(p => p.id === projectId);
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return '<p>Proyecto no encontrado</p>';
-    // Mostrar lista de roles (esto ya existía, lo resumimos)
-    let html = '<h3>Roles del proyecto</h3><ul class="role-list">';
+    
+    let html = '<div class="roles-panel card"><h3>Roles del proyecto</h3>';
+    
     if (project.roles && project.roles.length > 0) {
+        html += '<ul class="roles-list">';
         project.roles.forEach(role => {
-            html += `<li>${role.id} (${role.nombre || role.id}) - Usuarios: ${(role.usuarios_autorizados || []).join(', ') || 'ninguno'}</li>`;
+            const usuarios = role.usuarios_autorizados || [];
+            html += `
+                <li class="role-item">
+                    <div class="role-header">
+                        <strong>${role.id}</strong> 
+                        <span class="role-name">${role.nombre || ''}</span>
+                    </div>
+                    <div class="role-users">
+                        <small>Usuarios autorizados: ${usuarios.length ? usuarios.join(', ') : 'ninguno'}</small>
+                    </div>
+                    <div class="role-stats">
+                        <small>📦 Entregables: ${role.entregables?.length || 0}</small>
+                    </div>
+                </li>
+            `;
         });
+        html += '</ul>';
     } else {
-        html += '<li>No hay roles definidos</li>';
+        html += '<p class="no-data">No hay roles definidos en este proyecto.</p>';
     }
-    html += '</ul><button id="add-role-btn" class="btn-secondary">+ Añadir rol</button>';
+    
+    html += `
+        <div class="form-actions">
+            <button id="add-role-btn" class="btn-primary">+ Añadir rol</button>
+        </div>
+    </div>`;
+    
     return html;
 }
 
 function setupRolesTab(projectId) {
     document.getElementById('add-role-btn')?.addEventListener('click', () => {
-        // Aquí iría la lógica para añadir rol (existente)
-        alert('Funcionalidad de añadir rol (ya implementada)');
+        alert('Funcionalidad de añadir rol (próximamente)');
+        // Aquí iría la lógica para añadir roles desde el catálogo de 71 roles
     });
 }
 
-// ----- NUEVA: Pestaña de Entregables -----
+// ----- Pestaña Entregables (nueva) -----
 function renderEntregablesTab(projectId) {
-    const project = window.store.getState().projects.find(p => p.id === projectId);
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return '<p>Proyecto no encontrado</p>';
 
     // Estructura de dos columnas: lista de roles a la izquierda, detalle de entregables a la derecha
     let html = `
         <div class="entregables-layout">
-            <div class="role-sidebar">
-                <h3>Roles</h3>
+            <div class="role-sidebar card">
+                <h3>Roles del proyecto</h3>
                 <ul class="role-list" id="entregables-role-list">
     `;
 
     if (project.roles && project.roles.length > 0) {
         project.roles.forEach(role => {
             const roleName = role.nombre || role.id;
-            html += `<li class="role-item" data-role-id="${role.id}" data-project-id="${projectId}">${role.id} (${roleName})</li>`;
+            const entregableCount = role.entregables?.length || 0;
+            html += `<li class="role-item" data-role-id="${role.id}" data-project-id="${projectId}">
+                ${role.id} 
+                <small>(${entregableCount} entregables)</small>
+            </li>`;
         });
     } else {
-        html += '<li>No hay roles. Define roles primero.</li>';
+        html += '<li class="no-data">No hay roles. Define roles primero.</li>';
     }
 
     html += `
                 </ul>
             </div>
-            <div class="entregables-detail" id="entregables-detail">
+            <div class="entregables-detail card" id="entregables-detail">
                 <p class="placeholder">Selecciona un rol para ver sus entregables</p>
             </div>
         </div>
@@ -217,7 +263,7 @@ function setupEntregablesTab(projectId) {
 }
 
 function loadEntregablesForRole(projectId, roleId) {
-    const project = window.store.getState().projects.find(p => p.id === projectId);
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return;
     const role = project.roles.find(r => r.id === roleId);
     if (!role) return;
@@ -230,23 +276,33 @@ function loadEntregablesForRole(projectId, roleId) {
     } else {
         html += '<div class="entregables-list">';
         entregables.forEach(ent => {
+            const destinatarios = ent.puede_recibirlo || [];
             html += `
                 <div class="entregable-card" data-entregable-id="${ent.id}">
                     <div class="entregable-header">
-                        <strong>${ent.nombre}</strong> (UV base: ${ent.uv_base})
+                        <strong>${ent.nombre}</strong> 
+                        <span class="uv-badge">${ent.uv_base} UV</span>
                         <div class="actions">
-                            <button class="edit-entregable" data-entregable-id="${ent.id}">✏️</button>
-                            <button class="delete-entregable" data-entregable-id="${ent.id}">🗑️</button>
+                            <button class="edit-entregable icon-btn" data-entregable-id="${ent.id}" title="Editar">✏️</button>
+                            <button class="delete-entregable icon-btn" data-entregable-id="${ent.id}" title="Eliminar">🗑️</button>
                         </div>
                     </div>
-                    <p>${ent.descripcion || ''}</p>
-                    <details>
-                        <summary>Requisitos (${ent.requisitos?.length || 0})</summary>
-                        <ul>
-                            ${(ent.requisitos || []).map(req => `<li>${req.label} (${req.tipo}) ${req.required ? '*' : ''}</li>`).join('')}
+                    <p class="entregable-desc">${ent.descripcion || ''}</p>
+                    <details class="requisitos-details">
+                        <summary>📋 Requisitos (${ent.requisitos?.length || 0})</summary>
+                        <ul class="requisitos-list">
+                            ${(ent.requisitos || []).map(req => `
+                                <li>
+                                    <strong>${req.label || req.campo}</strong> 
+                                    (${req.tipo}) 
+                                    ${req.required ? '<span class="required-badge">requerido</span>' : ''}
+                                </li>
+                            `).join('')}
                         </ul>
                     </details>
-                    <p><strong>Puede recibirlo:</strong> ${(ent.puede_recibirlo || []).join(', ')}</p>
+                    <p class="destinatarios">
+                        <small>📨 Puede recibirlo: ${destinatarios.length ? destinatarios.join(', ') : 'cualquier rol'}</small>
+                    </p>
                 </div>
             `;
         });
@@ -286,8 +342,12 @@ function loadEntregablesForRole(projectId, roleId) {
 
 // Muestra formulario para crear/editar entregable
 function showEntregableForm(projectId, roleId, entregableId = null) {
-    const project = window.store.getState().projects.find(p => p.id === projectId);
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
+    if (!project) return;
+    
     const role = project.roles.find(r => r.id === roleId);
+    if (!role) return;
+    
     let entregable = null;
     if (entregableId) {
         entregable = role.entregables?.find(e => e.id === entregableId);
@@ -304,47 +364,46 @@ function showEntregableForm(projectId, roleId, entregableId = null) {
 
     // Construir HTML del formulario
     let html = `
-        <div class="form-overlay" id="entregable-form-overlay">
-            <div class="form-modal">
-                <h3>${entregableId ? 'Editar' : 'Nuevo'} entregable para ${roleId}</h3>
-                <form id="entregable-form">
-                    <div class="form-group">
-                        <label>Nombre *</label>
-                        <input type="text" id="ent-nombre" value="${initialNombre}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Descripción</label>
-                        <textarea id="ent-descripcion">${initialDesc}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>UV base *</label>
-                        <input type="number" id="ent-uvbase" value="${initialUv}" min="0" step="1" required>
-                    </div>
+        <div class="form-container" id="entregable-form-container">
+            <h3>${entregableId ? 'Editar' : 'Nuevo'} entregable para ${roleId}</h3>
+            <form id="entregable-form">
+                <div class="form-group">
+                    <label for="ent-nombre">Nombre *</label>
+                    <input type="text" id="ent-nombre" value="${initialNombre}" required placeholder="Ej: Especificación Técnica">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ent-descripcion">Descripción</label>
+                    <textarea id="ent-descripcion" rows="2" placeholder="Describe el entregable...">${initialDesc}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ent-uvbase">UV base *</label>
+                    <input type="number" id="ent-uvbase" value="${initialUv}" min="0" step="1" required placeholder="Ej: 600">
+                </div>
 
-                    <h4>Requisitos</h4>
-                    <div id="requisitos-container">
-                        <!-- Se llenará dinámicamente -->
-                    </div>
-                    <button type="button" id="add-requisito-btn" class="btn-secondary">+ Añadir requisito</button>
+                <h4>Requisitos del entregable</h4>
+                <div id="requisitos-container" class="requisitos-container">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+                <button type="button" id="add-requisito-btn" class="btn-secondary">+ Añadir requisito</button>
 
-                    <h4>Puede ser recibido por</h4>
-                    <select id="ent-destinatarios" multiple size="4">
-                        ${roleOptions}
-                    </select>
-                    <p class="help">Selecciona múltiples con Ctrl/Cmd</p>
+                <h4>Puede ser recibido por</h4>
+                <select id="ent-destinatarios" multiple size="4" class="multi-select">
+                    ${roleOptions}
+                </select>
+                <p class="help-text">Selecciona múltiples con Ctrl/Cmd (o ⌘ en Mac)</p>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Guardar</button>
-                        <button type="button" id="cancel-form-btn" class="btn-secondary">Cancelar</button>
-                    </div>
-                </form>
-            </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">💾 Guardar</button>
+                    <button type="button" id="cancel-form-btn" class="btn-secondary">❌ Cancelar</button>
+                </div>
+            </form>
         </div>
     `;
 
-    // Insertar el formulario en el body o en un contenedor
     const container = document.getElementById('entregables-detail');
-    container.innerHTML = html; // Reemplaza el detalle, pero podría ser un modal aparte. Por simplicidad lo hacemos inline.
+    container.innerHTML = html;
 
     // Inicializar requisitos dinámicos
     const requisitosContainer = document.getElementById('requisitos-container');
@@ -352,29 +411,35 @@ function showEntregableForm(projectId, roleId, entregableId = null) {
 
     function renderRequisitos() {
         requisitosContainer.innerHTML = '';
-        requisitos.forEach((req, index) => {
-            const reqHtml = `
-                <div class="requisito-item" data-index="${index}">
-                    <input type="text" placeholder="Nombre del campo" value="${req.campo || ''}" class="req-campo">
-                    <select class="req-tipo">
-                        <option value="text" ${req.tipo === 'text' ? 'selected' : ''}>Texto</option>
-                        <option value="textarea" ${req.tipo === 'textarea' ? 'selected' : ''}>Área de texto</option>
-                        <option value="number" ${req.tipo === 'number' ? 'selected' : ''}>Número</option>
-                        <option value="select" ${req.tipo === 'select' ? 'selected' : ''}>Selector</option>
-                        <option value="lista" ${req.tipo === 'lista' ? 'selected' : ''}>Lista</option>
-                    </select>
-                    <input type="text" placeholder="Label" value="${req.label || ''}" class="req-label">
-                    <label><input type="checkbox" class="req-required" ${req.required ? 'checked' : ''}> Requerido</label>
-                    <button type="button" class="remove-requisito" data-index="${index}">🗑️</button>
-                </div>
-            `;
-            requisitosContainer.insertAdjacentHTML('beforeend', reqHtml);
-        });
+        if (requisitos.length === 0) {
+            requisitosContainer.innerHTML = '<p class="no-data">No hay requisitos definidos. Añade el primero.</p>';
+        } else {
+            requisitos.forEach((req, index) => {
+                const reqHtml = `
+                    <div class="requisito-item" data-index="${index}">
+                        <input type="text" placeholder="Nombre del campo" value="${req.campo || ''}" class="req-campo" required>
+                        <select class="req-tipo">
+                            <option value="text" ${req.tipo === 'text' ? 'selected' : ''}>Texto</option>
+                            <option value="textarea" ${req.tipo === 'textarea' ? 'selected' : ''}>Área de texto</option>
+                            <option value="number" ${req.tipo === 'number' ? 'selected' : ''}>Número</option>
+                            <option value="select" ${req.tipo === 'select' ? 'selected' : ''}>Selector</option>
+                            <option value="lista" ${req.tipo === 'lista' ? 'selected' : ''}>Lista</option>
+                        </select>
+                        <input type="text" placeholder="Label" value="${req.label || ''}" class="req-label">
+                        <label class="req-required-label">
+                            <input type="checkbox" class="req-required" ${req.required ? 'checked' : ''}> Requerido
+                        </label>
+                        <button type="button" class="remove-requisito icon-btn" data-index="${index}" title="Eliminar requisito">🗑️</button>
+                    </div>
+                `;
+                requisitosContainer.insertAdjacentHTML('beforeend', reqHtml);
+            });
+        }
 
         // Añadir listeners a los botones eliminar
         document.querySelectorAll('.remove-requisito').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const index = e.target.dataset.index;
+                const index = parseInt(e.target.dataset.index);
                 requisitos.splice(index, 1);
                 renderRequisitos();
             });
@@ -411,18 +476,28 @@ function showEntregableForm(projectId, roleId, entregableId = null) {
         // Recoger requisitos actualizados del DOM
         const requisitosActualizados = [];
         document.querySelectorAll('.requisito-item').forEach(item => {
-            const campo = item.querySelector('.req-campo').value.trim();
-            const tipo = item.querySelector('.req-tipo').value;
-            const label = item.querySelector('.req-label').value.trim();
-            const required = item.querySelector('.req-required').checked;
+            const campo = item.querySelector('.req-campo')?.value.trim();
+            const tipo = item.querySelector('.req-tipo')?.value;
+            const label = item.querySelector('.req-label')?.value.trim();
+            const required = item.querySelector('.req-required')?.checked || false;
+            
             if (campo) { // Solo guardar si tiene nombre de campo
-                requisitosActualizados.push({ campo, tipo, label, required });
+                requisitosActualizados.push({ 
+                    campo, 
+                    tipo, 
+                    label: label || campo, // Si no hay label, usar el campo como label
+                    required 
+                });
             }
         });
 
         // Validaciones básicas
-        if (!nombre || !uvbase || uvbase < 0) {
-            alert('Nombre y UV base son obligatorios y UV debe ser >= 0');
+        if (!nombre) {
+            alert('El nombre es obligatorio');
+            return;
+        }
+        if (isNaN(uvbase) || uvbase < 0) {
+            alert('UV base debe ser un número mayor o igual a 0');
             return;
         }
 
@@ -447,7 +522,9 @@ function showEntregableForm(projectId, roleId, entregableId = null) {
 }
 
 function saveEntregable(projectId, roleId, entregable, isEdit = false) {
-    const state = window.store.getState();
+    const state = window.store?.getState?.();
+    if (!state) return;
+    
     const projectIndex = state.projects.findIndex(p => p.id === projectId);
     if (projectIndex === -1) return;
 
@@ -472,14 +549,23 @@ function saveEntregable(projectId, roleId, entregable, isEdit = false) {
     }
 
     // Usar el método updateProject del store
-    window.store.updateProject(projectId, updatedProject);
+    if (window.store && window.store.updateProject) {
+        window.store.updateProject(projectId, updatedProject);
+    } else {
+        // Fallback: actualizar manualmente
+        state.projects[projectIndex] = updatedProject;
+        window.store.saveState();
+        window.EventBus?.emit('project-updated', { projectId, project: updatedProject });
+    }
 
     // Recargar la vista de entregables para este rol
     loadEntregablesForRole(projectId, roleId);
 }
 
 function deleteEntregable(projectId, roleId, entregableId) {
-    const state = window.store.getState();
+    const state = window.store?.getState?.();
+    if (!state) return;
+    
     const projectIndex = state.projects.findIndex(p => p.id === projectId);
     if (projectIndex === -1) return;
 
@@ -491,7 +577,14 @@ function deleteEntregable(projectId, roleId, entregableId) {
         updatedProject.roles[roleIndex].entregables = updatedProject.roles[roleIndex].entregables.filter(e => e.id !== entregableId);
     }
 
-    window.store.updateProject(projectId, updatedProject);
+    if (window.store && window.store.updateProject) {
+        window.store.updateProject(projectId, updatedProject);
+    } else {
+        state.projects[projectIndex] = updatedProject;
+        window.store.saveState();
+        window.EventBus?.emit('project-updated', { projectId, project: updatedProject });
+    }
+    
     loadEntregablesForRole(projectId, roleId);
 }
 
@@ -499,19 +592,18 @@ function editEntregable(projectId, roleId, entregableId) {
     showEntregableForm(projectId, roleId, entregableId);
 }
 
-// Pestaña de Transacciones (placeholder)
+// ----- Pestaña Transacciones (placeholder) -----
 function renderTransaccionesTab(projectId) {
-    return '<p>Próximamente: gestión de transacciones</p>';
-}
-function setupTransaccionesTab(projectId) {}
-
-// Función para crear nuevo proyecto (ya existente, la resumimos)
-function showNewProjectForm() {
-    // Implementación existente...
-    alert('Formulario de nuevo proyecto (ya implementado)');
+    return `
+        <div class="card">
+            <h3>Transacciones del proyecto</h3>
+            <p class="coming-soon">Próximamente: gestión de transacciones y flujo de valor.</p>
+        </div>
+    `;
 }
 
-// Eventos al cargar la página (si es necesario)
-document.addEventListener('DOMContentLoaded', () => {
-    // Inicialización
-});
+function setupTransaccionesTab(projectId) {
+    // Placeholder
+}
+
+//
