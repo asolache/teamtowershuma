@@ -13,17 +13,15 @@ const SECTORES = [
     { id: 'servicios', nombre: 'Servicios Profesionales y Consultoría B2B' }
 ];
 
-// IDs y mapas para acceso rápido
 const SECTORES_ID = SECTORES.map(s => s.id);
 const SECTORES_MAP = Object.fromEntries(SECTORES.map(s => [s.id, s.nombre]));
-
-// Sector por defecto
 const SECTOR_DEFAULT = 'tecnologia';
 
-// Exponer en el ámbito global
 window.APP_CONSTANTS = {
     SECTORES,
     SECTORES_ID,
     SECTORES_MAP,
     SECTOR_DEFAULT
 };
+
+console.log('✅ constants.js cargado');
