@@ -12,28 +12,126 @@
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
         }
         .tab-link {
             transition: all 0.2s;
         }
         .tab-link:hover {
-            color: #2563eb !important;
+            color: var(--tt-primary) !important;
+        }
+        /* Loading spinner */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--tt-secondary);
+            font-size: 1.2rem;
+        }
+        .loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 1rem auto;
+            border: 4px solid var(--border-light);
+            border-top-color: var(--tt-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Mensaje de error */
+        .error-container {
+            max-width: 600px;
+            margin: 3rem auto;
+            text-align: center;
+        }
+        .error-title {
+            color: var(--status-forca);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        /* Header mejorado */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--tt-primary);
+            box-shadow: var(--shadow-tronc);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--tt-primary);
+        }
+        .logo-icon {
+            font-size: 2rem;
+        }
+        .main-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: var(--tt-secondary);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background: var(--border-light);
+            color: var(--tt-primary);
+        }
+        .nav-highlight {
+            background: var(--color-testing);
+            color: white !important;
+        }
+        .nav-highlight:hover {
+            background: var(--color-testing);
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+        .breadcrumb {
+            padding: 1rem 2rem;
+            background: var(--bg-app);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .breadcrumb a {
+            color: var(--tt-secondary);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--tt-primary);
+            text-decoration: underline;
+        }
+        #main-content {
+            padding: 2rem;
+            min-height: calc(100vh - 180px);
         }
     </style>
 </head>
 <body>
     <div class="app">
         <header class="app-header">
-            <div class="logo">🏗️ TeamTowers v3.5</div>
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">TeamTowers v3.5</span>
+            </div>
             <nav class="main-nav">
-                <a href="#" data-page="dashboard">📊 Dashboard</a>
-                <a href="#" data-page="projects">📋 Proyectos</a>
-                <a href="#" data-page="create-project" style="background: #10b981; color: white; font-weight: bold;">➕ Nuevo Proyecto</a>
-                <a href="#" data-page="users">👥 Usuarios</a>
-                <a href="#" data-page="castell">🏰 Castell</a>
-                <a href="#" data-page="value-map">🗺️ Value Map</a>
-                <a href="#" data-page="value-accounting">💰 Value Accounting</a>
+                <a href="#" data-page="dashboard" class="nav-link">📊 Dashboard</a>
+                <a href="#" data-page="projects" class="nav-link">📋 Proyectos</a>
+                <a href="#" data-page="create-project" class="nav-link nav-highlight">➕ Nuevo Proyecto</a>
+                <a href="#" data-page="users" class="nav-link">👥 Usuarios</a>
+                <a href="#" data-page="castell" class="nav-link">🏰 Castell</a>
+                <a href="#" data-page="value-map" class="nav-link">🗺️ Value Map</a>
+                <a href="#" data-page="value-accounting" class="nav-link">💰 Value Accounting</a>
             </nav>
         </header>
 
@@ -42,16 +140,25 @@
         </div>
 
         <main id="main-content">
-            <div class="loading">Cargando TeamTowers v3.5...</div>
+            <div class="loading">Iniciando TeamTowers v3.5...</div>
         </main>
     </div>
 
-    <!-- ===== CORE (ORDEN CRÍTICO) ===== -->
+    <!-- ===== CORE - ORDEN CRÍTICO (NO MODIFICAR) ===== -->
+    <!-- 1. Constantes primero (necesarias para todo) -->
+    <script src="js/core/constants.js"></script>
+    <!-- 2. EventBus (necesario para store) -->
+    <script src="js/core/event-bus.js"></script>
+    <!-- 3. Store (depende de EventBus) -->
     <script src="js/core/store.js"></script>
+    <!-- 4. Selectors (depende de store) -->
     <script src="js/core/selectors.js"></script>
+    <!-- 5. Export Manager (opcional pero útil) -->
+    <script src="js/core/export-manager.js"></script>
+    <!-- 6. Router (depende de las páginas, se carga pero se inicializa al final) -->
     <script src="js/core/router.js"></script>
 
-    <!-- ===== COMPONENTES ===== -->
+    <!-- ===== COMPONENTES UI (pueden cargarse en cualquier orden) ===== -->
     <script src="js/components/tt-metric-card.js"></script>
     <script src="js/components/tt-data-table.js"></script>
     <script src="js/components/tt-filter-bar.js"></script>
@@ -61,7 +168,7 @@
     <script src="js/components/tt-form.js"></script>
     <script src="js/components/tt-role-selector.js"></script>
 
-    <!-- ===== PÁGINAS ===== -->
+    <!-- ===== PÁGINAS (deben cargarse antes de inicializar router) ===== -->
     <script src="js/pages/dashboard.js"></script>
     <script src="js/pages/projects.js"></script>
     <script src="js/pages/create-project.js"></script>
@@ -74,38 +181,100 @@
 
     <!-- ===== INICIALIZACIÓN ===== -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Iniciando TeamTowers v3.5');
+        (function() {
+            'use strict';
             
-            // Verificar store
-            if (!window.store) {
-                console.error('❌ Store no disponible');
-                document.getElementById('main-content').innerHTML = `
-                    <div class="card">
-                        <h2>❌ Error de carga</h2>
-                        <p>El store no está disponible. Verifica que store.js se cargó correctamente.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            console.log('✅ Store disponible - Roles:', window.store.getState().roles.length);
-            
-            // Inicializar router
-            window.router = new Router();
-            
-            // Pequeño retraso para asegurar renderizado
-            setTimeout(() => window.router.navigate('dashboard'), 100);
-        });
+            // Esperar a que el DOM esté listo
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('🚀 Iniciando TeamTowers v3.5');
+                console.log('📦 Constantes cargadas:', !!window.APP_CONSTANTS);
+                console.log('🔌 EventBus cargado:', !!window.EventBus);
+                console.log('💾 Store cargado:', !!window.store);
+                
+                // Verificar dependencias críticas
+                const dependencies = {
+                    'APP_CONSTANTS': window.APP_CONSTANTS,
+                    'EventBus': window.EventBus,
+                    'store': window.store,
+                    'Router': window.Router
+                };
+                
+                const missing = Object.entries(dependencies)
+                    .filter(([_, value]) => !value)
+                    .map(([name]) => name);
+                
+                if (missing.length > 0) {
+                    console.error('❌ Dependencias faltantes:', missing.join(', '));
+                    document.getElementById('main-content').innerHTML = `
+                        <div class="error-container card">
+                            <h2 class="error-title">❌ Error de inicialización</h2>
+                            <p>No se pudieron cargar los siguientes módulos:</p>
+                            <ul>
+                                ${missing.map(m => `<li><code>${m}</code></li>`).join('')}
+                            </ul>
+                            <p>Verifica que los scripts se están cargando correctamente y en el orden adecuado.</p>
+                            <button onclick="location.reload()" class="btn-primary">Reintentar</button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                console.log('✅ Todas las dependencias cargadas correctamente');
+                console.log('📊 Roles disponibles:', window.store.getState().roles.length);
+                
+                // Inicializar router SOLO después de que todas las páginas estén cargadas
+                try {
+                    window.router = new window.Router();
+                    console.log('🔄 Router inicializado');
+                    
+                    // Navegar a la página inicial
+                    setTimeout(() => {
+                        window.router.navigate('dashboard');
+                        console.log('✅ Navegación inicial completada');
+                    }, 100);
+                } catch (error) {
+                    console.error('❌ Error al inicializar router:', error);
+                    document.getElementById('main-content').innerHTML = `
+                        <div class="error-container card">
+                            <h2 class="error-title">❌ Error en el router</h2>
+                            <p>${error.message}</p>
+                            <button onclick="location.reload()" class="btn-primary">Reintentar</button>
+                        </div>
+                    `;
+                }
+            });
 
-        // Exponer funciones globalmente para debugging
-        window.showRoleSelector = function(projectId) {
-            if (typeof showRoleSelector === 'function') {
-                showRoleSelector(projectId);
-            } else {
-                console.error('showRoleSelector no disponible');
-            }
-        };
+            // Exponer funciones globales de forma segura
+            window.TeamTowers = {
+                debug: {
+                    store: () => window.store?.getState(),
+                    constants: () => window.APP_CONSTANTS,
+                    reload: () => location.reload()
+                },
+                showRoleSelector: function(projectId) {
+                    if (typeof window.showRoleSelector === 'function') {
+                        window.showRoleSelector(projectId);
+                    } else {
+                        console.warn('showRoleSelector no disponible - función no implementada');
+                        alert('Selector de roles no disponible en este momento');
+                    }
+                }
+            };
+
+            // Manejar errores globales
+            window.addEventListener('error', function(e) {
+                console.error('🔥 Error global:', e.error?.message || e.message);
+            });
+
+            // Manejar navegación con el historial
+            window.addEventListener('popstate', function() {
+                if (window.router) {
+                    const path = window.location.pathname + window.location.search;
+                    window.router.handleRoute(path);
+                }
+            });
+
+        })();
     </script>
 </body>
 </html>
