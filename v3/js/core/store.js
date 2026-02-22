@@ -1,4 +1,4 @@
-// store.js - VERSIÓN CORREGIDA CON 71 ROLES
+// store.js - VERSIÓN FINAL CON 71 ROLES
 const STORAGE_KEY = 'teamtowers-v3-data';
 
 console.log('📦 Cargando store.js...');
@@ -172,7 +172,7 @@ class Store {
         console.log('🌱 GENERANDO SEMILLA con', ALL_ROLES.length, 'roles');
         const state = {
             projects: [...PROJECTS],
-            roles: [...ALL_ROLES], // <-- AQUÍ SE USAN LOS 71 ROLES
+            roles: [...ALL_ROLES], // AQUÍ SE USAN LOS 71 ROLES
             users: [...USERS],
             transactions: this.generateFixedTransactions(100)
         };
@@ -182,7 +182,7 @@ class Store {
     generateFixedTransactions(count) {
         const transactions = [];
         const projectIds = PROJECTS.map(p => p.id);
-        const roleIds = ALL_ROLES.map(r => r.id); // <-- USA ALL_ROLES
+        const roleIds = ALL_ROLES.map(r => r.id);
         const userIds = USERS.map(u => u.id);
         
         for (let i = 1; i <= count; i++) {
@@ -215,4 +215,4 @@ class Store {
 
 // EXPORTAR GLOBALMENTE
 window.store = new Store();
-window.ALL_ROLES = ALL_ROLES; // <-- PARA DIAGNÓSTICO
+window.ALL_ROLES = ALL_ROLES; // PARA DIAGNÓSTICO
