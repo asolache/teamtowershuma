@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeamTowers Humà v3.5</title>
     <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Estilos adicionales */
+        .btn-primary {
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+        }
+        .tab-link {
+            transition: all 0.2s;
+        }
+        .tab-link:hover {
+            color: #2563eb !important;
+        }
+    </style>
 </head>
 <body>
     <div class="app">
@@ -13,7 +29,7 @@
             <nav class="main-nav">
                 <a href="#" data-page="dashboard">📊 Dashboard</a>
                 <a href="#" data-page="projects">📋 Proyectos</a>
-                <a href="#" data-page="create-project" style="background: #10b981; color: white;">➕ Nuevo Proyecto</a>
+                <a href="#" data-page="create-project" style="background: #10b981; color: white; font-weight: bold;">➕ Nuevo Proyecto</a>
                 <a href="#" data-page="users">👥 Usuarios</a>
                 <a href="#" data-page="castell">🏰 Castell</a>
                 <a href="#" data-page="value-map">🗺️ Value Map</a>
@@ -26,20 +42,26 @@
         </div>
 
         <main id="main-content">
-            <div class="loading">Cargando TeamTowers...</div>
+            <div class="loading">Cargando TeamTowers v3.5...</div>
         </main>
     </div>
 
-    <!-- CORE (orden crítico) -->
+    <!-- ===== CORE (ORDEN CRÍTICO) ===== -->
     <script src="js/core/store.js"></script>
     <script src="js/core/selectors.js"></script>
     <script src="js/core/router.js"></script>
 
-    <!-- COMPONENTES -->
-    <script src="js/components/tt-form.js"></script>
+    <!-- ===== COMPONENTES ===== -->
+    <script src="js/components/tt-metric-card.js"></script>
+    <script src="js/components/tt-data-table.js"></script>
+    <script src="js/components/tt-filter-bar.js"></script>
+    <script src="js/components/tt-pie-chart.js"></script>
+    <script src="js/components/tt-breadcrumb.js"></script>
     <script src="js/components/tt-pinya-visual.js"></script>
+    <script src="js/components/tt-form.js"></script>
+    <script src="js/components/tt-role-selector.js"></script>
 
-    <!-- PÁGINAS -->
+    <!-- ===== PÁGINAS ===== -->
     <script src="js/pages/dashboard.js"></script>
     <script src="js/pages/projects.js"></script>
     <script src="js/pages/create-project.js"></script>
@@ -50,6 +72,7 @@
     <script src="js/pages/value-mapping.js"></script>
     <script src="js/pages/value-accounting.js"></script>
 
+    <!-- ===== INICIALIZACIÓN ===== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Iniciando TeamTowers v3.5');
@@ -57,13 +80,32 @@
             // Verificar store
             if (!window.store) {
                 console.error('❌ Store no disponible');
+                document.getElementById('main-content').innerHTML = `
+                    <div class="card">
+                        <h2>❌ Error de carga</h2>
+                        <p>El store no está disponible. Verifica que store.js se cargó correctamente.</p>
+                    </div>
+                `;
                 return;
             }
             
             console.log('✅ Store disponible - Roles:', window.store.getState().roles.length);
+            
+            // Inicializar router
             window.router = new Router();
+            
+            // Pequeño retraso para asegurar renderizado
             setTimeout(() => window.router.navigate('dashboard'), 100);
         });
+
+        // Exponer funciones globalmente para debugging
+        window.showRoleSelector = function(projectId) {
+            if (typeof showRoleSelector === 'function') {
+                showRoleSelector(projectId);
+            } else {
+                console.error('showRoleSelector no disponible');
+            }
+        };
     </script>
 </body>
 </html>
