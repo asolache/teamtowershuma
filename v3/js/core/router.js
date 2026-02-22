@@ -28,7 +28,7 @@ class Router {
             if (link) {
                 e.preventDefault();
                 const page = link.dataset.page;
-                // Si hay dataset.params, pasarlo como parámetros
+                // Si hay dataset.params, pasarlo como parámetros (opcional)
                 const params = link.dataset.params ? JSON.parse(link.dataset.params) : {};
                 this.navigate(page, params);
             }
@@ -63,12 +63,13 @@ class Router {
      * Maneja la ruta actual (desde URL o hash)
      */
     handleCurrentRoute() {
-        const hash = window.location.hash.slice(1); // quitar el #
+        const hash = window.location.hash.slice(1); // quitar el '#'
         if (!hash) {
             this.navigate('dashboard');
             return;
         }
         
+        // Separar página de parámetros
         const [page, queryString] = hash.split('?');
         const params = queryString ? Object.fromEntries(new URLSearchParams(queryString)) : {};
         
@@ -81,7 +82,7 @@ class Router {
      * @param {object} params - Parámetros
      */
     renderPage(page, params = {}) {
-        console.log(`🎨 Renderizando página: ${page}`);
+        console.log(`🎨 Renderizando página: ${page} con params:`, params);
         
         const renderFn = this.routes[page];
         if (!renderFn) {
@@ -94,14 +95,13 @@ class Router {
         const content = renderFn(params);
         document.getElementById('main-content').innerHTML = content;
 
-        // --- PARTE CRÍTICA: Ejecutar setup específico de la página ---
-        // Convertir kebab-case a CamelCase (ej: create-project -> CreateProject)
+        // --- Ejecutar setup específico de la página ---
+        // Convertir kebab-case a CamelCase (ej: project-detail -> ProjectDetail)
         const camelCasePage = page.split('-').map((part, index) => {
             if (index === 0) return part;
             return part.charAt(0).toUpperCase() + part.slice(1);
         }).join('');
 
-        // Construir nombre de la función setup (ej: setupCreateProjectEvents)
         const setupFnName = `setup${camelCasePage.charAt(0).toUpperCase() + camelCasePage.slice(1)}Events`;
         const setupFn = window[setupFnName];
 
@@ -109,26 +109,8 @@ class Router {
 
         if (typeof setupFn === 'function') {
             console.log(`⚙️ Ejecutando ${setupFnName}()`);
-            
-            // Para páginas que necesitan esperar a que el DOM esté listo
-            if (page === 'create-project' || page === 'project-detail') {
-                // Esperar un poco más para asegurar que los componentes están en el DOM
-                setTimeout(() => {
-                    try {
-                        setupFn();
-                    } catch (error) {
-                        console.error(`❌ Error en ${setupFnName}:`, error);
-                    }
-                }, 150);
-            } else {
-                try {
-                    setupFn();
-                } catch (error) {
-                    console.error(`❌ Error en ${setupFnName}:`, error);
-                }
-            }
-        } else {
-            console.warn(`⚠️ No se encontró la función setup: ${setupFnName}`);
+            // Pequeño retraso para asegurar DOM
+            setTimeout(() => setupFn(), 50);
         }
 
         // Actualizar breadcrumb
