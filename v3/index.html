@@ -115,6 +115,27 @@
             padding: 2rem;
             min-height: calc(100vh - 180px);
         }
+        /* Estilos para mensajes de error en formularios */
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+        }
+        .error-message button {
+            background: #c00;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+        .error-message button:hover {
+            background: #a00;
+        }
     </style>
 </head>
 <body>
@@ -227,11 +248,19 @@
                     window.router = new window.Router();
                     console.log('🔄 Router inicializado');
                     
-                    // Navegar a la página inicial
+                    // Manejar ruta inicial (hash o dashboard por defecto)
                     setTimeout(() => {
-                        window.router.navigate('dashboard');
+                        if (window.location.hash && window.location.hash.length > 1) {
+                            // Extraer página del hash
+                            const hash = window.location.hash.slice(1);
+                            const [page] = hash.split('?');
+                            window.router.navigate(page);
+                        } else {
+                            window.router.navigate('dashboard');
+                        }
                         console.log('✅ Navegación inicial completada');
-                    }, 100);
+                    }, 150); // Esperar un poco más para asegurar que todo está listo
+                    
                 } catch (error) {
                     console.error('❌ Error al inicializar router:', error);
                     document.getElementById('main-content').innerHTML = `
@@ -249,14 +278,16 @@
                 debug: {
                     store: () => window.store?.getState(),
                     constants: () => window.APP_CONSTANTS,
+                    router: () => window.router,
                     reload: () => location.reload()
                 },
-                showRoleSelector: function(projectId) {
-                    if (typeof window.showRoleSelector === 'function') {
-                        window.showRoleSelector(projectId);
+                // Exponer showNewProjectForm globalmente (definido en projects.js)
+                showNewProjectForm: function() {
+                    if (typeof window.showNewProjectForm === 'function') {
+                        window.showNewProjectForm();
                     } else {
-                        console.warn('showRoleSelector no disponible - función no implementada');
-                        alert('Selector de roles no disponible en este momento');
+                        console.warn('showNewProjectForm no disponible - función no implementada');
+                        alert('Formulario de creación no disponible en este momento');
                     }
                 }
             };
@@ -269,8 +300,25 @@
             // Manejar navegación con el historial
             window.addEventListener('popstate', function() {
                 if (window.router) {
-                    const path = window.location.pathname + window.location.search;
-                    window.router.handleRoute(path);
+                    if (window.location.hash) {
+                        const hash = window.location.hash.slice(1);
+                        const [page] = hash.split('?');
+                        window.router.navigate(page);
+                    } else {
+                        window.router.navigate('dashboard');
+                    }
+                }
+            });
+
+            // Prevenir comportamiento por defecto en enlaces con data-page
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('[data-page]');
+                if (link) {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    if (window.router) {
+                        window.router.navigate(page);
+                    }
                 }
             });
 
