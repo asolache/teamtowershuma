@@ -25,4 +25,5 @@ window.renderUser = function(userId) {
                 </tbody>
             </table>
         </div>
-    `
+    `;
+};
