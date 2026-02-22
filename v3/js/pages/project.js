@@ -722,59 +722,87 @@ window.showCreateTransactionForm = function(projectId, roleId, entregableId) {
     const container = document.getElementById('entregables-detail');
     container.innerHTML = html;
 
-    document.getElementById('save-transaction-btn').addEventListener('click', () => {
+    // Verificar que el componente tt-dynamic-form esté definido antes de usarlo
+    if (!customElements.get('tt-dynamic-form')) {
+        console.error('❌ El componente <tt-dynamic-form> no está definido. Asegúrate de que tt-dynamic-form.js está cargado.');
+        alert('Error: El formulario dinámico no está disponible. Verifica la consola.');
+        return;
+    }
+
+    // Esperar un poco a que el componente se actualice en el DOM
+    setTimeout(() => {
         const dynamicForm = document.getElementById('transaction-dynamic-form');
-        const formElement = dynamicForm.shadowRoot.querySelector('#dynamic-form');
-        const formData = new FormData(formElement);
-        const contenido = {};
-        for (let [key, value] of formData.entries()) {
-            const req = entregable.requisitos?.find(r => r.campo === key);
-            if (req && req.tipo === 'lista') {
-                contenido[key] = value.split('\n').map(line => line.trim()).filter(line => line);
-            } else {
-                contenido[key] = value;
+        if (!dynamicForm) {
+            console.error('❌ No se encontró el elemento <tt-dynamic-form>');
+            return;
+        }
+
+        document.getElementById('save-transaction-btn').addEventListener('click', () => {
+            // Acceder al shadowRoot del componente (debe estar disponible)
+            const shadow = dynamicForm.shadowRoot;
+            if (!shadow) {
+                console.error('❌ El shadowRoot del componente no está disponible');
+                alert('Error interno con el formulario dinámico.');
+                return;
             }
-        }
 
-        const receptorSelect = document.getElementById('transaction-receptor');
-        const receptorUserId = receptorSelect.value;
-        if (!receptorUserId) {
-            alert('Debes seleccionar un receptor');
-            return;
-        }
-        const selectedOption = receptorSelect.options[receptorSelect.selectedIndex];
-        const rolReceptor = selectedOption.dataset.rol;
+            const formElement = shadow.querySelector('#dynamic-form');
+            if (!formElement) {
+                console.error('❌ No se encontró el formulario dentro del componente');
+                return;
+            }
 
-        const uvEstimado = parseInt(document.getElementById('transaction-uv').value);
-        if (isNaN(uvEstimado) || uvEstimado < 0) {
-            alert('UV debe ser un número mayor o igual a 0');
-            return;
-        }
+            const formData = new FormData(formElement);
+            const contenido = {};
+            for (let [key, value] of formData.entries()) {
+                const req = entregable.requisitos?.find(r => r.campo === key);
+                if (req && req.tipo === 'lista') {
+                    contenido[key] = value.split('\n').map(line => line.trim()).filter(line => line);
+                } else {
+                    contenido[key] = value;
+                }
+            }
 
-        const nuevaTransaccion = {
-            id: 'tx-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-            entregable_id: entregable.id,
-            nombre: entregable.nombre,
-            creado_por: usuarioActual,
-            recibido_por: receptorUserId,
-            rol_emisor: roleId,
-            rol_receptor: rolReceptor,
-            fecha: new Date().toISOString(),
-            contenido: contenido,
-            uv_estimado: uvEstimado,
-            uv_real: null,
-            estado: 'pendiente'
-        };
+            const receptorSelect = document.getElementById('transaction-receptor');
+            const receptorUserId = receptorSelect.value;
+            if (!receptorUserId) {
+                alert('Debes seleccionar un receptor');
+                return;
+            }
+            const selectedOption = receptorSelect.options[receptorSelect.selectedIndex];
+            const rolReceptor = selectedOption.dataset.rol;
 
-        if (window.store && window.store.addTransaction) {
-            window.store.addTransaction(projectId, nuevaTransaccion);
-            console.log('✅ Transacción creada:', nuevaTransaccion);
-            alert('✅ Transacción creada correctamente');
-            loadEntregablesForRole(projectId, roleId);
-        } else {
-            alert('❌ Error al guardar la transacción');
-        }
-    });
+            const uvEstimado = parseInt(document.getElementById('transaction-uv').value);
+            if (isNaN(uvEstimado) || uvEstimado < 0) {
+                alert('UV debe ser un número mayor o igual a 0');
+                return;
+            }
+
+            const nuevaTransaccion = {
+                id: 'tx-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                entregable_id: entregable.id,
+                nombre: entregable.nombre,
+                creado_por: usuarioActual,
+                recibido_por: receptorUserId,
+                rol_emisor: roleId,
+                rol_receptor: rolReceptor,
+                fecha: new Date().toISOString(),
+                contenido: contenido,
+                uv_estimado: uvEstimado,
+                uv_real: null,
+                estado: 'pendiente'
+            };
+
+            if (window.store && window.store.addTransaction) {
+                window.store.addTransaction(projectId, nuevaTransaccion);
+                console.log('✅ Transacción creada:', nuevaTransaccion);
+                alert('✅ Transacción creada correctamente');
+                loadEntregablesForRole(projectId, roleId);
+            } else {
+                alert('❌ Error al guardar la transacción');
+            }
+        });
+    }, 100); // Pequeño retraso para asegurar que el componente se haya actualizado
 
     document.getElementById('cancel-transaction-btn').addEventListener('click', () => {
         loadEntregablesForRole(projectId, roleId);
