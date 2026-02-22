@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers Humà v3.4</title>
+    <title>TeamTowers Humà v3.5</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <div class="app">
         <header class="app-header">
-            <div class="logo">🏗️ TeamTowers v3.4</div>
+            <div class="logo">🏗️ TeamTowers v3.5</div>
             <nav class="main-nav">
                 <a href="#" data-page="dashboard">📊 Dashboard</a>
                 <a href="#" data-page="projects">📋 Proyectos</a>
+                <a href="#" data-page="create-project" style="background: #10b981; color: white;">➕ Nuevo Proyecto</a>
                 <a href="#" data-page="users">👥 Usuarios</a>
                 <a href="#" data-page="castell">🏰 Castell</a>
                 <a href="#" data-page="value-map">🗺️ Value Map</a>
@@ -35,11 +36,13 @@
     <script src="js/core/router.js"></script>
 
     <!-- COMPONENTES -->
+    <script src="js/components/tt-form.js"></script>
     <script src="js/components/tt-pinya-visual.js"></script>
 
     <!-- PÁGINAS -->
     <script src="js/pages/dashboard.js"></script>
     <script src="js/pages/projects.js"></script>
+    <script src="js/pages/create-project.js"></script>
     <script src="js/pages/project.js"></script>
     <script src="js/pages/users.js"></script>
     <script src="js/pages/user.js"></script>
@@ -49,7 +52,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Iniciando TeamTowers v3.4');
+            console.log('🚀 Iniciando TeamTowers v3.5');
+            
+            // Verificar store
+            if (!window.store) {
+                console.error('❌ Store no disponible');
+                return;
+            }
+            
+            console.log('✅ Store disponible - Roles:', window.store.getState().roles.length);
             window.router = new Router();
             setTimeout(() => window.router.navigate('dashboard'), 100);
         });
