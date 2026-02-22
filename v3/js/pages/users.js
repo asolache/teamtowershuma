@@ -1,5 +1,8 @@
+// users.js - DEFINICIÓN GLOBAL
 window.renderUsers = function() {
-    const users = window.store.getState().users;
+    console.log('👥 Renderizando usuarios...');
+    const state = window.store?.getState?.() || { users: [] };
+    
     return `
         <div class="card">
             <h2>👥 Usuarios</h2>
@@ -8,10 +11,10 @@ window.renderUsers = function() {
                     <tr><th>ID</th><th>Nombre</th><th>Tipo</th></tr>
                 </thead>
                 <tbody>
-                    ${users.map(u => `
-                        <tr onclick="window.router.navigate('user', '${u.id}')" style="cursor: pointer;">
+                    ${state.users.map(u => `
+                        <tr onclick="window.router?.navigate('user', '${u.id}')" style="cursor: pointer;">
                             <td><strong>${u.id}</strong></td>
-                            <td>${u.name}</td>
+                            <td>${u.name || u.id}</td>
                             <td>${u.type === 'human' ? '👤 Humano' : '🤖 IA'}</td>
                         </tr>
                     `).join('')}
@@ -20,3 +23,9 @@ window.renderUsers = function() {
         </div>
     `;
 };
+
+window.setupUsersEvents = function() {
+    console.log('✅ Usuarios eventos listos');
+};
+
+console.log('✅ Users cargado globalmente');
