@@ -2,7 +2,8 @@
 // Página para crear nuevos proyectos - v3.5
 
 console.log('📦 Cargando create-project.js...');
-
+if (window.__projectJsLoaded) return;
+window.__projectJsLoaded = true;
 // SOLO UNA DECLARACIÓN DE SECTORES (asegúrate de que no haya otra)
 const SECTORES = [
     { id: "tecnologia", nombre: "Tecnología, Software e IA", emoji: "💻", descripcion: "SaaS, apps, IA aplicada, ciberseguridad, productividad digital, deeptech…" },
