@@ -1,6 +1,8 @@
 // /v3/js/pages/create-project.js
 // Página para crear nuevos proyectos - v3.5
 
+console.log('📦 Cargando create-project.js...');
+
 // Lista completa de sectores
 const SECTORES = [
     { id: "tecnologia", nombre: "Tecnología, Software e IA", emoji: "💻" },
@@ -14,8 +16,9 @@ const SECTORES = [
     { id: "consultoria", nombre: "Servicios Profesionales y Consultoría B2B", emoji: "🤝" }
 ];
 
-window.renderCreateProject = function() {
-    console.log('📁 Renderizando formulario de nuevo proyecto');
+// EXPORTAR FUNCIÓN GLOBALMENTE (debe estar definida ANTES de usarse)
+window.renderCreateProject = function(params) {
+    console.log('📁 renderCreateProject ejecutado con params:', params);
     
     const fields = [
         {
@@ -111,13 +114,13 @@ function handleFormSubmit(e) {
         descripcion: data.Descripción || '',
         objetivos: objetivosLista,
         roles: [],
-        creado_por: "@masterproject", // Temporal
+        creado_por: "@masterproject",
         fecha_creacion: new Date().toISOString()
     };
 
     // Añadir al store
     if (window.store) {
-        // Verificar si ya existe un proyecto con ese ID
+        // Verificar si ya existe
         const existe = window.store.getState().projects.some(p => p.id === data.ID);
         if (existe) {
             alert(`❌ Ya existe un proyecto con ID ${data.ID}`);
@@ -125,15 +128,12 @@ function handleFormSubmit(e) {
         }
         
         window.store.addProject(nuevoProyecto);
-        
         console.log('✅ Proyecto creado:', nuevoProyecto);
-        alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente en sector ${sectorNombre}`);
+        alert(`✅ Proyecto ${nuevoProyecto.id} creado correctamente`);
         
         // Redirigir
         if (window.router) {
             window.router.navigate(`project-detail?id=${encodeURIComponent(nuevoProyecto.id)}`);
-        } else {
-            window.location.href = `/?page=project-detail&id=${encodeURIComponent(nuevoProyecto.id)}`;
         }
     } else {
         console.error('❌ Store no disponible');
@@ -141,28 +141,44 @@ function handleFormSubmit(e) {
     }
 }
 
+// Configurar eventos (se llama desde el router después de renderizar)
 window.setupCreateProjectEvents = function() {
-    console.log('📁 Intentando configurar eventos de create project');
+    console.log('📁 setupCreateProjectEvents iniciado');
     
-    // Función con reintento para asegurar que el elemento existe
-    function attachListener(attempts = 0) {
+    let attempts = 0;
+    const maxAttempts = 30; // 30 * 100ms = 3 segundos
+    
+    function tryAttach() {
         const form = document.getElementById('create-project-form');
         if (form) {
-            // Evitar duplicados: eliminar listener previo si existe
+            console.log('✅ Formulario encontrado, adjuntando evento');
             form.removeEventListener('form-submit', handleFormSubmit);
             form.addEventListener('form-submit', handleFormSubmit);
-            console.log('✅ Evento form-submit adjuntado correctamente');
+            return true;
         } else {
-            if (attempts < 10) {
-                console.warn(`⏳ Elemento no encontrado, reintentando (${attempts + 1}/10)...`);
-                setTimeout(() => attachListener(attempts + 1), 50);
+            if (attempts < maxAttempts) {
+                attempts++;
+                console.log(`⏳ Intento ${attempts}/${maxAttempts}: Esperando formulario...`);
+                setTimeout(tryAttach, 100);
             } else {
-                console.error('❌ No se pudo encontrar el elemento #create-project-form después de varios intentos');
+                console.error('❌ No se pudo encontrar el formulario después de varios intentos');
+                // Mostrar mensaje al usuario
+                const container = document.getElementById('main-content');
+                if (container) {
+                    container.innerHTML += `
+                        <div class="error-message" style="background: #fee; padding: 1rem; margin: 1rem; border-radius: 8px;">
+                            ⚠️ Error al cargar el formulario. 
+                            <button onclick="location.reload()">Recargar página</button>
+                        </div>
+                    `;
+                }
             }
         }
     }
     
-    attachListener();
+    tryAttach();
 };
 
-console.log('✅ Create Project page loaded con todos los sectores');
+console.log('✅ create-project.js cargado correctamente');
+console.log('📌 window.renderCreateProject definido:', !!window.renderCreateProject);
+console.log('📌 window.setupCreateProjectEvents definido:', !!window.setupCreateProjectEvents);
