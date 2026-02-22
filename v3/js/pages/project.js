@@ -314,5 +314,124 @@ window.setupProjectEvents = function() {
         });
     }
 };
+// Funciones para el modal de roles
+function showRoleSelector(projectId) {
+    // Crear modal si no existe
+    let modal = document.getElementById('role-selector-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'role-selector-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        `;
+        document.body.appendChild(modal);
+    }
 
+    modal.innerHTML = `
+        <div style="background: white; border-radius: 24px; width: 800px; max-width: 90%; max-height: 80vh; overflow-y: auto; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 style="margin: 0;">👥 Seleccionar Roles para el Proyecto</h2>
+                <button onclick="document.getElementById('role-selector-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+            </div>
+            
+            <tt-role-selector project-id="${projectId}" id="role-selector"></tt-role-selector>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button onclick="document.getElementById('role-selector-modal').remove()" style="padding: 10px 20px; background: #e2e8f0; border: none; border-radius: 30px; cursor: pointer;">
+                    Cancelar
+                </button>
+                <button id="save-roles-btn" style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 30px; cursor: pointer;">
+                    Guardar Roles
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Evento guardar
+    const saveBtn = document.getElementById('save-roles-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            const selector = document.getElementById('role-selector');
+            if (selector && selector.selectedRoles) {
+                saveProjectRoles(projectId, selector.selectedRoles);
+            }
+        });
+    }
+}
+
+function saveProjectRoles(projectId, roles) {
+    const state = window.store.getState();
+    const projectIndex = state.projects.findIndex(p => p.id === projectId);
+    
+    if (projectIndex !== -1) {
+        state.projects[projectIndex].roles = roles;
+        window.store.saveState();
+        
+        alert(`✅ ${roles.length} roles guardados correctamente`);
+        document.getElementById('role-selector-modal')?.remove();
+        
+        // Recargar la página para ver los cambios
+        location.reload();
+    } else {
+        alert('❌ Proyecto no encontrado');
+    }
+}
+
+// Modificar la función renderRolesTab para incluir el botón funcional
+function renderRolesTab(project) {
+    const roles = project.roles || [];
+    
+    return `
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>👥 Roles del Proyecto</h3>
+                <button onclick="showRoleSelector('${project.id}')" class="btn-primary" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 30px; cursor: pointer;">
+                    + Añadir Rol
+                </button>
+            </div>
+            
+            ${roles.length === 0 ? `
+                <div style="background: #f8fafc; border-radius: 16px; padding: 40px; text-align: center;">
+                    <p style="color: #64748b;">No hay roles asignados a este proyecto</p>
+                    <button onclick="showRoleSelector('${project.id}')" style="margin-top: 10px; padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 30px; cursor: pointer;">
+                        Añadir primer rol
+                    </button>
+                </div>
+            ` : `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rol</th>
+                            <th>Nivel</th>
+                            <th>Multiplicador</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${roles.map(rol => `
+                            <tr>
+                                <td><strong style="color: ${rol.color || '#2563eb'}">${rol.id}</strong></td>
+                                <td>${rol.level || 'base'}</td>
+                                <td>${rol.multiplier || 1.0}x</td>
+                                <td>
+                                    <button onclick="alert('Eliminar rol - Funcionalidad próximamente')" style="background: none; border: none; cursor: pointer;">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `}
+        </div>
+    `;
+}
 console.log('✅ Project page cargada');
