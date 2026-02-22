@@ -1,4 +1,4 @@
-// store.js - VERSIÓN COMPLETA CON 71 ROLES
+// store.js - VERSIÓN CORREGIDA CON 71 ROLES
 const STORAGE_KEY = 'teamtowers-v3-data';
 
 console.log('📦 Cargando store.js...');
@@ -97,7 +97,7 @@ const ALL_ROLES = [
 ];
 
 // ============================================
-// PROYECTOS Y USUARIOS
+// PROYECTOS
 // ============================================
 const PROJECTS = [
     { id: '#kernel', name: 'Kernel v4.0', sector: 'software' },
@@ -109,6 +109,9 @@ const PROJECTS = [
     { id: '#comunicaciones', name: 'Comunicaciones', sector: 'consultoria' }
 ];
 
+// ============================================
+// USUARIOS
+// ============================================
 const USERS = [
     { id: '@masterproject', name: 'Master Project', type: 'human' },
     { id: '@alvaro-solache', name: 'Álvaro Solache', type: 'human' },
@@ -131,10 +134,13 @@ const USERS = [
 // ============================================
 class Store {
     constructor() {
-        console.log('🏗️ Store inicializando con 71 roles...');
+        console.log('🏗️ Store inicializando...');
+        console.log('📊 ALL_ROLES definidos:', ALL_ROLES.length);
+        
         this.state = this.loadState();
         this.listeners = [];
-        console.log('✅ Store listo - Roles:', this.state.roles.length);
+        
+        console.log('✅ Store listo - Roles en estado:', this.state.roles.length);
     }
 
     loadState() {
@@ -143,6 +149,7 @@ class Store {
             if (saved) {
                 const parsed = JSON.parse(saved);
                 console.log('📂 Datos cargados desde localStorage');
+                console.log('   - Roles guardados:', parsed.roles?.length || 0);
                 return parsed;
             }
         } catch (e) {
@@ -162,9 +169,10 @@ class Store {
     }
 
     generateSeedState() {
+        console.log('🌱 GENERANDO SEMILLA con', ALL_ROLES.length, 'roles');
         const state = {
             projects: [...PROJECTS],
-            roles: [...ALL_ROLES],
+            roles: [...ALL_ROLES], // <-- AQUÍ SE USAN LOS 71 ROLES
             users: [...USERS],
             transactions: this.generateFixedTransactions(100)
         };
@@ -174,7 +182,7 @@ class Store {
     generateFixedTransactions(count) {
         const transactions = [];
         const projectIds = PROJECTS.map(p => p.id);
-        const roleIds = ALL_ROLES.map(r => r.id);
+        const roleIds = ALL_ROLES.map(r => r.id); // <-- USA ALL_ROLES
         const userIds = USERS.map(u => u.id);
         
         for (let i = 1; i <= count; i++) {
@@ -207,3 +215,4 @@ class Store {
 
 // EXPORTAR GLOBALMENTE
 window.store = new Store();
+window.ALL_ROLES = ALL_ROLES; // <-- PARA DIAGNÓSTICO
