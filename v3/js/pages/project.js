@@ -171,15 +171,11 @@ function setupRolesTab(projectId) {
     });
 }
 
-// Nueva función para mostrar formulario de añadir rol
 function showAddRoleForm(projectId) {
     const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return;
 
-    // Obtener roles globales disponibles (del store)
     const availableRoles = window.store?.getState?.()?.roles || [];
-    
-    // Roles ya existentes en el proyecto para no duplicar
     const existingRoleIds = project.roles.map(r => r.id);
 
     let html = `
@@ -226,12 +222,10 @@ function showAddRoleForm(projectId) {
         let newRoleId, newRoleName;
 
         if (selectedRoleId) {
-            // Usar rol del catálogo
             const selectedRole = availableRoles.find(r => r.id === selectedRoleId);
             newRoleId = selectedRole.id;
             newRoleName = selectedRole.nombre || selectedRole.id;
         } else if (customRoleId) {
-            // Usar rol personalizado
             if (!customRoleId.startsWith('@')) {
                 alert('El ID del rol personalizado debe empezar con @');
                 return;
@@ -243,13 +237,11 @@ function showAddRoleForm(projectId) {
             return;
         }
 
-        // Verificar si ya existe en el proyecto
         if (project.roles.some(r => r.id === newRoleId)) {
             alert(`El rol ${newRoleId} ya existe en el proyecto`);
             return;
         }
 
-        // Crear nuevo rol
         const newRole = {
             id: newRoleId,
             nombre: newRoleName,
@@ -257,11 +249,8 @@ function showAddRoleForm(projectId) {
             entregables: []
         };
 
-        // Añadir al proyecto
         project.roles.push(newRole);
         window.store.updateProject(projectId, project);
-
-        // Volver a la pestaña de roles
         loadTabContent(projectId, 'roles');
     });
 
@@ -270,7 +259,6 @@ function showAddRoleForm(projectId) {
     });
 }
 
-// Función para autorizar usuarios (ya existente)
 function showUserAuthorizationForm(projectId, roleId) {
     const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return;
@@ -331,7 +319,7 @@ function showUserAuthorizationForm(projectId, roleId) {
     });
 }
 
-// ----- Pestaña Entregables (con botón para crear transacción) -----
+// ----- Pestaña Entregables (completa) -----
 function renderEntregablesTab(projectId) {
     const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
     if (!project) return '<p>Proyecto no encontrado</p>';
@@ -384,6 +372,7 @@ function loadEntregablesForRole(projectId, roleId) {
     } else {
         html += '<div class="entregables-list">';
         entregables.forEach(ent => {
+            const destinatarios = ent.puede_recibirlo || [];
             html += `
                 <div class="entregable-card" data-entregable-id="${ent.id}">
                     <div class="entregable-header">
@@ -405,7 +394,7 @@ function loadEntregablesForRole(projectId, roleId) {
                         </ul>
                     </details>
                     <p class="destinatarios">
-                        <small>📨 Puede recibirlo: ${(ent.puede_recibirlo || []).join(', ') || 'cualquier rol'}</small>
+                        <small>📨 Puede recibirlo: ${destinatarios.length ? destinatarios.join(', ') : 'cualquier rol'}</small>
                     </p>
                 </div>
             `;
@@ -450,27 +439,346 @@ function loadEntregablesForRole(projectId, roleId) {
     });
 }
 
-// Funciones de entregable (editar, eliminar, formulario)
+// ===== FUNCIONES DE ENTREGABLES (CRUD) =====
 function showEntregableForm(projectId, roleId, entregableId = null) {
-    // ... (implementación existente, no se modifica)
-    // Por brevedad, asumimos que ya está implementada en tu código.
-    // Si no, copia la implementación anterior.
-    console.log('showEntregableForm llamado');
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
+    if (!project) return;
+    const role = project.roles.find(r => r.id === roleId);
+    if (!role) return;
+    
+    let entregable = null;
+    if (entregableId) {
+        entregable = role.entregables?.find(e => e.id === entregableId);
+    }
+
+    const roleOptions = project.roles.map(r => `<option value="${r.id}">${r.id}</option>`).join('');
+
+    const initialNombre = entregable ? entregable.nombre : '';
+    const initialDesc = entregable ? entregable.descripcion : '';
+    const initialUv = entregable ? entregable.uv_base : '';
+    const initialDestinatarios = entregable ? (entregable.puede_recibirlo || []) : [];
+
+    let html = `
+        <div class="form-container" id="entregable-form-container">
+            <h3>${entregableId ? 'Editar' : 'Nuevo'} entregable para ${roleId}</h3>
+            <form id="entregable-form">
+                <div class="form-group">
+                    <label for="ent-nombre">Nombre *</label>
+                    <input type="text" id="ent-nombre" value="${initialNombre}" required placeholder="Ej: Especificación Técnica">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ent-descripcion">Descripción</label>
+                    <textarea id="ent-descripcion" rows="2" placeholder="Describe el entregable...">${initialDesc}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ent-uvbase">UV base *</label>
+                    <input type="number" id="ent-uvbase" value="${initialUv}" min="0" step="1" required placeholder="Ej: 600">
+                </div>
+
+                <h4>Requisitos del entregable</h4>
+                <div id="requisitos-container" class="requisitos-container"></div>
+                <button type="button" id="add-requisito-btn" class="btn-secondary">+ Añadir requisito</button>
+
+                <h4>Puede ser recibido por</h4>
+                <select id="ent-destinatarios" multiple size="4" class="multi-select">
+                    ${roleOptions}
+                </select>
+                <p class="help-text">Selecciona múltiples con Ctrl/Cmd (o ⌘ en Mac)</p>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">💾 Guardar</button>
+                    <button type="button" id="cancel-form-btn" class="btn-secondary">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    const container = document.getElementById('entregables-detail');
+    container.innerHTML = html;
+
+    const requisitosContainer = document.getElementById('requisitos-container');
+    let requisitos = entregable ? (entregable.requisitos || []) : [];
+
+    function renderRequisitos() {
+        requisitosContainer.innerHTML = '';
+        if (requisitos.length === 0) {
+            requisitosContainer.innerHTML = '<p class="no-data">No hay requisitos definidos. Añade el primero.</p>';
+        } else {
+            requisitos.forEach((req, index) => {
+                const reqHtml = `
+                    <div class="requisito-item" data-index="${index}">
+                        <input type="text" placeholder="Nombre del campo" value="${req.campo || ''}" class="req-campo" required>
+                        <select class="req-tipo">
+                            <option value="text" ${req.tipo === 'text' ? 'selected' : ''}>Texto</option>
+                            <option value="textarea" ${req.tipo === 'textarea' ? 'selected' : ''}>Área de texto</option>
+                            <option value="number" ${req.tipo === 'number' ? 'selected' : ''}>Número</option>
+                            <option value="select" ${req.tipo === 'select' ? 'selected' : ''}>Selector</option>
+                            <option value="lista" ${req.tipo === 'lista' ? 'selected' : ''}>Lista</option>
+                        </select>
+                        <input type="text" placeholder="Label" value="${req.label || ''}" class="req-label">
+                        <label class="req-required-label">
+                            <input type="checkbox" class="req-required" ${req.required ? 'checked' : ''}> Requerido
+                        </label>
+                        <button type="button" class="remove-requisito icon-btn" data-index="${index}" title="Eliminar requisito">🗑️</button>
+                    </div>
+                `;
+                requisitosContainer.insertAdjacentHTML('beforeend', reqHtml);
+            });
+        }
+
+        document.querySelectorAll('.remove-requisito').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = parseInt(e.target.dataset.index);
+                requisitos.splice(index, 1);
+                renderRequisitos();
+            });
+        });
+    }
+
+    renderRequisitos();
+
+    document.getElementById('add-requisito-btn').addEventListener('click', () => {
+        requisitos.push({ campo: '', tipo: 'text', label: '', required: false });
+        renderRequisitos();
+    });
+
+    const destinatariosSelect = document.getElementById('ent-destinatarios');
+    if (initialDestinatarios.length > 0) {
+        Array.from(destinatariosSelect.options).forEach(opt => {
+            if (initialDestinatarios.includes(opt.value)) {
+                opt.selected = true;
+            }
+        });
+    }
+
+    document.getElementById('entregable-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById('ent-nombre').value.trim();
+        const descripcion = document.getElementById('ent-descripcion').value.trim();
+        const uvbase = parseInt(document.getElementById('ent-uvbase').value);
+        const destinatarios = Array.from(document.getElementById('ent-destinatarios').selectedOptions).map(opt => opt.value);
+
+        const requisitosActualizados = [];
+        document.querySelectorAll('.requisito-item').forEach(item => {
+            const campo = item.querySelector('.req-campo')?.value.trim();
+            const tipo = item.querySelector('.req-tipo')?.value;
+            const label = item.querySelector('.req-label')?.value.trim();
+            const required = item.querySelector('.req-required')?.checked || false;
+            if (campo) {
+                requisitosActualizados.push({ campo, tipo, label: label || campo, required });
+            }
+        });
+
+        if (!nombre) {
+            alert('El nombre es obligatorio');
+            return;
+        }
+        if (isNaN(uvbase) || uvbase < 0) {
+            alert('UV base debe ser un número mayor o igual a 0');
+            return;
+        }
+
+        const newEntregable = {
+            id: entregableId || 'ent-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+            nombre: nombre,
+            descripcion: descripcion,
+            uv_base: uvbase,
+            requisitos: requisitosActualizados,
+            puede_recibirlo: destinatarios
+        };
+
+        saveEntregable(projectId, roleId, newEntregable, !!entregableId);
+    });
+
+    document.getElementById('cancel-form-btn').addEventListener('click', () => {
+        loadEntregablesForRole(projectId, roleId);
+    });
 }
+
 function saveEntregable(projectId, roleId, entregable, isEdit) {
-    // ... (implementación existente)
+    const state = window.store?.getState?.();
+    if (!state) return;
+
+    const projectIndex = state.projects.findIndex(p => p.id === projectId);
+    if (projectIndex === -1) return;
+
+    const updatedProject = JSON.parse(JSON.stringify(state.projects[projectIndex]));
+    const roleIndex = updatedProject.roles.findIndex(r => r.id === roleId);
+    if (roleIndex === -1) return;
+
+    if (!updatedProject.roles[roleIndex].entregables) {
+        updatedProject.roles[roleIndex].entregables = [];
+    }
+
+    if (isEdit) {
+        const idx = updatedProject.roles[roleIndex].entregables.findIndex(e => e.id === entregable.id);
+        if (idx !== -1) {
+            updatedProject.roles[roleIndex].entregables[idx] = entregable;
+        }
+    } else {
+        updatedProject.roles[roleIndex].entregables.push(entregable);
+    }
+
+    window.store.updateProject(projectId, updatedProject);
+    loadEntregablesForRole(projectId, roleId);
 }
+
 function deleteEntregable(projectId, roleId, entregableId) {
-    // ... (implementación existente)
+    const state = window.store?.getState?.();
+    if (!state) return;
+
+    const projectIndex = state.projects.findIndex(p => p.id === projectId);
+    if (projectIndex === -1) return;
+
+    const updatedProject = JSON.parse(JSON.stringify(state.projects[projectIndex]));
+    const roleIndex = updatedProject.roles.findIndex(r => r.id === roleId);
+    if (roleIndex === -1) return;
+
+    updatedProject.roles[roleIndex].entregables = updatedProject.roles[roleIndex].entregables.filter(e => e.id !== entregableId);
+    window.store.updateProject(projectId, updatedProject);
+    loadEntregablesForRole(projectId, roleId);
 }
+
 function editEntregable(projectId, roleId, entregableId) {
     showEntregableForm(projectId, roleId, entregableId);
 }
 
-// Función para crear transacción (ya existente)
+// ----- Función para crear transacción (desde entregables) -----
 window.showCreateTransactionForm = function(projectId, roleId, entregableId) {
-    // ... (implementación existente, no se modifica)
-    console.log('showCreateTransactionForm llamado');
+    const project = window.store?.getState?.()?.projects.find(p => p.id === projectId);
+    if (!project) return;
+    const role = project.roles.find(r => r.id === roleId);
+    if (!role) return;
+    const entregable = role.entregables?.find(e => e.id === entregableId);
+    if (!entregable) return;
+
+    const usuarioActual = window.usuarioActual || '@masterproject';
+
+    if (!role.usuarios_autorizados?.includes(usuarioActual)) {
+        alert('No estás autorizado para crear transacciones en este rol');
+        return;
+    }
+
+    const allUsers = window.store?.getAllUsers() || [];
+    const rolesDestino = entregable.puede_recibirlo || [];
+    let posiblesReceptores = [];
+    rolesDestino.forEach(rolDest => {
+        const roleDestino = project.roles.find(r => r.id === rolDest);
+        if (roleDestino && roleDestino.usuarios_autorizados) {
+            roleDestino.usuarios_autorizados.forEach(userId => {
+                if (!posiblesReceptores.some(u => u.userId === userId)) {
+                    const user = allUsers.find(u => u.id === userId);
+                    if (user) {
+                        posiblesReceptores.push({
+                            userId: user.id,
+                            nombre: user.nombre,
+                            rolDestino: rolDest
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    const receptorOptions = posiblesReceptores.map(r => 
+        `<option value="${r.userId}" data-rol="${r.rolDestino}">${r.nombre} (${r.userId}) como ${r.rolDestino}</option>`
+    ).join('');
+
+    let html = `
+        <div class="form-container" id="transaction-form-container">
+            <h3>➕ Crear transacción para: ${entregable.nombre}</h3>
+            <p><strong>Rol emisor:</strong> ${roleId} (${usuarioActual})</p>
+            
+            <tt-dynamic-form 
+                id="transaction-dynamic-form"
+                requisitos='${JSON.stringify(entregable.requisitos || [])}'
+                submit-label="Crear Transacción"
+            ></tt-dynamic-form>
+            
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="transaction-receptor">Selecciona el receptor (usuario):</label>
+                <select id="transaction-receptor" class="filtro-select" required>
+                    <option value="">-- Selecciona un usuario --</option>
+                    ${receptorOptions}
+                </select>
+                <p class="help-text">El usuario que recibirá este entregable</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="transaction-uv">UV estimado:</label>
+                <input type="number" id="transaction-uv" value="${entregable.uv_base}" min="0" step="1">
+            </div>
+            
+            <div class="form-actions">
+                <button id="save-transaction-btn" class="btn-primary">💾 Guardar Transacción</button>
+                <button id="cancel-transaction-btn" class="btn-secondary">❌ Cancelar</button>
+            </div>
+        </div>
+    `;
+
+    const container = document.getElementById('entregables-detail');
+    container.innerHTML = html;
+
+    document.getElementById('save-transaction-btn').addEventListener('click', () => {
+        const dynamicForm = document.getElementById('transaction-dynamic-form');
+        const formElement = dynamicForm.shadowRoot.querySelector('#dynamic-form');
+        const formData = new FormData(formElement);
+        const contenido = {};
+        for (let [key, value] of formData.entries()) {
+            const req = entregable.requisitos?.find(r => r.campo === key);
+            if (req && req.tipo === 'lista') {
+                contenido[key] = value.split('\n').map(line => line.trim()).filter(line => line);
+            } else {
+                contenido[key] = value;
+            }
+        }
+
+        const receptorSelect = document.getElementById('transaction-receptor');
+        const receptorUserId = receptorSelect.value;
+        if (!receptorUserId) {
+            alert('Debes seleccionar un receptor');
+            return;
+        }
+        const selectedOption = receptorSelect.options[receptorSelect.selectedIndex];
+        const rolReceptor = selectedOption.dataset.rol;
+
+        const uvEstimado = parseInt(document.getElementById('transaction-uv').value);
+        if (isNaN(uvEstimado) || uvEstimado < 0) {
+            alert('UV debe ser un número mayor o igual a 0');
+            return;
+        }
+
+        const nuevaTransaccion = {
+            id: 'tx-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+            entregable_id: entregable.id,
+            nombre: entregable.nombre,
+            creado_por: usuarioActual,
+            recibido_por: receptorUserId,
+            rol_emisor: roleId,
+            rol_receptor: rolReceptor,
+            fecha: new Date().toISOString(),
+            contenido: contenido,
+            uv_estimado: uvEstimado,
+            uv_real: null,
+            estado: 'pendiente'
+        };
+
+        if (window.store && window.store.addTransaction) {
+            window.store.addTransaction(projectId, nuevaTransaccion);
+            console.log('✅ Transacción creada:', nuevaTransaccion);
+            alert('✅ Transacción creada correctamente');
+            loadEntregablesForRole(projectId, roleId);
+        } else {
+            alert('❌ Error al guardar la transacción');
+        }
+    });
+
+    document.getElementById('cancel-transaction-btn').addEventListener('click', () => {
+        loadEntregablesForRole(projectId, roleId);
+    });
 };
 
 // ----- Pestaña Transacciones -----
