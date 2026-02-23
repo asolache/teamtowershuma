@@ -21,66 +21,86 @@
         }
         #app { min-height: 100vh; }
         
-        /* Transición suave entre vistas (SPA) */
+        /* Animación de entrada para las vistas */
         .fade-in {
-            animation: fadeIn 0.3s ease-in;
+            animation: fadeIn 0.3s ease-out forwards;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        </div>
+    <div id="app"></div>
 
     <script type="module">
         import { store } from './js/core/store.js';
         import { HomeView } from './js/views/HomeView.js';
         import { ProjectView } from './js/views/ProjectView.js';
-        import { AboutView } from './js/views/AboutView.js'; // <-- La nueva vista del Manifiesto
+        import { AboutView } from './js/views/AboutView.js';
 
         const app = document.getElementById('app');
 
-        // --- ENRUTADOR DINÁMICO ---
+        /**
+         * ROUTER: Orquestador de navegación SPA
+         */
         function router() {
-            const hash = window.location.hash || '#/';
+            const rawHash = window.location.hash || '#/';
+            // Normalizamos el hash eliminando slash final si existe (ej: #/about/ -> #/about)
+            const hash = rawHash.replace(/\/$/, "");
             
-            // Reiniciar animación
-            app.classList.remove('fade-in');
-            void app.offsetWidth; // Trigger reflow
-            app.classList.add('fade-in');
+            console.log("SOS Kernel -> Navegando a:", hash);
 
-            // Renderizar la vista correspondiente
-            if (hash === '#/') {
+            // Reiniciar estado visual para la transición
+            app.classList.remove('fade-in');
+            void app.offsetWidth; // Reflow forzoso para reiniciar animación
+
+            // Lógica de Enrutamiento
+            if (hash === '#/' || hash === '') {
                 app.innerHTML = HomeView.render();
-            } else if (hash === '#/about') {
+            } 
+            else if (hash === '#/about') {
                 app.innerHTML = AboutView.render();
-            } else if (hash.startsWith('#/project/')) {
-                const projectId = hash.split('/')[2];
-                app.innerHTML = ProjectView.render(projectId);
-            } else {
+            } 
+            else if (hash.startsWith('#/project/')) {
+                const parts = hash.split('/');
+                const projectId = parts[2];
+                if (projectId) {
+                    app.innerHTML = ProjectView.render(projectId);
+                } else {
+                    window.location.hash = '#/';
+                }
+            } 
+            else {
+                // Vista 404 personalizada
                 app.innerHTML = `
                     <div style="padding:100px; text-align:center; color:#8b949e;">
-                        <h2>⚠️ 404 - Sector Desconocido</h2>
-                        <p>La coordenada a la que intentas acceder no existe en el Castell.</p>
-                        <a href="#/" style="color:#58a6ff; text-decoration:none;">Volver a la Base</a>
+                        <h2 style="color:#f0f6fc;">⚠️ 404 - Coordenada Inválida</h2>
+                        <p>El sector <code>${hash}</code> no existe en la ontología del Castell.</p>
+                        <a href="#/" style="color:var(--accent); text-decoration:none; font-weight:bold;">← Volver al Dashboard</a>
                     </div>
                 `;
             }
+
+            app.classList.add('fade-in');
         }
 
-        // --- ESCUCHADORES DE EVENTOS ---
-        
-        // Esperamos a que el Kernel cargue la ontología y el localStorage antes de pintar nada
+        // --- GESTIÓN DE CICLO DE VIDA ---
+
+        // El Kernel emite 'store-ready' tras cargar localStorage y ontología
         window.addEventListener('store-ready', () => {
-            console.log("SOS Kernel v4.2: Online y a la escucha");
+            console.log("SOS v4.2: Motor de datos listo.");
             router();
         });
 
-        // Detectar cambios en la URL para cambiar de vista sin recargar la página
+        // Escucha cambios de URL (atrás/adelante en el navegador)
         window.addEventListener('hashchange', router);
+
+        // Fallback: Si el store tarda más de lo previsto, intentar router inicial
+        if (store && store.state && store.state.projects.length > 0) {
+            router();
+        }
 
     </script>
 </body>
