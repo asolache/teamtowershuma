@@ -2,23 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SOS v4 | Suite de Validación Total</title>
+    <title>SOS v4.2 | Suite de Validación Total</title>
     <style>
-        body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; line-height: 1.6; }
-        .container { max-width: 800px; margin: 0 auto; }
+        body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 40px; }
+        .container { max-width: 900px; margin: 0 auto; }
         h1 { border-bottom: 2px solid #30363d; padding-bottom: 10px; color: #f0f6fc; }
         .test-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; }
         .pass { border-left: 5px solid #238636; }
         .fail { border-left: 5px solid #f85149; background: #2a1215; }
-        .icon { font-size: 1.2rem; margin-right: 15px; }
-        .msg { flex-grow: 1; font-family: 'Cascadia Code', monospace; font-size: 0.9rem; }
-        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: #30363d; margin-left: 10px; color: #8b949e; }
+        .msg { flex-grow: 1; font-family: 'Cascadia Code', monospace; font-size: 0.85rem; }
+        .badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; background: #30363d; margin-left: 10px; color: #8b949e; text-transform: uppercase; }
         .summary { margin-top: 30px; padding: 20px; border-radius: 8px; background: #0d1117; border: 1px solid #3b82f6; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧪 SOS v4: Validation Suite</h1>
+        <h1>🧪 SOS v4.2: Full Stress Test</h1>
         <div id="results"></div>
         <div id="summary-box"></div>
     </div>
@@ -28,90 +27,86 @@
 
         async function runSuite() {
             const results = document.getElementById('results');
-            let passed = 0;
-            let total = 0;
+            let passed = 0; let total = 0;
 
-            const assert = (condition, message, tag = "CORE") => {
+            const assert = (condition, message, tag) => {
                 total++;
                 const div = document.createElement('div');
                 div.className = `test-card ${condition ? "pass" : "fail"}`;
-                
                 if(condition) passed++;
-
-                div.innerHTML = `
-                    <span class="icon">${condition ? '✅' : '❌'}</span>
-                    <span class="msg">${message}</span>
-                    <span class="badge">${tag}</span>
-                `;
+                div.innerHTML = `<span style="margin-right:15px">${condition ? '✅' : '❌'}</span>
+                                 <span class="msg">${message}</span>
+                                 <span class="badge">${tag}</span>`;
                 results.appendChild(div);
             };
 
-            // 1. Inicialización del Kernel
+            // 1. Inicialización
             await new Promise(resolve => window.addEventListener('store-ready', resolve));
             await new Promise(resolve => setTimeout(resolve, 200));
 
-            // --- BLOQUE 1: ONTOLOGÍA Y ESTRUCTURA ---
+            // --- BLOQUE A: ESTRUCTURA Y ONTOLOGÍA ---
             assert(store.state.ontology !== null, "Kernel cargado con ontología maestra", "KERNEL");
             
-            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-v4', nombre: 'Test Project', sector: 'marketing' } });
-            const p = store.getState().projects.find(x => x.id === 'test-v4');
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'p-vna', nombre: 'Test Project', sector: 'marketing' } });
+            const p = store.getState().projects.find(x => x.id === 'p-vna');
             
-            assert(p.sector === 'marketing', "Mapeo de sector correcto", "ONTOLOGY");
-            assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Alias de roles inyectados", "ONTOLOGY");
+            assert(p.sector === 'marketing', "Sector marketing registrado", "ONTOLOGY");
+            assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Alias de marketing correctos", "ONTOLOGY");
 
-            // --- BLOQUE 2: PERSISTENCIA Y EDICIÓN ---
-            store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 'test-v4', rolId: '@baixos', newName: 'Junior Art' } });
-            const p2 = store.getState().projects.find(x => x.id === 'test-v4');
-            assert(p2.customRoles['@baixos'] === 'Junior Art', "Persistencia de customRoles activa", "STORE");
+            // --- BLOQUE B: PERSISTENCIA Y CÁLCULO ---
+            store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 'p-vna', rolId: '@baixos', newName: 'Junior Art' } });
+            assert(store.getState().projects.find(x => x.id === 'p-vna').customRoles['@baixos'] === 'Junior Art', "Persistencia de edición", "STORE");
 
-            // --- BLOQUE 3: ECONOMÍA SOS ---
             store.dispatch({ 
                 type: 'ADD_TRANSACTION', 
-                payload: { 
-                    projectId: 'test-v4', 
-                    transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Auditoría Inicial', tipo_flujo: 'tangible' } 
-                } 
+                payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Auditoría', tipo_flujo: 'tangible' } } 
             });
-            const tx = p2.transactions[0];
-            assert(tx.liquidación === 540, `Cálculo SOS 540€ (90*3*2). OK.`, "ECONOMY");
-            assert(tx.tipo_flujo === 'tangible', "Metadato VNA detectado", "VNA");
+            const tx = store.getState().projects.find(x => x.id === 'p-vna').transactions[0];
+            assert(tx.liquidación === 540, "Cálculo SOS 540€ OK", "ECONOMY");
+            assert(tx.tipo_flujo === 'tangible', "Metadato VNA presente", "VNA");
 
-            // --- BLOQUE 4: RESILIENCIA Y CIRCUIT BREAKER (NUEVOS - FALLARÁN) ---
+            // --- BLOQUE C: RESILIENCIA Y CIRCUIT BREAKER ---
+            // Inyectamos carga pesada sin auditoría
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { projectId: 'p-vna', transaction: { rolId: '@aixecador', horas: 10, concepto: 'Mega Dev' } } 
+            });
+
+            const salud = (typeof store.calculateResilience === 'function') ? store.calculateResilience('p-vna') : 0;
+            assert(salud < 50 && salud > 0, `Watchdog: Salud calculada (${salud}%)`, "RESILIENCE");
+
+            const txCountBefore = store.getState().projects.find(x => x.id === 'p-vna').transactions.length;
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', horas: 5, concepto: 'Estrategia Prohibida' } } 
+            });
+            const txCountAfter = store.getState().projects.find(x => x.id === 'p-vna').transactions.length;
+            assert(txCountBefore === txCountAfter, "Circuit Breaker: Bloqueo por baja salud", "SECURITY");
+
+            // --- BLOQUE D: ALARMAS Y SECTORES AVANZADOS ---
             
-            // Inyectamos una transacción masiva sin auditoría para bajar la salud
+            // Test 9: Web3 Alias
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'p-web3', nombre: 'DApp', sector: 'Web3' } });
+            const pW3 = store.getState().projects.find(x => x.id === 'p-web3');
+            assert(pW3.customRoles['@aixecador'] === 'Smart Contract Dev', "Mapeo Alias Web3 OK", "ONTOLOGY");
+
+            // Test 10: Riesgo Deuda Técnica
+            const hasDeuda = (typeof store.getAlerts === 'function') ? store.getAlerts('p-vna').some(a => a.code === 'RIESGO_DEUDA_TECNICA') : false;
+            assert(hasDeuda === true, "Alerta: Riesgo Deuda Técnica detectada", "WATCHDOG");
+
+            // Test 11: Desviación de Precio
             store.dispatch({ 
                 type: 'ADD_TRANSACTION', 
-                payload: { 
-                    projectId: 'test-v4', 
-                    transaction: { rolId: '@aixecador', horas: 10, concepto: 'Mega Construcción', tipo_flujo: 'tangible' } 
-                } 
+                payload: { projectId: 'p-vna', transaction: { rolId: '@pinya', horas: 1, concepto: 'Mantenimiento Caro', override_price: 500 } } 
             });
+            const hasOverprice = (typeof store.getAlerts === 'function') ? store.getAlerts('p-vna').some(a => a.code === 'DESVIACION_PRECIO') : false;
+            assert(hasOverprice === true, "Alerta: Sobre-liquidación detectada", "ECONOMY");
 
-            // Test 7: Verificar si el motor calcula la resiliencia
-            const salud = typeof store.calculateResilience === 'function' ? store.calculateResilience('test-v4') : 0;
-            assert(salud < 50 && salud > 0, `Motor de Resiliencia: Salud calculada en ${salud}%`, "WATCHDOG");
-
-            // Test 8: Intentar transacción de alto nivel con salud baja (Circuit Breaker)
-            const txCountBefore = p2.transactions.length;
-            store.dispatch({ 
-                type: 'ADD_TRANSACTION', 
-                payload: { 
-                    projectId: 'test-v4', 
-                    transaction: { rolId: '@anxaneta', horas: 5, concepto: 'Estrategia Prohibida' } 
-                } 
-            });
-            const txCountAfter = store.getState().projects.find(x => x.id === 'test-v4').transactions.length;
-            assert(txCountBefore === txCountAfter, "Circuit Breaker: Bloqueo de liquidación por baja resiliencia", "SECURITY");
-
-            // Resumen Final
+            // Resumen
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
-            summary.innerHTML = `
-                <h3>Resumen de Validación: ${passed}/${total}</h3>
-                <p>${passed === total ? "🚀 Sistema listo para producción." : "⚠️ Se requiere intervención en los módulos de Seguridad."}</p>
-            `;
+            summary.innerHTML = `<h3>Puntuación: ${passed}/${total}</h3><p>${passed === total ? "🚀 KERNEL ESTABLE" : "🛠️ REPARACIÓN REQUERIDA"}</p>`;
         }
-
         runSuite();
     </script>
 </body>
