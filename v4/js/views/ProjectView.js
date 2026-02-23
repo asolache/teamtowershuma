@@ -1,6 +1,5 @@
 import { store } from '../core/store.js';
 import { ValueMapView } from './ValueMapView.js';
-import { ResilienceBar } from './ResilienceBar.js';
 
 export const ProjectView = {
     render: (projectId) => {
@@ -8,34 +7,18 @@ export const ProjectView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return `<div style="padding:50px; text-align:center;"><h2>Proyecto no encontrado</h2><a href="#/" style="color:#58a6ff;">Volver al Dashboard</a></div>`;
 
-        const salud = store.calculateResilience(projectId);
-        const alerts = store.getAlerts(projectId);
-        const transactions = [...project.transactions].reverse();
-
         // 🛡️ FILTRO DE INMUTABILIDAD: Solo mostramos roles dinámicos que NO estén archivados
         const activeDynamicRoles = (project.dynamicRoles || []).filter(dr => !dr.isArchived);
-
-        // Generar las opciones de roles para los selectores de inyección
-        const roleOptions = `
-            <optgroup label="Roles Base">
-                ${Object.keys(project.customRoles).map(id => `<option value="${id}">${project.customRoles[id]}</option>`).join('')}
-            </optgroup>
-            ${activeDynamicRoles.length > 0 ? `
-                <optgroup label="Especialistas">
-                    ${activeDynamicRoles.map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
-                </optgroup>
-            ` : ''}
-        `;
 
         return `
             <div style="max-width: 1400px; margin: 0 auto; padding: 25px; font-family: sans-serif; color: #c9d1d9;">
                 
-                <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 20px; margin-bottom: 30px;">
+                <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 20px; margin-bottom: 20px;">
                     <div>
                         <h1 style="color: #f0f6fc; margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 15px;">
                             ${project.nombre} 
-                            <a href="#/project/${projectId}/edit" style="font-size: 0.85rem; color: #58a6ff; text-decoration: none; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-weight: normal; background: #161b22; transition: all 0.2s;">
-                                ✏️ Diseñar Sistema
+                            <a href="#/project/${projectId}/edit" style="font-size: 0.85rem; color: #a371f7; text-decoration: none; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-weight: normal; background: #161b22; transition: all 0.2s;">
+                                ⚙️ Editar Sistema (Prompt)
                             </a>
                         </h1>
                         <div style="color:#8b949e; font-size: 0.9rem; margin-top: 5px;">Sector: ${project.sector}</div>
@@ -43,30 +26,37 @@ export const ProjectView = {
                     <button onclick="location.hash='#/'" style="background:transparent; border:1px solid #30363d; color:#58a6ff; padding:8px 15px; border-radius:6px; cursor:pointer;">← Dashboard</button>
                 </header>
 
+                <nav style="display: flex; gap: 20px; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 25px;">
+                    <a href="#/project/${projectId}" style="color: #f0f6fc; text-decoration: none; font-weight: bold; border-bottom: 2px solid #58a6ff; padding-bottom: 14px; margin-bottom: -16px;">
+                        🗺️ Vista en curso: Mapa de Valor
+                    </a>
+                    <a href="#/project/${projectId}/accounting" style="color: #8b949e; text-decoration: none; padding-bottom: 14px; transition: 0.2s;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">
+                        💰 Contabilidad de Valor
+                    </a>
+                </nav>
+
                 <div style="display: grid; grid-template-columns: 350px 1fr; gap: 30px;">
                     
                     <aside>
-                        ${ResilienceBar.render(salud, alerts)}
-                        
-                        <div style="margin-top: 25px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
-                            <h4 style="font-size: 0.8rem; color: #f0f6fc; text-transform: uppercase; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;">Gremio Activo</h4>
+                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                            <h4 style="font-size: 0.8rem; color: #f0f6fc; text-transform: uppercase; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;">Nodos del Sistema (Gremio)</h4>
                             
                             <div style="margin-bottom: 15px;">
-                                <strong style="font-size: 0.7rem; color: #8b949e;">ROLES BASE:</strong>
+                                <strong style="font-size: 0.7rem; color: #8b949e;">ROLES BASE (Ontología):</strong>
                                 ${Object.keys(project.customRoles).map(id => `
                                     <div style="font-size: 0.85rem; padding: 4px 0;">
-                                        <span style="color:#238636;">${id}</span> <span style="color:#c9d1d9;">${project.customRoles[id]}</span>
+                                        <span style="color:#238636; font-weight:bold;">${id}</span> <span style="color:#c9d1d9;">${project.customRoles[id]}</span>
                                     </div>
                                 `).join('')}
                             </div>
 
                             ${activeDynamicRoles.length > 0 ? `
                                 <div>
-                                    <strong style="font-size: 0.7rem; color: #8b949e;">ESPECIALISTAS:</strong>
+                                    <strong style="font-size: 0.7rem; color: #8b949e;">ESPECIALISTAS (Dinámicos):</strong>
                                     ${activeDynamicRoles.map(dr => `
-                                        <div style="background:#0d1117; border:1px solid #21262d; padding:8px; border-radius:4px; margin-top:5px;">
-                                            <div style="font-weight:bold; font-size:0.8rem; color:#58a6ff;">${dr.name}</div>
-                                            <div style="font-size:0.65rem; color:#8b949e;">${dr.area}</div>
+                                        <div style="background:#0d1117; border:1px solid #21262d; padding:8px; border-radius:4px; margin-top:5px; border-left: 3px solid #a371f7;">
+                                            <div style="font-weight:bold; font-size:0.8rem; color:#f0f6fc;">${dr.name}</div>
+                                            <div style="font-size:0.65rem; color:#8b949e;">${dr.area} | Ref: ${dr.levelId}</div>
                                         </div>
                                     `).join('')}
                                 </div>
@@ -75,89 +65,15 @@ export const ProjectView = {
                     </aside>
 
                     <main>
-                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 500px; position: relative; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 600px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
                             ${ValueMapView.render(projectId)}
                         </div>
-
-                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
-                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Reportar Flujo de Valor</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 20px 1fr 2fr 80px 100px; gap: 10px; align-items: center;">
-                                
-                                <select id="f-from" title="Origen del Valor (Quién lo hace)" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                    ${roleOptions}
-                                </select>
-                                
-                                <span style="color:#8b949e; text-align:center; font-weight:bold;">➔</span>
-                                
-                                <select id="f-to" title="Destinatario del Valor (A quién se le entrega)" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                    ${roleOptions}
-                                </select>
-
-                                <input id="f-concepto" type="text" placeholder="¿Qué se ha entregado?" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                <input id="f-horas" type="number" value="1" title="Horas invertidas" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                <button onclick="window.addTx('${projectId}')" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; padding: 10px;">Inyectar</button>
-                            </div>
-                        </div>
-
-                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px;">
-                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Ledger Contable</h3>
-                            <div style="max-height: 400px; overflow-y: auto;">
-                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                                    <thead style="color:#8b949e; border-bottom:1px solid #30363d; position: sticky; top: 0; background: #161b22;">
-                                        <tr>
-                                            <th style="padding:10px; text-align:left;">Flujo (Origen ➔ Destino)</th>
-                                            <th style="padding:10px; text-align:left;">Concepto</th>
-                                            <th style="padding:10px; text-align:right;">Valor Inyectado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${transactions.length === 0 ? '<tr><td colspan="3" style="padding:30px; text-align:center; color:#484f58;">No hay flujos de valor aún.</td></tr>' : ''}
-                                        ${transactions.map(t => {
-                                            const roleFromName = project.customRoles[t.rolId] || project.dynamicRoles?.find(dr => dr.id === t.rolId)?.name || 'Desconocido';
-                                            const roleToName = project.customRoles[t.toId] || project.dynamicRoles?.find(dr => dr.id === t.toId)?.name || 'Ecosistema';
-                                            
-                                            return `
-                                            <tr style="border-bottom: 1px solid #21262d;">
-                                                <td style="padding:12px; font-weight:500;">
-                                                    <span style="color:#58a6ff;">${roleFromName}</span> 
-                                                    <span style="color:#8b949e; font-size:0.8em; margin:0 5px;">➔</span> 
-                                                    <span style="color:#c9d1d9;">${roleToName}</span>
-                                                </td>
-                                                <td style="padding:12px; color:#8b949e;">${t.concepto} <small>(${t.horas}h)</small></td>
-                                                <td style="padding:12px; text-align:right; font-weight:bold; color:#3fb950;">${t.liquidación.toLocaleString()}€</td>
-                                            </tr>`;
-                                        }).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <p style="text-align:center; color:#8b949e; font-size:0.8rem; margin-top:15px;">
+                            * El grosor de las líneas representa el flujo histórico de valor entre nodos.
+                        </p>
                     </main>
                 </div>
             </div>
         `;
     }
-};
-
-window.addTx = (projectId) => {
-    const fromId = document.getElementById('f-from').value;
-    const toId = document.getElementById('f-to').value;
-    const concepto = document.getElementById('f-concepto').value;
-    const horas = parseFloat(document.getElementById('f-horas').value);
-    
-    if(!concepto) return alert("Indica un concepto para el Ledger.");
-    if(fromId === toId) return alert("Un rol no puede inyectarse valor a sí mismo de manera directa.");
-
-    store.dispatch({ 
-        type: 'ADD_TRANSACTION', 
-        payload: { 
-            projectId, 
-            transaction: { 
-                rolId: fromId, 
-                toId: toId, 
-                horas, 
-                concepto 
-            } 
-        } 
-    });
-    location.reload();
 };
