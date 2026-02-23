@@ -1,32 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><title>SOS v4 | Agile Canvas</title><link rel="stylesheet" href="css/sos-style.css"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>SOS v4 | Agile Canvas & VNA</title>
+    <style>
+        body { background-color: #010409; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; margin: 0; color: #c9d1d9; }
+        select:focus, input:focus { outline: 1px solid #3b82f6; }
+    </style>
+</head>
 <body>
     <div id="app"></div>
+
     <script type="module">
         import { store } from './js/core/store.js';
         import { ProjectView } from './js/views/ProjectView.js';
 
-        const pId = new URLSearchParams(window.location.search).get('id') || 'p-default';
+        // Captura el proyecto de la URL o usa uno por defecto
+        const urlParams = new URLSearchParams(window.location.search);
+        const pId = urlParams.get('id') || 'p-default';
 
+        // Lógica de Registro Manual
         window.ejecutarTransaccion = (projectId) => {
+            const concepto = document.getElementById('f-concepto').value;
+            if (!concepto) return alert("Por favor, define el entregable");
+
             const transaction = {
                 rolId: document.getElementById('f-from').value,
                 to: document.getElementById('f-to').value,
-                concepto: document.getElementById('f-concepto').value,
-                horas: parseFloat(document.getElementById('f-horas').value)
+                tipo_flujo: document.getElementById('f-tipo').value,
+                concepto: concepto,
+                horas: parseFloat(document.getElementById('f-horas').value) || 1
             };
-            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, transaction } });
+
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { projectId, transaction } 
+            });
+            
+            // Limpiar concepto tras éxito
+            document.getElementById('f-concepto').value = "";
         };
 
-        const update = () => { document.getElementById('app').innerHTML = ProjectView.render(pId); };
+        const updateUI = () => {
+            document.getElementById('app').innerHTML = ProjectView.render(pId);
+        };
+
+        // Inicio del SOS
         window.addEventListener('store-ready', () => {
-            if (!store.getState().projects.find(p => p.id === pId)) {
-                store.dispatch({ type: 'ADD_PROJECT', payload: { id: pId, nombre: 'Proyecto Activo' } });
+            const state = store.getState();
+            if (!state.projects.find(p => p.id === pId)) {
+                store.dispatch({ type: 'ADD_PROJECT', payload: { id: pId, nombre: 'Castell de Control' } });
             }
-            update();
+            updateUI();
         });
-        store.subscribe(update);
+
+        store.subscribe(updateUI);
     </script>
 </body>
 </html>
