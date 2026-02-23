@@ -1,64 +1,54 @@
-// /v3/js/pages/project.js - PASO 2: VISUALIZACIÓN DE ROLES
-console.log('📦 Cargando project.js (Paso 2)...');
-
-// Guarda para evitar doble carga
-if (window.__projectJsLoaded) {
-    console.log('⏩ project.js ya cargado');
-    return;
-}
-window.__projectJsLoaded = true;
+// /v3/js/pages/project.js - VNA & Agile Canvas Edition
+console.log('📦 Cargando project.js (VNA Ready)...');
 
 window.renderProjectDetail = function(params) {
-    console.log('📄 renderProjectDetail', params);
-    
     const projectId = params?.id;
-    if (!projectId) return '<div class="error">ID no proporcionado</div>';
+    const state = window.store?.getState();
+    const project = state?.projects.find(p => p.id === projectId);
     
-    const project = window.store?.getState()?.projects.find(p => p.id === projectId);
-    if (!project) return `<div class="error">Proyecto ${projectId} no encontrado</div>`;
+    if (!project) return `<div class="error">Proyecto no encontrado</div>`;
 
-    // HTML con pestañas
+    // Inyectamos el CSS del Mapa Visual dinámicamente
+    const style = `
+        <style>
+            .vna-canvas { background: #1a1a1a; border-radius: 12px; padding: 20px; min-height: 400px; position: relative; overflow: hidden; border: 1px solid #333; }
+            .node-role { background: #2d2d2d; border: 2px solid var(--tt-primary); border-radius: 8px; padding: 10px; width: 140px; text-align: center; position: absolute; z-index: 2; }
+            .vna-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
+            .stat-box { background: #252525; padding: 10px; border-radius: 8px; border-left: 4px solid var(--tt-accent); }
+            .line-tangible { border-top: 2px solid #3b82f6; position: absolute; z-index: 1; }
+            .line-intangible { border-top: 2px dashed #10b981; position: absolute; z-index: 1; }
+        </style>
+    `;
+
     const html = `
+        ${style}
         <div class="project-detail-header">
-            <button onclick="window.router?.navigate('projects') || history.back()" class="back-btn">← Volver</button>
-            <h2>${project.nombre} <span class="project-id">${project.id}</span></h2>
-            <p class="project-sector-badge">🏷️ ${project.sector_nombre || project.sector}</p>
-            <p class="project-description">${project.descripcion || ''}</p>
+            <button onclick="window.router.navigate('projects')" class="back-btn">← Volver</button>
+            <h2>${project.sector_emoji || '📁'} ${project.nombre}</h2>
         </div>
         
         <div class="project-tabs">
-            <button class="tab-button active" data-tab="info">📋 Información</button>
+            <button class="tab-button active" data-tab="canvas">🕸️ Mapa de Valor</button>
+            <button class="tab-button" data-tab="info">📋 Info</button>
             <button class="tab-button" data-tab="roles">👥 Roles</button>
-            <button class="tab-button" data-tab="entregables">📦 Entregables</button>
-            <button class="tab-button" data-tab="transacciones">💰 Transacciones</button>
         </div>
         
         <div id="tab-content" class="tab-content">
-            ${renderInfoTab(project)}
+            ${renderCanvasTab(project)}
         </div>
     `;
 
-    // Configurar eventos después de renderizar
+    // Lógica de pestañas
     setTimeout(() => {
         document.querySelectorAll('.tab-button').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Quitar clase active de todos
                 document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                // Cargar contenido según pestaña
-                const tab = e.target.dataset.tab;
-                const project = window.store?.getState()?.projects.find(p => p.id === projectId);
-                if (!project) return;
-                
-                let content = '';
-                switch(tab) {
-                    case 'info': content = renderInfoTab(project); break;
-                    case 'roles': content = renderRolesTab(project); break;
-                    case 'entregables': content = '<div class="card"><h3>Entregables</h3><p>Contenido de entregables (próximamente)</p></div>'; break;
-                    case 'transacciones': content = '<div class="card"><h3>Transacciones</h3><p>Contenido de transacciones (próximamente)</p></div>'; break;
-                }
-                document.getElementById('tab-content').innerHTML = content;
+                e.currentTarget.classList.add('active');
+                const tab = e.currentTarget.dataset.tab;
+                const content = document.getElementById('tab-content');
+                if(tab === 'canvas') content.innerHTML = renderCanvasTab(project);
+                if(tab === 'info') content.innerHTML = renderInfoTab(project);
+                if(tab === 'roles') content.innerHTML = renderRolesTab(project);
             });
         });
     }, 0);
@@ -66,56 +56,34 @@ window.renderProjectDetail = function(params) {
     return html;
 };
 
-// ----- Pestaña Info -----
-function renderInfoTab(project) {
+function renderCanvasTab(project) {
+    // Calculamos el índice de resiliencia usando el Selector que creamos
+    const resiliencia = window.Selectors?.getProjectResilienceIndex?.(project.id) || { ratio: 0, status: 'N/A' };
+    
     return `
-        <div class="info-panel card">
-            <h3>Información general</h3>
-            <table class="info-table">
-                <tr><th>ID:</th><td><code>${project.id}</code></td></tr>
-                <tr><th>Nombre:</th><td>${project.nombre}</td></tr>
-                <tr><th>Sector:</th><td>${project.sector_nombre || project.sector}</td></tr>
-                <tr><th>Creado por:</th><td>${project.creado_por || 'desconocido'}</td></tr>
-                <tr><th>Fecha creación:</th><td>${project.fecha_creacion ? new Date(project.fecha_creacion).toLocaleString() : 'desconocida'}</td></tr>
-                <tr><th>Descripción:</th><td>${project.descripcion || 'Sin descripción'}</td></tr>
-                <tr><th>Roles:</th><td>${project.roles?.length || 0}</td></tr>
-                <tr><th>Transacciones:</th><td>${project.transacciones?.length || 0}</td></tr>
-            </table>
+        <div class="vna-stats">
+            <div class="stat-box"><strong>Ratio Resiliencia:</strong><br>${resiliencia.ratio}</div>
+            <div class="stat-box"><strong>Estado:</strong><br>${resiliencia.status.toUpperCase()}</div>
+            <div class="stat-box"><strong>Intangibles:</strong><br>${resiliencia.intangibles || 0}</div>
+        </div>
+        <div class="vna-canvas" id="canvas-container">
+            <p style="color: #666; text-align: center; margin-top: 150px;">
+                [ Agile Canvas v3.5 ]<br>
+                Renderizando nodos de roles para ${project.roles?.length || 0} participantes...
+            </p>
+            ${(project.roles || []).map((r, i) => `
+                <div class="node-role" style="top: ${50 + (i*80)}px; left: ${50 + (i*40)}px; border-color: ${r.color || '#3b82f6'}">
+                    <strong>${r.nombre}</strong><br><small>${r.multiplier}x</small>
+                </div>
+            `).join('')}
         </div>
     `;
 }
 
-// ----- Pestaña Roles (solo visualización) -----
-function renderRolesTab(project) {
-    let html = '<div class="roles-panel card"><h3>Roles del proyecto</h3>';
-    
-    if (project.roles && project.roles.length > 0) {
-        html += '<div class="roles-list">';
-        project.roles.forEach(role => {
-            const usuarios = role.usuarios_autorizados || [];
-            html += `
-                <div class="role-card" data-role-id="${role.id}">
-                    <div class="role-header">
-                        <strong>${role.id}</strong>
-                        <span class="role-name">${role.nombre || ''}</span>
-                    </div>
-                    <div class="role-users">
-                        <strong>Usuarios autorizados:</strong>
-                        ${usuarios.length > 0 ? `<ul class="user-list">${usuarios.map(u => `<li>${u}</li>`).join('')}</ul>` : '<p class="no-data">Ningún usuario autorizado</p>'}
-                    </div>
-                    <div class="role-stats">
-                        <small>📦 Entregables: ${role.entregables?.length || 0}</small>
-                    </div>
-                </div>
-            `;
-        });
-        html += '</div>';
-    } else {
-        html += '<p class="no-data">No hay roles definidos en este proyecto.</p>';
-    }
-    
-    html += '</div>';
-    return html;
+function renderInfoTab(project) {
+    return `<div class="card"><h3>Detalles del Proyecto</h3><pre>${JSON.stringify(project, null, 2)}</pre></div>`;
 }
 
-console.log('✅ project.js Paso 2 cargado');
+function renderRolesTab(project) {
+    return `<div class="card"><h3>Lista de Roles</h3><ul>${project.roles.map(r => `<li>${r.nombre} (${r.multiplier}x)</li>`).join('')}</ul></div>`;
+}
