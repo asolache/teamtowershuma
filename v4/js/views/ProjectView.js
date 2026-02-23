@@ -12,6 +12,16 @@ export const ProjectView = {
         const alerts = store.getAlerts(projectId);
         const transactions = [...project.transactions].reverse();
 
+        // Generar las opciones de roles una sola vez para reutilizarlas en los selects
+        const roleOptions = `
+            <optgroup label="Roles Base">
+                ${Object.keys(project.customRoles).map(id => `<option value="${id}">${project.customRoles[id]}</option>`).join('')}
+            </optgroup>
+            <optgroup label="Especialistas">
+                ${(project.dynamicRoles || []).map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
+            </optgroup>
+        `;
+
         return `
             <div style="max-width: 1400px; margin: 0 auto; padding: 25px; font-family: sans-serif; color: #c9d1d9;">
                 
@@ -39,56 +49,52 @@ export const ProjectView = {
                                     <option value="@pinya">Pinya (Infra/Soporte)</option>
                                 </select>
                                 <input id="nr-area" type="text" placeholder="Área (ej: Seguridad Web3)" style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
-                                <textarea id="nr-desc" placeholder="Descripción del rol..." style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px; height:50px; font-family:sans-serif;"></textarea>
-                                <input id="nr-skills" type="text" placeholder="Skills (separadas por comas)" style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
                                 <button onclick="window.createRole('${projectId}')" style="background:#238636; color:white; border:none; padding:12px; border-radius:4px; font-weight:bold; cursor:pointer;">Crear Nuevo Rol</button>
                             </div>
                         </div>
 
                         <div style="margin-top: 25px;">
                             <h4 style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase; border-bottom: 1px solid #30363d; padding-bottom: 5px; margin-bottom: 10px;">Gremio Especializado</h4>
-                            ${(project.dynamicRoles || []).length === 0 ? '<div style="color:#484f58; font-size:0.75rem;">No hay roles extra.</div>' : ''}
                             ${(project.dynamicRoles || []).map(dr => `
                                 <div style="background:#0d1117; border:1px solid #21262d; padding:12px; border-radius:6px; margin-bottom:10px;">
                                     <div style="font-weight:bold; font-size:0.85rem; color:#f0f6fc;">${dr.name}</div>
-                                    <div style="font-size:0.7rem; color:#58a6ff; margin-bottom:5px;">${dr.area} | ${dr.levelId.replace('@','')}</div>
-                                    <div style="font-size:0.75rem; color:#8b949e; line-height:1.3;">${dr.description}</div>
-                                    <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:4px;">
-                                        ${dr.skills.map(s => `<span style="font-size:0.6rem; background:#161b22; color:#c9d1d9; border:1px solid #30363d; padding:2px 6px; border-radius:10px;">${s}</span>`).join('')}
-                                    </div>
+                                    <div style="font-size:0.7rem; color:#58a6ff;">${dr.area} | ${dr.levelId.replace('@','')}</div>
                                 </div>
                             `).join('')}
                         </div>
                     </aside>
 
                     <main>
-                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 450px; position: relative; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 500px; position: relative; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
                             ${ValueMapView.render(projectId)}
                         </div>
 
                         <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
-                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Inyectar Valor al Sistema</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 2fr 80px 140px; gap: 15px;">
-                                <select id="f-from" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                    <optgroup label="Roles Base">
-                                        ${Object.keys(project.customRoles).map(id => `<option value="${id}">${project.customRoles[id]}</option>`).join('')}
-                                    </optgroup>
-                                    <optgroup label="Especialistas">
-                                        ${(project.dynamicRoles || []).map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
-                                    </optgroup>
+                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Inyectar Flujo de Valor</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 20px 1fr 2fr 80px 100px; gap: 10px; align-items: center;">
+                                
+                                <select id="f-from" title="Origen del Valor" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                    ${roleOptions}
                                 </select>
-                                <input id="f-concepto" type="text" placeholder="¿Qué se ha entregado?" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                <input id="f-horas" type="number" value="1" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                <button onclick="window.addTx('${projectId}')" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;">Inyectar</button>
+                                
+                                <span style="color:#8b949e; text-align:center; font-weight:bold;">➔</span>
+                                
+                                <select id="f-to" title="Destinatario del Valor" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                    ${roleOptions}
+                                </select>
+
+                                <input id="f-concepto" type="text" placeholder="¿Qué se ha entregado?" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                <input id="f-horas" type="number" value="1" title="Horas" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                <button onclick="window.addTx('${projectId}')" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; padding: 10px;">Inyectar</button>
                             </div>
                         </div>
 
                         <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px;">
-                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Historial de Liquidaciones (Ledger)</h3>
+                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Ledger del Proyecto</h3>
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                                 <thead style="color:#8b949e; border-bottom:1px solid #30363d;">
                                     <tr>
-                                        <th style="padding:10px; text-align:left;">Origen</th>
+                                        <th style="padding:10px; text-align:left;">Flujo (Origen ➔ Destino)</th>
                                         <th style="padding:10px; text-align:left;">Concepto</th>
                                         <th style="padding:10px; text-align:right;">Valor</th>
                                     </tr>
@@ -96,10 +102,16 @@ export const ProjectView = {
                                 <tbody>
                                     ${transactions.length === 0 ? '<tr><td colspan="3" style="padding:30px; text-align:center; color:#484f58;">No hay flujos de valor aún.</td></tr>' : ''}
                                     ${transactions.map(t => {
-                                        const roleName = project.customRoles[t.rolId] || (project.dynamicRoles.find(dr => dr.id === t.rolId)?.name);
+                                        const roleFromName = project.customRoles[t.rolId] || project.dynamicRoles?.find(dr => dr.id === t.rolId)?.name || 'Desconocido';
+                                        const roleToName = project.customRoles[t.toId] || project.dynamicRoles?.find(dr => dr.id === t.toId)?.name || 'Proyecto';
+                                        
                                         return `
                                         <tr style="border-bottom: 1px solid #21262d;">
-                                            <td style="padding:12px; color:#58a6ff; font-weight:500;">${roleName}</td>
+                                            <td style="padding:12px; font-weight:500;">
+                                                <span style="color:#58a6ff;">${roleFromName}</span> 
+                                                <span style="color:#8b949e; font-size:0.8em; margin:0 5px;">➔</span> 
+                                                <span style="color:#c9d1d9;">${roleToName}</span>
+                                            </td>
                                             <td style="padding:12px; color:#8b949e;">${t.concepto} <small>(${t.horas}h)</small></td>
                                             <td style="padding:12px; text-align:right; font-weight:bold; color:#3fb950;">${t.liquidación.toLocaleString()}€</td>
                                         </tr>`;
@@ -114,24 +126,35 @@ export const ProjectView = {
     }
 };
 
-// FUNCIONES GLOBALES DE ACCIÓN
 window.createRole = (projectId) => {
     const name = document.getElementById('nr-name').value;
     const levelId = document.getElementById('nr-level').value;
     const area = document.getElementById('nr-area').value;
-    const description = document.getElementById('nr-desc').value;
-    const skills = document.getElementById('nr-skills').value.split(',').map(s => s.trim()).filter(s => s);
-    
     if(!name) return alert("El nombre del rol es obligatorio.");
-    store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area, description, skills } });
+    store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area, description: '', skills: [] } });
     location.reload();
 };
 
 window.addTx = (projectId) => {
-    const rolId = document.getElementById('f-from').value;
+    const fromId = document.getElementById('f-from').value;
+    const toId = document.getElementById('f-to').value;
     const concepto = document.getElementById('f-concepto').value;
     const horas = parseFloat(document.getElementById('f-horas').value);
+    
     if(!concepto) return alert("Indica un concepto para el Ledger.");
-    store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, transaction: { rolId, horas, concepto } } });
+    if(fromId === toId) return alert("Un rol no puede inyectarse valor a sí mismo.");
+
+    store.dispatch({ 
+        type: 'ADD_TRANSACTION', 
+        payload: { 
+            projectId, 
+            transaction: { 
+                rolId: fromId, 
+                toId: toId, 
+                horas, 
+                concepto 
+            } 
+        } 
+    });
     location.reload();
 };
