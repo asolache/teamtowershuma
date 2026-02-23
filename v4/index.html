@@ -39,7 +39,7 @@
         import { HomeView } from './js/views/HomeView.js';
         import { ProjectView } from './js/views/ProjectView.js';
         import { AboutView } from './js/views/AboutView.js';
-        import { ProjectEditView } from './js/views/ProjectEditView.js'; // Necesario para que funcione el /edit
+        import { ProjectEditView } from './js/views/ProjectEditView.js';
 
         const app = document.getElementById('app');
 
@@ -49,7 +49,7 @@
         function router() {
             let hash = window.location.hash || '#/';
             
-            // Limpieza de hash: si tiene una barra al final Y no es exactamente la raíz '#/', se la quitamos
+            // Limpieza de hash
             if (hash !== '#/' && hash.endsWith('/')) {
                 hash = hash.slice(0, -1);
             }
@@ -58,7 +58,7 @@
 
             // Reiniciar estado visual para la transición
             app.classList.remove('fade-in');
-            void app.offsetWidth; // Reflow forzoso para reiniciar animación
+            void app.offsetWidth;
 
             // Lógica de Enrutamiento
             if (hash === '#/' || hash === '#' || hash === '') {
@@ -70,13 +70,12 @@
             else if (hash.startsWith('#/project/')) {
                 const parts = hash.split('/');
                 const projectId = parts[2];
-                const action = parts[3]; // 'edit' o 'accounting'
+                const action = parts[3]; 
 
                 if (projectId) {
                     if (action === 'edit') {
                         app.innerHTML = ProjectEditView.render(projectId);
                     } else if (action === 'accounting') {
-                        // Placeholder temporal para la nueva vista contable
                         app.innerHTML = `
                             <div style="padding:100px; text-align:center; color:#c9d1d9;">
                                 <h2>💰 Contabilidad de Valor</h2>
@@ -85,7 +84,6 @@
                             </div>
                         `;
                     } else {
-                        // Vista por defecto: Mapa de Valor
                         app.innerHTML = ProjectView.render(projectId);
                     }
                 } else {
@@ -93,7 +91,6 @@
                 }
             } 
             else {
-                // Vista 404 personalizada
                 app.innerHTML = `
                     <div style="padding:100px; text-align:center; color:#8b949e;">
                         <h2 style="color:#f0f6fc;">⚠️ 404 - Coordenada Inválida</h2>
@@ -107,23 +104,18 @@
         }
 
         // --- GESTIÓN DE CICLO DE VIDA ---
-
-        // El Kernel emite 'store-ready' tras cargar localStorage y ontología
         window.addEventListener('store-ready', () => {
             console.log("SOS v4.3: Motor de datos listo.");
             router();
         });
 
-        // Escucha cambios de URL (atrás/adelante en el navegador o clics en enlaces)
         window.addEventListener('hashchange', router);
 
-        // Fallback de seguridad: Si el store tarda más de lo previsto o el evento se pierde
         if (store && store.state) {
             setTimeout(() => {
                 if(app.innerHTML === '') router();
             }, 100);
         }
-
     </script>
 </body>
 </html>
