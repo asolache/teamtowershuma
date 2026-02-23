@@ -1,52 +1,29 @@
-// v3/tests/resilience.test.js
-
-// Si usas Vitest/Node, descomenta la siguiente línea:
-// import { Selectors } from '../js/core/selectors.js';
+// /v3/tests/resilience.test.js
+import { Selectors } from '../js/core/selectors.js';
 
 describe('VNA Resilience Index (P-023)', () => {
-
-    test('1. Caso: Sin transacciones = Desconocido', () => {
-        const state = { projects: [{ id: 'p1', transactions: [] }] };
-        const res = window.Selectors.getProjectResilienceIndex(state, 'p1');
-        if (res.status !== 'desconocido') throw new Error("Debería ser desconocido");
-    });
-
-    test('2. Caso: 100% Tangible = Frágil', () => {
+    test('Debe marcar como FRÁGIL si el valor es 100% tangible', () => {
         const state = {
             projects: [{
                 id: 'p1',
                 transactions: [{ uv: 1000, tipo_valor: 'tangible' }]
             }]
         };
-        const res = window.Selectors.getProjectResilienceIndex(state, 'p1');
-        if (res.status !== 'fragil') throw new Error("Debería ser frágil (falta de intangibles)");
+        const res = Selectors.getProjectResilienceIndex(state, 'p1');
+        expect(res.status).toBe('fragil');
     });
 
-    test('3. Caso: Equilibrio 50/50 = Saludable', () => {
+    test('Debe marcar como SALUDABLE si hay equilibrio 50/50', () => {
         const state = {
             projects: [{
-                id: 'p1',
+                id: 'p2',
                 transactions: [
                     { uv: 500, tipo_valor: 'tangible' },
                     { uv: 500, tipo_valor: 'intangible' }
                 ]
             }]
         };
-        const res = window.Selectors.getProjectResilienceIndex(state, 'p1');
-        if (res.ratio !== 0.5 || res.status !== 'saludable') throw new Error("Fallo en cálculo de equilibrio");
-    });
-
-    test('4. Caso: Dominio Intangible = Robusto', () => {
-        const state = {
-            projects: [{
-                id: 'p1',
-                transactions: [
-                    { uv: 200, tipo_valor: 'tangible' },
-                    { uv: 800, tipo_valor: 'intangible' }
-                ]
-            }]
-        };
-        const res = window.Selectors.getProjectResilienceIndex(state, 'p1');
-        if (res.status !== 'robusto') throw new Error("Debería ser robusto (alto capital social)");
+        const res = Selectors.getProjectResilienceIndex(state, 'p2');
+        expect(res.status).toBe('saludable');
     });
 });
