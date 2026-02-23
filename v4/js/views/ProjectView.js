@@ -1,61 +1,54 @@
 import { store } from '../core/store.js';
-import { Selectors } from '../core/selectors.js';
+import { ValueMapView } from './ValueMapView.js';
 
 export const ProjectView = {
     render: (projectId) => {
         const state = store.getState();
-        // Buscamos el proyecto o creamos uno genérico si no existe
-        let project = state.projects.find(p => p.id === projectId);
-        
-        if (!project) {
-            return `
-                <div class="sos-terminal">
-                    <h2>⚠️ Proyecto no encontrado</h2>
-                    <p>No se ha podido localizar el ID: ${projectId}</p>
-                    <button onclick="location.href='index.html'">Volver</button>
-                </div>
-            `;
-        }
-
-        const health = Selectors.getProjectResilienceIndex(state, projectId);
+        const project = state.projects.find(p => p.id === projectId);
+        if (!project) return "Cargando...";
 
         return `
-            <div class="project-view">
-                <header class="project-header">
-                    <div>
-                        <h1>${project.nombre}</h1>
-                        <small>ID: ${project.id} | Protocolo SOS v1.0</small>
-                    </div>
-                    <div class="health-badge ${health.status}">
-                        RESILIENCIA: ${health.status.toUpperCase()} (${(health.ratio * 100).toFixed(0)}%)
-                    </div>
-                </header>
-
-                <div class="canvas-area">
-                    <p>[ Agile Canvas: Visualización de Roles FEVS en desarrollo ]</p>
-                </div>
-
-                <div class="sos-terminal">
-                    <h3>🛰️ SOS Terminal: Entrada de Valor</h3>
-                    <p>Describe tu aportación para liquidar el Meme de Conocimiento:</p>
-                    <textarea id="ai-input" placeholder="Ej: He coordinado la reunión técnica del Tronc Superior durante 2h #coordinar"></textarea>
+            <div style="display:grid; grid-template-columns: 1fr 350px; gap:20px; padding:20px;">
+                <section>
+                    <h2 style="color:white;">Agile Canvas: ${project.nombre}</h2>
+                    ${ValueMapView.render(projectId)}
                     
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <button id="btn-liquidar">Liquidar en Red de Valor</button>
-                        <span style="font-size: 0.8rem; color: #64748b;">La IA procesará la ontología FEVS</span>
+                    <div style="margin-top:20px; background:#161b22; padding:20px; border-radius:12px; border:1px solid #30363d;">
+                        <h3 style="color:#3b82f6; margin-top:0;">Inyectar Transacción de Valor</h3>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <label style="color:#8b949e; font-size:0.8rem;">Origen (Quién)</label>
+                            <label style="color:#8b949e; font-size:0.8rem;">Destino (Para quién)</label>
+                            
+                            <select id="f-from" style="padding:8px; background:#0d1117; color:white; border:1px solid #30363d;">
+                                ${state.roles.map(r => `<option value="${r.id}">${r.nombre}</option>`).join('')}
+                            </select>
+                            <select id="f-to" style="padding:8px; background:#0d1117; color:white; border:1px solid #30363d;">
+                                <option value="@proyecto">@proyecto (Global)</option>
+                                ${state.roles.map(r => `<option value="${r.id}">${r.nombre}</option>`).join('')}
+                            </select>
+                            
+                            <input id="f-concepto" placeholder="¿Qué entregable?" style="grid-column: span 2; padding:10px; background:#0d1117; color:white; border:1px solid #30363d;">
+                            <input id="f-horas" type="number" value="1" style="padding:10px; background:#0d1117; color:white; border:1px solid #30363d;">
+                            
+                            <button onclick="window.ejecutarTransaccion('${projectId}')" style="background:#238636; color:white; border:none; padding:10px; font-weight:bold; cursor:pointer; border-radius:6px;">
+                                REGISTRAR Y MAPEAR
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="ledger-preview" style="margin-top:2rem;">
-                    <h3>📑 Últimas Transacciones</h3>
-                    <ul style="list-style:none; padding:0;">
-                        ${(project.transactions || []).slice(-3).reverse().map(tx => `
-                            <li style="background:#1e293b; padding:10px; margin-bottom:5px; border-radius:4px; font-size:0.9rem;">
-                                <b>${tx.categoria}</b>: ${tx.concepto} - <strong>${tx.liquidación.toFixed(2)}€</strong>
-                            </li>
+                <aside style="background:#161b22; padding:20px; border-radius:12px; border:1px solid #30363d;">
+                    <h3 style="color:white; margin-top:0;">Historial de Memes</h3>
+                    <div style="max-height:600px; overflow-y:auto;">
+                        ${project.transactions.slice().reverse().map(tx => `
+                            <div style="border-bottom:1px solid #30363d; padding:10px 0; font-size:0.8rem;">
+                                <div style="color:#3b82f6; font-weight:bold;">${tx.from} ➔ ${tx.to}</div>
+                                <div style="color:white;">${tx.concepto}</div>
+                                <div style="color:#2ea043; font-weight:bold;">${tx.liquidación}€</div>
+                            </div>
                         `).join('')}
-                    </ul>
-                </div>
+                    </div>
+                </aside>
             </div>
         `;
     }
