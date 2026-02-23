@@ -1,9 +1,8 @@
 /**
- * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (REPARADO)
+ * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE
  */
 export class TTStore {
     constructor() {
-        // Definimos la Ontología Maestra como una constante interna accesible
         this.ontologyStatic = {
             sectores: { 
                 marketing: { "@anxaneta": "Strategy Director", "@aixecador": "Creative Director", "@dosos": "Content Curator", "@baixos": "Graphic Designer", "@pinya": "Ads Manager" },
@@ -34,43 +33,30 @@ export class TTStore {
             try {
                 const parsed = JSON.parse(saved);
                 this.state.projects = parsed.projects || [];
-                // Actualizamos siempre la ontología del estado con la estática para evitar desajustes
                 this.state.ontology = this.ontologyStatic;
                 this.state.roles = this.ontologyStatic.roles;
-            } catch (e) {
-                console.error("SOS: Error recuperando estado", e);
-            }
+            } catch (e) { console.error("SOS: Error storage", e); }
         }
-        
-        // Pequeño delay para asegurar que el DOM esté listo antes del evento
-        setTimeout(() => {
-            window.dispatchEvent(new Event('store-ready'));
-        }, 10);
+        setTimeout(() => window.dispatchEvent(new Event('store-ready')), 10);
     }
 
-    // --- MOTOR DE RESILIENCIA ---
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || p.transactions.length === 0) return 100;
-        
         const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
         const auditValue = p.transactions
             .filter(t => t.rolId === '@dosos')
             .reduce((acc, t) => acc + (t.liquidación || 0), 0);
-        
         return totalValue > 0 ? Math.round((auditValue / totalValue) * 100) : 100;
     }
 
-    // --- SISTEMA DE ALERTAS (WATCHDOG) ---
     getAlerts(projectId) {
         const alerts = [];
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return [];
-
         if (p.transactions.length > 0 && !p.transactions.some(t => t.rolId === '@dosos')) {
             alerts.push({ code: 'RIESGO_DEUDA_TECNICA', level: 'CRITICAL' });
         }
-
         p.transactions.forEach(t => {
             const r = this.state.roles.find(rol => rol.id === t.rolId);
             if (!r) return;
@@ -79,7 +65,6 @@ export class TTStore {
                 alerts.push({ code: 'DESVIACION_PRECIO', msg: `Sobre-liquidación en ${t.rolId}` });
             }
         });
-
         return alerts;
     }
 
@@ -87,43 +72,35 @@ export class TTStore {
         const { type, payload } = action;
         switch (type) {
             case 'ADD_PROJECT':
-                const alias = this.state.ontology.sectores[payload.sector] || this.state.ontology.sectores['marketing'];
+                const sectorKey = Object.keys(this.state.ontology.sectores).find(
+                    k => k.toLowerCase() === payload.sector.toLowerCase()
+                ) || 'marketing';
+                const alias = this.state.ontology.sectores[sectorKey];
                 this.state.projects.push({
-                    id: payload.id, nombre: payload.nombre, sector: payload.sector,
+                    id: payload.id, nombre: payload.nombre, sector: sectorKey,
                     customRoles: { ...alias }, transactions: []
                 });
                 break;
-
             case 'ADD_TRANSACTION':
                 const project = this.state.projects.find(x => x.id === payload.projectId);
-                if (!project) return;
-                
                 const role = this.state.roles.find(r => r.id === payload.transaction.rolId);
-                if (!role) return;
+                if (!project || !role) return;
                 
                 const salud = this.calculateResilience(payload.projectId);
-                if (salud < 30 && role.multiplier > 2.0) {
-                    console.error("SOS: Circuit Breaker activado.");
-                    return; 
-                }
+                if (salud < 30 && role.multiplier > 2.0) return;
 
                 const horas = payload.transaction.horas || 1;
                 const precioBase = payload.transaction.override_price || role.precio_base_h;
                 const liq = horas * precioBase * role.multiplier;
 
                 project.transactions.push({
-                    ...payload.transaction,
-                    id: Date.now(),
-                    liquidación: liq,
-                    tipo_flujo: payload.transaction.tipo_flujo || 'tangible'
+                    ...payload.transaction, id: Date.now(), liquidación: liq, tipo_flujo: payload.transaction.tipo_flujo || 'tangible'
                 });
                 break;
-
             case 'UPDATE_ROLE_NAME':
                 const prj = this.state.projects.find(p => p.id === payload.projectId);
                 if (prj) prj.customRoles[payload.rolId] = payload.newName;
                 break;
-
             case 'RESET_DATABASE':
                 localStorage.removeItem('teamtowers-v4-state');
                 location.reload();
