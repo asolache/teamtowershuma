@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SOS v4 | Integración Core</title>
+    <style>
+        body { font-family: 'Cascadia Code', monospace; background: #0b0f1a; color: #4ade80; padding: 40px; }
+        .test-unit { background: #161b22; border: 1px solid #30363d; padding: 15px; margin-bottom: 10px; border-left: 4px solid #8b949e; }
+        .success { border-left-color: #238636; color: #2ea043; }
+        .error { border-left-color: #da3633; color: #f85149; }
+        .log { color: #8b949e; font-size: 0.85rem; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ SOS v4: Protocolo de Integración</h1>
+    <div id="status-report">Iniciando secuencia de verificación...</div>
 
+    <script type="module">
+        // 1. IMPORTACIÓN DE ARCHIVOS CORE (Aquí validamos si las rutas son correctas)
+        import { store } from '../js/core/store.js';
+        import { Selectors } from '../js/core/selectors.js';
+
+        const report = document.getElementById('status-report');
+
+        function runTest(name, fn) {
+            const div = document.createElement('div');
+            div.className = 'test-unit';
+            try {
+                fn();
+                div.classList.add('success');
+                div.innerHTML = `✅ PASS: ${name}`;
+            } catch (e) {
+                div.classList.add('error');
+                div.innerHTML = `❌ FAIL: ${name} <div class="log">${e.message}</div>`;
+                console.error(e);
+            }
+            report.appendChild(div);
+        }
+
+        window.addEventListener('store-ready', () => {
+            report.innerHTML = ''; // Limpiar mensaje inicial
+
+            // TEST A: Conectividad del Store
+            runTest("Estructura del Store SOS", () => {
+                const state = store.getState();
+                if (!state.roles) throw new Error("La ontología de roles no se ha cargado.");
+                if (!Array.isArray(state.projects)) throw new Error("Falta el array de proyectos.");
+            });
+
+            // TEST B: Motor de Liquidación (Gremio + FEVS)
+            runTest("Cálculo de Liquidación (Anxaneta x2h)", () => {
+                const pId = 'p-test-gold';
+                store.dispatch({ type: 'ADD_PROJECT', payload: { id: pId, nombre: 'Test Integración' } });
+                
+                // Forzamos un rol de Anxaneta para probar el multiplicador
+                store.dispatch({ 
+                    type: 'ADD_TRANSACTION', 
+                    payload: { 
+                        projectId: pId, 
+                        transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Test de Valor' } 
+                    } 
+                });
+
+                const state = store.getState();
+                const project = state.projects.find(p => p.id === pId);
+                const tx = project.transactions[0];
+                
+                // Valor esperado: 90€ (base) * 3.0 (mult) * 2h = 540€
+                if (tx.liquidación !== 540) {
+                    throw new Error(`Error en liquidación: calculó ${tx.liquidación}€, se esperaban 540€`);
+                }
+            });
+
+            // TEST C: Selectores VNA (Salud Organizativa)
+            runTest("Diagnóstico VNA (Resiliencia)", () => {
+                const state = store.getState();
+                const pId = 'p-test-gold';
+                const health = Selectors.getProjectResilienceIndex(state, pId);
+                
+                if (typeof health.ratio !== 'number') throw new Error("El ratio VNA no es un número.");
+                if (!health.status) throw new Error("El selector no devolvió un estado de salud.");
+            });
+
+            console.log("🏁 Pruebas de integración completadas.");
+        });
+    </script>
+</body>
+</html>
