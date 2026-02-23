@@ -1,8 +1,7 @@
 // /v3/js/core/store.js
-// Estado central (SSOT) - v3.5
-// Incluye: proyectos, roles, usuarios, transacciones globales y por proyecto
+// Estado central (SSOT) - v3.5 (Agile Canvas & VNA Ready)
 
-class Store {
+class TTStore {
     constructor() {
         this.state = {
             projects: [],
@@ -10,7 +9,8 @@ class Store {
             users: [],
             transactions: [] // Registro global de transacciones
         };
-        this.init();
+        // Para tests síncronos, init() puede ser llamado manualmente
+        this.initPromise = this.init();
     }
 
     async init() {
@@ -29,9 +29,10 @@ class Store {
         } else {
             await this.loadDefaultData();
         }
-        if (window.EventBus) {
-            window.EventBus.emit('store-initialized', this.state);
-        }
+        
+        // Usamos el EventBus global o importado
+        const bus = window.EventBus || (await import('./event-bus.js')).EventBus;
+        if (bus) bus.emit('store-initialized', this.state);
     }
 
     async loadDefaultData() {
@@ -42,7 +43,7 @@ class Store {
             roles: coreRoles,
             users: defaultUsers,
             transactions: [],
-            config: { version: "3.5-lean" }
+            config: { version: "3.5-vna-ready" }
         };
         this.saveState();
         console.log('✅ Estado inicializado con datos por defecto');
@@ -73,13 +74,8 @@ class Store {
         return [
             { id: "@alvaro-solache", nombre: "Álvaro Solache", email: "alvaro@teamtowers.com" },
             { id: "@ia-architect", nombre: "IA Architect", email: "ia.architect@teamtowers.com" },
-            { id: "@ia-coder", nombre: "IA Coder", email: "ia.coder@teamtowers.com" },
-            { id: "@ia-tester", nombre: "IA Tester", email: "ia.tester@teamtowers.com" },
             { id: "@usuario-1", nombre: "Usuario 1", email: "user1@example.com" },
-            { id: "@usuario-2", nombre: "Usuario 2", email: "user2@example.com" },
-            { id: "@masterproject", nombre: "Master Project", email: "master@teamtowers.com" },
-            { id: "@tester-guardian", nombre: "Tester Guardian", email: "tester@teamtowers.com" },
-            { id: "@Mr-Q", nombre: "Mr. Q", email: "q@teamtowers.com" }
+            { id: "@masterproject", nombre: "Master Project", email: "master@teamtowers.com" }
         ];
     }
 
@@ -88,14 +84,15 @@ class Store {
         return JSON.parse(JSON.stringify(this.state));
     }
 
-    // ===== Métodos de modificación =====
+    // ===== Métodos de modificación de Proyectos y Roles =====
     addProject(project) {
-        if (!window.APP_CONSTANTS?.SECTORES_ID.includes(project.sector)) {
-            project.sector = window.APP_CONSTANTS?.SECTOR_DEFAULT || 'tecnologia';
+        if (!window.APP_CONSTANTS?.SECTORES_ID && !project.sector) {
+            project.sector = 'tecnologia'; // Fallback
         }
         this.state.projects.push(project);
         this.saveState();
-        window.EventBus.emit('project-added', project);
+        
+        if (window.EventBus) window.EventBus.emit('project-added', project);
     }
 
     updateProject(projectId, updatedProject) {
@@ -103,10 +100,23 @@ class Store {
         if (index !== -1) {
             this.state.projects[index] = updatedProject;
             this.saveState();
-            window.EventBus.emit('project-updated', { projectId, project: updatedProject });
+            if (window.EventBus) window.EventBus.emit('project-updated', { projectId, project: updatedProject });
             return true;
         }
         return false;
+    }
+
+    // NUEVO: Para guardar las coordenadas del Agile Canvas
+    updateRoleUIState(projectId, roleId, uiState) {
+        const project = this.state.projects.find(p => p.id === projectId);
+        if (!project) return false;
+        
+        const role = project.roles.find(r => r.id === roleId);
+        if (!role) return false;
+
+        role.ui_state = { ...role.ui_state, ...uiState }; // Guarda {x, y}
+        this.saveState();
+        return true;
     }
 
     updateRoleUsers(projectId, roleId, users) {
@@ -114,128 +124,71 @@ class Store {
         if (!project) return false;
         const role = project.roles.find(r => r.id === roleId);
         if (!role) return false;
+        
         role.usuarios_autorizados = users;
         this.saveState();
-        window.EventBus.emit('role-users-updated', { projectId, roleId, users });
+        if (window.EventBus) window.EventBus.emit('role-users-updated', { projectId, roleId, users });
         return true;
     }
 
-    deleteProject(projectId) {
-        this.state.projects = this.state.projects.filter(p => p.id !== projectId);
-        // También eliminar transacciones globales de ese proyecto (opcional)
-        this.state.transactions = this.state.transactions.filter(tx => tx.projectId !== projectId);
-        this.saveState();
-        window.EventBus.emit('project-deleted', projectId);
-    }
-
-    // ===== MÉTODOS PARA TRANSACCIONES =====
-    /**
-     * Añade una transacción a un proyecto y al registro global
-     * @param {string} projectId - ID del proyecto
-     * @param {object} transaction - Objeto transacción con:
-     *   - id: string
-     *   - entregable_id: string
-     *   - nombre: string
-     *   - creado_por: userId (emisor)
-     *   - recibido_por: userId (receptor)
-     *   - rol_emisor: string (rol del emisor)
-     *   - rol_receptor: string (rol del receptor)
-     *   - fecha: string (ISO)
-     *   - contenido: object
-     *   - uv_estimado: number
-     *   - uv_real: number (null si no evaluado)
-     *   - estado: string (pendiente, en_revision, completado, cancelado)
-     */
+    // ===== MÉTODOS PARA TRANSACCIONES (VNA & Tokenization Ready) =====
     addTransaction(projectId, transaction) {
         const project = this.state.projects.find(p => p.id === projectId);
-        if (!project) {
-            console.error(`Proyecto ${projectId} no encontrado`);
-            return false;
-        }
+        if (!project) return false;
 
-        // Asegurar array de transacciones en el proyecto
-        if (!project.transacciones) {
-            project.transacciones = [];
-        }
+        if (!project.transacciones) project.transacciones = [];
 
-        // Añadir referencia al proyecto en la transacción
+        // Inyección Estructural VNA y Tokenomics v3.5
         transaction.projectId = projectId;
+        transaction.status = transaction.status || 'draft'; // Soporte para dibujo ágil
+        transaction.tipo_valor = transaction.tipo_valor || 'tangible'; // Para líneas continuas/discontinuas
+        transaction.tags = transaction.tags || []; // Para Base de Conocimiento (COOPS)
+        transaction.hash = transaction.hash || null; // Preparado para Triple-Entry (Blockchain)
+        transaction.duration = transaction.duration || 0; // Velocidad de la red
+        transaction.wait_time = transaction.wait_time || 0;
 
-        // Añadir a la lista del proyecto
         project.transacciones.push(transaction);
 
-        // Añadir al registro global
-        if (!this.state.transactions) {
-            this.state.transactions = [];
-        }
+        if (!this.state.transactions) this.state.transactions = [];
         this.state.transactions.push(transaction);
 
         this.saveState();
-        window.EventBus.emit('transaction-added', { projectId, transaction });
+        if (window.EventBus) window.EventBus.emit('transaction-added', { projectId, transaction });
         return true;
     }
 
-    /**
-     * Obtiene todas las transacciones de un proyecto
-     */
-    getProjectTransactions(projectId) {
-        const project = this.state.projects.find(p => p.id === projectId);
-        return project?.transacciones || [];
-    }
-
-    /**
-     * Obtiene todas las transacciones donde un usuario es emisor o receptor
-     */
-    getUserTransactions(userId) {
-        return (this.state.transactions || []).filter(tx => 
-            tx.creado_por === userId || tx.recibido_por === userId
-        );
-    }
-
-    /**
-     * Obtiene todas las transacciones (registro público)
-     */
-    getAllTransactions() {
-        return this.state.transactions || [];
-    }
-
-    /**
-     * Actualiza el estado de una transacción (para evaluación)
-     */
     updateTransaction(projectId, transactionId, updates) {
-        // Buscar en el proyecto
         const project = this.state.projects.find(p => p.id === projectId);
         if (!project || !project.transacciones) return false;
 
         const txIndex = project.transacciones.findIndex(tx => tx.id === transactionId);
         if (txIndex === -1) return false;
 
-        // Actualizar en proyecto
         Object.assign(project.transacciones[txIndex], updates);
 
-        // Actualizar en registro global
         const globalTx = this.state.transactions.find(tx => tx.id === transactionId);
         if (globalTx) {
             Object.assign(globalTx, updates);
         }
 
         this.saveState();
-        window.EventBus.emit('transaction-updated', { projectId, transactionId, updates });
+        if (window.EventBus) window.EventBus.emit('transaction-updated', { projectId, transactionId, updates });
         return true;
     }
 
     // ===== UTILIDADES =====
-    getUserById(userId) {
-        return this.state.users.find(u => u.id === userId);
-    }
-
-    getAllUsers() {
-        return this.state.users;
-    }
-
     saveState() {
         localStorage.setItem('teamtowers-v3-state', JSON.stringify(this.state));
     }
 }
 
-window.store = new Store();
+// 1. Instanciamos
+const store = new TTStore();
+
+// 2. Exportación ES6 (¡Esto arregla el test!)
+export { store };
+
+// 3. Fallback Global
+window.store = store;
+
+console.log('✅ store.js cargado (VNA & ES6 Ready)');
