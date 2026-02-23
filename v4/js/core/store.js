@@ -1,5 +1,5 @@
 /**
- * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (CON ROLES DINÁMICOS)
+ * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (CON ROLES DINÁMICOS Y DIRECCIONALIDAD)
  */
 export class TTStore {
     constructor() {
@@ -44,9 +44,12 @@ export class TTStore {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || p.transactions.length === 0) return 100;
         const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
+        
+        // Detectamos si el rol original O el nivel del rol dinámico es de auditoría
         const auditValue = p.transactions
             .filter(t => t.rolId === '@dosos' || t.levelId === '@dosos')
             .reduce((acc, t) => acc + (t.liquidación || 0), 0);
+            
         return totalValue > 0 ? Math.round((auditValue / totalValue) * 100) : 100;
     }
 
@@ -54,10 +57,24 @@ export class TTStore {
         const alerts = [];
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return [];
+        
         const hasAudit = p.transactions.some(t => t.rolId === '@dosos' || t.levelId === '@dosos');
         if (p.transactions.length > 0 && !hasAudit) {
             alerts.push({ code: 'RIESGO_DEUDA_TECNICA', level: 'CRITICAL' });
         }
+        
+        p.transactions.forEach(t => {
+            // Buscamos la data del rol (sea base o dinámico)
+            let r = this.state.roles.find(rol => rol.id === t.rolId);
+            if (!r && p.dynamicRoles) r = p.dynamicRoles.find(dr => dr.id === t.rolId);
+            if (!r) return;
+            
+            const precioHoraReal = t.liquidación / (t.horas * r.multiplier);
+            if (precioHoraReal > r.precio_base_h * 1.5) {
+                alerts.push({ code: 'DESVIACION_PRECIO', msg: `Sobre-liquidación en ${t.rolId}` });
+            }
+        });
+        
         return alerts;
     }
 
@@ -94,24 +111,27 @@ export class TTStore {
 
             case 'ADD_TRANSACTION':
                 if (!project) return;
-                // Buscar si es un rol maestro o un rol dinámico
+                
                 let roleData = this.state.roles.find(r => r.id === payload.transaction.rolId);
                 if (!roleData && project.dynamicRoles) {
                     roleData = project.dynamicRoles.find(dr => dr.id === payload.transaction.rolId);
                 }
-                
                 if (!roleData) return;
                 
                 const salud = this.calculateResilience(payload.projectId);
                 if (salud < 30 && roleData.multiplier > 2.0) return;
 
-                const liq = (payload.transaction.horas || 1) * roleData.precio_base_h * roleData.multiplier;
+                // --- RESTAURADO: Cálculo con override_price y horas seguras ---
+                const horas = payload.transaction.horas || 1;
+                const precioBase = payload.transaction.override_price || roleData.precio_base_h;
+                const liq = horas * precioBase * roleData.multiplier;
 
                 project.transactions.push({
                     ...payload.transaction,
                     id: Date.now(),
                     liquidación: liq,
-                    levelId: roleData.levelId || roleData.id // Para trazabilidad de resiliencia
+                    tipo_flujo: payload.transaction.tipo_flujo || 'tangible', // <-- RESTAURADO
+                    levelId: roleData.levelId || roleData.id 
                 });
                 break;
 
