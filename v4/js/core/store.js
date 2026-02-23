@@ -1,5 +1,5 @@
 /**
- * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE
+ * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (CON ROLES DINÁMICOS)
  */
 export class TTStore {
     constructor() {
@@ -35,7 +35,6 @@ export class TTStore {
                 this.state.projects = parsed.projects || [];
             } catch (e) { console.error("SOS: Error storage", e); }
         }
-        // Forzamos actualización de ontología estática sobre el estado cargado
         this.state.ontology = this.ontologyStatic;
         this.state.roles = this.ontologyStatic.roles;
         setTimeout(() => window.dispatchEvent(new Event('store-ready')), 10);
@@ -46,7 +45,7 @@ export class TTStore {
         if (!p || p.transactions.length === 0) return 100;
         const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
         const auditValue = p.transactions
-            .filter(t => t.rolId === '@dosos')
+            .filter(t => t.rolId === '@dosos' || t.levelId === '@dosos')
             .reduce((acc, t) => acc + (t.liquidación || 0), 0);
         return totalValue > 0 ? Math.round((auditValue / totalValue) * 100) : 100;
     }
@@ -55,57 +54,71 @@ export class TTStore {
         const alerts = [];
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return [];
-        if (p.transactions.length > 0 && !p.transactions.some(t => t.rolId === '@dosos')) {
+        const hasAudit = p.transactions.some(t => t.rolId === '@dosos' || t.levelId === '@dosos');
+        if (p.transactions.length > 0 && !hasAudit) {
             alerts.push({ code: 'RIESGO_DEUDA_TECNICA', level: 'CRITICAL' });
         }
-        p.transactions.forEach(t => {
-            const r = this.state.roles.find(rol => rol.id === t.rolId);
-            if (!r) return;
-            const precioHoraReal = t.liquidación / (t.horas * r.multiplier);
-            if (precioHoraReal > r.precio_base_h * 1.5) {
-                alerts.push({ code: 'DESVIACION_PRECIO', msg: `Sobre-liquidación en ${t.rolId}` });
-            }
-        });
         return alerts;
     }
 
     dispatch(action) {
         const { type, payload } = action;
+        const project = this.state.projects.find(x => x.id === payload.projectId);
+
         switch (type) {
             case 'ADD_PROJECT':
-                // Eliminar si ya existe para asegurar que el test use la ontología nueva
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
-                
-                const sectorKey = Object.keys(this.state.ontology.sectores).find(
-                    k => k.toLowerCase() === payload.sector.toLowerCase()
-                ) || 'marketing';
-                
+                const sectorKey = Object.keys(this.state.ontology.sectores).find(k => k.toLowerCase() === payload.sector.toLowerCase()) || 'marketing';
                 this.state.projects.push({
                     id: payload.id, nombre: payload.nombre, sector: sectorKey,
                     customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
-                    transactions: []
+                    dynamicRoles: [], transactions: []
                 });
                 break;
+
+            case 'CREATE_CUSTOM_ROLE':
+                if (project) {
+                    const master = this.state.roles.find(r => r.id === payload.levelId);
+                    project.dynamicRoles.push({
+                        id: `custom-${Date.now()}`,
+                        levelId: payload.levelId,
+                        name: payload.name,
+                        area: payload.area,
+                        description: payload.description,
+                        skills: payload.skills,
+                        multiplier: master.multiplier,
+                        precio_base_h: master.precio_base_h
+                    });
+                }
+                break;
+
             case 'ADD_TRANSACTION':
-                const project = this.state.projects.find(x => x.id === payload.projectId);
-                const role = this.state.roles.find(r => r.id === payload.transaction.rolId);
-                if (!project || !role) return;
+                if (!project) return;
+                // Buscar si es un rol maestro o un rol dinámico
+                let roleData = this.state.roles.find(r => r.id === payload.transaction.rolId);
+                if (!roleData && project.dynamicRoles) {
+                    roleData = project.dynamicRoles.find(dr => dr.id === payload.transaction.rolId);
+                }
+                
+                if (!roleData) return;
                 
                 const salud = this.calculateResilience(payload.projectId);
-                if (salud < 30 && role.multiplier > 2.0) return;
+                if (salud < 30 && roleData.multiplier > 2.0) return;
 
-                const horas = payload.transaction.horas || 1;
-                const precioBase = payload.transaction.override_price || role.precio_base_h;
-                const liq = horas * precioBase * role.multiplier;
+                const liq = (payload.transaction.horas || 1) * roleData.precio_base_h * roleData.multiplier;
 
                 project.transactions.push({
-                    ...payload.transaction, id: Date.now(), liquidación: liq, tipo_flujo: payload.transaction.tipo_flujo || 'tangible'
+                    ...payload.transaction,
+                    id: Date.now(),
+                    liquidación: liq,
+                    levelId: roleData.levelId || roleData.id // Para trazabilidad de resiliencia
                 });
                 break;
+
             case 'UPDATE_ROLE_NAME':
-                const prj = this.state.projects.find(p => p.id === payload.projectId);
-                if (prj) prj.customRoles[payload.rolId] = payload.newName;
+                if (project) project.customRoles[payload.rolId] = payload.newName;
                 break;
+
             case 'RESET_DATABASE':
                 localStorage.removeItem('teamtowers-v4-state');
                 location.reload();
