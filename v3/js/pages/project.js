@@ -1,15 +1,8 @@
-// /v3/js/pages/project.js - PASO 1: SOLO PESTAÑAS
-console.log('📦 Cargando project.js (Paso 1)...');
-
-// Guarda para evitar doble carga
-if (window.__projectJsLoaded) {
-    console.log('⏩ project.js ya cargado');
-    return;
-}
-window.__projectJsLoaded = true;
+// /v3/js/pages/project.js - VERSIÓN CON PESTAÑAS
+console.log('📦 Cargando project.js...');
 
 window.renderProjectDetail = function(params) {
-    console.log('📄 renderProjectDetail', params);
+    console.log('📄 renderProjectDetail EJECUTADA', params);
     
     const projectId = params?.id;
     if (!projectId) return '<div class="error">ID no proporcionado</div>';
@@ -18,7 +11,7 @@ window.renderProjectDetail = function(params) {
     if (!project) return `<div class="error">Proyecto ${projectId} no encontrado</div>`;
 
     // HTML con pestañas
-    const html = `
+    return `
         <div class="project-detail-header">
             <button onclick="window.router?.navigate('projects') || history.back()" class="back-btn">← Volver</button>
             <h2>${project.nombre} <span class="project-id">${project.id}</span></h2>
@@ -37,36 +30,9 @@ window.renderProjectDetail = function(params) {
             ${renderInfoTab(project)}
         </div>
     `;
-
-    // Configurar eventos después de renderizar
-    setTimeout(() => {
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                // Quitar clase active de todos
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                // Cargar contenido según pestaña
-                const tab = e.target.dataset.tab;
-                const project = window.store?.getState()?.projects.find(p => p.id === projectId);
-                if (!project) return;
-                
-                let content = '';
-                switch(tab) {
-                    case 'info': content = renderInfoTab(project); break;
-                    case 'roles': content = '<div class="card"><h3>Roles</h3><p>Contenido de roles (próximamente)</p></div>'; break;
-                    case 'entregables': content = '<div class="card"><h3>Entregables</h3><p>Contenido de entregables (próximamente)</p></div>'; break;
-                    case 'transacciones': content = '<div class="card"><h3>Transacciones</h3><p>Contenido de transacciones (próximamente)</p></div>'; break;
-                }
-                document.getElementById('tab-content').innerHTML = content;
-            });
-        });
-    }, 0);
-
-    return html;
 };
 
-// Función para la pestaña Info
+// Funciones de renderizado de pestañas
 function renderInfoTab(project) {
     return `
         <div class="info-panel card">
@@ -85,4 +51,49 @@ function renderInfoTab(project) {
     `;
 }
 
-console.log('✅ project.js Paso 1 cargado');
+function renderRolesTab(project) {
+    return '<div class="card"><h3>Roles del proyecto</h3><p class="no-data">Funcionalidad en desarrollo</p></div>';
+}
+
+function renderEntregablesTab(project) {
+    return '<div class="card"><h3>Entregables</h3><p class="no-data">Funcionalidad en desarrollo</p></div>';
+}
+
+function renderTransaccionesTab(project) {
+    return '<div class="card"><h3>Transacciones</h3><p class="no-data">Funcionalidad en desarrollo</p></div>';
+}
+
+// Configuración de eventos de las pestañas
+function setupTabs(projectId) {
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Quitar clase active de todos
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            // Cargar contenido según la pestaña
+            const tab = e.target.dataset.tab;
+            const project = window.store?.getState()?.projects.find(p => p.id === projectId);
+            if (!project) return;
+            
+            let content = '';
+            switch(tab) {
+                case 'info': content = renderInfoTab(project); break;
+                case 'roles': content = renderRolesTab(project); break;
+                case 'entregables': content = renderEntregablesTab(project); break;
+                case 'transacciones': content = renderTransaccionesTab(project); break;
+            }
+            document.getElementById('tab-content').innerHTML = content;
+        });
+    });
+}
+
+// Modificar el setTimeout para configurar los tabs después de renderizar
+setTimeout(() => {
+    if (window.router) {
+        const projectId = window.router?.currentParams?.id;
+        if (projectId) setupTabs(projectId);
+    }
+}, 0);
+
+console.log('✅ project.js cargado con pestañas');
