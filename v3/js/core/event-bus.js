@@ -1,7 +1,7 @@
 // /v3/js/core/event-bus.js
-// Sistema de eventos desacoplado (versión global)
+// Sistema de eventos desacoplado (versión ES6 Modules + Global fallback)
 
-class EventBus {
+class TTEventBus {
     constructor() {
         this.events = {};
     }
@@ -52,7 +52,13 @@ class EventBus {
     }
 }
 
-// Instancia global
-window.EventBus = new EventBus();
+// 1. Creamos la instancia única (Singleton)
+const EventBus = new TTEventBus();
 
-console.log('✅ event-bus.js cargado');
+// 2. Exportación ES6 (Para import { EventBus } en tests y nuevos módulos)
+export { EventBus };
+
+// 3. Fallback Global (Para no romper componentes antiguos)
+window.EventBus = EventBus;
+
+console.log('✅ event-bus.js cargado (ES6 Ready)');
