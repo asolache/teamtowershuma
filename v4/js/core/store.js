@@ -101,18 +101,23 @@ export class TTStore {
     }
 
     // --- COMPILADOR DE SYSTEM PROMPT ---
+ // --- COMPILADOR DE SYSTEM PROMPT ---
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "Proyecto no encontrado.";
 
+        // 🛡️ BLINDAJE CONTRA DATOS ANTIGUOS: Si p.sector no existe, usamos 'general'
+        const sectorName = p.sector || 'general';
+
         let prompt = `Estás actuando como un Agente de Inteligencia en el ecosistema SOS.\n`;
-        prompt += `Sector de Operación: ${p.sector.toUpperCase()}\n`;
+        prompt += `Sector de Operación: ${sectorName.toUpperCase()}\n`;
         prompt += `Propósito del Ecosistema: ${p.description || 'No definido.'}\n\n`;
         
         prompt += `[SECUENCIA DE FLUJO DE VALOR]\n`;
         
         const allRoles = [];
-        Object.keys(p.customRoles).forEach(id => allRoles.push({ id, name: p.customRoles[id], seq: p.sequences?.[id] || 99 }));
+        // 🛡️ Blindaje extra por si customRoles tampoco existiera en un proyecto muy viejo
+        Object.keys(p.customRoles || {}).forEach(id => allRoles.push({ id, name: p.customRoles[id], seq: p.sequences?.[id] || 99 }));
         (p.dynamicRoles || []).filter(dr => !dr.isArchived).forEach(dr => allRoles.push({ id: dr.id, name: dr.name, seq: p.sequences?.[dr.id] || 99 }));
         
         allRoles.sort((a, b) => a.seq - b.seq);
@@ -125,72 +130,6 @@ export class TTStore {
         prompt += `\nTu misión es analizar el Ledger actual y proponer soluciones para optimizar el flujo de valor.`;
         return prompt;
     }
-
-    dispatch(action) {
-        const { type, payload } = action;
-        const project = this.state.projects.find(x => x.id === payload.projectId);
-
-        switch (type) {
-            case 'ADD_PROJECT':
-                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
-                const sectorKey = Object.keys(this.state.ontology.sectores).find(k => k.toLowerCase() === payload.sector.toLowerCase()) || 'marketing';
-                this.state.projects.push({
-                    id: payload.id, nombre: payload.nombre, sector: sectorKey, description: payload.description || "", 
-                    customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
-                    dynamicRoles: [], transactions: [], sequences: {} 
-                });
-                break;
-
-            case 'UPDATE_PROJECT_INFO':
-                if (project) {
-                    project.nombre = payload.nombre || project.nombre;
-                    project.sector = payload.sector || project.sector;
-                    project.description = payload.description !== undefined ? payload.description : project.description;
-                }
-                break;
-
-            case 'UPDATE_ROLE_NAME':
-                if (project) project.customRoles[payload.rolId] = payload.newName;
-                break;
-
-            case 'CREATE_CUSTOM_ROLE':
-                if (project) {
-                    const master = this.state.roles.find(r => r.id === payload.levelId);
-                    project.dynamicRoles.push({
-                        id: `custom-${Date.now()}`, levelId: payload.levelId, name: payload.name, area: payload.area,
-                        description: payload.description || '', skills: payload.skills || [],
-                        multiplier: master.multiplier, precio_base_h: master.precio_base_h,
-                        isArchived: false
-                    });
-                }
-                break;
-
-            case 'DELETE_CUSTOM_ROLE':
-                if (project && project.dynamicRoles) {
-                    project.dynamicRoles = project.dynamicRoles.filter(r => r.id !== payload.rolId);
-                }
-                break;
-
-            case 'ARCHIVE_CUSTOM_ROLE':
-                if (project && project.dynamicRoles) {
-                    const rol = project.dynamicRoles.find(r => r.id === payload.rolId);
-                    if (rol) rol.isArchived = true;
-                }
-                break;
-
-            case 'UPDATE_ROLE_SEQUENCE':
-                if (project) {
-                    if (!project.sequences) project.sequences = {};
-                    project.sequences[payload.rolId] = parseInt(payload.sequence);
-                }
-                break;
-
-            case 'ADD_TRANSACTION':
-                if (!project) return;
-                
-                let roleData = this.state.roles.find(r => r.id === payload.transaction.rolId);
-                if (!roleData && project.dynamicRoles) roleData = project.dynamicRoles.find(dr => dr.id === payload.transaction.rolId);
-                if (!roleData) return;
 
                 // --- 🛡️ CIRCUIT BREAKER ---
                 const salud = this.calculateResilience(payload.projectId);
