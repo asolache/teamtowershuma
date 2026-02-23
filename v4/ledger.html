@@ -1,35 +1,18 @@
-// v4/js/views/LedgerView.js
-import { store } from '../core/store.js';
-
-export const LedgerView = {
-    render: () => {
-        const state = store.getState();
-        const txs = state.transactions || [];
-
-        return `
-            <div class="ledger-view">
-                <h1>💰 Libro de Liquidación Inmutable</h1>
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #334155; text-align: left;">
-                            <th>Fecha</th>
-                            <th>Meme (Concepto)</th>
-                            <th>Categoría</th>
-                            <th>Liquidación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${txs.reverse().map(tx => `
-                            <tr style="border-bottom: 1px solid #1e293b;">
-                                <td>${new Date(tx.timestamp).toLocaleDateString()}</td>
-                                <td>${tx.concepto}</td>
-                                <td><mark>${tx.categoria}</mark></td>
-                                <td><strong>${tx.liquidación.toFixed(2)}€</strong></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-};
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><title>SOS v4 | Ledger</title>
+    <link rel="stylesheet" href="css/sos-style.css">
+</head>
+<body>
+    <nav><a href="index.html">Dashboard</a> | <a href="ledger.html">Liquidación</a></nav>
+    <div id="app"></div>
+    <script type="module">
+        import { store } from './js/core/store.js';
+        import { LedgerView } from './js/views/LedgerView.js';
+        window.addEventListener('store-ready', () => {
+            document.getElementById('app').innerHTML = LedgerView.render();
+        });
+    </script>
+</body>
+</html>
