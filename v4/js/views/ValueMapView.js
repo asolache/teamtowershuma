@@ -6,45 +6,61 @@ export const ValueMapView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return "";
 
-        const pos = {
-            "@anxaneta":  { x: 400, y: 60 },
-            "@aixecador": { x: 200, y: 160 },
-            "@dosos":     { x: 600, y: 160 },
-            "@baixos":    { x: 400, y: 340 },
-            "@pinya":     { x: 700, y: 340 },
-            "@proyecto":  { x: 400, y: 200 }
-        };
+        // Definimos posiciones
+        // Roles base: arriba en arco
+        const baseRolesNodes = Object.keys(project.customRoles).map((id, i) => ({
+            id,
+            name: project.customRoles[id],
+            x: 150 + (i * 120),
+            y: 100,
+            color: '#238636'
+        }));
+
+        // Roles dinámicos: abajo en arco
+        const dynamicRolesNodes = (project.dynamicRoles || []).map((dr, i) => ({
+            id: dr.id,
+            name: dr.name,
+            x: 100 + (i * 130),
+            y: 300,
+            color: '#1f6feb',
+            isCustom: true
+        }));
+
+        const nodes = [...baseRolesNodes, ...dynamicRolesNodes];
+        const center = { x: 400, y: 200 }; // Nodo central del proyecto
 
         return `
-            <div style="position:relative; height:450px; background:#050a10; border-radius:12px; overflow:hidden; border:1px solid #1e293b; margin: 20px 0;">
-                <svg style="position:absolute; width:100%; height:100%;">
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
-                        </marker>
-                    </defs>
-                    ${project.transactions.map(tx => {
-                        // BLINDAJE: Fallback a @proyecto si el ID no existe en pos
-                        const pStart = pos[tx.rolId] || pos[tx.from] || pos["@proyecto"];
-                        const pEnd = pos[tx.to] || pos["@proyecto"];
-                        const isTangible = tx.tipo_flujo === 'tangible';
-                        return `
-                            <line x1="${pStart.x}" y1="${pStart.y}" x2="${pEnd.x}" y2="${pEnd.y}" 
-                                  stroke="#3b82f6" stroke-width="2" 
-                                  stroke-dasharray="${isTangible ? '0' : '6,6'}" 
-                                  marker-end="url(#arrowhead)" opacity="0.6">
-                                ${!isTangible ? '<animate attributeName="stroke-dashoffset" from="100" to="0" dur="5s" repeatCount="indefinite" />' : ''}
-                            </line>
-                        `;
-                    }).join('')}
-                </svg>
+            <svg viewBox="0 0 800 450" style="width:100%; height:100%; background:#0d1117;">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#30363d" />
+                    </marker>
+                </defs>
 
-                ${Object.keys(pos).map(id => `
-                    <div style="position:absolute; left:${pos[id].x-35}px; top:${pos[id].y-35}px; width:70px; height:70px; background:#0f172a; border:2px solid ${id==='@proyecto'?'#4ade80':'#3b82f6'}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:0.6rem; font-weight:bold; text-align:center; z-index:2; box-shadow:0 0 15px #3b82f633;">
-                        ${(project.customRoles[id] || (id==='@proyecto'?'PROYECTO':id)).toUpperCase()}
-                    </div>
+                ${nodes.map(n => `
+                    <line x1="${n.x}" y1="${n.y}" x2="${center.x}" y2="${center.y}" 
+                          stroke="#21262d" stroke-width="1.5" stroke-dasharray="4"
+                          marker-end="url(#arrowhead)" />
                 `).join('')}
-            </div>
+
+                <g>
+                    <circle cx="${center.x}" cy="${center.y}" r="30" fill="#161b22" stroke="#30363d" stroke-width="2" />
+                    <text x="${center.x}" y="${center.y + 5}" text-anchor="middle" fill="#58a6ff" font-size="10" font-weight="bold">PROJECT</text>
+                </g>
+
+                ${nodes.map(n => `
+                    <g class="vna-node" style="cursor:pointer;">
+                        <title>${n.name}</title>
+                        <circle cx="${n.x}" cy="${n.y}" r="22" fill="#161b22" stroke="${n.color}" stroke-width="3" />
+                        <text x="${n.x}" y="${n.y + 5}" text-anchor="middle" fill="white" font-size="8" font-weight="bold">
+                            ${n.id.startsWith('custom') ? 'EXT' : n.id.replace('@','').toUpperCase()}
+                        </text>
+                        <text x="${n.x}" y="${n.y + 38}" text-anchor="middle" fill="#8b949e" font-size="10" font-weight="normal">
+                            ${n.name}
+                        </text>
+                    </g>
+                `).join('')}
+            </svg>
         `;
     }
 };
