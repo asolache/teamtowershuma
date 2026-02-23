@@ -16,19 +16,26 @@ const generateHash = (str) => {
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
-            sectores: { 
-                marketing: { "@anxaneta": "Strategy Director", "@aixecador": "Creative Director", "@dosos": "Content Curator", "@baixos": "Graphic Designer", "@pinya": "Ads Manager" },
-                Web3: { "@anxaneta": "Lead Architect", "@aixecador": "Smart Contract Dev", "@dosos": "Security Auditor", "@baixos": "DApp Developer", "@pinya": "Validator" },
-                gremial: { "@anxaneta": "Ingeniero Jefe", "@aixecador": "Oficial de 1ª", "@dosos": "Verificador de Calidad", "@baixos": "Especialista", "@pinya": "Logística Base" }
-            },
-            roles: [
-                { id: "@anxaneta", multiplier: 3.0, precio_base_h: 90 },
-                { id: "@aixecador", multiplier: 2.5, precio_base_h: 75 },
-                { id: "@dosos", multiplier: 2.0, precio_base_h: 60 },
-                { id: "@baixos", multiplier: 1.5, precio_base_h: 45 },
-                { id: "@pinya", multiplier: 1.0, precio_base_h: 30 }
-            ]
-        };
+    sectores: { 
+        marketing: { "@anxaneta": "Strategy", "@aixecador": "Creative", "@dosos": "Content", "@baixos": "Design", "@pinya": "Ads" },
+        Web3: { "@anxaneta": "Lead Arch.", "@aixecador": "Smart Contracts", "@dosos": "Auditor", "@baixos": "DApp Dev", "@pinya": "Validator" },
+        gremial: { "@anxaneta": "Ingeniero", "@aixecador": "Oficial", "@dosos": "Calidad", "@baixos": "Especialista", "@pinya": "Logística" },
+        salud: { "@anxaneta": "Director Médico", "@aixecador": "Especialista", "@dosos": "Enfermería", "@baixos": "Técnico", "@pinya": "Admisión" },
+        educacion: { "@anxaneta": "Director", "@aixecador": "Profesor", "@dosos": "Pedagogo", "@baixos": "Tutor", "@pinya": "Secretaría" },
+        eventos: { "@anxaneta": "Producer", "@aixecador": "Logística", "@dosos": "Stage Manager", "@baixos": "Técnico", "@pinya": "Staff" },
+        legal: { "@anxaneta": "Socio", "@aixecador": "Abogado", "@dosos": "Paralegal", "@baixos": "Notaría", "@pinya": "Archivo" },
+        finanzas: { "@anxaneta": "CFO", "@aixecador": "Analista", "@dosos": "Controller", "@baixos": "Contable", "@pinya": "Tesorería" },
+        retail: { "@anxaneta": "Manager", "@aixecador": "Buyer", "@dosos": "Visual", "@baixos": "Vendedor", "@pinya": "Almacén" },
+        turismo: { "@anxaneta": "Director", "@aixecador": "Guía", "@dosos": "Guest Rel.", "@baixos": "Recepción", "@pinya": "Booking" }
+    },
+    roles: [
+        { id: "@anxaneta", multiplier: 3.0, precio_base_h: 90 },
+        { id: "@aixecador", multiplier: 2.5, precio_base_h: 75 },
+        { id: "@dosos", multiplier: 2.0, precio_base_h: 60 },
+        { id: "@baixos", multiplier: 1.5, precio_base_h: 45 },
+        { id: "@pinya", multiplier: 1.0, precio_base_h: 30 }
+    ]
+};
 
         this.state = {
             projects: [],
