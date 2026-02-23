@@ -1,0 +1,5 @@
+/* v4/css/style.css */
+:root { --bg: #0f172a; --text: #f1f5f9; --accent: #3b82f6; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.5; }
+mark { background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+h1 { color: #fff; }
