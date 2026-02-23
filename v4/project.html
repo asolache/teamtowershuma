@@ -1,51 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>SOS v4 | Agile Canvas</title>
-    <link rel="stylesheet" href="css/sos-style.css">
-</head>
+<head><meta charset="UTF-8"><title>SOS v4 | Agile Canvas</title><link rel="stylesheet" href="css/sos-style.css"></head>
 <body>
-    <nav>
-        <a href="index.html">← Volver al Dashboard</a>
-    </nav>
-
     <div id="app"></div>
-
     <script type="module">
         import { store } from './js/core/store.js';
         import { ProjectView } from './js/views/ProjectView.js';
 
-        // 1. Obtener ID del proyecto de la URL
-        const params = new URLSearchParams(window.location.search);
-        const projectId = params.get('id');
+        const pId = new URLSearchParams(window.location.search).get('id') || 'p-default';
 
-        // 2. Función global para que el botón de la vista funcione
-        window.registrarValor = (pId) => {
-            const concepto = document.getElementById('input-concepto').value;
-            const rolId = document.getElementById('input-rol').value;
-            const horas = parseFloat(document.getElementById('input-horas').value);
-
-            if (!concepto) return alert("Describe el valor aportado");
-
-            store.dispatch({
-                type: 'ADD_TRANSACTION',
-                payload: {
-                    projectId: pId,
-                    transaction: { rolId, horas, concepto, tipo_valor: 'tangible', categoria: '#hacer' }
-                }
-            });
-            render(); // Refrescar vista
+        window.ejecutarTransaccion = (projectId) => {
+            const transaction = {
+                rolId: document.getElementById('f-from').value,
+                to: document.getElementById('f-to').value,
+                concepto: document.getElementById('f-concepto').value,
+                horas: parseFloat(document.getElementById('f-horas').value)
+            };
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, transaction } });
         };
 
-        const render = () => {
-            const app = document.getElementById('app');
-            app.innerHTML = ProjectView.render(projectId);
-        };
-
-        // 3. Arrancar cuando el Store esté listo
-        window.addEventListener('store-ready', render);
-        store.subscribe(render); // Re-renderizar si el estado cambia
+        const update = () => { document.getElementById('app').innerHTML = ProjectView.render(pId); };
+        window.addEventListener('store-ready', () => {
+            if (!store.getState().projects.find(p => p.id === pId)) {
+                store.dispatch({ type: 'ADD_PROJECT', payload: { id: pId, nombre: 'Proyecto Activo' } });
+            }
+            update();
+        });
+        store.subscribe(update);
     </script>
 </body>
 </html>
