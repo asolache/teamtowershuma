@@ -1,7 +1,3 @@
-/**
- * VISTA: ProjectView v4.2
- * Incluye: ResilienceBar, VNA Graph y CSS Shake Reactivo
- */
 import { store } from '../core/store.js';
 import { ValueMapView } from './ValueMapView.js';
 import { ResilienceBar } from './ResilienceBar.js';
@@ -10,107 +6,106 @@ export const ProjectView = {
     render: (projectId) => {
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
-        
-        // 1. Validación de existencia
-        if (!project) return `
-            <div style="padding:100px; text-align:center; color:#8b949e;">
-                <h2>⚠️ Proyecto no encontrado</h2>
-                <button onclick="location.hash='#/'" style="background:none; border:1px solid #30363d; color:#58a6ff; cursor:pointer; padding:10px 20px; border-radius:6px;">Volver al Dashboard</button>
-            </div>
-        `;
+        if (!project) return `<div style="padding:50px; text-align:center;"><h2>Proyecto no encontrado</h2><a href="#/" style="color:#58a6ff;">Volver al Dashboard</a></div>`;
 
-        // 2. Cálculo de métricas de salud (Watchdog)
         const salud = store.calculateResilience(projectId);
         const alerts = store.getAlerts(projectId);
-
-        // 3. Inyección de Estilo Shake (Solo si la resiliencia es crítica < 30%)
-        const shakeEffect = (salud < 30) ? `
-            <style>
-                @keyframes sos-vibration {
-                    0% { transform: translate(1px, 1px) rotate(0deg); }
-                    20% { transform: translate(-2px, 0px) rotate(-1deg); }
-                    40% { transform: translate(2px, 2px) rotate(1deg); }
-                    60% { transform: translate(-1px, -1px) rotate(-1deg); }
-                    80% { transform: translate(3px, 1px) rotate(0deg); }
-                    100% { transform: translate(1px, -2px) rotate(1deg); }
-                }
-                /* Aplicamos la vibración a los nodos del grafo y a la barra lateral */
-                .vna-node, .alert-critical { 
-                    animation: sos-vibration 0.3s infinite; 
-                }
-                .resilience-red { box-shadow: 0 0 20px rgba(248, 81, 73, 0.4); }
-            </style>
-        ` : '';
+        const transactions = [...project.transactions].reverse();
 
         return `
-            ${shakeEffect}
-            <div style="max-width: 1400px; margin: 0 auto; padding: 25px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+            <div style="max-width: 1400px; margin: 0 auto; padding: 25px; font-family: sans-serif; color: #c9d1d9;">
                 
-                <header style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #30363d; padding-bottom: 20px; margin-bottom: 30px;">
+                <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 20px; margin-bottom: 30px;">
                     <div>
-                        <nav style="margin-bottom: 10px;">
-                            <a href="#/" style="color: #8b949e; text-decoration: none; font-size: 0.8rem;">Dashboard</a> 
-                            <span style="color: #30363d; margin: 0 8px;">/</span>
-                            <span style="color: #58a6ff; font-size: 0.8rem;">${project.sector}</span>
-                        </nav>
-                        <h1 style="color: #f0f6fc; margin: 0; font-size: 1.8rem; letter-spacing: -0.5px;">${project.nombre}</h1>
+                        <h1 style="color: #f0f6fc; margin: 0; font-size: 1.8rem;">${project.nombre} <small style="color:#8b949e; font-size: 0.9rem;">[${project.sector}]</small></h1>
                     </div>
-                    <div style="text-align: right;">
-                        <button onclick="window.resetProject('${projectId}')" style="background:none; border:1px solid #30363d; color:#f85149; padding:8px 12px; border-radius:6px; font-size: 0.75rem; cursor:pointer;">Limpiar Ledger</button>
-                    </div>
+                    <button onclick="location.hash='#/'" style="background:transparent; border:1px solid #30363d; color:#58a6ff; padding:8px 15px; border-radius:6px; cursor:pointer;">← Dashboard</button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: start;">
+                <div style="display: grid; grid-template-columns: 350px 1fr; gap: 30px;">
                     
                     <aside>
-                        <div class="${salud < 30 ? 'alert-critical resilience-red' : ''}">
-                            ${ResilienceBar.render(salud, alerts)}
-                        </div>
+                        ${ResilienceBar.render(salud, alerts)}
                         
-                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-top: 20px;">
-                            <h3 style="color: #f0f6fc; font-size: 0.85rem; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Estructura del Gremio</h3>
-                            ${Object.keys(project.customRoles).map(rolId => `
-                                <div style="margin-bottom: 15px;">
-                                    <label style="display:block; font-size: 0.65rem; color: #8b949e; margin-bottom: 4px;">ID de Rol: ${rolId}</label>
-                                    <input type="text" value="${project.customRoles[rolId]}" 
-                                           onchange="window.editRol('${projectId}', '${rolId}', this.value)"
-                                           style="width: 100%; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; padding: 10px; border-radius: 6px; font-size: 0.85rem; box-sizing: border-box;">
+                        <div style="background: #161b22; border: 1px solid #3b82f6; border-radius: 8px; padding: 20px; margin-top: 20px;">
+                            <h3 style="color: #58a6ff; font-size: 0.8rem; margin: 0 0 15px 0; text-transform: uppercase;">+ Añadir Rol al Gremio</h3>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <input id="nr-name" type="text" placeholder="Nombre (ej: Senior Auditor)" style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
+                                <select id="nr-level" style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
+                                    <option value="@anxaneta">Anxaneta (Estrategia)</option>
+                                    <option value="@aixecador">Aixecador (Estructura)</option>
+                                    <option value="@dosos">Dosos (Auditoría/Refinamiento)</option>
+                                    <option value="@baixos">Baixos (Producción)</option>
+                                    <option value="@pinya">Pinya (Infra/Soporte)</option>
+                                </select>
+                                <input id="nr-area" type="text" placeholder="Área (ej: Seguridad Web3)" style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
+                                <textarea id="nr-desc" placeholder="Descripción del rol..." style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px; height:50px; font-family:sans-serif;"></textarea>
+                                <input id="nr-skills" type="text" placeholder="Skills (separadas por comas)" style="background:#0d1117; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
+                                <button onclick="window.createRole('${projectId}')" style="background:#238636; color:white; border:none; padding:12px; border-radius:4px; font-weight:bold; cursor:pointer;">Crear Nuevo Rol</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 25px;">
+                            <h4 style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase; border-bottom: 1px solid #30363d; padding-bottom: 5px; margin-bottom: 10px;">Gremio Especializado</h4>
+                            ${(project.dynamicRoles || []).length === 0 ? '<div style="color:#484f58; font-size:0.75rem;">No hay roles extra.</div>' : ''}
+                            ${(project.dynamicRoles || []).map(dr => `
+                                <div style="background:#0d1117; border:1px solid #21262d; padding:12px; border-radius:6px; margin-bottom:10px;">
+                                    <div style="font-weight:bold; font-size:0.85rem; color:#f0f6fc;">${dr.name}</div>
+                                    <div style="font-size:0.7rem; color:#58a6ff; margin-bottom:5px;">${dr.area} | ${dr.levelId.replace('@','')}</div>
+                                    <div style="font-size:0.75rem; color:#8b949e; line-height:1.3;">${dr.description}</div>
+                                    <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:4px;">
+                                        ${dr.skills.map(s => `<span style="font-size:0.6rem; background:#161b22; color:#c9d1d9; border:1px solid #30363d; padding:2px 6px; border-radius:10px;">${s}</span>`).join('')}
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
                     </aside>
 
                     <main>
-                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 500px; position: relative; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,0,0,0.5);">
+                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 450px; position: relative; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
                             ${ValueMapView.render(projectId)}
-                            <div style="position: absolute; bottom: 15px; right: 15px; color: #30363d; font-size: 0.6rem; pointer-events: none;">
-                                SOS_ENGINE_V4.2 // VNA_ENABLED
+                        </div>
+
+                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Inyectar Valor al Sistema</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 2fr 80px 140px; gap: 15px;">
+                                <select id="f-from" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                    <optgroup label="Roles Base">
+                                        ${Object.keys(project.customRoles).map(id => `<option value="${id}">${project.customRoles[id]}</option>`).join('')}
+                                    </optgroup>
+                                    <optgroup label="Especialistas">
+                                        ${(project.dynamicRoles || []).map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
+                                    </optgroup>
+                                </select>
+                                <input id="f-concepto" type="text" placeholder="¿Qué se ha entregado?" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                <input id="f-horas" type="number" value="1" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                <button onclick="window.addTx('${projectId}')" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;">Inyectar</button>
                             </div>
                         </div>
 
-                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-top: 25px;">
-                            <h3 style="color: #f0f6fc; font-size: 1rem; margin-top: 0; margin-bottom: 20px;">Nuevas Transacciones de Valor</h3>
-                            <div style="display: grid; grid-template-columns: 180px 1fr 80px 140px; gap: 15px;">
-                                <select id="f-from" style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                    ${Object.keys(project.customRoles).map(id => `
-                                        <option value="${id}">${project.customRoles[id]}</option>
-                                    `).join('')}
-                                </select>
-                                
-                                <input id="f-concepto" type="text" placeholder="¿Qué entregable se ha completado?" 
-                                       style="padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
-                                
-                                <div style="position:relative;">
-                                    <input id="f-horas" type="number" value="1" min="1"
-                                           style="width: 100%; padding: 12px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px; box-sizing: border-box;">
-                                    <span style="position:absolute; right: -25px; top: 12px; color: #444; font-size: 0.8rem;">h</span>
-                                </div>
-
-                                <button onclick="window.addTx('${projectId}')" 
-                                        style="background: #238636; color: #ffffff; border: none; font-weight: bold; padding: 12px; border-radius: 6px; cursor: pointer; transition: filter 0.2s;">
-                                    Inject Value
-                                </button>
-                            </div>
+                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px;">
+                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Historial de Liquidaciones (Ledger)</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                <thead style="color:#8b949e; border-bottom:1px solid #30363d;">
+                                    <tr>
+                                        <th style="padding:10px; text-align:left;">Origen</th>
+                                        <th style="padding:10px; text-align:left;">Concepto</th>
+                                        <th style="padding:10px; text-align:right;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${transactions.length === 0 ? '<tr><td colspan="3" style="padding:30px; text-align:center; color:#484f58;">No hay flujos de valor aún.</td></tr>' : ''}
+                                    ${transactions.map(t => {
+                                        const roleName = project.customRoles[t.rolId] || (project.dynamicRoles.find(dr => dr.id === t.rolId)?.name);
+                                        return `
+                                        <tr style="border-bottom: 1px solid #21262d;">
+                                            <td style="padding:12px; color:#58a6ff; font-weight:500;">${roleName}</td>
+                                            <td style="padding:12px; color:#8b949e;">${t.concepto} <small>(${t.horas}h)</small></td>
+                                            <td style="padding:12px; text-align:right; font-weight:bold; color:#3fb950;">${t.liquidación.toLocaleString()}€</td>
+                                        </tr>`;
+                                    }).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </main>
                 </div>
@@ -119,50 +114,24 @@ export const ProjectView = {
     }
 };
 
-// --- MÉTODOS DE INTERACCIÓN GLOBAL ---
-
-window.editRol = (pId, rId, name) => {
-    store.dispatch({ 
-        type: 'UPDATE_ROLE_NAME', 
-        payload: { projectId: pId, rolId: rId, newName: name } 
-    });
-    // Notificamos para re-renderizar
-};
-
-window.addTx = (pId) => {
-    const from = document.getElementById('f-from').value;
-    const concepto = document.getElementById('f-concepto').value;
-    const horas = document.getElementById('f-horas').value;
+// FUNCIONES GLOBALES DE ACCIÓN
+window.createRole = (projectId) => {
+    const name = document.getElementById('nr-name').value;
+    const levelId = document.getElementById('nr-level').value;
+    const area = document.getElementById('nr-area').value;
+    const description = document.getElementById('nr-desc').value;
+    const skills = document.getElementById('nr-skills').value.split(',').map(s => s.trim()).filter(s => s);
     
-    if (!concepto) {
-        alert("El SOS requiere un concepto claro para validar el flujo.");
-        return;
-    }
-
-    store.dispatch({ 
-        type: 'ADD_TRANSACTION', 
-        payload: { 
-            projectId: pId, 
-            transaction: { 
-                rolId: from, 
-                horas: parseFloat(horas), 
-                concepto: concepto,
-                tipo_flujo: 'tangible' // Por defecto v4
-            } 
-        } 
-    });
-    // Forzamos re-renderizado
-    location.reload(); 
+    if(!name) return alert("El nombre del rol es obligatorio.");
+    store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area, description, skills } });
+    location.reload();
 };
 
-window.resetProject = (pId) => {
-    if(confirm("¿Seguro que quieres vaciar el Ledger? Esta acción es irreversible.")) {
-        const state = store.getState();
-        const p = state.projects.find(x => x.id === pId);
-        if(p) {
-            p.transactions = [];
-            store.save();
-            location.reload();
-        }
-    }
+window.addTx = (projectId) => {
+    const rolId = document.getElementById('f-from').value;
+    const concepto = document.getElementById('f-concepto').value;
+    const horas = parseFloat(document.getElementById('f-horas').value);
+    if(!concepto) return alert("Indica un concepto para el Ledger.");
+    store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, transaction: { rolId, horas, concepto } } });
+    location.reload();
 };
