@@ -1,113 +1,163 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v4.2 | Dashboard</title>
-    <style>
-        :root {
-            --bg-color: #010409;
-            --card-bg: #0d1117;
-            --border-color: #30363d;
-            --text-main: #c9d1d9;
-            --accent: #58a6ff;
-        }
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
-        }
-        #app { min-height: 100vh; }
-        
-        /* Animación de entrada para las vistas */
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-    <div id="app"></div>
+import { store } from '../core/store.js';
+import { ValueMapView } from './ValueMapView.js';
+import { ResilienceBar } from './ResilienceBar.js';
 
-    <script type="module">
-        import { store } from './js/core/store.js';
-        import { HomeView } from './js/views/HomeView.js';
-        import { ProjectView } from './js/views/ProjectView.js';
-        import { AboutView } from './js/views/AboutView.js';
+export const ProjectView = {
+    render: (projectId) => {
+        const state = store.getState();
+        const project = state.projects.find(p => p.id === projectId);
+        if (!project) return `<div style="padding:50px; text-align:center;"><h2>Proyecto no encontrado</h2><a href="#/" style="color:#58a6ff;">Volver al Dashboard</a></div>`;
 
-        const app = document.getElementById('app');
+        const salud = store.calculateResilience(projectId);
+        const alerts = store.getAlerts(projectId);
+        const transactions = [...project.transactions].reverse();
 
-        /**
-         * ROUTER: Orquestador de navegación SPA
-         */
-        function router() {
-            let hash = window.location.hash || '#/';
-            
-            // Limpieza de hash: si tiene una barra al final Y no es exactamente la raíz '#/', se la quitamos
-            if (hash !== '#/' && hash.endsWith('/')) {
-                hash = hash.slice(0, -1);
-            }
-            
-            console.log("SOS Kernel -> Navegando a:", hash);
+        // 🛡️ FILTRO DE INMUTABILIDAD: Solo mostramos roles dinámicos que NO estén archivados
+        const activeDynamicRoles = (project.dynamicRoles || []).filter(dr => !dr.isArchived);
 
-            // Reiniciar estado visual para la transición
-            app.classList.remove('fade-in');
-            void app.offsetWidth; // Reflow forzoso para reiniciar animación
+        // Generar las opciones de roles para los selectores de inyección
+        const roleOptions = `
+            <optgroup label="Roles Base">
+                ${Object.keys(project.customRoles).map(id => `<option value="${id}">${project.customRoles[id]}</option>`).join('')}
+            </optgroup>
+            ${activeDynamicRoles.length > 0 ? `
+                <optgroup label="Especialistas">
+                    ${activeDynamicRoles.map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
+                </optgroup>
+            ` : ''}
+        `;
 
-            // Lógica de Enrutamiento
-            if (hash === '#/' || hash === '#' || hash === '') {
-                app.innerHTML = HomeView.render();
-            } 
-            else if (hash === '#/about') {
-                app.innerHTML = AboutView.render();
-            } 
-            else if (hash.startsWith('#/project/')) {
-                const parts = hash.split('/');
-                const projectId = parts[2];
-                if (projectId) {
-                    app.innerHTML = ProjectView.render(projectId);
-                } else {
-                    window.location.hash = '#/';
-                }
-            } 
-            else {
-                // Vista 404 personalizada
-                app.innerHTML = `
-                    <div style="padding:100px; text-align:center; color:#8b949e;">
-                        <h2 style="color:#f0f6fc;">⚠️ 404 - Coordenada Inválida</h2>
-                        <p>El sector <code>${hash}</code> no existe en la ontología del Castell.</p>
-                        <a href="#/" style="color:var(--accent); text-decoration:none; font-weight:bold;">← Volver al Dashboard</a>
+        return `
+            <div style="max-width: 1400px; margin: 0 auto; padding: 25px; font-family: sans-serif; color: #c9d1d9;">
+                
+                <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 20px; margin-bottom: 30px;">
+                    <div>
+                        <h1 style="color: #f0f6fc; margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 15px;">
+                            ${project.nombre} 
+                            <a href="#/project/${projectId}/edit" style="font-size: 0.85rem; color: #58a6ff; text-decoration: none; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-weight: normal; background: #161b22; transition: all 0.2s;">
+                                ✏️ Diseñar Sistema
+                            </a>
+                        </h1>
+                        <div style="color:#8b949e; font-size: 0.9rem; margin-top: 5px;">Sector: ${project.sector}</div>
                     </div>
-                `;
-            }
+                    <button onclick="location.hash='#/'" style="background:transparent; border:1px solid #30363d; color:#58a6ff; padding:8px 15px; border-radius:6px; cursor:pointer;">← Dashboard</button>
+                </header>
 
-            app.classList.add('fade-in');
-        }
+                <div style="display: grid; grid-template-columns: 350px 1fr; gap: 30px;">
+                    
+                    <aside>
+                        ${ResilienceBar.render(salud, alerts)}
+                        
+                        <div style="margin-top: 25px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                            <h4 style="font-size: 0.8rem; color: #f0f6fc; text-transform: uppercase; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;">Gremio Activo</h4>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <strong style="font-size: 0.7rem; color: #8b949e;">ROLES BASE:</strong>
+                                ${Object.keys(project.customRoles).map(id => `
+                                    <div style="font-size: 0.85rem; padding: 4px 0;">
+                                        <span style="color:#238636;">${id}</span> <span style="color:#c9d1d9;">${project.customRoles[id]}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
 
-        // --- GESTIÓN DE CICLO DE VIDA ---
+                            ${activeDynamicRoles.length > 0 ? `
+                                <div>
+                                    <strong style="font-size: 0.7rem; color: #8b949e;">ESPECIALISTAS:</strong>
+                                    ${activeDynamicRoles.map(dr => `
+                                        <div style="background:#0d1117; border:1px solid #21262d; padding:8px; border-radius:4px; margin-top:5px;">
+                                            <div style="font-weight:bold; font-size:0.8rem; color:#58a6ff;">${dr.name}</div>
+                                            <div style="font-size:0.65rem; color:#8b949e;">${dr.area}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </aside>
 
-        // El Kernel emite 'store-ready' tras cargar localStorage y ontología
-        window.addEventListener('store-ready', () => {
-            console.log("SOS v4.2: Motor de datos listo.");
-            router();
-        });
+                    <main>
+                        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; height: 500px; position: relative; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                            ${ValueMapView.render(projectId)}
+                        </div>
 
-        // Escucha cambios de URL (atrás/adelante en el navegador o clics en enlaces)
-        window.addEventListener('hashchange', router);
+                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Reportar Flujo de Valor</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 20px 1fr 2fr 80px 100px; gap: 10px; align-items: center;">
+                                
+                                <select id="f-from" title="Origen del Valor (Quién lo hace)" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                    ${roleOptions}
+                                </select>
+                                
+                                <span style="color:#8b949e; text-align:center; font-weight:bold;">➔</span>
+                                
+                                <select id="f-to" title="Destinatario del Valor (A quién se le entrega)" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                    ${roleOptions}
+                                </select>
 
-        // Fallback de seguridad: Si el store tarda más de lo previsto o el evento se pierde
-        if (store && store.state) {
-            // Un pequeño timeout para asegurar que el evento custom no pise esta carga
-            setTimeout(() => {
-                if(app.innerHTML === '') router();
-            }, 100);
-        }
+                                <input id="f-concepto" type="text" placeholder="¿Qué se ha entregado?" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                <input id="f-horas" type="number" value="1" title="Horas invertidas" style="padding: 10px; background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px;">
+                                <button onclick="window.addTx('${projectId}')" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; padding: 10px;">Inyectar</button>
+                            </div>
+                        </div>
 
-    </script>
-</body>
-</html>
+                        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px;">
+                            <h3 style="color: #f0f6fc; font-size: 1rem; margin: 0 0 20px 0;">Ledger Contable</h3>
+                            <div style="max-height: 400px; overflow-y: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <thead style="color:#8b949e; border-bottom:1px solid #30363d; position: sticky; top: 0; background: #161b22;">
+                                        <tr>
+                                            <th style="padding:10px; text-align:left;">Flujo (Origen ➔ Destino)</th>
+                                            <th style="padding:10px; text-align:left;">Concepto</th>
+                                            <th style="padding:10px; text-align:right;">Valor Inyectado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${transactions.length === 0 ? '<tr><td colspan="3" style="padding:30px; text-align:center; color:#484f58;">No hay flujos de valor aún.</td></tr>' : ''}
+                                        ${transactions.map(t => {
+                                            const roleFromName = project.customRoles[t.rolId] || project.dynamicRoles?.find(dr => dr.id === t.rolId)?.name || 'Desconocido';
+                                            const roleToName = project.customRoles[t.toId] || project.dynamicRoles?.find(dr => dr.id === t.toId)?.name || 'Ecosistema';
+                                            
+                                            return `
+                                            <tr style="border-bottom: 1px solid #21262d;">
+                                                <td style="padding:12px; font-weight:500;">
+                                                    <span style="color:#58a6ff;">${roleFromName}</span> 
+                                                    <span style="color:#8b949e; font-size:0.8em; margin:0 5px;">➔</span> 
+                                                    <span style="color:#c9d1d9;">${roleToName}</span>
+                                                </td>
+                                                <td style="padding:12px; color:#8b949e;">${t.concepto} <small>(${t.horas}h)</small></td>
+                                                <td style="padding:12px; text-align:right; font-weight:bold; color:#3fb950;">${t.liquidación.toLocaleString()}€</td>
+                                            </tr>`;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+    }
+};
+
+window.addTx = (projectId) => {
+    const fromId = document.getElementById('f-from').value;
+    const toId = document.getElementById('f-to').value;
+    const concepto = document.getElementById('f-concepto').value;
+    const horas = parseFloat(document.getElementById('f-horas').value);
+    
+    if(!concepto) return alert("Indica un concepto para el Ledger.");
+    if(fromId === toId) return alert("Un rol no puede inyectarse valor a sí mismo de manera directa.");
+
+    store.dispatch({ 
+        type: 'ADD_TRANSACTION', 
+        payload: { 
+            projectId, 
+            transaction: { 
+                rolId: fromId, 
+                toId: toId, 
+                horas, 
+                concepto 
+            } 
+        } 
+    });
+    location.reload();
+};
