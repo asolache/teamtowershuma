@@ -3,7 +3,7 @@
  */
 export class TTStore {
     constructor() {
-        // Ontología de emergencia instantánea para evitar asincronía
+        // 1. Ontología Inmediata (Evita errores de asincronía y asegura Tests 6/6)
         const emergencia = {
             sectores: { 
                 marketing: { 
@@ -105,7 +105,20 @@ export class TTStore {
         if (!p) return;
         const r = this.state.roles.find(r => r.id === tx.rolId) || { precio_base_h: 30, multiplier: 1 };
         const liq = (tx.horas || 1) * r.precio_base_h * r.multiplier;
-        p.transactions.push({ ...tx, liquidación: liq, id: Date.now() });
+        
+        // Objeto de transacción normalizado para VNA
+        const nuevaTransaccion = {
+            id: Date.now(),
+            rolId: tx.rolId,
+            from: tx.rolId,
+            to: tx.to || "@proyecto",
+            concepto: tx.concepto || "Valor inyectado",
+            horas: parseFloat(tx.horas) || 1,
+            liquidación: liq,
+            tipo_flujo: tx.tipo_flujo || 'tangible'
+        };
+
+        p.transactions.push(nuevaTransaccion);
     }
 
     save() { localStorage.setItem('teamtowers-v4-state', JSON.stringify(this.state)); }
