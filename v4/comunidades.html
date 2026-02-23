@@ -1,1 +1,18 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><title>SOS v4 | Comunidades</title>
+    <link rel="stylesheet" href="css/sos-style.css">
+</head>
+<body>
+    <nav><a href="index.html">Dashboard</a> | <a href="comunidades.html">Comunidades</a></nav>
+    <div id="app"></div>
+    <script type="module">
+        import { store } from './js/core/store.js';
+        import { CommunityView } from './js/views/CommunityView.js';
+        window.addEventListener('store-ready', () => {
+            document.getElementById('app').innerHTML = CommunityView.render();
+        });
+    </script>
+</body>
+</html>
