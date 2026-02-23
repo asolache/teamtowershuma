@@ -58,6 +58,25 @@
             `).join('');
         };
 
+        // Función para poblar un proyecto con flujos de valor reales
+window.inyectarDemoVNA = (projectId) => {
+    const flujos = [
+        { rolId: '@anxaneta', to: '@proyecto', horas: 2, concepto: 'Estrategia de Marca', tipo_flujo: 'tangible' },
+        { rolId: '@aixecador', to: '@anxaneta', horas: 1, concepto: 'Arquitectura Técnica', tipo_flujo: 'intangible' },
+        { rolId: '@baixos', to: '@proyecto', horas: 4, concepto: 'Desarrollo Frontend', tipo_flujo: 'tangible' },
+        { rolId: '@pinya', to: '@baixos', horas: 1, concepto: 'Soporte DevOps', tipo_flujo: 'intangible' }
+    ];
+
+    flujos.forEach(tx => {
+        store.dispatch({
+            type: 'ADD_TRANSACTION',
+            payload: { projectId, transaction: tx }
+        });
+    });
+    
+    console.log("✅ Demo VNA inyectada con éxito");
+};
+
         window.addEventListener('store-ready', render);
         store.subscribe(render);
     </script>
