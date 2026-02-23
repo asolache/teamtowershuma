@@ -2,81 +2,125 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers v3.5 - TDD Suite</title>
+    <title>TeamTowers v3.5 - Core Engine Tests</title>
     <style>
-        :root { font-family: 'Inter', system-ui, sans-serif; }
-        body { background: #1e1e1e; color: #fff; padding: 2rem; max-width: 800px; margin: 0 auto; }
-        h1 { border-bottom: 2px solid #333; padding-bottom: 1rem; }
-        .test-case { background: #2d2d2d; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; border-left: 5px solid gray; }
-        .pass { border-left-color: #4CAF50; }
-        .fail { border-left-color: #F44336; }
-        .status { font-weight: bold; margin-bottom: 0.5rem; }
-        .pass .status { color: #4CAF50; }
-        .fail .status { color: #F44336; }
-        .details { font-family: monospace; font-size: 0.9em; color: #aaa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #e0e0e0; padding: 20px; line-height: 1.6; }
+        .test-container { max-width: 800px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        h1 { color: #3b82f6; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .test-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #252525; border-left: 5px solid #444; }
+        .test-item.pass { border-left-color: #10b981; background: #1a2e26; }
+        .test-item.fail { border-left-color: #ef4444; background: #2e1a1a; }
+        .status-icon { font-weight: bold; margin-right: 10px; }
+        .error-msg { color: #ff8a8a; font-size: 0.9em; margin-top: 10px; font-family: monospace; }
+        .console-box { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; border-radius: 4px; margin-top: 20px; overflow-x: auto; }
     </style>
 </head>
 <body>
-    <h1>🧪 TeamTowers v3.5 - Core Engine Tests</h1>
-    <div id="test-results"></div>
 
-    <script type="module">
-        import { EventBus } from '../js/core/event-bus.js';
-        import { store } from '../js/core/store.js';
-        import { Selectors } from '../js/core/selectors.js';
+    <div class="test-container">
+        <h1>🏗️ TeamTowers v3.5 - Test Suite</h1>
+        <div id="test-results">
+            </div>
+        
+        <h3>📟 Consola de Salida</h3>
+        <div id="console-output" class="console-box"></div>
+    </div>
 
-        const resultsDiv = document.getElementById('test-results');
+    <script src="../js/core/constants.js"></script>
+    <script src="../js/core/event-bus.js"></script>
+    <script src="../js/core/store.js"></script>
+    <script src="../js/core/selectors.js"></script>
 
-        // Micro-framework de testing
+    <script>
+        // Mock de consola para ver mensajes en pantalla
+        const consoleBox = document.getElementById('console-output');
+        const originalLog = console.log;
+        console.log = (...args) => {
+            originalLog(...args);
+            consoleBox.innerHTML += `> ${args.join(' ')}<br>`;
+        };
+
+        const resultsContainer = document.getElementById('test-results');
+
         function runTest(name, testFn) {
-            const testDiv = document.createElement('div');
-            testDiv.className = 'test-case';
+            const item = document.createElement('div');
+            item.className = 'test-item';
+            
             try {
                 testFn();
-                testDiv.classList.add('pass');
-                testDiv.innerHTML = `<div class="status">✅ PASS: ${name}</div>`;
+                item.classList.add('pass');
+                item.innerHTML = `<span class="status-icon">✅ PASS:</span> ${name}`;
             } catch (error) {
-                testDiv.classList.add('fail');
-                testDiv.innerHTML = `
-                    <div class="status">❌ FAIL: ${name}</div>
-                    <div class="details">${error.message}</div>
-                `;
-                console.error(`Test falló: ${name}`, error);
+                item.classList.add('fail');
+                item.innerHTML = `<span class="status-icon">❌ FAIL:</span> ${name}
+                                  <div class="error-msg">${error.message}</div>`;
+                console.error(`Error en test "${name}":`, error);
             }
-            resultsDiv.appendChild(testDiv);
+            resultsContainer.appendChild(item);
         }
 
-        // --- SUITE DE TESTS --- //
+        // --- INICIO DE LA SUITE DE TESTS ---
+        
+        window.addEventListener('load', () => {
+            console.log("Iniciando tests...");
 
-        // Limpiar el store antes de los tests
-        localStorage.removeItem('teamtowers-v3-state');
-        store.init(); // Asegura un estado limpio
+            // Limpiamos store para el test si fuera necesario
+            // window.localStorage.clear(); 
 
-        runTest("1. El Store se inicializa correctamente", () => {
-            const state = store.getState();
-            if (!state.proyectos) throw new Error("El estado no tiene la propiedad 'proyectos'");
-        });
-
-        runTest("2. Creación de Proyecto (Tronco Común)", () => {
-            // Simulamos la creación de un proyecto
-            store.addProject({
-                id: "#test-startup",
-                nombre: "Startup Test",
-                sector: "1", // Tecnología, Software e IA
-                roles: [
-                    { id: "@ceo", multiplicador: 2.0 },
-                    { id: "@developer", multiplicador: 1.0 }
-                ]
+            // 1. Test de Integridad del Store
+            runTest("1. El Store se inicializa correctamente", () => {
+                const state = window.store.getState();
+                if (!state) throw new Error("El estado es nulo");
+                if (!state.projects) throw new Error("El estado no tiene la propiedad 'projects' (revisa el idioma)");
+                console.log("Estado detectado:", Object.keys(state).join(', '));
             });
 
-            const state = store.getState();
-            const project = state.proyectos.find(p => p.id === "#test-startup");
-            if (!project) throw new Error("El proyecto no se guardó en el store");
-            if (project.roles.length !== 2) throw new Error("Los roles del tronco común no se guardaron");
-        });
+            // 2. Test de Lógica de Negocio (Módulos de creación)
+            runTest("2. Registro de Proyecto en el Store", () => {
+                const idTest = 'p-test-' + Date.now();
+                window.store.dispatch({
+                    type: 'ADD_PROJECT',
+                    payload: { id: idTest, nombre: 'Proyecto de Test TDD' }
+                });
 
-        // NOTA: Añadiremos más tests aquí a medida que programemos el ValueEngine.
+                const state = window.store.getState();
+                const found = state.projects.find(p => p.id === idTest);
+                if (!found) throw new Error("El proyecto no se guardó en state.projects");
+            });
+
+            // 3. Test de Resiliencia VNA (P-023)
+            runTest("3. Cálculo VNA: Ratio de Resiliencia (Saludable)", () => {
+                const mockState = {
+                    projects: [{
+                        id: 'vna-1',
+                        transactions: [
+                            { uv: 500, tipo_valor: 'tangible' },
+                            { uv: 500, tipo_valor: 'intangible' }
+                        ]
+                    }]
+                };
+
+                const res = window.Selectors.getProjectResilienceIndex(mockState, 'vna-1');
+                if (res.status !== 'saludable') throw new Error(`Esperado: saludable, Recibido: ${res.status}`);
+                if (res.ratio !== 0.5) throw new Error(`Esperado ratio 0.5, Recibido: ${res.ratio}`);
+            });
+
+            runTest("4. Cálculo VNA: Ratio de Resiliencia (Frágil)", () => {
+                const mockState = {
+                    projects: [{
+                        id: 'vna-2',
+                        transactions: [
+                            { uv: 1000, tipo_valor: 'tangible' }
+                        ]
+                    }]
+                };
+
+                const res = window.Selectors.getProjectResilienceIndex(mockState, 'vna-2');
+                if (res.status !== 'fragil') throw new Error(`Esperado: fragil, Recibido: ${res.status}`);
+            });
+
+            console.log("Suite de tests finalizada.");
+        });
     </script>
 </body>
 </html>
