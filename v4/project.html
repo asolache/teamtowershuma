@@ -2,45 +2,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS | Agile Canvas</title>
-    <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f1f5f9; --green: #4ade80; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        #app { max-width: 1200px; margin: 0 auto; }
-        .project-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
-        .canvas-area { height: 400px; background: #000; margin: 20px 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #444; border: 1px dashed #334155; }
-        .sos-terminal { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 80px; background: #000; color: var(--green); border: 1px solid #334155; border-radius: 6px; padding: 15px; font-family: monospace; font-size: 1rem; margin-top: 10px; resize: none; }
-        button { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: opacity 0.2s; }
-        button:hover { opacity: 0.8; }
-        .health-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid; }
-        .health-badge.saludable { color: var(--green); border-color: var(--green); }
-        .health-badge.fragil { color: #f87171; border-color: #f87171; }
-    </style>
+    <title>SOS v4 | Agile Canvas</title>
+    <link rel="stylesheet" href="css/sos-style.css">
 </head>
 <body>
+    <nav>
+        <a href="index.html">← Volver al Dashboard</a>
+    </nav>
 
-    <div id="app">
-        <p>Iniciando Sistema Operativo Social...</p>
-    </div>
+    <div id="app"></div>
 
     <script type="module">
         import { store } from './js/core/store.js';
         import { ProjectView } from './js/views/ProjectView.js';
 
-        const renderApp = () => {
+        // 1. Obtener ID del proyecto de la URL
+        const params = new URLSearchParams(window.location.search);
+        const projectId = params.get('id');
+
+        // 2. Función global para que el botón de la vista funcione
+        window.registrarValor = (pId) => {
+            const concepto = document.getElementById('input-concepto').value;
+            const rolId = document.getElementById('input-rol').value;
+            const horas = parseFloat(document.getElementById('input-horas').value);
+
+            if (!concepto) return alert("Describe el valor aportado");
+
+            store.dispatch({
+                type: 'ADD_TRANSACTION',
+                payload: {
+                    projectId: pId,
+                    transaction: { rolId, horas, concepto, tipo_valor: 'tangible', categoria: '#hacer' }
+                }
+            });
+            render(); // Refrescar vista
+        };
+
+        const render = () => {
             const app = document.getElementById('app');
-            const params = new URLSearchParams(window.location.search);
-            const projectId = params.get('id') || 'p-default';
             app.innerHTML = ProjectView.render(projectId);
         };
 
-        // Escuchar cuando el motor esté listo
-        window.addEventListener('store-ready', renderApp);
-        
-        // Escuchar cambios en el estado para re-renderizar
-        store.subscribe(renderApp);
+        // 3. Arrancar cuando el Store esté listo
+        window.addEventListener('store-ready', render);
+        store.subscribe(render); // Re-renderizar si el estado cambia
     </script>
 </body>
 </html>
