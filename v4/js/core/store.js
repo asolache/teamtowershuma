@@ -15,10 +15,11 @@ const generateHash = (str) => {
 
 export class TTStore {
     constructor() {
-        this.ontologyStatic = { /* ... tu ontología estática actual ... */ 
+        this.ontologyStatic = {
             sectores: { 
                 marketing: { "@anxaneta": "Strategy Director", "@aixecador": "Creative Director", "@dosos": "Content Curator", "@baixos": "Graphic Designer", "@pinya": "Ads Manager" },
-                Web3: { "@anxaneta": "Lead Architect", "@aixecador": "Smart Contract Dev", "@dosos": "Security Auditor", "@baixos": "DApp Developer", "@pinya": "Validator" }
+                Web3: { "@anxaneta": "Lead Architect", "@aixecador": "Smart Contract Dev", "@dosos": "Security Auditor", "@baixos": "DApp Developer", "@pinya": "Validator" },
+                gremial: { "@anxaneta": "Ingeniero Jefe", "@aixecador": "Oficial de 1ª", "@dosos": "Verificador de Calidad", "@baixos": "Especialista", "@pinya": "Logística Base" }
             },
             roles: [
                 { id: "@anxaneta", multiplier: 3.0, precio_base_h: 90 },
@@ -28,7 +29,12 @@ export class TTStore {
                 { id: "@pinya", multiplier: 1.0, precio_base_h: 30 }
             ]
         };
-        this.state = { projects: [], ontology: this.ontologyStatic, roles: this.ontologyStatic.roles };
+
+        this.state = {
+            projects: [],
+            ontology: this.ontologyStatic,
+            roles: this.ontologyStatic.roles
+        };
         this.listeners = [];
         this.init();
     }
@@ -36,14 +42,54 @@ export class TTStore {
     init() {
         const saved = localStorage.getItem('teamtowers-v4-state');
         if (saved) {
-            try { this.state.projects = JSON.parse(saved).projects || []; } catch (e) {}
+            try {
+                const parsed = JSON.parse(saved);
+                this.state.projects = parsed.projects || [];
+            } catch (e) { console.error("SOS: Error storage", e); }
         }
         this.state.ontology = this.ontologyStatic;
         this.state.roles = this.ontologyStatic.roles;
         setTimeout(() => window.dispatchEvent(new Event('store-ready')), 10);
     }
 
-    // --- NUEVO: INTEGRIDAD DEL LEDGER ---
+    // --- CÁLCULOS DE SALUD Y ALERTAS (RESTAURADOS) ---
+    calculateResilience(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || p.transactions.length === 0) return 100;
+        const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
+        
+        const auditValue = p.transactions
+            .filter(t => t.rolId === '@dosos' || t.levelId === '@dosos')
+            .reduce((acc, t) => acc + (t.liquidación || 0), 0);
+            
+        return totalValue > 0 ? Math.round((auditValue / totalValue) * 100) : 100;
+    }
+
+    getAlerts(projectId) {
+        const alerts = [];
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return [];
+        
+        const hasAudit = p.transactions.some(t => t.rolId === '@dosos' || t.levelId === '@dosos');
+        if (p.transactions.length > 0 && !hasAudit) {
+            alerts.push({ code: 'RIESGO_DEUDA_TECNICA', level: 'CRITICAL' });
+        }
+        
+        p.transactions.forEach(t => {
+            let r = this.state.roles.find(rol => rol.id === t.rolId);
+            if (!r && p.dynamicRoles) r = p.dynamicRoles.find(dr => dr.id === t.rolId);
+            if (!r) return;
+            
+            const precioHoraReal = t.liquidación / ((t.horas || 1) * r.multiplier);
+            if (precioHoraReal > r.precio_base_h * 1.5) {
+                alerts.push({ code: 'DESVIACION_PRECIO', msg: `Sobre-liquidación en ${t.rolId}` });
+            }
+        });
+        
+        return alerts;
+    }
+
+    // --- INTEGRIDAD DEL LEDGER ---
     verifyLedgerIntegrity(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || p.transactions.length === 0) return true;
@@ -54,7 +100,7 @@ export class TTStore {
         return true;
     }
 
-    // --- NUEVO: COMPILADOR DE SYSTEM PROMPT ---
+    // --- COMPILADOR DE SYSTEM PROMPT ---
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "Proyecto no encontrado.";
@@ -65,7 +111,6 @@ export class TTStore {
         
         prompt += `[SECUENCIA DE FLUJO DE VALOR]\n`;
         
-        // Mapear roles y secuencias
         const allRoles = [];
         Object.keys(p.customRoles).forEach(id => allRoles.push({ id, name: p.customRoles[id], seq: p.sequences?.[id] || 99 }));
         (p.dynamicRoles || []).filter(dr => !dr.isArchived).forEach(dr => allRoles.push({ id: dr.id, name: dr.name, seq: p.sequences?.[dr.id] || 99 }));
@@ -81,8 +126,6 @@ export class TTStore {
         return prompt;
     }
 
-    // ... (Mantén getAlerts y calculateResilience igual que antes) ...
-
     dispatch(action) {
         const { type, payload } = action;
         const project = this.state.projects.find(x => x.id === payload.projectId);
@@ -92,21 +135,52 @@ export class TTStore {
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sectorKey = Object.keys(this.state.ontology.sectores).find(k => k.toLowerCase() === payload.sector.toLowerCase()) || 'marketing';
                 this.state.projects.push({
-                    id: payload.id, nombre: payload.nombre, sector: sectorKey, description: payload.description || "", 
+                    id: payload.id, 
+                    nombre: payload.nombre, 
+                    sector: sectorKey, 
+                    description: payload.description || "", 
                     customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
-                    dynamicRoles: [], transactions: [], sequences: {} // Nuevo: sequences
+                    dynamicRoles: [], 
+                    transactions: [], 
+                    sequences: {} 
                 });
+                break;
+
+            // --- RESTAURADO ---
+            case 'UPDATE_PROJECT_INFO':
+                if (project) {
+                    project.nombre = payload.nombre || project.nombre;
+                    project.sector = payload.sector || project.sector;
+                    project.description = payload.description !== undefined ? payload.description : project.description;
+                }
+                break;
+
+            // --- RESTAURADO ---
+            case 'UPDATE_ROLE_NAME':
+                if (project) project.customRoles[payload.rolId] = payload.newName;
                 break;
 
             case 'CREATE_CUSTOM_ROLE':
                 if (project) {
                     const master = this.state.roles.find(r => r.id === payload.levelId);
                     project.dynamicRoles.push({
-                        id: `custom-${Date.now()}`, levelId: payload.levelId, name: payload.name, area: payload.area,
-                        description: payload.description || '', skills: payload.skills || [],
-                        multiplier: master.multiplier, precio_base_h: master.precio_base_h,
-                        isArchived: false // Nuevo estado por defecto
+                        id: `custom-${Date.now()}`, 
+                        levelId: payload.levelId, 
+                        name: payload.name, 
+                        area: payload.area,
+                        description: payload.description || '', 
+                        skills: payload.skills || [],
+                        multiplier: master.multiplier, 
+                        precio_base_h: master.precio_base_h,
+                        isArchived: false
                     });
+                }
+                break;
+
+            // --- RESTAURADO (Para que pase la Fase 3 del test histórico) ---
+            case 'DELETE_CUSTOM_ROLE':
+                if (project && project.dynamicRoles) {
+                    project.dynamicRoles = project.dynamicRoles.filter(r => r.id !== payload.rolId);
                 }
                 break;
 
@@ -114,7 +188,7 @@ export class TTStore {
             case 'ARCHIVE_CUSTOM_ROLE':
                 if (project && project.dynamicRoles) {
                     const rol = project.dynamicRoles.find(r => r.id === payload.rolId);
-                    if (rol) rol.isArchived = true; // Se oculta en UI, se mantiene en Ledger
+                    if (rol) rol.isArchived = true;
                 }
                 break;
 
