@@ -52,7 +52,7 @@ export class TTStore {
         setTimeout(() => window.dispatchEvent(new Event('store-ready')), 10);
     }
 
-    // --- CÁLCULOS DE SALUD Y ALERTAS (RESTAURADOS) ---
+    // --- CÁLCULOS DE SALUD Y ALERTAS ---
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || p.transactions.length === 0) return 100;
@@ -135,18 +135,12 @@ export class TTStore {
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sectorKey = Object.keys(this.state.ontology.sectores).find(k => k.toLowerCase() === payload.sector.toLowerCase()) || 'marketing';
                 this.state.projects.push({
-                    id: payload.id, 
-                    nombre: payload.nombre, 
-                    sector: sectorKey, 
-                    description: payload.description || "", 
+                    id: payload.id, nombre: payload.nombre, sector: sectorKey, description: payload.description || "", 
                     customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
-                    dynamicRoles: [], 
-                    transactions: [], 
-                    sequences: {} 
+                    dynamicRoles: [], transactions: [], sequences: {} 
                 });
                 break;
 
-            // --- RESTAURADO ---
             case 'UPDATE_PROJECT_INFO':
                 if (project) {
                     project.nombre = payload.nombre || project.nombre;
@@ -155,7 +149,6 @@ export class TTStore {
                 }
                 break;
 
-            // --- RESTAURADO ---
             case 'UPDATE_ROLE_NAME':
                 if (project) project.customRoles[payload.rolId] = payload.newName;
                 break;
@@ -164,27 +157,20 @@ export class TTStore {
                 if (project) {
                     const master = this.state.roles.find(r => r.id === payload.levelId);
                     project.dynamicRoles.push({
-                        id: `custom-${Date.now()}`, 
-                        levelId: payload.levelId, 
-                        name: payload.name, 
-                        area: payload.area,
-                        description: payload.description || '', 
-                        skills: payload.skills || [],
-                        multiplier: master.multiplier, 
-                        precio_base_h: master.precio_base_h,
+                        id: `custom-${Date.now()}`, levelId: payload.levelId, name: payload.name, area: payload.area,
+                        description: payload.description || '', skills: payload.skills || [],
+                        multiplier: master.multiplier, precio_base_h: master.precio_base_h,
                         isArchived: false
                     });
                 }
                 break;
 
-            // --- RESTAURADO (Para que pase la Fase 3 del test histórico) ---
             case 'DELETE_CUSTOM_ROLE':
                 if (project && project.dynamicRoles) {
                     project.dynamicRoles = project.dynamicRoles.filter(r => r.id !== payload.rolId);
                 }
                 break;
 
-            // --- NUEVO: ARCHIVADO INMUTABLE ---
             case 'ARCHIVE_CUSTOM_ROLE':
                 if (project && project.dynamicRoles) {
                     const rol = project.dynamicRoles.find(r => r.id === payload.rolId);
@@ -192,7 +178,6 @@ export class TTStore {
                 }
                 break;
 
-            // --- NUEVO: SECUENCIACIÓN ---
             case 'UPDATE_ROLE_SEQUENCE':
                 if (project) {
                     if (!project.sequences) project.sequences = {};
@@ -207,11 +192,15 @@ export class TTStore {
                 if (!roleData && project.dynamicRoles) roleData = project.dynamicRoles.find(dr => dr.id === payload.transaction.rolId);
                 if (!roleData) return;
 
+                // --- 🛡️ CIRCUIT BREAKER ---
+                const salud = this.calculateResilience(payload.projectId);
+                if (salud < 30 && roleData.multiplier > 2.0) return;
+
                 const horas = payload.transaction.horas || 1;
                 const precioBase = payload.transaction.override_price || roleData.precio_base_h;
                 const liq = horas * precioBase * roleData.multiplier;
 
-                // Criptografía: Calcular hash encadenado
+                // --- 🔐 HASHING CRIPTOGRÁFICO ---
                 const lastTx = project.transactions.length > 0 ? project.transactions[project.transactions.length - 1] : null;
                 const prevHash = lastTx ? lastTx.hash : "0000000000000000";
                 const dataToHash = `${payload.transaction.rolId}${payload.transaction.toId}${liq}${prevHash}`;
