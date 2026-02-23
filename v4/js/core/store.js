@@ -1,9 +1,9 @@
 /**
- * TEAMTOWERS SOS v4.0 - KERNEL BLINDADO
+ * TEAMTOWERS SOS v4.0 - KERNEL CENTRAL
  */
 export class TTStore {
     constructor() {
-        // 1. Ontología Inmediata (Evita errores de asincronía en Tests)
+        // Ontología de emergencia instantánea para evitar asincronía
         const emergencia = {
             sectores: { 
                 marketing: { 
@@ -47,11 +47,10 @@ export class TTStore {
                 const parsed = JSON.parse(saved);
                 this.state.projects = parsed.projects || [];
                 this.state.transactions = parsed.transactions || [];
-                // Asegurar retrocompatibilidad de roles
                 this.state.projects.forEach(p => { if (!p.customRoles) p.customRoles = {}; });
-            } catch (e) { console.error("Error localStorage:", e); }
+            } catch (e) { console.error("Error en storage:", e); }
         }
-        await this.loadOntology(); // Intenta mejorar la emergencia con el JSON externo
+        await this.loadOntology();
         window.dispatchEvent(new Event('store-ready'));
     }
 
@@ -104,7 +103,7 @@ export class TTStore {
     addTx(pId, tx) {
         const p = this.state.projects.find(p => p.id === pId);
         if (!p) return;
-        const r = this.state.roles.find(r => r.id === tx.rolId);
+        const r = this.state.roles.find(r => r.id === tx.rolId) || { precio_base_h: 30, multiplier: 1 };
         const liq = (tx.horas || 1) * r.precio_base_h * r.multiplier;
         p.transactions.push({ ...tx, liquidación: liq, id: Date.now() });
     }
