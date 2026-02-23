@@ -5,15 +5,17 @@ export const HomeView = {
         const state = store.getState();
         const projects = state.projects || [];
 
+        // --- ORDENACIÓN: De último a primero ---
+        const displayProjects = [...projects].reverse();
+
         // --- CÁLCULOS DE ECOSISTEMA BLINDADOS CONTRA 'NaN' ---
         const totalLiquidez = projects.reduce((sum, p) => 
-            sum + p.transactions.reduce((s, t) => s + (Number(t.liquidación) || 0), 0), 0);
+            sum + (p.transactions || []).reduce((s, t) => s + (Number(t.liquidación) || 0), 0), 0);
         
         const proyectosEnRiesgo = projects.filter(p => store.calculateResilience(p.id) < 30).length;
         
-        // Sanitizamos t.horas: Si no existe o es corrupto, sumamos 0.
         const totalHoras = projects.reduce((sum, p) => 
-            sum + p.transactions.reduce((s, t) => s + (Number(t.horas) || 0), 0), 0);
+            sum + (p.transactions || []).reduce((s, t) => s + (Number(t.horas) || 0), 0), 0);
 
         return `
             <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
@@ -54,21 +56,25 @@ export const HomeView = {
                         <select id="new-p-sector" style="background: #161b22; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 6px;">
                             ${Object.keys(store.state.ontology.sectores).map(s => `<option value="${s}">${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
                         </select>
-                        <button onclick="window.createProject()" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer;">Inicializar</button>
+                        <button onclick="window.createProject()" style="background: #238636; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">Inicializar</button>
                     </div>
                 </section>
 
                 <h3 style="color: #f0f6fc; margin-bottom: 20px;">Ecosistema Activo</h3>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-                    ${projects.length === 0 ? '<p style="color:#484f58;">No hay castells levantados aún.</p>' : ''}
-                    ${projects.map(p => {
+                    ${displayProjects.length === 0 ? '<p style="color:#484f58;">No hay castells levantados aún.</p>' : ''}
+                    
+                    ${displayProjects.map(p => {
                         const salud = store.calculateResilience(p.id);
-                        const liq = p.transactions.reduce((s, t) => s + (Number(t.liquidación) || 0), 0);
+                        const liq = (p.transactions || []).reduce((s, t) => s + (Number(t.liquidación) || 0), 0);
                         return `
-                        <div onclick="location.hash='#/project/${p.id}'" style="background: #161b22; border: 1px solid #30363d; padding: 15px 25px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <div onclick="location.hash='#/project/${p.id}'" 
+                             style="background: #161b22; border: 1px solid #30363d; padding: 15px 25px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;" 
+                             onmouseover="this.style.borderColor='#58a6ff'; this.style.transform='translateX(5px)'" 
+                             onmouseout="this.style.borderColor='#30363d'; this.style.transform='translateX(0)'">
                             <div style="flex: 2;">
                                 <div style="color: #f0f6fc; font-weight: bold; font-size: 1.1rem;">${p.nombre}</div>
-                                <div style="color: #8b949e; font-size: 0.75rem;">Sector: ${p.sector}</div>
+                                <div style="color: #8b949e; font-size: 0.75rem;">Sector: <span style="color:#c9d1d9">${(p.sector || 'N/A').toUpperCase()}</span></div>
                             </div>
                             <div style="flex: 1; text-align: center;">
                                 <div style="color: #8b949e; font-size: 0.7rem;">LIQUIDEZ</div>
@@ -91,10 +97,14 @@ export const HomeView = {
 };
 
 window.createProject = () => {
-    const name = document.getElementById('new-p-name').value;
-    const sector = document.getElementById('new-p-sector').value;
+    const nameInput = document.getElementById('new-p-name');
+    const sectorInput = document.getElementById('new-p-sector');
+    const name = nameInput.value.trim();
+    const sector = sectorInput.value;
+    
     if (!name) return alert("Ponle un nombre al Castell");
-    const id = name.toLowerCase().replace(/\s+/g, '-');
+    
+    const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     store.dispatch({ type: 'ADD_PROJECT', payload: { id, nombre: name, sector } });
     location.hash = `#/project/${id}`;
 };
