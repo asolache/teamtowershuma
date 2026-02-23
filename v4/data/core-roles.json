@@ -1,1 +1,50 @@
-
+{
+  "version": "4.0",
+  "roles": [
+    {
+      "id": "@anxaneta",
+      "nombre": "Anxaneta (Estratega Visionario)",
+      "nivel": "Pom de Dalt",
+      "multiplier": 3.0,
+      "precio_base_h": 90,
+      "fevs_req": { "f": 2, "e": 5, "v": 9, "s": 9 },
+      "descripcion": "Decisiones críticas y visión de futuro."
+    },
+    {
+      "id": "@aixecador",
+      "nombre": "Aixecador (Arquitecto de Sistemas)",
+      "nivel": "Pom de Dalt",
+      "multiplier": 2.5,
+      "precio_base_h": 75,
+      "fevs_req": { "f": 4, "e": 9, "v": 7, "s": 7 },
+      "descripcion": "Diseño de estructuras y equilibrio técnico."
+    },
+    {
+      "id": "@dosos",
+      "nombre": "Dosos (Auditor / Especialista)",
+      "nivel": "Tronc Superior",
+      "multiplier": 2.0,
+      "precio_base_h": 60,
+      "fevs_req": { "f": 6, "e": 8, "v": 6, "s": 6 },
+      "descripcion": "Garantía de calidad y validación técnica."
+    },
+    {
+      "id": "@baixos",
+      "nombre": "Baixos (Ejecución / Dev)",
+      "nivel": "Tronc Inferior",
+      "multiplier": 1.5,
+      "precio_base_h": 45,
+      "fevs_req": { "f": 9, "e": 6, "v": 5, "s": 4 },
+      "descripcion": "Fuerza de trabajo y entrega de tangibles."
+    },
+    {
+      "id": "@pinya",
+      "nombre": "Pinya (Soporte / IA)",
+      "nivel": "Base",
+      "multiplier": 1.0,
+      "precio_base_h": 30,
+      "fevs_req": { "f": 5, "e": 5, "v": 3, "s": 3 },
+      "descripcion": "Soporte operativo y mantenimiento del sistema."
+    }
+  ]
+}
