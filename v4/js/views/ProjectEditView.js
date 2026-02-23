@@ -1,5 +1,50 @@
 import { store } from '../core/store.js';
 
+// 🛡️ EVENTOS BLINDADOS PARA LA EDICIÓN
+document.addEventListener('click', (e) => {
+    // Evento: Guardar Metadatos
+    if (e.target.id === 'btn-save-meta') {
+        const projectId = e.target.getAttribute('data-pid');
+        const nombre = document.getElementById('edit-name').value;
+        const sector = document.getElementById('edit-sector').value;
+        const description = document.getElementById('edit-desc').value;
+        store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, nombre, sector, description } });
+        location.reload(); 
+    }
+
+    // Evento: Añadir Rol desde Edición
+    if (e.target.id === 'btn-add-role-edit') {
+        const projectId = e.target.getAttribute('data-pid');
+        const name = document.getElementById('nr-name-edit').value;
+        const levelId = document.getElementById('nr-level-edit').value;
+        const area = document.getElementById('nr-area-edit').value;
+        if(!name) return alert("El nombre es obligatorio");
+        
+        store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area } });
+        location.reload();
+    }
+
+    // Evento: Archivar Rol
+    if (e.target.classList.contains('btn-archive-role')) {
+        const projectId = e.target.getAttribute('data-pid');
+        const rolId = e.target.getAttribute('data-rid');
+        if(confirm("¿Archivar rol? Dejará de aparecer en el mapa.")) {
+            store.dispatch({ type: 'ARCHIVE_CUSTOM_ROLE', payload: { projectId, rolId } });
+            location.reload();
+        }
+    }
+});
+
+// Evento: Cambiar el número de secuencia
+document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('seq-input')) {
+        const projectId = e.target.getAttribute('data-pid');
+        const rolId = e.target.getAttribute('data-rid');
+        store.dispatch({ type: 'UPDATE_ROLE_SEQUENCE', payload: { projectId, rolId, sequence: e.target.value } });
+        location.reload(); 
+    }
+});
+
 export const ProjectEditView = {
     render: (projectId) => {
         const state = store.getState();
@@ -16,16 +61,15 @@ export const ProjectEditView = {
                 <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 20px; margin-bottom: 30px;">
                     <div>
                         <h1 style="color: #58a6ff; margin: 0; font-size: 1.8rem;">⚙️ Diseñador de Ecosistema: ${project.nombre}</h1>
-                        <p style="color:#8b949e; margin: 5px 0 0 0; font-size: 0.9rem;">Fase de Arquitectura, Secuenciación y Contexto IA</p>
+                        <p style="color:#8b949e; margin: 5px 0 0 0;">Arquitectura y Contexto IA</p>
                     </div>
-                    <button onclick="location.hash='#/project/${projectId}'" style="background:#238636; border:none; color:#fff; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 1rem; transition: 0.2s;">Guardar y Volver ➔</button>
+                    <button onclick="location.hash='#/project/${projectId}'" style="background:#238636; border:none; color:#fff; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">Guardar y Volver ➔</button>
                 </header>
 
                 <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px;">
-                    
                     <div style="display: flex; flex-direction: column; gap: 20px;">
                         <section style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
-                            <h3 style="color: #f0f6fc; margin-top: 0; border-bottom: 1px solid #30363d; padding-bottom: 10px;">1. Misión del Proyecto</h3>
+                            <h3 style="color: #f0f6fc; margin-top: 0;">1. Misión del Proyecto</h3>
                             
                             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
                                 <div>
@@ -43,22 +87,20 @@ export const ProjectEditView = {
                             </div>
 
                             <div style="margin-bottom: 15px;">
-                                <label style="display:block; font-size: 0.8rem; color: #8b949e; margin-bottom: 5px;">Prompt Maestro (Propósito IA)</label>
-                                <textarea id="edit-desc" placeholder="Define el propósito del sistema..." style="width: 100%; height: 80px; background:#0d1117; color:white; border:1px solid #30363d; padding:10px; border-radius:4px; box-sizing:border-box;">${project.description || ''}</textarea>
+                                <label style="display:block; font-size: 0.8rem; color: #8b949e; margin-bottom: 5px;">Prompt Maestro</label>
+                                <textarea id="edit-desc" style="width: 100%; height: 80px; background:#0d1117; color:white; border:1px solid #30363d; padding:10px; border-radius:4px; box-sizing:border-box;">${project.description || ''}</textarea>
                             </div>
-                            <button onclick="window.saveProjectInfo('${projectId}')" style="background:#21262d; color:#c9d1d9; border:1px solid #30363d; padding:10px; border-radius:4px; cursor:pointer; width:100%; font-weight:bold;">Actualizar Metadatos</button>
+                            <button id="btn-save-meta" data-pid="${projectId}" style="background:#21262d; color:#c9d1d9; border:1px solid #30363d; padding:10px; border-radius:4px; cursor:pointer; width:100%; font-weight:bold;">Actualizar Metadatos</button>
                         </section>
 
                         <section style="background: #0d1117; border: 1px solid #a371f7; border-radius: 8px; padding: 20px;">
                             <h3 style="color: #a371f7; margin-top:0;">🧠 Espejo de Consciencia</h3>
-                            <p style="font-size: 0.8rem; color: #8b949e;">Así interpretará la IA la arquitectura de tu ecosistema:</p>
                             <pre style="background: #010409; padding: 15px; border-radius: 6px; border: 1px solid #30363d; color: #c9d1d9; font-size: 0.8rem; white-space: pre-wrap;">${systemPrompt}</pre>
                         </section>
                     </div>
 
                     <section style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
                         <h3 style="color: #f0f6fc; margin-top: 0; border-bottom: 1px solid #30363d; padding-bottom: 10px;">2. Secuenciación del Flujo</h3>
-                        <p style="font-size: 0.8rem; color: #8b949e;">Asigna la Fase numérica (1, 2, 3...) para crear la tubería lógica.</p>
                         
                         <div style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding-right: 10px;">
                             <h4 style="font-size:0.75rem; color:#8b949e; text-transform:uppercase; margin-top:0;">Roles Base</h4>
@@ -67,7 +109,7 @@ export const ProjectEditView = {
                                 return `
                                 <div style="display:flex; justify-content:space-between; align-items:center; background:#0d1117; padding:10px; border:1px solid #30363d; border-radius:6px; margin-bottom:8px;">
                                     <div style="display:flex; align-items:center; gap: 15px;">
-                                        <input type="number" value="${seq}" onchange="window.updateSequence('${projectId}', '${id}', this.value)" style="width: 45px; background:#161b22; color:#58a6ff; border:1px solid #30363d; padding:5px; border-radius:4px; text-align:center;">
+                                        <input type="number" value="${seq}" class="seq-input" data-pid="${projectId}" data-rid="${id}" style="width: 45px; background:#161b22; color:#58a6ff; border:1px solid #30363d; text-align:center;">
                                         <div>
                                             <span style="color:#238636; font-size:0.8rem; font-weight:bold;">${id}</span> 
                                             <div style="color:#c9d1d9; font-size:0.9rem;">${project.customRoles[id]}</div>
@@ -83,13 +125,13 @@ export const ProjectEditView = {
                                 return `
                                 <div style="display:flex; justify-content:space-between; align-items:center; background:#0d1117; padding:10px; border:1px solid #30363d; border-radius:6px; margin-bottom:8px;">
                                     <div style="display:flex; align-items:center; gap: 15px;">
-                                        <input type="number" value="${seq}" onchange="window.updateSequence('${projectId}', '${dr.id}', this.value)" style="width: 45px; background:#161b22; color:#58a6ff; border:1px solid #30363d; padding:5px; border-radius:4px; text-align:center;">
+                                        <input type="number" value="${seq}" class="seq-input" data-pid="${projectId}" data-rid="${dr.id}" style="width: 45px; background:#161b22; color:#58a6ff; border:1px solid #30363d; text-align:center;">
                                         <div>
                                             <div style="color:#58a6ff; font-weight:bold; font-size:0.9rem;">${dr.name}</div>
                                             <div style="font-size:0.7rem; color:#8b949e;">Vinculado a: ${dr.levelId}</div>
                                         </div>
                                     </div>
-                                    <button onclick="window.archiveCustomRole('${projectId}', '${dr.id}')" title="Archivar" style="background:transparent; border:1px solid #30363d; padding: 6px 10px; border-radius: 4px; color:#8b949e; cursor:pointer;">📥</button>
+                                    <button class="btn-archive-role" data-pid="${projectId}" data-rid="${dr.id}" style="background:transparent; border:1px solid #30363d; padding: 6px 10px; border-radius: 4px; color:#8b949e; cursor:pointer;">📥</button>
                                 </div>
                                 `;
                             }).join('')}
@@ -100,14 +142,14 @@ export const ProjectEditView = {
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <input id="nr-name-edit" type="text" placeholder="Nombre (ej: QA Engineer)" style="background:#161b22; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
                                 <select id="nr-level-edit" style="background:#161b22; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
-                                    <option value="@anxaneta">Anxaneta (Estrategia)</option>
-                                    <option value="@aixecador">Aixecador (Estructura)</option>
-                                    <option value="@dosos">Dosos (Refinamiento)</option>
-                                    <option value="@baixos">Baixos (Producción)</option>
-                                    <option value="@pinya">Pinya (Soporte)</option>
+                                    <option value="@anxaneta">Anxaneta</option>
+                                    <option value="@aixecador">Aixecador</option>
+                                    <option value="@dosos">Dosos</option>
+                                    <option value="@baixos">Baixos</option>
+                                    <option value="@pinya">Pinya</option>
                                 </select>
-                                <input id="nr-area-edit" type="text" placeholder="Área (ej: Testing)" style="grid-column: span 2; background:#161b22; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
-                                <button onclick="window.createRoleFromEdit('${projectId}')" style="grid-column: span 2; background:#238636; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;">Añadir Nodo</button>
+                                <input id="nr-area-edit" type="text" placeholder="Área" style="grid-column: span 2; background:#161b22; color:white; border:1px solid #30363d; padding:8px; border-radius:4px;">
+                                <button id="btn-add-role-edit" data-pid="${projectId}" style="grid-column: span 2; background:#238636; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;">Añadir Nodo</button>
                             </div>
                         </div>
                     </section>
@@ -115,38 +157,4 @@ export const ProjectEditView = {
             </div>
         `;
     }
-};
-
-// --- FUNCIONES GLOBALES PARA LA VISTA DE EDICIÓN ---
-window.saveProjectInfo = (projectId) => {
-    const nombre = document.getElementById('edit-name').value;
-    const sector = document.getElementById('edit-sector').value;
-    const description = document.getElementById('edit-desc').value;
-    store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, nombre, sector, description } });
-    location.reload(); 
-};
-
-window.archiveCustomRole = (projectId, rolId) => {
-    if(confirm("¿Archivar rol? Dejará de aparecer en el mapa activo.")) {
-        store.dispatch({ type: 'ARCHIVE_CUSTOM_ROLE', payload: { projectId, rolId } });
-        location.reload();
-    }
-};
-
-window.updateSequence = (projectId, rolId, sequence) => {
-    store.dispatch({ type: 'UPDATE_ROLE_SEQUENCE', payload: { projectId, rolId, sequence } });
-    location.reload(); 
-};
-
-window.createRoleFromEdit = (projectId) => {
-    const name = document.getElementById('nr-name-edit').value;
-    const levelId = document.getElementById('nr-level-edit').value;
-    const area = document.getElementById('nr-area-edit').value;
-    if(!name) return alert("El nombre es obligatorio");
-    
-    store.dispatch({ 
-        type: 'CREATE_CUSTOM_ROLE', 
-        payload: { projectId, name, levelId, area } 
-    });
-    location.reload();
 };
