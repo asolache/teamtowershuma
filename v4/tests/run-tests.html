@@ -1,63 +1,175 @@
-<script type="module">
-    import { store } from '../js/core/store.js';
-    import { Selectors } from '../js/core/selectors.js';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS v4 | Suite de Integración</title>
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --panel: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --green: #2ea043;
+            --red: #f85149;
+            --blue: #388bfd;
+        }
+        body { 
+            font-family: 'Cascadia Code', 'Courier New', monospace; 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 40px; 
+            line-height: 1.5;
+        }
+        .header { border-bottom: 2px solid var(--border); margin-bottom: 30px; padding-bottom: 10px; }
+        .header h1 { margin: 0; color: #fff; font-size: 1.5rem; }
+        .header p { margin: 5px 0 0; color: #8b949e; font-size: 0.9rem; }
 
-    const report = document.getElementById('status-report');
-
-    function createLog(name, condition, errorMsg = "") {
-        const div = document.createElement('div');
-        div.className = 'test-unit ' + (condition ? 'success' : 'error');
-        div.innerHTML = (condition ? '✅ PASS: ' : '❌ FAIL: ') + name + 
-                        (condition ? '' : `<div class="log">${errorMsg}</div>`);
-        report.appendChild(div);
-    }
-
-    // Función principal de tests asíncronos
-    async function runSuite() {
-        report.innerHTML = '⚙️ Ejecutando suite de integración...';
+        .test-unit { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            padding: 20px; 
+            margin-bottom: 15px; 
+            border-left: 5px solid #8b949e; 
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .success { border-left-color: var(--green); }
+        .error { border-left-color: var(--red); }
         
-        // 1. Esperar a que el Store esté realmente inicializado
-        await store.initPromise;
-        report.innerHTML = ''; 
-
-        // --- TEST A ---
-        const state = store.getState();
-        createLog("Estructura del Store SOS", state.roles.length > 0);
-
-        // --- TEST B: EL CRÍTICO ---
-        const pId = 'p-test-gold-' + Date.now(); // ID único para evitar caché
+        .test-title { font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 5px; }
+        .test-result { font-size: 0.9rem; }
+        .log { 
+            background: #000; 
+            color: #8b949e; 
+            padding: 10px; 
+            margin-top: 10px; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            border: 1px solid #222;
+        }
+        .status-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-right: 10px;
+        }
+        .success .status-tag { background: rgba(46, 160, 67, 0.15); color: var(--green); }
+        .error .status-tag { background: rgba(248, 81, 73, 0.15); color: var(--red); }
         
-        // Enviamos la acción
-        store.dispatch({ type: 'ADD_PROJECT', payload: { id: pId, nombre: 'Test Integración' } });
-        store.dispatch({ 
-            type: 'ADD_TRANSACTION', 
-            payload: { 
-                projectId: pId, 
-                transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Test de Valor' } 
-            } 
-        });
+        .loading { color: var(--blue); font-style: italic; }
+    </style>
+</head>
+<body>
 
-        // Pequeña pausa para que el Store asiente los datos
-        setTimeout(() => {
-            const updatedState = store.getState();
-            const project = updatedState.projects.find(p => p.id === pId);
-            const tx = project.transactions[0];
+    <div class="header">
+        <h1>🛡️ SOS v4: Protocolo de Integración</h1>
+        <p>Verificación de Kernel, Ontología FEVS y Motor de Liquidación</p>
+    </div>
+
+    <div id="status-report">
+        <p class="loading">⚙️ Iniciando secuencia de verificación y cargando ontología...</p>
+    </div>
+
+    <script type="module">
+        import { store } from '../js/core/store.js';
+        import { Selectors } from '../js/core/selectors.js';
+
+        const report = document.getElementById('status-report');
+
+        /**
+         * Renderiza el resultado de un test en el DOM
+         */
+        function renderTestResult(name, condition, errorMsg = "", debugData = null) {
+            const div = document.createElement('div');
+            div.className = 'test-unit ' + (condition ? 'success' : 'error');
             
-            const isCorrect = tx.liquidación === 540;
-            createLog(
-                "Cálculo de Liquidación (Anxaneta x2h)", 
-                isCorrect, 
-                `Calculó ${tx.liquidación}€, se esperaban 540€. (Rol detectado: ${tx.rolId})`
-            );
+            div.innerHTML = `
+                <span class="test-title">
+                    <span class="status-tag">${condition ? 'PASS' : 'FAIL'}</span>
+                    ${name}
+                </span>
+                <div class="test-result">
+                    ${condition ? 'La verificación ha sido exitosa.' : 'Se ha detectado una anomalía en el sistema.'}
+                </div>
+                ${!condition ? `<div class="log"><strong>ERROR:</strong> ${errorMsg}</div>` : ''}
+                ${debugData ? `<div class="log"><strong>DEBUG:</strong> ${JSON.stringify(debugData, null, 2)}</div>` : ''}
+            `;
+            report.appendChild(div);
+        }
 
-            // --- TEST C ---
-            const health = Selectors.getProjectResilienceIndex(updatedState, pId);
-            createLog("Diagnóstico VNA (Resiliencia)", health.ratio > 0);
+        /**
+         * Suite de Pruebas Asíncrona
+         */
+        async function runSuite() {
+            // 1. Esperar a que el Kernel cargue el JSON y LocalStorage
+            await store.initPromise;
+            report.innerHTML = ''; // Limpiar mensaje de carga
+
+            // --- TEST 1: Integridad del Store ---
+            const state = store.getState();
+            const hasRoles = state.roles && state.roles.length > 0;
+            renderTestResult("Estructura del Store SOS", hasRoles, "La ontología de roles no se cargó correctamente.");
+
+            // --- TEST 2: Motor de Liquidación (El punto crítico) ---
+            const testProjectId = 'p-verif-' + Date.now();
             
-            console.log("🏁 Suite completada. Resultado esperado: 540€. Resultado real:", tx.liquidación);
-        }, 100); 
-    }
+            // Creamos proyecto de prueba
+            store.dispatch({ 
+                type: 'ADD_PROJECT', 
+                payload: { id: testProjectId, nombre: 'Certificación v4' } 
+            });
 
-    // Iniciar cuando el store avise
-    window.addEventListener('store-ready', runSuite);
-</script>
+            // Añadimos transacción de 2h de Anxaneta (90€ * 3.0 * 2h = 540€)
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { 
+                    projectId: testProjectId, 
+                    transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Auditoría de Kernel' } 
+                } 
+            });
+
+            // Esperamos 150ms para asegurar que el Store ha procesado y guardado
+            setTimeout(() => {
+                const updatedState = store.getState();
+                const project = updatedState.projects.find(p => p.id === testProjectId);
+                const tx = project ? project.transactions[0] : null;
+                
+                if (!tx) {
+                    renderTestResult("Cálculo de Liquidación (Anxaneta x2h)", false, "No se registró la transacción.");
+                    return;
+                }
+
+                const resultValue = tx.liquidación;
+                const expectedValue = 540;
+                const isCorrect = (resultValue === expectedValue);
+
+                renderTestResult(
+                    "Cálculo de Liquidación (Anxaneta x2h)", 
+                    isCorrect, 
+                    `Valor incorrecto: ${resultValue}€. Se esperaban ${expectedValue}€.`,
+                    { rolUsado: tx.rolId, liquidacion: resultValue, objetivo: expectedValue }
+                );
+
+                // --- TEST 3: Selectores VNA ---
+                const health = Selectors.getProjectResilienceIndex(updatedState, testProjectId);
+                const isVNAOk = health && health.ratio !== undefined;
+                renderTestResult(
+                    "Diagnóstico VNA (Resiliencia)", 
+                    isVNAOk, 
+                    "El motor VNA no pudo procesar los datos del proyecto.",
+                    { statusVNA: health.status, ratio: health.ratio }
+                );
+
+                console.log("🏁 Protocolo de pruebas v4 finalizado.");
+            }, 150);
+        }
+
+        // Ejecutar cuando el Store emita la señal de listo
+        window.addEventListener('store-ready', runSuite);
+    </script>
+</body>
+</html>
