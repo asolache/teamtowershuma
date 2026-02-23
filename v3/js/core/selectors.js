@@ -1,4 +1,4 @@
-// v3/js/core/selectors.js
+// /v3/js/core/selectors.js
 
 /**
  * SELECTORS: Lógica de negocio y filtrado de datos del estado global.
@@ -10,15 +10,16 @@ export const Selectors = {
      * Calcula las métricas globales para el Dashboard
      */
     getGlobalMetrics: (state) => {
+        const projects = state.projects || state.proyectos || [];
         if (!state) return { totalProjects: 0, totalUV: 0, totalUsers: 0 };
         
-        const totalUV = (state.projects || []).reduce((acc, p) => {
+        const totalUV = projects.reduce((acc, p) => {
             const projectUV = (p.transactions || []).reduce((sum, t) => sum + (t.uv || 0), 0);
             return acc + projectUV;
         }, 0);
 
         return {
-            totalProjects: state.projects?.length || 0,
+            totalProjects: projects.length,
             totalUV: totalUV,
             totalUsers: state.users?.length || 0
         };
@@ -29,13 +30,13 @@ export const Selectors = {
      * Calcula la salud de un proyecto basada en el equilibrio entre valor Tangible e Intangible.
      */
     getProjectResilienceIndex: (state, projectId) => {
-        const project = state.projects?.find(p => p.id === projectId);
+        const projects = state.projects || state.proyectos || [];
+        const project = projects.find(p => p.id === projectId);
         
         if (!project || !project.transactions || project.transactions.length === 0) {
             return { ratio: 0, status: 'desconocido', intangibles: 0, tangibles: 0 };
         }
 
-        // 1. Sumarizar valores
         let totalTangible = 0;
         let totalIntangible = 0;
 
@@ -48,13 +49,9 @@ export const Selectors = {
         });
 
         const totalTotal = totalTangible + totalIntangible;
-        
-        // 2. Calcular Ratio (Porcentaje de Intangibles sobre el total)
         const ratio = totalTotal > 0 ? (totalIntangible / totalTotal) : 0;
 
-        // 3. Determinar Estado (Seny de Resiliencia)
-        // Un sistema sin intangibles (0) es frágil. 
-        // El equilibrio saludable está entre 40% y 60%.
+        // Lógica de Resiliencia
         let status = 'fragil';
         if (ratio >= 0.4 && ratio <= 0.6) {
             status = 'saludable';
@@ -71,7 +68,6 @@ export const Selectors = {
     }
 };
 
-// Bridge para navegadores que no usan módulos en componentes específicos
 if (typeof window !== 'undefined') {
     window.Selectors = Selectors;
 }
