@@ -2,66 +2,114 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SOS v4 | Suite de Validación</title>
+    <title>SOS v4 | Suite de Validación Total</title>
     <style>
-        body { background: #010409; color: #c9d1d9; font-family: monospace; padding: 40px; }
-        .pass { color: #238636; }
-        .fail { color: #f85149; font-weight: bold; }
-        hr { border: 0; border-top: 1px solid #30363d; margin: 20px 0; }
+        body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { border-bottom: 2px solid #30363d; padding-bottom: 10px; color: #f0f6fc; }
+        .test-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; }
+        .pass { border-left: 5px solid #238636; }
+        .fail { border-left: 5px solid #f85149; background: #2a1215; }
+        .icon { font-size: 1.2rem; margin-right: 15px; }
+        .msg { flex-grow: 1; font-family: 'Cascadia Code', monospace; font-size: 0.9rem; }
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: #30363d; margin-left: 10px; color: #8b949e; }
+        .summary { margin-top: 30px; padding: 20px; border-radius: 8px; background: #0d1117; border: 1px solid #3b82f6; }
     </style>
 </head>
 <body>
-    <h1>🧪 SOS v4 Test Runner</h1>
-    <div id="results"></div>
+    <div class="container">
+        <h1>🧪 SOS v4: Validation Suite</h1>
+        <div id="results"></div>
+        <div id="summary-box"></div>
+    </div>
 
     <script type="module">
         import { store } from '../js/core/store.js';
 
         async function runSuite() {
             const results = document.getElementById('results');
-            const assert = (condition, message) => {
+            let passed = 0;
+            let total = 0;
+
+            const assert = (condition, message, tag = "CORE") => {
+                total++;
                 const div = document.createElement('div');
-                div.className = condition ? "pass" : "fail";
-                div.innerHTML = `${condition ? '✅' : '❌'} ${message}`;
+                div.className = `test-card ${condition ? "pass" : "fail"}`;
+                
+                if(condition) passed++;
+
+                div.innerHTML = `
+                    <span class="icon">${condition ? '✅' : '❌'}</span>
+                    <span class="msg">${message}</span>
+                    <span class="badge">${tag}</span>
+                `;
                 results.appendChild(div);
             };
 
-            // 1. Esperar inicialización
+            // 1. Inicialización del Kernel
             await new Promise(resolve => window.addEventListener('store-ready', resolve));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Test 1: Ontología
-            assert(store.state.ontology !== null, "Kernel cargado con ontología");
+            // --- BLOQUE 1: ONTOLOGÍA Y ESTRUCTURA ---
+            assert(store.state.ontology !== null, "Kernel cargado con ontología maestra", "KERNEL");
+            
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-v4', nombre: 'Test Project', sector: 'marketing' } });
+            const p = store.getState().projects.find(x => x.id === 'test-v4');
+            
+            assert(p.sector === 'marketing', "Mapeo de sector correcto", "ONTOLOGY");
+            assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Alias de roles inyectados", "ONTOLOGY");
 
-            // Test 2: Creación de Proyecto
-            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-vna', nombre: 'Test Project', sector: 'marketing' } });
-            const p = store.getState().projects.find(x => x.id === 'test-vna');
-            assert(p.sector === 'marketing', "Sector marketing registrado");
+            // --- BLOQUE 2: PERSISTENCIA Y EDICIÓN ---
+            store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 'test-v4', rolId: '@baixos', newName: 'Junior Art' } });
+            const p2 = store.getState().projects.find(x => x.id === 'test-v4');
+            assert(p2.customRoles['@baixos'] === 'Junior Art', "Persistencia de customRoles activa", "STORE");
 
-            // Test 3: Nombres de Sector
-            assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Nombres de marketing asignados correctamente");
-
-            // Test 4: Persistencia Edición
-            store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 'test-vna', rolId: '@baixos', newName: 'Junior' } });
-            const p2 = store.getState().projects.find(x => x.id === 'test-vna');
-            assert(p2.customRoles['@baixos'] === 'Junior', "Edición de rol persistente");
-
-            // Test 5: Economía SOS (540€)
+            // --- BLOQUE 3: ECONOMÍA SOS ---
             store.dispatch({ 
                 type: 'ADD_TRANSACTION', 
                 payload: { 
-                    projectId: 'test-vna', 
-                    transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Consultoría', tipo_flujo: 'tangible' } 
+                    projectId: 'test-v4', 
+                    transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Auditoría Inicial', tipo_flujo: 'tangible' } 
                 } 
             });
-            const pFinal = store.getState().projects.find(x => x.id === 'test-vna');
-            const tx = pFinal.transactions[pFinal.transactions.length - 1];
-            assert(tx.liquidación === 540, `Cálculo 540€ OK (90*3*2). Resultado: ${tx.liquidación}€`);
+            const tx = p2.transactions[0];
+            assert(tx.liquidación === 540, `Cálculo SOS 540€ (90*3*2). OK.`, "ECONOMY");
+            assert(tx.tipo_flujo === 'tangible', "Metadato VNA detectado", "VNA");
 
-            // Test 6: Metadato VNA
-            assert(tx.tipo_flujo === 'tangible', "Metadato VNA (tipo_flujo) presente y correcto");
+            // --- BLOQUE 4: RESILIENCIA Y CIRCUIT BREAKER (NUEVOS - FALLARÁN) ---
+            
+            // Inyectamos una transacción masiva sin auditoría para bajar la salud
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { 
+                    projectId: 'test-v4', 
+                    transaction: { rolId: '@aixecador', horas: 10, concepto: 'Mega Construcción', tipo_flujo: 'tangible' } 
+                } 
+            });
 
-            results.innerHTML += `<hr><h2>Validación Completada</h2>`;
+            // Test 7: Verificar si el motor calcula la resiliencia
+            const salud = typeof store.calculateResilience === 'function' ? store.calculateResilience('test-v4') : 0;
+            assert(salud < 50 && salud > 0, `Motor de Resiliencia: Salud calculada en ${salud}%`, "WATCHDOG");
+
+            // Test 8: Intentar transacción de alto nivel con salud baja (Circuit Breaker)
+            const txCountBefore = p2.transactions.length;
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { 
+                    projectId: 'test-v4', 
+                    transaction: { rolId: '@anxaneta', horas: 5, concepto: 'Estrategia Prohibida' } 
+                } 
+            });
+            const txCountAfter = store.getState().projects.find(x => x.id === 'test-v4').transactions.length;
+            assert(txCountBefore === txCountAfter, "Circuit Breaker: Bloqueo de liquidación por baja resiliencia", "SECURITY");
+
+            // Resumen Final
+            const summary = document.getElementById('summary-box');
+            summary.className = "summary";
+            summary.innerHTML = `
+                <h3>Resumen de Validación: ${passed}/${total}</h3>
+                <p>${passed === total ? "🚀 Sistema listo para producción." : "⚠️ Se requiere intervención en los módulos de Seguridad."}</p>
+            `;
         }
 
         runSuite();
