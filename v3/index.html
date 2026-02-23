@@ -3,126 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers v3.5 | Ecosistema Ágil</title>
+    <title>TeamTowers v3.5 | Test Driven Architecture</title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages.css">
     <style>
-        /* Splash screen simple para evitar parpadeos */
         #loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #121212; display: flex; justify-content: center;
-            align-items: center; z-index: 9999; color: white; font-family: sans-serif;
+            align-items: center; z-index: 9999; color: white;
         }
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loading-overlay">
-        <div style="text-align: center;">
-            <div class="spinner"></div>
-            <p>Iniciando Motor VNA...</p>
-        </div>
-    </div>
+    <div id="loading-overlay">🚀 Iniciando Motor VNA...</div>
 
     <header class="main-header">
-        <div class="logo" onclick="window.router.navigate('dashboard')">
-            <span class="logo-icon">🏰</span> 
-            <span class="logo-text">TeamTowers <small>v3.5</small></span>
-        </div>
-        <nav class="main-nav">
+        <div class="logo" onclick="window.router.navigate('dashboard')">🏰 TeamTowers v3.5</div>
+        <nav>
             <button onclick="window.router.navigate('dashboard')">📊 Dashboard</button>
             <button onclick="window.router.navigate('projects')">🏗️ Proyectos</button>
-            <button onclick="window.exportData()">📥 Exportar</button>
         </nav>
     </header>
 
-    <main id="app-viewport">
-        </main>
+    <main id="app-viewport"></main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 TeamTowers - Human Management Architecture</p>
-    </footer>
+    <script type="module">
+        import { APP_CONSTANTS } from './js/core/constants.js';
+        import { EventBus } from './js/core/event-bus.js';
+        import { store } from './js/core/store.js';
+        import { Selectors } from './js/core/selectors.js';
 
-    <script src="js/core/constants.js"></script>
-    <script src="js/core/event-bus.js"></script>
-    <script src="js/core/store.js"></script>
-    <script src="js/core/selectors.js"></script>
+        // Hacemos el bridge a window para que los componentes NO-módulos funcionen
+        window.APP_CONSTANTS = APP_CONSTANTS;
+        window.EventBus = EventBus;
+        window.store = store;
+        window.Selectors = Selectors;
+
+        console.log("✅ Core inyectado en window desde módulos");
+    </script>
+
     <script src="js/core/router.js"></script>
-    <script src="js/core/export-manager.js"></script>
-
-    <script src="js/components/tt-form.js"></script>
     <script src="js/components/tt-dynamic-form.js"></script>
     <script src="js/components/tt-role-selector.js"></script>
 
     <script>
-        /**
-         * TeamTowers v3.5 - Bootstrap
-         * Este script coordina la carga de páginas y la salud del sistema.
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            initSystem();
-        });
-
-        async function initSystem() {
-            console.log("🚀 Iniciando TeamTowers v3.5...");
-
-            // Verificación de integridad del CORE
-            const dependenciasOk = window.store && window.APP_CONSTANTS && window.EventBus;
-            
-            if (!dependenciasOk) {
-                console.error("❌ Fallo crítico: El motor core no se ha cargado correctamente.");
-                document.getElementById('loading-overlay').innerHTML = "Error al cargar el núcleo.";
-                return;
-            }
-
-            // Precarga de scripts de páginas (opcional, pero mejora la fluidez)
-            const paginas = [
+        async function loadPageScripts() {
+            const pages = [
                 'js/pages/dashboard.js',
                 'js/pages/projects.js',
-                'js/pages/project.js',
-                'js/pages/create-project.js'
+                'js/pages/project.js'
             ];
-
-            try {
-                await Promise.all(paginas.map(src => loadScript(src)));
-                console.log("✅ Todas las páginas cargadas.");
-                
-                // Ocultar splash y arrancar router
-                document.getElementById('loading-overlay').style.display = 'none';
-                
-                if (window.router) {
-                    window.router.init();
-                }
-            } catch (err) {
-                console.error("❌ Error cargando componentes de página:", err);
+            
+            for (const src of pages) {
+                await new Promise((resolve) => {
+                    const s = document.createElement('script');
+                    s.src = src;
+                    s.onload = resolve;
+                    document.head.appendChild(s);
+                });
             }
         }
 
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        // Global Utility para Exportar
-        window.exportData = function() {
-            if (window.store) {
-                const data = JSON.stringify(window.store.getState(), null, 2);
-                const blob = new Blob([data], {type: 'application/json'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `teamtowers-backup-${new Date().toISOString().slice(0,10)}.json`;
-                a.click();
-            }
-        };
+        window.addEventListener('load', async () => {
+            await loadPageScripts();
+            document.getElementById('loading-overlay').style.display = 'none';
+            if (window.router) window.router.init();
+            console.log("🚀 App Ready");
+        });
     </script>
 </body>
 </html>
