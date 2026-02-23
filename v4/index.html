@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v4.3 | Dashboard</title>
+    <title>TeamTowers SOS v4.3</title>
     <style>
-        :root { --bg-color: #010409; --text-main: #c9d1d9; --accent: #58a6ff; }
-        body { background-color: var(--bg-color); color: var(--text-main); margin: 0; font-family: sans-serif; overflow-x: hidden; }
-        #app { min-height: 100vh; }
-        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        body { background: #010409; color: #c9d1d9; margin: 0; font-family: sans-serif; }
+        #app { min-height: 100vh; opacity: 0; transition: opacity 0.3s; }
+        .ready { opacity: 1 !important; }
     </style>
 </head>
 <body>
     <div id="app"></div>
+
     <script type="module">
         import { store } from './js/core/store.js';
         import { HomeView } from './js/views/HomeView.js';
@@ -21,37 +20,42 @@
         import { AboutView } from './js/views/AboutView.js';
         import { ProjectEditView } from './js/views/ProjectEditView.js';
         import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
-// ... y en el router añadir el 'else if' de accounting que te pasé antes.
 
         const app = document.getElementById('app');
 
-        // Reemplaza el bloque de router en tu index.html
-function router() {
-    let hash = window.location.hash || '#/';
-    const app = document.getElementById('app');
-    const parts = hash.split('/');
-    const pId = parts[2];
-    const action = parts[3];
+        function router() {
+            const hash = window.location.hash || '#/';
+            const parts = hash.split('/');
+            const pId = parts[2];
+            const action = parts[3];
 
-    app.innerHTML = ""; // Limpieza total
+            console.log("Navegando a:", hash);
 
-    if (hash === '#/' || hash === '#') {
-        app.innerHTML = HomeView.render();
-    } else if (hash.startsWith('#/project/')) {
-        if (action === 'edit') {
-            app.innerHTML = ProjectEditView.render(pId);
-        } else if (action === 'accounting') {
-            // AQUÍ RECUPERAMOS LA CONTABILIDAD
-            app.innerHTML = ProjectAccountingView.render(pId);
-        } else {
-            app.innerHTML = ProjectView.render(pId);
+            if (hash === '#/' || hash === '') {
+                app.innerHTML = HomeView.render();
+            } else if (hash === '#/about') {
+                app.innerHTML = AboutView.render();
+            } else if (hash.startsWith('#/project/')) {
+                if (action === 'edit') {
+                    app.innerHTML = ProjectEditView.render(pId);
+                } else if (action === 'accounting') {
+                    app.innerHTML = ProjectAccountingView.render(pId);
+                } else {
+                    app.innerHTML = ProjectView.render(pId);
+                }
+            }
+            app.classList.add('ready');
         }
-    }
-}
 
-        window.addEventListener('store-ready', router);
+        // Escuchar al store y a la navegación
         window.addEventListener('hashchange', router);
-        if (store && store.state) setTimeout(router, 50);
+        window.addEventListener('store-ready', () => {
+            console.log("Store listo, cargando UI...");
+            router();
+        });
+
+        // Arranque forzado si el store ya cargó
+        if (store.getState().projects) router();
     </script>
 </body>
 </html>
