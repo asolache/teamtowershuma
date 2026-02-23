@@ -1,6 +1,6 @@
 // /v3/js/pages/projects.js
 // Vista de lista de proyectos y creación de nuevos proyectos (modal)
-// v3.5 - VERSIÓN CORREGIDA SIN ERRORES DE SINTAXIS
+// v3.5 - VERSIÓN DEPURADA SIN ERRORES DE SINTAXIS
 
 console.log('📦 Cargando projects.js...');
 
@@ -41,7 +41,7 @@ window.renderProjects = function() {
     }
     html += `</div>`;
 
-    return html;
+    return html; // ← Este return SÍ está dentro de la función
 };
 
 window.setupProjectsEvents = function() {
