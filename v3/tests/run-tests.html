@@ -2,117 +2,212 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TeamTowers v3.5 - Core Engine Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers v3.5 | Verification Suite</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; padding: 20px; }
-        .test-container { max-width: 800px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 12px; }
-        h1 { color: #3b82f6; border-bottom: 2px solid #333; }
-        .test-item { margin-bottom: 10px; padding: 15px; border-radius: 8px; background: #252525; border-left: 5px solid #444; }
-        .test-item.pass { border-left-color: #10b981; background: #1a2e26; }
-        .test-item.fail { border-left-color: #ef4444; background: #2e1a1a; }
-        .error-msg { color: #ff8a8a; font-size: 0.9em; margin-top: 5px; font-family: monospace; }
-        .console-box { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; border-radius: 4px; margin-top: 20px; }
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 2rem; 
+            margin: 0;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { border-bottom: 2px solid #334155; margin-bottom: 2rem; padding-bottom: 1rem; }
+        h1 { margin: 0; color: var(--blue); }
+        
+        .test-item { 
+            background: var(--card); 
+            padding: 1.25rem; 
+            margin-bottom: 1rem; 
+            border-left: 6px solid #475569; 
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .test-item:hover { transform: translateX(5px); }
+        .pass { border-left-color: var(--green); background: rgba(16, 185, 129, 0.05); }
+        .fail { border-left-color: var(--red); background: rgba(239, 68, 68, 0.05); }
+        
+        .status-badge {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+        .pass .status-badge { background: var(--green); color: white; }
+        .fail .status-badge { background: var(--red); color: white; }
+        
+        .error-log {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #000;
+            color: #fb7185;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        #console-output {
+            background: #000;
+            color: #4ade80;
+            padding: 1rem;
+            font-family: monospace;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+        }
     </style>
 </head>
 <body>
 
-    <div class="test-container">
-        <h1>🏗️ TeamTowers v3.5 - Test Suite</h1>
-        <div id="test-results">Esperando al motor core...</div>
-        <div id="console-output" class="console-box"></div>
+    <div class="container">
+        <header>
+            <h1>🏰 TeamTowers Core v3.5</h1>
+            <p>Verification Lab: State Management & VNA Logic</p>
+        </header>
+
+        <div id="results-engine">
+            <p style="text-align: center; color: #94a3b8;">🚀 Inicializando motor asíncrono...</p>
+        </div>
+
+        <h3>📟 System Console</h3>
+        <div id="console-output"></div>
     </div>
 
     <script type="module">
         import { store } from '../js/core/store.js';
         import { Selectors } from '../js/core/selectors.js';
         
-        // Los inyectamos en window para que los tests los vean
+        // Exponemos a window para compatibilidad con el runner de abajo
         window.store = store;
         window.Selectors = Selectors;
+
+        // Esperamos a que el store cargue del localStorage (o default)
+        if (window.store.initPromise) {
+            await window.store.initPromise;
+        }
         
-        console.log("🚀 Módulos cargados correctamente en window.");
-        // Avisamos que estamos listos
         window.dispatchEvent(new Event('core-ready'));
     </script>
 
     <script>
-        const resultsContainer = document.getElementById('test-results');
-        const consoleBox = document.getElementById('console-output');
+        const resultsArea = document.getElementById('results-engine');
+        const consoleArea = document.getElementById('console-output');
 
-        function log(msg) {
-            console.log(msg);
-            consoleBox.innerHTML += `> ${msg}<br>`;
+        function printLog(msg) {
+            const time = new Date().toLocaleTimeString();
+            consoleArea.innerHTML += `<span style="color:#64748b">[${time}]</span> ${msg}<br>`;
+            consoleArea.scrollTop = consoleArea.scrollHeight;
         }
 
         function runTest(name, testFn) {
-            const item = document.createElement('div');
-            item.className = 'test-item';
+            const div = document.createElement('div');
+            div.className = 'test-item';
+            
             try {
                 testFn();
-                item.classList.add('pass');
-                item.innerHTML = `✅ <b>PASS:</b> ${name}`;
-            } catch (error) {
-                item.classList.add('fail');
-                item.innerHTML = `❌ <b>FAIL:</b> ${name} <div class="error-msg">${error.message}</div>`;
+                div.classList.add('pass');
+                div.innerHTML = `<span class="status-badge">Pass</span> <b>${name}</b>`;
+                printLog(`✅ TEST PASSED: ${name}`);
+            } catch (e) {
+                div.classList.add('fail');
+                div.innerHTML = `
+                    <span class="status-badge">Fail</span> <b>${name}</b>
+                    <div class="error-log">Error: ${e.message}</div>
+                `;
+                printLog(`❌ TEST FAILED: ${name}`);
+                console.error(e);
             }
-            resultsContainer.appendChild(item);
+            resultsArea.appendChild(div);
         }
 
-        // EL SECRETO: Esperar al evento 'core-ready'
         window.addEventListener('core-ready', () => {
-            resultsContainer.innerHTML = ''; // Limpiar el "Esperando..."
-            log("Iniciando suite de tests...");
+            resultsArea.innerHTML = ''; // Limpiar loader
+            printLog("Motor detectado. Iniciando suite de validación...");
 
-            // 1. Test Store
-            runTest("1. El Store se inicializa correctamente", () => {
+            // --- 1. TEST DE INTEGRIDAD ---
+            runTest("Integridad del Store (SSOT)", () => {
                 const state = window.store.getState();
-                if (!state.projects) throw new Error("No existe la propiedad 'projects'");
+                if (!state || typeof state !== 'object') throw new Error("Estado no recuperable");
+                if (!Array.isArray(state.projects)) throw new Error("Estructura de projects inválida");
             });
 
-            // 2. Test Registro
-            runTest("2. Registro de Proyecto en el Store", () => {
-                const id = 'test-' + Math.random();
-                window.store.dispatch({ type: 'ADD_PROJECT', payload: { id, nombre: 'TDD Test' } });
-                const found = window.store.getState().projects.find(p => p.id === id);
-                if (!found) throw new Error("Proyecto no encontrado tras dispatch");
+            // --- 2. TEST DE DISPATCH ---
+            runTest("Registro de Proyectos (Dispatch ADD_PROJECT)", () => {
+                const testID = 'test-p-' + Date.now();
+                window.store.dispatch({
+                    type: 'ADD_PROJECT',
+                    payload: { id: testID, nombre: 'Laboratorio TDD' }
+                });
+                const project = window.store.getState().projects.find(p => p.id === testID);
+                if (!project) throw new Error("El proyecto no se persistió en el Store");
             });
 
-            // 3. Test Resiliencia (Saludable)
-            runTest("3. Cálculo VNA: Ratio de Resiliencia (Saludable)", () => {
-                const mock = {
+            // --- 3. TEST DE LÓGICA VNA ---
+            runTest("Cálculo de Resiliencia: Saludable (50/50)", () => {
+                const mockState = {
                     projects: [{
-                        id: 'vna-1',
+                        id: 'm1',
                         transactions: [
                             { uv: 500, tipo_valor: 'tangible' },
                             { uv: 500, tipo_valor: 'intangible' }
                         ]
                     }]
                 };
-                const res = window.Selectors.getProjectResilienceIndex(mock, 'vna-1');
-                if (res.status !== 'saludable') throw new Error(`Status incorrecto: ${res.status}`);
+                const res = window.Selectors.getProjectResilienceIndex(mockState, 'm1');
+                if (res.status !== 'saludable') throw new Error(`Estado incorrecto: ${res.status}`);
             });
 
-            // 4. Test Resiliencia (Frágil)
-            runTest("4. Cálculo VNA: Ratio de Resiliencia (Frágil)", () => {
-                const mock = {
-                    projects: [{
-                        id: 'vna-2',
-                        transactions: [{ uv: 1000, tipo_valor: 'tangible' }]
-                    }]
-                };
-                const res = window.Selectors.getProjectResilienceIndex(mock, 'vna-2');
-                if (res.status !== 'fragil') throw new Error(`Status incorrecto: ${res.status}`);
+            // --- 4. TEST DE IMPACTO P-024 ---
+            runTest("Evolución de Salud (P-024): De Frágil a Saludable", () => {
+                const pEvolveID = 'p-evolve-24';
+                
+                // Paso A: Crear proyecto frágil (100% tangible)
+                window.store.dispatch({
+                    type: 'ADD_PROJECT',
+                    payload: { 
+                        id: pEvolveID, 
+                        nombre: 'Proyecto en Crisis',
+                        transactions: [{ uv: 1000, tipo_valor: 'tangible' }] 
+                    }
+                });
+
+                const state1 = window.store.getState();
+                const res1 = window.Selectors.getProjectResilienceIndex(state1, pEvolveID);
+                if (res1.status !== 'fragil') throw new Error("No inició como frágil");
+
+                // Paso B: Inyectar Transacción Intangible (Cultura/Bienestar)
+                window.store.dispatch({
+                    type: 'ADD_TRANSACTION',
+                    payload: {
+                        projectId: pEvolveID,
+                        transaction: { uv: 800, tipo_valor: 'intangible', concepto: 'Acompañamiento Estratégico' }
+                    }
+                });
+
+                const state2 = window.store.getState();
+                const res2 = window.Selectors.getProjectResilienceIndex(state2, pEvolveID);
+                
+                // Ratio: 800 / (1000 + 800) = 0.44 -> Entra en rango 'saludable' (0.4 - 0.6)
+                if (res2.status !== 'saludable') {
+                    throw new Error(`La salud no evolucionó. Ratio: ${res2.ratio}, Status: ${res2.status}`);
+                }
             });
 
-            log("Suite finalizada.");
+            printLog("🏁 Suite finalizada.");
         });
-
-        // Timeout de seguridad por si falla la carga de módulos
-        setTimeout(() => {
-            if (!window.store) {
-                resultsContainer.innerHTML = '<b style="color:red">❌ ERROR: El motor core no cargó en 3 segundos. Revisa la consola (F12).</b>';
-            }
-        }, 3000);
     </script>
 </body>
 </html>
