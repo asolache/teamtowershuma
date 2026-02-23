@@ -21,7 +21,7 @@
         }
         #app { min-height: 100vh; }
         
-        /* Transición suave entre vistas */
+        /* Transición suave entre vistas (SPA) */
         .fade-in {
             animation: fadeIn 0.3s ease-in;
         }
@@ -39,43 +39,48 @@
         import { store } from './js/core/store.js';
         import { HomeView } from './js/views/HomeView.js';
         import { ProjectView } from './js/views/ProjectView.js';
+        import { AboutView } from './js/views/AboutView.js'; // <-- La nueva vista del Manifiesto
 
         const app = document.getElementById('app');
 
-        // --- ROUTER LÓGICO ---
+        // --- ENRUTADOR DINÁMICO ---
         function router() {
             const hash = window.location.hash || '#/';
-            app.classList.remove('fade-in');
             
-            // Forzamos un reflow para que la animación se repita
-            void app.offsetWidth; 
+            // Reiniciar animación
+            app.classList.remove('fade-in');
+            void app.offsetWidth; // Trigger reflow
             app.classList.add('fade-in');
 
+            // Renderizar la vista correspondiente
             if (hash === '#/') {
                 app.innerHTML = HomeView.render();
+            } else if (hash === '#/about') {
+                app.innerHTML = AboutView.render();
             } else if (hash.startsWith('#/project/')) {
                 const projectId = hash.split('/')[2];
                 app.innerHTML = ProjectView.render(projectId);
             } else {
-                app.innerHTML = `<div style="padding:50px; color:white;">404 - Ruta no encontrada</div>`;
+                app.innerHTML = `
+                    <div style="padding:100px; text-align:center; color:#8b949e;">
+                        <h2>⚠️ 404 - Sector Desconocido</h2>
+                        <p>La coordenada a la que intentas acceder no existe en el Castell.</p>
+                        <a href="#/" style="color:#58a6ff; text-decoration:none;">Volver a la Base</a>
+                    </div>
+                `;
             }
         }
 
         // --- ESCUCHADORES DE EVENTOS ---
         
-        // Renderizar cuando el store esté listo (primera carga)
+        // Esperamos a que el Kernel cargue la ontología y el localStorage antes de pintar nada
         window.addEventListener('store-ready', () => {
-            console.log("SOS Kernel: Online");
+            console.log("SOS Kernel v4.2: Online y a la escucha");
             router();
         });
 
-        // Renderizar cuando cambie la URL (navegación)
+        // Detectar cambios en la URL para cambiar de vista sin recargar la página
         window.addEventListener('hashchange', router);
-
-        // Opcional: Re-renderizar cuando el store cambie (reactividad)
-        // store.subscribe(() => router()); 
-        // Nota: Por ahora usamos location.reload() en las vistas para simplificar, 
-        // pero esta línea permitiría actualizaciones sin refrescar.
 
     </script>
 </body>
