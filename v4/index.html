@@ -23,27 +23,29 @@
 
         const app = document.getElementById('app');
 
-        function router() {
-            let hash = window.location.hash || '#/';
-            if (hash !== '#/' && hash.endsWith('/')) hash = hash.slice(0, -1);
-            
-            app.classList.remove('fade-in');
-            void app.offsetWidth;
+        // Reemplaza el bloque de router en tu index.html
+function router() {
+    let hash = window.location.hash || '#/';
+    const app = document.getElementById('app');
+    const parts = hash.split('/');
+    const pId = parts[2];
+    const action = parts[3];
 
-            if (hash === '#/' || hash === '#' || hash === '') {
-                app.innerHTML = HomeView.render();
-            } else if (hash === '#/about') {
-                app.innerHTML = AboutView.render();
-            } else if (hash.startsWith('#/project/')) {
-                const parts = hash.split('/');
-                const pId = parts[2];
-                const action = parts[3];
-                if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
-                else if (action === 'accounting') app.innerHTML = '<div style="padding:100px;text-align:center;"><h2>💰 Contabilidad</h2><a href="#/project/'+pId+'">Volver</a></div>';
-                else app.innerHTML = ProjectView.render(pId);
-            }
-            app.classList.add('fade-in');
+    app.innerHTML = ""; // Limpieza total
+
+    if (hash === '#/' || hash === '#') {
+        app.innerHTML = HomeView.render();
+    } else if (hash.startsWith('#/project/')) {
+        if (action === 'edit') {
+            app.innerHTML = ProjectEditView.render(pId);
+        } else if (action === 'accounting') {
+            // AQUÍ RECUPERAMOS LA CONTABILIDAD
+            app.innerHTML = ProjectAccountingView.render(pId);
+        } else {
+            app.innerHTML = ProjectView.render(pId);
         }
+    }
+}
 
         window.addEventListener('store-ready', router);
         window.addEventListener('hashchange', router);
