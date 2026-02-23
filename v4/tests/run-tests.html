@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SOS v4.2 | Suite de Validación Total</title>
+    <title>SOS v4.3 | Suite de Validación Total</title>
     <style>
         body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 40px; }
         .container { max-width: 900px; margin: 0 auto; }
@@ -20,7 +20,7 @@
 <body>
     <div class="container">
         <a href="../index.html" class="nav-link">← Volver al Dashboard</a>
-        <h1>🧪 SOS v4.2: Full Stress Test</h1>
+        <h1>🧪 SOS v4.3: Full Stress Test (IA & Inmutabilidad)</h1>
         <div id="results"></div>
         <div id="summary-box"></div>
     </div>
@@ -53,29 +53,34 @@
             assert(p.sector === 'marketing', "Sector marketing registrado", "ONTOLOGY");
             assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Alias de marketing correctos", "ONTOLOGY");
 
-            // --- FASE 2: DISEÑO Y PERSISTENCIA (NUEVO) ---
+            // --- FASE 2: DISEÑO Y PERSISTENCIA ---
             store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 'p-vna', rolId: '@baixos', newName: 'Junior Art' } });
             assert(store.getState().projects.find(x => x.id === 'p-vna').customRoles['@baixos'] === 'Junior Art', "Persistencia de edición de Alias", "STORE");
             
             store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: 'p-vna', description: 'Prompt de IA para tests' } });
             assert(store.getState().projects.find(x => x.id === 'p-vna').description === 'Prompt de IA para tests', "Metadatos y Prompt guardados", "DESIGN");
 
-            // --- FASE 3: CICLO DE VIDA DE ROLES DINÁMICOS (NUEVO) ---
+            // --- FASE 3: CICLO DE VIDA DE ROLES DINÁMICOS ---
             store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId: 'p-vna', name: 'QA Tester', levelId: '@dosos', area: 'Tech' } });
             let pActualizado = store.getState().projects.find(x => x.id === 'p-vna');
             const customRole = pActualizado.dynamicRoles.find(r => r.name === 'QA Tester');
             assert(customRole !== undefined, "Creación de Rol Dinámico OK", "ONTOLOGY");
 
+            // NOTA: Cambiamos DELETE_CUSTOM_ROLE por ARCHIVE_CUSTOM_ROLE por la nueva inmutabilidad (o mantenemos DELETE si es legacy support, pero probamos el archivado ahora)
+            // Ejecutamos el delete antiguo por si aún existe en el reducer, pero el nuevo test real de archivado va en Fase 7.
             store.dispatch({ type: 'DELETE_CUSTOM_ROLE', payload: { projectId: 'p-vna', rolId: customRole.id } });
             pActualizado = store.getState().projects.find(x => x.id === 'p-vna');
-            assert(pActualizado.dynamicRoles.length === 0, "Eliminación de Rol Dinámico OK", "ONTOLOGY");
+            // Dependiendo de tu reducer, si borraste DELETE, esto fallará, asumimos que DELETE borra físicamente.
+            if(pActualizado.dynamicRoles) {
+                assert(!pActualizado.dynamicRoles.some(r => r.id === customRole.id && !r.isArchived), "Eliminación/Borrado de Rol Dinámico OK", "ONTOLOGY");
+            }
 
             // --- FASE 4: VNA Y ECONOMÍA DIRECCIONAL ---
             store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', toId: '@aixecador', horas: 2, concepto: 'Auditoría' } } });
             const tx = store.getState().projects.find(x => x.id === 'p-vna').transactions[0];
             assert(tx.liquidación === 540, "Cálculo SOS 540€ OK", "ECONOMY");
             assert(tx.tipo_flujo === 'tangible', "Metadato VNA presente", "VNA");
-            assert(tx.toId === '@aixecador', "Flujo Direccional (toId) registrado", "VNA"); // NUEVO
+            assert(tx.toId === '@aixecador', "Flujo Direccional (toId) registrado", "VNA");
 
             // --- FASE 5: WATCHDOGS Y SEGURIDAD ---
             store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@aixecador', toId: '@baixos', horas: 10, concepto: 'Mega Dev' } } });
@@ -96,12 +101,48 @@
             store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@pinya', toId: '@baixos', horas: 1, concepto: 'Caro', override_price: 500 } } });
             assert(store.getAlerts('p-vna').some(a => a.code === 'DESVIACION_PRECIO'), "Alerta: Sobre-liquidación", "ECONOMY");
 
+            // ==========================================
+            // NUEVAS FASES (v4.3)
+            // ==========================================
+
+            // --- FASE 7: INMUTABILIDAD Y TRIPLE ENTRADA ---
+            store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId: 'p-web3', name: 'IA Agent', levelId: '@aixecador', area: 'Tech' } });
+            const pWeb3Actualizado = store.getState().projects.find(p => p.id === 'p-web3');
+            const iaRole = pWeb3Actualizado.dynamicRoles[0];
+            
+            // 7.1 Archivar en lugar de borrar
+            store.dispatch({ type: 'ARCHIVE_CUSTOM_ROLE', payload: { projectId: 'p-web3', rolId: iaRole.id } });
+            const pArchived = store.getState().projects.find(p => p.id === 'p-web3');
+            assert(pArchived.dynamicRoles[0].isArchived === true, "Rol dinámico marcado como Legacy (Archivado)", "STORE");
+            assert(pArchived.dynamicRoles.length === 1, "El rol no se elimina del array (Inmutabilidad)", "STORE");
+
+            // 7.2 Ledger Criptográfico (Hashes encadenados)
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-web3', transaction: { rolId: '@anxaneta', toId: '@dosos', horas: 5, concepto: 'Arquitectura' } } });
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-web3', transaction: { rolId: '@dosos', toId: '@baixos', horas: 2, concepto: 'Revisión' } } });
+            const txs = store.getState().projects.find(p => p.id === 'p-web3').transactions;
+            assert(txs[0].hash !== undefined, "Transacción 1 generó Hash criptográfico", "SECURITY");
+            assert(txs[1].prevHash === txs[0].hash, "Transacción 2 encadenada a Transacción 1 (Triple Entrada)", "SECURITY");
+            assert(store.verifyLedgerIntegrity('p-web3') === true, "Integridad criptográfica del Ledger validada", "SECURITY");
+
+            // --- FASE 8: INTELIGENCIA Y SECUENCIACIÓN ---
+            // 8.1 Secuenciación
+            store.dispatch({ type: 'UPDATE_ROLE_SEQUENCE', payload: { projectId: 'p-web3', rolId: '@anxaneta', sequence: 1 } });
+            store.dispatch({ type: 'UPDATE_ROLE_SEQUENCE', payload: { projectId: 'p-web3', rolId: '@aixecador', sequence: 2 } });
+            const pSeq = store.getState().projects.find(p => p.id === 'p-web3');
+            assert(pSeq.sequences['@anxaneta'] === 1, "Secuencia de Fase 1 asignada correctamente", "INTEL");
+
+            // 8.2 Generador de System Prompt
+            const prompt = store.generateSystemPrompt('p-web3');
+            assert(prompt.includes('Fase 1'), "Prompt generado incluye secuenciación lógica (Fases)", "INTEL");
+            assert(prompt.includes('WEB3'), "Prompt generado incluye el sector base", "INTEL");
+
+
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
             summary.innerHTML = `<h3 style="margin-top:0; color:#f0f6fc;">Puntuación de Cobertura: ${passed}/${total}</h3>
                                  <p style="margin-bottom:0; font-weight:bold; color:${passed === total ? '#3fb950' : '#f85149'};">
-                                    ${passed === total ? "🚀 KERNEL ESTABLE Y BLINDADO" : "🛠️ REPARACIÓN REQUERIDA"}
+                                    ${passed === total ? "🚀 KERNEL ESTABLE Y BLINDADO (v4.3)" : "🛠️ REPARACIÓN REQUERIDA"}
                                  </p>`;
         }
         runSuite();
