@@ -13,6 +13,9 @@ export const ProjectEditView = {
         const activeDynamicRoles = (project.dynamicRoles || []).filter(dr => !dr.isArchived);
         const archivedRoles = (project.dynamicRoles || []).filter(dr => dr.isArchived);
 
+        // 🛡️ DICCIONARI DE SEQÜÈNCIES PER DEFECTE
+        const defaultSeq = { "@anxaneta": 1, "@aixecador": 2, "@dosos": 3, "@baixos": 4, "@pinya": 5 };
+
         return `
             <div style="max-width: 1400px; margin: 0 auto; padding: 25px; font-family: sans-serif; color: #c9d1d9;">
                 
@@ -69,7 +72,8 @@ export const ProjectEditView = {
                             
                             <h4 style="font-size:0.75rem; color:#8b949e; text-transform:uppercase; margin-top:0;">Roles Base (Ontología)</h4>
                             ${Object.keys(project.customRoles).map(id => {
-                                const seq = project.sequences?.[id] || 99;
+                                // Apliquem el diccionari per defecte
+                                const seq = project.sequences?.[id] || defaultSeq[id] || 99;
                                 return `
                                 <div style="display:flex; justify-content:space-between; align-items:center; background:#0d1117; padding:10px; border:1px solid #30363d; border-radius:6px; margin-bottom:8px;">
                                     <div style="display:flex; align-items:center; gap: 15px;">
@@ -141,7 +145,6 @@ export const ProjectEditView = {
     }
 };
 
-// Acciones globales (El reload refrescará el Preview del System Prompt en tiempo real)
 window.saveProjectInfo = (projectId) => {
     const nombre = document.getElementById('edit-name').value;
     const sector = document.getElementById('edit-sector').value;
