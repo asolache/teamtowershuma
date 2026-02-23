@@ -2,614 +2,81 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🧪 Test Runner - TeamTowers v3.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers v3.5 - TDD Suite</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 16px;
-            font-size: 16px; /* Base 16px para móvil */
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            color: white;
-            margin-bottom: 20px;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .controls {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        button {
-            min-height: 48px; /* Tamaño táctil mínimo */
-            padding: 12px 24px;
-            border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1 1 auto;
-            min-width: 140px;
-            background: #f1f5f9;
-            color: #1e293b;
-            border: 1px solid #cbd5e1;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-            border: none;
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-            border: none;
-        }
-
-        .btn-audit {
-            background: #8b5cf6;
-            color: white;
-            border: none;
-        }
-
-        #output {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            font-family: 'SF Mono', Monaco, Consolas, monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            overflow-x: auto;
-            width: 100%;
-        }
-
-        .suite {
-            margin: 20px 0;
-            padding: 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            background: #f8fafc;
-        }
-
-        .suite h2 {
-            margin: 0 0 12px 0;
-            color: #1e293b;
-            font-size: 1.3rem;
-            border-bottom: 2px solid #cbd5e1;
-            padding-bottom: 8px;
-        }
-
-        .test {
-            margin: 8px 0;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .pass {
-            background: #dcfce7;
-            color: #166534;
-            border-left: 4px solid #10b981;
-        }
-
-        .fail {
-            background: #fee2e2;
-            color: #991b1b;
-            border-left: 4px solid #dc2626;
-        }
-
-        .summary {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 24px;
-            padding: 20px;
-            background: #f1f5f9;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        /* ===== SYSTEM PROMPTS ===== */
-        .system-prompts {
-            margin-top: 30px;
-            border-top: 2px solid #cbd5e1;
-            padding-top: 20px;
-        }
-
-        .prompt-card {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            font-family: 'SF Mono', Monaco, Consolas, monospace;
-            font-size: 13px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            border-left: 4px solid #10b981;
-        }
-
-        .prompt-title {
-            color: #10b981;
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .prompt-meta {
-            color: #94a3b8;
-            font-size: 12px;
-            margin-top: 10px;
-            border-top: 1px solid #334155;
-            padding-top: 10px;
-        }
-
-        /* ===== MOBILE OPTIMIZATIONS ===== */
-        @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-
-            .controls {
-                flex-direction: column;
-                padding: 16px;
-            }
-
-            button {
-                width: 100%;
-                min-height: 52px; /* Más grande para móvil */
-            }
-
-            #output {
-                padding: 16px;
-                font-size: 13px;
-            }
-
-            .suite {
-                padding: 12px;
-            }
-
-            .test {
-                padding: 10px;
-                font-size: 13px;
-                word-break: break-word;
-            }
-
-            .prompt-card {
-                padding: 16px;
-                font-size: 12px;
-            }
-        }
-
-        /* Touch feedback */
-        @media (hover: none) {
-            button:active {
-                opacity: 0.7;
-            }
-        }
+        :root { font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #1e1e1e; color: #fff; padding: 2rem; max-width: 800px; margin: 0 auto; }
+        h1 { border-bottom: 2px solid #333; padding-bottom: 1rem; }
+        .test-case { background: #2d2d2d; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; border-left: 5px solid gray; }
+        .pass { border-left-color: #4CAF50; }
+        .fail { border-left-color: #F44336; }
+        .status { font-weight: bold; margin-bottom: 0.5rem; }
+        .pass .status { color: #4CAF50; }
+        .fail .status { color: #F44336; }
+        .details { font-family: monospace; font-size: 0.9em; color: #aaa; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧪 Test Runner - Kernel Crítico v3.1</h1>
-        
-        <div class="controls">
-            <button class="btn-primary" onclick="runAllTests()">▶️ Ejecutar Todos</button>
-            <button onclick="runUnitTests()">🔍 Unit Tests</button>
-            <button onclick="runIntegrationTests()">🔄 Integration Tests</button>
-            <button class="btn-success" onclick="runRegressionTests()">📊 Regression Tests</button>
-            <button class="btn-audit" onclick="runAuditTests()">🔬 Auditoría</button>
-            <button onclick="resetAllTests()">🔄 Reset</button>
-        </div>
+    <h1>🧪 TeamTowers v3.5 - Core Engine Tests</h1>
+    <div id="test-results"></div>
 
-        <div id="output">
-            <div class="suite">
-                <h2>📋 Sistema de Testeo - TeamTowers v3.1</h2>
-                <p style="color: #64748b; margin-bottom: 10px;">Haz clic en cualquier botón para ejecutar los tests.</p>
-                <p style="color: #64748b;">Última actualización: 22/02/2026</p>
-            </div>
-        </div>
+    <script type="module">
+        import { EventBus } from '../js/core/event-bus.js';
+        import { store } from '../js/core/store.js';
+        import { Selectors } from '../js/core/selectors.js';
 
-        <!-- ===== SYSTEM PROMPTS - DOCUMENTACIÓN VIVA ===== -->
-        <div class="system-prompts">
-            <h2 style="color: white; margin-bottom: 20px;">📚 Documentación Viva - System Prompts</h2>
-            
-            <!-- PROMPT 1: Visión del Sistema -->
-            <div class="prompt-card">
-                <div class="prompt-title">🏗️ VISIÓN DEL SISTEMA</div>
-                <div>TeamTowers Humà v3.1 es un sistema de contabilidad de valor y gestión del conocimiento basado en principios de economía organizacional. El kernel gestiona proyectos, roles, usuarios y transacciones con un store centralizado y selectors para cálculos derivados. La arquitectura sigue los principios de Equilibri (balance), Seny (sensatez), Força (robustez) y Valor (generación de valor).</div>
-                <div class="prompt-meta">Última modificación: 22/02/2026 | Versión: 3.1 | Responsable: @arquitecto</div>
-            </div>
+        const resultsDiv = document.getElementById('test-results');
 
-            <!-- PROMPT 2: Estructura de Datos -->
-            <div class="prompt-card">
-                <div class="prompt-title">📊 ESTRUCTURA DE DATOS</div>
-                <div>El store central (store.js) mantiene el estado con cuatro colecciones principales:
-- projects: Array de proyectos con id, name, sector
-- roles: Array de roles con id, name, multiplier, color
-- users: Array de usuarios con id, name, type (human/ai)
-- transactions: Array de transacciones con id, name, project, role, user, uv, date
-
-Los selectors (selectors.js) proporcionan cálculos derivados: getGlobalMetrics(), getProjectsWithMetrics(), getTopContributors(), getTransactionsByProject().</div>
-                <div class="prompt-meta">Última modificación: 22/02/2026 | Versión: 1.2 | Responsable: @arquitecto</div>
-            </div>
-
-            <!-- PROMPT 3: Tests y Auditoría -->
-            <div class="prompt-card">
-                <div class="prompt-title">🧪 PROTOCOLO DE TESTS</div>
-                <div>El sistema de tests se organiza en cuatro niveles:
-1. Unit Tests: Verifican componentes individuales (store, selectors)
-2. Integration Tests: Validan flujos completos (dashboard, navegación)
-3. Regression Tests: Aseguran que el kernel no se rompe
-4. Audit Tests: Miden rendimiento (<16ms), aislamiento, manejo de errores y compatibilidad móvil
-
-El runner (run-tests.html) proporciona una interfaz visual para ejecutar todos los tests y ver resultados en tiempo real.</div>
-                <div class="prompt-meta">Última modificación: 22/02/2026 | Versión: 1.0 | Responsable: @arquitecto</div>
-            </div>
-
-            <!-- PROMPT 4: Mobile First -->
-            <div class="prompt-card">
-                <div class="prompt-title">📱 PRINCIPIOS MOBILE FIRST</div>
-                <div>Todos los componentes y tests están diseñados para funcionar en dispositivos móviles:
-- Botones con altura mínima de 48px para interacción táctil
-- Fuente base de 16px para legibilidad
-- Layouts flexibles con clamp() y porcentajes
-- Tests específicos que validan la experiencia móvil
-- Soporte para hover: none con feedback táctil</div>
-                <div class="prompt-meta">Última modificación: 22/02/2026 | Versión: 1.0 | Responsable: @arquitecto</div>
-            </div>
-
-            <!-- PROMPT 5: Documentación Viva -->
-            <div class="prompt-card">
-                <div class="prompt-title">📚 HIPERTEXTO Y DOCUMENTACIÓN</div>
-                <div>La documentación vive en el propio código y en estos system prompts. Cada archivo contiene su propósito y contexto. La suma de todos los documentos genera el prompt maestro del proyecto, permitiendo recuperar el conocimiento crítico: el qué (funcionalidad), el para qué (objetivo), el cómo (implementación) y el porqué (decisiones arquitectónicas).</div>
-                <div class="prompt-meta">Última modificación: 22/02/2026 | Versión: 1.0 | Responsable: @arquitecto</div>
-            </div>
-
-            <!-- PROMPT 6: Kernel Crítico -->
-            <div class="prompt-card">
-                <div class="prompt-title">⚙️ KERNEL CRÍTICO</div>
-                <div>El kernel del sistema está formado por:
-1. store.js - Estado central inmutable con getState() y listeners
-2. selectors.js - Cálculos derivados puros
-3. router.js - Navegación SPA con deep linking
-4. dashboard.js - Página principal con métricas globales
-5. projects.js - Listado de proyectos con filtros
-6. users.js - Gestión de usuarios y top contributors
-
-Todos los componentes se comunican mediante eventos, nunca acceden directamente al store.</div>
-                <div class="prompt-meta">Última modificación: 22/02/2026 | Versión: 3.1 | Responsable: @arquitecto</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPTS DEL SISTEMA -->
-    <script src="../js/core/store.js"></script>
-    <script src="../js/core/selectors.js"></script>
-    <script src="../js/core/router.js"></script>
-    <script src="../js/core/store.test-helper.js"></script>
-    <script src="../js/pages/dashboard.js"></script>
-    <script src="../js/pages/projects.js"></script>
-    <script src="../js/pages/users.js"></script>
-
-    <script>
-        // ===== TEST RUNNER =====
-        const output = document.getElementById('output');
-        let totalPassed = 0;
-        let totalTests = 0;
-
-        function log(message, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `test ${type}`;
-            div.innerHTML = message;
-            output.appendChild(div);
-        }
-
-        function assert(condition, message) {
-            totalTests++;
-            if (condition) {
-                totalPassed++;
-                log(`✅ ${message}`, 'pass');
-            } else {
-                log(`❌ ${message}`, 'fail');
-            }
-        }
-
-        function clearOutput() {
-            output.innerHTML = '';
-            totalPassed = 0;
-            totalTests = 0;
-        }
-
-        function showSummary() {
-            const percentage = Math.round((totalPassed / totalTests) * 100) || 0;
-            const summary = document.createElement('div');
-            summary.className = 'summary';
-            summary.style.background = percentage === 100 ? '#10b981' : percentage > 80 ? '#f59e0b' : '#dc2626';
-            summary.style.color = 'white';
-            summary.innerHTML = `📊 RESULTADO: ${totalPassed}/${totalTests} tests pasados (${percentage}%)`;
-            output.appendChild(summary);
-        }
-
-        // ===== UNIT TESTS =====
-        function runUnitTests() {
-            clearOutput();
-            log('<div class="suite"><h2>🔍 UNIT TESTS</h2></div>', 'info');
-
-            // Store Tests
-            log('<b>📦 Store Tests</b>', 'info');
-            const state = window.store.getState();
-            assert(state !== null, 'Store no es null');
-            assert(Array.isArray(state.projects), 'projects es array');
-            assert(Array.isArray(state.transactions), 'transactions es array');
-            assert(state.projects.length >= 3, 'Hay al menos 3 proyectos');
-
-            // Selectors Tests
-            log('<b>🎯 Selectors Tests</b>', 'info');
-            const metrics = window.Selectors.getGlobalMetrics();
-            assert(metrics.totalProjects === state.projects.length, 'totalProjects correcto');
-            assert(metrics.activeProjects <= metrics.totalProjects, 'activos ≤ totales');
-
-            const projects = window.Selectors.getProjectsWithMetrics();
-            projects.forEach(p => {
-                const expectedUV = state.transactions
-                    .filter(t => t.project === p.id)
-                    .reduce((sum, t) => sum + (t.uv || 0), 0);
-                assert(p.uv === expectedUV, `UV de ${p.id} correcto`);
-            });
-
-            showSummary();
-        }
-
-        // ===== INTEGRATION TESTS =====
-        function runIntegrationTests() {
-            clearOutput();
-            log('<div class="suite"><h2>🔄 INTEGRATION TESTS</h2></div>', 'info');
-
-            // Dashboard render
+        // Micro-framework de testing
+        function runTest(name, testFn) {
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-case';
             try {
-                const html = window.renderDashboard();
-                assert(html.includes('Dashboard'), 'Dashboard renderizado');
-                assert(html.includes('Proyectos'), 'Dashboard muestra proyectos');
-            } catch (e) {
-                assert(false, 'Dashboard renderiza sin errores');
+                testFn();
+                testDiv.classList.add('pass');
+                testDiv.innerHTML = `<div class="status">✅ PASS: ${name}</div>`;
+            } catch (error) {
+                testDiv.classList.add('fail');
+                testDiv.innerHTML = `
+                    <div class="status">❌ FAIL: ${name}</div>
+                    <div class="details">${error.message}</div>
+                `;
+                console.error(`Test falló: ${name}`, error);
             }
-
-            // Projects render
-            try {
-                const html = window.renderProjects();
-                assert(html.includes('Proyectos'), 'Projects renderizado');
-                assert(html.includes('data-table'), 'Projects incluye tabla');
-            } catch (e) {
-                assert(false, 'Projects renderiza sin errores');
-            }
-
-            // Users render
-            try {
-                const html = window.renderUsers();
-                assert(html.includes('Usuarios'), 'Users renderizado');
-            } catch (e) {
-                assert(false, 'Users renderiza sin errores');
-            }
-
-            showSummary();
+            resultsDiv.appendChild(testDiv);
         }
 
-        // ===== REGRESSION TESTS =====
-        function runRegressionTests() {
-            clearOutput();
-            log('<div class="suite"><h2>📊 REGRESSION TESTS</h2></div>', 'info');
+        // --- SUITE DE TESTS --- //
 
-            // Funciones core
-            const coreFunctions = [
-                window.store.getState,
-                window.Selectors.getGlobalMetrics,
-                window.Selectors.getProjectsWithMetrics,
-                window.Selectors.getTopContributors,
-                window.renderDashboard,
-                window.renderProjects,
-                window.router.navigate
-            ];
+        // Limpiar el store antes de los tests
+        localStorage.removeItem('teamtowers-v3-state');
+        store.init(); // Asegura un estado limpio
 
-            coreFunctions.forEach((fn, i) => {
-                assert(typeof fn === 'function', `Función core ${i} existe`);
-            });
-
-            // IDs únicos
-            const state = window.store.getState();
-            const projectIds = new Set(state.projects.map(p => p.id));
-            assert(projectIds.size === state.projects.length, 'IDs de proyecto únicos');
-
-            // Cálculos consistentes
-            const manualTotalUV = state.transactions.reduce((sum, t) => sum + (t.uv || 0), 0);
-            const selectorTotalUV = window.Selectors.getGlobalMetrics().totalUV;
-            assert(manualTotalUV === selectorTotalUV, 'Cálculos de UV consistentes');
-
-            showSummary();
-        }
-
-        // ===== AUDIT TESTS =====
-        function runAuditTests() {
-            clearOutput();
-            log('<div class="suite"><h2>🔬 AUDITORÍA DE CALIDAD</h2></div>', 'info');
-
-            // Test de rendimiento
-            log('<b>⚡ Tests de Rendimiento</b>', 'info');
-            const stressData = window.TestHelper.generateStressData(1000);
-            window.store.state.transactions = stressData;
-
-            const start = performance.now();
-            window.Selectors.getGlobalMetrics();
-            const duration = performance.now() - start;
-            assert(duration < 16, `Rendimiento: ${duration.toFixed(2)}ms < 16ms`);
-
-            // Test de aislamiento
-            log('<b>🧪 Tests de Aislamiento</b>', 'info');
-            window.TestHelper.resetToMock();
-            const afterReset = window.Selectors.getGlobalMetrics();
-            assert(afterReset.totalTransactions === 1000, 'Reset debe restaurar 1000 transacciones');
-
-            // Test de errores
-            log('<b>⚠️ Tests de Errores</b>', 'info');
-            const original = window.store.state.transactions;
-            window.store.state.transactions = null;
-            const nullMetrics = window.Selectors.getGlobalMetrics();
-            assert(nullMetrics.totalTransactions === 0, 'Manejo de null correcto');
-            window.store.state.transactions = original;
-
-            // Test mobile first
-            log('<b>📱 Tests Mobile First</b>', 'info');
-            const buttons = document.querySelectorAll('button');
-            let allButtonsValid = true;
-            buttons.forEach(btn => {
-                const styles = window.getComputedStyle(btn);
-                const height = parseInt(styles.height);
-                if (height < 48) allButtonsValid = false;
-            });
-            assert(allButtonsValid, 'Botones tienen altura ≥ 48px (táctil)');
-
-            const bodyStyles = window.getComputedStyle(document.body);
-            const fontSize = parseInt(bodyStyles.fontSize);
-            assert(fontSize >= 16, `Fuente base ${fontSize}px ≥ 16px (legibilidad)`);
-
-            showSummary();
-
-            // Restaurar datos originales
-            window.TestHelper.resetToMock();
-        }
-
-        // ===== RESET =====
-        function resetAllTests() {
-            clearOutput();
-            window.TestHelper.resetToMock();
-            log('<div class="suite"><h2>🔄 SISTEMA RESETEADO</h2></div>', 'info');
-            log('✅ Store restaurado a estado de prueba', 'pass');
-            log('✅ LocalStorage limpiado', 'pass');
-            log('✅ Listo para ejecutar nuevos tests', 'pass');
-        }
-
-        // ===== RUN ALL =====
-        function runAllTests() {
-            clearOutput();
-            log('<div class="suite"><h2>🧪 EJECUTANDO TODOS LOS TESTS...</h2></div>', 'info');
-            
-            setTimeout(() => {
-                runUnitTests();
-                setTimeout(() => {
-                    runIntegrationTests();
-                    setTimeout(() => {
-                        runRegressionTests();
-                        setTimeout(() => {
-                            runAuditTests();
-                        }, 500);
-                    }, 500);
-                }, 500);
-            }, 500);
-        }
-
-        // ===== MOBILE TEST ESPECÍFICO =====
-        function runMobileTests() {
-            clearOutput();
-            log('<div class="suite"><h2>📱 TESTS MOBILE FIRST</h2></div>', 'info');
-
-            // Test 1: Botones táctiles
-            const buttons = document.querySelectorAll('button');
-            let validButtons = 0;
-            buttons.forEach(btn => {
-                const styles = window.getComputedStyle(btn);
-                const height = parseInt(styles.height);
-                if (height >= 48) validButtons++;
-            });
-            assert(validButtons === buttons.length, `Botones táctiles: ${validButtons}/${buttons.length} OK`);
-
-            // Test 2: Fuente legible
-            const bodyStyles = window.getComputedStyle(document.body);
-            const fontSize = parseInt(bodyStyles.fontSize);
-            assert(fontSize >= 16, `Fuente base: ${fontSize}px (mínimo 16px)`);
-
-            // Test 3: Contenedor responsive
-            const container = document.querySelector('.container');
-            const containerStyles = window.getComputedStyle(container);
-            assert(containerStyles.maxWidth === '1200px', 'Contenedor con max-width');
-
-            // Test 4: Media queries activas (simulado)
-            const isMobile = window.matchMedia('(max-width: 768px)').matches;
-            if (isMobile) {
-                const controls = document.querySelector('.controls');
-                const controlsStyles = window.getComputedStyle(controls);
-                assert(controlsStyles.flexDirection === 'column', 'Mobile: controles en columna');
-            } else {
-                log('ℹ️ Modo desktop - saltando tests específicos móvil', 'info');
-            }
-
-            // Test 5: Touch feedback
-            const hasTouchMedia = window.matchMedia('(hover: none)').matches;
-            if (hasTouchMedia) {
-                log('ℹ️ Dispositivo táctil detectado', 'info');
-            }
-
-            showSummary();
-        }
-
-        // Exponer funciones globalmente
-        window.runUnitTests = runUnitTests;
-        window.runIntegrationTests = runIntegrationTests;
-        window.runRegressionTests = runRegressionTests;
-        window.runAuditTests = runAuditTests;
-        window.runAllTests = runAllTests;
-        window.resetAllTests = resetAllTests;
-        window.runMobileTests = runMobileTests;
-    </script>
-
-    <!-- AÑADIR BOTÓN MOBILE TESTS AL FINAL (OPCIONAL) -->
-    <script>
-        // Añadir botón mobile tests al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            const controls = document.querySelector('.controls');
-            const mobileBtn = document.createElement('button');
-            mobileBtn.textContent = '📱 Mobile Tests';
-            mobileBtn.onclick = runMobileTests;
-            mobileBtn.style.background = '#059669';
-            mobileBtn.style.color = 'white';
-            mobileBtn.style.border = 'none';
-            controls.appendChild(mobileBtn);
+        runTest("1. El Store se inicializa correctamente", () => {
+            const state = store.getState();
+            if (!state.proyectos) throw new Error("El estado no tiene la propiedad 'proyectos'");
         });
+
+        runTest("2. Creación de Proyecto (Tronco Común)", () => {
+            // Simulamos la creación de un proyecto
+            store.addProject({
+                id: "#test-startup",
+                nombre: "Startup Test",
+                sector: "1", // Tecnología, Software e IA
+                roles: [
+                    { id: "@ceo", multiplicador: 2.0 },
+                    { id: "@developer", multiplicador: 1.0 }
+                ]
+            });
+
+            const state = store.getState();
+            const project = state.proyectos.find(p => p.id === "#test-startup");
+            if (!project) throw new Error("El proyecto no se guardó en el store");
+            if (project.roles.length !== 2) throw new Error("Los roles del tronco común no se guardaron");
+        });
+
+        // NOTA: Añadiremos más tests aquí a medida que programemos el ValueEngine.
     </script>
 </body>
 </html>
