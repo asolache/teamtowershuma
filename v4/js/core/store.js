@@ -1,8 +1,8 @@
 /**
  * TEAMTOWERS SOS v4.3 - KERNEL DE INMUTABILIDAD E INTELIGENCIA
+ * Versión corregida para evitar SyntaxError en entornos SES/Lockdown
  */
 
-// Función de Hashing simple para el Ledger (MVP Triple Entrada)
 const generateHash = (str) => {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
@@ -52,97 +52,87 @@ export class TTStore {
         setTimeout(() => window.dispatchEvent(new Event('store-ready')), 10);
     }
 
-    // --- CÁLCULOS DE SALUD Y ALERTAS ---
+    save() {
+        localStorage.setItem('teamtowers-v4-state', JSON.stringify({ projects: this.state.projects }));
+        this.notify();
+    }
+
+    notify() {
+        this.listeners.forEach(listener => listener(this.state));
+    }
+
+    getState() { return this.state; }
+
+    // --- CÁLCULOS DE SALUD ---
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || p.transactions.length === 0) return 100;
-        const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
-        
+        if (!p || !p.transactions || p.transactions.length === 0) return 100;
+        const totalValue = p.transactions.reduce((acc, t) => acc + (Number(t.liquidación) || 0), 0);
         const auditValue = p.transactions
-            .filter(t => t.rolId === '@dosos' || t.levelId === '@dosos')
-            .reduce((acc, t) => acc + (t.liquidación || 0), 0);
-            
+            .filter(t => t.rolId === '@dosos')
+            .reduce((acc, t) => acc + (Number(t.liquidación) || 0), 0);
         return totalValue > 0 ? Math.round((auditValue / totalValue) * 100) : 100;
     }
 
-    getAlerts(projectId) {
-        const alerts = [];
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return [];
-        
-        const hasAudit = p.transactions.some(t => t.rolId === '@dosos' || t.levelId === '@dosos');
-        if (p.transactions.length > 0 && !hasAudit) {
-            alerts.push({ code: 'RIESGO_DEUDA_TECNICA', level: 'CRITICAL' });
-        }
-        
-        p.transactions.forEach(t => {
-            let r = this.state.roles.find(rol => rol.id === t.rolId);
-            if (!r && p.dynamicRoles) r = p.dynamicRoles.find(dr => dr.id === t.rolId);
-            if (!r) return;
-            
-            const precioHoraReal = t.liquidación / ((t.horas || 1) * r.multiplier);
-            if (precioHoraReal > r.precio_base_h * 1.5) {
-                alerts.push({ code: 'DESVIACION_PRECIO', msg: `Sobre-liquidación en ${t.rolId}` });
-            }
-        });
-        
-        return alerts;
-    }
-
-    // --- INTEGRIDAD DEL LEDGER ---
-    verifyLedgerIntegrity(projectId) {
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || p.transactions.length === 0) return true;
-        
-        for (let i = 1; i < p.transactions.length; i++) {
-            if (p.transactions[i].prevHash !== p.transactions[i-1].hash) return false;
-        }
-        return true;
-    }
-
-    // --- COMPILADOR DE SYSTEM PROMPT (BLINDADO Y CON SECUENCIAS POR DEFECTO) ---
+    // --- COMPILADOR DE SYSTEM PROMPT ---
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "Proyecto no encontrado.";
-
-        // 🛡️ BLINDAJE: Si el proyecto es antiguo y no tiene sector, asume 'general'
         const sectorName = p.sector || 'general';
-
         let prompt = `Estás actuando como un Agente de Inteligencia en el ecosistema SOS.\n`;
-        prompt += `Sector de Operación: ${sectorName.toUpperCase()}\n`;
-        prompt += `Propósito del Ecosistema: ${p.description || 'No definido.'}\n\n`;
-        
+        prompt += `Sector: ${sectorName.toUpperCase()}\n`;
+        prompt += `Propósito: ${p.description || 'No definido.'}\n\n`;
         prompt += `[SECUENCIA DE FLUJO DE VALOR]\n`;
         
-        // 🛡️ DICCIONARIO POR DEFECTO
         const defaultSeq = { "@anxaneta": 1, "@aixecador": 2, "@dosos": 3, "@baixos": 4, "@pinya": 5 };
-
         const allRoles = [];
-        Object.keys(p.customRoles || {}).forEach(id => allRoles.push({ id, name: p.customRoles[id], seq: p.sequences?.[id] || defaultSeq[id] || 99 }));
-        (p.dynamicRoles || []).filter(dr => !dr.isArchived).forEach(dr => allRoles.push({ id: dr.id, name: dr.name, seq: p.sequences?.[dr.id] || 99 }));
-        
-        allRoles.sort((a, b) => a.seq - b.seq);
-        
-        allRoles.forEach(r => {
-            if (r.seq !== 99) prompt += `- Fase ${r.seq}: ${r.name} (${r.id})\n`;
-            else prompt += `- Soporte/Adhoc: ${r.name} (${r.id})\n`;
+        Object.keys(p.customRoles || {}).forEach(id => {
+            allRoles.push({ id, name: p.customRoles[id], seq: p.sequences?.[id] || defaultSeq[id] || 99 });
         });
 
-        prompt += `\nTu misión es analizar el Ledger actual y proponer soluciones para optimizar el flujo de valor.`;
+        allRoles.sort((a, b) => a.seq - b.seq).forEach(r => {
+            prompt += `- Fase ${r.seq}: ${r.name} (${r.id})\n`;
+        });
+
         return prompt;
     }
 
     dispatch(action) {
         const { type, payload } = action;
-        const project = this.state.projects.find(x => x.id === payload.projectId);
+        
+        if (type === 'ADD_PROJECT') {
+            this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
+            const sectorKey = payload.sector || 'marketing';
+            this.state.projects.push({
+                id: payload.id,
+                nombre: payload.nombre,
+                sector: sectorKey,
+                description: payload.description || "",
+                customRoles: { ...this.ontologyStatic.sectores[sectorKey] },
+                dynamicRoles: [],
+                transactions: [],
+                sequences: { "@anxaneta": 1, "@aixecador": 2, "@dosos": 3, "@baixos": 4, "@pinya": 5 }
+            });
+        }
 
-        switch (type) {
-            case 'ADD_PROJECT':
-                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
-                const sectorKey = Object.keys(this.state.ontology.sectores).find(k => k.toLowerCase() === (payload.sector || '').toLowerCase()) || 'marketing';
-                this.state.projects.push({
-                    id: payload.id, nombre: payload.nombre, sector: sectorKey, description: payload.description || "", 
-                    customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
-                    dynamicRoles: [], transactions: [], 
-                    // 🛡️ ASIGNACIÓN AUTOMÁTICA DE SECUENCIAS EN NUEVOS PROYECTOS
-                    sequences: { "@anxaneta": 1, "@
+        if (type === 'ADD_TRANSACTION') {
+            const p = this.state.projects.find(x => x.id === payload.projectId);
+            if (p) {
+                const lastTx = p.transactions[p.transactions.length - 1];
+                const newTx = {
+                    ...payload.tx,
+                    timestamp: Date.now(),
+                    prevHash: lastTx ? lastTx.hash : "0",
+                    hash: ""
+                };
+                newTx.hash = generateHash(JSON.stringify(newTx));
+                p.transactions.push(newTx);
+            }
+        }
+
+        this.save();
+    }
+}
+
+// Instancia única exportada
+export const store = new TTStore();
