@@ -6,7 +6,6 @@ export const ValueMapView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return "";
 
-        // Posiciones estratégicas para el Grafo VNA
         const pos = {
             "@anxaneta": { x: 400, y: 60 },
             "@aixecador": { x: 200, y: 160 },
@@ -25,13 +24,16 @@ export const ValueMapView = {
                         </marker>
                     </defs>
                     ${project.transactions.map(tx => {
-                        const p1 = pos[tx.from] || pos["@proyecto"];
-                        const p2 = pos[tx.to] || pos["@proyecto"];
+                        const pStart = pos[tx.from] || pos["@proyecto"];
+                        const pEnd = pos[tx.to] || pos["@proyecto"];
+                        const isTangible = tx.tipo_flujo === 'tangible';
+                        
                         return `
-                            <line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" 
-                                  stroke="#3b82f6" stroke-width="2" stroke-dasharray="4" 
-                                  marker-end="url(#arrow)" opacity="0.5">
-                                <animate attributeName="stroke-dashoffset" from="100" to="0" dur="10s" repeatCount="indefinite" />
+                            <line x1="${pStart.x}" y1="${pStart.y}" x2="${pEnd.x}" y2="${pEnd.y}" 
+                                  stroke="#3b82f6" stroke-width="2" 
+                                  stroke-dasharray="${isTangible ? '0' : '6,6'}" 
+                                  marker-end="url(#arrow)" opacity="0.6">
+                                ${!isTangible ? '<animate attributeName="stroke-dashoffset" from="100" to="0" dur="15s" repeatCount="indefinite" />' : ''}
                             </line>
                         `;
                     }).join('')}
@@ -39,21 +41,21 @@ export const ValueMapView = {
 
                 ${Object.keys(pos).map(rol => `
                     <div style="position:absolute; left:${pos[rol].x - 35}px; top:${pos[rol].y - 35}px; 
-                                width:70px; height:70px; background:#1e293b; border:2px solid #3b82f6; 
+                                width:70px; height:70px; background:#0f172a; border:2px solid #3b82f6; 
                                 border-radius:50%; display:flex; align-items:center; justify-content:center; 
-                                color:white; font-size:0.6rem; font-weight:bold; box-shadow:0 0 15px #3b82f633;">
+                                color:white; font-size:0.6rem; font-weight:bold; box-shadow:0 0 15px #3b82f633; z-index:2;">
                         ${rol}
                     </div>
                 `).join('')}
 
                 ${project.transactions.map(tx => {
-                    const p1 = pos[tx.from] || pos["@proyecto"];
-                    const p2 = pos[tx.to] || pos["@proyecto"];
-                    return `<div style="position:absolute; left:${(p1.x + p2.x) / 2}px; top:${(p1.y + p2.y) / 2}px; 
-                                 background:#3b82f6; color:white; padding:2px 6px; border-radius:4px; 
-                                 font-size:0.6rem; transform:translate(-50%, -50%); z-index:10; cursor:help;" 
-                                 title="${tx.concepto}">
-                                ${tx.liquidación}€
+                    const pS = pos[tx.from] || pos["@proyecto"];
+                    const pE = pos[tx.to] || pos["@proyecto"];
+                    return `<div style="position:absolute; left:${(pS.x + pE.x) / 2}px; top:${(pS.y + pE.y) / 2}px; 
+                                 background:#1e293b; border:1px solid #3b82f6; color:white; padding:4px 8px; border-radius:4px; 
+                                 font-size:0.6rem; transform:translate(-50%, -50%); z-index:10; text-align:center; min-width:80px;">
+                                <div style="font-weight:bold; border-bottom:1px solid #3b82f644; margin-bottom:2px;">${tx.concepto}</div>
+                                <div style="color:#4ade80;">${tx.liquidación}€</div>
                             </div>`;
                 }).join('')}
             </div>
