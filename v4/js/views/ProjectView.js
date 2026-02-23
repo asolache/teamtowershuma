@@ -12,14 +12,17 @@ export const ProjectView = {
         const alerts = store.getAlerts(projectId);
         const transactions = [...project.transactions].reverse();
 
+        // 🛡️ FILTRO DE INMUTABILIDAD: Solo mostramos roles dinámicos que NO estén archivados
+        const activeDynamicRoles = (project.dynamicRoles || []).filter(dr => !dr.isArchived);
+
         // Generar las opciones de roles para los selectores de inyección
         const roleOptions = `
             <optgroup label="Roles Base">
                 ${Object.keys(project.customRoles).map(id => `<option value="${id}">${project.customRoles[id]}</option>`).join('')}
             </optgroup>
-            ${(project.dynamicRoles || []).length > 0 ? `
+            ${activeDynamicRoles.length > 0 ? `
                 <optgroup label="Especialistas">
-                    ${project.dynamicRoles.map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
+                    ${activeDynamicRoles.map(dr => `<option value="${dr.id}">${dr.name}</option>`).join('')}
                 </optgroup>
             ` : ''}
         `;
@@ -57,10 +60,10 @@ export const ProjectView = {
                                 `).join('')}
                             </div>
 
-                            ${(project.dynamicRoles || []).length > 0 ? `
+                            ${activeDynamicRoles.length > 0 ? `
                                 <div>
                                     <strong style="font-size: 0.7rem; color: #8b949e;">ESPECIALISTAS:</strong>
-                                    ${project.dynamicRoles.map(dr => `
+                                    ${activeDynamicRoles.map(dr => `
                                         <div style="background:#0d1117; border:1px solid #21262d; padding:8px; border-radius:4px; margin-top:5px;">
                                             <div style="font-weight:bold; font-size:0.8rem; color:#58a6ff;">${dr.name}</div>
                                             <div style="font-size:0.65rem; color:#8b949e;">${dr.area}</div>
