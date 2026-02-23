@@ -6,27 +6,18 @@ export const ValueMapView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return "";
 
-        // 1. Recopilamos todos los nodos disponibles (Base + Dinámicos)
         const allNodes = [
-            ...Object.keys(project.customRoles).map(id => ({
-                id,
-                name: project.customRoles[id],
-                type: 'base'
-            })),
-            ...(project.dynamicRoles || []).map(dr => ({
-                id: dr.id,
-                name: dr.name,
-                type: 'dynamic'
-            }))
+            ...Object.keys(project.customRoles).map(id => ({ id, name: project.customRoles[id], type: 'base' })),
+            ...(project.dynamicRoles || []).map(dr => ({ id: dr.id, name: dr.name, type: 'dynamic' }))
         ];
 
-        // 2. Posicionamiento en círculo (Layout radial para evitar el nodo central)
+        // Layout Radial
         const centerX = 400;
-        const centerY = 225;
-        const radius = 160;
+        const centerY = 250;
+        const radius = 170;
         
         const nodesWithPos = allNodes.map((node, i) => {
-            const angle = (i / allNodes.length) * 2 * Math.PI;
+            const angle = (i / allNodes.length) * 2 * Math.PI - (Math.PI / 2); // Empezar arriba
             return {
                 ...node,
                 x: centerX + radius * Math.cos(angle),
@@ -34,70 +25,76 @@ export const ValueMapView = {
             };
         });
 
-        // 3. Extraer relaciones del Ledger (Tuberías de Valor)
-        // Por ahora, como las transacciones v4 inyectan valor al "sistema", 
-        // vamos a conectar los roles que han participado hacia los roles estratégicos (@anxaneta/@aixecador)
-        // o mapear flujos directos si existen.
-        
-        // Calculamos el valor total por rol para el grosor de los nodos
-        const roleStats = project.transactions.reduce((acc, t) => {
-            acc[t.rolId] = (acc[t.rolId] || 0) + t.liquidación;
-            return acc;
-        }, {});
+        // Agrupar transacciones por par (Origen -> Destino) para calcular el grosor (Value Flow)
+        const flows = {};
+        const roleStats = {}; // Para el tamaño del nodo
+
+        project.transactions.forEach(t => {
+            // Stats para tamaño del nodo (valor aportado)
+            roleStats[t.rolId] = (roleStats[t.rolId] || 0) + t.liquidación;
+            
+            // Stats para la línea de conexión
+            if (!t.toId) return; 
+            const flowKey = `${t.rolId}->${t.toId}`;
+            flows[flowKey] = (flows[flowKey] || 0) + t.liquidación;
+        });
 
         return `
-            <svg viewBox="0 0 800 450" style="width:100%; height:100%; background:#0d1117;">
+            <svg viewBox="0 0 800 500" style="width:100%; height:100%; background:#0d1117;">
                 <defs>
                     <filter id="glow">
-                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                         <feMerge>
                             <feMergeNode in="coloredBlur"/>
                             <feMergeNode in="SourceGraphic"/>
                         </feMerge>
                     </filter>
+                    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="24" refY="4" orient="auto">
+                        <polygon points="0 0, 8 4, 0 8" fill="#58a6ff" />
+                    </marker>
                 </defs>
 
-                ${nodesWithPos.map((src, i) => 
-                    nodesWithPos.slice(i + 1).map(target => {
-                        const hasInteraction = project.transactions.some(t => 
-                            (t.rolId === src.id) || (t.rolId === target.id)
-                        );
-                        if (!hasInteraction) return '';
-                        
-                        return `
-                            <line x1="${src.x}" y1="${src.y}" x2="${target.x}" y2="${target.y}" 
-                                  stroke="#30363d" stroke-width="1" stroke-dasharray="2,2" />
-                        `;
-                    }).join('')
-                ).join('')}
+                ${Object.keys(flows).map(flowKey => {
+                    const [fromId, toId] = flowKey.split('->');
+                    const src = nodesWithPos.find(n => n.id === fromId);
+                    const tgt = nodesWithPos.find(n => n.id === toId);
+                    if (!src || !tgt) return '';
 
-                ${nodesWithPos.map(n => {
-                    const value = roleStats[n.id] || 0;
-                    const size = 18 + Math.min(value / 500, 15); // El nodo crece con el valor inyectado
-                    const color = n.type === 'base' ? '#238636' : '#1f6feb';
-                    const active = value > 0;
+                    const totalValue = flows[flowKey];
+                    // El grosor de la línea escala según el valor (mínimo 1px, máximo 12px)
+                    const strokeWidth = Math.max(1, Math.min(totalValue / 200, 12)); 
 
                     return `
-                        <g class="vna-node" style="cursor:pointer;">
+                        <g>
+                            <title>${totalValue.toLocaleString()}€ transferidos</title>
+                            <line x1="${src.x}" y1="${src.y}" x2="${tgt.x}" y2="${tgt.y}" 
+                                  stroke="#58a6ff" stroke-width="${strokeWidth}" stroke-opacity="0.6"
+                                  marker-end="url(#arrowhead)" />
+                        </g>
+                    `;
+                }).join('')}
+
+                ${nodesWithPos.map(n => {
+                    const valueProduced = roleStats[n.id] || 0;
+                    const size = 20 + Math.min(valueProduced / 400, 20); // Crece según aporta
+                    const color = n.type === 'base' ? '#238636' : '#a371f7'; // Verdes = Base, Morados = Custom
+                    const active = valueProduced > 0;
+
+                    return `
+                        <g class="vna-node" style="cursor:pointer; transition: all 0.3s;">
                             <circle cx="${n.x}" cy="${n.y}" r="${size}" 
                                     fill="#161b22" 
                                     stroke="${active ? color : '#30363d'}" 
                                     stroke-width="${active ? 3 : 1}"
                                     filter="${active ? 'url(#glow)' : ''}" />
                             
-                            <text x="${n.x}" y="${n.y + 5}" text-anchor="middle" fill="white" font-size="8" font-weight="bold" style="pointer-events:none;">
+                            <text x="${n.x}" y="${n.y + 4}" text-anchor="middle" fill="#c9d1d9" font-size="9" font-weight="bold" style="pointer-events:none;">
                                 ${n.id.startsWith('custom') ? 'EXT' : n.id.replace('@','').toUpperCase()}
                             </text>
                             
-                            <text x="${n.x}" y="${n.y + size + 15}" text-anchor="middle" fill="${active ? '#f0f6fc' : '#8b949e'}" font-size="11" font-weight="${active ? 'bold' : 'normal'}">
+                            <text x="${n.x}" y="${n.y + size + 16}" text-anchor="middle" fill="${active ? '#f0f6fc' : '#8b949e'}" font-size="12" font-weight="${active ? 'bold' : 'normal'}">
                                 ${n.name}
                             </text>
-                            
-                            ${value > 0 ? `
-                                <text x="${n.x}" y="${n.y - size - 10}" text-anchor="middle" fill="#3fb950" font-size="10" font-weight="bold">
-                                    ${value.toLocaleString()}€
-                                </text>
-                            ` : ''}
                         </g>
                     `;
                 }).join('')}
