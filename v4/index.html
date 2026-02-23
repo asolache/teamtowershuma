@@ -1,33 +1,63 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><title>Dashboard SOS v4</title></head>
-<body style="background:#010409; color:white; font-family:sans-serif; padding:40px;">
-    <h1>🏗️ Gestión de Castells</h1>
-    <div style="background:#0d1117; padding:20px; border-radius:8px; border:1px solid #30363d; max-width:500px;">
-        <h3>Nuevo Proyecto</h3>
-        <input id="name" placeholder="Nombre..." style="width:100%; padding:10px; margin-bottom:10px;">
-        <select id="sector" style="width:100%; padding:10px; margin-bottom:10px;">
-            <option value="software">Software / IT</option>
-            <option value="marketing">Marketing / Agencia</option>
+<head>
+    <meta charset="UTF-8">
+    <title>SOS v4 | Dashboard</title>
+    <style>
+        body { background: #010409; color: #c9d1d9; font-family: sans-serif; padding: 40px; }
+        .card { background: #0d1117; border: 1px solid #30363d; padding: 20px; border-radius: 8px; max-width: 600px; margin-bottom: 20px; }
+        input, select { padding: 10px; background: #000; border: 1px solid #30363d; color: white; width: 100%; margin-bottom: 10px; border-radius: 4px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .btn-green { background: #238636; color: white; }
+        .btn-outline { border: 1px solid #30363d; color: #58a6ff; background: transparent; margin-left: 10px; }
+        .project-link { display: block; padding: 10px; border-bottom: 1px solid #30363d; color: #58a6ff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header style="display: flex; justify-content: space-between; align-items: center; max-width: 600px;">
+        <h1>🏗️ SOS Dashboard</h1>
+        <a href="tests/run-tests.html" class="btn btn-outline">🧪 Run Tests</a>
+    </header>
+
+    <div class="card">
+        <h3>Crear nuevo Castell</h3>
+        <input id="name" placeholder="Nombre del proyecto (ej: Web TeamTowers)">
+        <select id="sector">
+            <option value="software">Sector Software / IT</option>
+            <option value="marketing">Sector Marketing / Agencia</option>
         </select>
-        <button onclick="nuevo()" style="width:100%; padding:10px; background:#238636; color:white; border:none; cursor:pointer;">Crear</button>
+        <button onclick="crear()" class="btn btn-green">Inaugurar Proyecto</button>
     </div>
-    <div id="lista" style="margin-top:20px;"></div>
+
+    <div class="card">
+        <h3>Proyectos Activos</h3>
+        <div id="lista"></div>
+    </div>
 
     <script type="module">
         import { store } from './js/core/store.js';
-        window.nuevo = () => {
+
+        window.crear = () => {
             const nombre = document.getElementById('name').value;
             const sector = document.getElementById('sector').value;
-            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'p-'+Date.now(), nombre, sector } });
+            if (!nombre) return alert("El proyecto necesita un nombre");
+            
+            store.dispatch({ 
+                type: 'ADD_PROJECT', 
+                payload: { id: 'p-' + Date.now(), nombre, sector } 
+            });
+            document.getElementById('name').value = "";
         };
+
         const render = () => {
-            document.getElementById('lista').innerHTML = store.getState().projects.map(p => `
-                <div style="padding:10px; border-bottom:1px solid #333;">
-                    ${p.nombre} (${p.sector}) - <a href="project.html?id=${p.id}" style="color:#58a6ff;">Abrir Canvas</a>
-                </div>
+            const state = store.getState();
+            document.getElementById('lista').innerHTML = state.projects.map(p => `
+                <a href="project.html?id=${p.id}" class="project-link">
+                    🚀 ${p.nombre} <span style="font-size:0.7rem; color:#8b949e;">(${p.sector})</span>
+                </a>
             `).join('');
         };
+
         window.addEventListener('store-ready', render);
         store.subscribe(render);
     </script>
