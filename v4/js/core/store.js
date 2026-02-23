@@ -1,9 +1,10 @@
 /**
- * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE
+ * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (REPARADO)
  */
 export class TTStore {
     constructor() {
-        const ontologiaMaestra = {
+        // Definimos la Ontología Maestra como una constante interna accesible
+        this.ontologyStatic = {
             sectores: { 
                 marketing: { "@anxaneta": "Strategy Director", "@aixecador": "Creative Director", "@dosos": "Content Curator", "@baixos": "Graphic Designer", "@pinya": "Ads Manager" },
                 Web3: { "@anxaneta": "Lead Architect / Tokenomist", "@aixecador": "Smart Contract Dev", "@dosos": "Security Auditor", "@baixos": "DApp Developer", "@pinya": "Validator / IA" },
@@ -20,8 +21,8 @@ export class TTStore {
 
         this.state = {
             projects: [],
-            ontology: ontologiaMaestra,
-            roles: ontologiaMaestra.roles
+            ontology: this.ontologyStatic,
+            roles: this.ontologyStatic.roles
         };
         this.listeners = [];
         this.init();
@@ -29,10 +30,22 @@ export class TTStore {
 
     init() {
         const saved = localStorage.getItem('teamtowers-v4-state');
-        if (saved) this.state = JSON.parse(saved);
-        // Aseguramos que la ontología esté siempre actualizada
-        this.state.ontology = this.constructor().ontology; 
-        window.dispatchEvent(new Event('store-ready'));
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                this.state.projects = parsed.projects || [];
+                // Actualizamos siempre la ontología del estado con la estática para evitar desajustes
+                this.state.ontology = this.ontologyStatic;
+                this.state.roles = this.ontologyStatic.roles;
+            } catch (e) {
+                console.error("SOS: Error recuperando estado", e);
+            }
+        }
+        
+        // Pequeño delay para asegurar que el DOM esté listo antes del evento
+        setTimeout(() => {
+            window.dispatchEvent(new Event('store-ready'));
+        }, 10);
     }
 
     // --- MOTOR DE RESILIENCIA ---
@@ -40,12 +53,11 @@ export class TTStore {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || p.transactions.length === 0) return 100;
         
-        const totalValue = p.transactions.reduce((acc, t) => acc + t.liquidación, 0);
+        const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
         const auditValue = p.transactions
             .filter(t => t.rolId === '@dosos')
-            .reduce((acc, t) => acc + t.liquidación, 0);
+            .reduce((acc, t) => acc + (t.liquidación || 0), 0);
         
-        // Si no hay auditoría, la salud cae drásticamente según el peso del proyecto
         return totalValue > 0 ? Math.round((auditValue / totalValue) * 100) : 100;
     }
 
@@ -55,17 +67,15 @@ export class TTStore {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return [];
 
-        // Alerta 1: Riesgo Deuda Técnica
-        const tieneAuditoria = p.transactions.some(t => t.rolId === '@dosos');
-        if (p.transactions.length > 0 && !tieneAuditoria) {
+        if (p.transactions.length > 0 && !p.transactions.some(t => t.rolId === '@dosos')) {
             alerts.push({ code: 'RIESGO_DEUDA_TECNICA', level: 'CRITICAL' });
         }
 
-        // Alerta 2: Desviación de Precio
         p.transactions.forEach(t => {
             const r = this.state.roles.find(rol => rol.id === t.rolId);
+            if (!r) return;
             const precioHoraReal = t.liquidación / (t.horas * r.multiplier);
-            if (precioHoraReal > r.precio_base_h * 1.5) { // Tolerancia del 50%
+            if (precioHoraReal > r.precio_base_h * 1.5) {
                 alerts.push({ code: 'DESVIACION_PRECIO', msg: `Sobre-liquidación en ${t.rolId}` });
             }
         });
@@ -86,13 +96,15 @@ export class TTStore {
 
             case 'ADD_TRANSACTION':
                 const project = this.state.projects.find(x => x.id === payload.projectId);
-                const role = this.state.roles.find(r => r.id === payload.transaction.rolId);
+                if (!project) return;
                 
-                // --- CIRCUIT BREAKER ---
+                const role = this.state.roles.find(r => r.id === payload.transaction.rolId);
+                if (!role) return;
+                
                 const salud = this.calculateResilience(payload.projectId);
                 if (salud < 30 && role.multiplier > 2.0) {
-                    console.error("SOS: Circuit Breaker activado. Bloqueada liquidación estratégica por baja resiliencia.");
-                    return; // Bloqueo total
+                    console.error("SOS: Circuit Breaker activado.");
+                    return; 
                 }
 
                 const horas = payload.transaction.horas || 1;
