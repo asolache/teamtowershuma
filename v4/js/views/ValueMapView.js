@@ -6,60 +6,101 @@ export const ValueMapView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return "";
 
-        // Definimos posiciones
-        // Roles base: arriba en arco
-        const baseRolesNodes = Object.keys(project.customRoles).map((id, i) => ({
-            id,
-            name: project.customRoles[id],
-            x: 150 + (i * 120),
-            y: 100,
-            color: '#238636'
-        }));
+        // 1. Recopilamos todos los nodos disponibles (Base + Dinámicos)
+        const allNodes = [
+            ...Object.keys(project.customRoles).map(id => ({
+                id,
+                name: project.customRoles[id],
+                type: 'base'
+            })),
+            ...(project.dynamicRoles || []).map(dr => ({
+                id: dr.id,
+                name: dr.name,
+                type: 'dynamic'
+            }))
+        ];
 
-        // Roles dinámicos: abajo en arco
-        const dynamicRolesNodes = (project.dynamicRoles || []).map((dr, i) => ({
-            id: dr.id,
-            name: dr.name,
-            x: 100 + (i * 130),
-            y: 300,
-            color: '#1f6feb',
-            isCustom: true
-        }));
+        // 2. Posicionamiento en círculo (Layout radial para evitar el nodo central)
+        const centerX = 400;
+        const centerY = 225;
+        const radius = 160;
+        
+        const nodesWithPos = allNodes.map((node, i) => {
+            const angle = (i / allNodes.length) * 2 * Math.PI;
+            return {
+                ...node,
+                x: centerX + radius * Math.cos(angle),
+                y: centerY + radius * Math.sin(angle)
+            };
+        });
 
-        const nodes = [...baseRolesNodes, ...dynamicRolesNodes];
-        const center = { x: 400, y: 200 }; // Nodo central del proyecto
+        // 3. Extraer relaciones del Ledger (Tuberías de Valor)
+        // Por ahora, como las transacciones v4 inyectan valor al "sistema", 
+        // vamos a conectar los roles que han participado hacia los roles estratégicos (@anxaneta/@aixecador)
+        // o mapear flujos directos si existen.
+        
+        // Calculamos el valor total por rol para el grosor de los nodos
+        const roleStats = project.transactions.reduce((acc, t) => {
+            acc[t.rolId] = (acc[t.rolId] || 0) + t.liquidación;
+            return acc;
+        }, {});
 
         return `
             <svg viewBox="0 0 800 450" style="width:100%; height:100%; background:#0d1117;">
                 <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#30363d" />
-                    </marker>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
                 </defs>
 
-                ${nodes.map(n => `
-                    <line x1="${n.x}" y1="${n.y}" x2="${center.x}" y2="${center.y}" 
-                          stroke="#21262d" stroke-width="1.5" stroke-dasharray="4"
-                          marker-end="url(#arrowhead)" />
-                `).join('')}
+                ${nodesWithPos.map((src, i) => 
+                    nodesWithPos.slice(i + 1).map(target => {
+                        const hasInteraction = project.transactions.some(t => 
+                            (t.rolId === src.id) || (t.rolId === target.id)
+                        );
+                        if (!hasInteraction) return '';
+                        
+                        return `
+                            <line x1="${src.x}" y1="${src.y}" x2="${target.x}" y2="${target.y}" 
+                                  stroke="#30363d" stroke-width="1" stroke-dasharray="2,2" />
+                        `;
+                    }).join('')
+                ).join('')}
 
-                <g>
-                    <circle cx="${center.x}" cy="${center.y}" r="30" fill="#161b22" stroke="#30363d" stroke-width="2" />
-                    <text x="${center.x}" y="${center.y + 5}" text-anchor="middle" fill="#58a6ff" font-size="10" font-weight="bold">PROJECT</text>
-                </g>
+                ${nodesWithPos.map(n => {
+                    const value = roleStats[n.id] || 0;
+                    const size = 18 + Math.min(value / 500, 15); // El nodo crece con el valor inyectado
+                    const color = n.type === 'base' ? '#238636' : '#1f6feb';
+                    const active = value > 0;
 
-                ${nodes.map(n => `
-                    <g class="vna-node" style="cursor:pointer;">
-                        <title>${n.name}</title>
-                        <circle cx="${n.x}" cy="${n.y}" r="22" fill="#161b22" stroke="${n.color}" stroke-width="3" />
-                        <text x="${n.x}" y="${n.y + 5}" text-anchor="middle" fill="white" font-size="8" font-weight="bold">
-                            ${n.id.startsWith('custom') ? 'EXT' : n.id.replace('@','').toUpperCase()}
-                        </text>
-                        <text x="${n.x}" y="${n.y + 38}" text-anchor="middle" fill="#8b949e" font-size="10" font-weight="normal">
-                            ${n.name}
-                        </text>
-                    </g>
-                `).join('')}
+                    return `
+                        <g class="vna-node" style="cursor:pointer;">
+                            <circle cx="${n.x}" cy="${n.y}" r="${size}" 
+                                    fill="#161b22" 
+                                    stroke="${active ? color : '#30363d'}" 
+                                    stroke-width="${active ? 3 : 1}"
+                                    filter="${active ? 'url(#glow)' : ''}" />
+                            
+                            <text x="${n.x}" y="${n.y + 5}" text-anchor="middle" fill="white" font-size="8" font-weight="bold" style="pointer-events:none;">
+                                ${n.id.startsWith('custom') ? 'EXT' : n.id.replace('@','').toUpperCase()}
+                            </text>
+                            
+                            <text x="${n.x}" y="${n.y + size + 15}" text-anchor="middle" fill="${active ? '#f0f6fc' : '#8b949e'}" font-size="11" font-weight="${active ? 'bold' : 'normal'}">
+                                ${n.name}
+                            </text>
+                            
+                            ${value > 0 ? `
+                                <text x="${n.x}" y="${n.y - size - 10}" text-anchor="middle" fill="#3fb950" font-size="10" font-weight="bold">
+                                    ${value.toLocaleString()}€
+                                </text>
+                            ` : ''}
+                        </g>
+                    `;
+                }).join('')}
             </svg>
         `;
     }
