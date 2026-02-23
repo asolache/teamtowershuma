@@ -46,9 +46,12 @@
          * ROUTER: Orquestador de navegación SPA
          */
         function router() {
-            const rawHash = window.location.hash || '#/';
-            // Normalizamos el hash eliminando slash final si existe (ej: #/about/ -> #/about)
-            const hash = rawHash.replace(/\/$/, "");
+            let hash = window.location.hash || '#/';
+            
+            // Limpieza de hash: si tiene una barra al final Y no es exactamente la raíz '#/', se la quitamos
+            if (hash !== '#/' && hash.endsWith('/')) {
+                hash = hash.slice(0, -1);
+            }
             
             console.log("SOS Kernel -> Navegando a:", hash);
 
@@ -57,7 +60,7 @@
             void app.offsetWidth; // Reflow forzoso para reiniciar animación
 
             // Lógica de Enrutamiento
-            if (hash === '#/' || hash === '') {
+            if (hash === '#/' || hash === '#' || hash === '') {
                 app.innerHTML = HomeView.render();
             } 
             else if (hash === '#/about') {
@@ -94,12 +97,15 @@
             router();
         });
 
-        // Escucha cambios de URL (atrás/adelante en el navegador)
+        // Escucha cambios de URL (atrás/adelante en el navegador o clics en enlaces)
         window.addEventListener('hashchange', router);
 
-        // Fallback: Si el store tarda más de lo previsto, intentar router inicial
-        if (store && store.state && store.state.projects.length > 0) {
-            router();
+        // Fallback de seguridad: Si el store tarda más de lo previsto o el evento se pierde
+        if (store && store.state) {
+            // Un pequeño timeout para asegurar que el evento custom no pise esta carga
+            setTimeout(() => {
+                if(app.innerHTML === '') router();
+            }, 100);
         }
 
     </script>
