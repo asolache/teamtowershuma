@@ -5,35 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeamTowers SOS v4.3 | Dashboard</title>
     <style>
-        :root {
-            --bg-color: #010409;
-            --card-bg: #0d1117;
-            --border-color: #30363d;
-            --text-main: #c9d1d9;
-            --accent: #58a6ff;
-        }
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
-        }
+        :root { --bg-color: #010409; --text-main: #c9d1d9; --accent: #58a6ff; }
+        body { background-color: var(--bg-color); color: var(--text-main); margin: 0; font-family: sans-serif; overflow-x: hidden; }
         #app { min-height: 100vh; }
-        
-        /* Animación de entrada para las vistas */
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div id="app"></div>
-
     <script type="module">
         import { store } from './js/core/store.js';
         import { HomeView } from './js/views/HomeView.js';
@@ -43,79 +23,31 @@
 
         const app = document.getElementById('app');
 
-        /**
-         * ROUTER: Orquestador de navegación SPA
-         */
         function router() {
             let hash = window.location.hash || '#/';
+            if (hash !== '#/' && hash.endsWith('/')) hash = hash.slice(0, -1);
             
-            // Limpieza de hash
-            if (hash !== '#/' && hash.endsWith('/')) {
-                hash = hash.slice(0, -1);
-            }
-            
-            console.log("SOS Kernel -> Navegando a:", hash);
-
-            // Reiniciar estado visual para la transición
             app.classList.remove('fade-in');
             void app.offsetWidth;
 
-            // Lógica de Enrutamiento
             if (hash === '#/' || hash === '#' || hash === '') {
                 app.innerHTML = HomeView.render();
-            } 
-            else if (hash === '#/about') {
+            } else if (hash === '#/about') {
                 app.innerHTML = AboutView.render();
-            } 
-            else if (hash.startsWith('#/project/')) {
+            } else if (hash.startsWith('#/project/')) {
                 const parts = hash.split('/');
-                const projectId = parts[2];
-                const action = parts[3]; 
-
-                if (projectId) {
-                    if (action === 'edit') {
-                        app.innerHTML = ProjectEditView.render(projectId);
-                    } else if (action === 'accounting') {
-                        app.innerHTML = `
-                            <div style="padding:100px; text-align:center; color:#c9d1d9;">
-                                <h2>💰 Contabilidad de Valor</h2>
-                                <p>Área de operaciones en construcción (Siguiente Sprint)...</p>
-                                <a href="#/project/${projectId}" style="color:#58a6ff; text-decoration:none;">← Volver al Mapa de Valor</a>
-                            </div>
-                        `;
-                    } else {
-                        app.innerHTML = ProjectView.render(projectId);
-                    }
-                } else {
-                    window.location.hash = '#/';
-                }
-            } 
-            else {
-                app.innerHTML = `
-                    <div style="padding:100px; text-align:center; color:#8b949e;">
-                        <h2 style="color:#f0f6fc;">⚠️ 404 - Coordenada Inválida</h2>
-                        <p>El sector <code>${hash}</code> no existe en la ontología del Castell.</p>
-                        <a href="#/" style="color:var(--accent); text-decoration:none; font-weight:bold;">← Volver al Dashboard</a>
-                    </div>
-                `;
+                const pId = parts[2];
+                const action = parts[3];
+                if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
+                else if (action === 'accounting') app.innerHTML = '<div style="padding:100px;text-align:center;"><h2>💰 Contabilidad</h2><a href="#/project/'+pId+'">Volver</a></div>';
+                else app.innerHTML = ProjectView.render(pId);
             }
-
             app.classList.add('fade-in');
         }
 
-        // --- GESTIÓN DE CICLO DE VIDA ---
-        window.addEventListener('store-ready', () => {
-            console.log("SOS v4.3: Motor de datos listo.");
-            router();
-        });
-
+        window.addEventListener('store-ready', router);
         window.addEventListener('hashchange', router);
-
-        if (store && store.state) {
-            setTimeout(() => {
-                if(app.innerHTML === '') router();
-            }, 100);
-        }
+        if (store && store.state) setTimeout(router, 50);
     </script>
 </body>
 </html>
