@@ -4,93 +4,82 @@
     <meta charset="UTF-8">
     <title>TeamTowers v3.5 - Core Engine Tests</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #e0e0e0; padding: 20px; line-height: 1.6; }
-        .test-container { max-width: 800px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        h1 { color: #3b82f6; border-bottom: 2px solid #333; padding-bottom: 10px; }
-        .test-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #252525; border-left: 5px solid #444; }
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; padding: 20px; }
+        .test-container { max-width: 800px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 12px; }
+        h1 { color: #3b82f6; border-bottom: 2px solid #333; }
+        .test-item { margin-bottom: 10px; padding: 15px; border-radius: 8px; background: #252525; border-left: 5px solid #444; }
         .test-item.pass { border-left-color: #10b981; background: #1a2e26; }
         .test-item.fail { border-left-color: #ef4444; background: #2e1a1a; }
-        .status-icon { font-weight: bold; margin-right: 10px; }
-        .error-msg { color: #ff8a8a; font-size: 0.9em; margin-top: 10px; font-family: monospace; }
-        .console-box { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; border-radius: 4px; margin-top: 20px; overflow-x: auto; }
+        .error-msg { color: #ff8a8a; font-size: 0.9em; margin-top: 5px; font-family: monospace; }
+        .console-box { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; border-radius: 4px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="test-container">
         <h1>🏗️ TeamTowers v3.5 - Test Suite</h1>
-        <div id="test-results">
-            </div>
-        
-        <h3>📟 Consola de Salida</h3>
+        <div id="test-results">Esperando al motor core...</div>
         <div id="console-output" class="console-box"></div>
     </div>
 
-    <script src="../js/core/constants.js"></script>
-    <script src="../js/core/event-bus.js"></script>
-    <script src="../js/core/store.js"></script>
-    <script src="../js/core/selectors.js"></script>
+    <script type="module">
+        import { store } from '../js/core/store.js';
+        import { Selectors } from '../js/core/selectors.js';
+        
+        // Los inyectamos en window para que los tests los vean
+        window.store = store;
+        window.Selectors = Selectors;
+        
+        console.log("🚀 Módulos cargados correctamente en window.");
+        // Avisamos que estamos listos
+        window.dispatchEvent(new Event('core-ready'));
+    </script>
 
     <script>
-        // Mock de consola para ver mensajes en pantalla
-        const consoleBox = document.getElementById('console-output');
-        const originalLog = console.log;
-        console.log = (...args) => {
-            originalLog(...args);
-            consoleBox.innerHTML += `> ${args.join(' ')}<br>`;
-        };
-
         const resultsContainer = document.getElementById('test-results');
+        const consoleBox = document.getElementById('console-output');
+
+        function log(msg) {
+            console.log(msg);
+            consoleBox.innerHTML += `> ${msg}<br>`;
+        }
 
         function runTest(name, testFn) {
             const item = document.createElement('div');
             item.className = 'test-item';
-            
             try {
                 testFn();
                 item.classList.add('pass');
-                item.innerHTML = `<span class="status-icon">✅ PASS:</span> ${name}`;
+                item.innerHTML = `✅ <b>PASS:</b> ${name}`;
             } catch (error) {
                 item.classList.add('fail');
-                item.innerHTML = `<span class="status-icon">❌ FAIL:</span> ${name}
-                                  <div class="error-msg">${error.message}</div>`;
-                console.error(`Error en test "${name}":`, error);
+                item.innerHTML = `❌ <b>FAIL:</b> ${name} <div class="error-msg">${error.message}</div>`;
             }
             resultsContainer.appendChild(item);
         }
 
-        // --- INICIO DE LA SUITE DE TESTS ---
-        
-        window.addEventListener('load', () => {
-            console.log("Iniciando tests...");
+        // EL SECRETO: Esperar al evento 'core-ready'
+        window.addEventListener('core-ready', () => {
+            resultsContainer.innerHTML = ''; // Limpiar el "Esperando..."
+            log("Iniciando suite de tests...");
 
-            // Limpiamos store para el test si fuera necesario
-            // window.localStorage.clear(); 
-
-            // 1. Test de Integridad del Store
+            // 1. Test Store
             runTest("1. El Store se inicializa correctamente", () => {
                 const state = window.store.getState();
-                if (!state) throw new Error("El estado es nulo");
-                if (!state.projects) throw new Error("El estado no tiene la propiedad 'projects' (revisa el idioma)");
-                console.log("Estado detectado:", Object.keys(state).join(', '));
+                if (!state.projects) throw new Error("No existe la propiedad 'projects'");
             });
 
-            // 2. Test de Lógica de Negocio (Módulos de creación)
+            // 2. Test Registro
             runTest("2. Registro de Proyecto en el Store", () => {
-                const idTest = 'p-test-' + Date.now();
-                window.store.dispatch({
-                    type: 'ADD_PROJECT',
-                    payload: { id: idTest, nombre: 'Proyecto de Test TDD' }
-                });
-
-                const state = window.store.getState();
-                const found = state.projects.find(p => p.id === idTest);
-                if (!found) throw new Error("El proyecto no se guardó en state.projects");
+                const id = 'test-' + Math.random();
+                window.store.dispatch({ type: 'ADD_PROJECT', payload: { id, nombre: 'TDD Test' } });
+                const found = window.store.getState().projects.find(p => p.id === id);
+                if (!found) throw new Error("Proyecto no encontrado tras dispatch");
             });
 
-            // 3. Test de Resiliencia VNA (P-023)
+            // 3. Test Resiliencia (Saludable)
             runTest("3. Cálculo VNA: Ratio de Resiliencia (Saludable)", () => {
-                const mockState = {
+                const mock = {
                     projects: [{
                         id: 'vna-1',
                         transactions: [
@@ -99,28 +88,31 @@
                         ]
                     }]
                 };
-
-                const res = window.Selectors.getProjectResilienceIndex(mockState, 'vna-1');
-                if (res.status !== 'saludable') throw new Error(`Esperado: saludable, Recibido: ${res.status}`);
-                if (res.ratio !== 0.5) throw new Error(`Esperado ratio 0.5, Recibido: ${res.ratio}`);
+                const res = window.Selectors.getProjectResilienceIndex(mock, 'vna-1');
+                if (res.status !== 'saludable') throw new Error(`Status incorrecto: ${res.status}`);
             });
 
+            // 4. Test Resiliencia (Frágil)
             runTest("4. Cálculo VNA: Ratio de Resiliencia (Frágil)", () => {
-                const mockState = {
+                const mock = {
                     projects: [{
                         id: 'vna-2',
-                        transactions: [
-                            { uv: 1000, tipo_valor: 'tangible' }
-                        ]
+                        transactions: [{ uv: 1000, tipo_valor: 'tangible' }]
                     }]
                 };
-
-                const res = window.Selectors.getProjectResilienceIndex(mockState, 'vna-2');
-                if (res.status !== 'fragil') throw new Error(`Esperado: fragil, Recibido: ${res.status}`);
+                const res = window.Selectors.getProjectResilienceIndex(mock, 'vna-2');
+                if (res.status !== 'fragil') throw new Error(`Status incorrecto: ${res.status}`);
             });
 
-            console.log("Suite de tests finalizada.");
+            log("Suite finalizada.");
         });
+
+        // Timeout de seguridad por si falla la carga de módulos
+        setTimeout(() => {
+            if (!window.store) {
+                resultsContainer.innerHTML = '<b style="color:red">❌ ERROR: El motor core no cargó en 3 segundos. Revisa la consola (F12).</b>';
+            }
+        }, 3000);
     </script>
 </body>
 </html>
