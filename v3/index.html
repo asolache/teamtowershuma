@@ -3,145 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers Humà v3.5</title>
+    <title>TeamTowers v3.5 | Ecosistema Ágil</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
     <style>
-        /* ... (mismos estilos) ... */
+        /* Splash screen simple para evitar parpadeos */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #121212; display: flex; justify-content: center;
+            align-items: center; z-index: 9999; color: white; font-family: sans-serif;
+        }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="app">
-        <header class="app-header">
-            <div class="logo">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">TeamTowers v3.5</span>
-            </div>
-            <nav class="main-nav">
-               <a href="#" data-page="dashboard" class="nav-link">📊 Dashboard</a> 
-                <a href="#" data-page="projects" class="nav-link">📋 Proyectos</a>
-                <a href="#" data-page="create-project" class="nav-link nav-highlight">➕ Nuevo Proyecto</a>
-                <a href="#" data-page="users" class="nav-link">👥 Usuarios</a>
-                <a href="#" data-page="castell" class="nav-link">🏰 Castell</a>
-                <a href="#" data-page="value-map" class="nav-link">🗺️ Value Map</a>
-                <a href="#" data-page="value-accounting" class="nav-link">💰 Value Accounting</a>
-            </nav>
-        </header>
 
-        <div class="breadcrumb" id="breadcrumb">
-            <a href="#" data-page="dashboard">Inicio</a>
+    <div id="loading-overlay">
+        <div style="text-align: center;">
+            <div class="spinner"></div>
+            <p>Iniciando Motor VNA...</p>
         </div>
-
-        <main id="main-content">
-            <div class="loading">Iniciando TeamTowers v3.5...</div>
-        </main>
     </div>
 
-    <!-- ===== CORE ===== -->
+    <header class="main-header">
+        <div class="logo" onclick="window.router.navigate('dashboard')">
+            <span class="logo-icon">🏰</span> 
+            <span class="logo-text">TeamTowers <small>v3.5</small></span>
+        </div>
+        <nav class="main-nav">
+            <button onclick="window.router.navigate('dashboard')">📊 Dashboard</button>
+            <button onclick="window.router.navigate('projects')">🏗️ Proyectos</button>
+            <button onclick="window.exportData()">📥 Exportar</button>
+        </nav>
+    </header>
+
+    <main id="app-viewport">
+        </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 TeamTowers - Human Management Architecture</p>
+    </footer>
+
     <script src="js/core/constants.js"></script>
     <script src="js/core/event-bus.js"></script>
     <script src="js/core/store.js"></script>
     <script src="js/core/selectors.js"></script>
+    <script src="js/core/router.js"></script>
     <script src="js/core/export-manager.js"></script>
 
-    <!-- ===== COMPONENTES UI ===== -->
-    <script src="js/components/tt-metric-card.js"></script>
-    <script src="js/components/tt-data-table.js"></script>
-    <script src="js/components/tt-filter-bar.js"></script>
-    <script src="js/components/tt-pie-chart.js"></script>
-    <script src="js/components/tt-breadcrumb.js"></script>
-    <script src="js/components/tt-pinya-visual.js"></script>
     <script src="js/components/tt-form.js"></script>
-    <script src="js/components/tt-role-selector.js"></script>
     <script src="js/components/tt-dynamic-form.js"></script>
+    <script src="js/components/tt-role-selector.js"></script>
 
-    <!-- ===== PÁGINAS ===== -->
-    <script src="js/pages/dashboard.js"></script> 
-    <script src="js/pages/projects.js"></script>
-    <script src="js/pages/create-project.js"></script>
-    <script src="js/pages/project.js"></script> 
-    <script src="js/pages/users.js"></script> 
-    <script src="js/pages/user.js"></script>
-   <script src="js/pages/castell-view.js"></script>
-    <script src="js/pages/value-mapping.js"></script>
-    <script src="js/pages/value-accounting.js"></script>
-
-    <!-- ===== ROUTER (después de las páginas) ===== -->
-    <script src="js/core/router.js"></script>
-
-    <!-- ===== INICIALIZACIÓN ===== -->
     <script>
-        (function() {
-            'use strict';
+        /**
+         * TeamTowers v3.5 - Bootstrap
+         * Este script coordina la carga de páginas y la salud del sistema.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            initSystem();
+        });
+
+        async function initSystem() {
+            console.log("🚀 Iniciando TeamTowers v3.5...");
+
+            // Verificación de integridad del CORE
+            const dependenciasOk = window.store && window.APP_CONSTANTS && window.EventBus;
             
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('🚀 Iniciando TeamTowers v3.5');
+            if (!dependenciasOk) {
+                console.error("❌ Fallo crítico: El motor core no se ha cargado correctamente.");
+                document.getElementById('loading-overlay').innerHTML = "Error al cargar el núcleo.";
+                return;
+            }
+
+            // Precarga de scripts de páginas (opcional, pero mejora la fluidez)
+            const paginas = [
+                'js/pages/dashboard.js',
+                'js/pages/projects.js',
+                'js/pages/project.js',
+                'js/pages/create-project.js'
+            ];
+
+            try {
+                await Promise.all(paginas.map(src => loadScript(src)));
+                console.log("✅ Todas las páginas cargadas.");
                 
-                const dependencies = {
-                    'APP_CONSTANTS': window.APP_CONSTANTS,
-                    'EventBus': window.EventBus,
-                    'store': window.store,
-                    'Router': window.Router
-                };
+                // Ocultar splash y arrancar router
+                document.getElementById('loading-overlay').style.display = 'none';
                 
-                const missing = Object.entries(dependencies)
-                    .filter(([_, value]) => !value)
-                    .map(([name]) => name);
-                
-                if (missing.length > 0) {
-                    console.error('❌ Dependencias faltantes:', missing.join(', '));
-                    document.getElementById('main-content').innerHTML = `
-                        <div class="error-container card">
-                            <h2 class="error-title">❌ Error de inicialización</h2>
-                            <p>No se pudieron cargar los siguientes módulos:</p>
-                            <ul>
-                                ${missing.map(m => `<li><code>${m}</code></li>`).join('')}
-                            </ul>
-                            <p>Verifica que los scripts se están cargando correctamente y en el orden adecuado.</p>
-                            <button onclick="location.reload()" class="btn-primary">Reintentar</button>
-                        </div>
-                    `;
-                    return;
+                if (window.router) {
+                    window.router.init();
                 }
-                
-                console.log('✅ Todas las dependencias cargadas correctamente');
-                
-                try {
-                    window.router = new window.Router();
-                    console.log('🔄 Router inicializado y procesando ruta actual');
-                } catch (error) {
-                    console.error('❌ Error al inicializar router:', error);
-                    document.getElementById('main-content').innerHTML = `
-                        <div class="error-container card">
-                            <h2 class="error-title">❌ Error en el router</h2>
-                            <p>${error.message}</p>
-                            <button onclick="location.reload()" class="btn-primary">Reintentar</button>
-                        </div>
-                    `;
-                }
+            } catch (err) {
+                console.error("❌ Error cargando componentes de página:", err);
+            }
+        }
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
             });
+        }
 
-            window.TeamTowers = {
-                debug: {
-                    store: () => window.store?.getState(),
-                    constants: () => window.APP_CONSTANTS,
-                    router: () => window.router,
-                    reload: () => location.reload()
-                },
-                showNewProjectForm: function() {
-                    if (typeof window.showNewProjectForm === 'function') {
-                        window.showNewProjectForm();
-                    } else {
-                        console.warn('showNewProjectForm no disponible');
-                        alert('Formulario de creación no disponible');
-                    }
-                }
-            };
-
-            window.addEventListener('error', function(e) {
-                console.error('🔥 Error global:', e.error?.message || e.message);
-            });
-
-        })();
+        // Global Utility para Exportar
+        window.exportData = function() {
+            if (window.store) {
+                const data = JSON.stringify(window.store.getState(), null, 2);
+                const blob = new Blob([data], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `teamtowers-backup-${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+            }
+        };
     </script>
 </body>
 </html>
