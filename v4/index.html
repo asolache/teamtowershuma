@@ -1,1 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SOS v4 | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #0f172a; color: #f1f5f9; font-family: sans-serif; padding: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
+        .status { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏰 TeamTowers SOS Dashboard</h1>
+        <p>Monitor Global de Resiliencia Organizativa</p>
+    </header>
 
+    <div id="project-list" class="grid">
+        </div>
+
+    <script type="module">
+        import { store } from './js/core/store.js';
+        import { Selectors } from './js/core/selectors.js';
+
+        window.addEventListener('store-ready', () => {
+            const list = document.getElementById('project-list');
+            const state = store.getState();
+
+            list.innerHTML = state.projects.map(p => {
+                const health = Selectors.getProjectResilienceIndex(state, p.id);
+                return `
+                    <div class="card">
+                        <span class="status">${health.status}</span>
+                        <h2>${p.nombre}</h2>
+                        <p>Ratio VNA: ${(health.ratio * 100).toFixed(0)}%</p>
+                        <a href="project.html?id=${p.id}" class="btn">Entrar al Canvas</a>
+                    </div>
+                `;
+            }).join('');
+        });
+    </script>
+</body>
+</html>
