@@ -1,5 +1,5 @@
 /**
- * TEAMTOWERS SOS v4.0 - KERNEL
+ * TEAMTOWERS SOS v4.0 - KERNEL (PROCESADOR VNA)
  */
 class TTStore {
     constructor() {
@@ -20,9 +20,8 @@ class TTStore {
             try { this.state = JSON.parse(saved); } catch (e) { console.error(e); }
         }
         await this.loadCoreRoles();
-        this.state.projects = this.state.projects || [];
-        this.state.transactions = this.state.transactions || [];
-        if (!this.state.users?.length) this.state.users = this.getDefaultUsers();
+        if (!this.state.projects) this.state.projects = [];
+        if (!this.state.transactions) this.state.transactions = [];
         this.saveState();
         window.dispatchEvent(new Event('store-ready'));
         return this.state;
@@ -40,6 +39,7 @@ class TTStore {
                 }
             } catch (e) {}
         }
+        // Fallback si no hay JSON
         this.state.roles = [{ id: "@pinya", multiplier: 1, precio_base_h: 30, fevs_req: {f:1,e:1,v:1,s:1} }];
     }
 
@@ -47,7 +47,9 @@ class TTStore {
         const { type, payload } = action;
         switch (type) {
             case 'ADD_PROJECT':
-                this.state.projects.push({ id: payload.id, nombre: payload.nombre, transactions: [], created_at: new Date().toISOString() });
+                if(!this.state.projects.find(p => p.id === payload.id)) {
+                    this.state.projects.push({ id: payload.id, nombre: payload.nombre, transactions: [] });
+                }
                 break;
             case 'ADD_TRANSACTION':
                 this.addTransaction(payload.projectId, payload.transaction);
@@ -70,15 +72,12 @@ class TTStore {
 
         const newMeme = {
             id: `tx-${Date.now()}`,
-            from: transaction.rolId, // Quién entrega
-            to: transaction.to || "@proyecto", // Quién recibe (Flecha)
-            rolId: transaction.rolId,
-            concepto: transaction.concepto || "Valor inyectado",
+            from: transaction.rolId,
+            to: transaction.to || "@proyecto",
+            concepto: transaction.concepto || "Sin concepto",
             horas: transaction.horas || 1,
             liquidación: liquidacion,
-            tipo_valor: transaction.horas > 2 ? 'intangible' : 'tangible',
-            categoria: transaction.categoria || '#hacer',
-            uv: transaction.uv || 100,
+            tipo_flujo: transaction.tipo_flujo || 'tangible', // 'tangible' o 'intangible'
             timestamp: new Date().toISOString()
         };
 
@@ -90,7 +89,6 @@ class TTStore {
     saveState() { localStorage.setItem('teamtowers-v4-state', JSON.stringify(this.state)); }
     subscribe(callback) { this.listeners.push(callback); return () => this.listeners = this.listeners.filter(l => l !== callback); }
     notify() { this.listeners.forEach(l => l(this.state)); }
-    getDefaultUsers() { return [{ id: "@alvaro", nombre: "Álvaro", fevs: {f:9,e:9,v:9,s:9} }]; }
 }
 
 export const store = new TTStore();
