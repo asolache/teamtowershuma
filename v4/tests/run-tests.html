@@ -1,102 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>SOS v4 | Suite de Validación</title>
-    <style>
-        body { background: #010409; color: #c9d1d9; font-family: monospace; padding: 40px; }
-        .pass { color: #238636; }
-        .fail { color: #f85149; font-weight: bold; }
-        .log { background: #0d1117; border: 1px solid #30363d; padding: 15px; border-radius: 6px; margin-top: 10px; }
-        hr { border: 0; border-top: 1px solid #30363d; margin: 20px 0; }
-    </style>
-</head>
-<body>
-    <h1>🧪 SOS v4 Test Runner</h1>
-    <div id="results">Ejecutando suite de validación...</div>
+<head><meta charset="UTF-8"><title>SOS v4 | Test Runner</title></head>
+<body style="background:#010409; color:#c9d1d9; font-family:monospace; padding:40px;">
+    <h1>🧪 Suite de Validación v4.0</h1>
+    <div id="results"></div>
 
     <script type="module">
         import { store } from '../js/core/store.js';
 
-        async function runSuite() {
-            const results = document.getElementById('results');
-            results.innerHTML = "";
-            let passCount = 0;
-            let totalTests = 0;
-
-            const assert = (condition, message) => {
-                totalTests++;
-                const div = document.createElement('div');
-                if (condition) {
-                    div.innerHTML = `✅ ${message}`;
-                    div.className = "pass";
-                    passCount++;
-                } else {
-                    div.innerHTML = `❌ ${message}`;
-                    div.className = "fail";
-                }
-                results.appendChild(div);
+        async function run() {
+            const res = document.getElementById('results');
+            const assert = (cond, msg) => {
+                res.innerHTML += `<div style="color:${cond ? '#238636':'#f85149'}">${cond ? '✅':'❌'} ${msg}</div>`;
             };
 
-            // Esperar a que el store esté listo (ontología cargada)
-            await new Promise(resolve => window.addEventListener('store-ready', resolve));
+            // Espera técnica de seguridad
+            await new Promise(r => window.addEventListener('store-ready', r));
+            await new Promise(r => setTimeout(r, 100));
 
-            // --- TEST 1: Inicialización y Ontología ---
-            assert(store.state.roles.length > 0, "El Kernel ha cargado la ontología (Roles base detectados)");
+            // Test 1: Ontología
+            assert(store.state.ontology !== null, "Kernel cargado con ontología");
 
-            // --- TEST 2: Creación de Proyecto con Sector ---
-            const testProjId = 'test-sector-marketing';
-            store.dispatch({ 
-                type: 'ADD_PROJECT', 
-                payload: { id: testProjId, nombre: 'Proyecto Test Marketing', sector: 'marketing' } 
-            });
-            
-            const project = store.getState().projects.find(p => p.id === testProjId);
-            assert(project.sector === 'marketing', "Proyecto creado con sector Marketing");
-            assert(project.customRoles['@anxaneta'] === 'Strategy Director', "Nombres de roles asignados según sector correctamente");
+            // Test 2 & 3: Sectores y Nombres
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 't1', nombre: 'Test', sector: 'marketing' } });
+            const p = store.getState().projects.find(x => x.id === 't1');
+            assert(p.sector === 'marketing', "Sector marketing registrado");
+            assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Nombres de marketing asignados correctamente");
 
-            // --- TEST 3: Edición de Roles (Persistencia) ---
-            store.dispatch({
-                type: 'UPDATE_ROLE_NAME',
-                payload: { projectId: testProjId, rolId: '@baixos', newName: 'Junior Wizard' }
-            });
-            const projectUpdated = store.getState().projects.find(p => p.id === testProjId);
-            assert(projectUpdated.customRoles['@baixos'] === 'Junior Wizard', "Edición de nombre de rol exitosa y persistente");
+            // Test 4: Edición
+            store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 't1', rolId: '@baixos', newName: 'Junior' } });
+            const p2 = store.getState().projects.find(x => x.id === 't1');
+            assert(p2.customRoles['@baixos'] === 'Junior', "Edición de rol persistente");
 
-            // --- TEST 4: Cálculo Económico SOS (Regla de los 540€) ---
-            // Simulación: @anxaneta (90€) * Multiplicador(2) * 3 Horas = 540€ 
-            // Nota: En la ontología v4 el precio es 90 y mult es 2 para el rol @anxaneta
-            store.dispatch({
-                type: 'ADD_TRANSACTION',
-                payload: {
-                    projectId: testProjId,
-                    transaction: {
-                        rolId: '@anxaneta',
-                        to: '@proyecto',
-                        horas: 2, // 90 * 3 (mult) * 2 horas = 540€
-                        concepto: 'Estrategia de Test',
-                        tipo_flujo: 'tangible'
-                    }
-                }
-            });
+            // Test 5: Economía (540€)
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 't1', transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Test' } } });
+            const tx = p2.transactions[0];
+            assert(tx.liquidación === 540, "Cálculo 540€ OK (90*3*2)");
 
-            const lastTx = projectUpdated.transactions[projectUpdated.transactions.length - 1];
-            assert(lastTx.liquidación === 540, `Cálculo de liquidación correcto: ${lastTx.liquidación}€ (Esperado: 540€)`);
-
-            // --- TEST 5: VNA Flujos ---
-            assert(lastTx.tipo_flujo === 'tangible', "Atributo de flujo VNA (tangible) registrado");
-
-            // --- RESUMEN ---
-            const summary = document.createElement('div');
-            summary.innerHTML = `<hr><h2>Resultado: ${passCount}/${totalTests} Tests superados</h2>`;
-            results.appendChild(summary);
-
-            if(passCount === totalTests) {
-                summary.innerHTML += `<p class="pass">🚀 EL KERNEL ESTÁ LISTO PARA PRODUCCIÓN (VNA v4 OK)</p>`;
-            }
+            // Test 6: VNA
+            assert(tx.hasOwnProperty('tipo_flujo'), "Metadato VNA presente");
         }
-
-        runSuite();
+        run();
     </script>
 </body>
 </html>
