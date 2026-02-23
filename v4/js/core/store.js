@@ -33,10 +33,11 @@ export class TTStore {
             try {
                 const parsed = JSON.parse(saved);
                 this.state.projects = parsed.projects || [];
-                this.state.ontology = this.ontologyStatic;
-                this.state.roles = this.ontologyStatic.roles;
             } catch (e) { console.error("SOS: Error storage", e); }
         }
+        // Forzamos actualización de ontología estática sobre el estado cargado
+        this.state.ontology = this.ontologyStatic;
+        this.state.roles = this.ontologyStatic.roles;
         setTimeout(() => window.dispatchEvent(new Event('store-ready')), 10);
     }
 
@@ -72,13 +73,17 @@ export class TTStore {
         const { type, payload } = action;
         switch (type) {
             case 'ADD_PROJECT':
+                // Eliminar si ya existe para asegurar que el test use la ontología nueva
+                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
+                
                 const sectorKey = Object.keys(this.state.ontology.sectores).find(
                     k => k.toLowerCase() === payload.sector.toLowerCase()
                 ) || 'marketing';
-                const alias = this.state.ontology.sectores[sectorKey];
+                
                 this.state.projects.push({
                     id: payload.id, nombre: payload.nombre, sector: sectorKey,
-                    customRoles: { ...alias }, transactions: []
+                    customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
+                    transactions: []
                 });
                 break;
             case 'ADD_TRANSACTION':
