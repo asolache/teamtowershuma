@@ -1,5 +1,5 @@
 /**
- * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (CON ROLES DINÁMICOS Y DIRECCIONALIDAD)
+ * TEAMTOWERS SOS v4.2 - KERNEL CONSCIENTE (CON ROLES DINÁMICOS Y DISEÑO SEPARADO)
  */
 export class TTStore {
     constructor() {
@@ -45,7 +45,6 @@ export class TTStore {
         if (!p || p.transactions.length === 0) return 100;
         const totalValue = p.transactions.reduce((acc, t) => acc + (t.liquidación || 0), 0);
         
-        // Detectamos si el rol original O el nivel del rol dinámico es de auditoría
         const auditValue = p.transactions
             .filter(t => t.rolId === '@dosos' || t.levelId === '@dosos')
             .reduce((acc, t) => acc + (t.liquidación || 0), 0);
@@ -64,7 +63,6 @@ export class TTStore {
         }
         
         p.transactions.forEach(t => {
-            // Buscamos la data del rol (sea base o dinámico)
             let r = this.state.roles.find(rol => rol.id === t.rolId);
             if (!r && p.dynamicRoles) r = p.dynamicRoles.find(dr => dr.id === t.rolId);
             if (!r) return;
@@ -87,10 +85,22 @@ export class TTStore {
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sectorKey = Object.keys(this.state.ontology.sectores).find(k => k.toLowerCase() === payload.sector.toLowerCase()) || 'marketing';
                 this.state.projects.push({
-                    id: payload.id, nombre: payload.nombre, sector: sectorKey,
+                    id: payload.id, 
+                    nombre: payload.nombre, 
+                    sector: sectorKey,
+                    description: "", // Para el Prompt IA
                     customRoles: { ...this.state.ontology.sectores[sectorKey] }, 
-                    dynamicRoles: [], transactions: []
+                    dynamicRoles: [], 
+                    transactions: []
                 });
+                break;
+
+            case 'UPDATE_PROJECT_INFO':
+                if (project) {
+                    project.nombre = payload.nombre || project.nombre;
+                    project.sector = payload.sector || project.sector;
+                    project.description = payload.description !== undefined ? payload.description : project.description;
+                }
                 break;
 
             case 'CREATE_CUSTOM_ROLE':
@@ -101,11 +111,17 @@ export class TTStore {
                         levelId: payload.levelId,
                         name: payload.name,
                         area: payload.area,
-                        description: payload.description,
-                        skills: payload.skills,
+                        description: payload.description || '',
+                        skills: payload.skills || [],
                         multiplier: master.multiplier,
                         precio_base_h: master.precio_base_h
                     });
+                }
+                break;
+
+            case 'DELETE_CUSTOM_ROLE':
+                if (project && project.dynamicRoles) {
+                    project.dynamicRoles = project.dynamicRoles.filter(r => r.id !== payload.rolId);
                 }
                 break;
 
@@ -121,7 +137,6 @@ export class TTStore {
                 const salud = this.calculateResilience(payload.projectId);
                 if (salud < 30 && roleData.multiplier > 2.0) return;
 
-                // --- RESTAURADO: Cálculo con override_price y horas seguras ---
                 const horas = payload.transaction.horas || 1;
                 const precioBase = payload.transaction.override_price || roleData.precio_base_h;
                 const liq = horas * precioBase * roleData.multiplier;
@@ -130,7 +145,7 @@ export class TTStore {
                     ...payload.transaction,
                     id: Date.now(),
                     liquidación: liq,
-                    tipo_flujo: payload.transaction.tipo_flujo || 'tangible', // <-- RESTAURADO
+                    tipo_flujo: payload.transaction.tipo_flujo || 'tangible',
                     levelId: roleData.levelId || roleData.id 
                 });
                 break;
