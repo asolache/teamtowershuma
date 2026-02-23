@@ -3,11 +3,17 @@ import { store } from '../core/store.js';
 export const HomeView = {
     render: () => {
         const state = store.getState();
-        const projects = state.projects;
+        const projects = state.projects || [];
 
-        const totalLiquidez = projects.reduce((sum, p) => sum + p.transactions.reduce((s, t) => s + t.liquidación, 0), 0);
+        // --- CÁLCULOS DE ECOSISTEMA BLINDADOS CONTRA 'NaN' ---
+        const totalLiquidez = projects.reduce((sum, p) => 
+            sum + p.transactions.reduce((s, t) => s + (Number(t.liquidación) || 0), 0), 0);
+        
         const proyectosEnRiesgo = projects.filter(p => store.calculateResilience(p.id) < 30).length;
-        const totalHoras = projects.reduce((sum, p) => sum + p.transactions.reduce((s, t) => s + t.horas, 0), 0);
+        
+        // Sanitizamos t.horas: Si no existe o es corrupto, sumamos 0.
+        const totalHoras = projects.reduce((sum, p) => 
+            sum + p.transactions.reduce((s, t) => s + (Number(t.horas) || 0), 0), 0);
 
         return `
             <div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
@@ -57,7 +63,7 @@ export const HomeView = {
                     ${projects.length === 0 ? '<p style="color:#484f58;">No hay castells levantados aún.</p>' : ''}
                     ${projects.map(p => {
                         const salud = store.calculateResilience(p.id);
-                        const liq = p.transactions.reduce((s, t) => s + t.liquidación, 0);
+                        const liq = p.transactions.reduce((s, t) => s + (Number(t.liquidación) || 0), 0);
                         return `
                         <div onclick="location.hash='#/project/${p.id}'" style="background: #161b22; border: 1px solid #30363d; padding: 15px 25px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
                             <div style="flex: 2;">
