@@ -1,160 +1,168 @@
-// /v3/js/core/store.js
-// Estado central (SSOT) - v3.5 (Agile Canvas & VNA Ready)
+/**
+ * TEAMTOWERS SOS (Sistema Operativo Social) v1.0
+ * KERNEL: Store Centralizado con Ontología FEVS
+ */
 
 class TTStore {
     constructor() {
         this.state = {
             projects: [],
-            roles: [],
+            roles: [], // Se cargan desde core-roles.json
             users: [],
-            transactions: [] // Registro global de transacciones
+            transactions: [],
+            config: { version: "3.5-sos-ready" }
         };
+        this.listeners = [];
         this.initPromise = this.init();
     }
 
     async init() {
+        console.log('🚀 Iniciando SOS Kernel...');
+        
+        // 1. Intentar cargar desde LocalStorage
         const saved = localStorage.getItem('teamtowers-v3-state');
         if (saved) {
             try {
                 this.state = JSON.parse(saved);
-                // Compatibilidad de idioma: asegurar que 'projects' siempre exista
-                if (this.state.proyectos && !this.state.projects) {
-                    this.state.projects = this.state.proyectos;
-                }
-                if (!this.state.transactions) this.state.transactions = [];
-                if (!this.state.users) this.state.users = this.getDefaultUsers();
-                console.log('✅ Estado cargado desde localStorage');
+                console.log('✅ Estado recuperado de LocalStorage');
             } catch (e) {
-                console.error('Error parsing state', e);
-                await this.loadDefaultData();
+                console.error('❌ Error al parsear LocalStorage, reiniciando...');
             }
-        } else {
-            await this.loadDefaultData();
         }
-        
-        const bus = window.EventBus || (await import('./event-bus.js').catch(() => ({}))).EventBus;
-        if (bus && bus.emit) bus.emit('store-initialized', this.state);
-    }
 
-    // ===== MÉTODO DISPATCH (Fix para Tests) =====
-    /**
-     * Permite que el Store responda a acciones estándar tipo Redux
-     * @param {Object} action - { type: string, payload: any }
-     */
-    dispatch(action) {
-        console.log(`Action Dispatched: ${action.type}`, action.payload);
-        
-        switch (action.type) {
-            case 'ADD_PROJECT':
-                this.addProject(action.payload);
-                break;
-            case 'ADD_TRANSACTION':
-                this.addTransaction(action.payload.projectId, action.payload.transaction);
-                break;
-            default:
-                console.warn(`Acción no reconocida: ${action.type}`);
-        }
-    }
+        // 2. Cargar/Actualizar la librería de roles FEVS (Sincronización con el Gremio)
+        await this.loadCoreRoles();
 
-    async loadDefaultData() {
-        const coreRoles = await this.loadCoreRoles();
-        const defaultUsers = this.getDefaultUsers();
-        this.state = {
-            projects: [],
-            roles: coreRoles,
-            users: defaultUsers,
-            transactions: [],
-            config: { version: "3.5-vna-ready" }
-        };
+        // 3. Asegurar estructura mínima
+        if (!this.state.projects) this.state.projects = [];
+        if (!this.state.transactions) this.state.transactions = [];
+        if (this.state.users.length === 0) this.state.users = this.getDefaultUsers();
+
         this.saveState();
-        console.log('✅ Estado inicializado con datos por defecto');
+        window.dispatchEvent(new Event('store-ready'));
+        return this.state;
     }
 
     async loadCoreRoles() {
         try {
-            const response = await fetch('data/core-roles.json');
-            if (!response.ok) throw new Error();
+            // Intentamos cargar la ontología oficial
+            const response = await fetch('../data/core-roles.json');
+            if (!response.ok) throw new Error("No se encontró core-roles.json");
             const data = await response.json();
-            return data.roles;
+            this.state.roles = data.roles;
+            console.log('✅ Ontología FEVS cargada:', this.state.roles.length, 'roles disponibles');
         } catch (e) {
-            console.warn('Usando roles por defecto (core-roles.json no encontrado)');
-            return this.getDefaultRoles();
+            console.warn('⚠️ No se pudo cargar core-roles.json. Usando roles de emergencia.');
+            this.state.roles = [
+                { id: "@pinya", nombre: "Soporte Base", multiplier: 1.0, precio_base_h: 30, fevs_req: {f:5,e:5,v:3,s:3} }
+            ];
         }
     }
 
-    getDefaultRoles() {
-        return [
-            { id: "@arquitecto", nombre: "Master Architect", multiplier: 2.5, color: "#7c2d12" },
-            { id: "@developer", nombre: "Dev Segon", multiplier: 1.5, color: "#3b82f6" },
-            { id: "@tester", nombre: "Quality Guardian", multiplier: 1.5, color: "#10b981" },
-            { id: "@strategist", nombre: "Lead Strategist", multiplier: 2.0, color: "#f59e0b" },
-            { id: "@enxaneta.media", nombre: "Visual Storyteller", multiplier: 1.2, color: "#8b5cf6" }
-        ];
-    }
+    // ===== SISTEMA DE ACCIONES (Dispatch) =====
+    dispatch(action) {
+        const { type, payload } = action;
+        console.log(`📡 SOS ACTION: ${type}`);
 
-    getDefaultUsers() {
-        return [
-            { id: "@alvaro-solache", nombre: "Álvaro Solache", email: "alvaro@teamtowers.com" },
-            { id: "@ia-architect", nombre: "IA Architect", email: "ia.architect@teamtowers.com" },
-            { id: "@usuario-1", nombre: "Usuario 1", email: "user1@example.com" },
-            { id: "@masterproject", nombre: "Master Project", email: "master@teamtowers.com" }
-        ];
-    }
-
-    getState() {
-        // Devolvemos una copia profunda para evitar mutaciones externas
-        const stateCopy = JSON.parse(JSON.stringify(this.state));
-        // Alias de compatibilidad para tests antiguos
-        stateCopy.proyectos = stateCopy.projects;
-        return stateCopy;
-    }
-
-    addProject(project) {
-        if (!project.id) project.id = `p-${Date.now()}`;
-        if (!project.roles) project.roles = [];
+        switch (type) {
+            case 'ADD_PROJECT':
+                this.addProject(payload);
+                break;
+            case 'ADD_TRANSACTION':
+                this.addTransaction(payload.projectId, payload.transaction);
+                break;
+            case 'UPDATE_USER_FEVS':
+                this.updateUserFEVS(payload.userId, payload.fevs);
+                break;
+            default:
+                console.warn(`⚠️ Acción SOS no reconocida: ${type}`);
+        }
         
-        this.state.projects.push(project);
         this.saveState();
-        
-        if (window.EventBus) window.EventBus.emit('project-added', project);
+        this.notify();
     }
 
+    // ===== LÓGICA DE NEGOCIO (Memes de Valor) =====
+    
+    addProject(project) {
+        const newProject = {
+            id: project.id || `p-${Date.now()}`,
+            nombre: project.nombre || "Nuevo Castell",
+            transactions: project.transactions || [],
+            created_at: new Date().toISOString(),
+            status: 'active'
+        };
+        this.state.projects.push(newProject);
+    }
+
+    /**
+     * P-024: Liquidación de Memes de Valor
+     * Calcula automáticamente el valor económico basado en el Rol SOS.
+     */
     addTransaction(projectId, transaction) {
         const project = this.state.projects.find(p => p.id === projectId);
-        if (!project) return false;
+        if (!project) return;
 
-        if (!project.transactions) project.transactions = [];
-        
-        // VNA & Tokenomics v3.5 metadata
-        const newTx = {
-            id: `tx-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        // Buscar el rol para aplicar liquidación SOS
+        const rolID = transaction.rolId || "@pinya";
+        const rolConfig = this.state.roles.find(r => r.id === rolID) || this.state.roles[0];
+
+        // Cálculo de Liquidación del Gremio
+        const horas = transaction.horas || 1;
+        const valorEconomico = horas * rolConfig.precio_base_h * rolConfig.multiplier;
+
+        const newMeme = {
+            id: `tx-${Date.now()}`,
             projectId,
-            tipo_valor: 'tangible',
-            status: 'confirmed',
-            timestamp: new Date().toISOString(),
-            ...transaction
+            rolId: rolID,
+            tipo_valor: transaction.tipo_valor || 'tangible', // Para el Mapa de Valor
+            categoria: transaction.categoria || '#hacer',   // Ontología SOS
+            concepto: transaction.concepto || "Nueva entrega",
+            uv: transaction.uv || 100, // Unidades de Valor Relativo
+            liquidación: valorEconomico,
+            fevs_impact: rolConfig.fevs_req, // Huella de identidad de la entrega
+            timestamp: new Date().toISOString()
         };
 
-        project.transactions.push(newTx);
-        this.state.transactions.push(newTx);
+        if (!project.transactions) project.transactions = [];
+        project.transactions.push(newMeme);
+        this.state.transactions.push(newMeme);
+        
+        console.log(`💰 Meme Liquidado: ${valorEconomico}€ (${newMeme.categoria})`);
+    }
 
-        this.saveState();
-        if (window.EventBus) window.EventBus.emit('transaction-added', { projectId, transaction: newTx });
-        return true;
+    // ===== PERSISTENCIA Y UTILIDADES =====
+    
+    getState() {
+        const copy = JSON.parse(JSON.stringify(this.state));
+        copy.proyectos = copy.projects; // Compatibilidad legacy
+        return copy;
     }
 
     saveState() {
         localStorage.setItem('teamtowers-v3-state', JSON.stringify(this.state));
     }
+
+    subscribe(callback) {
+        this.listeners.push(callback);
+        return () => this.listeners = this.listeners.filter(l => l !== callback);
+    }
+
+    notify() {
+        this.listeners.forEach(l => l(this.state));
+    }
+
+    getDefaultUsers() {
+        return [
+            { id: "@alvaro-solache", nombre: "Álvaro Solache", fevs: {f:9,e:9,v:9,s:9} },
+            { id: "@ia-architect", nombre: "Gemini SOS", fevs: {f:10,e:10,v:10,s:1} }
+        ];
+    }
 }
 
-// 1. Instanciamos la clase
+// Inicialización global
 const store = new TTStore();
-
-// 2. Fallback Global (Vital para tests y scripts legacy)
 window.store = store;
-
-// 3. Exportación ES6
 export { store };
 
-console.log('✅ store.js cargado (VNA, Dispatch & Legacy Support Ready)');
+console.log('✅ SOS Kernel v1.0 cargado y listo para el Agente Parser.');
