@@ -13,13 +13,13 @@
         .pass { border-left: 5px solid #238636; }
         .fail { border-left: 5px solid #f85149; background: #2a1215; }
         .msg { flex-grow: 1; font-family: 'Cascadia Code', monospace; font-size: 0.85rem; }
-        .badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; background: #30363d; margin-left: 10px; color: #8b949e; text-transform: uppercase; }
-        .summary { margin-top: 30px; padding: 20px; border-radius: 8px; background: #0d1117; border: 1px solid #3b82f6; }
+        .badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; background: #30363d; margin-left: 10px; color: #8b949e; text-transform: uppercase; font-weight: bold; }
+        .summary { margin-top: 30px; padding: 20px; border-radius: 8px; background: #0d1117; border: 1px solid #3b82f6; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="javascript:history.back()" class="nav-link">← Volver al Proyecto</a>
+        <a href="../index.html" class="nav-link">← Volver al Dashboard</a>
         <h1>🧪 SOS v4.2: Full Stress Test</h1>
         <div id="results"></div>
         <div id="summary-box"></div>
@@ -46,43 +46,63 @@
             await new Promise(resolve => window.addEventListener('store-ready', resolve));
             await new Promise(resolve => setTimeout(resolve, 200));
 
-            // 1-3: Estructura
+            // --- FASE 1: KERNEL Y ONTOLOGÍA BASE ---
             assert(store.state.ontology !== null, "Kernel cargado con ontología maestra", "KERNEL");
             store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'p-vna', nombre: 'Test Project', sector: 'marketing' } });
             const p = store.getState().projects.find(x => x.id === 'p-vna');
             assert(p.sector === 'marketing', "Sector marketing registrado", "ONTOLOGY");
             assert(p.customRoles['@anxaneta'] === 'Strategy Director', "Alias de marketing correctos", "ONTOLOGY");
 
-            // 4-6: Persistencia y VNA
+            // --- FASE 2: DISEÑO Y PERSISTENCIA (NUEVO) ---
             store.dispatch({ type: 'UPDATE_ROLE_NAME', payload: { projectId: 'p-vna', rolId: '@baixos', newName: 'Junior Art' } });
-            assert(store.getState().projects.find(x => x.id === 'p-vna').customRoles['@baixos'] === 'Junior Art', "Persistencia de edición", "STORE");
-            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', horas: 2, concepto: 'Auditoría' } } });
+            assert(store.getState().projects.find(x => x.id === 'p-vna').customRoles['@baixos'] === 'Junior Art', "Persistencia de edición de Alias", "STORE");
+            
+            store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: 'p-vna', description: 'Prompt de IA para tests' } });
+            assert(store.getState().projects.find(x => x.id === 'p-vna').description === 'Prompt de IA para tests', "Metadatos y Prompt guardados", "DESIGN");
+
+            // --- FASE 3: CICLO DE VIDA DE ROLES DINÁMICOS (NUEVO) ---
+            store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId: 'p-vna', name: 'QA Tester', levelId: '@dosos', area: 'Tech' } });
+            let pActualizado = store.getState().projects.find(x => x.id === 'p-vna');
+            const customRole = pActualizado.dynamicRoles.find(r => r.name === 'QA Tester');
+            assert(customRole !== undefined, "Creación de Rol Dinámico OK", "ONTOLOGY");
+
+            store.dispatch({ type: 'DELETE_CUSTOM_ROLE', payload: { projectId: 'p-vna', rolId: customRole.id } });
+            pActualizado = store.getState().projects.find(x => x.id === 'p-vna');
+            assert(pActualizado.dynamicRoles.length === 0, "Eliminación de Rol Dinámico OK", "ONTOLOGY");
+
+            // --- FASE 4: VNA Y ECONOMÍA DIRECCIONAL ---
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', toId: '@aixecador', horas: 2, concepto: 'Auditoría' } } });
             const tx = store.getState().projects.find(x => x.id === 'p-vna').transactions[0];
             assert(tx.liquidación === 540, "Cálculo SOS 540€ OK", "ECONOMY");
             assert(tx.tipo_flujo === 'tangible', "Metadato VNA presente", "VNA");
+            assert(tx.toId === '@aixecador', "Flujo Direccional (toId) registrado", "VNA"); // NUEVO
 
-            // 7-8: Seguridad
-            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@aixecador', horas: 10, concepto: 'Mega Dev' } } });
+            // --- FASE 5: WATCHDOGS Y SEGURIDAD ---
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@aixecador', toId: '@baixos', horas: 10, concepto: 'Mega Dev' } } });
             const salud = store.calculateResilience('p-vna');
             assert(salud < 50 && salud >= 0, `Watchdog: Salud calculada (${salud}%)`, "RESILIENCE");
             
             const txCountBefore = store.getState().projects.find(x => x.id === 'p-vna').transactions.length;
-            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', horas: 5, concepto: 'Estrategia Prohibida' } } });
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@anxaneta', toId: '@dosos', horas: 5, concepto: 'Estrategia Prohibida' } } });
             const txCountAfter = store.getState().projects.find(x => x.id === 'p-vna').transactions.length;
             assert(txCountBefore === txCountAfter, "Circuit Breaker: Bloqueo por baja salud", "SECURITY");
 
-            // 9-11: Avanzado
+            // --- FASE 6: ADAPTABILIDAD ---
             store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'p-web3', nombre: 'DApp', sector: 'Web3' } });
             const pW3 = store.getState().projects.find(x => x.id === 'p-web3');
             assert(pW3.customRoles['@aixecador'] === 'Smart Contract Dev', "Mapeo Alias Web3 OK", "ONTOLOGY");
             assert(store.getAlerts('p-vna').some(a => a.code === 'RIESGO_DEUDA_TECNICA'), "Alerta: Deuda Técnica", "WATCHDOG");
             
-            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@pinya', horas: 1, concepto: 'Caro', override_price: 500 } } });
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'p-vna', transaction: { rolId: '@pinya', toId: '@baixos', horas: 1, concepto: 'Caro', override_price: 500 } } });
             assert(store.getAlerts('p-vna').some(a => a.code === 'DESVIACION_PRECIO'), "Alerta: Sobre-liquidación", "ECONOMY");
 
+            // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
-            summary.innerHTML = `<h3>Puntuación: ${passed}/${total}</h3><p>${passed === total ? "🚀 KERNEL ESTABLE" : "🛠️ REPARACIÓN REQUERIDA"}</p>`;
+            summary.innerHTML = `<h3 style="margin-top:0; color:#f0f6fc;">Puntuación de Cobertura: ${passed}/${total}</h3>
+                                 <p style="margin-bottom:0; font-weight:bold; color:${passed === total ? '#3fb950' : '#f85149'};">
+                                    ${passed === total ? "🚀 KERNEL ESTABLE Y BLINDADO" : "🛠️ REPARACIÓN REQUERIDA"}
+                                 </p>`;
         }
         runSuite();
     </script>
