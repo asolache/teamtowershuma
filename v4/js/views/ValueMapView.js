@@ -6,99 +6,111 @@ export const ValueMapView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return "";
 
-        const allNodes = [
-            ...Object.keys(project.customRoles).map(id => ({ id, name: project.customRoles[id], type: 'base' })),
-            ...(project.dynamicRoles || []).map(dr => ({ id: dr.id, name: dr.name, type: 'dynamic' }))
+        // 1. Recopilar todos los nodos (Base + Dinámicos)
+        const nodes = [
+            ...Object.keys(project.customRoles || {}).map(id => ({ id, label: project.customRoles[id], type: 'base' })),
+            ...(project.dynamicRoles || []).map(dr => ({ id: dr.id, label: dr.name, type: 'dynamic', parent: dr.levelId }))
         ];
 
-        // Layout Radial
-        const centerX = 400;
-        const centerY = 250;
-        const radius = 170;
+        // 2. Definir posiciones circulares para los nodos base
+        const centerX = 400, centerY = 300, radius = 220;
+        const positions = {};
         
-        const nodesWithPos = allNodes.map((node, i) => {
-            const angle = (i / allNodes.length) * 2 * Math.PI - (Math.PI / 2); // Empezar arriba
-            return {
-                ...node,
-                x: centerX + radius * Math.cos(angle),
-                y: centerY + radius * Math.sin(angle)
+        nodes.forEach((node, i) => {
+            if (node.type === 'base') {
+                const angle = (i * 2 * Math.PI) / Object.keys(project.customRoles).length;
+                positions[node.id] = {
+                    x: centerX + radius * Math.cos(angle),
+                    y: centerY + radius * Math.sin(angle)
+                };
+            }
+        });
+
+        // Posicionar dinámicos cerca de su padre
+        nodes.filter(n => n.type === 'dynamic').forEach((node, i) => {
+            const parentPos = positions[node.parent] || { x: centerX, y: centerY };
+            positions[node.id] = {
+                x: parentPos.x + (60 * Math.cos(i)),
+                y: parentPos.y + (60 * Math.sin(i))
             };
         });
 
-        // Agrupar transacciones por par (Origen -> Destino) para calcular el grosor (Value Flow)
-        const flows = {};
-        const roleStats = {}; // Para el tamaño del nodo
-
-        project.transactions.forEach(t => {
-            // Stats para tamaño del nodo (valor aportado)
-            roleStats[t.rolId] = (roleStats[t.rolId] || 0) + t.liquidación;
-            
-            // Stats para la línea de conexión
-            if (!t.toId) return; 
-            const flowKey = `${t.rolId}->${t.toId}`;
-            flows[flowKey] = (flows[flowKey] || 0) + t.liquidación;
-        });
+        const txs = project.transactions || [];
 
         return `
-            <svg viewBox="0 0 800 500" style="width:100%; height:100%; background:#0d1117;">
-                <defs>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="24" refY="4" orient="auto">
-                        <polygon points="0 0, 8 4, 0 8" fill="#58a6ff" />
-                    </marker>
-                </defs>
+            <div style="width:100%; height:100%; position:relative; overflow:hidden; background:#0d1117;">
+                <svg id="svg-map" viewBox="0 0 800 600" style="width:100%; height:100%; cursor:grab;">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#58a6ff" />
+                        </marker>
+                    </defs>
 
-                ${Object.keys(flows).map(flowKey => {
-                    const [fromId, toId] = flowKey.split('->');
-                    const src = nodesWithPos.find(n => n.id === fromId);
-                    const tgt = nodesWithPos.find(n => n.id === toId);
-                    if (!src || !tgt) return '';
+                    ${txs.map(t => {
+                        const start = positions[t.from] || { x:0, y:0 };
+                        const end = positions[t.to] || { x:0, y:0 };
+                        const isTangible = t.tipo === 'tangible';
+                        
+                        return `
+                            <g>
+                                <line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" 
+                                      stroke="#58a6ff" stroke-width="2" 
+                                      stroke-dasharray="${isTangible ? '0' : '5,5'}"
+                                      marker-end="url(#arrowhead)" />
+                                <text x="${(start.x + end.x) / 2}" y="${(start.y + end.y) / 2 - 5}" 
+                                      fill="#8b949e" font-size="10" text-anchor="middle" font-style="italic">
+                                    ${t.entregable || ''}
+                                </text>
+                            </g>
+                        `;
+                    }).join('')}
 
-                    const totalValue = flows[flowKey];
-                    // El grosor de la línea escala según el valor (mínimo 1px, máximo 12px)
-                    const strokeWidth = Math.max(1, Math.min(totalValue / 200, 12)); 
-
-                    return `
+                    ${nodes.map(n => `
                         <g>
-                            <title>${totalValue.toLocaleString()}€ transferidos</title>
-                            <line x1="${src.x}" y1="${src.y}" x2="${tgt.x}" y2="${tgt.y}" 
-                                  stroke="#58a6ff" stroke-width="${strokeWidth}" stroke-opacity="0.6"
-                                  marker-end="url(#arrowhead)" />
-                        </g>
-                    `;
-                }).join('')}
-
-                ${nodesWithPos.map(n => {
-                    const valueProduced = roleStats[n.id] || 0;
-                    const size = 20 + Math.min(valueProduced / 400, 20); // Crece según aporta
-                    const color = n.type === 'base' ? '#238636' : '#a371f7'; // Verdes = Base, Morados = Custom
-                    const active = valueProduced > 0;
-
-                    return `
-                        <g class="vna-node" style="cursor:pointer; transition: all 0.3s;">
-                            <circle cx="${n.x}" cy="${n.y}" r="${size}" 
-                                    fill="#161b22" 
-                                    stroke="${active ? color : '#30363d'}" 
-                                    stroke-width="${active ? 3 : 1}"
-                                    filter="${active ? 'url(#glow)' : ''}" />
-                            
-                            <text x="${n.x}" y="${n.y + 4}" text-anchor="middle" fill="#c9d1d9" font-size="9" font-weight="bold" style="pointer-events:none;">
-                                ${n.id.startsWith('custom') ? 'EXT' : n.id.replace('@','').toUpperCase()}
-                            </text>
-                            
-                            <text x="${n.x}" y="${n.y + size + 16}" text-anchor="middle" fill="${active ? '#f0f6fc' : '#8b949e'}" font-size="12" font-weight="${active ? 'bold' : 'normal'}">
-                                ${n.name}
+                            <circle cx="${positions[n.id].x}" cy="${positions[n.id].y}" r="15" 
+                                    fill="${n.type === 'base' ? '#1f6feb' : '#238636'}" stroke="#f0f6fc" stroke-width="2" />
+                            <text x="${positions[n.id].x}" y="${positions[n.id].y + 30}" 
+                                  fill="white" font-size="12" text-anchor="middle" font-weight="bold">
+                                ${n.label}
                             </text>
                         </g>
-                    `;
-                }).join('')}
-            </svg>
+                    `).join('')}
+                </svg>
+
+                <div style="position:absolute; bottom:10px; left:10px; background:#161b22; padding:15px; border-radius:8px; border:1px solid #30363d; display:grid; gap:8px; width:280px; z-index:100;">
+                    <h4 style="margin:0; font-size:0.8rem; color:#58a6ff;">Inyectar Flujo de Valor</h4>
+                    <select id="tx-from" style="background:#0d1117; color:white; font-size:0.7rem;">
+                        ${nodes.map(n => `<option value="${n.id}">De: ${n.label}</option>`).join('')}
+                    </select>
+                    <select id="tx-to" style="background:#0d1117; color:white; font-size:0.7rem;">
+                        ${nodes.map(n => `<option value="${n.id}">Para: ${n.label}</option>`).join('')}
+                    </select>
+                    <input id="tx-entregable" placeholder="Nombre entregable..." style="background:#0d1117; color:white; font-size:0.7rem; border:1px solid #30363d; padding:4px;">
+                    <select id="tx-tipo" style="background:#0d1117; color:white; font-size:0.7rem;">
+                        <option value="tangible">Tangible (Continua)</option>
+                        <option value="intangible">Intangible (Discontinua)</option>
+                    </select>
+                    <button onclick="window.sendValue('${projectId}')" style="background:#238636; color:white; border:none; padding:5px; border-radius:4px; cursor:pointer; font-weight:bold;">Enviar Valor →</button>
+                </div>
+            </div>
         `;
     }
+};
+
+window.sendValue = (pId) => {
+    const from = document.getElementById('tx-from').value;
+    const to = document.getElementById('tx-to').value;
+    const entregable = document.getElementById('tx-entregable').value;
+    const tipo = document.getElementById('tx-tipo').value;
+
+    if (!entregable) return alert("Define el entregable");
+
+    store.dispatch({
+        type: 'ADD_TRANSACTION',
+        payload: {
+            projectId: pId,
+            tx: { from, to, entregable, tipo, fecha: new Date().toISOString() }
+        }
+    });
+    location.reload();
 };
