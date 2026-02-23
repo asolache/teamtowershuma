@@ -2,45 +2,128 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SOS v4 | Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS v4 | Dashboard Central</title>
     <style>
-        body { background: #0f172a; color: #f1f5f9; font-family: sans-serif; padding: 40px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-        .status { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
-        .btn { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; }
+        :root {
+            --bg: #010409; --panel: #0d1117; --border: #30363d;
+            --text: #c9d1d9; --blue: #58a6ff; --green: #238636;
+        }
+        body { 
+            background: var(--bg); color: var(--text); 
+            font-family: -apple-system, sans-serif; margin: 0; padding: 20px; 
+        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .card { 
+            background: var(--panel); border: 1px solid var(--border); 
+            border-radius: 8px; padding: 20px; 
+        }
+        h1, h2 { color: #fff; margin-top: 0; }
+        .btn {
+            display: inline-block; padding: 10px 15px; border-radius: 6px;
+            text-decoration: none; font-weight: bold; cursor: pointer; border: none;
+            font-size: 0.9rem; margin-top: 10px;
+        }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-outline { border: 1px solid var(--border); color: var(--blue); background: transparent; }
+        .btn-red { color: #f85149; background: transparent; border: 1px solid #f85149; font-size: 0.7rem; }
+        
+        .project-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; border-bottom: 1px solid var(--border);
+        }
+        .badge {
+            font-size: 0.7rem; padding: 2px 6px; border-radius: 10px;
+            background: #21262d; color: var(--blue); border: 1px solid var(--blue);
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>🏰 TeamTowers SOS Dashboard</h1>
-        <p>Monitor Global de Resiliencia Organizativa</p>
+
+    <header style="max-width: 1200px; margin: 0 auto 30px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>🛡️ SOS v4 Kernel</h1>
+            <p style="color: #8b949e; margin: 0;">Sistema Operativo Social | Agile Canvas & VNA</p>
+        </div>
+        <a href="tests/run-tests.html" class="btn btn-outline">🧪 Ejecutar Suite de Tests</a>
     </header>
 
-    <div id="project-list" class="grid">
-        </div>
+    <div class="grid">
+        <section class="card">
+            <h2>🏗️ Proyectos (Castells)</h2>
+            <div id="project-list">
+                </div>
+            <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <input id="new-project-name" placeholder="Nombre del nuevo Castell..." 
+                       style="width: 100%; padding: 10px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 6px; box-sizing: border-box;">
+                <button onclick="crearProyecto()" class="btn btn-blue" style="width: 100%;">Crear Nuevo Proyecto</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>📊 Resumen del Gremio</h2>
+            <div id="stats" style="font-size: 0.9rem; line-height: 2;">
+                </div>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+            <h3>⚙️ Acciones de Sistema</h3>
+            <button onclick="resetearSistema()" class="btn btn-red">HARD RESET (Borrar todo)</button>
+            <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">
+                Versión: 4.0.26-FLASH <br>
+                Ontología FEVS: Cargada
+            </p>
+        </section>
+    </div>
 
     <script type="module">
         import { store } from './js/core/store.js';
-        import { Selectors } from './js/core/selectors.js';
 
-        window.addEventListener('store-ready', () => {
-            const list = document.getElementById('project-list');
+        const updateUI = () => {
             const state = store.getState();
-
-            list.innerHTML = state.projects.map(p => {
-                const health = Selectors.getProjectResilienceIndex(state, p.id);
-                return `
-                    <div class="card">
-                        <span class="status">${health.status}</span>
-                        <h2>${p.nombre}</h2>
-                        <p>Ratio VNA: ${(health.ratio * 100).toFixed(0)}%</p>
-                        <a href="project.html?id=${p.id}" class="btn">Entrar al Canvas</a>
+            
+            // 1. Renderizar Proyectos
+            const projectList = document.getElementById('project-list');
+            if (state.projects.length === 0) {
+                projectList.innerHTML = '<p style="color:#8b949e;">No hay proyectos activos.</p>';
+            } else {
+                projectList.innerHTML = state.projects.map(p => `
+                    <div class="project-item">
+                        <div>
+                            <strong>${p.nombre}</strong> <br>
+                            <span class="badge">${p.transactions?.length || 0} Flujos VNA</span>
+                        </div>
+                        <a href="project.html?id=${p.id}" class="btn btn-outline" style="margin:0;">Abrir Canvas</a>
                     </div>
-                `;
-            }).join('');
-        });
+                `).join('');
+            }
+
+            // 2. Renderizar Stats
+            const totalLiquidado = state.transactions.reduce((acc, tx) => acc + tx.liquidación, 0);
+            const stats = document.getElementById('stats');
+            stats.innerHTML = `
+                <div>Total Proyectos: <strong>${state.projects.length}</strong></div>
+                <div>Transacciones: <strong>${state.transactions.length}</strong></div>
+                <div>Capital de Conocimiento: <strong style="color:var(--green);">${totalLiquidado}€</strong></div>
+                <div>Roles definidos: <strong>${state.roles.length}</strong></div>
+            `;
+        };
+
+        // Funciones Globales
+        window.crearProyecto = () => {
+            const name = document.getElementById('new-project-name').value;
+            if (!name) return alert("Ponle un nombre al Castell");
+            const id = 'p-' + Date.now();
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id, nombre: name } });
+            document.getElementById('new-project-name').value = "";
+        };
+
+        window.resetearSistema = () => {
+            if (confirm("¿Seguro? Se perderán todos los proyectos y transacciones.")) {
+                store.dispatch({ type: 'RESET_DATABASE' });
+            }
+        };
+
+        window.addEventListener('store-ready', updateUI);
+        store.subscribe(updateUI);
     </script>
 </body>
 </html>
