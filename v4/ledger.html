@@ -1,1 +1,35 @@
+// v4/js/views/LedgerView.js
+import { store } from '../core/store.js';
 
+export const LedgerView = {
+    render: () => {
+        const state = store.getState();
+        const txs = state.transactions || [];
+
+        return `
+            <div class="ledger-view">
+                <h1>💰 Libro de Liquidación Inmutable</h1>
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #334155; text-align: left;">
+                            <th>Fecha</th>
+                            <th>Meme (Concepto)</th>
+                            <th>Categoría</th>
+                            <th>Liquidación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${txs.reverse().map(tx => `
+                            <tr style="border-bottom: 1px solid #1e293b;">
+                                <td>${new Date(tx.timestamp).toLocaleDateString()}</td>
+                                <td>${tx.concepto}</td>
+                                <td><mark>${tx.categoria}</mark></td>
+                                <td><strong>${tx.liquidación.toFixed(2)}€</strong></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+};
