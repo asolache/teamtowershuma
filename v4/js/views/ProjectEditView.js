@@ -20,7 +20,6 @@ document.addEventListener('change', (e) => {
             type: 'UPDATE_ROLE', 
             payload: { projectId, roleId, field: 'levelId', value: e.target.value } 
         });
-        // Re-render para mostrar los cambios financieros si los hubiera
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
     }
@@ -40,9 +39,11 @@ document.addEventListener('click', (e) => {
                 description: document.getElementById('edit-desc').value 
             } 
         });
-        alert("✅ Configuración guardada");
+        
+        // Feedback visual de guardado y re-render
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
+        console.log("✅ Datos estratégicos sincronizados con el Contexto IA");
     }
 
     // Inyectar Nuevo Rol
@@ -65,7 +66,6 @@ export const ProjectEditView = {
 
         const activeRoles = project.roles.filter(r => !r.isArchived);
 
-        // Mapeo de niveles con formato: "Nombre (@id)"
         const levelOptions = [
             { id: "@anxaneta", label: "Strategy (@anxaneta)" },
             { id: "@aixecador", label: "Creative/Coord (@aixecador)" },
@@ -79,16 +79,20 @@ export const ProjectEditView = {
                 <header class="header-main">
                     <div>
                         <h1>⚙️ Diseñador de Ontología: ${project.nombre}</h1>
-                        <p class="text-muted">Personalización de roles y órbitas de valor</p>
+                        <p class="text-muted">Ajusta la base estratégica y la estructura de capital humano</p>
                     </div>
                     <button class="btn btn-secondary" onclick="location.hash='#/project/${projectId}'">← Volver al Mapa</button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 350px 1fr; gap: 30px;">
+                <div style="display: grid; grid-template-columns: 380px 1fr; gap: 30px;">
                     
-                    <section class="panel">
-                        <h3>Misión y Propósito</h3>
-                        <div style="margin-bottom: 15px;">
+                    <section class="panel" style="border-left: 4px solid var(--accent-purple);">
+                        <h3 style="display: flex; justify-content: space-between; align-items: center;">
+                            Misión y Propósito
+                            <span style="font-size: 0.7rem; background: var(--accent-purple); color: white; padding: 2px 8px; border-radius: 10px;">ESTRATÉGICO</span>
+                        </h3>
+                        
+                        <div style="margin-bottom: 20px;">
                             <label class="form-label">Nombre del Proyecto</label>
                             <input id="edit-name" type="text" class="form-control" value="${project.nombre}">
                             
@@ -99,53 +103,70 @@ export const ProjectEditView = {
                                 `).join('')}
                             </select>
                             
-                            <label class="form-label">Descripción Estratégica</label>
-                            <textarea id="edit-desc" class="form-control" style="height: 100px;">${project.description || ''}</textarea>
+                            <label class="form-label">Descripción / Misión (Lectura IA)</label>
+                            <textarea id="edit-desc" class="form-control" 
+                                style="height: 180px; line-height: 1.5; font-family: 'Inter', sans-serif; resize: vertical;" 
+                                placeholder="Define el propósito central del proyecto...">${project.description || ''}</textarea>
+                            <p class="text-small text-muted" style="margin-top: 5px;">* Esta descripción define el comportamiento de los agentes IA.</p>
                         </div>
-                        <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-primary btn-block">Guardar Cambios</button>
+
+                        <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-bottom: 25px;">
+                            💾 Guardar y Sincronizar Contexto
+                        </button>
                         
-                        <div style="margin-top: 20px; padding: 10px; background: rgba(163, 113, 247, 0.1); border-radius: 8px;">
-                            <h4 style="color: var(--accent-purple); margin:0;">🧠 Contexto IA</h4>
-                            <p class="text-small text-muted">Este texto alimenta el diagnóstico automático del ecosistema.</p>
+                        <div style="padding: 15px; background: rgba(163, 113, 247, 0.05); border: 1px dashed var(--accent-purple); border-radius: 12px;">
+                            <h4 style="color: var(--accent-purple); margin:0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                                🧠 Contexto IA Activo
+                            </h4>
+                            <div id="ai-context-preview" style="font-size: 0.85rem; color: #eee;">
+                                <div style="margin-bottom: 8px;"><strong>Sector:</strong> <span style="color: var(--accent-blue);">${project.sector}</span></div>
+                                <div style="margin-bottom: 8px;"><strong>Enfoque:</strong> ${project.description ? project.description.substring(0, 100) + '...' : '<span class="text-muted">Esperando descripción...</span>'}</div>
+                                <div style="display: flex; gap: 5px; margin-top: 10px;">
+                                    <span style="height: 8px; width: 8px; background: #00ff00; border-radius: 50%; display: inline-block;"></span>
+                                    <span class="text-small" style="color: #00ff00; font-weight: bold;">IA Lista para Diagnóstico</span>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
                     <section class="panel">
-                        <h3>Gestión de Roles</h3>
-                        <p class="text-muted text-small">Edita los nombres y cambia las órbitas para ajustar el peso financiero (Slicing Pie).</p>
+                        <h3>Gestión de Roles y Órbitas</h3>
+                        <p class="text-muted text-small">Asigna responsabilidades a los niveles de valor. Los cambios afectan al reparto de Slicing Pie.</p>
                         
-                        <div style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 25px;">
                             ${activeRoles.map(r => `
-                                <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center; margin-bottom: 10px;">
+                                <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
                                     <div>
-                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem;">NOMBRE DEL ROL</label>
+                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">NOMBRE DEL ROL</label>
                                         <input type="text" 
                                                class="form-control edit-role-name" 
                                                data-pid="${projectId}" 
                                                data-rid="${r.id}" 
                                                value="${r.name}" 
-                                               style="margin:0;">
+                                               style="margin:0; border-color: transparent; background: rgba(0,0,0,0.2);">
                                     </div>
                                     <div>
-                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem;">ÓRBITA (NIVEL)</label>
+                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">ÓRBITA DE VALOR</label>
                                         <select class="form-control edit-role-level" 
-                                                data-pid="${projectId}" 
-                                                data-rid="${r.id}" 
-                                                style="margin:0; font-size: 0.85rem;">
+                                                 data-pid="${projectId}" 
+                                                 data-rid="${r.id}" 
+                                                 style="margin:0; font-size: 0.85rem; border-color: transparent; background: rgba(0,0,0,0.2);">
                                             ${levelOptions.map(opt => `
                                                 <option value="${opt.id}" ${r.levelId === opt.id ? 'selected' : ''}>${opt.label}</option>
                                             `).join('')}
                                         </select>
                                     </div>
-                                    <button class="btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">🗑️</button>
+                                    <button class="btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" 
+                                            style="background:none; border:none; cursor:pointer; font-size:1.1rem; opacity:0.6; transition: 0.3s;"
+                                            onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">🗑️</button>
                                 </div>
                             `).join('')}
                         </div>
 
-                        <div class="panel-surface" style="border: 2px dashed var(--border-color); background: none;">
-                            <h4 style="margin-top:0;">+ Inyectar Nuevo Rol</h4>
+                        <div class="panel-surface" style="border: 2px dashed rgba(163, 113, 247, 0.3); background: rgba(163, 113, 247, 0.02);">
+                            <h4 style="margin-top:0; font-size: 0.9rem; color: var(--accent-purple);">+ Inyectar Nueva Posición</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
-                                <input id="nr-name-edit" type="text" class="form-control" placeholder="Nombre del Rol" style="margin:0;">
+                                <input id="nr-name-edit" type="text" class="form-control" placeholder="Ej: Lead Developer" style="margin:0;">
                                 <select id="nr-level-edit" class="form-control" style="margin:0;">
                                     ${levelOptions.map(opt => `<option value="${opt.id}">${opt.label}</option>`).join('')}
                                 </select>
