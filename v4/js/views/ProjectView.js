@@ -111,8 +111,32 @@ export const ProjectView = {
                         </div>
                     </aside>
 
-                    <main class="map-container">
-                        ${ValueMapView.render(projectId)}
+                    <main style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="map-container">
+                            ${ValueMapView.render(projectId)}
+                        </div>
+
+                        <section class="panel" style="border-color: var(--accent-blue); background-color: rgba(88, 166, 255, 0.03);">
+                            <h3 class="text-accent" style="margin-top: 0; font-size: 1rem;">ℹ️ Guía del Ecosistema Simbiótico</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 0.85rem; color: var(--text-muted);">
+                                <div>
+                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🗺️ Nodos y Topología</h4>
+                                    <ul style="margin-top: 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 6px;"><b>Nodos Base (Azul):</b> Representan la ontología estructural del Castell (Estrategia, Producción, Calidad, etc.). Son los cimientos.</li>
+                                        <li style="margin-bottom: 6px;"><b>Nodos Especialistas (Verde):</b> Son personas o roles específicos del Gremio que has inyectado. Aparecen orbitando a su Nodo Base correspondiente.</li>
+                                        <li style="margin-bottom: 6px;"><b>Conexión Punteada Gris:</b> Muestra la dependencia jerárquica entre un Especialista y su rol fundacional.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">⚡ Flujos de Valor y Salud</h4>
+                                    <ul style="margin-top: 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 6px;"><b>Flujo Tangible (Flecha Continua Azul):</b> Intercambio de valor directo, cuantificable o material (ej. código, dinero, un informe finalizado).</li>
+                                        <li style="margin-bottom: 6px;"><b>Flujo Intangible (Flecha Discontinua Violeta):</b> Transferencia de valor no material (ej. conocimiento, reputación, confianza, validación).</li>
+                                        <li style="margin-bottom: 6px;"><b>Resiliencia:</b> Porcentaje en la cabecera. Sube cuando se detectan flujos que pasan por el rol de auditoría/calidad (<code>@dosos</code>), asegurando que el ecosistema no genera deuda técnica.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
                     </main>
                 </div>
             </div>
