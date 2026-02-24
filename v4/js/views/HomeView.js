@@ -37,12 +37,10 @@ export const HomeView = {
             globalTxs += txs.length;
             globalResilienceSum += store.calculateResilience(p.id);
 
-            // Sumar el valor congelado de todas las transacciones de este proyecto
             txs.forEach(t => {
                 if (t.valorCongelado !== undefined) {
                     globalValue += t.valorCongelado;
                 } else {
-                    // Fallback para transacciones viejas
                     const originRole = (p.roles || []).find(r => r.id === t.from);
                     if (originRole) {
                         const horas = parseFloat(t.horas) || 1;
@@ -66,6 +64,10 @@ export const HomeView = {
                     <div>
                         <h1>Centro de Mando SOS</h1>
                         <p class="text-muted">Gestión de Resiliencia y Flujo de Valor Global</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="location.hash='#/about'">📖 Metodología y Ayuda</button>
+                        <button class="btn btn-outline" onclick="location.hash='#/test'">🧪 Entorno Test</button>
                     </div>
                 </header>
 
@@ -95,17 +97,20 @@ export const HomeView = {
                     <div style="margin-top: 15px; cursor: default; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid rgba(88,166,255,0.2); padding-top: 15px;">
                         <div>
                             <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🏢 Filosofía del Sistema (SOS)</h4>
-                            <p style="margin-bottom: 10px;"><b>TeamTowers System of Systems (SOS)</b> es una plataforma para mapear, diseñar y auditar ecosistemas corporativos usando la metáfora de los <i>Castells</i> (torres humanas).</p>
+                            <p style="margin-bottom: 10px;"><b>TeamTowers System of Systems (SOS)</b> es una plataforma para mapear, auditar y optimizar ecosistemas corporativos usando la metáfora de los <i>Castells</i>.</p>
                             <p style="margin-bottom: 0;">Aquí no gestionamos "tareas", sino <b>Flujos de Valor</b>. Podrás visualizar cómo la estrategia fluye hacia la operativa y cómo la base sostiene a toda la organización. Al documentarlo, el sistema genera automáticamente un <i>Prompt Maestro</i> para entrenar IAs con la estructura exacta de tu empresa.</p>
                         </div>
                         <div>
                             <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🚀 Pasos para empezar</h4>
                             <ul style="margin-top: 0; padding-left: 20px;">
-                                <li style="margin-bottom: 6px;"><b>1. Levantar un Castell:</b> Usa el formulario de abajo para crear un proyecto y elegir un sector base.</li>
-                                <li style="margin-bottom: 6px;"><b>2. Diseñar el Ecosistema:</b> Entra al proyecto y usa el botón "⚙️ Diseñar" para ajustar los roles, niveles jerárquicos y precios por hora.</li>
-                                <li style="margin-bottom: 6px;"><b>3. Mapear el Flujo:</b> Desde el Mapa Visual, inyecta transacciones (entregables) entre los distintos roles.</li>
-                                <li style="margin-bottom: 6px;"><b>4. Auditar en el Libro Mayor:</b> Ve a "💰 Contabilidad" para revisar el valor generado en euros y las alertas de resiliencia o deuda técnica.</li>
+                                <li style="margin-bottom: 6px;"><b>1. Levantar un Castell:</b> Usa el panel inferior para crear un proyecto.</li>
+                                <li style="margin-bottom: 6px;"><b>2. Diseñar el Ecosistema:</b> Ajusta roles, jerarquías y finanzas.</li>
+                                <li style="margin-bottom: 6px;"><b>3. Mapear el Flujo:</b> Inyecta transacciones entre los nodos.</li>
+                                <li style="margin-bottom: 6px;"><b>4. Auditar en el Libro Mayor:</b> Revisa el valor generado y la resiliencia.</li>
                             </ul>
+                            <div style="margin-top: 10px;">
+                                <button class="btn btn-outline" onclick="location.hash='#/about'" style="font-size: 0.75rem; padding: 4px 8px;">Leer documentación completa ➔</button>
+                            </div>
                         </div>
                     </div>
                 </details>
