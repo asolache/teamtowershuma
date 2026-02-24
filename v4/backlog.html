@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers SOS | Backlog & Flujo de Valor</title>
+    <style>
+        :root {
+            --bg-base: #010409;
+            --bg-surface: #0d1117;
+            --bg-panel: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #238636;
+            --accent-purple: #a371f7;
+            --font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            margin: 0; padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1, h2, h3 { color: #f0f6fc; margin: 0; }
+        
+        .version-block {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .version-header {
+            display: flex; justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px; margin-bottom: 20px;
+        }
+
+        .tx-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-left: 4px solid var(--border-color);
+            padding: 15px; border-radius: 6px; margin-bottom: 15px;
+            display: grid; grid-template-columns: 2fr 3fr auto; gap: 15px; align-items: center;
+        }
+
+        .tx-intangible { border-left-color: var(--accent-purple); }
+        .tx-tangible { border-left-color: var(--accent-blue); }
+
+        .role-badge {
+            display: inline-block; font-size: 0.75rem; font-weight: bold;
+            padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);
+        }
+
+        .btn {
+            background: var(--accent-green); color: white; border: none;
+            padding: 10px 16px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-family: inherit;
+        }
+        .btn:hover { background: #2ea043; }
+        .btn-outline { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); }
+
+        pre {
+            background: #000; padding: 15px; border-radius: 8px;
+            overflow-x: auto; font-size: 0.85rem; color: #a5d6ff;
+            display: none; border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1 style="color: var(--accent-blue);">📜 SOS Ledger</h1>
+                <p class="text-muted" style="margin: 5px 0 0 0;">Flujo de Valor Histórico (Tú y la IA construyendo el Kernel)</p>
+            </div>
+            <div>
+                <button class="btn btn-outline" onclick="window.location.href='index.html'">← Volver a la App</button>
+                <button class="btn" onclick="toggleJson()">⚙️ Ver Data JSON</button>
+            </div>
+        </header>
+
+        <pre id="json-viewer"></pre>
+
+        <div id="timeline"></div>
+    </div>
+
+    <script id="vna-data" type="application/json">
+    {
+        "projectId": "sos-kernel-build",
+        "nombre": "Construcción Core v4.x",
+        "sector": "web3",
+        "roles": [
+            { "id": "user_arch", "name": "Humano", "levelId": "@anxaneta", "desc": "Lead Arch. / Strategy" },
+            { "id": "user_qa", "name": "Humano", "levelId": "@dosos", "desc": "Auditor / QA" },
+            { "id": "ai_dev", "name": "Gemini AI", "levelId": "@baixos", "desc": "DApp Dev / Code" }
+        ],
+        "versiones": [
+            {
+                "version": "v4.4",
+                "titulo": "Kernel Estable & Value Map SVG",
+                "transacciones": [
+                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Auto-save de Misión y Contexto IA", "horas": 1 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js adaptado", "horas": 3 },
+                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Integrar JSON de Roles a Store.js", "horas": 1 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js actualizado (Payload IA)", "horas": 2 },
+                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug Report: Ocultar Ecosistema y Centrar Mapa", "horas": 1.5 },
+                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Renderizado Elíptico Canvas/SVG", "horas": 4 }
+                ]
+            },
+            {
+                "version": "v4.5",
+                "titulo": "Slicing Pie, Ledger & Sistema de Usuarios",
+                "transacciones": [
+                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Paradigma Usuario vs Rol (Contabilidad)", "horas": 2 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store v4.5 (Ledger + Usuarios)", "horas": 5 },
+                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug Report: Desincronización de 10 Sectores HTML", "horas": 1 },
+                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: DashboardView y Store Integrados", "horas": 2 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectAccountingView.js (Cap Table)", "horas": 6 }
+                ]
+            }
+        ]
+    }
+    </script>
+
+    <script>
+        // Lógica para renderizar el JSON en el HTML visualmente
+        const rawData = document.getElementById('vna-data').textContent;
+        const data = JSON.parse(rawData);
+        
+        document.getElementById('json-viewer').textContent = JSON.stringify(data, null, 4);
+
+        function toggleJson() {
+            const el = document.getElementById('json-viewer');
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        const timeline = document.getElementById('timeline');
+
+        data.versiones.forEach(v => {
+            let txsHtml = v.transacciones.map(tx => {
+                const fromRole = data.roles.find(r => r.id === tx.from);
+                const toRole = data.roles.find(r => r.id === tx.to);
+                const typeColor = tx.tipo === 'intangible' ? 'var(--accent-purple)' : 'var(--accent-blue)';
+                
+                return `
+                    <div class="tx-card tx-${tx.tipo}">
+                        <div>
+                            <span class="role-badge">${fromRole.levelId}</span> 
+                            <span style="color: var(--text-muted); margin: 0 5px;">→</span> 
+                            <span class="role-badge">${toRole.levelId}</span>
+                        </div>
+                        <div>
+                            <strong style="display:block; font-size: 0.95rem;">${tx.entregable}</strong>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">De: ${fromRole.name} | Para: ${toRole.name}</span>
+                        </div>
+                        <div style="text-align: right; font-size: 0.85rem; color: ${typeColor}; font-weight: bold;">
+                            ${tx.tipo.toUpperCase()}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            timeline.innerHTML += `
+                <div class="version-block">
+                    <div class="version-header">
+                        <h2>${v.version} - <span style="color: var(--text-muted); font-size: 1.2rem; font-weight: normal;">${v.titulo}</span></h2>
+                        <span style="background: rgba(88, 166, 255, 0.1); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: var(--accent-blue);">
+                            ${v.transacciones.length} Transacciones
+                        </span>
+                    </div>
+                    ${txsHtml}
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
