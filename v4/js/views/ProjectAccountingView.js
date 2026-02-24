@@ -93,7 +93,7 @@ export const ProjectAccountingView = {
         // 📊 LÓGICA DE ALERTAS (Inteligencia del Ecosistema)
         const alertas = [];
         if (txs.length > 0) {
-            // 1. Riesgo de Deuda Técnica (Falta de @dosos)
+            // 1. Riesgo de Deuda Técnica
             const hasAudit = txs.some(t => {
                 const isBaseDosos = t.from === '@dosos' || t.to === '@dosos';
                 const node = allNodes.find(n => n.id === t.from);
@@ -104,7 +104,7 @@ export const ProjectAccountingView = {
                 alertas.push({ nivel: 'CRÍTICA', color: 'var(--accent-red)', msg: 'Riesgo de Deuda Técnica: No hay flujo de auditoría o calidad (@dosos).' });
             }
 
-            // 2. Falta de Estrategia (@anxaneta)
+            // 2. Falta de Estrategia
             const hasStrategy = txs.some(t => t.from === '@anxaneta' || (allNodes.find(n => n.id === t.from)?.parent === '@anxaneta'));
             if (!hasStrategy && txs.length > 3) {
                 alertas.push({ nivel: 'AVISO', color: '#d29922', msg: 'Desviación: El ecosistema está operando sin dirección estratégica registrada (@anxaneta).' });
@@ -211,7 +211,7 @@ export const ProjectAccountingView = {
                         </div>
                     </aside>
 
-                    <main>
+                    <main style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="panel-surface" style="padding: 0; overflow-x: auto;">
                             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
                                 <thead style="background-color: var(--bg-panel); border-bottom: 2px solid var(--border-color);">
@@ -230,6 +230,28 @@ export const ProjectAccountingView = {
                                 </tbody>
                             </table>
                         </div>
+
+                        <section class="panel" style="border-color: var(--accent-blue); background-color: rgba(88, 166, 255, 0.03);">
+                            <h3 class="text-accent" style="margin-top: 0; font-size: 1rem;">ℹ️ Guía del Libro Mayor y Diagnóstico</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 0.85rem; color: var(--text-muted);">
+                                <div>
+                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">📊 KPIs y Estadísticas</h4>
+                                    <ul style="margin-top: 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 6px;"><b>Valor Generado:</b> Se calcula automáticamente multiplicando las horas aportadas por el multiplicador jerárquico del rol.</li>
+                                        <li style="margin-bottom: 6px;"><b>Resiliencia:</b> Indicador de salud sistémica. Si baja del 40%, indica que se está produciendo valor sin el equilibrio necesario de auditoría.</li>
+                                        <li style="margin-bottom: 6px;"><b>Distribución (Tarta):</b> Muestra de forma visual qué roles están inyectando mayor peso financiero en el ecosistema.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">⚠️ Alertas de Auditoría</h4>
+                                    <ul style="margin-top: 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 6px;"><b>Riesgo de Deuda Técnica:</b> Se dispara si el equipo opera sin intervenciones del rol de Calidad o Refinamiento (<code>@dosos</code>).</li>
+                                        <li style="margin-bottom: 6px;"><b>Falta de Estrategia:</b> Se activa si se registran transacciones de producción pero falta la directriz de la cúspide (<code>@anxaneta</code>).</li>
+                                        <li style="margin-bottom: 6px;"><b>Hash Inmutable:</b> Cada línea del Ledger cuenta con un identificador criptográfico, garantizando que el historial de esfuerzo no pueda ser alterado.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
                     </main>
                 </div>
             </div>
