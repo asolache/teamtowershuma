@@ -43,8 +43,8 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .version-header {
@@ -111,12 +111,12 @@
     <div class="container">
         <header>
             <div>
-                <h1 style="color: var(--accent-blue);">📜 SOS Ledger (Dogfooding)</h1>
-                <p class="text-muted" style="margin: 5px 0 0 0;">Reporte real de inyección de valor: Humano vs IA</p>
+                <h1 style="color: var(--accent-blue);">📜 SOS Ledger (Histórico Completo)</h1>
+                <p class="text-muted" style="margin: 5px 0 0 0;">Historia inmutable de inyección de valor entre Humanos e IA</p>
             </div>
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline" onclick="window.location.href='index.html'">← App</button>
-                <button class="btn" onclick="toggleJson()">⚙️ Data JSON</button>
+                <button class="btn btn-outline" onclick="window.location.href='index.html'">← Volver a la App</button>
+                <button class="btn" onclick="toggleJson()">⚙️ Ver Data JSON</button>
             </div>
         </header>
 
@@ -128,8 +128,8 @@
     <script id="vna-data" type="application/json">
     {
         "projectId": "sos-kernel-build",
-        "nombre": "Construcción Core v4.x",
-        "sector": "saas",
+        "nombre": "Construcción TeamTowers SOS",
+        "sector": "web3",
         "roles": [
             { "id": "user_arch", "name": "Humano", "levelId": "@anxaneta", "desc": "Lead Arch.", "fmv": 45.0, "multiplier": 3.0 },
             { "id": "user_qa", "name": "Humano", "levelId": "@dosos", "desc": "Auditor QA", "fmv": 30.0, "multiplier": 2.0 },
@@ -158,6 +158,18 @@
                     { "fase": 3, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: DashboardView y Store Integrados", "horas": 0.05 },
                     { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectAccountingView.js (Cap Table)", "horas": 0.1 }
                 ]
+            },
+            {
+                "version": "v4.4",
+                "titulo": "Kernel Estable & Value Map SVG",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Auto-save Misión y Contexto IA", "horas": 2.5 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js adaptado", "horas": 0.2 },
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Integrar JSON de Roles a Store.js", "horas": 1.0 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js actualizado (Payload IA)", "horas": 0.1 },
+                    { "fase": 4, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Ocultar Ecosistema y Centrar Mapa", "horas": 1.5 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Renderizado Elíptico Canvas/SVG", "horas": 0.2 }
+                ]
             }
         ]
     }
@@ -179,7 +191,7 @@
         data.versiones.forEach(v => {
             let versionPieTotal = 0;
 
-            // Ordenamos por fase lógica según la nueva metodología
+            // Aplicamos el orden lógico de fases en el renderizado
             const sortedTxs = [...v.transacciones].sort((a, b) => (a.fase || 99) - (b.fase || 99));
 
             let txsHtml = sortedTxs.map(tx => {
@@ -187,7 +199,6 @@
                 const toRole = data.roles.find(r => r.id === tx.to);
                 const typeColor = tx.tipo === 'intangible' ? 'var(--accent-purple)' : 'var(--accent-blue)';
                 
-                // CÁLCULO SLICING PIE (Lógica Humano vs IA)
                 const valorGenerado = tx.horas * fromRole.fmv * fromRole.multiplier;
                 versionPieTotal += valorGenerado;
                 
@@ -200,7 +211,7 @@
                                 <span class="role-badge">${toRole.levelId}</span>
                             </div>
                             <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Flujo ${tx.tipo}</span>
-                            ${tx.fase ? `<br><span class="fase-indicator">FASE ${tx.fase}</span>` : ''}
+                            <br><span class="fase-indicator">FASE ${tx.fase}</span>
                         </div>
                         <div>
                             <strong style="display:block; font-size: 1rem; color: #f0f6fc;">${tx.entregable}</strong>
@@ -221,7 +232,7 @@
                     <div class="version-header">
                         <h2>${v.version} - <span style="color: var(--text-muted); font-size: 1.2rem; font-weight: normal;">${v.titulo}</span></h2>
                         <div style="text-align: right;">
-                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05rem;">Fondo Slicing Pie Generado</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05rem;">Equity Total Acumulado</div>
                             <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-gold);">${versionPieTotal.toFixed(2)} €</div>
                         </div>
                     </div>
