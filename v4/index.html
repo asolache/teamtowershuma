@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v4.4 | Ecosistema</title>
+    <title>TeamTowers SOS v4.5 | Ecosistema</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
         :root {
@@ -218,6 +218,9 @@
         import { ProjectEditView } from './js/views/ProjectEditView.js';
         import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
         
+        // 🚀 NUEVA IMPORTACIÓN: El Portal del Contribuidor
+        import { UserDashboardView } from './js/views/UserDashboardView.js';
+        
         // 💡 NOTA: Si tienes un TestView.js real, descomenta la línea de abajo e impórtalo.
         // import { TestView } from './js/views/TestView.js';
 
@@ -240,6 +243,10 @@
                 } else if (hash === '#/about') {
                     app.innerHTML = AboutView.render();
                 
+                // 🚀 NUEVA RUTA: Carga el dashboard personal del usuario
+                } else if (hash === '#/user') {
+                    app.innerHTML = UserDashboardView.render();
+
                 } else if (hash === '#/test') {
                     // 💡 Si usas el import de arriba, cambia esta línea por: app.innerHTML = TestView.render();
                     app.innerHTML = `
