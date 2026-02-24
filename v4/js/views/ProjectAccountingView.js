@@ -170,4 +170,98 @@ export const ProjectAccountingView = {
                     </div>
                     <div style="display: flex; gap: 15px; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 10px; background: var(--bg-surface); border: 1px solid var(--border-color); padding: 5px 15px; border-radius: var(--radius-md);">
-                            <span class="text-muted text-small">
+                            <span class="text-muted text-small">Filtrar por:</span>
+                            <select id="filter-ronda" data-pid="${projectId}" class="form-control" style="width: auto; margin: 0; border: none; background: transparent; padding: 0; color: var(--accent-blue); font-weight: bold; cursor: pointer;">
+                                <option value="all" ${filterRondaId === 'all' ? 'selected' : ''}>🌍 Vista Global (Histórico)</option>
+                                ${rondas.map(r => `<option value="${r.id}" ${filterRondaId === r.id ? 'selected' : ''}>🎯 ${r.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="location.hash='#/'">← Dashboard</button>
+                        <button class="btn btn-outline" onclick="location.hash='#/project/${projectId}'">Volver al Mapa</button>
+                    </div>
+                </header>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="panel">
+                        <div class="text-muted text-uppercase text-small">Valor en ${currentRondaName}</div>
+                        <div style="color: var(--accent-green); font-size: 1.8rem; font-weight: bold;">${totalValue.toLocaleString()} €</div>
+                    </div>
+                    <div class="panel" style="border-color: ${resiliencia < 40 ? 'var(--accent-red)' : 'var(--border-color)'}">
+                        <div class="text-muted text-uppercase text-small">Resiliencia</div>
+                        <div style="color: ${resiliencia < 40 ? 'var(--accent-red)' : 'var(--accent-blue)'}; font-size: 1.8rem; font-weight: bold;">${resiliencia}%</div>
+                    </div>
+                    <div class="panel">
+                        <div class="text-muted text-uppercase text-small">Aportaciones</div>
+                        <div style="color: var(--text-heading); font-size: 1.8rem; font-weight: bold;">${txs.length}</div>
+                    </div>
+                    
+                    <div class="panel" style="display: flex; gap: 20px; align-items: center; justify-content: space-around; padding: 15px;">
+                        <div style="${pieStyle}"></div>
+                        <div style="flex-grow: 1;">
+                            <h4 class="text-muted text-uppercase text-small" style="margin-top:0; border-bottom:1px solid var(--border-color); padding-bottom:5px;">Distribución en Fase</h4>
+                            <div style="max-height: 90px; overflow-y: auto; padding-right:5px;">
+                                ${totalValue > 0 ? chartLegend.join('') : '<span class="text-muted text-small">Sin transacciones en esta fase</span>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-layout" style="grid-template-columns: 320px 1fr;">
+                    
+                    <aside style="display:flex; flex-direction:column; gap:20px;">
+                        <div class="panel" style="border-color: #d29922;">
+                            <h3 class="text-uppercase text-small" style="color: #d29922; margin-top:0;">⏱️ Inyectar Valor (Slicing Pie)</h3>
+                            <p class="text-muted text-small" style="margin-bottom: 15px;">El riesgo (y el multiplicador de €) se calculará automáticamente según la <b>fecha</b> indicada.</p>
+                            
+                            <label class="form-label">Rol / Especialista (Origen)</label>
+                            <select id="acc-role" class="form-control">
+                                ${activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('')}
+                            </select>
+                            
+                            <label class="form-label">Fecha de la aportación</label>
+                            <input id="acc-date" type="date" class="form-control" value="${new Date().toISOString().split('T')[0]}">
+
+                            <label class="form-label">Horas Invertidas</label>
+                            <input id="acc-hours" type="number" min="0.5" step="0.5" class="form-control" placeholder="Ej: 4">
+                            
+                            <label class="form-label">Concepto (Entregable)</label>
+                            <input id="acc-concept" type="text" class="form-control" placeholder="Ej: Desarrollo de API">
+                            
+                            <button id="btn-add-hours-acc" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px; background-color: #d29922;">
+                                Inyectar al Ledger
+                            </button>
+                        </div>
+
+                        <div class="panel" style="border-color: ${alertas.length > 0 ? 'var(--accent-red)' : 'var(--border-color)'};">
+                            <h3 class="text-uppercase text-small" style="color: ${alertas.length > 0 ? 'var(--accent-red)' : 'var(--text-muted)'}; margin-top:0;">
+                                ⚠️ Auditoría del Sistema
+                            </h3>
+                            ${alertasHtml}
+                        </div>
+                    </aside>
+
+                    <main style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="panel-surface" style="padding: 0; overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                                <thead style="background-color: var(--bg-panel); border-bottom: 2px solid var(--border-color);">
+                                    <tr>
+                                        <th style="padding: 15px; color: var(--text-muted);">Hash</th>
+                                        <th style="padding: 15px; color: var(--text-muted);">Fecha y Hora</th>
+                                        <th style="padding: 15px; color: var(--text-muted);">Origen (Rol)</th>
+                                        <th style="padding: 15px; color: var(--text-muted);">Destino</th>
+                                        <th style="padding: 15px; color: var(--text-muted);">Concepto</th>
+                                        <th style="padding: 15px; color: var(--text-muted); text-align: center;">Esfuerzo</th>
+                                        <th style="padding: 15px; color: var(--text-muted); text-align: right;">Valor (€)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${txs.length === 0 ? `<tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">No hay transacciones registradas en este ciclo temporal.</td></tr>` : ledgerRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+    }
+};
