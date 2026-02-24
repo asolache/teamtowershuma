@@ -21,13 +21,13 @@ document.addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-archive-role')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
-        if(confirm("¿Archivar rol? Dejará de aparecer en el mapa activo.")) {
+        if(confirm("¿Eliminar este rol? Desaparecerá del mapa, pero las transacciones financieras previas se mantendrán intactas en el Libro Mayor.")) {
             store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId, roleId } });
         }
     }
 });
 
-// Detectar cambios en inputs (Nombres, Precios, Multiplicadores, Fases)
+// Detectar cambios en inputs (Nombres, Niveles, Precios, Multiplicadores, Fases)
 document.addEventListener('change', (e) => {
     if (e.target.classList.contains('role-input')) {
         const projectId = e.target.getAttribute('data-pid');
@@ -65,7 +65,7 @@ export const ProjectEditView = {
                     </button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 30px;">
                     
                     <div style="display: flex; flex-direction: column; gap: 20px;">
                         <section class="panel">
@@ -93,7 +93,7 @@ export const ProjectEditView = {
                         
                         <section class="panel">
                             <h3 style="margin-bottom: 5px;">2. Ontología Unificada (Roles y Finanzas)</h3>
-                            <p class="text-muted text-small" style="margin-bottom: 20px;">Edita los nombres, el poder multiplicador y el precio/hora para adaptar la economía del Castell a este proyecto concreto.</p>
+                            <p class="text-muted text-small" style="margin-bottom: 20px;">Modifica el nombre, jerarquía (órbita) y valor financiero de cualquier nodo. Puedes borrar roles innecesarios.</p>
                             
                             <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; padding: 0 10px;">
                                 <span class="text-muted text-small">NOMBRE DEL ROL</span>
@@ -106,22 +106,29 @@ export const ProjectEditView = {
                             <div style="max-height: 350px; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
                                 ${activeRoles.map(r => `
                                     <div class="panel-surface" style="padding: 10px; margin-bottom: 8px; display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr auto; gap: 10px; align-items: center;">
+                                        
                                         <input type="text" value="${r.name}" class="form-control role-input" data-field="name" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; font-weight: bold; border-color: transparent;">
                                         
-                                        <span class="text-muted text-small" style="padding-left: 10px;">${r.levelId}</span>
+                                        <select class="form-control role-input" data-field="levelId" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; font-size: 0.75rem; padding: 8px;">
+                                            <option value="@anxaneta" ${r.levelId === '@anxaneta' ? 'selected' : ''}>@anxaneta (Dirección)</option>
+                                            <option value="@aixecador" ${r.levelId === '@aixecador' ? 'selected' : ''}>@aixecador (Management)</option>
+                                            <option value="@dosos" ${r.levelId === '@dosos' ? 'selected' : ''}>@dosos (Calidad)</option>
+                                            <option value="@baixos" ${r.levelId === '@baixos' ? 'selected' : ''}>@baixos (Operativa)</option>
+                                            <option value="@pinya" ${r.levelId === '@pinya' ? 'selected' : ''}>@pinya (Soporte)</option>
+                                        </select>
                                         
                                         <input type="number" step="0.1" value="${r.multiplier}" class="form-control role-input" data-field="multiplier" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; text-align: center; color: var(--accent-blue);">
                                         
                                         <input type="number" step="1" value="${r.price}" class="form-control role-input" data-field="price" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; text-align: center; color: var(--accent-green);">
                                         
-                                        ${r.isBase ? `<span style="width:34px; display:inline-block;"></span>` : `<button class="btn btn-outline btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="padding: 6px; border:none;" title="Archivar">📥</button>`}
+                                        <button class="btn btn-outline btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="padding: 6px; border:none; color: var(--accent-red);" title="Borrar Rol">🗑️</button>
                                     </div>
                                 `).join('')}
                             </div>
 
                             <div class="panel-surface" style="border-style: dashed; padding: 15px;">
-                                <h4 class="text-heading text-small" style="margin-top:0;">+ Inyectar Nuevo Rol al Sistema</h4>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
+                                <h4 class="text-heading text-small" style="margin-top:0;">+ Añadir Nuevo Rol a la Estructura</h4>
+                                <div style="display: grid; grid-template-columns: 2fr 1.5fr auto; gap: 10px;">
                                     <input id="nr-name-edit" type="text" class="form-control" placeholder="Nombre (ej: Data Analyst)" style="margin:0;">
                                     <select id="nr-level-edit" class="form-control" style="margin:0;">
                                         <option value="@anxaneta">Órbita @anxaneta</option>
@@ -130,7 +137,7 @@ export const ProjectEditView = {
                                         <option value="@baixos">Órbita @baixos</option>
                                         <option value="@pinya">Órbita @pinya</option>
                                     </select>
-                                    <button id="btn-add-role-edit" data-pid="${projectId}" class="btn btn-primary">Añadir</button>
+                                    <button id="btn-add-role-edit" data-pid="${projectId}" class="btn btn-primary">Inyectar</button>
                                 </div>
                             </div>
                         </section>
