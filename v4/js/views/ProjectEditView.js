@@ -23,10 +23,20 @@ document.addEventListener('change', (e) => {
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
     }
+
+    // 3. NUEVO: Autoguardado del System Prompt del Rol
+    if (e.target.classList.contains('role-prompt-input')) {
+        const projectId = e.target.getAttribute('data-pid');
+        const roleId = e.target.getAttribute('data-rid');
+        store.dispatch({
+            type: 'UPDATE_ROLE',
+            payload: { projectId, roleId, field: 'systemPrompt', value: e.target.value }
+        });
+    }
 });
 
 document.addEventListener('click', (e) => {
-    // Guardar Metadatos del Proyecto
+    // 4. Guardar Metadatos del Proyecto
     const btnSave = e.target.closest('#btn-save-meta');
     if (btnSave) {
         const projectId = btnSave.getAttribute('data-pid');
@@ -46,7 +56,7 @@ document.addEventListener('click', (e) => {
         console.log("✅ Datos estratégicos sincronizados con el Contexto IA");
     }
 
-    // Inyectar Nuevo Rol
+    // 5. Inyectar Nuevo Rol
     if (e.target.id === 'btn-add-role-edit') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name-edit').value;
@@ -55,6 +65,37 @@ document.addEventListener('click', (e) => {
         store.dispatch({ type: 'CREATE_ROLE', payload: { projectId, name, levelId } });
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
+    }
+
+    // 6. FIX: Archivar Rol (Estaba el botón pero faltaba el evento)
+    if (e.target.classList.contains('btn-archive-role')) {
+        const roleId = e.target.getAttribute('data-rid');
+        const projectId = e.target.getAttribute('data-pid');
+        if(confirm('¿Desactivar este nodo del ecosistema?')) {
+            store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId, roleId } });
+            document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
+        }
+    }
+
+    // 7. NUEVO: Crear Transacción con Prompt Táctico
+    if (e.target.id === 'btn-add-tx-edit') {
+        const projectId = e.target.getAttribute('data-pid');
+        const from = document.getElementById('tx-from').value;
+        const to = document.getElementById('tx-to').value;
+        const entregable = document.getElementById('tx-entregable').value;
+        const tipo = document.getElementById('tx-tipo').value;
+        const promptTactico = document.getElementById('tx-prompt').value;
+
+        if (!entregable) return alert("Define el nombre del entregable.");
+
+        store.dispatch({ 
+            type: 'ADD_TRANSACTION', 
+            payload: { 
+                projectId, 
+                tx: { from, to, entregable, tipo, systemPrompt: promptTactico, horas: 1 } 
+            } 
+        });
+        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
     }
 });
 
@@ -65,6 +106,7 @@ export const ProjectEditView = {
         if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
 
         const activeRoles = project.roles.filter(r => !r.isArchived);
+        const optionsHtml = activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('');
 
         const levelOptions = [
             { id: "@anxaneta", label: "Strategy (@anxaneta)" },
@@ -78,15 +120,15 @@ export const ProjectEditView = {
             <div class="container">
                 <header class="header-main">
                     <div>
-                        <h1>⚙️ Diseñador de Ontología: ${project.nombre}</h1>
-                        <p class="text-muted">Ajusta la base estratégica y la estructura de capital humano</p>
+                        <h1>⚙️ Diseñador de Ontología y Prompts: ${project.nombre}</h1>
+                        <p class="text-muted">Ajusta la base estratégica, los roles y las instrucciones tácticas para la IA</p>
                     </div>
                     <button class="btn btn-secondary" onclick="location.hash='#/project/${projectId}'">← Volver al Mapa</button>
                 </header>
 
                 <div style="display: grid; grid-template-columns: 380px 1fr; gap: 30px;">
                     
-                    <section class="panel" style="border-left: 4px solid var(--accent-purple);">
+                    <section class="panel" style="border-left: 4px solid var(--accent-purple); align-self: start;">
                         <h3 style="display: flex; justify-content: space-between; align-items: center;">
                             Misión y Propósito
                             <span style="font-size: 0.7rem; background: var(--accent-purple); color: white; padding: 2px 8px; border-radius: 10px;">ESTRATÉGICO</span>
@@ -105,9 +147,9 @@ export const ProjectEditView = {
                             
                             <label class="form-label">Descripción / Misión (Lectura IA)</label>
                             <textarea id="edit-desc" class="form-control" 
-                                style="height: 180px; line-height: 1.5; font-family: 'Inter', sans-serif; resize: vertical;" 
+                                style="height: 180px; line-height: 1.5; font-family: monospace; background: #000; color: #a5d6ff; resize: vertical;" 
                                 placeholder="Define el propósito central del proyecto...">${project.description || ''}</textarea>
-                            <p class="text-small text-muted" style="margin-top: 5px;">* Esta descripción define el comportamiento de los agentes IA.</p>
+                            <p class="text-small text-muted" style="margin-top: 5px;">* Esta descripción define el comportamiento global de todos los agentes IA.</p>
                         </div>
 
                         <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-bottom: 25px;">
@@ -130,35 +172,44 @@ export const ProjectEditView = {
                     </section>
 
                     <section class="panel">
-                        <h3>Gestión de Roles y Órbitas</h3>
-                        <p class="text-muted text-small">Asigna responsabilidades a los niveles de valor. Los cambios afectan al reparto de Slicing Pie.</p>
+                        <h3>Gestión de Roles y Prompts de Agente</h3>
+                        <p class="text-muted text-small">Edita los nombres, niveles y el comportamiento específico (System Prompt) de cada rol.</p>
                         
                         <div style="margin-bottom: 25px;">
                             ${activeRoles.map(r => `
-                                <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                                    <div>
-                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">NOMBRE DEL ROL</label>
-                                        <input type="text" 
-                                               class="form-control edit-role-name" 
-                                               data-pid="${projectId}" 
-                                               data-rid="${r.id}" 
-                                               value="${r.name}" 
-                                               style="margin:0; border-color: transparent; background: rgba(0,0,0,0.2);">
+                                <div class="panel-surface" style="padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center;">
+                                        <div>
+                                            <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">NOMBRE DEL ROL</label>
+                                            <input type="text" 
+                                                   class="form-control edit-role-name" 
+                                                   data-pid="${projectId}" 
+                                                   data-rid="${r.id}" 
+                                                   value="${r.name}" 
+                                                   style="margin:0; border-color: transparent; background: rgba(0,0,0,0.2); font-weight: bold;">
+                                        </div>
+                                        <div>
+                                            <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">ÓRBITA DE VALOR</label>
+                                            <select class="form-control edit-role-level" 
+                                                     data-pid="${projectId}" 
+                                                     data-rid="${r.id}" 
+                                                     style="margin:0; font-size: 0.85rem; border-color: transparent; background: rgba(0,0,0,0.2);">
+                                                ${levelOptions.map(opt => `
+                                                    <option value="${opt.id}" ${r.levelId === opt.id ? 'selected' : ''}>${opt.label}</option>
+                                                `).join('')}
+                                            </select>
+                                        </div>
+                                        <button class="btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" 
+                                                style="background:none; border:none; cursor:pointer; font-size:1.1rem; opacity:0.6; transition: 0.3s;"
+                                                onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">🗑️</button>
                                     </div>
-                                    <div>
-                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">ÓRBITA DE VALOR</label>
-                                        <select class="form-control edit-role-level" 
-                                                 data-pid="${projectId}" 
-                                                 data-rid="${r.id}" 
-                                                 style="margin:0; font-size: 0.85rem; border-color: transparent; background: rgba(0,0,0,0.2);">
-                                            ${levelOptions.map(opt => `
-                                                <option value="${opt.id}" ${r.levelId === opt.id ? 'selected' : ''}>${opt.label}</option>
-                                            `).join('')}
-                                        </select>
+                                    
+                                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
+                                        <label class="text-small text-muted" style="display:block; font-size:0.65rem; letter-spacing: 0.05rem; color: var(--accent-purple);">SYSTEM PROMPT DEL ROL (HEREDA MISIÓN)</label>
+                                        <textarea class="form-control role-prompt-input" data-pid="${projectId}" data-rid="${r.id}" 
+                                            style="min-height: 60px; background: rgba(0,0,0,0.3); color: #d2a8ff; font-family: monospace; font-size: 0.8rem; margin: 5px 0 0 0; border-color: transparent;" 
+                                            placeholder="Ej: Eres un auditor experto. Tu único objetivo es encontrar cuellos de botella...">${r.systemPrompt || ''}</textarea>
                                     </div>
-                                    <button class="btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" 
-                                            style="background:none; border:none; cursor:pointer; font-size:1.1rem; opacity:0.6; transition: 0.3s;"
-                                            onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">🗑️</button>
                                 </div>
                             `).join('')}
                         </div>
@@ -175,6 +226,43 @@ export const ProjectEditView = {
                         </div>
                     </section>
                 </div>
+
+                <section class="panel" style="border-color: var(--accent-green); margin-top: 30px;">
+                    <h3 style="color: var(--accent-green); margin-top: 0;">📝 Flujos de Valor e Instrucciones Tácticas</h3>
+                    <p class="text-small text-muted">Añade entregables al Mapa de Valor. Define el prompt exacto que necesitará el operario (o la IA) para generarlo.</p>
+                    
+                    <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
+                        
+                        <div>
+                            <label class="form-label">Emisor (Quién lo hace):</label>
+                            <select id="tx-from" class="form-control text-small">${optionsHtml}</select>
+                            
+                            <label class="form-label">Receptor (Para quién es):</label>
+                            <select id="tx-to" class="form-control text-small">${optionsHtml}</select>
+                            
+                            <label class="form-label">Nombre del Entregable:</label>
+                            <input id="tx-entregable" class="form-control text-small" placeholder="Ej: Estructura HTML Base">
+                            
+                            <label class="form-label">Tipo de Flujo:</label>
+                            <select id="tx-tipo" class="form-control text-small">
+                                <option value="tangible">Tangible (Material / Contrato)</option>
+                                <option value="intangible">Intangible (Feedback / Guía)</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; height: 100%;">
+                            <label class="form-label" style="color: var(--accent-green);">Prompt del Entregable (Instrucción a la IA):</label>
+                            <textarea id="tx-prompt" class="form-control" 
+                                style="flex-grow: 1; min-height: 150px; background: #000; color: #7ee787; font-family: monospace; font-size: 0.8rem;" 
+                                placeholder="Ej: Escribe el código HTML5 semántico para el login. No uses librerías externas. Devuelve solo el código en un bloque."></textarea>
+                            
+                            <button id="btn-add-tx-edit" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px;">
+                                Inyectar al Mapa de Valor →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         `;
     }
