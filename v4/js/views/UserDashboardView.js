@@ -5,14 +5,13 @@ document.addEventListener('change', (e) => {
     // Simulador de Login: Al cambiar de usuario, recargamos la vista
     if (e.target.id === 'user-login-simulator') {
         const userId = e.target.value;
-        // Guardamos en sessionStorage para mantener la "sesión" activa mientras navegamos
         sessionStorage.setItem('sos-active-user', userId);
         document.getElementById('app').innerHTML = UserDashboardView.render();
     }
 });
 
 document.addEventListener('click', (e) => {
-    // Registrar Trabajo desde el Portal
+    // 1. Registrar Trabajo desde el Portal
     if (e.target.classList.contains('btn-report-work')) {
         const txHash = e.target.getAttribute('data-tx');
         const projectId = e.target.getAttribute('data-pid');
@@ -26,7 +25,7 @@ document.addEventListener('click', (e) => {
 
         if (!horasInput || horasInput <= 0) return alert("Por favor, indica las horas invertidas.");
 
-        // Guardamos en el Ledger
+        // Guardamos en el Ledger (Slicing Pie)
         store.dispatch({ 
             type: 'ADD_LEDGER_ENTRY', 
             payload: { 
@@ -42,6 +41,25 @@ document.addEventListener('click', (e) => {
         alert("✅ Aportación registrada en el Libro Mayor. Slicing Pie actualizado.");
         document.getElementById('app').innerHTML = UserDashboardView.render();
     }
+
+    // 2. 🚀 NUEVO: Copiar el Prompt Maestro ensamblado
+    if (e.target.classList.contains('btn-copy-prompt')) {
+        const encodedPrompt = e.target.getAttribute('data-prompt');
+        const decodedPrompt = decodeURIComponent(encodedPrompt);
+        
+        navigator.clipboard.writeText(decodedPrompt).then(() => {
+            const originalText = e.target.innerHTML;
+            e.target.innerHTML = '✅ ¡Copiado!';
+            e.target.style.borderColor = 'var(--accent-green)';
+            e.target.style.color = 'var(--accent-green)';
+            
+            setTimeout(() => {
+                e.target.innerHTML = originalText;
+                e.target.style.borderColor = '';
+                e.target.style.color = '';
+            }, 2000);
+        });
+    }
 });
 
 export const UserDashboardView = {
@@ -50,7 +68,6 @@ export const UserDashboardView = {
         const projects = state.projects || [];
         
         // 1. OBTENER TODOS LOS USUARIOS DEL SISTEMA (Para el simulador de Login)
-        // Extraemos usuarios únicos de todos los proyectos para el selector global
         const allUsers = [];
         projects.forEach(p => {
             (p.usuarios || []).forEach(u => {
@@ -94,11 +111,9 @@ export const UserDashboardView = {
         let totalValorUsuario = 0;
 
         projects.forEach(p => {
-            // Verificar si el usuario tiene asignaciones en este proyecto
             const userAssignments = (p.asignaciones || []).filter(a => a.userId === activeUserId);
-            if (userAssignments.length === 0) return; // No está en este proyecto
+            if (userAssignments.length === 0) return;
 
-            // Calcular el valor histórico del usuario en este proyecto (Slicing Pie)
             const userLedger = (p.ledger || []).filter(l => l.userId === activeUserId);
             const projectHoras = userLedger.reduce((acc, l) => acc + parseFloat(l.horas), 0);
             const projectValor = userLedger.reduce((acc, l) => acc + l.valorCongelado, 0);
@@ -106,7 +121,6 @@ export const UserDashboardView = {
             totalHorasUsuario += projectHoras;
             totalValorUsuario += projectValor;
 
-            // Construir la lista de Tareas Pendientes (Transacciones donde el usuario es el Origen)
             const userRoleIds = userAssignments.map(a => a.roleId);
             const myPendingTasks = (p.transactions || []).filter(tx => userRoleIds.includes(tx.from));
 
@@ -118,9 +132,15 @@ export const UserDashboardView = {
                     const isIntangible = tx.tipo === 'intangible';
                     const color = isIntangible ? 'var(--accent-purple)' : 'var(--accent-blue)';
 
+                    // 🧠 ENSAMBLAJE DEL PROMPT MAESTRO (Contexto + Rol + Tarea)
+                    const taskPrompt = tx.systemPrompt || "Genera el entregable solicitado.";
+                    const masterPrompt = `[CONTEXTO DEL PROYECTO]\nProyecto: ${p.nombre}\nSector: ${p.sector}\nMisión Global: ${p.description || 'Sin definir'}\n\n[TU IDENTIDAD]\nRol: ${fromRole.name}\nNivel: ${fromRole.levelId}\nComportamiento: ${fromRole.systemPrompt || 'Sin definir'}\n\n[TU TAREA ACTUAL]\nReceptor: ${toRole.name}\nEntregable: ${tx.entregable}\nInstrucciones Específicas: ${taskPrompt}`;
+                    
+                    const safeEncodedPrompt = encodeURIComponent(masterPrompt);
+
                     return `
-                        <div class="panel-surface" style="margin-bottom: 15px; border-left: 3px solid ${color};">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <div class="panel-surface" style="margin-bottom: 20px; border-left: 3px solid ${color};">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                                 <div>
                                     <span style="font-size: 0.7rem; font-weight: bold; color: ${color}; text-transform: uppercase;">
                                         Actuando como: ${fromRole.name}
@@ -135,18 +155,23 @@ export const UserDashboardView = {
                                 </div>
                             </div>
                             
-                            <div style="background: #000; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-family: monospace; font-size: 0.8rem; color: #a5d6ff; display: flex; justify-content: space-between; align-items: center;">
-                                <span>📄 System Prompt del Entregable: <span style="opacity:0.5;">(Próximamente en v4.6)</span></span>
-                                <button class="btn btn-outline" style="padding: 3px 8px; font-size: 0.7rem; opacity: 0.5;" disabled>Generar con IA</button>
+                            <div style="background: #000; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                                    <span style="font-family: monospace; font-size: 0.75rem; color: var(--accent-green);">🤖 INSTRUCCIÓN PARA LA IA</span>
+                                    <button class="btn btn-outline btn-copy-prompt" data-prompt="${safeEncodedPrompt}" style="padding: 4px 10px; font-size: 0.7rem; font-family: monospace;">
+                                        📋 Copiar Prompt Maestro
+                                    </button>
+                                </div>
+                                <div style="font-family: monospace; font-size: 0.85rem; color: #a5d6ff; white-space: pre-wrap; line-height: 1.5; max-height: 150px; overflow-y: auto;">${taskPrompt}</div>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 80px 1fr auto; gap: 10px; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                            <div style="display: grid; grid-template-columns: 80px 1fr auto; gap: 10px; align-items: center; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                                 <input type="number" id="horas-${tx.hash}" class="form-control" placeholder="Horas" step="0.5" style="margin:0;">
-                                <input type="text" id="notes-${tx.hash}" class="form-control" placeholder="Notas adicionales (Opcional)" style="margin:0;">
+                                <input type="text" id="notes-${tx.hash}" class="form-control" placeholder="Notas sobre el trabajo (Opcional)" style="margin:0;">
                                 <button class="btn btn-primary btn-report-work" 
                                     data-tx="${tx.hash}" data-pid="${p.id}" data-rid="${tx.from}" 
                                     data-rec="${tx.to}" data-desc="${tx.entregable}">
-                                    Reportar Valor
+                                    Reportar Valor al Ledger
                                 </button>
                             </div>
                         </div>
@@ -176,7 +201,7 @@ export const UserDashboardView = {
                 <header class="header-main" style="margin-bottom: 20px;">
                     <div>
                         <h1 class="text-accent">👤 Portal del Contribuidor</h1>
-                        <p class="text-muted" style="margin: 0;">Tu espacio personal de ejecución y reporte de valor.</p>
+                        <p class="text-muted" style="margin: 0;">Ejecuta tu trabajo con IA y reporta el valor generado.</p>
                     </div>
                     <div style="display: flex; gap: 15px;">
                         ${loginSelectorHTML}
@@ -200,7 +225,7 @@ export const UserDashboardView = {
                 </div>
 
                 <div class="inbox-section">
-                    <h2 style="font-size: 1.2rem; margin-bottom: 20px; color: var(--text-main);">📥 Tus Flujos de Valor Pendientes</h2>
+                    <h2 style="font-size: 1.2rem; margin-bottom: 20px; color: var(--text-main);">📥 Tu Bandeja de Ejecución</h2>
                     ${userInboxHTML}
                 </div>
             </div>
