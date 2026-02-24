@@ -80,6 +80,11 @@ export class TTStore {
             prompt += `- ${r.name} (Nivel: ${r.levelId} | Poder: ${r.multiplier}x)\n`;
         });
 
+        prompt += `\n[FASES / TOKENOMICS]\n`;
+        (p.rondas || []).forEach(r => {
+            prompt += `- ${r.name}: Riesgo ${r.multiplier}x (Desde ${r.startDate || 'Inicio'} hasta ${r.endDate || 'Actualidad'})\n`;
+        });
+
         prompt += `\n[FLUJO DE PROCESOS]\n`;
         const txs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
         if (txs.length === 0) prompt += "Sin transacciones.\n";
@@ -96,14 +101,13 @@ export class TTStore {
 
     dispatch(action) {
         const { type, payload } = action;
-        
-        // 🐛 AQUÍ ESTABA EL BUG: He corregido la validación del payload.projectId
         const p = (payload && payload.projectId) ? this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
             case 'ADD_PROJECT':
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sKey = payload.sector || 'marketing';
+                const today = new Date().toISOString().split('T')[0];
                 
                 let idCounter = 0;
                 const initialRoles = Object.keys(this.ontologyStatic.sectores[sKey]).map(level => {
@@ -118,9 +122,18 @@ export class TTStore {
                     };
                 });
 
+                // Inicializamos con una ronda base
+                const initialRondas = [{
+                    id: `ronda-${Date.now()}`,
+                    name: 'Fase 1: Bootstrapping',
+                    startDate: today,
+                    endDate: '',
+                    multiplier: 2.0
+                }];
+
                 this.state.projects.push({
                     id: payload.id, nombre: payload.nombre, sector: sKey, description: "",
-                    roles: initialRoles, transactions: []
+                    roles: initialRoles, rondas: initialRondas, transactions: []
                 });
                 break;
 
@@ -130,33 +143,25 @@ export class TTStore {
                 }
                 break;
 
+            // --- ROLES ---
             case 'CREATE_ROLE':
                 if (p) {
                     const defaults = this.ontologyStatic.niveles[payload.levelId];
                     p.roles.push({ 
-                        id: `role-${Date.now()}`, 
-                        name: payload.name, 
-                        levelId: payload.levelId, 
-                        price: payload.price || defaults.precio, 
-                        multiplier: payload.multiplier || defaults.multiplier, 
-                        isArchived: false
+                        id: `role-${Date.now()}`, name: payload.name, levelId: payload.levelId, 
+                        price: payload.price || defaults.precio, multiplier: payload.multiplier || defaults.multiplier, isArchived: false
                     });
                 }
                 break;
-
             case 'UPDATE_ROLE':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
                     if (role) {
-                        if (payload.field === 'name' || payload.field === 'levelId') {
-                            role[payload.field] = payload.value;
-                        } else {
-                            role[payload.field] = parseFloat(payload.value);
-                        }
+                        if (payload.field === 'name' || payload.field === 'levelId') role[payload.field] = payload.value;
+                        else role[payload.field] = parseFloat(payload.value);
                     }
                 }
                 break;
-
             case 'ARCHIVE_ROLE':
                 if (p) {
                     const roleToArchive = p.roles.find(r => r.id === payload.roleId);
@@ -164,6 +169,35 @@ export class TTStore {
                 }
                 break;
 
+            // --- RONDAS / TOKENOMICS ---
+            case 'CREATE_RONDA':
+                if (p) {
+                    p.rondas = p.rondas || [];
+                    p.rondas.push({
+                        id: `ronda-${Date.now()}`,
+                        name: payload.name,
+                        startDate: payload.startDate || '',
+                        endDate: payload.endDate || '',
+                        multiplier: parseFloat(payload.multiplier) || 1.0
+                    });
+                }
+                break;
+            case 'UPDATE_RONDA':
+                if (p) {
+                    const r = p.rondas.find(x => x.id === payload.rondaId);
+                    if (r) {
+                        if (payload.field === 'multiplier') r[payload.field] = parseFloat(payload.value) || 1.0;
+                        else r[payload.field] = payload.value;
+                    }
+                }
+                break;
+            case 'DELETE_RONDA':
+                if (p) {
+                    p.rondas = (p.rondas || []).filter(x => x.id !== payload.rondaId);
+                }
+                break;
+
+            // --- TRANSACCIONES ---
             case 'ADD_TRANSACTION':
                 if (p) {
                     const lastTx = p.transactions[p.transactions.length - 1];
@@ -173,27 +207,27 @@ export class TTStore {
                     const horasReales = parseFloat(payload.tx.horas) || 1;
                     let valorCalculado = 0;
                     if (originRole) {
+                        // AQUÍ, EN EL PASO 2, METEREMOS EL MULTIPLICADOR DE RONDA EN EL CÁLCULO
                         valorCalculado = horasReales * originRole.multiplier * originRole.price;
                     }
 
                     const newTx = { 
-                        ...payload.tx, 
-                        timestamp: Date.now(), 
-                        prevHash: lastTx ? lastTx.hash : "0", 
-                        hash: "", 
-                        fase: nextFase,
-                        valorCongelado: valorCalculado
+                        ...payload.tx, timestamp: Date.now(), prevHash: lastTx ? lastTx.hash : "0", 
+                        hash: "", fase: nextFase, valorCongelado: valorCalculado
                     };
                     newTx.hash = generateHash(JSON.stringify(newTx));
                     p.transactions.push(newTx);
                 }
                 break;
-
             case 'UPDATE_TRANSACTION_PHASE':
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
                     if (tx) tx.fase = parseInt(payload.fase) || 99;
                 }
+                break;
+
+            case 'IMPORT_DATA':
+                if (payload && payload.projects) this.state.projects = payload.projects;
                 break;
         }
         this.save();
