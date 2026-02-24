@@ -1,7 +1,3 @@
-/**
- * TEAMTOWERS SOS KERNEL v4.4 - REPARACIÓN TOTAL
- */
-
 const generateHash = (str) => {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
@@ -16,8 +12,16 @@ export class TTStore {
     constructor() {
         this.ontologyStatic = {
             sectores: { 
-                marketing: { "@anxaneta": "Strategy", "@aixecador": "Creative", "@dosos": "Content", "@baixos": "Design", "@pinya": "Ads" }
-                // ... los demás sectores se mantienen igual
+                marketing: { "@anxaneta": "Strategy", "@aixecador": "Creative", "@dosos": "Content", "@baixos": "Design", "@pinya": "Ads" },
+                Web3: { "@anxaneta": "Lead Arch.", "@aixecador": "Smart Contracts", "@dosos": "Auditor", "@baixos": "DApp Dev", "@pinya": "Validator" },
+                gremial: { "@anxaneta": "Ingeniero", "@aixecador": "Oficial", "@dosos": "Calidad", "@baixos": "Especialista", "@pinya": "Logística" },
+                salud: { "@anxaneta": "Director Médico", "@aixecador": "Especialista", "@dosos": "Enfermería", "@baixos": "Técnico", "@pinya": "Admisión" },
+                educacion: { "@anxaneta": "Director", "@aixecador": "Profesor", "@dosos": "Pedagogo", "@baixos": "Tutor", "@pinya": "Secretaría" },
+                eventos: { "@anxaneta": "Producer", "@aixecador": "Logística", "@dosos": "Stage Manager", "@baixos": "Técnico", "@pinya": "Staff" },
+                legal: { "@anxaneta": "Socio", "@aixecador": "Abogado", "@dosos": "Paralegal", "@baixos": "Notaría", "@pinya": "Archivo" },
+                finanzas: { "@anxaneta": "CFO", "@aixecador": "Analista", "@dosos": "Controller", "@baixos": "Contable", "@pinya": "Tesorería" },
+                retail: { "@anxaneta": "Manager", "@aixecador": "Buyer", "@dosos": "Visual", "@baixos": "Vendedor", "@pinya": "Almacén" },
+                turismo: { "@anxaneta": "Director", "@aixecador": "Guía", "@dosos": "Guest Rel.", "@baixos": "Recepción", "@pinya": "Booking" }
             },
             niveles: {
                 "@anxaneta": { multiplier: 3.0, precio: 90 },
@@ -50,76 +54,72 @@ export class TTStore {
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.transactions || p.transactions.length === 0) return 100;
-        const intangibles = p.transactions.filter(t => t.tipo === 'intangible').length;
-        return intangibles > 0 ? 100 : 80;
+        
+        // Lógica Allee/Audit: ¿Existen flujos revisados por @dosos (Calidad)?
+        const audits = p.transactions.filter(t => {
+            const rFrom = p.roles.find(r => r.id === t.from);
+            const rTo = p.roles.find(r => r.id === t.to);
+            return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
+        }).length;
+        
+        return audits > 0 ? 100 : 80;
     }
 
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return "";
-        let prompt = `CONTEXTO SOS: ${p.nombre}\n`;
-        const txs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
-        txs.forEach(t => {
-            const rFrom = p.roles.find(r => r.id === t.from)?.name || 'Desconocido';
-            prompt += `Fase ${t.fase || 1}: ${rFrom} entrega ${t.entregable}\n`;
-        });
+        if (!p) return "Esperando datos...";
+        let prompt = `[CONTEXTO SOS]\nPROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\nMISIÓN: ${p.description || 'N/A'}\n\n`;
+        prompt += `[ROLES]\n` + p.roles.filter(r => !r.isArchived).map(r => `- ${r.name} (${r.levelId})`).join('\n');
+        prompt += `\n\n[FLUJO]\n` + (p.transactions || []).sort((a,b) => (a.fase || 0) - (b.fase || 0)).map(t => `- Fase ${t.fase || 1}: ${t.entregable}`).join('\n');
         return prompt;
     }
 
     dispatch(action) {
         const { type, payload } = action;
-        // Referencia rápida al proyecto
         let p = (payload && payload.projectId) ? this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
             case 'ADD_PROJECT':
-                // REPARACIÓN CORE: Asegurar que el sector se guarde correctamente
                 const sKey = payload.sector || 'marketing';
+                const initialRoles = Object.keys(this.ontologyStatic.niveles).map(levelId => ({
+                    id: `role-${levelId}-${Date.now()}`, 
+                    levelId: levelId,
+                    name: this.ontologyStatic.sectores[sKey][levelId],
+                    price: this.ontologyStatic.niveles[levelId].precio,
+                    multiplier: this.ontologyStatic.niveles[levelId].multiplier,
+                    isArchived: false
+                }));
+                const initialRonda = { id: `ronda-${Date.now()}`, name: 'Fase 1: Bootstrapping', startDate: new Date().toISOString().split('T')[0], endDate: '', multiplier: 1.0 };
                 
-                // REPARACIÓN ONTOLOGY: Mapeo exacto de nombres por sector
-                const initialRoles = Object.keys(this.ontologyStatic.niveles).map(levelId => {
-                    const sectorNames = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
-                    const levelData = this.ontologyStatic.niveles[levelId];
-                    return {
-                        id: `role-${levelId}-${Date.now()}`, 
-                        levelId: levelId,
-                        name: sectorNames[levelId], // Aquí es donde el test de ONTOLOGY fallaba
-                        price: levelData.precio,
-                        multiplier: levelData.multiplier,
-                        isArchived: false
-                    };
-                });
-
-                // Limpiar si ya existía para el test y añadir
-                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 this.state.projects.push({
-                    id: payload.id, 
-                    nombre: payload.nombre, 
-                    sector: sKey, 
-                    description: "",
-                    roles: initialRoles, 
-                    transactions: []
+                    id: payload.id, nombre: payload.nombre, sector: sKey, description: "",
+                    roles: initialRoles, rondas: [initialRonda], transactions: []
                 });
+                break;
+
+            case 'UPDATE_PROJECT_INFO':
+                const targetP = this.state.projects.find(x => x.id === payload.projectId);
+                if (targetP) {
+                    targetP.nombre = payload.nombre;
+                    targetP.sector = payload.sector;
+                    targetP.description = payload.description;
+                }
                 break;
 
             case 'CREATE_ROLE':
                 if (p) {
                     const def = this.ontologyStatic.niveles[payload.levelId];
-                    p.roles.push({ 
-                        id: `role-${Date.now()}`, 
-                        name: payload.name, 
-                        levelId: payload.levelId, 
-                        price: def.precio, 
-                        multiplier: def.multiplier, 
-                        isArchived: false 
-                    });
+                    p.roles.push({ id: `role-${Date.now()}`, name: payload.name, levelId: payload.levelId, price: def.precio, multiplier: def.multiplier, isArchived: false });
                 }
                 break;
 
             case 'UPDATE_ROLE':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
-                    if (role) role[payload.field] = payload.value;
+                    if (role) {
+                        if (payload.field === 'name' || payload.field === 'levelId') role[payload.field] = payload.value;
+                        else role[payload.field] = parseFloat(payload.value);
+                    }
                 }
                 break;
 
@@ -130,25 +130,38 @@ export class TTStore {
                 }
                 break;
 
+            case 'CREATE_RONDA':
+                if (p) {
+                    p.rondas.push({ id: `ronda-${Date.now()}`, name: payload.name, startDate: payload.startDate, endDate: payload.endDate, multiplier: parseFloat(payload.multiplier) || 1.0 });
+                }
+                break;
+
+            case 'UPDATE_RONDA':
+                if (p) {
+                    const r = p.rondas.find(x => x.id === payload.rondaId);
+                    if (r) r[payload.field] = (payload.field === 'multiplier') ? parseFloat(payload.value) : payload.value;
+                }
+                break;
+
+            case 'DELETE_RONDA':
+                if (p) p.rondas = p.rondas.filter(x => x.id !== payload.rondaId);
+                break;
+
             case 'ADD_TRANSACTION':
                 if (p) {
                     const originRole = p.roles.find(r => r.id === payload.tx.from);
                     const lastTx = p.transactions[p.transactions.length - 1];
                     
-                    // REPARACIÓN ECONOMY: Cálculo de 540€ (2h * 3.0 * 90)
-                    // Usamos los valores inyectados en el rol para asegurar consistencia
-                    const multiplier = originRole ? originRole.multiplier : 1;
-                    const price = originRole ? originRole.price : 0;
-                    const horas = payload.tx.horas || 0;
-                    const valorCalculado = horas * multiplier * price;
+                    // Cálculo de Slicing Pie (Horas * Multiplicador Rol * Precio Rol)
+                    const valor = (payload.tx.horas || 1) * (originRole?.multiplier || 1) * (originRole?.price || 1);
 
                     const newTx = { 
                         ...payload.tx, 
-                        valorCongelado: valorCalculado, 
+                        valorCongelado: valor, 
                         timestamp: Date.now(), 
-                        prevHash: lastTx ? lastTx.hash : null, 
+                        prevHash: lastTx ? lastTx.hash : "0", 
                         fase: p.transactions.length + 1,
-                        hash: ""
+                        hash: "" 
                     };
                     newTx.hash = generateHash(JSON.stringify(newTx));
                     p.transactions.push(newTx);
@@ -158,18 +171,15 @@ export class TTStore {
             case 'UPDATE_TRANSACTION_PHASE':
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
-                    if (tx) tx.fase = payload.fase;
+                    if (tx) tx.fase = parseInt(payload.fase);
                 }
                 break;
 
-            case 'UPDATE_PROJECT_INFO':
-                // REPARACIÓN DESIGN: p no estaba definido correctamente para este caso
-                const proj = this.state.projects.find(x => x.id === payload.projectId);
-                if (proj) proj.description = payload.description;
+            case 'IMPORT_DATA':
+                if (payload && payload.projects) this.state.projects = payload.projects;
                 break;
         }
         this.save();
     }
 }
-
 export const store = new TTStore();
