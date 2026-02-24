@@ -1,264 +1,223 @@
 import { store } from '../core/store.js';
 
-// 🛡️ EVENTOS REACTIVOS DE LA CONTABILIDAD
+// 🛡️ EVENTOS DE CONTABILIDAD
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'btn-add-hours-acc') {
+    // 1. Añadir Persona al Equipo
+    if (e.target.id === 'btn-add-user') {
         const projectId = e.target.getAttribute('data-pid');
-        const from = document.getElementById('acc-role').value;
-        const to = document.getElementById('acc-role-to').value; // 🎯 CAPTURA DESTINO
-        const horas = parseFloat(document.getElementById('acc-hours').value) || 0;
-        const entregable = document.getElementById('acc-concept').value;
-        const fechaManual = document.getElementById('acc-date').value;
+        const name = document.getElementById('new-user-name').value;
+        if (!name) return alert("Indica el nombre del contribuidor.");
+        
+        store.dispatch({ type: 'ADD_USER', payload: { projectId, name } });
+        document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+    }
 
-        if (!horas || !entregable) return alert("Indica el concepto y las horas aportadas.");
+    // 2. Asignar Rol a Persona
+    if (e.target.id === 'btn-assign-role') {
+        const projectId = e.target.getAttribute('data-pid');
+        const userId = document.getElementById('assign-user-id').value;
+        const roleId = document.getElementById('assign-role-id').value;
+        
+        if (!userId || !roleId) return alert("Selecciona un usuario y un rol.");
+        
+        store.dispatch({ type: 'ASSIGN_USER_ROLE', payload: { projectId, userId, roleId } });
+        document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+    }
 
-        const fechaFinal = fechaManual ? new Date(fechaManual).toISOString() : new Date().toISOString();
+    // 3. Registrar Aportación de Valor (Ledger / Slicing Pie)
+    if (e.target.id === 'btn-add-ledger') {
+        const projectId = e.target.getAttribute('data-pid');
+        const userId = document.getElementById('ldg-user').value;
+        const roleId = document.getElementById('ldg-role').value;
+        const receiverId = document.getElementById('ldg-receiver').value;
+        const description = document.getElementById('ldg-desc').value;
+        const horas = document.getElementById('ldg-horas').value;
+
+        if (!userId || !roleId || !receiverId || !description || !horas) {
+            return alert("Rellena todos los campos para registrar el valor.");
+        }
 
         store.dispatch({ 
-            type: 'ADD_TRANSACTION', 
-            payload: { 
-                projectId, 
-                tx: { 
-                    from, 
-                    to, // 🚀 ENVIADO AL STORE
-                    entregable, 
-                    tipo: 'tangible', 
-                    horas, 
-                    fecha: fechaFinal
-                } 
-            } 
+            type: 'ADD_LEDGER_ENTRY', 
+            payload: { projectId, userId, roleId, receiverId, description, horas } 
         });
-    }
-});
-
-document.addEventListener('change', (e) => {
-    if (e.target.id === 'filter-ronda') {
-        const projectId = e.target.getAttribute('data-pid');
-        const selectedRonda = e.target.value;
-        const app = document.getElementById('app');
-        app.innerHTML = ProjectAccountingView.render(projectId, selectedRonda);
+        document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
     }
 });
 
 export const ProjectAccountingView = {
-    render: (projectId, filterRondaId = 'all') => {
+    render: (projectId) => {
         const state = store.getState();
-        const project = state.projects.find(x => x.id === projectId);
-        if (!project) return `<div class="container text-center"><h2>Proyecto no encontrado</h2></div>`;
+        const project = state.projects.find(p => p.id === projectId);
+        if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
 
-        const activeRoles = (project.roles || []).filter(r => !r.isArchived);
-        const rondas = project.rondas || [];
+        // Datos del proyecto (Con Fallbacks seguros para v4.5)
+        const roles = project.roles || [];
+        const activeRoles = roles.filter(r => !r.isArchived && r.id !== 'ecosistema');
+        const users = project.usuarios || [];
+        const asignaciones = project.asignaciones || [];
+        const ledger = project.ledger || [];
+
+        // 🧮 CÁLCULO DEL CAP TABLE (SLICING PIE)
+        const totalPie = ledger.reduce((acc, entry) => acc + entry.valorCongelado, 0);
         
-        let allTxs = project.transactions || [];
-        let txs = allTxs;
-        let currentRondaName = "Histórico Completo (Global)";
-
-        if (filterRondaId !== 'all') {
-            const r = rondas.find(x => x.id === filterRondaId);
-            if (r) {
-                currentRondaName = r.name;
-                txs = allTxs.filter(t => {
-                    const txDate = t.fecha ? t.fecha.split('T')[0] : new Date(t.timestamp).toISOString().split('T')[0];
-                    const afterStart = r.startDate ? txDate >= r.startDate : true;
-                    const beforeEnd = r.endDate ? txDate <= r.endDate : true;
-                    return afterStart && beforeEnd;
+        const userStats = users.map(user => {
+            const userEntries = ledger.filter(l => l.userId === user.id);
+            const userTotalValue = userEntries.reduce((sum, l) => sum + l.valorCongelado, 0);
+            const ownership = totalPie > 0 ? ((userTotalValue / totalPie) * 100).toFixed(2) : "0.00";
+            
+            // Buscar qué roles tiene asignados este usuario
+            const userRoles = asignaciones
+                .filter(a => a.userId === user.id)
+                .map(a => {
+                    const r = roles.find(r => r.id === a.roleId);
+                    return r ? r.name : 'Rol Desconocido';
                 });
-            }
-        }
 
-        const resiliencia = store.calculateResilience(projectId, txs);
+            return { ...user, userTotalValue, ownership, userRoles };
+        }).sort((a, b) => b.userTotalValue - a.userTotalValue); // Ordenar por mayor % de equity
 
-        const getNodeName = (id) => {
-            if (id === 'Ecosistema') return 'Ecosistema (General)';
-            const node = activeRoles.find(n => n.id === id);
-            return node ? node.name : id; 
-        };
-
-        let totalValue = 0;
-        let totalHours = 0;
-        const valueByNode = {}; 
-
-        const ledgerRows = txs.map(t => {
-            const horasReales = parseFloat(t.horas) || 1; 
-            let valorTx = t.valorCongelado !== undefined ? t.valorCongelado : 0;
-            
-            totalValue += valorTx;
-            totalHours += horasReales;
-
-            if (!valueByNode[t.from]) valueByNode[t.from] = 0;
-            valueByNode[t.from] += valorTx;
-
-            const shortHash = t.hash ? t.hash.substring(0, 8) + '...' : 'pending';
-            const fechaFormat = t.fecha ? new Date(t.fecha).toLocaleString() : new Date(t.timestamp || Date.now()).toLocaleString();
-            
-            const originRole = activeRoles.find(r => r.id === t.from);
-            const levelLabel = originRole ? `(${originRole.levelId})` : '';
-            const multiBadge = t.rondaMultiplier && t.rondaMultiplier !== 1 ? `<span style="font-size:0.65rem; background:#d29922; color:#000; padding:1px 4px; border-radius:3px; margin-left:5px;">Riesgo ${t.rondaMultiplier}x</span>` : '';
-
-            return `
-                <tr style="border-top: 1px solid var(--border-color);">
-                    <td style="padding: 12px;" class="text-muted text-small"><span title="${t.hash}">${shortHash}</span></td>
-                    <td style="padding: 12px; font-size: 0.8rem;">${fechaFormat}</td>
-                    <td style="padding: 12px;" class="text-accent">
-                        <b>${getNodeName(t.from)}</b> ${multiBadge} <span style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:2px;">${levelLabel}</span>
-                    </td>
-                    <td style="padding: 12px;" class="text-muted">➔ ${getNodeName(t.to)}</td>
-                    <td style="padding: 12px;">${t.entregable}</td>
-                    <td style="padding: 12px; text-align: center;">${horasReales}h</td>
-                    <td style="padding: 12px; text-align: right; color: var(--accent-green); font-weight: bold;">${valorTx.toLocaleString()} €</td>
-                </tr>
-            `;
-        }).join('');
-
-        const alertas = [];
-        if (txs.length > 0) {
-            const hasAudit = txs.some(t => {
-                const rFrom = project.roles.find(r => r.id === t.from);
-                const rTo = project.roles.find(r => r.id === t.to);
-                return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
-            });
-            if (!hasAudit) {
-                alertas.push({ nivel: 'CRÍTICA', color: 'var(--accent-red)', msg: `Riesgo de Deuda Técnica en ${currentRondaName}: No hay flujo de auditoría o calidad (Nivel @dosos).` });
-            }
-        }
-
-        const alertasHtml = alertas.length > 0 ? alertas.map(a => `
-            <div style="background: rgba(0,0,0,0.2); border-left: 4px solid ${a.color}; padding: 10px 15px; margin-bottom: 10px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;">
-                <span style="color: ${a.color}; font-size: 0.75rem; font-weight: bold; margin-right: 10px;">[${a.nivel}]</span>
-                <span style="font-size: 0.85rem;">${a.msg}</span>
-            </div>
-        `).join('') : `<div class="text-muted text-small">✅ El flujo en ${currentRondaName} está sano y equilibrado.</div>`;
-
-        const colors = ['#58a6ff', '#238636', '#a371f7', '#f85149', '#d29922', '#3fb950', '#bc8cff', '#ff7b72'];
-        let conicGradient = [];
-        let chartLegend = [];
-        let currentAngle = 0;
-        
-        const nodesArr = Object.keys(valueByNode).sort((a,b) => valueByNode[b] - valueByNode[a]);
-        if (totalValue > 0) {
-            nodesArr.forEach((nodeId, index) => {
-                const percentage = (valueByNode[nodeId] / totalValue) * 100;
-                const color = colors[index % colors.length];
-                const angle = (percentage / 100) * 360;
-                conicGradient.push(`${color} ${currentAngle}deg ${currentAngle + angle}deg`);
-                currentAngle += angle;
-                chartLegend.push(`
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px; font-size:0.8rem;">
-                        <div style="width:12px; height:12px; border-radius:3px; background:${color};"></div>
-                        <span class="text-muted" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;" title="${getNodeName(nodeId)}">${getNodeName(nodeId)}:</span> 
-                        <b class="text-heading">${percentage.toFixed(1)}%</b>
-                    </div>
-                `);
-            });
-        } else {
-            conicGradient.push(`var(--border-color) 0deg 360deg`);
-        }
-        const pieStyle = `width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(${conicGradient.join(', ')}); border: 2px solid var(--bg-panel); flex-shrink: 0;`;
+        // Opciones HTML pre-generadas
+        const userOptions = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+        const activeRoleOptions = activeRoles.map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
 
         return `
             <div class="container">
-                <header class="header-main" style="align-items: flex-end;">
+                <header class="header-main">
                     <div>
-                        <h1>💰 Libro Mayor: ${project.nombre}</h1>
-                        <p class="text-muted" style="margin: 0;">Auditoría Inmutable de Valor y Tokenomics</p>
+                        <h1>💰 Contabilidad de Valor (Slicing Pie)</h1>
+                        <p class="text-muted">Proyecto: <b class="text-accent">${project.nombre}</b> | Fondo Total Generado: <b style="color: var(--accent-green);">${totalPie.toLocaleString()} €</b></p>
                     </div>
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 10px; background: var(--bg-surface); border: 1px solid var(--border-color); padding: 5px 15px; border-radius: var(--radius-md);">
-                            <span class="text-muted text-small">Filtrar por:</span>
-                            <select id="filter-ronda" data-pid="${projectId}" class="form-control" style="width: auto; margin: 0; border: none; background: transparent; padding: 0; color: var(--accent-blue); font-weight: bold; cursor: pointer;">
-                                <option value="all" ${filterRondaId === 'all' ? 'selected' : ''}>🌍 Vista Global (Histórico)</option>
-                                ${rondas.map(r => `<option value="${r.id}" ${filterRondaId === r.id ? 'selected' : ''}>🎯 ${r.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <button class="btn btn-secondary" onclick="location.hash='#/'">← Dashboard</button>
-                        <button class="btn btn-outline" onclick="location.hash='#/project/${projectId}'">Volver al Mapa</button>
-                    </div>
+                    <button class="btn btn-secondary" onclick="location.hash='#/project/${projectId}'">← Volver al Mapa</button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 20px;">
-                    <div class="panel">
-                        <div class="text-muted text-uppercase text-small">Valor en ${currentRondaName}</div>
-                        <div style="color: var(--accent-green); font-size: 1.8rem; font-weight: bold;">${totalValue.toLocaleString()} €</div>
-                    </div>
-                    <div class="panel" style="border-color: ${resiliencia < 40 ? 'var(--accent-red)' : 'var(--border-color)'}">
-                        <div class="text-muted text-uppercase text-small">Resiliencia</div>
-                        <div style="color: ${resiliencia < 40 ? 'var(--accent-red)' : 'var(--accent-blue)'}; font-size: 1.8rem; font-weight: bold;">${resiliencia}%</div>
-                    </div>
-                    <div class="panel">
-                        <div class="text-muted text-uppercase text-small">Aportaciones</div>
-                        <div style="color: var(--text-heading); font-size: 1.8rem; font-weight: bold;">${txs.length}</div>
-                    </div>
+                <div class="grid-layout" style="grid-template-columns: 350px 1fr; gap: 30px;">
                     
-                    <div class="panel" style="display: flex; gap: 20px; align-items: center; justify-content: space-around; padding: 15px;">
-                        <div style="${pieStyle}"></div>
-                        <div style="flex-grow: 1;">
-                            <h4 class="text-muted text-uppercase text-small" style="margin-top:0; border-bottom:1px solid var(--border-color); padding-bottom:5px;">Distribución en Fase</h4>
-                            <div style="max-height: 90px; overflow-y: auto; padding-right:5px;">
-                                ${totalValue > 0 ? chartLegend.join('') : '<span class="text-muted text-small">Sin transacciones en esta fase</span>'}
+                    <aside style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <div class="panel">
+                            <h3 class="text-small text-uppercase">1. Alta de Contribuidor</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <input id="new-user-name" type="text" class="form-control" placeholder="Nombre (Ej: Laura)" style="margin-bottom:0;">
+                                <button id="btn-add-user" data-pid="${projectId}" class="btn btn-primary">+</button>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="grid-layout" style="grid-template-columns: 320px 1fr;">
-                    
-                    <aside style="display:flex; flex-direction:column; gap:20px;">
-                        <div class="panel" style="border-color: #d29922;">
-                            <h3 class="text-uppercase text-small" style="color: #d29922; margin-top:0;">⏱️ Registrar valor (Slicing Pie)</h3>
-                            <p class="text-muted text-small" style="margin-bottom: 15px;">Define el flujo de valor entre los roles de tu ecosistema.</p>
+                        <div class="panel">
+                            <h3 class="text-small text-uppercase">2. Asignar Rol a Usuario</h3>
+                            <p class="text-small text-muted" style="margin-bottom: 10px;">¿Qué sombreros lleva cada persona?</p>
                             
-                            <label class="form-label">Rol / Especialista (Origen)</label>
-                            <select id="acc-role" class="form-control" style="border-left: 3px solid var(--accent-blue);">
-                                ${activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('')}
-                            </select>
-
-                            <label class="form-label">Rol / Especialista (Destino)</label>
-                            <select id="acc-role-to" class="form-control" style="border-left: 3px solid var(--accent-green);">
-                                <option value="Ecosistema">Ecosistema (General)</option>
-                                ${activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('')}
+                            <select id="assign-user-id" class="form-control text-small">
+                                <option value="">Selecciona Usuario...</option>
+                                ${userOptions}
                             </select>
                             
-                            <label class="form-label">Fecha de la aportación</label>
-                            <input id="acc-date" type="date" class="form-control" value="${new Date().toISOString().split('T')[0]}">
-
-                            <label class="form-label">Horas Invertidas</label>
-                            <input id="acc-hours" type="number" min="0.5" step="0.5" class="form-control" placeholder="Ej: 4">
+                            <select id="assign-role-id" class="form-control text-small">
+                                <option value="">Selecciona Rol (Activo)...</option>
+                                ${activeRoleOptions}
+                            </select>
                             
-                            <label class="form-label">Concepto (Entregable)</label>
-                            <input id="acc-concept" type="text" class="form-control" placeholder="Ej: Desarrollo de API">
-                            
-                            <button id="btn-add-hours-acc" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px; background-color: #d29922;">
-                                Registrar valor
-                            </button>
+                            <button id="btn-assign-role" data-pid="${projectId}" class="btn btn-secondary btn-block">Asignar Rol</button>
                         </div>
 
-                        <div class="panel" style="border-color: ${alertas.length > 0 ? 'var(--accent-red)' : 'var(--border-color)'};">
-                            <h3 class="text-uppercase text-small" style="color: ${alertas.length > 0 ? 'var(--accent-red)' : 'var(--text-muted)'}; margin-top:0;">
-                                ⚠️ Auditoría del Sistema
-                            </h3>
-                            ${alertasHtml}
+                        <div class="panel" style="border-color: var(--accent-green);">
+                            <h3 class="text-small text-uppercase" style="color: var(--accent-green);">3. Registrar Aportación</h3>
+                            <p class="text-small text-muted" style="margin-bottom: 15px;">Inyecta valor al Slicing Pie.</p>
+                            
+                            <label class="form-label">¿Quién aportó?</label>
+                            <select id="ldg-user" class="form-control text-small">${userOptions}</select>
+                            
+                            <label class="form-label">¿Actuando en qué Rol?</label>
+                            <select id="ldg-role" class="form-control text-small">${activeRoleOptions}</select>
+                            
+                            <label class="form-label">¿A qué Rol lo entregó?</label>
+                            <select id="ldg-receiver" class="form-control text-small">${activeRoleOptions}</select>
+                            
+                            <label class="form-label">¿Qué se entregó? (Descripción)</label>
+                            <input id="ldg-desc" type="text" class="form-control text-small" placeholder="Ej: Backend Login Completado">
+                            
+                            <label class="form-label">Horas Invertidas</label>
+                            <input id="ldg-horas" type="number" step="0.5" class="form-control text-small" placeholder="Ej: 4">
+                            
+                            <button id="btn-add-ledger" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                                💾 Registrar en Libro Mayor
+                            </button>
                         </div>
                     </aside>
 
                     <main style="display: flex; flex-direction: column; gap: 20px;">
-                        <div class="panel-surface" style="padding: 0; overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-                                <thead style="background-color: var(--bg-panel); border-bottom: 2px solid var(--border-color);">
-                                    <tr>
-                                        <th style="padding: 15px; color: var(--text-muted);">Hash</th>
-                                        <th style="padding: 15px; color: var(--text-muted);">Fecha y Hora</th>
-                                        <th style="padding: 15px; color: var(--text-muted);">Origen (Rol)</th>
-                                        <th style="padding: 15px; color: var(--text-muted);">Destino</th>
-                                        <th style="padding: 15px; color: var(--text-muted);">Concepto</th>
-                                        <th style="padding: 15px; color: var(--text-muted); text-align: center;">Esfuerzo</th>
-                                        <th style="padding: 15px; color: var(--text-muted); text-align: right;">Valor (€)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${txs.length === 0 ? `<tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">No hay transacciones registradas en este ciclo temporal.</td></tr>` : ledgerRows}
-                                </tbody>
-                            </table>
-                        </div>
+                        
+                        <section class="panel" style="border-color: var(--accent-purple); background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(163, 113, 247, 0.05) 100%);">
+                            <h3 style="color: var(--accent-purple); margin-top: 0;">📊 Cap Table (Reparto de Acciones)</h3>
+                            
+                            ${users.length === 0 ? `<p class="text-muted">Añade usuarios para ver el Cap Table.</p>` : `
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-align: left;">
+                                                <th style="padding: 10px;">Contribuidor</th>
+                                                <th style="padding: 10px;">Roles Asignados</th>
+                                                <th style="padding: 10px; text-align: right;">Valor Generado (€)</th>
+                                                <th style="padding: 10px; text-align: right;">% Equity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${userStats.map(u => `
+                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                                    <td style="padding: 12px 10px; font-weight: bold;">${u.name}</td>
+                                                    <td style="padding: 12px 10px; font-size: 0.8rem; color: var(--accent-blue);">${u.userRoles.length > 0 ? u.userRoles.join(', ') : '<i>Sin rol</i>'}</td>
+                                                    <td style="padding: 12px 10px; text-align: right;">${u.userTotalValue.toLocaleString()} €</td>
+                                                    <td style="padding: 12px 10px; text-align: right; font-weight: bold; color: var(--accent-green);">${u.ownership} %</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `}
+                        </section>
+
+                        <section class="panel">
+                            <h3 style="margin-top: 0;">📖 Historial del Libro Mayor</h3>
+                            <p class="text-small text-muted">Registro inmutable de aportaciones de valor. Muestra roles históricos incluso si fueron archivados.</p>
+                            
+                            ${ledger.length === 0 ? `<p class="text-muted">El libro mayor está vacío. Registra trabajo para empezar.</p>` : `
+                                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                                        <thead style="position: sticky; top: 0; background: var(--bg-panel); z-index: 1;">
+                                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-align: left;">
+                                                <th style="padding: 10px;">Fecha</th>
+                                                <th style="padding: 10px;">Usuario</th>
+                                                <th style="padding: 10px;">Transacción (Rol -> Rol)</th>
+                                                <th style="padding: 10px;">Entregable</th>
+                                                <th style="padding: 10px; text-align: center;">Horas</th>
+                                                <th style="padding: 10px; text-align: right;">Pie (€)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${ledger.slice().reverse().map(l => {
+                                                const date = new Date(l.timestamp).toLocaleDateString();
+                                                const userName = users.find(u => u.id === l.userId)?.name || 'Desconocido';
+                                                
+                                                // 🛡️ REGLA HISTÓRICA: Buscamos en TODOS los roles, no solo en los activos.
+                                                const roleName = roles.find(r => r.id === l.roleId)?.name || '<del>Rol Eliminado</del>';
+                                                const receiverName = roles.find(r => r.id === l.receiverId)?.name || '<del>Rol Eliminado</del>';
+
+                                                return `
+                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                                                    <td style="padding: 10px; color: var(--text-muted);">${date}</td>
+                                                    <td style="padding: 10px; font-weight: bold;">${userName}</td>
+                                                    <td style="padding: 10px; color: var(--accent-blue);">[${roleName}] → [${receiverName}]</td>
+                                                    <td style="padding: 10px;">${l.description}</td>
+                                                    <td style="padding: 10px; text-align: center;">${l.horas}</td>
+                                                    <td style="padding: 10px; text-align: right; color: var(--accent-green);">+${l.valorCongelado}</td>
+                                                </tr>
+                                                `;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `}
+                        </section>
                     </main>
                 </div>
             </div>
