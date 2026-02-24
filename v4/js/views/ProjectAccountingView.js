@@ -5,14 +5,13 @@ document.addEventListener('click', (e) => {
     if (e.target.id === 'btn-add-hours-acc') {
         const projectId = e.target.getAttribute('data-pid');
         const from = document.getElementById('acc-role').value;
+        const to = document.getElementById('acc-role-to').value; // 🎯 CAPTURA DESTINO
         const horas = parseFloat(document.getElementById('acc-hours').value) || 0;
         const entregable = document.getElementById('acc-concept').value;
-        // Permitir registrar transacciones en el pasado para las Rondas
         const fechaManual = document.getElementById('acc-date').value;
 
         if (!horas || !entregable) return alert("Indica el concepto y las horas aportadas.");
 
-        // Si hay fecha manual, la convertimos a formato ISO
         const fechaFinal = fechaManual ? new Date(fechaManual).toISOString() : new Date().toISOString();
 
         store.dispatch({ 
@@ -20,8 +19,12 @@ document.addEventListener('click', (e) => {
             payload: { 
                 projectId, 
                 tx: { 
-                    from, to: 'Ecosistema', entregable, tipo: 'tangible', 
-                    horas, fecha: fechaFinal
+                    from, 
+                    to, // 🚀 ENVIADO AL STORE
+                    entregable, 
+                    tipo: 'tangible', 
+                    horas, 
+                    fecha: fechaFinal
                 } 
             } 
         });
@@ -32,7 +35,6 @@ document.addEventListener('change', (e) => {
     if (e.target.id === 'filter-ronda') {
         const projectId = e.target.getAttribute('data-pid');
         const selectedRonda = e.target.value;
-        // Re-renderizamos la vista con el filtro aplicado
         const app = document.getElementById('app');
         app.innerHTML = ProjectAccountingView.render(projectId, selectedRonda);
     }
@@ -47,7 +49,6 @@ export const ProjectAccountingView = {
         const activeRoles = (project.roles || []).filter(r => !r.isArchived);
         const rondas = project.rondas || [];
         
-        // 🚀 FILTRO DINÁMICO POR RONDAS
         let allTxs = project.transactions || [];
         let txs = allTxs;
         let currentRondaName = "Histórico Completo (Global)";
@@ -65,11 +66,10 @@ export const ProjectAccountingView = {
             }
         }
 
-        // Resiliencia calculada SOLO para las transacciones filtradas
         const resiliencia = store.calculateResilience(projectId, txs);
 
         const getNodeName = (id) => {
-            if (id === 'Ecosistema') return 'Ecosistema';
+            if (id === 'Ecosistema') return 'Ecosistema (General)';
             const node = activeRoles.find(n => n.id === id);
             return node ? node.name : id; 
         };
@@ -80,8 +80,6 @@ export const ProjectAccountingView = {
 
         const ledgerRows = txs.map(t => {
             const horasReales = parseFloat(t.horas) || 1; 
-            
-            // 🧊 INMUTABILIDAD FINANCIERA
             let valorTx = t.valorCongelado !== undefined ? t.valorCongelado : 0;
             
             totalValue += valorTx;
@@ -95,8 +93,6 @@ export const ProjectAccountingView = {
             
             const originRole = activeRoles.find(r => r.id === t.from);
             const levelLabel = originRole ? `(${originRole.levelId})` : '';
-            
-            // Etiqueta visual para saber si esta transacción tuvo multiplicador Slicing Pie
             const multiBadge = t.rondaMultiplier && t.rondaMultiplier !== 1 ? `<span style="font-size:0.65rem; background:#d29922; color:#000; padding:1px 4px; border-radius:3px; margin-left:5px;">Riesgo ${t.rondaMultiplier}x</span>` : '';
 
             return `
@@ -114,7 +110,6 @@ export const ProjectAccountingView = {
             `;
         }).join('');
 
-        // 📊 LÓGICA DE ALERTAS (Basada en el contexto actual)
         const alertas = [];
         if (txs.length > 0) {
             const hasAudit = txs.some(t => {
@@ -134,7 +129,6 @@ export const ProjectAccountingView = {
             </div>
         `).join('') : `<div class="text-muted text-small">✅ El flujo en ${currentRondaName} está sano y equilibrado.</div>`;
 
-        // 📊 GRÁFICO DE TARTA
         const colors = ['#58a6ff', '#238636', '#a371f7', '#f85149', '#d29922', '#3fb950', '#bc8cff', '#ff7b72'];
         let conicGradient = [];
         let chartLegend = [];
@@ -210,11 +204,17 @@ export const ProjectAccountingView = {
                     
                     <aside style="display:flex; flex-direction:column; gap:20px;">
                         <div class="panel" style="border-color: #d29922;">
-                            <h3 class="text-uppercase text-small" style="color: #d29922; margin-top:0;">⏱️ Inyectar Valor (Slicing Pie)</h3>
-                            <p class="text-muted text-small" style="margin-bottom: 15px;">El riesgo (y el multiplicador de €) se calculará automáticamente según la <b>fecha</b> indicada.</p>
+                            <h3 class="text-uppercase text-small" style="color: #d29922; margin-top:0;">⏱️ Registrar valor (Slicing Pie)</h3>
+                            <p class="text-muted text-small" style="margin-bottom: 15px;">Define el flujo de valor entre los roles de tu ecosistema.</p>
                             
                             <label class="form-label">Rol / Especialista (Origen)</label>
-                            <select id="acc-role" class="form-control">
+                            <select id="acc-role" class="form-control" style="border-left: 3px solid var(--accent-blue);">
+                                ${activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('')}
+                            </select>
+
+                            <label class="form-label">Rol / Especialista (Destino)</label>
+                            <select id="acc-role-to" class="form-control" style="border-left: 3px solid var(--accent-green);">
+                                <option value="Ecosistema">Ecosistema (General)</option>
                                 ${activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('')}
                             </select>
                             
@@ -228,7 +228,7 @@ export const ProjectAccountingView = {
                             <input id="acc-concept" type="text" class="form-control" placeholder="Ej: Desarrollo de API">
                             
                             <button id="btn-add-hours-acc" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px; background-color: #d29922;">
-                                Inyectar al Ledger
+                                Registrar valor
                             </button>
                         </div>
 
