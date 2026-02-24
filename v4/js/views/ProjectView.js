@@ -1,20 +1,18 @@
 import { store } from '../core/store.js';
 import { ValueMapView } from './ValueMapView.js';
 
-// 🛡️ EVENTOS BLINDADOS CONTRA SES
+// 🛡️ EVENTOS BLINDADOS Y REACTIVOS (Sin Reload)
 document.addEventListener('click', (e) => {
-    // Evento: Añadir Nuevo Rol (Especialista)
     if (e.target.id === 'btn-add-role-view') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name').value;
         const levelId = document.getElementById('nr-level').value;
         if(!name) return alert("Por favor, introduce un nombre para el especialista.");
         
+        // El dispatch guarda y avisa al router automáticamente
         store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area: 'Especialista' } });
-        location.reload();
     }
     
-    // Evento: Añadir Nueva Transacción (Flujo)
     if (e.target.id === 'btn-add-tx-view') {
         const projectId = e.target.getAttribute('data-pid');
         const from = document.getElementById('tx-from').value;
@@ -25,7 +23,6 @@ document.addEventListener('click', (e) => {
         if (!entregable) return alert("Por favor, define qué se entrega en esta transacción.");
 
         store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, tx: { from, to, entregable, tipo, liquidación: 0, horas: 1 } } });
-        location.reload();
     }
 });
 
@@ -37,7 +34,6 @@ export const ProjectView = {
 
         const salud = store.calculateResilience(projectId);
         
-        // Recopilamos todos los nodos activos para los desplegables
         const allActiveNodes = [
             ...Object.keys(project.customRoles || {}).map(id => ({ id, label: project.customRoles[id] })),
             ...(project.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ id: dr.id, label: dr.name }))
