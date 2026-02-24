@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS | Backlog & Flujo de Valor</title>
+    <title>TeamTowers SOS | Backlog & Slicing Pie</title>
     <style>
         :root {
             --bg-base: #010409;
@@ -15,6 +15,7 @@
             --accent-blue: #58a6ff;
             --accent-green: #238636;
             --accent-purple: #a371f7;
+            --accent-gold: #d29922;
             --font-family: 'Inter', -apple-system, sans-serif;
         }
 
@@ -26,7 +27,7 @@
             line-height: 1.6;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 950px; margin: 0 auto; }
 
         header {
             border-bottom: 1px solid var(--border-color);
@@ -46,7 +47,7 @@
         }
 
         .version-header {
-            display: flex; justify-content: space-between;
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px; margin-bottom: 20px;
         }
@@ -55,8 +56,8 @@
             background: var(--bg-panel);
             border: 1px solid rgba(255,255,255,0.05);
             border-left: 4px solid var(--border-color);
-            padding: 15px; border-radius: 6px; margin-bottom: 15px;
-            display: grid; grid-template-columns: 2fr 3fr auto; gap: 15px; align-items: center;
+            padding: 15px; border-radius: 8px; margin-bottom: 15px;
+            display: grid; grid-template-columns: 180px 1fr auto; gap: 20px; align-items: center;
         }
 
         .tx-intangible { border-left-color: var(--accent-purple); }
@@ -65,6 +66,17 @@
         .role-badge {
             display: inline-block; font-size: 0.75rem; font-weight: bold;
             padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);
+        }
+
+        .financial-pill {
+            background: rgba(210, 153, 34, 0.1);
+            border: 1px solid rgba(210, 153, 34, 0.3);
+            color: var(--accent-gold);
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: right;
+            font-size: 0.85rem;
+            min-width: 140px;
         }
 
         .btn {
@@ -87,8 +99,8 @@
     <div class="container">
         <header>
             <div>
-                <h1 style="color: var(--accent-blue);">📜 SOS Ledger</h1>
-                <p class="text-muted" style="margin: 5px 0 0 0;">Flujo de Valor Histórico (Tú y la IA construyendo el Kernel)</p>
+                <h1 style="color: var(--accent-blue);">📜 SOS Ledger (Dogfooding)</h1>
+                <p class="text-muted" style="margin: 5px 0 0 0;">Flujo de Valor y Slicing Pie real entre el Humano (Tú) y la IA (Gemini)</p>
             </div>
             <div>
                 <button class="btn btn-outline" onclick="window.location.href='index.html'">← Volver a la App</button>
@@ -107,32 +119,32 @@
         "nombre": "Construcción Core v4.x",
         "sector": "web3",
         "roles": [
-            { "id": "user_arch", "name": "Humano", "levelId": "@anxaneta", "desc": "Lead Arch. / Strategy" },
-            { "id": "user_qa", "name": "Humano", "levelId": "@dosos", "desc": "Auditor / QA" },
-            { "id": "ai_dev", "name": "Gemini AI", "levelId": "@baixos", "desc": "DApp Dev / Code" }
+            { "id": "user_arch", "name": "Humano", "levelId": "@anxaneta", "desc": "Lead Arch.", "fmv": 45.0, "multiplier": 3.0 },
+            { "id": "user_qa", "name": "Humano", "levelId": "@dosos", "desc": "Auditor QA", "fmv": 30.0, "multiplier": 2.0 },
+            { "id": "ai_dev", "name": "Gemini IA", "levelId": "@baixos", "desc": "DApp Dev", "fmv": 0.07, "multiplier": 1.5 }
         ],
         "versiones": [
-            {
-                "version": "v4.4",
-                "titulo": "Kernel Estable & Value Map SVG",
-                "transacciones": [
-                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Auto-save de Misión y Contexto IA", "horas": 1 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js adaptado", "horas": 3 },
-                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Integrar JSON de Roles a Store.js", "horas": 1 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js actualizado (Payload IA)", "horas": 2 },
-                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug Report: Ocultar Ecosistema y Centrar Mapa", "horas": 1.5 },
-                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Renderizado Elíptico Canvas/SVG", "horas": 4 }
-                ]
-            },
             {
                 "version": "v4.5",
                 "titulo": "Slicing Pie, Ledger & Sistema de Usuarios",
                 "transacciones": [
-                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Paradigma Usuario vs Rol (Contabilidad)", "horas": 2 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store v4.5 (Ledger + Usuarios)", "horas": 5 },
-                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug Report: Desincronización de 10 Sectores HTML", "horas": 1 },
-                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: DashboardView y Store Integrados", "horas": 2 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectAccountingView.js (Cap Table)", "horas": 6 }
+                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Paradigma Usuario vs Rol (Contabilidad)", "horas": 1.5 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store v4.5 (Ledger + Usuarios)", "horas": 0.1 },
+                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Desincronización de 10 Sectores HTML", "horas": 0.5 },
+                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: DashboardView y Store Integrados", "horas": 0.05 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectAccountingView.js (Cap Table)", "horas": 0.1 }
+                ]
+            },
+            {
+                "version": "v4.4",
+                "titulo": "Kernel Estable & Value Map SVG",
+                "transacciones": [
+                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Auto-save Misión y Contexto IA", "horas": 1.0 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js adaptado", "horas": 0.05 },
+                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Integrar JSON de Roles a Store.js", "horas": 0.5 },
+                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js actualizado (Payload IA)", "horas": 0.1 },
+                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Ocultar Ecosistema y Centrar Mapa", "horas": 0.5 },
+                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Renderizado Elíptico Canvas/SVG", "horas": 0.1 }
                 ]
             }
         ]
@@ -140,7 +152,6 @@
     </script>
 
     <script>
-        // Lógica para renderizar el JSON en el HTML visualmente
         const rawData = document.getElementById('vna-data').textContent;
         const data = JSON.parse(rawData);
         
@@ -154,24 +165,36 @@
         const timeline = document.getElementById('timeline');
 
         data.versiones.forEach(v => {
+            let versionPieTotal = 0;
+
             let txsHtml = v.transacciones.map(tx => {
                 const fromRole = data.roles.find(r => r.id === tx.from);
                 const toRole = data.roles.find(r => r.id === tx.to);
                 const typeColor = tx.tipo === 'intangible' ? 'var(--accent-purple)' : 'var(--accent-blue)';
                 
+                // CÁLCULO SLICING PIE
+                const valorGenerado = tx.horas * fromRole.fmv * fromRole.multiplier;
+                versionPieTotal += valorGenerado;
+                
                 return `
                     <div class="tx-card tx-${tx.tipo}">
                         <div>
-                            <span class="role-badge">${fromRole.levelId}</span> 
-                            <span style="color: var(--text-muted); margin: 0 5px;">→</span> 
-                            <span class="role-badge">${toRole.levelId}</span>
+                            <div style="margin-bottom: 5px;">
+                                <span class="role-badge" style="color: ${typeColor}">${fromRole.levelId}</span> 
+                                <span style="color: var(--text-muted); margin: 0 2px;">→</span> 
+                                <span class="role-badge">${toRole.levelId}</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Flujo ${tx.tipo}</span>
                         </div>
                         <div>
-                            <strong style="display:block; font-size: 0.95rem;">${tx.entregable}</strong>
-                            <span style="font-size: 0.8rem; color: var(--text-muted);">De: ${fromRole.name} | Para: ${toRole.name}</span>
+                            <strong style="display:block; font-size: 1rem; color: var(--text-heading);">${tx.entregable}</strong>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+                                <span style="color: var(--text-main)">${fromRole.name}</span> (${fromRole.desc}) a <span style="color: var(--text-main)">${toRole.name}</span>
+                            </div>
                         </div>
-                        <div style="text-align: right; font-size: 0.85rem; color: ${typeColor}; font-weight: bold;">
-                            ${tx.tipo.toUpperCase()}
+                        <div class="financial-pill">
+                            <strong style="display: block; font-size: 1.1rem;">+ ${valorGenerado.toFixed(3)} €</strong>
+                            <span style="font-size: 0.7rem; opacity: 0.8;">${tx.horas}h × ${fromRole.fmv}€ × ${fromRole.multiplier}x</span>
                         </div>
                     </div>
                 `;
@@ -181,9 +204,10 @@
                 <div class="version-block">
                     <div class="version-header">
                         <h2>${v.version} - <span style="color: var(--text-muted); font-size: 1.2rem; font-weight: normal;">${v.titulo}</span></h2>
-                        <span style="background: rgba(88, 166, 255, 0.1); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: var(--accent-blue);">
-                            ${v.transacciones.length} Transacciones
-                        </span>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Fondo Generado (Pie)</div>
+                            <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent-gold);">${versionPieTotal.toFixed(2)} €</div>
+                        </div>
                     </div>
                     ${txsHtml}
                 </div>
