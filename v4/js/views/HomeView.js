@@ -67,7 +67,7 @@ export const HomeView = {
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button class="btn btn-secondary" onclick="location.hash='#/about'">📖 Metodología y Ayuda</button>
-                        <button class="btn btn-outline" onclick="location.hash='#/test'">🧪 Entorno Test</button>
+                        <button class="btn btn-outline" onclick="window.location.href='./tests/run-tests.html'">🧪 Entorno Test</button>
                     </div>
                 </header>
 
