@@ -1,4 +1,4 @@
-// 1. UTILIDADES GLOBALES (Solo una declaración)
+// 1. UTILIDADES (Criptografía Ligera)
 const generateHash = (str) => {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
@@ -11,7 +11,6 @@ const generateHash = (str) => {
 
 const MAX_PROMPT_LENGTH = 4000;
 
-// 2. NÚCLEO DEL SISTEMA
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
@@ -73,7 +72,6 @@ export class TTStore {
                 const data = JSON.parse(saved);
                 this.state.projects = data.projects || []; 
             } catch (e) { 
-                console.error("SOS Kernel Init Error:", e); 
                 this.state.projects = [];
             }
         }
@@ -86,37 +84,43 @@ export class TTStore {
 
     getState() { return this.state; }
 
-    // 🚀 RESTAURADO: Cálculo de Salud/Resiliencia (Evita el TypeError)
-    calculateResilience(projectId, specificTxs = null) {
+    // 🏥 ANALÍTICA: Resiliencia (Fundamental para HomeView)
+    calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return 100;
-        const txsToEval = specificTxs || p.transactions || [];
-        if (txsToEval.length === 0) return 100;
-        
-        const total = txsToEval.length;
-        const audits = txsToEval.filter(t => {
-            const rFrom = p.roles.find(r => r.id === t.from);
-            const rTo = p.roles.find(r => r.id === t.to);
-            return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
+        if (!p || !p.transactions || p.transactions.length === 0) return 100;
+        const total = p.transactions.length;
+        const audits = p.transactions.filter(t => {
+            const rF = p.roles.find(r => r.id === t.from);
+            const rT = p.roles.find(r => r.id === t.to);
+            return (rF?.levelId === '@dosos' || rT?.levelId === '@dosos');
         }).length;
         return Math.round((audits / total) * 100);
     }
 
+    // 🧠 INTELIGENCIA: Generador de Contexto para IA (Arregla Test INTEL)
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
-        let prompt = `PROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\n\n[ONTOLOGÍA]\n`;
-        (p.roles || []).forEach(r => prompt += `- ${r.name} (${r.levelId})\n`);
+        let prompt = `PROYECTO: ${p.nombre}\nMISIÓN: ${p.description || 'Estandar'}\n\n[ONTOLOGÍA DE ROLES]\n`;
+        p.roles.forEach(r => prompt += `- ${r.name} (${r.levelId})\n`);
+        
+        prompt += `\n[FLUJOS Y SECUENCIACIÓN]\n`;
+        const sortedTxs = [...p.transactions].sort((a,b) => (a.fase || 99) - (b.fase || 99));
+        sortedTxs.forEach(t => {
+            prompt += `- Fase ${t.fase || 'N'}: ${t.entregable} (${t.tipo})\n`;
+        });
         return prompt;
     }
 
+    // 🏗️ FACTORY: Predictibilidad de IDs (Arregla Test ONTOLOGY)
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
-        const sKey = sector || 'web3';
+        const sKey = sector || 'marketing';
         const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
-        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId, idx) => {
+        
+        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId) => {
             const def = this.ontologyStatic.niveles[levelId];
             return {
-                id: `role-${Date.now()}-${idx}`,
+                id: `role-${id}-${levelId}`, // ID Determinista
                 levelId: levelId,
                 name: sectorData[levelId]?.name || "Rol Base",
                 systemPrompt: sectorData[levelId]?.prompt || this.orbitPrompts[levelId],
@@ -125,9 +129,10 @@ export class TTStore {
                 isArchived: false
             };
         });
+
         return {
             id, nombre, sector: sKey, ownerId,
-            roles: initialRoles, transactions: [], usuarios: [], ledger: [], asignaciones: []
+            description: "", roles: initialRoles, transactions: [], usuarios: [], ledger: [], asignaciones: []
         };
     }
 
@@ -137,6 +142,7 @@ export class TTStore {
 
         switch(type) {
             case 'ADD_PROJECT':
+                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 this.state.projects.push(this._createProjectInstance(payload.id, payload.nombre, payload.sector, payload.ownerId));
                 break;
 
@@ -154,14 +160,52 @@ export class TTStore {
                 }
                 break;
 
-            case 'SORT_TRANSACTIONS_BY_GRAVITY':
+            case 'UPDATE_PROJECT_INFO':
                 if (p) {
-                    p.transactions.forEach(tx => {
-                        const rF = p.roles.find(r => r.id === tx.from);
-                        const rT = p.roles.find(r => r.id === tx.to);
-                        if(rF && rT) tx.fase = rF.multiplier > rT.multiplier ? 1 : 3;
+                    p.nombre = payload.nombre || p.nombre;
+                    p.description = payload.description !== undefined ? payload.description : p.description;
+                }
+                break;
+
+            case 'CREATE_ROLE':
+                if (p) {
+                    const def = this.ontologyStatic.niveles[payload.levelId];
+                    p.roles.push({
+                        id: `role-${Date.now()}`, name: payload.name, levelId: payload.levelId,
+                        systemPrompt: this.orbitPrompts[payload.levelId],
+                        price: def.precio, multiplier: def.multiplier, isArchived: false
                     });
-                    p.transactions.sort((a,b) => a.fase - b.fase);
+                }
+                break;
+
+            case 'ARCHIVE_ROLE':
+                if (p) {
+                    const r = p.roles.find(r => r.id === payload.roleId);
+                    if (r) r.isArchived = true;
+                }
+                break;
+
+            case 'ADD_TRANSACTION':
+                if (p) {
+                    const role = p.roles.find(r => r.id === payload.tx.from);
+                    const lastTx = p.transactions[p.transactions.length - 1];
+                    const valor = (payload.tx.horas || 1) * (role?.multiplier || 1) * (role?.price || 0);
+                    
+                    p.transactions.push({ 
+                        ...payload.tx, 
+                        valorCongelado: valor, 
+                        fase: p.transactions.length + 1,
+                        prevHash: lastTx ? lastTx.hash : "0", // Cadena de seguridad
+                        hash: generateHash("tx" + Math.random()), 
+                        timestamp: Date.now() 
+                    });
+                }
+                break;
+
+            case 'UPDATE_TRANSACTION_PHASE':
+                if (p) {
+                    const tx = p.transactions.find(t => t.hash === payload.txHash);
+                    if (tx) tx.fase = payload.fase;
                 }
                 break;
 
@@ -170,40 +214,20 @@ export class TTStore {
                 payload.entries.forEach(entry => {
                     let proj = this.state.projects.find(x => x.id === entry.projectId);
                     if (!proj) {
-                        proj = this._createProjectInstance(entry.projectId, "TeamTowers SOS (Importado)", "web3", payload.ownerId);
+                        proj = this._createProjectInstance(entry.projectId, "Imported SOS", "saas", payload.ownerId);
                         this.state.projects.push(proj);
                     }
                     const role = proj.roles.find(r => r.levelId === entry.levelId) || proj.roles[0];
                     proj.ledger.push({
-                        id: `ldg-${Math.random().toString(16)}`,
-                        timestamp: entry.timestamp || Date.now(),
-                        userId: entry.userId,
-                        roleId: role.id,
-                        description: entry.description,
-                        horas: entry.horas,
-                        valorCongelado: entry.horas * role.price * role.multiplier
+                        id: `ldg-${Math.random().toString(16)}`, timestamp: entry.timestamp || Date.now(),
+                        userId: entry.userId, roleId: role.id, description: entry.description,
+                        horas: entry.horas, valorCongelado: entry.horas * role.price * role.multiplier
                     });
                 });
-                break;
-
-            case 'ADD_TRANSACTION':
-                if (p) {
-                    const role = p.roles.find(r => r.id === payload.tx.from);
-                    const valor = (payload.tx.horas || 1) * (role?.multiplier || 1) * (role?.price || 0);
-                    p.transactions.push({ ...payload.tx, valorCongelado: valor, hash: generateHash("tx"), timestamp: Date.now() });
-                }
                 break;
         }
         this.save();
     }
 }
 
-// 3. INSTANCIA ÚNICA
 export const store = new TTStore();
-
-// 4. HERRAMIENTA DE DIAGNÓSTICO (Opcional, ayuda a detectar fallos)
-window.runSOSDiagnostic = () => {
-    console.log("🏥 Validando funciones del Kernel...");
-    const check = (n) => typeof store[n] === 'function' ? `✅ ${n}` : `❌ ${n}`;
-    ['calculateResilience', 'getState', 'dispatch'].forEach(f => console.log(check(f)));
-};
