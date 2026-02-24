@@ -121,4 +121,17 @@ export const AboutView = {
 
                     <section class="panel" style="border-color: var(--accent-purple); background: linear-gradient(180deg, rgba(163, 113, 247, 0.05) 0%, rgba(13, 17, 23, 0) 100%);">
                         <h3 style="color: var(--accent-purple);">5. El Horizonte: Diagnóstico Aumentado por IA</h3>
-                        <p class="text
+                        <p class="text-muted">El objetivo final de documentar un ecosistema en TeamTowers SOS no es solo llevar la contabilidad, sino preparar a la organización para la <b>Consultoría Algorítmica</b>.</p>
+                        
+                        <ul class="text-muted text-small" style="padding-left: 20px; line-height: 1.6;">
+                            <li style="margin-bottom: 10px;"><b>El Prompt Maestro:</b> El sistema compila en tiempo real tu Ontología y la secuencia de Flujos en un contexto estructurado que cualquier <i>LLM</i> puede entender.</li>
+                            <li style="margin-bottom: 10px;"><b>Detección de Cuellos de Botella:</b> En fases futuras, la IA analizará el Libro Mayor para detectar qué roles están sobrecargados y sugerirá redistribuciones.</li>
+                            <li style="margin-bottom: 10px;"><b>Optimización de Rondas:</b> A partir de la Tokenomics, la IA podrá diagnosticar si la dilución del esfuerzo es justa respecto a la fase de riesgo en la que se encuentra la empresa.</li>
+                        </ul>
+                    </section>
+
+                </div>
+            </div>
+        `;
+    }
+};
