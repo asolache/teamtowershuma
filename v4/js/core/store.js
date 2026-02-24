@@ -38,7 +38,6 @@ export class TTStore {
     }
 
     init() {
-        // Usamos la misma clave para mantener tus proyectos nuevos
         const saved = localStorage.getItem('teamtowers-v4.4-state');
         if (saved) {
             try { this.state.projects = JSON.parse(saved).projects || []; } 
@@ -97,19 +96,20 @@ export class TTStore {
 
     dispatch(action) {
         const { type, payload } = action;
-        const p = payload.projectId ? this.state.projects.find(x => x.id === projectId) || this.state.projects.find(x => x.id === payload.projectId) : null;
+        
+        // 🐛 AQUÍ ESTABA EL BUG: He corregido la validación del payload.projectId
+        const p = (payload && payload.projectId) ? this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
             case 'ADD_PROJECT':
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sKey = payload.sector || 'marketing';
                 
-                // 🚀 TODOS LOS ROLES NACEN LIBRES E IGUALES
                 let idCounter = 0;
                 const initialRoles = Object.keys(this.ontologyStatic.sectores[sKey]).map(level => {
                     idCounter++;
                     return {
-                        id: `role-${Date.now()}-${idCounter}`, // ID único genérico
+                        id: `role-${Date.now()}-${idCounter}`, 
                         name: this.ontologyStatic.sectores[sKey][level],
                         levelId: level,
                         price: this.ontologyStatic.niveles[level].precio,
@@ -148,7 +148,6 @@ export class TTStore {
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
                     if (role) {
-                        // Si es texto (name o levelId) lo guarda tal cual, si es número lo parsea
                         if (payload.field === 'name' || payload.field === 'levelId') {
                             role[payload.field] = payload.value;
                         } else {
@@ -161,7 +160,6 @@ export class TTStore {
             case 'ARCHIVE_ROLE':
                 if (p) {
                     const roleToArchive = p.roles.find(r => r.id === payload.roleId);
-                    // 🚀 AHORA CUALQUIER ROL PUEDE SER BORRADO
                     if (roleToArchive) roleToArchive.isArchived = true;
                 }
                 break;
