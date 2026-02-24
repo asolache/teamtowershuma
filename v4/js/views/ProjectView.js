@@ -40,8 +40,12 @@ export const ProjectView = {
         const salud = store.calculateResilience(projectId);
         const colorSalud = salud > 40 ? 'var(--accent-green)' : 'var(--accent-red)';
         
-        // 🚀 Leemos la nueva estructura unificada de Roles
-        const activeRoles = (project.roles || []).filter(r => !r.isArchived);
+        // 🚀 Ocultamos "Ecosistema" y roles archivados de los selectores de transacción
+        const activeRoles = (project.roles || []).filter(r => 
+            !r.isArchived && 
+            r.id !== 'ecosistema' && 
+            r.name.toLowerCase() !== 'ecosistema'
+        );
         const optionsHtml = activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('');
 
         return `
@@ -112,7 +116,7 @@ export const ProjectView = {
 
                     <main style="display: flex; flex-direction: column; gap: 20px;">
                         
-                        <div class="map-container">
+                        <div class="map-container" style="background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; text-align: center;">
                             ${ValueMapView.render(projectId)}
                         </div>
 
