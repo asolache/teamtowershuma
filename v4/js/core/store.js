@@ -93,6 +93,15 @@ export class TTStore {
             }
         };
 
+        // 🚀 NUEVO: Plantillas transversales (por órbita) para nuevos roles añadidos manualmente
+        this.orbitPrompts = {
+            "@anxaneta": "Misión: Toma de decisiones de alto riesgo, visión estratégica y capital.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Plan Estratégico / Presupuesto Aprobado / OKRs.\n- [Intangible] Visión a largo plazo / Liderazgo / Resolución de bloqueos graves.",
+            "@aixecador": "Misión: Traducción de estrategia a táctica, coordinación de equipos.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Roadmap del Proyecto / Asignación de Tareas / Cronograma.\n- [Intangible] Coordinación entre áreas / Mentoría de gestión / Priorización.",
+            "@dosos": "Misión: Fricción necesaria, validación y prevención de fallos sistémicos.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Reporte de Auditoría / Lista de Fallos (Log) / Métrica de Calidad.\n- [Intangible] Aprobación de paso a producción (Visto Bueno) / Feedback de corrección.",
+            "@baixos": "Misión: Generación de valor directo, la 'fuerza bruta' del conocimiento especializado.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Asset Finalizado (Código, Diseño, Pieza Física, Documento redactado).\n- [Intangible] Propuesta de mejora técnica / Duda sobre requerimientos.",
+            "@pinya": "Misión: Mantenimiento de la infraestructura para que los demás operen sin fricción.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Inventario Actualizado / Entorno Configurado / Herramientas listas.\n- [Intangible] Alerta de falta de recursos / Soporte logístico."
+        };
+
         this.state = { projects: [], ontology: this.ontologyStatic };
         this.init();
     }
@@ -169,12 +178,12 @@ export class TTStore {
                 const initialRoles = Object.keys(this.ontologyStatic.niveles).map(levelId => {
                     idCounter++;
                     const levelDef = this.ontologyStatic.niveles[levelId];
-                    const roleData = sectorAliases[levelId]; // 🚀 V4.6: Recogemos el objeto completo
+                    const roleData = sectorAliases[levelId]; 
                     return {
                         id: `role-${Date.now()}-${idCounter}`, 
                         levelId: levelId,
                         name: roleData.name,
-                        systemPrompt: roleData.prompt, // 🚀 V4.6: Inyectamos el prompt base
+                        systemPrompt: roleData.prompt, 
                         price: levelDef.precio,
                         multiplier: levelDef.multiplier,
                         isArchived: false
@@ -207,10 +216,13 @@ export class TTStore {
             case 'CREATE_ROLE':
                 if (p) {
                     const def = this.ontologyStatic.niveles[payload.levelId];
+                    // 🚀 FIX APLICADO: Aquí le inyectamos la plantilla genérica de su órbita
+                    const fallbackPrompt = this.orbitPrompts[payload.levelId] || ""; 
                     p.roles.push({ 
                         id: `role-${Date.now()}`, 
                         name: payload.name, 
                         levelId: payload.levelId, 
+                        systemPrompt: fallbackPrompt,
                         price: def.precio, 
                         multiplier: def.multiplier, 
                         isArchived: false 
