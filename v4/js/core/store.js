@@ -159,4 +159,69 @@ export class TTStore {
 
             case 'CREATE_RONDA':
                 if (p) {
-                    p.r
+                    p.rondas = p.rondas || [];
+                    p.rondas.push({ id: `ronda-${Date.now()}`, name: payload.name, startDate: payload.startDate || '', endDate: payload.endDate || '', multiplier: parseFloat(payload.multiplier) || 1.0 });
+                }
+                break;
+            case 'UPDATE_RONDA':
+                if (p) {
+                    const r = p.rondas.find(x => x.id === payload.rondaId);
+                    if (r) {
+                        if (payload.field === 'multiplier') r[payload.field] = parseFloat(payload.value) || 1.0;
+                        else r[payload.field] = payload.value;
+                    }
+                }
+                break;
+            case 'DELETE_RONDA':
+                if (p) p.rondas = (p.rondas || []).filter(x => x.id !== payload.rondaId);
+                break;
+
+            case 'ADD_TRANSACTION':
+                if (p) {
+                    const lastTx = p.transactions[p.transactions.length - 1];
+                    const nextFase = p.transactions.length + 1;
+                    
+                    const originRole = p.roles.find(r => r.id === payload.tx.from);
+                    const horasReales = parseFloat(payload.tx.horas) || 1;
+                    
+                    const txDateStr = payload.tx.fecha ? payload.tx.fecha.split('T')[0] : new Date().toISOString().split('T')[0];
+                    let rondaMultiplier = 1.0;
+                    
+                    if (p.rondas && p.rondas.length > 0) {
+                        const rondaActiva = p.rondas.find(r => {
+                            const afterStart = r.startDate ? txDateStr >= r.startDate : true;
+                            const beforeEnd = r.endDate ? txDateStr <= r.endDate : true;
+                            return afterStart && beforeEnd;
+                        });
+                        if (rondaActiva) rondaMultiplier = rondaActiva.multiplier;
+                    }
+
+                    let valorCalculado = 0;
+                    if (originRole) {
+                        valorCalculado = horasReales * originRole.multiplier * originRole.price * rondaMultiplier;
+                    }
+
+                    const newTx = { 
+                        ...payload.tx, timestamp: Date.now(), prevHash: lastTx ? lastTx.hash : "0", 
+                        hash: "", fase: nextFase, valorCongelado: valorCalculado, rondaMultiplier: rondaMultiplier
+                    };
+                    newTx.hash = generateHash(JSON.stringify(newTx));
+                    p.transactions.push(newTx);
+                }
+                break;
+
+            case 'UPDATE_TRANSACTION_PHASE':
+                if (p) {
+                    const tx = p.transactions.find(t => t.hash === payload.txHash);
+                    if (tx) tx.fase = parseInt(payload.fase) || 99;
+                }
+                break;
+
+            case 'IMPORT_DATA':
+                if (payload && payload.projects) this.state.projects = payload.projects;
+                break;
+        }
+        this.save();
+    }
+}
+export const store = new TTStore();
