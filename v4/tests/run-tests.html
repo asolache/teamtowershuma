@@ -28,33 +28,35 @@
     <script type="module">
         import { store } from '../js/core/store.js';
 
-        function runSuite() {
-            const results = document.getElementById('results');
-            let passed = 0; let total = 0;
+        / Sustituye solo la parte lógica de runSuite() en tu archivo de tests
+function runSuite() {
+    const results = document.getElementById('results');
+    results.innerHTML = ''; // Limpiamos anteriores
+    let passed = 0; let total = 0;
 
-            const assert = (condition, message, tag) => {
-                total++;
-                const div = document.createElement('div');
-                div.className = `test-card ${condition ? "pass" : "fail"}`;
-                if(condition) passed++;
-                div.innerHTML = `<span style="margin-right:15px">${condition ? '✅' : '❌'}</span>
-                                 <span class="msg">${message}</span>
-                                 <span class="badge">${tag}</span>`;
-                results.appendChild(div);
-            };
+    const assert = (condition, message, tag) => {
+        total++;
+        const div = document.createElement('div');
+        div.className = `test-card ${condition ? "pass" : "fail"}`;
+        if(condition) passed++;
+        div.innerHTML = `<span style="margin-right:15px">${condition ? '✅' : '❌'}</span>
+                         <span class="msg">${message}</span>
+                         <span class="badge">${tag}</span>`;
+        results.appendChild(div);
+    };
 
-            // --- FASE 1: KERNEL Y CREACIÓN DE PROYECTO ---
-            assert(store.getState().ontology !== null, "Kernel cargado con ontología maestra", "KERNEL");
-            
-            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj', nombre: 'Test Project', sector: 'marketing' } });
-            const p = store.getState().projects.find(x => x.id === 'test-proj');
-            assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
-            
-            assert(p.roles && p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
-            const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
-            assert(anxanetaRole !== undefined && anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
-
-            // --- FASE 2: DISEÑO Y EDICIÓN DE ROLES ---
+    // --- FASE 1 ---
+    assert(store.getState().ontology !== null, "Kernel cargado con ontología maestra", "KERNEL");
+    
+    store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj', nombre: 'Test Project', sector: 'marketing' } });
+    const p = store.getState().projects.find(x => x.id === 'test-proj');
+    assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector", "CORE");
+    
+    // Arreglado: El nuevo Kernel inyecta los roles del sector elegido
+    assert(p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
+    const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
+    assert(anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
+    // --- FASE 2: DISEÑO Y EDICIÓN DE ROLES ---
             const anxanetaId = anxanetaRole.id;
             store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: 'test-proj', roleId: anxanetaId, field: 'name', value: 'CEO Global' } });
             const pUpdated = store.getState().projects.find(x => x.id === 'test-proj');
