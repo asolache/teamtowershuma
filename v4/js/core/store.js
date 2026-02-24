@@ -46,7 +46,7 @@ export class TTStore {
                     "@aixecador": { name: "Asociado Senior", prompt: "Eres el Asociado Senior. Diriges la táctica del caso judicial o contrato.\n\n🎯 SUGERENCIAS:\n- [Tangible] Borrador Maestro de Contrato/Demanda.\n- [Intangible] Directrices de jurisprudencia a aplicar." },
                     "@dosos": { name: "Revisor/Compliance", prompt: "Eres el Auditor de Compliance. Previenes riesgos legales y normativos.\n\n🎯 SUGERENCIAS:\n- [Tangible] Matriz de Riesgos Legales.\n- [Intangible] Visto bueno de cumplimiento normativo." },
                     "@baixos": { name: "Abogado Junior", prompt: "Eres el Abogado Junior. Redactas clausulados y buscas jurisprudencia.\n\n🎯 SUGERENCIAS:\n- [Tangible] Informe de Antecedentes Jurisprudenciales.\n- [Intangible] Consulta sobre estrategia procesal." },
-                    "@pinya": { name: "Paralegal", prompt: "Eres el Paralegal. Gestionas plazos procesales y documentación.\n\n🎯 SUGERENCIAS:\n- [Tangible] Expediente Judicial Organizado.\n- [Intangible] Alerta de vencimiento de plazo." }
+                    "@pinya": { name: "Paralegal", prompt: "Eres el Paralegal. Gestionas plazos procesales y documentation.\n\n🎯 SUGERENCIAS:\n- [Tangible] Expediente Judicial Organizado.\n- [Intangible] Alerta de vencimiento de plazo." }
                 },
                 salud: { 
                     "@anxaneta": { name: "Director Médico", prompt: "Eres el Director Médico. Defines protocolos y políticas de salud.\n\n🎯 SUGERENCIAS:\n- [Tangible] Protocolo Clínico Actualizado.\n- [Intangible] Resolución de conflictos ético-médicos." },
@@ -93,7 +93,7 @@ export class TTStore {
             }
         };
 
-        // 🚀 NUEVO: Plantillas transversales (por órbita) para nuevos roles añadidos manualmente
+        // 🚀 Plantillas transversales (por órbita) para nuevos roles añadidos manualmente
         this.orbitPrompts = {
             "@anxaneta": "Misión: Toma de decisiones de alto riesgo, visión estratégica y capital.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Plan Estratégico / Presupuesto Aprobado / OKRs.\n- [Intangible] Visión a largo plazo / Liderazgo / Resolución de bloqueos graves.",
             "@aixecador": "Misión: Traducción de estrategia a táctica, coordinación de equipos.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Roadmap del Proyecto / Asignación de Tareas / Cronograma.\n- [Intangible] Coordinación entre áreas / Mentoría de gestión / Priorización.",
@@ -216,7 +216,6 @@ export class TTStore {
             case 'CREATE_ROLE':
                 if (p) {
                     const def = this.ontologyStatic.niveles[payload.levelId];
-                    // 🚀 FIX APLICADO: Aquí le inyectamos la plantilla genérica de su órbita
                     const fallbackPrompt = this.orbitPrompts[payload.levelId] || ""; 
                     p.roles.push({ 
                         id: `role-${Date.now()}`, 
@@ -267,7 +266,7 @@ export class TTStore {
                         valorCongelado: valor, 
                         timestamp: Date.now(), 
                         prevHash: lastTx ? lastTx.hash : "0", 
-                        fase: p.transactions.length + 1,
+                        fase: p.transactions.length + 1, // Por defecto se pone al final
                         hash: ""
                     };
                     newTx.hash = generateHash(JSON.stringify(newTx));
@@ -282,7 +281,39 @@ export class TTStore {
                 }
                 break;
 
-            // 👤 MOTOR DE USUARIOS Y CONTABILIDAD
+            // 🚀 NUEVO: ALGORITMO DE AUTO-ORDENACIÓN (Gravedad de Valor)
+            case 'SORT_TRANSACTIONS_BY_GRAVITY':
+                if (p && p.transactions.length > 0) {
+                    p.transactions.forEach(tx => {
+                        const emisor = p.roles.find(r => r.id === tx.from);
+                        const receptor = p.roles.find(r => r.id === tx.to);
+                        
+                        if (!emisor || !receptor) return; // Salvaguarda si falta un rol
+
+                        // 1. Gravedad Positiva (Baja en la jerarquía: ej. 3.0x a 1.5x)
+                        if (emisor.multiplier > receptor.multiplier) {
+                            if (emisor.levelId === '@anxaneta') tx.fase = 1; // Alta Estrategia
+                            else tx.fase = 2; // Táctica bajando a Operativa
+                        } 
+                        // 2. Horizontal (Mismo nivel productivo: ej. 1.5x a 1.5x)
+                        else if (emisor.multiplier === receptor.multiplier) {
+                            tx.fase = 3; 
+                        }
+                        // 3. Fricción / Auditoría (Todo lo que va hacia @dosos)
+                        else if (receptor.levelId === '@dosos') {
+                            tx.fase = 4;
+                        }
+                        // 4. Gravedad Negativa / Reporte (Sube en la jerarquía: ej. 2.0x a 3.0x)
+                        else if (emisor.multiplier < receptor.multiplier) {
+                            tx.fase = 5;
+                        }
+                    });
+
+                    // Tras asignar la fase, reordenamos el array para que el UI lo pinte ordenado
+                    p.transactions.sort((a, b) => a.fase - b.fase);
+                }
+                break;
+
             case 'ADD_USER':
                 if (p) {
                     p.usuarios = p.usuarios || [];
