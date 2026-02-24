@@ -23,22 +23,23 @@ export class TTStore {
                 retail: { "@anxaneta": "Manager", "@aixecador": "Buyer", "@dosos": "Visual", "@baixos": "Vendedor", "@pinya": "Almacén" },
                 turismo: { "@anxaneta": "Director", "@aixecador": "Guía", "@dosos": "Guest Rel.", "@baixos": "Recepción", "@pinya": "Booking" }
             },
-            roles: [
-                { id: "@anxaneta", multiplier: 3.0, precio_base_h: 90 },
-                { id: "@aixecador", multiplier: 2.5, precio_base_h: 75 },
-                { id: "@dosos", multiplier: 2.0, precio_base_h: 60 },
-                { id: "@baixos", multiplier: 1.5, precio_base_h: 45 },
-                { id: "@pinya", multiplier: 1.0, precio_base_h: 30 }
-            ]
+            niveles: {
+                "@anxaneta": { multiplier: 3.0, precio: 90 },
+                "@aixecador": { multiplier: 2.5, precio: 75 },
+                "@dosos": { multiplier: 2.0, precio: 60 },
+                "@baixos": { multiplier: 1.5, precio: 45 },
+                "@pinya": { multiplier: 1.0, precio: 30 }
+            }
         };
 
-        this.state = { projects: [], ontology: this.ontologyStatic, roles: this.ontologyStatic.roles };
+        this.state = { projects: [], ontology: this.ontologyStatic };
         this.listeners = [];
         this.init();
     }
 
     init() {
-        const saved = localStorage.getItem('teamtowers-v4-state');
+        // 🚀 NUEVA CLAVE: Fuerza un reinicio limpio para la v4.4
+        const saved = localStorage.getItem('teamtowers-v4.4-state');
         if (saved) {
             try { this.state.projects = JSON.parse(saved).projects || []; } 
             catch (e) { console.error("SOS: Error storage", e); }
@@ -47,7 +48,7 @@ export class TTStore {
     }
 
     save() {
-        localStorage.setItem('teamtowers-v4-state', JSON.stringify({ projects: this.state.projects }));
+        localStorage.setItem('teamtowers-v4.4-state', JSON.stringify({ projects: this.state.projects }));
         this.notify();
     }
 
@@ -62,7 +63,12 @@ export class TTStore {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.transactions || p.transactions.length === 0) return 100;
         const total = p.transactions.length;
-        const audits = p.transactions.filter(t => t.from === '@dosos' || t.to === '@dosos').length;
+        // La auditoría se basa en que el origen o destino sea de nivel @dosos
+        const audits = p.transactions.filter(t => {
+            const roleFrom = p.roles.find(r => r.id === t.from);
+            const roleTo = p.roles.find(r => r.id === t.to);
+            return (roleFrom && roleFrom.levelId === '@dosos') || (roleTo && roleTo.levelId === '@dosos');
+        }).length;
         return Math.round((audits / total) * 100) || 100;
     }
 
@@ -71,21 +77,20 @@ export class TTStore {
         if (!p) return "";
         let prompt = `CONTEXTO SOS: ${p.nombre}\nSECTOR: ${p.sector}\nMISION: ${p.description || 'Operación estándar'}\n\n`;
         
-        prompt += `[ONTOLOGÍA DE ROLES]\n`;
-        Object.keys(p.customRoles).forEach(id => {
-            prompt += `- ${id}: ${p.customRoles[id]}\n`;
-        });
-        (p.dynamicRoles || []).filter(dr => !dr.isArchived).forEach(dr => {
-            prompt += `- Especialista: ${dr.name} (Vinculado a ${dr.levelId})\n`;
+        prompt += `[NUEVA ONTOLOGÍA UNIFICADA]\n`;
+        (p.roles || []).filter(r => !r.isArchived).forEach(r => {
+            prompt += `- ${r.name} (Nivel: ${r.levelId} | Poder: ${r.multiplier}x)\n`;
         });
 
-        prompt += `\n[SECUENCIA DEL FLUJO DE PROCESOS]\n`;
+        prompt += `\n[FLUJO DE PROCESOS]\n`;
         const txs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
-        if (txs.length === 0) prompt += "Sin transacciones definidas.\n";
+        if (txs.length === 0) prompt += "Sin transacciones.\n";
         
         txs.forEach(t => {
-            const fase = t.fase && t.fase !== 99 ? `Fase ${t.fase}` : 'Flujo Continuo';
-            prompt += `- ${fase}: [${t.from}] entrega "${t.entregable}" a [${t.to}]\n`;
+            const f = t.fase && t.fase !== 99 ? `Fase ${t.fase}` : 'Flujo Continuo';
+            const rFrom = p.roles.find(r => r.id === t.from)?.name || t.from;
+            const rTo = p.roles.find(r => r.id === t.to)?.name || t.to;
+            prompt += `- ${f}: [${rFrom}] entrega "${t.entregable}" a [${rTo}]\n`;
         });
 
         return prompt;
@@ -99,44 +104,90 @@ export class TTStore {
             case 'ADD_PROJECT':
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sKey = payload.sector || 'marketing';
+                
+                // 🚀 CREACIÓN UNIFICADA DE ROLES INICIALES
+                const initialRoles = Object.keys(this.ontologyStatic.sectores[sKey]).map(level => {
+                    return {
+                        id: `role-${level.replace('@','')}-${Date.now()}`,
+                        name: this.ontologyStatic.sectores[sKey][level],
+                        levelId: level,
+                        price: this.ontologyStatic.niveles[level].precio,
+                        multiplier: this.ontologyStatic.niveles[level].multiplier,
+                        isArchived: false,
+                        isBase: true // Etiqueta para no poder borrarlos, solo editarlos
+                    };
+                });
+
                 this.state.projects.push({
                     id: payload.id, nombre: payload.nombre, sector: sKey, description: "",
-                    customRoles: { ...this.ontologyStatic.sectores[sKey] }, dynamicRoles: [], transactions: []
+                    roles: initialRoles, transactions: []
                 });
                 break;
+
             case 'UPDATE_PROJECT_INFO':
                 if (p) {
                     p.nombre = payload.nombre; p.sector = payload.sector; p.description = payload.description;
-                    // Ya NO reseteamos customRoles aquí para no borrar los nombres editados manualmente
                 }
                 break;
-            case 'UPDATE_BASE_ROLE_NAME': // NUEVA LÓGICA
-                if (p && p.customRoles[payload.roleId] !== undefined) {
-                    p.customRoles[payload.roleId] = payload.newName;
-                }
-                break;
-            case 'CREATE_CUSTOM_ROLE':
+
+            case 'CREATE_ROLE':
                 if (p) {
-                    if (!p.dynamicRoles) p.dynamicRoles = [];
-                    p.dynamicRoles.push({ id: `dyn-${Date.now()}`, name: payload.name, levelId: payload.levelId, area: payload.area || 'Gremio', isArchived: false });
+                    const defaults = this.ontologyStatic.niveles[payload.levelId];
+                    p.roles.push({ 
+                        id: `dyn-${Date.now()}`, 
+                        name: payload.name, 
+                        levelId: payload.levelId, 
+                        price: payload.price || defaults.precio, 
+                        multiplier: payload.multiplier || defaults.multiplier, 
+                        isArchived: false,
+                        isBase: false
+                    });
                 }
                 break;
-            case 'ARCHIVE_CUSTOM_ROLE':
+
+            case 'UPDATE_ROLE':
                 if (p) {
-                    const role = p.dynamicRoles.find(r => r.id === payload.rolId);
-                    if (role) role.isArchived = true;
+                    const role = p.roles.find(r => r.id === payload.roleId);
+                    if (role) {
+                        role[payload.field] = payload.field === 'name' ? payload.value : parseFloat(payload.value);
+                    }
                 }
                 break;
+
+            case 'ARCHIVE_ROLE':
+                if (p) {
+                    const roleToArchive = p.roles.find(r => r.id === payload.roleId);
+                    if (roleToArchive && !roleToArchive.isBase) roleToArchive.isArchived = true;
+                }
+                break;
+
             case 'ADD_TRANSACTION':
                 if (p) {
                     const lastTx = p.transactions[p.transactions.length - 1];
-                    const nextFase = p.transactions.length + 1; // Auto-asignar la siguiente fase
-                    const newTx = { ...payload.tx, timestamp: Date.now(), prevHash: lastTx ? lastTx.hash : "0", hash: "", fase: nextFase };
+                    const nextFase = p.transactions.length + 1;
+                    
+                    // 🧊 CONGELACIÓN DEL VALOR FINANCIERO
+                    const originRole = p.roles.find(r => r.id === payload.tx.from);
+                    const horasReales = parseFloat(payload.tx.horas) || 1;
+                    let valorCalculado = 0;
+                    if (originRole) {
+                        valorCalculado = horasReales * originRole.multiplier * originRole.price;
+                    }
+
+                    const newTx = { 
+                        ...payload.tx, 
+                        timestamp: Date.now(), 
+                        prevHash: lastTx ? lastTx.hash : "0", 
+                        hash: "", 
+                        fase: nextFase,
+                        valorCongelado: valorCalculado // <- Inmutabilidad financiera
+                    };
                     newTx.hash = generateHash(JSON.stringify(newTx));
                     p.transactions.push(newTx);
                 }
                 break;
-            case 'UPDATE_TRANSACTION_PHASE': // NUEVA LÓGICA
+
+            case 'UPDATE_TRANSACTION_PHASE':
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
                     if (tx) tx.fase = parseInt(payload.fase) || 99;
