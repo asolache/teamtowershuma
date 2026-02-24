@@ -1,4 +1,4 @@
-// 1. UTILIDADES (Criptografía Ligera)
+// 1. UTILIDADES GLOBALES (Solo una declaración)
 const generateHash = (str) => {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
@@ -11,9 +11,11 @@ const generateHash = (str) => {
 
 const MAX_PROMPT_LENGTH = 4000;
 
+// 2. NÚCLEO DEL SISTEMA
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
+            // 🛡️ RESTAURADOS LOS 9 SECTORES COMPLETOS PARA NO PERDER NADA
             sectores: { 
                 marketing: { 
                     "@anxaneta": { name: "Strategy", prompt: "Eres el Director de Estrategia..." },
@@ -42,6 +44,41 @@ export class TTStore {
                     "@dosos": { name: "Revisor/Compliance", prompt: "Eres el Auditor de Compliance..." },
                     "@baixos": { name: "Abogado Junior", prompt: "Eres el Abogado Junior..." },
                     "@pinya": { name: "Paralegal", prompt: "Eres el Paralegal..." }
+                },
+                salud: { 
+                    "@anxaneta": { name: "Director Médico", prompt: "Eres el Director Médico..." },
+                    "@aixecador": { name: "Jefe de Planta", prompt: "Eres el Jefe de Planta..." },
+                    "@dosos": { name: "Supervisor", prompt: "Eres el Supervisor..." },
+                    "@baixos": { name: "Especialista", prompt: "Eres el Médico Especialista..." },
+                    "@pinya": { name: "Enfermería/Celador", prompt: "Eres el Personal de Base..." }
+                },
+                hosteleria: { 
+                    "@anxaneta": { name: "Gerente/Chef", prompt: "Eres el Chef Ejecutivo/Gerente..." },
+                    "@aixecador": { name: "Maître", prompt: "Eres el Maître..." },
+                    "@dosos": { name: "Jefe de Rango", prompt: "Eres el Jefe de Rango..." },
+                    "@baixos": { name: "Cocinero/Camarero", prompt: "Eres el Operativo..." },
+                    "@pinya": { name: "Ayudante", prompt: "Eres el Office/Ayudante..." }
+                },
+                educacion: { 
+                    "@anxaneta": { name: "Rector/Director", prompt: "Eres el Director..." },
+                    "@aixecador": { name: "Jefe Estudios", prompt: "Eres el Jefe de Estudios..." },
+                    "@dosos": { name: "Coordinador", prompt: "Eres el Coordinador..." },
+                    "@baixos": { name: "Profesor", prompt: "Eres el Profesor..." },
+                    "@pinya": { name: "Administración", prompt: "Eres Conserjería/Admin..." }
+                },
+                construccion: { 
+                    "@anxaneta": { name: "Arquitecto", prompt: "Eres el Arquitecto..." },
+                    "@aixecador": { name: "Jefe de Obra", prompt: "Eres el Jefe de Obra..." },
+                    "@dosos": { name: "Aparejador (QA)", prompt: "Eres el Aparejador..." },
+                    "@baixos": { name: "Oficial", prompt: "Eres el Oficial..." },
+                    "@pinya": { name: "Peón", prompt: "Eres el Peón..." }
+                },
+                audiovisual: { 
+                    "@anxaneta": { name: "Productor Ej.", prompt: "Eres el Productor Ejecutivo..." },
+                    "@aixecador": { name: "Director", prompt: "Eres el Director..." },
+                    "@dosos": { name: "Script/Continuidad", prompt: "Eres Script/QA..." },
+                    "@baixos": { name: "Cámara/Sonido", prompt: "Eres Operador Técnico..." },
+                    "@pinya": { name: "Eléctrico/Auxiliar", prompt: "Eres Eléctrico/Runner..." }
                 }
             },
             niveles: {
@@ -72,6 +109,7 @@ export class TTStore {
                 const data = JSON.parse(saved);
                 this.state.projects = data.projects || []; 
             } catch (e) { 
+                console.error("SOS Kernel Init Error:", e); 
                 this.state.projects = [];
             }
         }
@@ -84,43 +122,36 @@ export class TTStore {
 
     getState() { return this.state; }
 
-    // 🏥 ANALÍTICA: Resiliencia (Fundamental para HomeView)
-    calculateResilience(projectId) {
+    calculateResilience(projectId, specificTxs = null) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || !p.transactions || p.transactions.length === 0) return 100;
-        const total = p.transactions.length;
-        const audits = p.transactions.filter(t => {
-            const rF = p.roles.find(r => r.id === t.from);
-            const rT = p.roles.find(r => r.id === t.to);
-            return (rF?.levelId === '@dosos' || rT?.levelId === '@dosos');
+        if (!p) return 100;
+        const txsToEval = specificTxs || p.transactions || [];
+        if (txsToEval.length === 0) return 100;
+        
+        const total = txsToEval.length;
+        const audits = txsToEval.filter(t => {
+            const rFrom = p.roles.find(r => r.id === t.from);
+            const rTo = p.roles.find(r => r.id === t.to);
+            return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
         }).length;
         return Math.round((audits / total) * 100);
     }
 
-    // 🧠 INTELIGENCIA: Generador de Contexto para IA (Arregla Test INTEL)
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
-        let prompt = `PROYECTO: ${p.nombre}\nMISIÓN: ${p.description || 'Estandar'}\n\n[ONTOLOGÍA DE ROLES]\n`;
-        p.roles.forEach(r => prompt += `- ${r.name} (${r.levelId})\n`);
-        
-        prompt += `\n[FLUJOS Y SECUENCIACIÓN]\n`;
-        const sortedTxs = [...p.transactions].sort((a,b) => (a.fase || 99) - (b.fase || 99));
-        sortedTxs.forEach(t => {
-            prompt += `- Fase ${t.fase || 'N'}: ${t.entregable} (${t.tipo})\n`;
-        });
+        let prompt = `PROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\n\n[ONTOLOGÍA]\n`;
+        (p.roles || []).forEach(r => prompt += `- ${r.name} (${r.levelId})\n`);
         return prompt;
     }
 
-    // 🏗️ FACTORY: Predictibilidad de IDs (Arregla Test ONTOLOGY)
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
-        const sKey = sector || 'marketing';
+        const sKey = sector || 'web3';
         const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
-        
-        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId) => {
+        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId, idx) => {
             const def = this.ontologyStatic.niveles[levelId];
             return {
-                id: `role-${id}-${levelId}`, // ID Determinista
+                id: `role-${Date.now()}-${idx}`,
                 levelId: levelId,
                 name: sectorData[levelId]?.name || "Rol Base",
                 systemPrompt: sectorData[levelId]?.prompt || this.orbitPrompts[levelId],
@@ -129,10 +160,10 @@ export class TTStore {
                 isArchived: false
             };
         });
-
         return {
             id, nombre, sector: sKey, ownerId,
-            description: "", roles: initialRoles, transactions: [], usuarios: [], ledger: [], asignaciones: []
+            isVerified: false, // 🚀 NUEVO: Sello de Confianza del Ecosystem Owner
+            roles: initialRoles, transactions: [], usuarios: [], ledger: [], asignaciones: []
         };
     }
 
@@ -142,8 +173,12 @@ export class TTStore {
 
         switch(type) {
             case 'ADD_PROJECT':
-                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 this.state.projects.push(this._createProjectInstance(payload.id, payload.nombre, payload.sector, payload.ownerId));
+                break;
+
+            // 🚀 NUEVO: VALIDACIÓN DEL ECOSISTEMA (Owner)
+            case 'VERIFY_PROJECT':
+                if (p) p.isVerified = true;
                 break;
 
             case 'UPDATE_ROLE':
@@ -185,20 +220,77 @@ export class TTStore {
                 }
                 break;
 
+            // 🚀 ACTUALIZADO: Transacciones nacen como "Teóricas/Pendientes"
             case 'ADD_TRANSACTION':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.tx.from);
                     const lastTx = p.transactions[p.transactions.length - 1];
-                    const valor = (payload.tx.horas || 1) * (role?.multiplier || 1) * (role?.price || 0);
+                    const estimatedHours = parseFloat(payload.tx.horas) || 1;
+                    const theoreticalValue = estimatedHours * (role?.multiplier || 1) * (role?.price || 0);
                     
                     p.transactions.push({ 
                         ...payload.tx, 
-                        valorCongelado: valor, 
+                        estimatedHours: estimatedHours,
+                        realHours: 0,
+                        status: 'theoretical', // Estado inicial
+                        assigneeId: null,      // A quién se le hace Ping
+                        proofLink: null,       // URL de prueba
+                        valorCongelado: theoreticalValue, // Valor proyectado
                         fase: p.transactions.length + 1,
-                        prevHash: lastTx ? lastTx.hash : "0", // Cadena de seguridad
+                        prevHash: lastTx ? lastTx.hash : "0", 
                         hash: generateHash("tx" + Math.random()), 
                         timestamp: Date.now() 
                     });
+                }
+                break;
+
+            // 🚀 NUEVO: FLUJO DE GOBERNANZA OPERATIVA (Ping -> Report -> Approve)
+            case 'PING_TRANSACTION':
+                if (p) {
+                    const tx = p.transactions.find(t => t.hash === payload.txHash);
+                    if (tx) {
+                        tx.status = 'pinged';
+                        tx.assigneeId = payload.userId; // El PO pide la tarea a este usuario
+                    }
+                }
+                break;
+
+            case 'REPORT_TRANSACTION':
+                if (p) {
+                    const tx = p.transactions.find(t => t.hash === payload.txHash);
+                    if (tx) {
+                        tx.status = 'reported';
+                        tx.realHours = payload.realHours;
+                        tx.proofLink = payload.proofLink;
+                        tx.reportComment = payload.comentario;
+                    }
+                }
+                break;
+
+            case 'APPROVE_TRANSACTION':
+                if (p) {
+                    const tx = p.transactions.find(t => t.hash === payload.txHash);
+                    if (tx && tx.status === 'reported') {
+                        tx.status = 'consolidated'; // Sellado oficial
+                        
+                        // Recalculamos el valor real final basado en las horas reportadas
+                        const role = p.roles.find(r => r.id === tx.from);
+                        tx.valorCongelado = tx.realHours * (role?.multiplier || 1) * (role?.price || 0);
+
+                        // Se inyecta automáticamente en el Libro Mayor (Ledger)
+                        p.ledger = p.ledger || [];
+                        p.ledger.push({
+                            id: `ldg-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                            timestamp: Date.now(),
+                            userId: tx.assigneeId,
+                            roleId: role.id,
+                            receiverId: tx.to,
+                            description: `[APROBADO] ${tx.entregable}`,
+                            horas: tx.realHours,
+                            valorCongelado: tx.valorCongelado,
+                            txHashRef: tx.hash // Trazabilidad a la transacción teórica
+                        });
+                    }
                 }
                 break;
 
@@ -206,6 +298,17 @@ export class TTStore {
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
                     if (tx) tx.fase = payload.fase;
+                }
+                break;
+
+            case 'SORT_TRANSACTIONS_BY_GRAVITY':
+                if (p) {
+                    p.transactions.forEach(tx => {
+                        const rF = p.roles.find(r => r.id === tx.from);
+                        const rT = p.roles.find(r => r.id === tx.to);
+                        if(rF && rT) tx.fase = rF.multiplier > rT.multiplier ? 1 : 3;
+                    });
+                    p.transactions.sort((a,b) => a.fase - b.fase);
                 }
                 break;
 
