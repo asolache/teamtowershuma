@@ -14,31 +14,28 @@ document.addEventListener('click', (e) => {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name-edit').value;
         const levelId = document.getElementById('nr-level-edit').value;
-        const area = document.getElementById('nr-area-edit').value;
         if(!name) return alert("El nombre es obligatorio");
-        
-        store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area } });
+        store.dispatch({ type: 'CREATE_ROLE', payload: { projectId, name, levelId } });
     }
 
     if (e.target.classList.contains('btn-archive-role')) {
         const projectId = e.target.getAttribute('data-pid');
-        const rolId = e.target.getAttribute('data-rid');
+        const roleId = e.target.getAttribute('data-rid');
         if(confirm("¿Archivar rol? Dejará de aparecer en el mapa activo.")) {
-            store.dispatch({ type: 'ARCHIVE_CUSTOM_ROLE', payload: { projectId, rolId } });
+            store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId, roleId } });
         }
     }
 });
 
-// Eventos para detectar cambios en inputs de texto/número
+// Detectar cambios en inputs (Nombres, Precios, Multiplicadores, Fases)
 document.addEventListener('change', (e) => {
-    // Detectar edición de nombres de roles base
-    if (e.target.classList.contains('base-role-input')) {
+    if (e.target.classList.contains('role-input')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
-        store.dispatch({ type: 'UPDATE_BASE_ROLE_NAME', payload: { projectId, roleId, newName: e.target.value } });
+        const field = e.target.getAttribute('data-field');
+        store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId, roleId, field, value: e.target.value } });
     }
     
-    // Detectar cambio de fase en las transacciones
     if (e.target.classList.contains('tx-fase-input')) {
         const projectId = e.target.getAttribute('data-pid');
         const txHash = e.target.getAttribute('data-hash');
@@ -50,13 +47,10 @@ export const ProjectEditView = {
     render: (projectId) => {
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
-        
         if (!project) return `<div class="container text-center"><h2>Proyecto no encontrado</h2></div>`;
 
         const systemPrompt = store.generateSystemPrompt(projectId);
-        const activeDynamicRoles = (project.dynamicRoles || []).filter(dr => !dr.isArchived);
-        
-        // Ordenamos las transacciones por fase para mostrarlas en la tabla
+        const activeRoles = (project.roles || []).filter(r => !r.isArchived);
         const txsOrdered = [...(project.transactions || [])].sort((a, b) => (a.fase || 99) - (b.fase || 99));
 
         return `
@@ -64,102 +58,102 @@ export const ProjectEditView = {
                 <header class="header-main">
                     <div>
                         <h1>⚙️ Diseñador: ${project.nombre}</h1>
-                        <p class="text-muted" style="margin: 0;">Arquitectura, Ontología y Secuenciación de Procesos</p>
+                        <p class="text-muted" style="margin: 0;">Arquitectura Unificada, Finanzas y Procesos</p>
                     </div>
                     <button class="btn btn-primary" onclick="location.hash='#/project/${projectId}'">
                         Guardar y Volver ➔
                     </button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
                     
                     <div style="display: flex; flex-direction: column; gap: 20px;">
-                        
                         <section class="panel">
-                            <h3>1. Misión y Sector</h3>
-                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
-                                <div>
-                                    <label class="form-label">Nombre del Ecosistema</label>
-                                    <input id="edit-name" type="text" class="form-control" value="${project.nombre}">
-                                </div>
-                                <div>
-                                    <label class="form-label">Sector Base (Plantilla)</label>
-                                    <select id="edit-sector" class="form-control" style="text-transform:capitalize;">
-                                        ${Object.keys(state.ontology.sectores).map(s => `
-                                            <option value="${s}" ${project.sector === s ? 'selected' : ''}>${s}</option>
-                                        `).join('')}
-                                    </select>
-                                </div>
+                            <h3>1. Misión y Propósito</h3>
+                            <div style="margin-bottom: 15px;">
+                                <label class="form-label">Nombre del Ecosistema</label>
+                                <input id="edit-name" type="text" class="form-control" value="${project.nombre}">
+                                <label class="form-label">Sector</label>
+                                <select id="edit-sector" class="form-control" style="text-transform:capitalize;">
+                                    ${Object.keys(state.ontology.sectores).map(s => `<option value="${s}" ${project.sector === s ? 'selected' : ''}>${s}</option>`).join('')}
+                                </select>
+                                <label class="form-label">Prompt Maestro</label>
+                                <textarea id="edit-desc" class="form-control" style="height: 100px;">${project.description || ''}</textarea>
                             </div>
-                            <div>
-                                <label class="form-label">Propósito / Directriz (Prompt Maestro)</label>
-                                <textarea id="edit-desc" class="form-control" style="height: 100px; resize: vertical;" placeholder="Define el propósito del sistema...">${project.description || ''}</textarea>
-                            </div>
-                            <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-secondary btn-block">
-                                Actualizar Metadatos
-                            </button>
+                            <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-secondary btn-block">Actualizar Metadatos</button>
                         </section>
 
                         <section class="panel" style="border-color: var(--accent-purple);">
-                            <h3 style="color: var(--accent-purple);">🧠 Espejo de Consciencia</h3>
-                            <p class="text-muted text-small">Así leerá la IA los roles y el proceso secuencial de tu proyecto:</p>
-                            <pre style="background: var(--bg-base); padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.8rem; white-space: pre-wrap; margin: 0; font-family: monospace; max-height: 400px; overflow-y: auto;">${systemPrompt}</pre>
+                            <h3 style="color: var(--accent-purple);">🧠 Contexto IA</h3>
+                            <pre style="background: var(--bg-base); padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; white-space: pre-wrap; max-height: 400px; overflow-y: auto;">${systemPrompt}</pre>
                         </section>
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 20px;">
                         
                         <section class="panel">
-                            <h3>2. Ontología de Roles</h3>
-                            <p class="text-muted text-small" style="margin-bottom: 20px;">
-                                Modifica el nombre de los roles base para adaptarlos a tu léxico interno.
-                            </p>
+                            <h3 style="margin-bottom: 5px;">2. Ontología Unificada (Roles y Finanzas)</h3>
+                            <p class="text-muted text-small" style="margin-bottom: 20px;">Edita los nombres, el poder multiplicador y el precio/hora para adaptar la economía del Castell a este proyecto concreto.</p>
                             
-                            <div style="max-height: 250px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px;">
-                                <h4 class="text-muted text-uppercase">Roles Base (Editables)</h4>
-                                ${Object.keys(project.customRoles).map(id => `
-                                    <div class="panel-surface" style="padding: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px;">
-                                        <div class="text-accent" style="font-weight: bold; font-size: 0.9rem; width: 85px;">${id}</div>
-                                        <input type="text" value="${project.customRoles[id]}" class="form-control base-role-input" data-pid="${projectId}" data-rid="${id}" style="margin:0;">
+                            <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; padding: 0 10px;">
+                                <span class="text-muted text-small">NOMBRE DEL ROL</span>
+                                <span class="text-muted text-small">NIVEL / ÓRBITA</span>
+                                <span class="text-muted text-small text-center">MULTI (x)</span>
+                                <span class="text-muted text-small text-center">PRECIO (€/h)</span>
+                                <span style="width: 30px;"></span>
+                            </div>
+
+                            <div style="max-height: 350px; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
+                                ${activeRoles.map(r => `
+                                    <div class="panel-surface" style="padding: 10px; margin-bottom: 8px; display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr auto; gap: 10px; align-items: center;">
+                                        <input type="text" value="${r.name}" class="form-control role-input" data-field="name" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; font-weight: bold; border-color: transparent;">
+                                        
+                                        <span class="text-muted text-small" style="padding-left: 10px;">${r.levelId}</span>
+                                        
+                                        <input type="number" step="0.1" value="${r.multiplier}" class="form-control role-input" data-field="multiplier" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; text-align: center; color: var(--accent-blue);">
+                                        
+                                        <input type="number" step="1" value="${r.price}" class="form-control role-input" data-field="price" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; text-align: center; color: var(--accent-green);">
+                                        
+                                        ${r.isBase ? `<span style="width:34px; display:inline-block;"></span>` : `<button class="btn btn-outline btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="padding: 6px; border:none;" title="Archivar">📥</button>`}
                                     </div>
                                 `).join('')}
-                                
-                                <h4 class="text-muted text-uppercase" style="margin-top: 25px;">Especialistas Activos</h4>
-                                ${activeDynamicRoles.length === 0 ? '<p class="text-muted text-small text-center">No hay especialistas inyectados aún.</p>' : ''}
-                                ${activeDynamicRoles.map(dr => `
-                                    <div class="panel-surface" style="padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                                        <div>
-                                            <div class="text-accent" style="font-weight: bold; font-size: 0.9rem;">${dr.name}</div>
-                                            <div class="text-muted" style="font-size: 0.7rem;">Vinculado a: ${dr.levelId}</div>
-                                        </div>
-                                        <button class="btn btn-outline btn-archive-role" data-pid="${projectId}" data-rid="${dr.id}" style="padding: 5px 10px; border-color: transparent;" title="Archivar (ocultar del mapa)">📥</button>
-                                    </div>
-                                `).join('')}
+                            </div>
+
+                            <div class="panel-surface" style="border-style: dashed; padding: 15px;">
+                                <h4 class="text-heading text-small" style="margin-top:0;">+ Inyectar Nuevo Rol al Sistema</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
+                                    <input id="nr-name-edit" type="text" class="form-control" placeholder="Nombre (ej: Data Analyst)" style="margin:0;">
+                                    <select id="nr-level-edit" class="form-control" style="margin:0;">
+                                        <option value="@anxaneta">Órbita @anxaneta</option>
+                                        <option value="@aixecador">Órbita @aixecador</option>
+                                        <option value="@dosos">Órbita @dosos</option>
+                                        <option value="@baixos">Órbita @baixos</option>
+                                        <option value="@pinya">Órbita @pinya</option>
+                                    </select>
+                                    <button id="btn-add-role-edit" data-pid="${projectId}" class="btn btn-primary">Añadir</button>
+                                </div>
                             </div>
                         </section>
 
                         <section class="panel" style="border-color: var(--accent-blue);">
-                            <h3 style="color: var(--accent-blue);">3. Secuenciación del Flujo de Valor</h3>
-                            <p class="text-muted text-small" style="margin-bottom: 20px;">
-                                Asigna el orden lógico (Fase 1, 2, 3...) a las transacciones para crear el proceso. Un número "99" equivale a flujo transversal continuo.
-                            </p>
-                            
-                            <div style="max-height: 300px; overflow-y: auto;">
+                            <h3 style="color: var(--accent-blue);">3. Secuenciación del Flujo Temporal</h3>
+                            <div style="max-height: 250px; overflow-y: auto;">
                                 ${txsOrdered.length === 0 ? `<p class="text-muted text-center text-small">Ve al Mapa e inyecta transacciones para secuenciarlas aquí.</p>` : ''}
-                                ${txsOrdered.map(t => `
-                                    <div class="panel-surface" style="padding: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border-left: 3px solid var(--accent-blue);">
+                                ${txsOrdered.map(t => {
+                                    const rFrom = project.roles.find(r => r.id === t.from)?.name || 'Ecosistema';
+                                    const rTo = project.roles.find(r => r.id === t.to)?.name || 'Ecosistema';
+                                    return `
+                                    <div class="panel-surface" style="padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 15px; border-left: 3px solid var(--accent-blue);">
                                         <div style="text-align: center;">
-                                            <label class="text-muted" style="font-size: 0.6rem; display:block; margin-bottom:2px;">FASE</label>
                                             <input type="number" value="${t.fase || 99}" class="form-control tx-fase-input" data-pid="${projectId}" data-hash="${t.hash}" style="width: 55px; padding: 5px; text-align: center; margin:0; color: var(--accent-blue); font-weight:bold;">
                                         </div>
-                                        <div style="flex-grow: 1;">
-                                            <div style="font-size: 0.85rem; color: var(--text-heading); margin-bottom: 2px;"><b>${t.entregable}</b></div>
-                                            <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                                <span class="text-accent">${t.from}</span> ➔ ${t.to}
-                                            </div>
+                                        <div>
+                                            <div style="font-size: 0.85rem; color: var(--text-heading);"><b>${t.entregable}</b></div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted);"><span class="text-accent">${rFrom}</span> ➔ ${rTo}</div>
                                         </div>
                                     </div>
-                                `).join('')}
+                                    `
+                                }).join('')}
                             </div>
                         </section>
                         
