@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers SOS | Códice IA</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #010409;
+            --bg-surface: #0d1117;
+            --bg-panel: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #238636;
+            --accent-purple: #a371f7;
+            --font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            margin: 0; padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1, h2, h3 { color: #f0f6fc; margin-top: 1.5em; margin-bottom: 0.5em; }
+        h1 { color: var(--accent-purple); font-size: 1.8rem; margin-top: 0; }
+        h2 { color: var(--accent-blue); font-size: 1.4rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        h3 { color: #f0f6fc; font-size: 1.1rem; }
+
+        .btn {
+            background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-color);
+            padding: 8px 14px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-family: inherit; transition: 0.2s;
+        }
+        .btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        .document-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Estilos específicos para el contenido Markdown renderizado */
+        .document-panel ul { padding-left: 20px; }
+        .document-panel li { margin-bottom: 8px; }
+        .document-panel strong { color: #fff; }
+        .document-panel code {
+            background: rgba(163, 113, 247, 0.15);
+            color: var(--accent-purple);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <p class="text-muted" style="margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Documentación Core</p>
+                <h1 style="margin: 5px 0 0 0;">🧠 Códice del Agente IA</h1>
+            </div>
+            <div>
+                <button class="btn" onclick="window.location.href='index.html'">← Volver al Dashboard</button>
+            </div>
+        </header>
+
+        <div class="document-panel" id="markdown-content">
+            <p style="color: var(--text-muted); text-align: center;">Cargando documento base...</p>
+        </div>
+    </div>
+
+    <script>
+        // Función para cargar y renderizar el Markdown
+        async function loadSystemPrompt() {
+            try {
+                // Ruta donde has guardado el archivo .md
+                const response = await fetch('./docs/SOS_AI_System_Prompt_v1.md');
+                
+                if (!response.ok) {
+                    throw new Error('No se encontró el archivo. Asegúrate de haberlo guardado en docs/SOS_AI_System_Prompt_v1.md');
+                }
+                
+                const markdownText = await response.text();
+                
+                // Usamos la librería marked para convertir el texto MD a HTML
+                document.getElementById('markdown-content').innerHTML = marked.parse(markdownText);
+                
+            } catch (error) {
+                document.getElementById('markdown-content').innerHTML = `
+                    <div style="border-left: 4px solid var(--accent-red); padding-left: 15px;">
+                        <h3 style="color: var(--accent-red); margin-top:0;">⚠️ Error de Lectura</h3>
+                        <p>${error.message}</p>
+                        <p class="text-muted text-small">Nota: Si estás abriendo el archivo HTML directamente (file://) sin un servidor local, los navegadores bloquean la lectura de archivos por seguridad. Usa una extensión como "Live Server" en VS Code.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Iniciar la carga al abrir la página
+        loadSystemPrompt();
+    </script>
+</body>
+</html>
