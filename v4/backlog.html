@@ -44,6 +44,7 @@
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .version-header {
@@ -65,18 +66,19 @@
 
         .role-badge {
             display: inline-block; font-size: 0.75rem; font-weight: bold;
-            padding: 3px 8px; border-radius: 12px; background: rgba(255,255,255,0.1);
+            padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05);
+            font-family: monospace;
         }
 
         .financial-pill {
-            background: rgba(210, 153, 34, 0.1);
-            border: 1px solid rgba(210, 153, 34, 0.3);
+            background: rgba(210, 153, 34, 0.05);
+            border: 1px solid rgba(210, 153, 34, 0.2);
             color: var(--accent-gold);
             padding: 8px 12px;
             border-radius: 6px;
             text-align: right;
             font-size: 0.85rem;
-            min-width: 140px;
+            min-width: 150px;
         }
 
         .btn {
@@ -91,6 +93,16 @@
             background: #000; padding: 15px; border-radius: 8px;
             overflow-x: auto; font-size: 0.85rem; color: #a5d6ff;
             display: none; border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .fase-indicator {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--accent-green);
+            background: rgba(35, 134, 54, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -100,11 +112,11 @@
         <header>
             <div>
                 <h1 style="color: var(--accent-blue);">📜 SOS Ledger (Dogfooding)</h1>
-                <p class="text-muted" style="margin: 5px 0 0 0;">Flujo de Valor y Slicing Pie real entre el Humano (Tú) y la IA (Gemini)</p>
+                <p class="text-muted" style="margin: 5px 0 0 0;">Reporte real de inyección de valor: Humano vs IA</p>
             </div>
-            <div>
-                <button class="btn btn-outline" onclick="window.location.href='index.html'">← Volver a la App</button>
-                <button class="btn" onclick="toggleJson()">⚙️ Ver Data JSON</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="window.location.href='index.html'">← App</button>
+                <button class="btn" onclick="toggleJson()">⚙️ Data JSON</button>
             </div>
         </header>
 
@@ -117,34 +129,34 @@
     {
         "projectId": "sos-kernel-build",
         "nombre": "Construcción Core v4.x",
-        "sector": "web3",
+        "sector": "saas",
         "roles": [
             { "id": "user_arch", "name": "Humano", "levelId": "@anxaneta", "desc": "Lead Arch.", "fmv": 45.0, "multiplier": 3.0 },
             { "id": "user_qa", "name": "Humano", "levelId": "@dosos", "desc": "Auditor QA", "fmv": 30.0, "multiplier": 2.0 },
-            { "id": "ai_dev", "name": "Gemini IA", "levelId": "@baixos", "desc": "DApp Dev", "fmv": 0.07, "multiplier": 1.5 }
+            { "id": "ai_dev", "name": "Gemini IA", "levelId": "@baixos", "desc": "AI Developer", "fmv": 0.08, "multiplier": 1.5 }
         ],
         "versiones": [
+            {
+                "version": "v4.6",
+                "titulo": "Gravedad de Valor & Ontología de Prompts",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Ontología extendida (50 prompts)", "horas": 2.0 },
+                    { "fase": 2, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Algoritmo de Gravedad (Auto-sort)", "horas": 1.5 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js (Matriz de Órbitas)", "horas": 0.15 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: Sugeridor ✨ en ProjectEditView", "horas": 0.2 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: Ensamblado de Prompt Maestro", "horas": 0.15 },
+                    { "fase": 5, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Audit: Test de persistencia de Prompts", "horas": 0.5 }
+                ]
+            },
             {
                 "version": "v4.5",
                 "titulo": "Slicing Pie, Ledger & Sistema de Usuarios",
                 "transacciones": [
-                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Paradigma Usuario vs Rol (Contabilidad)", "horas": 1.5 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store v4.5 (Ledger + Usuarios)", "horas": 0.1 },
-                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Desincronización de 10 Sectores HTML", "horas": 0.5 },
-                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: DashboardView y Store Integrados", "horas": 0.05 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectAccountingView.js (Cap Table)", "horas": 0.1 }
-                ]
-            },
-            {
-                "version": "v4.4",
-                "titulo": "Kernel Estable & Value Map SVG",
-                "transacciones": [
-                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Auto-save Misión y Contexto IA", "horas": 2.5 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js adaptado", "horas": 0.2 },
-                    { "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Integrar JSON de Roles a Store.js", "horas": 1.0 },
-                    { "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js actualizado (Payload IA)", "horas": 0.1 },
-                    { "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Ocultar Ecosistema y Centrar Mapa", "horas": 1.5 },
-                    { "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Renderizado Elíptico Canvas/SVG", "horas": 0.2 }
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Paradigma Usuario vs Rol (Contabilidad)", "horas": 1.5 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store v4.5 (Ledger + Usuarios)", "horas": 0.1 },
+                    { "fase": 4, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Desincronización de 10 Sectores HTML", "horas": 0.5 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: DashboardView y Store Integrados", "horas": 0.05 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectAccountingView.js (Cap Table)", "horas": 0.1 }
                 ]
             }
         ]
@@ -167,12 +179,15 @@
         data.versiones.forEach(v => {
             let versionPieTotal = 0;
 
-            let txsHtml = v.transacciones.map(tx => {
+            // Ordenamos por fase lógica según la nueva metodología
+            const sortedTxs = [...v.transacciones].sort((a, b) => (a.fase || 99) - (b.fase || 99));
+
+            let txsHtml = sortedTxs.map(tx => {
                 const fromRole = data.roles.find(r => r.id === tx.from);
                 const toRole = data.roles.find(r => r.id === tx.to);
                 const typeColor = tx.tipo === 'intangible' ? 'var(--accent-purple)' : 'var(--accent-blue)';
                 
-                // CÁLCULO SLICING PIE
+                // CÁLCULO SLICING PIE (Lógica Humano vs IA)
                 const valorGenerado = tx.horas * fromRole.fmv * fromRole.multiplier;
                 versionPieTotal += valorGenerado;
                 
@@ -184,12 +199,13 @@
                                 <span style="color: var(--text-muted); margin: 0 2px;">→</span> 
                                 <span class="role-badge">${toRole.levelId}</span>
                             </div>
-                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Flujo ${tx.tipo}</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Flujo ${tx.tipo}</span>
+                            ${tx.fase ? `<br><span class="fase-indicator">FASE ${tx.fase}</span>` : ''}
                         </div>
                         <div>
-                            <strong style="display:block; font-size: 1rem; color: var(--text-heading);">${tx.entregable}</strong>
+                            <strong style="display:block; font-size: 1rem; color: #f0f6fc;">${tx.entregable}</strong>
                             <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
-                                <span style="color: var(--text-main)">${fromRole.name}</span> (${fromRole.desc}) a <span style="color: var(--text-main)">${toRole.name}</span>
+                                <span style="color: var(--accent-blue)">${fromRole.name}</span> entregó a <span style="color: var(--accent-blue)">${toRole.name}</span>
                             </div>
                         </div>
                         <div class="financial-pill">
@@ -205,8 +221,8 @@
                     <div class="version-header">
                         <h2>${v.version} - <span style="color: var(--text-muted); font-size: 1.2rem; font-weight: normal;">${v.titulo}</span></h2>
                         <div style="text-align: right;">
-                            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Fondo Generado (Pie)</div>
-                            <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent-gold);">${versionPieTotal.toFixed(2)} €</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05rem;">Fondo Slicing Pie Generado</div>
+                            <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-gold);">${versionPieTotal.toFixed(2)} €</div>
                         </div>
                     </div>
                     ${txsHtml}
