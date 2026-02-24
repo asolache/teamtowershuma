@@ -42,7 +42,7 @@ document.addEventListener('click', (e) => {
         document.getElementById('app').innerHTML = UserDashboardView.render();
     }
 
-    // 2. 🚀 NUEVO: Copiar el Prompt Maestro ensamblado
+    // 2. Copiar el Prompt Maestro ensamblado
     if (e.target.classList.contains('btn-copy-prompt')) {
         const encodedPrompt = e.target.getAttribute('data-prompt');
         const decodedPrompt = decodeURIComponent(encodedPrompt);
@@ -67,7 +67,7 @@ export const UserDashboardView = {
         const state = store.getState();
         const projects = state.projects || [];
         
-        // 1. OBTENER TODOS LOS USUARIOS DEL SISTEMA (Para el simulador de Login)
+        // 1. OBTENER TODOS LOS USUARIOS DEL SISTEMA
         const allUsers = [];
         projects.forEach(p => {
             (p.usuarios || []).forEach(u => {
@@ -121,6 +121,18 @@ export const UserDashboardView = {
             totalHorasUsuario += projectHoras;
             totalValorUsuario += projectValor;
 
+            // 🧠 NUEVO: CONSTRUIR EL MAPA DE VALOR DEL ECOSISTEMA PARA EL PROMPT
+            let ecosistemaContext = '\n\n[MAPA DE VALOR DEL ECOSISTEMA (Flujos)]\n';
+            if (p.transactions && p.transactions.length > 0) {
+                p.transactions.forEach(t => {
+                    const rFrom = p.roles.find(r => r.id === t.from)?.name || 'Desconocido';
+                    const rTo = p.roles.find(r => r.id === t.to)?.name || 'Desconocido';
+                    ecosistemaContext += `- ${rFrom} -> entrega "${t.entregable}" a -> ${rTo}\n`;
+                });
+            } else {
+                ecosistemaContext += "Aún no hay flujos definidos en este ecosistema.\n";
+            }
+
             const userRoleIds = userAssignments.map(a => a.roleId);
             const myPendingTasks = (p.transactions || []).filter(tx => userRoleIds.includes(tx.from));
 
@@ -132,9 +144,10 @@ export const UserDashboardView = {
                     const isIntangible = tx.tipo === 'intangible';
                     const color = isIntangible ? 'var(--accent-purple)' : 'var(--accent-blue)';
 
-                    // 🧠 ENSAMBLAJE DEL PROMPT MAESTRO (Contexto + Rol + Tarea)
+                    // 🧠 ENSAMBLAJE DEL PROMPT MAESTRO ACTUALIZADO (Contexto + Ecosistema + Rol + Tarea)
                     const taskPrompt = tx.systemPrompt || "Genera el entregable solicitado.";
-                    const masterPrompt = `[CONTEXTO DEL PROYECTO]\nProyecto: ${p.nombre}\nSector: ${p.sector}\nMisión Global: ${p.description || 'Sin definir'}\n\n[TU IDENTIDAD]\nRol: ${fromRole.name}\nNivel: ${fromRole.levelId}\nComportamiento: ${fromRole.systemPrompt || 'Sin definir'}\n\n[TU TAREA ACTUAL]\nReceptor: ${toRole.name}\nEntregable: ${tx.entregable}\nInstrucciones Específicas: ${taskPrompt}`;
+                    
+                    const masterPrompt = `[CONTEXTO DEL PROYECTO]\nProyecto: ${p.nombre}\nSector: ${p.sector}\nMisión Global: ${p.description || 'Sin definir'}${ecosistemaContext}\n[TU IDENTIDAD]\nRol: ${fromRole.name}\nNivel: ${fromRole.levelId}\nComportamiento: ${fromRole.systemPrompt || 'Sin definir'}\n\n[TU TAREA ACTUAL]\nReceptor: ${toRole.name}\nEntregable: ${tx.entregable}\nInstrucciones Específicas: ${taskPrompt}`;
                     
                     const safeEncodedPrompt = encodeURIComponent(masterPrompt);
 
