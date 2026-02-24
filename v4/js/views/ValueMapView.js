@@ -6,55 +6,46 @@ export const ValueMapView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return "";
 
-        // 1. Unificar todos los Nodos (Ontología Base + Gremio)
-        const nodes = [
-            ...Object.keys(project.customRoles || {}).map(id => ({ 
-                id, 
-                label: project.customRoles[id], 
-                type: 'base' 
-            })),
-            ...(project.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ 
-                id: dr.id, 
-                label: dr.name, 
-                type: 'dynamic', 
-                parent: dr.levelId 
-            }))
-        ];
+        // 1. Leer Roles Activos Unificados
+        const activeRoles = (project.roles || []).filter(r => !r.isArchived);
 
-        // 2. Motor Físico: Posicionamiento de Nodos
+        // 2. Motor Físico: Órbitas Concéntricas
         const centerX = 400;
         const centerY = 350;
-        const radius = 240;
         const positions = {};
+        
+        // Radios de las órbitas para cada nivel jerárquico
+        const orbits = {
+            '@anxaneta': 0,     // Centro (Dirección)
+            '@aixecador': 80,   // Órbita 1 (Management)
+            '@dosos': 160,      // Órbita 2 (Calidad)
+            '@baixos': 240,     // Órbita 3 (Operativa)
+            '@pinya': 320       // Órbita 4 (Soporte Base)
+        };
 
-        // 2.1. Posicionar Roles Base en un anillo central
-        const baseNodes = nodes.filter(n => n.type === 'base');
-        baseNodes.forEach((node, i) => {
-            const angle = (i * 2 * Math.PI) / baseNodes.length;
-            positions[node.id] = {
-                x: centerX + radius * Math.cos(angle),
-                y: centerY + radius * Math.sin(angle)
-            };
+        // Distribuimos matemáticamente los roles en su órbita correspondiente
+        Object.keys(orbits).forEach(level => {
+            const rolesInLevel = activeRoles.filter(r => r.levelId === level);
+            const radius = orbits[level];
+            
+            rolesInLevel.forEach((node, i) => {
+                if (radius === 0) {
+                    // Centro: Si hay más de un anxaneta, los separamos ligeramente
+                    const offset = rolesInLevel.length > 1 ? 20 : 0;
+                    const angle = (i * 2 * Math.PI) / rolesInLevel.length;
+                    positions[node.id] = { x: centerX + offset * Math.cos(angle), y: centerY + offset * Math.sin(angle) };
+                } else {
+                    // Repartir homogéneamente por el anillo
+                    const angle = (i * 2 * Math.PI) / rolesInLevel.length - (Math.PI / 2); // Start at top
+                    positions[node.id] = {
+                        x: centerX + radius * Math.cos(angle),
+                        y: centerY + radius * Math.sin(angle)
+                    };
+                }
+            });
         });
 
-        // 2.2. Posicionar Especialistas (Dinámicos) cerca de su Rol Base asociado
-        const dynamicNodes = nodes.filter(n => n.type === 'dynamic');
-        dynamicNodes.forEach((node, i) => {
-            const parentPos = positions[node.parent];
-            if (parentPos) {
-                // Generamos un pequeño ángulo para que no se superpongan si hay varios en el mismo padre
-                const offsetAngle = (i * Math.PI) / 4; 
-                positions[node.id] = {
-                    x: parentPos.x + 90 * Math.cos(offsetAngle),
-                    y: parentPos.y + 90 * Math.sin(offsetAngle)
-                };
-            } else {
-                // Si por algún motivo no tienen padre, los mandamos al centro
-                positions[node.id] = { x: centerX, y: centerY };
-            }
-        });
-
-        // 3. Renderizar el Lienzo SVG
+        // 3. Renderizado SVG
         return `
             <svg id="svg-map" viewBox="0 0 800 700" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid meet">
                 <defs>
@@ -66,6 +57,10 @@ export const ValueMapView = {
                     </marker>
                 </defs>
 
+                ${Object.values(orbits).filter(r => r > 0).map(r => `
+                    <circle cx="${centerX}" cy="${centerY}" r="${r}" fill="none" stroke="#30363d" stroke-width="1" stroke-dasharray="4,4" opacity="0.3" />
+                `).join('')}
+
                 ${(project.transactions || []).map(t => {
                     const start = positions[t.from];
                     const end = positions[t.to];
@@ -76,7 +71,6 @@ export const ValueMapView = {
                     const marker = isTangible ? 'url(#arrow-tangible)' : 'url(#arrow-intangible)';
                     const dash = isTangible ? '0' : '5,5';
 
-                    // Calculamos el punto medio para poner la etiqueta
                     const midX = (start.x + end.x) / 2;
                     const midY = (start.y + end.y) / 2;
 
@@ -96,35 +90,24 @@ export const ValueMapView = {
                     `;
                 }).join('')}
 
-                ${dynamicNodes.map(node => {
-                    const parentPos = positions[node.parent];
-                    const childPos = positions[node.id];
-                    if(!parentPos) return '';
+                ${activeRoles.map(n => {
+                    const pos = positions[n.id];
+                    if(!pos) return '';
+                    // Si es base lo pintamos azul, si fue añadido a mano, verde.
+                    const fillColor = n.isBase ? '#1f6feb' : '#238636'; 
                     return `
-                        <line x1="${parentPos.x}" y1="${parentPos.y}" x2="${childPos.x}" y2="${childPos.y}" 
-                              stroke="#30363d" stroke-width="1" stroke-dasharray="2,2" />
+                        <g class="map-node">
+                            <circle cx="${pos.x}" cy="${pos.y}" r="20" 
+                                    fill="${fillColor}" 
+                                    stroke="#f0f6fc" stroke-width="2" />
+                            
+                            <text x="${pos.x}" y="${pos.y + 35}" 
+                                  fill="white" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">
+                                ${n.name}
+                            </text>
+                        </g>
                     `;
                 }).join('')}
-
-                ${nodes.map(n => `
-                    <g class="map-node" style="cursor: pointer;">
-                        <circle cx="${positions[n.id].x}" cy="${positions[n.id].y}" r="20" 
-                                fill="${n.type === 'base' ? '#1f6feb' : '#238636'}" 
-                                stroke="#f0f6fc" stroke-width="2" />
-                        
-                        <text x="${positions[n.id].x}" y="${positions[n.id].y + 35}" 
-                              fill="white" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">
-                            ${n.label}
-                        </text>
-                        
-                        ${n.type === 'base' ? `
-                            <text x="${positions[n.id].x}" y="${positions[n.id].y + 48}" 
-                                  fill="#8b949e" font-size="9" font-family="sans-serif" text-anchor="middle">
-                                ${n.id}
-                            </text>
-                        ` : ''}
-                    </g>
-                `).join('')}
             </svg>
         `;
     }
