@@ -58,11 +58,13 @@ export class TTStore {
 
     getState() { return this.state; }
 
-    calculateResilience(projectId) {
+    calculateResilience(projectId, specificTxs = null) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || !p.transactions || p.transactions.length === 0) return 100;
-        const total = p.transactions.length;
-        const audits = p.transactions.filter(t => {
+        const txsToEval = specificTxs || (p ? p.transactions : []);
+        if (!p || !txsToEval || txsToEval.length === 0) return 100;
+        
+        const total = txsToEval.length;
+        const audits = txsToEval.filter(t => {
             const roleFrom = p.roles.find(r => r.id === t.from);
             const roleTo = p.roles.find(r => r.id === t.to);
             return (roleFrom && roleFrom.levelId === '@dosos') || (roleTo && roleTo.levelId === '@dosos');
@@ -114,21 +116,13 @@ export class TTStore {
                     idCounter++;
                     return {
                         id: `role-${Date.now()}-${idCounter}`, 
-                        name: this.ontologyStatic.sectores[sKey][level],
-                        levelId: level,
-                        price: this.ontologyStatic.niveles[level].precio,
-                        multiplier: this.ontologyStatic.niveles[level].multiplier,
-                        isArchived: false
+                        name: this.ontologyStatic.sectores[sKey][level], levelId: level,
+                        price: this.ontologyStatic.niveles[level].precio, multiplier: this.ontologyStatic.niveles[level].multiplier, isArchived: false
                     };
                 });
 
-                // Inicializamos con una ronda base
                 const initialRondas = [{
-                    id: `ronda-${Date.now()}`,
-                    name: 'Fase 1: Bootstrapping',
-                    startDate: today,
-                    endDate: '',
-                    multiplier: 2.0
+                    id: `ronda-${Date.now()}`, name: 'Fase 1: Bootstrapping', startDate: today, endDate: '', multiplier: 2.0
                 }];
 
                 this.state.projects.push({
@@ -138,19 +132,13 @@ export class TTStore {
                 break;
 
             case 'UPDATE_PROJECT_INFO':
-                if (p) {
-                    p.nombre = payload.nombre; p.sector = payload.sector; p.description = payload.description;
-                }
+                if (p) { p.nombre = payload.nombre; p.sector = payload.sector; p.description = payload.description; }
                 break;
 
-            // --- ROLES ---
             case 'CREATE_ROLE':
                 if (p) {
                     const defaults = this.ontologyStatic.niveles[payload.levelId];
-                    p.roles.push({ 
-                        id: `role-${Date.now()}`, name: payload.name, levelId: payload.levelId, 
-                        price: payload.price || defaults.precio, multiplier: payload.multiplier || defaults.multiplier, isArchived: false
-                    });
+                    p.roles.push({ id: `role-${Date.now()}`, name: payload.name, levelId: payload.levelId, price: payload.price || defaults.precio, multiplier: payload.multiplier || defaults.multiplier, isArchived: false });
                 }
                 break;
             case 'UPDATE_ROLE':
@@ -169,68 +157,6 @@ export class TTStore {
                 }
                 break;
 
-            // --- RONDAS / TOKENOMICS ---
             case 'CREATE_RONDA':
                 if (p) {
-                    p.rondas = p.rondas || [];
-                    p.rondas.push({
-                        id: `ronda-${Date.now()}`,
-                        name: payload.name,
-                        startDate: payload.startDate || '',
-                        endDate: payload.endDate || '',
-                        multiplier: parseFloat(payload.multiplier) || 1.0
-                    });
-                }
-                break;
-            case 'UPDATE_RONDA':
-                if (p) {
-                    const r = p.rondas.find(x => x.id === payload.rondaId);
-                    if (r) {
-                        if (payload.field === 'multiplier') r[payload.field] = parseFloat(payload.value) || 1.0;
-                        else r[payload.field] = payload.value;
-                    }
-                }
-                break;
-            case 'DELETE_RONDA':
-                if (p) {
-                    p.rondas = (p.rondas || []).filter(x => x.id !== payload.rondaId);
-                }
-                break;
-
-            // --- TRANSACCIONES ---
-            case 'ADD_TRANSACTION':
-                if (p) {
-                    const lastTx = p.transactions[p.transactions.length - 1];
-                    const nextFase = p.transactions.length + 1;
-                    
-                    const originRole = p.roles.find(r => r.id === payload.tx.from);
-                    const horasReales = parseFloat(payload.tx.horas) || 1;
-                    let valorCalculado = 0;
-                    if (originRole) {
-                        // AQUÍ, EN EL PASO 2, METEREMOS EL MULTIPLICADOR DE RONDA EN EL CÁLCULO
-                        valorCalculado = horasReales * originRole.multiplier * originRole.price;
-                    }
-
-                    const newTx = { 
-                        ...payload.tx, timestamp: Date.now(), prevHash: lastTx ? lastTx.hash : "0", 
-                        hash: "", fase: nextFase, valorCongelado: valorCalculado
-                    };
-                    newTx.hash = generateHash(JSON.stringify(newTx));
-                    p.transactions.push(newTx);
-                }
-                break;
-            case 'UPDATE_TRANSACTION_PHASE':
-                if (p) {
-                    const tx = p.transactions.find(t => t.hash === payload.txHash);
-                    if (tx) tx.fase = parseInt(payload.fase) || 99;
-                }
-                break;
-
-            case 'IMPORT_DATA':
-                if (payload && payload.projects) this.state.projects = payload.projects;
-                break;
-        }
-        this.save();
-    }
-}
-export const store = new TTStore();
+                    p.r
