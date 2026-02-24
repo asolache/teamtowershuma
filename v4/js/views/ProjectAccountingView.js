@@ -76,7 +76,7 @@ export const ProjectAccountingView = {
             const shortHash = t.hash ? t.hash.substring(0, 8) + '...' : 'pending';
             const fechaFormat = t.fecha ? new Date(t.fecha).toLocaleString() : new Date(t.timestamp || Date.now()).toLocaleString();
             
-            // Mostrar ID acortado para estética
+          // Mostrar ID acortado para estética
             const idShort = t.from.includes('role-') ? `(${t.from.split('-')[1]}...)` : '';
 
             return `
@@ -85,6 +85,9 @@ export const ProjectAccountingView = {
                     <td style="padding: 12px; font-size: 0.8rem;">${fechaFormat}</td>
                     <td style="padding: 12px;" class="text-accent">
                         <b>${getNodeName(t.from)}</b> <span style="font-size:0.7rem; color:var(--text-muted)">${idShort}</span>
+                    </td>
+                    <td style="padding: 12px;" class="text-muted">➔ ${getNodeName(t.to)}</td>
+
                     </td>
                     <td style="padding: 12px;" class="text-muted">➔ ${getNodeName(t.to)}</td>
                     <td style="padding: 12px;">${t.entregable}</td>
