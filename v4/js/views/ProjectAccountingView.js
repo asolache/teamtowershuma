@@ -36,7 +36,7 @@ export const ProjectAccountingView = {
         const txs = project.transactions || [];
         const resiliencia = store.calculateResilience(projectId);
         
-        // 🚀 NUEVA LÓGICA: Leer roles unificados
+        // 🚀 LÓGICA: Leer roles unificados
         const activeRoles = (project.roles || []).filter(r => !r.isArchived);
 
         const getNodeName = (id) => {
@@ -45,7 +45,6 @@ export const ProjectAccountingView = {
             return node ? node.name : id; 
         };
 
-        // Fallback por si hay transacciones muy antiguas que no se congelaron
         const getFallbackFinancials = (nodeId) => {
             const roleDef = project.roles.find(r => r.id === nodeId);
             return roleDef ? { multiplier: roleDef.multiplier, price: roleDef.price } : { multiplier: 1, price: 30 };
@@ -58,7 +57,7 @@ export const ProjectAccountingView = {
         const ledgerRows = txs.map(t => {
             const horasReales = parseFloat(t.horas) || 1; 
             
-            // 🧊 INMUTABILIDAD FINANCIERA: Usa el valor guardado
+            // 🧊 INMUTABILIDAD FINANCIERA
             let valorTx = 0;
             if (t.valorCongelado !== undefined) {
                 valorTx = t.valorCongelado;
@@ -76,18 +75,16 @@ export const ProjectAccountingView = {
             const shortHash = t.hash ? t.hash.substring(0, 8) + '...' : 'pending';
             const fechaFormat = t.fecha ? new Date(t.fecha).toLocaleString() : new Date(t.timestamp || Date.now()).toLocaleString();
             
-          // Mostrar ID acortado para estética
-            const idShort = t.from.includes('role-') ? `(${t.from.split('-')[1]}...)` : '';
+            // 🚀 Mostrar el Nivel Jerárquico real en lugar del ID
+            const originRole = activeRoles.find(r => r.id === t.from);
+            const levelLabel = originRole ? `(${originRole.levelId})` : '';
 
             return `
                 <tr style="border-top: 1px solid var(--border-color);">
                     <td style="padding: 12px;" class="text-muted text-small"><span title="${t.hash}">${shortHash}</span></td>
                     <td style="padding: 12px; font-size: 0.8rem;">${fechaFormat}</td>
                     <td style="padding: 12px;" class="text-accent">
-                        <b>${getNodeName(t.from)}</b> <span style="font-size:0.7rem; color:var(--text-muted)">${idShort}</span>
-                    </td>
-                    <td style="padding: 12px;" class="text-muted">➔ ${getNodeName(t.to)}</td>
-
+                        <b>${getNodeName(t.from)}</b> <span style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:2px;">${levelLabel}</span>
                     </td>
                     <td style="padding: 12px;" class="text-muted">➔ ${getNodeName(t.to)}</td>
                     <td style="padding: 12px;">${t.entregable}</td>
@@ -97,10 +94,9 @@ export const ProjectAccountingView = {
             `;
         }).join('');
 
-        // 📊 LÓGICA DE ALERTAS ADAPTADA (Lee las órbitas)
+        // 📊 LÓGICA DE ALERTAS
         const alertas = [];
         if (txs.length > 0) {
-            // Riesgo de Deuda Técnica
             const hasAudit = txs.some(t => {
                 const rFrom = project.roles.find(r => r.id === t.from);
                 const rTo = project.roles.find(r => r.id === t.to);
@@ -110,7 +106,6 @@ export const ProjectAccountingView = {
                 alertas.push({ nivel: 'CRÍTICA', color: 'var(--accent-red)', msg: 'Riesgo de Deuda Técnica: No hay flujo de auditoría o calidad (Nivel @dosos).' });
             }
 
-            // Falta de Estrategia
             const hasStrategy = txs.some(t => {
                 const rFrom = project.roles.find(r => r.id === t.from);
                 return rFrom && rFrom.levelId === '@anxaneta';
