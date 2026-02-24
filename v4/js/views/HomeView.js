@@ -2,7 +2,6 @@ import { store } from '../core/store.js';
 
 // 🛡️ EVENTOS BLINDADOS PARA EL DASHBOARD
 document.addEventListener('click', (e) => {
-    // 1. Evento: Crear Proyecto
     if (e.target.id === 'btn-create-project') {
         const name = document.getElementById('new-p-name').value;
         const sector = document.getElementById('new-p-sector').value;
@@ -17,7 +16,6 @@ document.addEventListener('click', (e) => {
         location.hash = '#/project/' + id;
     }
 
-    // 2. Evento: Navegar al Proyecto (Delegado desde las tarjetas)
     const card = e.target.closest('.project-card');
     if (card) {
         location.hash = card.getAttribute('data-route');
@@ -29,65 +27,137 @@ export const HomeView = {
         const state = store.getState();
         const projects = [...(state.projects || [])].reverse();
         
+        // 📊 LÓGICA DE ESTADÍSTICAS GLOBALES
+        let globalValue = 0;
+        let globalTxs = 0;
+        let globalResilienceSum = 0;
+
+        projects.forEach(p => {
+            const txs = p.transactions || [];
+            globalTxs += txs.length;
+            globalResilienceSum += store.calculateResilience(p.id);
+
+            // Sumar el valor congelado de todas las transacciones de este proyecto
+            txs.forEach(t => {
+                if (t.valorCongelado !== undefined) {
+                    globalValue += t.valorCongelado;
+                } else {
+                    // Fallback para transacciones viejas
+                    const originRole = (p.roles || []).find(r => r.id === t.from);
+                    if (originRole) {
+                        const horas = parseFloat(t.horas) || 1;
+                        globalValue += horas * originRole.multiplier * originRole.price;
+                    }
+                }
+            });
+        });
+
+        const avgResilience = projects.length > 0 ? Math.round(globalResilienceSum / projects.length) : 0;
+        const colorGlobalSalud = avgResilience > 40 ? 'var(--accent-green)' : (projects.length === 0 ? 'var(--text-muted)' : 'var(--accent-red)');
+
         const sectores = [
             "marketing", "Web3", "gremial", "salud", "educacion", 
             "eventos", "legal", "finanzas", "retail", "turismo"
         ];
 
         return `
-            <div class="container-sm container">
-                <header class="header-main" style="border-bottom: none;">
+            <div class="container">
+                <header class="header-main" style="border-bottom: none; margin-bottom: 10px;">
                     <div>
                         <h1>Centro de Mando SOS</h1>
-                        <p class="text-muted">Gestión de Resiliencia y Flujo de Valor</p>
+                        <p class="text-muted">Gestión de Resiliencia y Flujo de Valor Global</p>
                     </div>
                 </header>
 
-                <section class="panel" style="margin-bottom: 40px;">
-                    <h3>🚀 Levantar Nuevo Castell</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 120px; gap: 15px; align-items: end;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px;">
+                    <div class="panel">
+                        <div class="text-muted text-uppercase text-small">Castells Activos</div>
+                        <div style="color: var(--text-heading); font-size: 2rem; font-weight: bold;">${projects.length}</div>
+                    </div>
+                    <div class="panel">
+                        <div class="text-muted text-uppercase text-small">Valor Global Auditado</div>
+                        <div style="color: var(--accent-green); font-size: 2rem; font-weight: bold;">${globalValue.toLocaleString()} €</div>
+                    </div>
+                    <div class="panel" style="border-color: ${projects.length > 0 && avgResilience < 40 ? 'var(--accent-red)' : 'var(--border-color)'}">
+                        <div class="text-muted text-uppercase text-small">Resiliencia Media</div>
+                        <div style="color: ${colorGlobalSalud}; font-size: 2rem; font-weight: bold;">${avgResilience}%</div>
+                    </div>
+                    <div class="panel">
+                        <div class="text-muted text-uppercase text-small">Transacciones Totales</div>
+                        <div style="color: var(--accent-blue); font-size: 2rem; font-weight: bold;">${globalTxs}</div>
+                    </div>
+                </div>
+
+                <details class="panel" style="border-color: var(--accent-blue); background-color: rgba(88, 166, 255, 0.03); margin-bottom: 30px; cursor: pointer;">
+                    <summary style="font-weight: bold; color: var(--accent-blue); font-size: 1rem; outline: none; user-select: none;">
+                        ℹ️ ¿Qué es TeamTowers SOS y cómo funciona? (Haz clic para expandir/ocultar)
+                    </summary>
+                    <div style="margin-top: 15px; cursor: default; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid rgba(88,166,255,0.2); padding-top: 15px;">
                         <div>
-                            <label class="form-label">Nombre del Ecosistema</label>
-                            <input id="new-p-name" type="text" class="form-control" placeholder="Ej: Proyecto Alpha..." style="margin-bottom:0;">
+                            <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🏢 Filosofía del Sistema (SOS)</h4>
+                            <p style="margin-bottom: 10px;"><b>TeamTowers System of Systems (SOS)</b> es una plataforma para mapear, diseñar y auditar ecosistemas corporativos usando la metáfora de los <i>Castells</i> (torres humanas).</p>
+                            <p style="margin-bottom: 0;">Aquí no gestionamos "tareas", sino <b>Flujos de Valor</b>. Podrás visualizar cómo la estrategia fluye hacia la operativa y cómo la base sostiene a toda la organización. Al documentarlo, el sistema genera automáticamente un <i>Prompt Maestro</i> para entrenar IAs con la estructura exacta de tu empresa.</p>
                         </div>
                         <div>
-                            <label class="form-label">Sector Operativo</label>
-                            <select id="new-p-sector" class="form-control" style="margin-bottom:0; text-transform: capitalize;">
+                            <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🚀 Pasos para empezar</h4>
+                            <ul style="margin-top: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 6px;"><b>1. Levantar un Castell:</b> Usa el formulario de abajo para crear un proyecto y elegir un sector base.</li>
+                                <li style="margin-bottom: 6px;"><b>2. Diseñar el Ecosistema:</b> Entra al proyecto y usa el botón "⚙️ Diseñar" para ajustar los roles, niveles jerárquicos y precios por hora.</li>
+                                <li style="margin-bottom: 6px;"><b>3. Mapear el Flujo:</b> Desde el Mapa Visual, inyecta transacciones (entregables) entre los distintos roles.</li>
+                                <li style="margin-bottom: 6px;"><b>4. Auditar en el Libro Mayor:</b> Ve a "💰 Contabilidad" para revisar el valor generado en euros y las alertas de resiliencia o deuda técnica.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="grid-layout">
+                    <aside>
+                        <section class="panel">
+                            <h3 class="text-accent text-uppercase text-small">🚀 Levantar Nuevo Castell</h3>
+                            <label class="form-label">Nombre del Ecosistema</label>
+                            <input id="new-p-name" type="text" class="form-control" placeholder="Ej: Proyecto Alpha...">
+                            
+                            <label class="form-label">Sector Operativo (Plantilla Base)</label>
+                            <select id="new-p-sector" class="form-control" style="text-transform: capitalize;">
                                 ${sectores.map(s => `<option value="${s}">${s}</option>`).join('')}
                             </select>
-                        </div>
-                        <button id="btn-create-project" class="btn btn-primary btn-block">
-                            Inicializar
-                        </button>
-                    </div>
-                </section>
-
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <h4 class="text-muted text-uppercase" style="margin-bottom: 0;">Proyectos Activos</h4>
-                    
-                    ${projects.length === 0 ? '<div class="panel text-center text-muted">No hay Castells levantados todavía.</div>' : 
-                        projects.map(p => {
-                            const salud = store.calculateResilience(p.id);
-                            const colorSalud = salud > 40 ? 'var(--accent-green)' : 'var(--accent-red)';
                             
-                            return `
-                                <div class="card-interactive project-card" data-route="#/project/${p.id}">
-                                    <div>
-                                        <h3 style="margin: 0; font-size: 1.2rem;">${p.nombre}</h3>
-                                        <div class="text-muted text-uppercase" style="margin-top: 4px;">
-                                            Sector: <span class="text-accent">${p.sector}</span>
+                            <button id="btn-create-project" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                                Inicializar Castell
+                            </button>
+                        </section>
+                    </aside>
+
+                    <main>
+                        <h4 class="text-muted text-uppercase" style="margin-top: 0; margin-bottom: 15px;">Proyectos Activos</h4>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            ${projects.length === 0 ? '<div class="panel text-center text-muted">No hay Castells levantados todavía. Utiliza el panel izquierdo para inicializar uno.</div>' : 
+                                projects.map(p => {
+                                    const salud = store.calculateResilience(p.id);
+                                    const colorSalud = salud > 40 ? 'var(--accent-green)' : 'var(--accent-red)';
+                                    const txsCount = (p.transactions || []).length;
+                                    
+                                    return `
+                                        <div class="card-interactive project-card" data-route="#/project/${p.id}">
+                                            <div>
+                                                <h3 style="margin: 0; font-size: 1.2rem;">${p.nombre}</h3>
+                                                <div class="text-muted text-uppercase" style="margin-top: 4px; font-size: 0.75rem;">
+                                                    Sector: <span class="text-accent" style="margin-right: 15px;">${p.sector}</span>
+                                                    Flujos: <span>${txsCount}</span>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 20px;">
+                                                <div style="text-align: right;">
+                                                    <div class="text-muted text-uppercase" style="font-size: 0.65rem;">Resiliencia</div>
+                                                    <div style="color: ${colorSalud}; font-weight: bold; font-size: 1.1rem;">${salud}%</div>
+                                                </div>
+                                                <span class="text-muted" style="font-size: 1.5rem;">➔</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <div style="text-align: right;">
-                                            <div class="text-muted text-uppercase" style="font-size: 0.65rem;">Resiliencia</div>
-                                            <div style="color: ${colorSalud}; font-weight: bold; font-size: 1.1rem;">${salud}%</div>
-                                        </div>
-                                        <span class="text-accent" style="font-size: 1.5rem;">→</span>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
+                                    `;
+                                }).join('')}
+                        </div>
+                    </main>
                 </div>
             </div>
         `;
