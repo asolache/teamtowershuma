@@ -76,8 +76,8 @@ export const AboutView = {
                             <div class="panel-surface">
                                 <h4 class="text-heading" style="margin-top: 0; font-size: 0.95rem;">⚡ Tipos de Flujo y Resiliencia</h4>
                                 <ul class="text-muted text-small" style="padding-left: 15px; margin-bottom: 0;">
-                                    <li style="margin-bottom: 8px;"><b>Tangible (Continua Azul):</b> Entrega de valor material (código, presupuesto, reportes).</li>
-                                    <li style="margin-bottom: 8px;"><b>Intangible (Violeta):</b> Transferencia de valor relacional (mentoría, validación).</li>
+                                    <li style="margin-bottom: 8px;"><b>Tangible (Continua Azul):</b> Entrega de valor material o contractual.</li>
+                                    <li style="margin-bottom: 8px;"><b>Intangible (Violeta):</b> Transferencia de valor relacional no contractual.</li>
                                     <li><b>Resiliencia:</b> Porcentaje vivo. Indica qué tan expuesta está la empresa a la <i>Deuda Técnica</i> por falta de auditoría interna.</li>
                                 </ul>
                             </div>
@@ -85,7 +85,7 @@ export const AboutView = {
                                 <h4 class="text-heading" style="margin-top: 0; font-size: 0.95rem;">⏱️ Rondas y Multiplicadores</h4>
                                 <ul class="text-muted text-small" style="padding-left: 15px; margin-bottom: 0;">
                                     <li style="margin-bottom: 8px;"><b>Hash Inmutable:</b> Toda inyección de valor recibe un código criptográfico congelando su precio en el tiempo.</li>
-                                    <li><b>Tokenomics Dinámica:</b> El valor final aportado depende del riesgo asumido. Las aportaciones en "Rondas" tempranas o de validación reciben un multiplicador mayor que en fases consolidadas.</li>
+                                    <li><b>Tokenomics Dinámica:</b> El valor final aportado depende del riesgo asumido. Las aportaciones en "Rondas" tempranas reciben un multiplicador mayor que en fases consolidadas.</li>
                                 </ul>
                             </div>
                         </div>
@@ -95,7 +95,7 @@ export const AboutView = {
                         <h3 style="color: #d29922; display: flex; align-items: center; gap: 10px;">
                             📚 Bibliografía y Referencias Metodológicas
                         </h3>
-                        <p class="text-muted text-small" style="margin-bottom: 15px;">La arquitectura de TeamTowers SOS se fundamenta en principios empíricos de diseño organizacional, Lean y economía dinámica de startups. A continuación se listan las obras de referencia:</p>
+                        <p class="text-muted text-small" style="margin-bottom: 15px;">La arquitectura de TeamTowers SOS se fundamenta en principios empíricos de diseño organizacional, análisis de redes de valor y economía dinámica de startups.</p>
                         
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             
@@ -103,13 +103,17 @@ export const AboutView = {
                                 <h4 class="text-heading" style="margin: 0; font-size: 1rem;">Slicing Pie (El Reparto del Pastel)</h4>
                                 <div class="text-accent text-small" style="margin-bottom: 8px;">Autor: Mike Moyer</div>
                                 <p class="text-muted text-small" style="margin-bottom: 10px;">
-                                    <b>Aporte al Sistema:</b> Fundamenta el motor de "Tokenomics" y Rondas de inversión. Establece un modelo matemático para el reparto justo de capital ("Dynamic Equity Split") basado en el riesgo. Justifica por qué las inyecciones de valor (horas o dinero) en las fases iniciales de una startup (mayor riesgo) deben tener un multiplicador mayor (ej. 2x o 4x) que las aportaciones realizadas cuando la empresa ya está consolidada y tiene flujo de caja.
+                                    <b>Aporte al Sistema:</b> Fundamenta el motor de "Tokenomics" y Rondas de inversión. Establece un modelo matemático para el reparto justo de capital ("Dynamic Equity Split") basado en el riesgo asumido según la madurez de la empresa.
                                 </p>
                                 <a href="https://slicingpie.com/wp-content/uploads/2016/09/Slicing-Pie-Handbook-FREE-SAMPLE.pdf" target="_blank" class="text-small" style="color: var(--accent-blue); text-decoration: none;">🔗 Leer extracto / Más información</a>
                             </div>
 
-                            <div id="future-books" class="text-muted text-small text-center" style="padding: 10px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">
-                                <i>+ Espacio reservado para futuras adiciones bibliográficas...</i>
+                            <div class="panel-surface" style="border-left: 4px solid var(--accent-purple);">
+                                <h4 class="text-heading" style="margin: 0; font-size: 1rem;">Value Network Analysis and value conversion of tangible and intangible assets</h4>
+                                <div class="text-accent text-small" style="margin-bottom: 8px;">Autora: Verna Allee (Journal of Intellectual Capital, 2008)</div>
+                                <p class="text-muted text-small" style="margin-bottom: 10px;">
+                                    <b>Aporte al Sistema:</b> Provee el marco teórico fundacional para el análisis del mapa de ecosistemas. Allee define cómo las organizaciones utilizan "redes de valor" para convertir activos tangibles e intangibles en formas negociables de valor. El sistema hereda de aquí la distinción vital entre transacciones tangibles (contractuales) e intangibles (conocimiento y beneficios no contractuales), así como la designación de los "Roles" como los verdaderos agentes de conversión en la red.
+                                </p>
                             </div>
 
                         </div>
@@ -117,17 +121,4 @@ export const AboutView = {
 
                     <section class="panel" style="border-color: var(--accent-purple); background: linear-gradient(180deg, rgba(163, 113, 247, 0.05) 0%, rgba(13, 17, 23, 0) 100%);">
                         <h3 style="color: var(--accent-purple);">5. El Horizonte: Diagnóstico Aumentado por IA</h3>
-                        <p class="text-muted">El objetivo final de documentar un ecosistema en TeamTowers SOS no es solo llevar la contabilidad, sino preparar a la organización para la <b>Consultoría Algorítmica</b>.</p>
-                        
-                        <ul class="text-muted text-small" style="padding-left: 20px; line-height: 1.6;">
-                            <li style="margin-bottom: 10px;"><b>El Prompt Maestro:</b> El sistema compila en tiempo real tu Ontología y la secuencia de Flujos en un contexto estructurado que cualquier <i>LLM</i> puede entender.</li>
-                            <li style="margin-bottom: 10px;"><b>Detección de Cuellos de Botella:</b> En fases futuras, la IA analizará el Libro Mayor para detectar qué roles están sobrecargados y sugerirá redistribuciones.</li>
-                            <li style="margin-bottom: 10px;"><b>Optimización de Rondas:</b> A partir de la Tokenomics, la IA podrá diagnosticar si la dilución del esfuerzo es justa respecto a la fase de riesgo en la que se encuentra la empresa.</li>
-                        </ul>
-                    </section>
-
-                </div>
-            </div>
-        `;
-    }
-};
+                        <p class="text
