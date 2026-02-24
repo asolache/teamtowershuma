@@ -1,8 +1,3 @@
-/**
- * TEAMTOWERS SOS v4.3 - KERNEL DE INMUTABILIDAD E INTELIGENCIA
- * He ajustado la función notify() para que lance un evento global cada vez que haya un cambio.
- */
-
 const generateHash = (str) => {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
@@ -58,7 +53,6 @@ export class TTStore {
 
     notify() {
         this.listeners.forEach(listener => listener(this.state));
-        // 🚀 MAGIA SPA: Avisamos al router de que hay datos nuevos
         window.dispatchEvent(new CustomEvent('store-ready')); 
     }
 
@@ -75,13 +69,25 @@ export class TTStore {
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
-        let prompt = `CONTEXTO SOS: ${p.nombre}\nSECTOR: ${p.sector}\nMISION: ${p.description || 'Operación estándar'}\n\n[MAPA DE VALOR]\n`;
-        const defaultSeq = { "@anxaneta": 1, "@aixecador": 2, "@dosos": 3, "@baixos": 4, "@pinya": 5 };
-        const list = [
-            ...Object.keys(p.customRoles).map(id => ({ id, name: p.customRoles[id], seq: p.sequences?.[id] || defaultSeq[id] })),
-            ...(p.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ id: dr.id, name: dr.name, seq: p.sequences?.[dr.id] || 99 }))
-        ];
-        list.sort((a,b) => a.seq - b.seq).forEach(r => prompt += `Fase ${r.seq}: ${r.name} (${r.id})\n`);
+        let prompt = `CONTEXTO SOS: ${p.nombre}\nSECTOR: ${p.sector}\nMISION: ${p.description || 'Operación estándar'}\n\n`;
+        
+        prompt += `[ONTOLOGÍA DE ROLES]\n`;
+        Object.keys(p.customRoles).forEach(id => {
+            prompt += `- ${id}: ${p.customRoles[id]}\n`;
+        });
+        (p.dynamicRoles || []).filter(dr => !dr.isArchived).forEach(dr => {
+            prompt += `- Especialista: ${dr.name} (Vinculado a ${dr.levelId})\n`;
+        });
+
+        prompt += `\n[SECUENCIA DEL FLUJO DE PROCESOS]\n`;
+        const txs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
+        if (txs.length === 0) prompt += "Sin transacciones definidas.\n";
+        
+        txs.forEach(t => {
+            const fase = t.fase && t.fase !== 99 ? `Fase ${t.fase}` : 'Flujo Continuo';
+            prompt += `- ${fase}: [${t.from}] entrega "${t.entregable}" a [${t.to}]\n`;
+        });
+
         return prompt;
     }
 
@@ -95,26 +101,24 @@ export class TTStore {
                 const sKey = payload.sector || 'marketing';
                 this.state.projects.push({
                     id: payload.id, nombre: payload.nombre, sector: sKey, description: "",
-                    customRoles: { ...this.ontologyStatic.sectores[sKey] }, dynamicRoles: [], transactions: [],
-                    sequences: { "@anxaneta": 1, "@aixecador": 2, "@dosos": 3, "@baixos": 4, "@pinya": 5 }
+                    customRoles: { ...this.ontologyStatic.sectores[sKey] }, dynamicRoles: [], transactions: []
                 });
                 break;
             case 'UPDATE_PROJECT_INFO':
                 if (p) {
                     p.nombre = payload.nombre; p.sector = payload.sector; p.description = payload.description;
-                    p.customRoles = { ...this.ontologyStatic.sectores[payload.sector] };
+                    // Ya NO reseteamos customRoles aquí para no borrar los nombres editados manualmente
+                }
+                break;
+            case 'UPDATE_BASE_ROLE_NAME': // NUEVA LÓGICA
+                if (p && p.customRoles[payload.roleId] !== undefined) {
+                    p.customRoles[payload.roleId] = payload.newName;
                 }
                 break;
             case 'CREATE_CUSTOM_ROLE':
                 if (p) {
                     if (!p.dynamicRoles) p.dynamicRoles = [];
                     p.dynamicRoles.push({ id: `dyn-${Date.now()}`, name: payload.name, levelId: payload.levelId, area: payload.area || 'Gremio', isArchived: false });
-                }
-                break;
-            case 'UPDATE_ROLE_SEQUENCE':
-                if (p) {
-                    if (!p.sequences) p.sequences = {};
-                    p.sequences[payload.rolId] = parseInt(payload.sequence);
                 }
                 break;
             case 'ARCHIVE_CUSTOM_ROLE':
@@ -126,9 +130,16 @@ export class TTStore {
             case 'ADD_TRANSACTION':
                 if (p) {
                     const lastTx = p.transactions[p.transactions.length - 1];
-                    const newTx = { ...payload.tx, timestamp: Date.now(), prevHash: lastTx ? lastTx.hash : "0", hash: "" };
+                    const nextFase = p.transactions.length + 1; // Auto-asignar la siguiente fase
+                    const newTx = { ...payload.tx, timestamp: Date.now(), prevHash: lastTx ? lastTx.hash : "0", hash: "", fase: nextFase };
                     newTx.hash = generateHash(JSON.stringify(newTx));
                     p.transactions.push(newTx);
+                }
+                break;
+            case 'UPDATE_TRANSACTION_PHASE': // NUEVA LÓGICA
+                if (p) {
+                    const tx = p.transactions.find(t => t.hash === payload.txHash);
+                    if (tx) tx.fase = parseInt(payload.fase) || 99;
                 }
                 break;
         }
