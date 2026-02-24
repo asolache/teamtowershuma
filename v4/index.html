@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v4.3 | Dashboard</title>
+    <title>TeamTowers SOS v4.4 | Ecosistema</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
         :root {
@@ -66,6 +66,7 @@
         
         .container-sm {
             max-width: 1000px;
+            margin: 0 auto;
         }
 
         .header-main {
@@ -216,6 +217,9 @@
         import { AboutView } from './js/views/AboutView.js';
         import { ProjectEditView } from './js/views/ProjectEditView.js';
         import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
+        
+        // 💡 NOTA: Si tienes un TestView.js real, descomenta la línea de abajo e impórtalo.
+        // import { TestView } from './js/views/TestView.js';
 
         const app = document.getElementById('app');
 
@@ -232,8 +236,23 @@
             try {
                 if (hash === '#/' || hash === '' || hash === '#') {
                     app.innerHTML = HomeView.render();
+                
                 } else if (hash === '#/about') {
                     app.innerHTML = AboutView.render();
+                
+                } else if (hash === '#/test') {
+                    // 💡 Si usas el import de arriba, cambia esta línea por: app.innerHTML = TestView.render();
+                    app.innerHTML = `
+                        <div class="container container-sm text-center">
+                            <header class="header-main" style="justify-content: center;">
+                                <h1>🧪 Entorno de Pruebas (Test)</h1>
+                            </header>
+                            <div class="panel" style="border-color: var(--accent-purple);">
+                                <p>Zona de experimentación aislada del sistema principal.</p>
+                                <button class="btn btn-secondary" onclick="location.hash='#/'">← Volver al Dashboard</button>
+                            </div>
+                        </div>`;
+                
                 } else if (hash.startsWith('#/project/')) {
                     if (action === 'edit') {
                         app.innerHTML = ProjectEditView.render(pId);
@@ -242,12 +261,25 @@
                     } else {
                         app.innerHTML = ProjectView.render(pId);
                     }
+                
                 } else {
-                     app.innerHTML = `<div class="container text-center"><h2 class="text-accent">⚠️ 404</h2><p>Coordenada desconocida.</p><button class="btn btn-secondary" onclick="location.hash='#/'">Volver</button></div>`;
+                     app.innerHTML = `
+                        <div class="container container-sm text-center">
+                            <h2 class="text-accent" style="font-size: 3rem;">⚠️ 404</h2>
+                            <p>Coordenada desconocida en el ecosistema.</p>
+                            <button class="btn btn-secondary" onclick="location.hash='#/'">Volver a la Base</button>
+                        </div>`;
                 }
             } catch (e) {
                 console.error("SOS Router Error:", e);
-                app.innerHTML = `<div class="container"><div class="panel" style="border-color: var(--accent-red);"><h3 style="color: var(--accent-red);">Error de Renderizado</h3><p>${e.message}</p></div></div>`;
+                app.innerHTML = `
+                    <div class="container container-sm">
+                        <div class="panel" style="border-color: var(--accent-red);">
+                            <h3 style="color: var(--accent-red);">Error de Renderizado</h3>
+                            <p>${e.message}</p>
+                            <button class="btn btn-outline" onclick="location.hash='#/'">Forzar Reinicio</button>
+                        </div>
+                    </div>`;
             }
             
             app.classList.add('fade-in');
@@ -255,7 +287,7 @@
 
         // --- SISTEMA REACTIVO ---
         window.addEventListener('hashchange', router);
-        window.addEventListener('store-ready', router); // Escucha los cambios del store.js sin recargar
+        window.addEventListener('store-ready', router); // Escucha los cambios del store sin recargar
         
         // Inicialización
         if (store.getState()) router();
