@@ -1,5 +1,27 @@
 import { store } from '../core/store.js';
 
+// 🧠 MEMORIA DE SESIÓN LOCAL (Para recordar el último usuario y rol usado)
+let memoryUserId = null;
+let memoryRoleId = null;
+
+// 🛡️ EVENTOS REACTIVOS (Formularios Dinámicos)
+document.addEventListener('change', (e) => {
+    // Si cambiamos el usuario en el formulario de registro, actualizamos la vista para filtrar sus roles
+    if (e.target.id === 'ldg-user') {
+        memoryUserId = e.target.value;
+        memoryRoleId = null; // Reseteamos el rol al cambiar de usuario
+        const projectId = e.target.getAttribute('data-pid');
+        document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+    }
+    
+    // Si cambiamos el rol, actualizamos para pre-cargar el receptor
+    if (e.target.id === 'ldg-role') {
+        memoryRoleId = e.target.value;
+        const projectId = e.target.getAttribute('data-pid');
+        document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+    }
+});
+
 // 🛡️ EVENTOS DE CONTABILIDAD
 document.addEventListener('click', (e) => {
     // 1. Añadir Persona al Equipo
@@ -21,6 +43,9 @@ document.addEventListener('click', (e) => {
         if (!userId || !roleId) return alert("Selecciona un usuario y un rol.");
         
         store.dispatch({ type: 'ASSIGN_USER_ROLE', payload: { projectId, userId, roleId } });
+        
+        // Si justo asignamos un rol al usuario que tenemos en memoria, forzamos la actualización de su dropdown
+        if (userId === memoryUserId) memoryRoleId = roleId; 
         document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
     }
 
@@ -34,13 +59,18 @@ document.addEventListener('click', (e) => {
         const horas = document.getElementById('ldg-horas').value;
 
         if (!userId || !roleId || !receiverId || !description || !horas) {
-            return alert("Rellena todos los campos para registrar el valor.");
+            return alert("Rellena todos los campos para registrar el valor. (Asegúrate de tener un rol asignado)");
         }
 
         store.dispatch({ 
             type: 'ADD_LEDGER_ENTRY', 
             payload: { projectId, userId, roleId, receiverId, description, horas } 
         });
+
+        // Guardamos en memoria el usuario y rol que acaba de registrar para que siga precargado
+        memoryUserId = userId;
+        memoryRoleId = roleId;
+
         document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
     }
 });
@@ -51,22 +81,26 @@ export const ProjectAccountingView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
 
-        // Datos del proyecto (Con Fallbacks seguros para v4.5)
+        // Datos básicos
         const roles = project.roles || [];
         const activeRoles = roles.filter(r => !r.isArchived && r.id !== 'ecosistema');
         const users = project.usuarios || [];
         const asignaciones = project.asignaciones || [];
         const ledger = project.ledger || [];
+        const transactions = project.transactions || []; // El Mapa de Valor
 
         // 🧮 CÁLCULO DEL CAP TABLE (SLICING PIE)
         const totalPie = ledger.reduce((acc, entry) => acc + entry.valorCongelado, 0);
         
-        const userStats = users.map(user => {
+        // Array de colores fijos para la tarta
+        const pieColors = ['#58a6ff', '#a371f7', '#238636', '#d29922', '#f85149', '#3fb950', '#bc8cff', '#d1d5da'];
+
+        const userStats = users.map((user, index) => {
             const userEntries = ledger.filter(l => l.userId === user.id);
             const userTotalValue = userEntries.reduce((sum, l) => sum + l.valorCongelado, 0);
-            const ownership = totalPie > 0 ? ((userTotalValue / totalPie) * 100).toFixed(2) : "0.00";
+            const rawOwnership = totalPie > 0 ? (userTotalValue / totalPie) * 100 : 0;
+            const ownership = rawOwnership.toFixed(2);
             
-            // Buscar qué roles tiene asignados este usuario
             const userRoles = asignaciones
                 .filter(a => a.userId === user.id)
                 .map(a => {
@@ -74,12 +108,59 @@ export const ProjectAccountingView = {
                     return r ? r.name : 'Rol Desconocido';
                 });
 
-            return { ...user, userTotalValue, ownership, userRoles };
-        }).sort((a, b) => b.userTotalValue - a.userTotalValue); // Ordenar por mayor % de equity
+            const color = pieColors[index % pieColors.length];
 
-        // Opciones HTML pre-generadas
-        const userOptions = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
-        const activeRoleOptions = activeRoles.map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
+            return { ...user, userTotalValue, ownership, rawOwnership, userRoles, color };
+        }).sort((a, b) => b.userTotalValue - a.userTotalValue);
+
+        // 🎨 GENERADOR DEL GRÁFICO DE TARTA CSS (Conic Gradient)
+        let pieGradient = 'conic-gradient(';
+        let cumulativePercent = 0;
+        
+        if (totalPie === 0) {
+            pieGradient = 'conic-gradient(#30363d 0% 100%)';
+        } else {
+            userStats.forEach((u, i) => {
+                const start = cumulativePercent;
+                const end = cumulativePercent + u.rawOwnership;
+                pieGradient += `${u.color} ${start}% ${end}%${i < userStats.length - 1 ? ', ' : ''}`;
+                cumulativePercent = end;
+            });
+            pieGradient += ')';
+        }
+
+        // ⚙️ LÓGICA DE AUTOCOMPLETADO (UX MEJORADA)
+        const currentUserId = memoryUserId || (users.length > 0 ? users[0].id : "");
+
+        const userAssignedRoleIds = asignaciones.filter(a => a.userId === currentUserId).map(a => a.roleId);
+        const assignedActiveRoles = activeRoles.filter(r => userAssignedRoleIds.includes(r.id));
+
+        let currentRoleId = (memoryRoleId && userAssignedRoleIds.includes(memoryRoleId)) 
+            ? memoryRoleId 
+            : (assignedActiveRoles.length > 0 ? assignedActiveRoles[0].id : "");
+
+        let defaultReceiverId = "";
+        if (currentRoleId) {
+            const outgoingTxs = transactions.filter(tx => tx.from === currentRoleId);
+            if (outgoingTxs.length > 0) {
+                defaultReceiverId = outgoingTxs[0].to;
+            }
+        }
+
+        // GENERACIÓN DE OPCIONES HTML
+        const userOptions = users.map(u => 
+            `<option value="${u.id}" ${u.id === currentUserId ? 'selected' : ''}>${u.name}</option>`
+        ).join('');
+        
+        const myRoleOptions = assignedActiveRoles.length > 0
+            ? assignedActiveRoles.map(r => `<option value="${r.id}" ${r.id === currentRoleId ? 'selected' : ''}>${r.name} (${r.levelId})</option>`).join('')
+            : `<option value="">-- Sin roles asignados --</option>`;
+
+        const receiverOptions = activeRoles.map(r => 
+            `<option value="${r.id}" ${r.id === defaultReceiverId ? 'selected' : ''}>${r.name} (${r.levelId})</option>`
+        ).join('');
+
+        const allActiveRoleOptions = activeRoles.map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
 
         return `
             <div class="container">
@@ -109,12 +190,12 @@ export const ProjectAccountingView = {
                             
                             <select id="assign-user-id" class="form-control text-small">
                                 <option value="">Selecciona Usuario...</option>
-                                ${userOptions}
+                                ${users.map(u => `<option value="${u.id}">${u.name}</option>`).join('')}
                             </select>
                             
                             <select id="assign-role-id" class="form-control text-small">
                                 <option value="">Selecciona Rol (Activo)...</option>
-                                ${activeRoleOptions}
+                                ${allActiveRoleOptions}
                             </select>
                             
                             <button id="btn-assign-role" data-pid="${projectId}" class="btn btn-secondary btn-block">Asignar Rol</button>
@@ -125,13 +206,20 @@ export const ProjectAccountingView = {
                             <p class="text-small text-muted" style="margin-bottom: 15px;">Inyecta valor al Slicing Pie.</p>
                             
                             <label class="form-label">¿Quién aportó?</label>
-                            <select id="ldg-user" class="form-control text-small">${userOptions}</select>
+                            <select id="ldg-user" data-pid="${projectId}" class="form-control text-small">
+                                ${users.length === 0 ? '<option value="">Crea un usuario primero</option>' : userOptions}
+                            </select>
                             
                             <label class="form-label">¿Actuando en qué Rol?</label>
-                            <select id="ldg-role" class="form-control text-small">${activeRoleOptions}</select>
+                            <select id="ldg-role" data-pid="${projectId}" class="form-control text-small" style="border-color: var(--accent-purple);">
+                                ${myRoleOptions}
+                            </select>
                             
                             <label class="form-label">¿A qué Rol lo entregó?</label>
-                            <select id="ldg-receiver" class="form-control text-small">${activeRoleOptions}</select>
+                            <select id="ldg-receiver" class="form-control text-small" style="border-color: var(--accent-blue);">
+                                ${receiverOptions}
+                            </select>
+                            <p class="text-muted" style="font-size: 0.65rem; margin-top: -8px; margin-bottom: 10px;">*Receptor sugerido según el Mapa de Valor.</p>
                             
                             <label class="form-label">¿Qué se entregó? (Descripción)</label>
                             <input id="ldg-desc" type="text" class="form-control text-small" placeholder="Ej: Backend Login Completado">
@@ -148,11 +236,36 @@ export const ProjectAccountingView = {
                     <main style="display: flex; flex-direction: column; gap: 20px;">
                         
                         <section class="panel" style="border-color: var(--accent-purple); background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(163, 113, 247, 0.05) 100%);">
-                            <h3 style="color: var(--accent-purple); margin-top: 0;">📊 Cap Table (Reparto de Acciones)</h3>
+                            <h3 style="color: var(--accent-purple); margin-top: 0; margin-bottom: 20px;">📊 Cap Table (Reparto de Acciones)</h3>
                             
                             ${users.length === 0 ? `<p class="text-muted">Añade usuarios para ver el Cap Table.</p>` : `
+                                
+                                <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 30px;">
+                                    
+                                    <div style="
+                                        width: 150px; 
+                                        height: 150px; 
+                                        border-radius: 50%; 
+                                        background: ${pieGradient};
+                                        box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.8);
+                                        flex-shrink: 0;
+                                    "></div>
+                                    
+                                    <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">
+                                        ${userStats.map(u => `
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; border-radius: 3px; background: ${u.color};"></div>
+                                                <div>
+                                                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-heading);">${u.name}</div>
+                                                    <div style="font-size: 0.7rem; color: var(--text-muted);">${u.ownership}%</div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
                                 <div style="overflow-x: auto;">
-                                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                                         <thead>
                                             <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-align: left;">
                                                 <th style="padding: 10px;">Contribuidor</th>
@@ -164,7 +277,10 @@ export const ProjectAccountingView = {
                                         <tbody>
                                             ${userStats.map(u => `
                                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                                    <td style="padding: 12px 10px; font-weight: bold;">${u.name}</td>
+                                                    <td style="padding: 12px 10px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: ${u.color};"></div>
+                                                        ${u.name}
+                                                    </td>
                                                     <td style="padding: 12px 10px; font-size: 0.8rem; color: var(--accent-blue);">${u.userRoles.length > 0 ? u.userRoles.join(', ') : '<i>Sin rol</i>'}</td>
                                                     <td style="padding: 12px 10px; text-align: right;">${u.userTotalValue.toLocaleString()} €</td>
                                                     <td style="padding: 12px 10px; text-align: right; font-weight: bold; color: var(--accent-green);">${u.ownership} %</td>
