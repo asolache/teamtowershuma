@@ -1,8 +1,47 @@
 import { store } from '../core/store.js';
 
+// 🧠 HELPER: Función para extraer y renderizar las sugerencias del System Prompt
+const generateSuggestionsHtml = (roleId, project) => {
+    if (!roleId || !project) return '';
+    const role = project.roles.find(r => r.id === roleId);
+    if (!role || !role.systemPrompt) return '';
+
+    const lines = role.systemPrompt.split('\n');
+    let html = '';
+    
+    lines.forEach(line => {
+        if (line.includes('- [Tangible]') || line.includes('- [Intangible]')) {
+            const isTangible = line.includes('[Tangible]');
+            const type = isTangible ? 'tangible' : 'intangible';
+            const text = line.split('] ')[1]?.trim(); 
+            
+            if (text) {
+                const color = isTangible ? 'var(--accent-blue)' : 'var(--accent-purple)';
+                const shortTitle = text.split('.')[0]; 
+                
+                html += `
+                    <div class="btn-use-suggestion" data-tipo="${type}" data-titulo="${shortTitle}" data-texto="${text}"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid ${color}; color: ${color}; 
+                        padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; margin-top: 8px; transition: 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                        ✨ Usar: <b>[${isTangible ? 'Tangible' : 'Intangible'}]</b> ${shortTitle}
+                    </div>
+                `;
+            }
+        }
+    });
+
+    if (html === '') return '<div class="text-muted text-small" style="margin-top:10px;">No hay sugerencias formateadas en el prompt de este rol.</div>';
+    
+    return `<div style="margin-top: 15px;">
+                <label class="form-label text-muted" style="font-size: 0.65rem; letter-spacing: 0.05rem;">SUGERENCIAS DEL MAPA DE VALOR:</label>
+                ${html}
+            </div>`;
+};
+
 // 🛡️ GESTIÓN DE EVENTOS DE EDICIÓN
 document.addEventListener('change', (e) => {
-    // 1. Editar Nombre del Rol
+    // 1. Editar Nombre del Rol (Mantenido de tu versión)
     if (e.target.classList.contains('edit-role-name')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
@@ -12,7 +51,7 @@ document.addEventListener('change', (e) => {
         });
     }
 
-    // 2. Editar Órbita/Nivel
+    // 2. Editar Órbita/Nivel (Mantenido de tu versión)
     if (e.target.classList.contains('edit-role-level')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
@@ -24,7 +63,7 @@ document.addEventListener('change', (e) => {
         app.innerHTML = ProjectEditView.render(projectId);
     }
 
-    // 3. NUEVO: Autoguardado del System Prompt del Rol
+    // 3. Autoguardado del System Prompt del Rol
     if (e.target.classList.contains('role-prompt-input')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
@@ -32,11 +71,26 @@ document.addEventListener('change', (e) => {
             type: 'UPDATE_ROLE',
             payload: { projectId, roleId, field: 'systemPrompt', value: e.target.value }
         });
+        
+        // Actualizar sugerencias en vivo si estamos editando el rol seleccionado como emisor
+        const currentEmisor = document.getElementById('tx-from').value;
+        if (currentEmisor === roleId) {
+            const project = store.getState().projects.find(p => p.id === projectId);
+            document.getElementById('tx-suggestions-container').innerHTML = generateSuggestionsHtml(roleId, project);
+        }
+    }
+
+    // 4. Actualizar sugerencias al cambiar el "Emisor" en el formulario de transacciones
+    if (e.target.id === 'tx-from') {
+        const projectId = e.target.getAttribute('data-pid');
+        const roleId = e.target.value;
+        const project = store.getState().projects.find(p => p.id === projectId);
+        document.getElementById('tx-suggestions-container').innerHTML = generateSuggestionsHtml(roleId, project);
     }
 });
 
 document.addEventListener('click', (e) => {
-    // 4. Guardar Metadatos del Proyecto
+    // Guardar Metadatos del Proyecto (Mantenido intacto de tu versión)
     const btnSave = e.target.closest('#btn-save-meta');
     if (btnSave) {
         const projectId = btnSave.getAttribute('data-pid');
@@ -49,14 +103,12 @@ document.addEventListener('click', (e) => {
                 description: document.getElementById('edit-desc').value 
             } 
         });
-        
-        // Feedback visual de guardado y re-render
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
         console.log("✅ Datos estratégicos sincronizados con el Contexto IA");
     }
 
-    // 5. Inyectar Nuevo Rol
+    // Inyectar Nuevo Rol (Mantenido intacto de tu versión)
     if (e.target.id === 'btn-add-role-edit') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name-edit').value;
@@ -67,7 +119,7 @@ document.addEventListener('click', (e) => {
         app.innerHTML = ProjectEditView.render(projectId);
     }
 
-    // 6. FIX: Archivar Rol (Estaba el botón pero faltaba el evento)
+    // Archivar Rol
     if (e.target.classList.contains('btn-archive-role')) {
         const roleId = e.target.getAttribute('data-rid');
         const projectId = e.target.getAttribute('data-pid');
@@ -77,7 +129,24 @@ document.addEventListener('click', (e) => {
         }
     }
 
-    // 7. NUEVO: Crear Transacción con Prompt Táctico
+    // 🚀 INYECTOR MÁGICO: Al hacer clic en un botón de Sugerencia, autocompletar el formulario
+    const btnSuggestion = e.target.closest('.btn-use-suggestion');
+    if (btnSuggestion) {
+        const tipo = btnSuggestion.getAttribute('data-tipo');
+        const titulo = btnSuggestion.getAttribute('data-titulo');
+        const textoCompleto = btnSuggestion.getAttribute('data-texto');
+
+        document.getElementById('tx-tipo').value = tipo;
+        document.getElementById('tx-entregable').value = titulo;
+        
+        document.getElementById('tx-prompt').value = `Instrucción Táctica: Genera el entregable principal de este flujo.\n\nRequerimiento: ${textoCompleto}\n\nAsegúrate de cumplir con tu misión de rol y aplicar las directrices globales del proyecto.`;
+        
+        const promptBox = document.getElementById('tx-prompt');
+        promptBox.style.boxShadow = '0 0 15px var(--accent-green)';
+        setTimeout(() => promptBox.style.boxShadow = 'none', 500);
+    }
+
+    // Crear Transacción con Prompt Táctico
     if (e.target.id === 'btn-add-tx-edit') {
         const projectId = e.target.getAttribute('data-pid');
         const from = document.getElementById('tx-from').value;
@@ -115,6 +184,9 @@ export const ProjectEditView = {
             { id: "@baixos", label: "Operational (@baixos)" },
             { id: "@pinya", label: "Support/Base (@pinya)" }
         ];
+
+        // 🧠 Cargamos las sugerencias del primer rol por defecto
+        const initialSuggestionsHtml = activeRoles.length > 0 ? generateSuggestionsHtml(activeRoles[0].id, project) : '';
 
         return `
             <div class="container">
@@ -205,10 +277,10 @@ export const ProjectEditView = {
                                     </div>
                                     
                                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
-                                        <label class="text-small text-muted" style="display:block; font-size:0.65rem; letter-spacing: 0.05rem; color: var(--accent-purple);">SYSTEM PROMPT DEL ROL (HEREDA MISIÓN)</label>
+                                        <label class="text-small text-muted" style="display:block; font-size:0.65rem; letter-spacing: 0.05rem; color: var(--accent-purple);">SYSTEM PROMPT DEL ROL (Misión y Sugerencias)</label>
                                         <textarea class="form-control role-prompt-input" data-pid="${projectId}" data-rid="${r.id}" 
-                                            style="min-height: 60px; background: rgba(0,0,0,0.3); color: #d2a8ff; font-family: monospace; font-size: 0.8rem; margin: 5px 0 0 0; border-color: transparent;" 
-                                            placeholder="Ej: Eres un auditor experto. Tu único objetivo es encontrar cuellos de botella...">${r.systemPrompt || ''}</textarea>
+                                            style="min-height: 80px; background: rgba(0,0,0,0.3); color: #d2a8ff; font-family: monospace; font-size: 0.8rem; margin: 5px 0 0 0; border-color: transparent;" 
+                                            placeholder="Añade aquí las instrucciones y etiquetas [Tangible] o [Intangible] para alimentar el sugeridor...">${r.systemPrompt || ''}</textarea>
                                     </div>
                                 </div>
                             `).join('')}
@@ -229,19 +301,25 @@ export const ProjectEditView = {
 
                 <section class="panel" style="border-color: var(--accent-green); margin-top: 30px;">
                     <h3 style="color: var(--accent-green); margin-top: 0;">📝 Flujos de Valor e Instrucciones Tácticas</h3>
-                    <p class="text-small text-muted">Añade entregables al Mapa de Valor. Define el prompt exacto que necesitará el operario (o la IA) para generarlo.</p>
+                    <p class="text-small text-muted">Añade entregables al Mapa de Valor. Usa las sugerencias de la IA para autocompletar rápidamente.</p>
                     
                     <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
                         
                         <div>
                             <label class="form-label">Emisor (Quién lo hace):</label>
-                            <select id="tx-from" class="form-control text-small">${optionsHtml}</select>
+                            <select id="tx-from" data-pid="${projectId}" class="form-control text-small">${optionsHtml}</select>
                             
+                            <div id="tx-suggestions-container">
+                                ${initialSuggestionsHtml}
+                            </div>
+                            
+                            <hr style="border-color: rgba(255,255,255,0.05); margin: 20px 0;">
+
                             <label class="form-label">Receptor (Para quién es):</label>
                             <select id="tx-to" class="form-control text-small">${optionsHtml}</select>
                             
                             <label class="form-label">Nombre del Entregable:</label>
-                            <input id="tx-entregable" class="form-control text-small" placeholder="Ej: Estructura HTML Base">
+                            <input id="tx-entregable" class="form-control text-small" placeholder="Haz clic en una sugerencia arriba...">
                             
                             <label class="form-label">Tipo de Flujo:</label>
                             <select id="tx-tipo" class="form-control text-small">
@@ -254,7 +332,7 @@ export const ProjectEditView = {
                             <label class="form-label" style="color: var(--accent-green);">Prompt del Entregable (Instrucción a la IA):</label>
                             <textarea id="tx-prompt" class="form-control" 
                                 style="flex-grow: 1; min-height: 150px; background: #000; color: #7ee787; font-family: monospace; font-size: 0.8rem;" 
-                                placeholder="Ej: Escribe el código HTML5 semántico para el login. No uses librerías externas. Devuelve solo el código en un bloque."></textarea>
+                                placeholder="El texto se autocompletará aquí cuando hagas clic en una sugerencia..."></textarea>
                             
                             <button id="btn-add-tx-edit" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px;">
                                 Inyectar al Mapa de Valor →
