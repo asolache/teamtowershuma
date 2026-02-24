@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS | Universal Value Importer</title>
+    <style>
+        :root {
+            --bg-base: #010409;
+            --bg-surface: #0d1117;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --accent-blue: #58a6ff;
+            --accent-green: #238636;
+            --accent-purple: #a371f7;
+            --accent-gold: #d29922;
+            --code-bg: #000000;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0; padding: 40px;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px; margin-bottom: 30px;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 450px; gap: 30px; }
+
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px;
+        }
+
+        h2 { color: var(--accent-blue); margin-top: 0; font-size: 1.2rem; }
+
+        /* Estilo tabla de importación */
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; color: #8b949e; border-bottom: 1px solid var(--border-color); padding: 10px; }
+        td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .id-badge { font-family: monospace; font-size: 0.7rem; background: #21262d; padding: 2px 5px; border-radius: 4px; color: #a5d6ff; }
+        .tag { padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; }
+        .tag-human { background: rgba(163, 113, 247, 0.1); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+        .tag-ai { background: rgba(35, 134, 54, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
+
+        pre {
+            background: var(--code-bg);
+            color: #d2a8ff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-import {
+            background: var(--accent-green);
+            color: white; border: none;
+            padding: 12px 20px; border-radius: 6px;
+            font-weight: bold; cursor: pointer; width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>📦 Universal Data Importer</h1>
+                <p style="color: #8b949e; margin: 5px 0 0 0;">Análisis de valor real (Interaction Logs) convertido a Contabilidad Slicing Pie</p>
+            </div>
+            <div class="id-badge" style="font-size: 0.9rem;">Block: #460224_SOS</div>
+        </header>
+
+        <div class="grid">
+            <div class="panel">
+                <h2>📋 Entregables Detectados (Backlog Real)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Proyecto / Timestamp</th>
+                            <th>Contribuidor</th>
+                            <th>Entregable / Flujo</th>
+                            <th>Esfuerzo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="panel">
+                <h2>💎 JSON de Importación (Ready to Dispatch)</h2>
+                <p style="font-size: 0.75rem; color: #8b949e; margin-bottom: 15px;">Este objeto puede ser enviado directamente al `store.dispatch({ type: 'IMPORT_BATCH_LEDGER', payload: ... })`</p>
+                <pre id="json-preview"></pre>
+                <button class="btn-import" onclick="alert('Batch copiado al portapapeles. Listo para inyectar en Store.js')">
+                    🚀 Copiar Batch de Contabilidad
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LA DATA REAL DE NUESTRA INTERACCIÓN (Slicing Pie Dogfooding)
+        // IDs estilo Ethereum para Proyectos
+        const PROJ_CORE = "0x564e41_SOS_CORE"; // El Kernel
+        const PROJ_UI = "0x5549_SOS_INTERFACE"; // La Interfaz
+        
+        const USR_HUMAN = "usr-human-01";
+        const USR_GEMINI = "usr-gemini-ai";
+
+        const importData = [
+            // INTERACCIONES DE AYER (Hito v4.4)
+            {
+                projectId: PROJ_CORE,
+                userId: USR_HUMAN,
+                roleId: "role-strat-01", // @anxaneta
+                receiverId: "role-dev-01", // Gemini Dev
+                description: "Arquitectura: Definición de Kernel Reactivo y Store Centralizado",
+                horas: 2.5,
+                timestamp: Date.now() - 86400000 // Ayer
+            },
+            {
+                projectId: PROJ_CORE,
+                userId: USR_GEMINI,
+                roleId: "role-dev-01", // @baixos
+                receiverId: "role-strat-01",
+                description: "Desarrollo: Implementación de Kernel v4.4 (LocalStorage + Dispatcher)",
+                horas: 0.2,
+                timestamp: Date.now() - 82400000
+            },
+            // INTERACCIONES DE HOY (Hito v4.5)
+            {
+                projectId: PROJ_UI,
+                userId: USR_HUMAN,
+                roleId: "role-qa-01", // @dosos
+                receiverId: "role-dev-01",
+                description: "Requerimiento: Implementación de Cap Table visual y Gráfica de Tarta",
+                horas: 1.5,
+                timestamp: Date.now() - 14400000 // Hace 4h
+            },
+            {
+                projectId: PROJ_UI,
+                userId: USR_GEMINI,
+                roleId: "role-dev-01",
+                receiverId: "role-qa-01",
+                description: "Desarrollo: ProjectAccountingView.js con Chart CSS dinámico",
+                horas: 0.15,
+                timestamp: Date.now() - 10800000
+            },
+            // INTERACCIONES ACTUALES (Hito v4.6)
+            {
+                projectId: PROJ_CORE,
+                userId: USR_HUMAN,
+                roleId: "role-strat-01",
+                receiverId: "role-dev-01",
+                description: "Visión: Ontología de 50 Prompts y Algoritmo de Gravedad",
+                horas: 3.0,
+                timestamp: Date.now() - 3600000
+            },
+            {
+                projectId: PROJ_CORE,
+                userId: USR_GEMINI,
+                roleId: "role-dev-01",
+                receiverId: "role-strat-01",
+                description: "Desarrollo: Store v4.6 (Matrix de Órbitas + Sort Gravity)",
+                horas: 0.25,
+                timestamp: Date.now() - 1800000
+            }
+        ];
+
+        // RENDERIZAR VISTA
+        const tableBody = document.getElementById('table-body');
+        importData.forEach(item => {
+            const isHuman = item.userId === USR_HUMAN;
+            const date = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            tableBody.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="id-badge">${item.projectId}</div>
+                        <div style="font-size: 0.7rem; color: #8b949e; margin-top:4px;">${date}</div>
+                    </td>
+                    <td>
+                        <span class="tag ${isHuman ? 'tag-human' : 'tag-ai'}">${isHuman ? 'HUMANO' : 'GEMINI IA'}</span>
+                        <div style="font-size: 0.7rem; margin-top:4px;">${item.roleId}</div>
+                    </td>
+                    <td>
+                        <strong>${item.description}</strong>
+                        <div style="color: var(--accent-blue); font-size: 0.7rem;">Entrega a: ${item.receiverId}</div>
+                    </td>
+                    <td style="text-align: right;">
+                        <b style="color: var(--accent-gold);">${item.horas}h</b>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // RENDERIZAR JSON
+        document.getElementById('json-preview').textContent = JSON.stringify({
+            batchId: "BATCH_" + Date.now(),
+            importDate: new Date().toISOString(),
+            entries: importData
+        }, null, 4);
+
+    </script>
+</body>
+</html>
