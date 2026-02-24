@@ -1,18 +1,15 @@
 import { store } from '../core/store.js';
 
-// 🛡️ EVENTOS BLINDADOS PARA LA EDICIÓN
+// 🛡️ EVENTOS BLINDADOS Y REACTIVOS (Sin Reload)
 document.addEventListener('click', (e) => {
-    // Evento: Guardar Metadatos
     if (e.target.id === 'btn-save-meta') {
         const projectId = e.target.getAttribute('data-pid');
         const nombre = document.getElementById('edit-name').value;
         const sector = document.getElementById('edit-sector').value;
         const description = document.getElementById('edit-desc').value;
         store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, nombre, sector, description } });
-        location.reload(); 
     }
 
-    // Evento: Añadir Rol desde Edición
     if (e.target.id === 'btn-add-role-edit') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name-edit').value;
@@ -21,27 +18,22 @@ document.addEventListener('click', (e) => {
         if(!name) return alert("El nombre es obligatorio");
         
         store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area } });
-        location.reload();
     }
 
-    // Evento: Archivar Rol
     if (e.target.classList.contains('btn-archive-role')) {
         const projectId = e.target.getAttribute('data-pid');
         const rolId = e.target.getAttribute('data-rid');
         if(confirm("¿Archivar rol? Dejará de aparecer en el mapa.")) {
             store.dispatch({ type: 'ARCHIVE_CUSTOM_ROLE', payload: { projectId, rolId } });
-            location.reload();
         }
     }
 });
 
-// Evento: Cambiar el número de secuencia
 document.addEventListener('change', (e) => {
     if (e.target.classList.contains('seq-input')) {
         const projectId = e.target.getAttribute('data-pid');
         const rolId = e.target.getAttribute('data-rid');
         store.dispatch({ type: 'UPDATE_ROLE_SEQUENCE', payload: { projectId, rolId, sequence: e.target.value } });
-        location.reload(); 
     }
 });
 
