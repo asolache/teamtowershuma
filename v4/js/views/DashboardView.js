@@ -52,6 +52,7 @@ export const DashboardView = {
                         <p class="text-muted">Sistema de Gestión Basado en Redes de Valor</p>
                     </div>
                     <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="location.hash='#/user'">👤 Portal del Contribuidor</button>
                         <button class="btn btn-secondary" onclick="location.hash='#/about'">📖 Metodología</button>
                     </div>
                 </header>
