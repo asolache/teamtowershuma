@@ -41,7 +41,7 @@ const generateSuggestionsHtml = (roleId, project) => {
 
 // 🛡️ GESTIÓN DE EVENTOS DE EDICIÓN
 document.addEventListener('change', (e) => {
-    // 1. Editar Nombre del Rol (Mantenido de tu versión)
+    // 1. Editar Nombre del Rol
     if (e.target.classList.contains('edit-role-name')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
@@ -51,7 +51,7 @@ document.addEventListener('change', (e) => {
         });
     }
 
-    // 2. Editar Órbita/Nivel (Mantenido de tu versión)
+    // 2. Editar Órbita/Nivel
     if (e.target.classList.contains('edit-role-level')) {
         const projectId = e.target.getAttribute('data-pid');
         const roleId = e.target.getAttribute('data-rid');
@@ -90,7 +90,7 @@ document.addEventListener('change', (e) => {
 });
 
 document.addEventListener('click', (e) => {
-    // Guardar Metadatos del Proyecto (Mantenido intacto de tu versión)
+    // Guardar Metadatos del Proyecto
     const btnSave = e.target.closest('#btn-save-meta');
     if (btnSave) {
         const projectId = btnSave.getAttribute('data-pid');
@@ -108,7 +108,7 @@ document.addEventListener('click', (e) => {
         console.log("✅ Datos estratégicos sincronizados con el Contexto IA");
     }
 
-    // Inyectar Nuevo Rol (Mantenido intacto de tu versión)
+    // Inyectar Nuevo Rol
     if (e.target.id === 'btn-add-role-edit') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name-edit').value;
@@ -129,7 +129,7 @@ document.addEventListener('click', (e) => {
         }
     }
 
-    // 🚀 INYECTOR MÁGICO: Al hacer clic en un botón de Sugerencia, autocompletar el formulario
+    // INYECTOR MÁGICO: Al hacer clic en un botón de Sugerencia
     const btnSuggestion = e.target.closest('.btn-use-suggestion');
     if (btnSuggestion) {
         const tipo = btnSuggestion.getAttribute('data-tipo');
@@ -165,6 +165,24 @@ document.addEventListener('click', (e) => {
             } 
         });
         document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
+    }
+
+    // 🚀 NUEVO: Botón para Auto-ordenar Transacciones (Gravedad de Valor)
+    if (e.target.id === 'btn-sort-gravity') {
+        const projectId = e.target.getAttribute('data-pid');
+        store.dispatch({ 
+            type: 'SORT_TRANSACTIONS_BY_GRAVITY', 
+            payload: { projectId } 
+        });
+        // Pequeño feedback al usuario de que se ha ordenado internamente
+        const originalText = e.target.innerHTML;
+        e.target.innerHTML = '✅ Mapa Ordenado por Gravedad';
+        e.target.style.color = 'var(--accent-green)';
+        e.target.style.borderColor = 'var(--accent-green)';
+        
+        setTimeout(() => {
+            document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
+        }, 1000); // Recarga la vista tras 1 segundo para mostrar el mensaje
     }
 });
 
@@ -300,8 +318,15 @@ export const ProjectEditView = {
                 </div>
 
                 <section class="panel" style="border-color: var(--accent-green); margin-top: 30px;">
-                    <h3 style="color: var(--accent-green); margin-top: 0;">📝 Flujos de Valor e Instrucciones Tácticas</h3>
-                    <p class="text-small text-muted">Añade entregables al Mapa de Valor. Usa las sugerencias de la IA para autocompletar rápidamente.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="color: var(--accent-green); margin-top: 0; margin-bottom: 5px;">📝 Inyección de Entregables Teóricos</h3>
+                            <p class="text-small text-muted" style="margin: 0;">Añade entregables al Mapa de Valor. Usa las sugerencias de la IA para autocompletar.</p>
+                        </div>
+                        <button id="btn-sort-gravity" data-pid="${projectId}" class="btn btn-outline" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(255,255,255,0.2);">
+                            🪄 Ordenar Flujos por Gravedad (Órbitas)
+                        </button>
+                    </div>
                     
                     <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
                         
