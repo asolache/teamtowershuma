@@ -10,7 +10,6 @@ document.addEventListener('click', (e) => {
 
         if (!horas || !entregable) return alert("Indica el concepto y las horas aportadas.");
 
-        // Guardamos explícitamente la fecha en formato ISO
         store.dispatch({ 
             type: 'ADD_TRANSACTION', 
             payload: { 
@@ -35,21 +34,20 @@ export const ProjectAccountingView = {
         if (!project) return `<div class="container text-center"><h2>Proyecto no encontrado</h2></div>`;
 
         const txs = project.transactions || [];
+        const resiliencia = store.calculateResilience(projectId);
         
-        // Unificamos nodos para el selector y el traductor de nombres
+        // Unificamos nodos
         const allNodes = [
             ...Object.keys(project.customRoles || {}).map(id => ({ id, label: project.customRoles[id] })),
-            ...(project.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ id: dr.id, label: dr.name }))
+            ...(project.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ id: dr.id, label: dr.name, parent: dr.levelId }))
         ];
 
-        // Función para traducir el ID al nombre legible en la tabla
         const getNodeName = (id) => {
             if (id === 'Ecosistema') return 'Ecosistema';
             const node = allNodes.find(n => n.id === id);
             return node ? node.label : id;
         };
 
-        // Función financiera para calcular valor
         const getFinancials = (nodeId) => {
             let baseId = nodeId;
             const dyn = (project.dynamicRoles || []).find(r => r.id === nodeId);
@@ -61,7 +59,7 @@ export const ProjectAccountingView = {
 
         let totalValue = 0;
         let totalHours = 0;
-        const valueByNode = {}; // Almacén para el gráfico de tarta
+        const valueByNode = {}; 
 
         const ledgerRows = txs.map(t => {
             const financials = getFinancials(t.from);
@@ -71,12 +69,10 @@ export const ProjectAccountingView = {
             totalValue += valorTx;
             totalHours += horasReales;
 
-            // Acumulamos el valor generado por este rol
             if (!valueByNode[t.from]) valueByNode[t.from] = 0;
             valueByNode[t.from] += valorTx;
 
             const shortHash = t.hash ? t.hash.substring(0, 8) + '...' : 'pending';
-            // Formateo correcto de fecha y hora
             const fechaFormat = t.fecha ? new Date(t.fecha).toLocaleString() : new Date(t.timestamp || Date.now()).toLocaleString();
 
             return `
@@ -94,24 +90,48 @@ export const ProjectAccountingView = {
             `;
         }).join('');
 
-        // 📊 LÓGICA DEL GRÁFICO DE TARTA (Conic Gradient)
+        // 📊 LÓGICA DE ALERTAS (Inteligencia del Ecosistema)
+        const alertas = [];
+        if (txs.length > 0) {
+            // 1. Riesgo de Deuda Técnica (Falta de @dosos)
+            const hasAudit = txs.some(t => {
+                const isBaseDosos = t.from === '@dosos' || t.to === '@dosos';
+                const node = allNodes.find(n => n.id === t.from);
+                const isDynDosos = node && node.parent === '@dosos';
+                return isBaseDosos || isDynDosos;
+            });
+            if (!hasAudit) {
+                alertas.push({ nivel: 'CRÍTICA', color: 'var(--accent-red)', msg: 'Riesgo de Deuda Técnica: No hay flujo de auditoría o calidad (@dosos).' });
+            }
+
+            // 2. Falta de Estrategia (@anxaneta)
+            const hasStrategy = txs.some(t => t.from === '@anxaneta' || (allNodes.find(n => n.id === t.from)?.parent === '@anxaneta'));
+            if (!hasStrategy && txs.length > 3) {
+                alertas.push({ nivel: 'AVISO', color: '#d29922', msg: 'Desviación: El ecosistema está operando sin dirección estratégica registrada (@anxaneta).' });
+            }
+        }
+
+        const alertasHtml = alertas.length > 0 ? alertas.map(a => `
+            <div style="background: rgba(0,0,0,0.2); border-left: 4px solid ${a.color}; padding: 10px 15px; margin-bottom: 10px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;">
+                <span style="color: ${a.color}; font-size: 0.75rem; font-weight: bold; margin-right: 10px;">[${a.nivel}]</span>
+                <span style="font-size: 0.85rem;">${a.msg}</span>
+            </div>
+        `).join('') : '<div class="text-muted text-small">✅ El ecosistema opera con un flujo sano y equilibrado.</div>';
+
+        // 📊 LÓGICA DEL GRÁFICO DE TARTA
         const colors = ['#58a6ff', '#238636', '#a371f7', '#f85149', '#d29922', '#3fb950', '#bc8cff', '#ff7b72'];
         let conicGradient = [];
         let chartLegend = [];
         let currentAngle = 0;
         
-        // Ordenar nodos por mayor aportación
         const nodesArr = Object.keys(valueByNode).sort((a,b) => valueByNode[b] - valueByNode[a]);
-        
         if (totalValue > 0) {
             nodesArr.forEach((nodeId, index) => {
                 const percentage = (valueByNode[nodeId] / totalValue) * 100;
                 const color = colors[index % colors.length];
                 const angle = (percentage / 100) * 360;
-                
                 conicGradient.push(`${color} ${currentAngle}deg ${currentAngle + angle}deg`);
                 currentAngle += angle;
-                
                 chartLegend.push(`
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px; font-size:0.8rem;">
                         <div style="width:12px; height:12px; border-radius:3px; background:${color};"></div>
@@ -123,7 +143,6 @@ export const ProjectAccountingView = {
         } else {
             conicGradient.push(`var(--border-color) 0deg 360deg`);
         }
-
         const pieStyle = `width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(${conicGradient.join(', ')}); border: 2px solid var(--bg-panel); flex-shrink: 0;`;
 
         return `
@@ -138,26 +157,26 @@ export const ProjectAccountingView = {
                     </button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 20px;">
                     <div class="panel">
                         <div class="text-muted text-uppercase text-small">Valor Generado</div>
-                        <div style="color: var(--accent-green); font-size: 2rem; font-weight: bold;">${totalValue.toLocaleString()} €</div>
+                        <div style="color: var(--accent-green); font-size: 1.8rem; font-weight: bold;">${totalValue.toLocaleString()} €</div>
+                    </div>
+                    <div class="panel" style="border-color: ${resiliencia < 40 ? 'var(--accent-red)' : 'var(--border-color)'}">
+                        <div class="text-muted text-uppercase text-small">Resiliencia</div>
+                        <div style="color: ${resiliencia < 40 ? 'var(--accent-red)' : 'var(--accent-blue)'}; font-size: 1.8rem; font-weight: bold;">${resiliencia}%</div>
                     </div>
                     <div class="panel">
-                        <div class="text-muted text-uppercase text-small">Esfuerzo Total</div>
-                        <div style="color: var(--accent-blue); font-size: 2rem; font-weight: bold;">${totalHours} h</div>
-                    </div>
-                    <div class="panel">
-                        <div class="text-muted text-uppercase text-small">Aportaciones Totales</div>
-                        <div style="color: var(--text-heading); font-size: 2rem; font-weight: bold;">${txs.length}</div>
+                        <div class="text-muted text-uppercase text-small">Aportaciones</div>
+                        <div style="color: var(--text-heading); font-size: 1.8rem; font-weight: bold;">${txs.length}</div>
                     </div>
                     
-                    <div class="panel" style="display: flex; gap: 20px; align-items: center; justify-content: space-around;">
+                    <div class="panel" style="display: flex; gap: 20px; align-items: center; justify-content: space-around; padding: 15px;">
                         <div style="${pieStyle}"></div>
                         <div style="flex-grow: 1;">
                             <h4 class="text-muted text-uppercase text-small" style="margin-top:0; border-bottom:1px solid var(--border-color); padding-bottom:5px;">Distribución</h4>
                             <div style="max-height: 90px; overflow-y: auto; padding-right:5px;">
-                                ${totalValue > 0 ? chartLegend.join('') : '<span class="text-muted text-small">Aporta valor para ver el gráfico</span>'}
+                                ${totalValue > 0 ? chartLegend.join('') : '<span class="text-muted text-small">Aporta valor para generar gráfico</span>'}
                             </div>
                         </div>
                     </div>
@@ -165,10 +184,9 @@ export const ProjectAccountingView = {
 
                 <div class="grid-layout" style="grid-template-columns: 320px 1fr;">
                     
-                    <aside>
+                    <aside style="display:flex; flex-direction:column; gap:20px;">
                         <div class="panel">
                             <h3 class="text-accent text-uppercase text-small">⏱️ Anotar Aportación de Valor</h3>
-                            
                             <label class="form-label">Rol / Especialista (Origen)</label>
                             <select id="acc-role" class="form-control">
                                 ${allNodes.map(n => `<option value="${n.id}">${n.label} (${n.id})</option>`).join('')}
@@ -183,9 +201,13 @@ export const ProjectAccountingView = {
                             <button id="btn-add-hours-acc" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px;">
                                 Inyectar Valor
                             </button>
-                            <p class="text-muted text-small" style="margin-top: 15px; text-align: center;">
-                                El sistema calculará el valor en base al multiplicador del rol seleccionado.
-                            </p>
+                        </div>
+
+                        <div class="panel" style="border-color: ${alertas.length > 0 ? 'var(--accent-red)' : 'var(--border-color)'};">
+                            <h3 class="text-uppercase text-small" style="color: ${alertas.length > 0 ? 'var(--accent-red)' : 'var(--text-muted)'}; margin-top:0;">
+                                ⚠️ Auditoría del Sistema
+                            </h3>
+                            ${alertasHtml}
                         </div>
                     </aside>
 
@@ -204,7 +226,7 @@ export const ProjectAccountingView = {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${txs.length === 0 ? `<tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">No hay transacciones registradas en el Ledger.</td></tr>` : ledgerRows}
+                                    ${txs.length === 0 ? `<tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">No hay transacciones registradas.</td></tr>` : ledgerRows}
                                 </tbody>
                             </table>
                         </div>
