@@ -59,24 +59,31 @@ export class TTStore {
         return Math.round((audits / total) * 100) || 100;
     }
 
+    // 🧠 ACTUALIZADO: Hemos enriquecido el generador del prompt para incluir el Slicing Pie
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
-        let prompt = `CONTEXTO SOS: ${p.nombre}\nSECTOR: ${p.sector}\nMISIÓN: ${p.description || 'Operación estándar'}\n\n`;
+        let prompt = `PROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\nMISIÓN ESTRATÉGICA: ${p.description || 'Operación estándar'}\n\n`;
         
         prompt += `[ONTOLOGÍA UNIFICADA DE ROLES]\n`;
         (p.roles || []).filter(r => !r.isArchived).forEach(r => {
             prompt += `- ${r.name} (Nivel: ${r.levelId} | Poder: ${r.multiplier}x)\n`;
         });
 
-        prompt += `\n[FLUJO DE PROCESOS]\n`;
+        prompt += `\n[FLUJO DE PROCESOS E INYECCIÓN DE VALOR]\n`;
         const txs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
-        txs.forEach(t => {
-            const f = t.fase && t.fase !== 99 ? `Fase ${t.fase}` : 'Flujo Continuo';
-            const rFrom = p.roles.find(r => r.id === t.from)?.name || t.from;
-            const rTo = p.roles.find(r => r.id === t.to)?.name || t.to;
-            prompt += `- ${f}: [${rFrom}] entrega "${t.entregable}" a [${rTo}]\n`;
-        });
+        
+        if (txs.length === 0) {
+            prompt += `Aún no hay transacciones definidas en el mapa.\n`;
+        } else {
+            txs.forEach(t => {
+                const f = t.fase && t.fase !== 99 ? `Fase ${t.fase}` : 'Flujo Continuo';
+                const rFrom = p.roles.find(r => r.id === t.from)?.name || t.from;
+                const rTo = p.roles.find(r => r.id === t.to)?.name || t.to;
+                const val = t.valorCongelado || 0;
+                prompt += `- ${f}: [${rFrom}] entrega "${t.entregable || 'Ninguno'}" a [${rTo}] | Valor Slicing Pie: ${val}€\n`;
+            });
+        }
 
         return prompt;
     }
@@ -124,7 +131,7 @@ export class TTStore {
                 if (targetP) {
                     targetP.nombre = payload.nombre || targetP.nombre;
                     targetP.sector = payload.sector || targetP.sector;
-                    targetP.description = payload.description || targetP.description;
+                    targetP.description = payload.description !== undefined ? payload.description : targetP.description;
                 }
                 break;
 
