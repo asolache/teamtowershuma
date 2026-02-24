@@ -11,11 +11,18 @@ const generateHash = (str) => {
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
+            // 🚀 BUG FIX: Los 10 sectores definidos en el core para que nunca fallen
             sectores: { 
                 marketing: { "@anxaneta": "Strategy", "@aixecador": "Creative", "@dosos": "Content", "@baixos": "Design", "@pinya": "Ads" },
-                Web3: { "@anxaneta": "Lead Arch.", "@aixecador": "Smart Contracts", "@dosos": "Auditor", "@baixos": "DApp Dev", "@pinya": "Validator" },
-                gremial: { "@anxaneta": "Ingeniero", "@aixecador": "Oficial", "@dosos": "Calidad", "@baixos": "Especialista", "@pinya": "Logística" }
-                // ... (el resto de sectores se mantienen igual)
+                web3: { "@anxaneta": "Lead Arch.", "@aixecador": "Smart Contracts", "@dosos": "Auditor", "@baixos": "DApp Dev", "@pinya": "Validator" },
+                gremial: { "@anxaneta": "Ingeniero", "@aixecador": "Oficial", "@dosos": "Calidad", "@baixos": "Especialista", "@pinya": "Logística" },
+                saas: { "@anxaneta": "Product Owner", "@aixecador": "Tech Lead", "@dosos": "QA Tester", "@baixos": "Frontend/Backend", "@pinya": "Soporte/DevOps" },
+                legal: { "@anxaneta": "Socio Director", "@aixecador": "Asociado Senior", "@dosos": "Revisor/Compliance", "@baixos": "Abogado Junior", "@pinya": "Paralegal" },
+                salud: { "@anxaneta": "Director Médico", "@aixecador": "Jefe de Planta", "@dosos": "Supervisor", "@baixos": "Especialista", "@pinya": "Enfermería/Celador" },
+                hosteleria: { "@anxaneta": "Gerente/Chef", "@aixecador": "Maître", "@dosos": "Jefe de Rango", "@baixos": "Cocinero/Camarero", "@pinya": "Ayudante" },
+                educacion: { "@anxaneta": "Rector/Director", "@aixecador": "Jefe Estudios", "@dosos": "Coordinador", "@baixos": "Profesor", "@pinya": "Administración" },
+                construccion: { "@anxaneta": "Arquitecto", "@aixecador": "Jefe de Obra", "@dosos": "Aparejador (QA)", "@baixos": "Oficial", "@pinya": "Peón" },
+                audiovisual: { "@anxaneta": "Productor Ej.", "@aixecador": "Director", "@dosos": "Script/Continuidad", "@baixos": "Cámara/Sonido", "@pinya": "Eléctrico/Auxiliar" }
             },
             niveles: {
                 "@anxaneta": { multiplier: 3.0, precio: 90 },
@@ -59,7 +66,6 @@ export class TTStore {
         return Math.round((audits / total) * 100) || 100;
     }
 
-    // 🧠 ACTUALIZADO: Hemos enriquecido el generador del prompt para incluir el Slicing Pie
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
@@ -94,13 +100,12 @@ export class TTStore {
 
         switch(type) {
             case 'ADD_PROJECT':
-                // REPARACIÓN CORE: Limpiar si ya existe para el test
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 
                 const sKey = payload.sector || 'marketing';
+                // Si el sector no existe, hacemos fallback seguro a marketing
                 const sectorAliases = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
                 
-                // REPARACIÓN ONTOLOGY: Generar los 5 roles con nombres del sector
                 let idCounter = 0;
                 const initialRoles = Object.keys(this.ontologyStatic.niveles).map(levelId => {
                     idCounter++;
@@ -108,7 +113,7 @@ export class TTStore {
                     return {
                         id: `role-${Date.now()}-${idCounter}`, 
                         levelId: levelId,
-                        name: sectorAliases[levelId], // Inyecta "Strategy" si es marketing
+                        name: sectorAliases[levelId],
                         price: levelDef.precio,
                         multiplier: levelDef.multiplier,
                         isArchived: false
@@ -122,6 +127,9 @@ export class TTStore {
                     description: "",
                     roles: initialRoles, 
                     transactions: [],
+                    usuarios: [],     
+                    asignaciones: [], 
+                    ledger: [],       
                     rondas: [{ id: `ronda-${Date.now()}`, name: 'Fase 1: Bootstrapping', multiplier: 2.0 }]
                 });
                 break;
@@ -154,14 +162,11 @@ export class TTStore {
                     const role = p.roles.find(r => r.id === payload.roleId);
                     if (role) {
                         role[payload.field] = payload.value;
-                        
-                        // 🛠️ REPARACIÓN: Si cambiamos el nivel, actualizamos herencia financiera
                         if (payload.field === 'levelId') {
                             const def = this.ontologyStatic.niveles[payload.value];
                             if (def) {
                                 role.price = def.precio;
                                 role.multiplier = def.multiplier;
-                                console.log(`🚀 Órbita actualizada: ${payload.value} (Price: ${def.precio}, Multiplier: ${def.multiplier})`);
                             }
                         }
                     }
@@ -180,7 +185,6 @@ export class TTStore {
                     const originRole = p.roles.find(r => r.id === payload.tx.from);
                     const lastTx = p.transactions[p.transactions.length - 1];
                     
-                    // REPARACIÓN ECONOMY: 2h * multiplier * price (540€ para anxaneta)
                     const multiplier = originRole ? originRole.multiplier : 1;
                     const price = originRole ? originRole.price : 0;
                     const valor = (payload.tx.horas || 1) * multiplier * price;
@@ -202,6 +206,63 @@ export class TTStore {
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
                     if (tx) tx.fase = payload.fase;
+                }
+                break;
+
+            // 👤 MOTOR DE USUARIOS Y CONTABILIDAD (v4.5)
+            case 'ADD_USER':
+                if (p) {
+                    p.usuarios = p.usuarios || [];
+                    p.usuarios.push({
+                        id: `usr-${Date.now()}`,
+                        name: payload.name,
+                        alias: payload.alias || '',
+                        joinedAt: Date.now()
+                    });
+                }
+                break;
+
+            case 'ASSIGN_USER_ROLE':
+                if (p) {
+                    p.asignaciones = p.asignaciones || [];
+                    const exists = p.asignaciones.find(a => a.userId === payload.userId && a.roleId === payload.roleId);
+                    if (!exists) {
+                        p.asignaciones.push({ 
+                            id: `asg-${Date.now()}`,
+                            userId: payload.userId, 
+                            roleId: payload.roleId 
+                        });
+                    }
+                }
+                break;
+
+            case 'REMOVE_USER_ROLE':
+                if (p) {
+                    p.asignaciones = p.asignaciones || [];
+                    p.asignaciones = p.asignaciones.filter(a => !(a.userId === payload.userId && a.roleId === payload.roleId));
+                }
+                break;
+
+            case 'ADD_LEDGER_ENTRY':
+                if (p) {
+                    p.ledger = p.ledger || [];
+                    const roleEmisor = p.roles.find(r => r.id === payload.roleId);
+                    
+                    const multiplier = roleEmisor ? roleEmisor.multiplier : 1;
+                    const price = roleEmisor ? roleEmisor.price : 0;
+                    const horasInvertidas = parseFloat(payload.horas) || 1;
+                    const valorGenerado = horasInvertidas * multiplier * price;
+
+                    p.ledger.push({
+                        id: `ldg-${Date.now()}`,
+                        timestamp: Date.now(),
+                        userId: payload.userId,
+                        roleId: payload.roleId,
+                        receiverId: payload.receiverId,
+                        description: payload.description,
+                        horas: horasInvertidas,
+                        valorCongelado: valorGenerado
+                    });
                 }
                 break;
         }
