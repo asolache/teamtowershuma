@@ -1,45 +1,59 @@
 import { store } from '../core/store.js';
 
-// 🛡️ EVENTOS BLINDADOS
+// 🛡️ GESTIÓN DE EVENTOS DE EDICIÓN
+document.addEventListener('change', (e) => {
+    // 1. Editar Nombre del Rol
+    if (e.target.classList.contains('edit-role-name')) {
+        const projectId = e.target.getAttribute('data-pid');
+        const roleId = e.target.getAttribute('data-rid');
+        store.dispatch({ 
+            type: 'UPDATE_ROLE', 
+            payload: { projectId, roleId, field: 'name', value: e.target.value } 
+        });
+    }
+
+    // 2. Editar Órbita/Nivel
+    if (e.target.classList.contains('edit-role-level')) {
+        const projectId = e.target.getAttribute('data-pid');
+        const roleId = e.target.getAttribute('data-rid');
+        store.dispatch({ 
+            type: 'UPDATE_ROLE', 
+            payload: { projectId, roleId, field: 'levelId', value: e.target.value } 
+        });
+        // Re-render para mostrar los cambios financieros si los hubiera
+        const app = document.getElementById('app');
+        app.innerHTML = ProjectEditView.render(projectId);
+    }
+});
+
 document.addEventListener('click', (e) => {
-    // 1. REPARACIÓN: Guardar Metadatos
+    // Guardar Metadatos del Proyecto
     const btnSave = e.target.closest('#btn-save-meta');
     if (btnSave) {
         const projectId = btnSave.getAttribute('data-pid');
-        const nombre = document.getElementById('edit-name').value;
-        const sector = document.getElementById('edit-sector').value;
-        const description = document.getElementById('edit-desc').value;
-        
         store.dispatch({ 
             type: 'UPDATE_PROJECT_INFO', 
-            payload: { projectId, nombre, sector, description } 
+            payload: { 
+                projectId, 
+                nombre: document.getElementById('edit-name').value, 
+                sector: document.getElementById('edit-sector').value, 
+                description: document.getElementById('edit-desc').value 
+            } 
         });
-        alert("✅ Configuración del Castell actualizada");
-        // Forzamos re-render para actualizar el Prompt IA
+        alert("✅ Configuración guardada");
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
     }
 
-    // 2. Añadir Rol
+    // Inyectar Nuevo Rol
     if (e.target.id === 'btn-add-role-edit') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name-edit').value;
         const levelId = document.getElementById('nr-level-edit').value;
-        if(!name) return alert("El nombre es obligatorio");
+        if(!name) return alert("Indica el nombre del rol");
         store.dispatch({ type: 'CREATE_ROLE', payload: { projectId, name, levelId } });
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
-    }
-
-    // 3. Archivar Rol
-    if (e.target.classList.contains('btn-archive-role')) {
-        const projectId = e.target.getAttribute('data-pid');
-        const roleId = e.target.getAttribute('data-rid');
-        if(confirm("¿Archivar este rol?")) {
-            store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId, roleId } });
-            const app = document.getElementById('app');
-            app.innerHTML = ProjectEditView.render(projectId);
-        }
     }
 });
 
@@ -49,10 +63,9 @@ export const ProjectEditView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
 
-        const systemPrompt = store.generateSystemPrompt(projectId);
         const activeRoles = project.roles.filter(r => !r.isArchived);
 
-        // Mapeo para los desplegables con nombres descriptivos
+        // Mapeo de niveles con formato: "Nombre (@id)"
         const levelOptions = [
             { id: "@anxaneta", label: "Strategy (@anxaneta)" },
             { id: "@aixecador", label: "Creative/Coord (@aixecador)" },
@@ -65,20 +78,18 @@ export const ProjectEditView = {
             <div class="container">
                 <header class="header-main">
                     <div>
-                        <h1>⚙️ Diseñador: ${project.nombre}</h1>
-                        <p class="text-muted">Ajuste de Ontología y Misión SOS</p>
+                        <h1>⚙️ Diseñador de Ontología: ${project.nombre}</h1>
+                        <p class="text-muted">Personalización de roles y órbitas de valor</p>
                     </div>
-                    <button class="btn btn-primary" onclick="location.hash='#/project/${projectId}'">
-                        Ver Mapa ➔
-                    </button>
+                    <button class="btn btn-secondary" onclick="location.hash='#/project/${projectId}'">← Volver al Mapa</button>
                 </header>
 
-                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
+                <div style="display: grid; grid-template-columns: 350px 1fr; gap: 30px;">
                     
                     <section class="panel">
-                        <h3>1. Misión y Propósito</h3>
+                        <h3>Misión y Propósito</h3>
                         <div style="margin-bottom: 15px;">
-                            <label class="form-label">Nombre del Castell</label>
+                            <label class="form-label">Nombre del Proyecto</label>
                             <input id="edit-name" type="text" class="form-control" value="${project.nombre}">
                             
                             <label class="form-label">Sector Operativo</label>
@@ -88,46 +99,57 @@ export const ProjectEditView = {
                                 `).join('')}
                             </select>
                             
-                            <label class="form-label">Misión Estratégica (Contexto IA)</label>
-                            <textarea id="edit-desc" class="form-control" style="height: 120px;" placeholder="Describe el objetivo de este ecosistema...">${project.description || ''}</textarea>
+                            <label class="form-label">Descripción Estratégica</label>
+                            <textarea id="edit-desc" class="form-control" style="height: 100px;">${project.description || ''}</textarea>
                         </div>
-                        <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-secondary btn-block">
-                            Actualizar Metadatos
-                        </button>
-
-                        <div style="margin-top: 30px;">
-                            <h3 style="color: var(--accent-purple);">🧠 Contexto IA (Prompt Maestro)</h3>
-                            <pre style="background: #0d1117; padding: 15px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted); white-space: pre-wrap; border: 1px solid var(--border-color);">${systemPrompt}</pre>
+                        <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-primary btn-block">Guardar Cambios</button>
+                        
+                        <div style="margin-top: 20px; padding: 10px; background: rgba(163, 113, 247, 0.1); border-radius: 8px;">
+                            <h4 style="color: var(--accent-purple); margin:0;">🧠 Contexto IA</h4>
+                            <p class="text-small text-muted">Este texto alimenta el diagnóstico automático del ecosistema.</p>
                         </div>
                     </section>
 
                     <section class="panel">
-                        <h3>2. Ontología (Roles y Órbitas)</h3>
+                        <h3>Gestión de Roles</h3>
+                        <p class="text-muted text-small">Edita los nombres y cambia las órbitas para ajustar el peso financiero (Slicing Pie).</p>
                         
-                        <div style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
+                        <div style="margin-bottom: 20px;">
                             ${activeRoles.map(r => `
-                                <div class="panel-surface" style="display: grid; grid-template-columns: 1.5fr 1.5fr 40px; gap: 10px; align-items: center; margin-bottom: 10px; padding: 10px;">
-                                    <input type="text" value="${r.name}" class="form-control" style="margin:0; font-weight: bold;" readonly>
-                                    
-                                    <select class="form-control" style="margin:0; font-size: 0.8rem;" disabled>
-                                        ${levelOptions.map(opt => `
-                                            <option value="${opt.id}" ${r.levelId === opt.id ? 'selected' : ''}>${opt.label}</option>
-                                        `).join('')}
-                                    </select>
-                                    
-                                    <button class="btn btn-outline btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="color: var(--accent-red); border:none;">🗑️</button>
+                                <div class="panel-surface" style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center; margin-bottom: 10px;">
+                                    <div>
+                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem;">NOMBRE DEL ROL</label>
+                                        <input type="text" 
+                                               class="form-control edit-role-name" 
+                                               data-pid="${projectId}" 
+                                               data-rid="${r.id}" 
+                                               value="${r.name}" 
+                                               style="margin:0;">
+                                    </div>
+                                    <div>
+                                        <label class="text-small text-muted" style="display:block; font-size:0.6rem;">ÓRBITA (NIVEL)</label>
+                                        <select class="form-control edit-role-level" 
+                                                data-pid="${projectId}" 
+                                                data-rid="${r.id}" 
+                                                style="margin:0; font-size: 0.85rem;">
+                                            ${levelOptions.map(opt => `
+                                                <option value="${opt.id}" ${r.levelId === opt.id ? 'selected' : ''}>${opt.label}</option>
+                                            `).join('')}
+                                        </select>
+                                    </div>
+                                    <button class="btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">🗑️</button>
                                 </div>
                             `).join('')}
                         </div>
 
-                        <div class="panel-surface" style="border-style: dashed; border-color: var(--accent-blue);">
+                        <div class="panel-surface" style="border: 2px dashed var(--border-color); background: none;">
                             <h4 style="margin-top:0;">+ Inyectar Nuevo Rol</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
-                                <input id="nr-name-edit" type="text" class="form-control" placeholder="Nombre (ej: QA Engineer)" style="margin:0;">
+                                <input id="nr-name-edit" type="text" class="form-control" placeholder="Nombre del Rol" style="margin:0;">
                                 <select id="nr-level-edit" class="form-control" style="margin:0;">
                                     ${levelOptions.map(opt => `<option value="${opt.id}">${opt.label}</option>`).join('')}
                                 </select>
-                                <button id="btn-add-role-edit" data-pid="${projectId}" class="btn btn-primary">Inyectar</button>
+                                <button id="btn-add-role-edit" data-pid="${projectId}" class="btn btn-primary">Añadir</button>
                             </div>
                         </div>
                     </section>
