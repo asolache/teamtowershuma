@@ -142,12 +142,21 @@ export class TTStore {
                 }
                 break;
 
-            case 'UPDATE_ROLE':
+           case 'UPDATE_ROLE':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
                     if (role) {
-                        if (payload.field === 'name') role.name = payload.value;
-                        if (payload.field === 'levelId') role.levelId = payload.value;
+                        role[payload.field] = payload.value;
+                        
+                        // 🛠️ REPARACIÓN: Si cambiamos el nivel, actualizamos herencia financiera
+                        if (payload.field === 'levelId') {
+                            const def = this.ontologyStatic.niveles[payload.value];
+                            if (def) {
+                                role.price = def.precio;
+                                role.multiplier = def.multiplier;
+                                console.log(`🚀 Órbita actualizada: ${payload.value} (Price: ${def.precio}, Multiplier: ${def.multiplier})`);
+                            }
+                        }
                     }
                 }
                 break;
