@@ -10,12 +10,27 @@ const generateHash = (str) => {
 
 export class TTStore {
     constructor() {
-        this.ontologyStatic = {
+       this.ontologyStatic = {
             sectores: { 
                 marketing: { "@anxaneta": "Strategy", "@aixecador": "Creative", "@dosos": "Content", "@baixos": "Design", "@pinya": "Ads" },
-                Web3: { "@anxaneta": "Lead Arch.", "@aixecador": "Smart Contracts", "@dosos": "Auditor", "@baixos": "DApp Dev", "@pinya": "Validator" },
-                gremial: { "@anxaneta": "Ingeniero", "@aixecador": "Oficial", "@dosos": "Calidad", "@baixos": "Especialista", "@pinya": "Logística" }
-                // ... (el resto de sectores se mantienen igual)
+                web3: { "@anxaneta": "Lead Arch.", "@aixecador": "Smart Contracts", "@dosos": "Auditor", "@baixos": "DApp Dev", "@pinya": "Validator" },
+                gremial: { "@anxaneta": "Ingeniero", "@aixecador": "Oficial", "@dosos": "Calidad", "@baixos": "Especialista", "@pinya": "Logística" },
+                saas: { "@anxaneta": "Product Owner", "@aixecador": "Tech Lead", "@dosos": "QA Tester", "@baixos": "Frontend/Backend", "@pinya": "Soporte/DevOps" },
+                legal: { "@anxaneta": "Socio Director", "@aixecador": "Asociado Senior", "@dosos": "Revisor/Compliance", "@baixos": "Abogado Junior", "@pinya": "Paralegal" },
+                salud: { "@anxaneta": "Director Médico", "@aixecador": "Jefe de Planta", "@dosos": "Supervisor", "@baixos": "Especialista", "@pinya": "Enfermería/Celador" },
+                hosteleria: { "@anxaneta": "Gerente/Chef", "@aixecador": "Maître", "@dosos": "Jefe de Rango", "@baixos": "Cocinero/Camarero", "@pinya": "Ayudante" },
+                educacion: { "@anxaneta": "Rector/Director", "@aixecador": "Jefe Estudios", "@dosos": "Coordinador", "@baixos": "Profesor", "@pinya": "Administración" },
+                construccion: { "@anxaneta": "Arquitecto", "@aixecador": "Jefe de Obra", "@dosos": "Aparejador (QA)", "@baixos": "Oficial", "@pinya": "Peón" },
+                audiovisual: { "@anxaneta": "Productor Ej.", "@aixecador": "Director", "@dosos": "Script/Continuidad", "@baixos": "Cámara/Sonido", "@pinya": "Eléctrico/Auxiliar" }
+            },
+            niveles: {
+                "@anxaneta": { multiplier: 3.0, precio: 90 },
+                "@aixecador": { multiplier: 2.5, precio: 75 },
+                "@dosos": { multiplier: 2.0, precio: 60 },
+                "@baixos": { multiplier: 1.5, precio: 45 },
+                "@pinya": { multiplier: 1.0, precio: 30 }
+            }
+        };
             },
             niveles: {
                 "@anxaneta": { multiplier: 3.0, precio: 90 },
