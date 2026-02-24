@@ -3,11 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v4.3</title>
+    <title>TeamTowers SOS v4.3 | Dashboard</title>
     <style>
-        body { background: #010409; color: #c9d1d9; margin: 0; font-family: sans-serif; }
-        #app { min-height: 100vh; opacity: 0; transition: opacity 0.3s; }
-        .ready { opacity: 1 !important; }
+        /* --- VARIABLES GLOBALES --- */
+        :root {
+            --bg-base: #010409;
+            --bg-surface: #0d1117;
+            --bg-panel: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-heading: #f0f6fc;
+            --accent-blue: #58a6ff;
+            --accent-green: #238636;
+            --accent-green-hover: #2ea043;
+            --accent-purple: #a371f7;
+            --accent-red: #f85149;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --transition-speed: 0.2s;
+        }
+
+        /* --- RESET Y BASE --- */
+        * { box-sizing: border-box; }
+        
+        body { 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
+            margin: 0; 
+            font-family: var(--font-family);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        #app { min-height: 100vh; }
+
+        /* --- TIPOGRAFÍA --- */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-heading);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        p { margin-top: 0; margin-bottom: 1rem; }
+        
+        .text-muted { color: var(--text-muted); }
+        .text-accent { color: var(--accent-blue); }
+        .text-small { font-size: 0.85rem; }
+        .text-uppercase { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
+
+        /* --- LAYOUT Y CONTENEDORES --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .container-sm {
+            max-width: 1000px;
+        }
+
+        .header-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+        }
+
+        .panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        .panel-surface {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        /* --- COMPONENTES (Botones, Inputs, Cards) --- */
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.5;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            transition: all var(--transition-speed) ease;
+            font-family: var(--font-family);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: #ffffff;
+        }
+        .btn-primary:hover { background-color: var(--accent-green-hover); }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--accent-blue);
+            border-color: var(--border-color);
+        }
+        .btn-outline:hover {
+            border-color: var(--accent-blue);
+            background-color: rgba(88, 166, 255, 0.1);
+        }
+        
+        .btn-secondary {
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+        .btn-secondary:hover { background-color: var(--bg-panel); border-color: var(--text-muted); }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-heading);
+            background-color: var(--bg-surface);
+            background-clip: padding-box;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: border-color var(--transition-speed) ease;
+            font-family: var(--font-family);
+            margin-bottom: 12px;
+        }
+        .form-control:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .card-interactive {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: transform var(--transition-speed) ease, border-color var(--transition-speed) ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-interactive:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        /* --- MAPA --- */
+        .map-container {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            height: 750px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+        }
+
+        /* --- ANIMACIONES --- */
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -29,33 +225,40 @@
             const pId = parts[2];
             const action = parts[3];
 
-            console.log("Navegando a:", hash);
+            // Animación suave entre vistas
+            app.classList.remove('fade-in');
+            void app.offsetWidth;
 
-            if (hash === '#/' || hash === '') {
-                app.innerHTML = HomeView.render();
-            } else if (hash === '#/about') {
-                app.innerHTML = AboutView.render();
-            } else if (hash.startsWith('#/project/')) {
-                if (action === 'edit') {
-                    app.innerHTML = ProjectEditView.render(pId);
-                } else if (action === 'accounting') {
-                    app.innerHTML = ProjectAccountingView.render(pId);
+            try {
+                if (hash === '#/' || hash === '' || hash === '#') {
+                    app.innerHTML = HomeView.render();
+                } else if (hash === '#/about') {
+                    app.innerHTML = AboutView.render();
+                } else if (hash.startsWith('#/project/')) {
+                    if (action === 'edit') {
+                        app.innerHTML = ProjectEditView.render(pId);
+                    } else if (action === 'accounting') {
+                        app.innerHTML = ProjectAccountingView.render(pId);
+                    } else {
+                        app.innerHTML = ProjectView.render(pId);
+                    }
                 } else {
-                    app.innerHTML = ProjectView.render(pId);
+                     app.innerHTML = `<div class="container text-center"><h2 class="text-accent">⚠️ 404</h2><p>Coordenada desconocida.</p><button class="btn btn-secondary" onclick="location.hash='#/'">Volver</button></div>`;
                 }
+            } catch (e) {
+                console.error("SOS Router Error:", e);
+                app.innerHTML = `<div class="container"><div class="panel" style="border-color: var(--accent-red);"><h3 style="color: var(--accent-red);">Error de Renderizado</h3><p>${e.message}</p></div></div>`;
             }
-            app.classList.add('ready');
+            
+            app.classList.add('fade-in');
         }
 
-        // Escuchar al store y a la navegación
+        // --- SISTEMA REACTIVO ---
         window.addEventListener('hashchange', router);
-        window.addEventListener('store-ready', () => {
-            console.log("Store listo, cargando UI...");
-            router();
-        });
-
-        // Arranque forzado si el store ya cargó
-        if (store.getState().projects) router();
+        window.addEventListener('store-ready', router); // Escucha los cambios del store.js sin recargar
+        
+        // Inicialización
+        if (store.getState()) router();
     </script>
 </body>
 </html>
