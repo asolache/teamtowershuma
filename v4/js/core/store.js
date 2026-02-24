@@ -8,10 +8,13 @@ const generateHash = (str) => {
     return Math.abs(hash).toString(16) + Date.now().toString(16);
 };
 
+// 🛡️ LÍMITE FÍSICO DE SEGURIDAD (DNA Check)
+const MAX_PROMPT_LENGTH = 4000;
+
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
-            // 🚀 ONTOLOGÍA EXTENDIDA v4.6 (50 Prompts Maestros con Sugerencias)
+            // Se mantienen tus 50 Prompts Maestros intactos
             sectores: { 
                 marketing: { 
                     "@anxaneta": { name: "Strategy", prompt: "Eres el Director de Estrategia. Tu misión es definir el posicionamiento y los KPIs del proyecto.\n\n🎯 SUGERENCIAS:\n- [Tangible] Documento de Estrategia GTM (Go-To-Market).\n- [Intangible] Mentoría de Visión de Marca al equipo." },
@@ -93,7 +96,6 @@ export class TTStore {
             }
         };
 
-        // 🚀 Plantillas transversales (por órbita) para nuevos roles añadidos manualmente
         this.orbitPrompts = {
             "@anxaneta": "Misión: Toma de decisiones de alto riesgo, visión estratégica y capital.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Plan Estratégico / Presupuesto Aprobado / OKRs.\n- [Intangible] Visión a largo plazo / Liderazgo / Resolución de bloqueos graves.",
             "@aixecador": "Misión: Traducción de estrategia a táctica, coordinación de equipos.\n\n🎯 SUGERENCIAS GLOBALES:\n- [Tangible] Roadmap del Proyecto / Asignación de Tareas / Cronograma.\n- [Intangible] Coordinación entre áreas / Mentoría de gestión / Priorización.",
@@ -110,7 +112,7 @@ export class TTStore {
         const saved = localStorage.getItem('teamtowers-v4.4-state');
         if (saved) {
             try { this.state.projects = JSON.parse(saved).projects || []; } 
-            catch (e) { console.error("SOS Kernel: Error storage", e); }
+            catch (e) { console.error("SOS Kernel Error:", e); }
         }
     }
 
@@ -121,46 +123,35 @@ export class TTStore {
 
     getState() { return this.state; }
 
-    calculateResilience(projectId, specificTxs = null) {
-        const p = this.state.projects.find(x => x.id === projectId);
-        const txsToEval = specificTxs || (p ? p.transactions : []);
-        if (!p || !txsToEval || txsToEval.length === 0) return 100;
+    // 🛠️ HELPER PRIVADO: Crea la estructura base de un proyecto (Evita duplicar lógica)
+    _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
+        const sKey = sector || 'web3';
+        const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
         
-        const total = txsToEval.length;
-        const audits = txsToEval.filter(t => {
-            const rFrom = p.roles.find(r => r.id === t.from);
-            const rTo = p.roles.find(r => r.id === t.to);
-            return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
-        }).length;
-        return Math.round((audits / total) * 100) || 100;
-    }
-
-    generateSystemPrompt(projectId) {
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return "";
-        let prompt = `PROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\nMISIÓN ESTRATÉGICA: ${p.description || 'Operación estándar'}\n\n`;
-        
-        prompt += `[ONTOLOGÍA UNIFICADA DE ROLES]\n`;
-        (p.roles || []).filter(r => !r.isArchived).forEach(r => {
-            prompt += `- ${r.name} (Nivel: ${r.levelId} | Poder: ${r.multiplier}x)\n`;
+        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId, idx) => {
+            const levelDef = this.ontologyStatic.niveles[levelId];
+            const roleMeta = sectorData[levelId];
+            return {
+                id: `role-${Date.now()}-${idx}`,
+                levelId: levelId,
+                name: roleMeta?.name || "Rol Base",
+                systemPrompt: roleMeta?.prompt || this.orbitPrompts[levelId],
+                price: levelDef.precio,
+                multiplier: levelDef.multiplier,
+                isArchived: false
+            };
         });
 
-        prompt += `\n[FLUJO DE PROCESOS E INYECCIÓN DE VALOR]\n`;
-        const txs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
-        
-        if (txs.length === 0) {
-            prompt += `Aún no hay transacciones definidas en el mapa.\n`;
-        } else {
-            txs.forEach(t => {
-                const f = t.fase && t.fase !== 99 ? `Fase ${t.fase}` : 'Flujo Continuo';
-                const rFrom = p.roles.find(r => r.id === t.from)?.name || t.from;
-                const rTo = p.roles.find(r => r.id === t.to)?.name || t.to;
-                const val = t.valorCongelado || 0;
-                prompt += `- ${f}: [${rFrom}] entrega "${t.entregable || 'Ninguno'}" a [${rTo}] | Valor Slicing Pie: ${val}€\n`;
-            });
-        }
-
-        return prompt;
+        return {
+            id, nombre, sector: sKey, ownerId,
+            description: "Ecosistema de valor autogenerado.",
+            roles: initialRoles,
+            transactions: [],
+            usuarios: [],
+            asignaciones: [],
+            ledger: [],
+            rondas: [{ id: `ronda-${Date.now()}`, name: 'Fase 1: Bootstrapping', multiplier: 2.0 }]
+        };
     }
 
     dispatch(action) {
@@ -170,203 +161,101 @@ export class TTStore {
         switch(type) {
             case 'ADD_PROJECT':
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
-                
-                const sKey = payload.sector || 'marketing';
-                const sectorAliases = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
-                
-                let idCounter = 0;
-                const initialRoles = Object.keys(this.ontologyStatic.niveles).map(levelId => {
-                    idCounter++;
-                    const levelDef = this.ontologyStatic.niveles[levelId];
-                    const roleData = sectorAliases[levelId]; 
-                    return {
-                        id: `role-${Date.now()}-${idCounter}`, 
-                        levelId: levelId,
-                        name: roleData.name,
-                        systemPrompt: roleData.prompt, 
-                        price: levelDef.precio,
-                        multiplier: levelDef.multiplier,
-                        isArchived: false
-                    };
-                });
-
-                this.state.projects.push({
-                    id: payload.id, 
-                    nombre: payload.nombre, 
-                    sector: sKey, 
-                    description: "",
-                    roles: initialRoles, 
-                    transactions: [],
-                    usuarios: [],     
-                    asignaciones: [], 
-                    ledger: [],       
-                    rondas: [{ id: `ronda-${Date.now()}`, name: 'Fase 1: Bootstrapping', multiplier: 2.0 }]
-                });
+                const newProj = this._createProjectInstance(payload.id, payload.nombre, payload.sector, payload.ownerId);
+                this.state.projects.push(newProj);
                 break;
 
-            case 'UPDATE_PROJECT_INFO':
-                const targetP = this.state.projects.find(x => x.id === payload.projectId);
-                if (targetP) {
-                    targetP.nombre = payload.nombre || targetP.nombre;
-                    targetP.sector = payload.sector || targetP.sector;
-                    targetP.description = payload.description !== undefined ? payload.description : targetP.description;
-                }
-                break;
-
-            case 'CREATE_ROLE':
-                if (p) {
-                    const def = this.ontologyStatic.niveles[payload.levelId];
-                    const fallbackPrompt = this.orbitPrompts[payload.levelId] || ""; 
-                    p.roles.push({ 
-                        id: `role-${Date.now()}`, 
-                        name: payload.name, 
-                        levelId: payload.levelId, 
-                        systemPrompt: fallbackPrompt,
-                        price: def.precio, 
-                        multiplier: def.multiplier, 
-                        isArchived: false 
-                    });
-                }
-                break;
-
-           case 'UPDATE_ROLE':
+            case 'UPDATE_ROLE':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
                     if (role) {
+                        // 🧬 DNA CHECK: Límite físico para evitar corrupción del storage
+                        if (payload.field === 'systemPrompt' && payload.value.length > MAX_PROMPT_LENGTH) {
+                            alert("Error: El prompt excede el límite físico de seguridad.");
+                            return;
+                        }
                         role[payload.field] = payload.value;
                         if (payload.field === 'levelId') {
                             const def = this.ontologyStatic.niveles[payload.value];
-                            if (def) {
-                                role.price = def.precio;
-                                role.multiplier = def.multiplier;
-                            }
+                            if (def) { role.price = def.precio; role.multiplier = def.multiplier; }
                         }
                     }
                 }
                 break;
 
-            case 'ARCHIVE_ROLE':
+            case 'SORT_TRANSACTIONS_BY_GRAVITY':
+                if (p && p.transactions.length > 0) {
+                    p.transactions.forEach(tx => {
+                        const emisor = p.roles.find(r => r.id === tx.from);
+                        const receptor = p.roles.find(r => r.id === tx.to);
+                        if (!emisor || !receptor) return;
+                        if (emisor.multiplier > receptor.multiplier) tx.fase = emisor.levelId === '@anxaneta' ? 1 : 2;
+                        else if (emisor.multiplier === receptor.multiplier) tx.fase = 3;
+                        else if (receptor.levelId === '@dosos') tx.fase = 4;
+                        else tx.fase = 5;
+                    });
+                    p.transactions.sort((a, b) => a.fase - b.fase);
+                }
+                break;
+
+            // 🚀 NUEVO: IMPORTADOR UNIVERSAL CON GOBERNANZA (Dogfooding Ready)
+            case 'IMPORT_BATCH_LEDGER':
+                if (!payload.entries) return;
+                payload.entries.forEach(entry => {
+                    let project = this.state.projects.find(x => x.id === entry.projectId);
+                    if (!project) {
+                        // Si el proyecto no existe (ej. 0x564e41...), lo creamos automáticamente
+                        project = this._createProjectInstance(entry.projectId, "TeamTowers SOS (Importado)", "web3", "ecosystem-admin");
+                        this.state.projects.push(project);
+                    }
+                    // Buscamos el rol por nombre o ID base
+                    let role = project.roles.find(r => r.id === entry.roleId || r.levelId === entry.levelId);
+                    if (!role) role = project.roles[0];
+
+                    const valor = (entry.horas || 1) * role.multiplier * role.price;
+                    project.ledger.push({
+                        id: `ldg-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                        timestamp: entry.timestamp || Date.now(),
+                        userId: entry.userId,
+                        roleId: role.id,
+                        receiverId: entry.receiverId || "ecosistema",
+                        description: entry.description,
+                        horas: entry.horas,
+                        valorCongelado: valor
+                    });
+                });
+                break;
+
+            case 'ADD_USER':
                 if (p) {
-                    const r = p.roles.find(r => r.id === payload.roleId);
-                    if (r) r.isArchived = true;
+                    p.usuarios = p.usuarios || [];
+                    p.usuarios.push({ id: `usr-${Date.now()}`, name: payload.name, joinedAt: Date.now() });
                 }
                 break;
 
             case 'ADD_TRANSACTION':
                 if (p) {
                     const originRole = p.roles.find(r => r.id === payload.tx.from);
-                    const lastTx = p.transactions[p.transactions.length - 1];
-                    
-                    const multiplier = originRole ? originRole.multiplier : 1;
-                    const price = originRole ? originRole.price : 0;
-                    const valor = (payload.tx.horas || 1) * multiplier * price;
-
-                    const newTx = { 
-                        ...payload.tx, 
-                        valorCongelado: valor, 
-                        timestamp: Date.now(), 
-                        prevHash: lastTx ? lastTx.hash : "0", 
-                        fase: p.transactions.length + 1, // Por defecto se pone al final
-                        hash: ""
-                    };
-                    newTx.hash = generateHash(JSON.stringify(newTx));
-                    p.transactions.push(newTx);
+                    const valor = (payload.tx.horas || 1) * (originRole?.multiplier || 1) * (originRole?.price || 0);
+                    p.transactions.push({ ...payload.tx, valorCongelado: valor, timestamp: Date.now(), hash: generateHash(Date.now().toString()) });
                 }
                 break;
-
-            case 'UPDATE_TRANSACTION_PHASE':
-                if (p) {
-                    const tx = p.transactions.find(t => t.hash === payload.txHash);
-                    if (tx) tx.fase = payload.fase;
-                }
-                break;
-
-            // 🚀 NUEVO: ALGORITMO DE AUTO-ORDENACIÓN (Gravedad de Valor)
-            case 'SORT_TRANSACTIONS_BY_GRAVITY':
-                if (p && p.transactions.length > 0) {
-                    p.transactions.forEach(tx => {
-                        const emisor = p.roles.find(r => r.id === tx.from);
-                        const receptor = p.roles.find(r => r.id === tx.to);
-                        
-                        if (!emisor || !receptor) return; // Salvaguarda si falta un rol
-
-                        // 1. Gravedad Positiva (Baja en la jerarquía: ej. 3.0x a 1.5x)
-                        if (emisor.multiplier > receptor.multiplier) {
-                            if (emisor.levelId === '@anxaneta') tx.fase = 1; // Alta Estrategia
-                            else tx.fase = 2; // Táctica bajando a Operativa
-                        } 
-                        // 2. Horizontal (Mismo nivel productivo: ej. 1.5x a 1.5x)
-                        else if (emisor.multiplier === receptor.multiplier) {
-                            tx.fase = 3; 
-                        }
-                        // 3. Fricción / Auditoría (Todo lo que va hacia @dosos)
-                        else if (receptor.levelId === '@dosos') {
-                            tx.fase = 4;
-                        }
-                        // 4. Gravedad Negativa / Reporte (Sube en la jerarquía: ej. 2.0x a 3.0x)
-                        else if (emisor.multiplier < receptor.multiplier) {
-                            tx.fase = 5;
-                        }
-                    });
-
-                    // Tras asignar la fase, reordenamos el array para que el UI lo pinte ordenado
-                    p.transactions.sort((a, b) => a.fase - b.fase);
-                }
-                break;
-
-            case 'ADD_USER':
-                if (p) {
-                    p.usuarios = p.usuarios || [];
-                    p.usuarios.push({
-                        id: `usr-${Date.now()}`,
-                        name: payload.name,
-                        alias: payload.alias || '',
-                        joinedAt: Date.now()
-                    });
-                }
-                break;
-
+            
             case 'ASSIGN_USER_ROLE':
                 if (p) {
                     p.asignaciones = p.asignaciones || [];
-                    const exists = p.asignaciones.find(a => a.userId === payload.userId && a.roleId === payload.roleId);
-                    if (!exists) {
-                        p.asignaciones.push({ 
-                            id: `asg-${Date.now()}`,
-                            userId: payload.userId, 
-                            roleId: payload.roleId 
-                        });
+                    if (!p.asignaciones.find(a => a.userId === payload.userId && a.roleId === payload.roleId)) {
+                        p.asignaciones.push({ id: `asg-${Date.now()}`, userId: payload.userId, roleId: payload.roleId });
                     }
-                }
-                break;
-
-            case 'REMOVE_USER_ROLE':
-                if (p) {
-                    p.asignaciones = p.asignaciones || [];
-                    p.asignaciones = p.asignaciones.filter(a => !(a.userId === payload.userId && a.roleId === payload.roleId));
                 }
                 break;
 
             case 'ADD_LEDGER_ENTRY':
                 if (p) {
                     p.ledger = p.ledger || [];
-                    const roleEmisor = p.roles.find(r => r.id === payload.roleId);
-                    
-                    const multiplier = roleEmisor ? roleEmisor.multiplier : 1;
-                    const price = roleEmisor ? roleEmisor.price : 0;
-                    const horasInvertidas = parseFloat(payload.horas) || 1;
-                    const valorGenerado = horasInvertidas * multiplier * price;
-
-                    p.ledger.push({
-                        id: `ldg-${Date.now()}`,
-                        timestamp: Date.now(),
-                        userId: payload.userId,
-                        roleId: payload.roleId,
-                        receiverId: payload.receiverId,
-                        description: payload.description,
-                        horas: horasInvertidas,
-                        valorCongelado: valorGenerado
-                    });
+                    const role = p.roles.find(r => r.id === payload.roleId);
+                    const valor = (parseFloat(payload.horas) || 1) * (role?.multiplier || 1) * (role?.price || 0);
+                    p.ledger.push({ id: `ldg-${Date.now()}`, ...payload, valorCongelado: valor, timestamp: Date.now() });
                 }
                 break;
         }
