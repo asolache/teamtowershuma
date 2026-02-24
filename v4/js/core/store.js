@@ -38,7 +38,7 @@ export class TTStore {
     }
 
     init() {
-        // 🚀 NUEVA CLAVE: Fuerza un reinicio limpio para la v4.4
+        // Usamos la misma clave para mantener tus proyectos nuevos
         const saved = localStorage.getItem('teamtowers-v4.4-state');
         if (saved) {
             try { this.state.projects = JSON.parse(saved).projects || []; } 
@@ -63,7 +63,6 @@ export class TTStore {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.transactions || p.transactions.length === 0) return 100;
         const total = p.transactions.length;
-        // La auditoría se basa en que el origen o destino sea de nivel @dosos
         const audits = p.transactions.filter(t => {
             const roleFrom = p.roles.find(r => r.id === t.from);
             const roleTo = p.roles.find(r => r.id === t.to);
@@ -77,7 +76,7 @@ export class TTStore {
         if (!p) return "";
         let prompt = `CONTEXTO SOS: ${p.nombre}\nSECTOR: ${p.sector}\nMISION: ${p.description || 'Operación estándar'}\n\n`;
         
-        prompt += `[NUEVA ONTOLOGÍA UNIFICADA]\n`;
+        prompt += `[ONTOLOGÍA UNIFICADA DE ROLES]\n`;
         (p.roles || []).filter(r => !r.isArchived).forEach(r => {
             prompt += `- ${r.name} (Nivel: ${r.levelId} | Poder: ${r.multiplier}x)\n`;
         });
@@ -98,23 +97,24 @@ export class TTStore {
 
     dispatch(action) {
         const { type, payload } = action;
-        const p = payload.projectId ? this.state.projects.find(x => x.id === payload.projectId) : null;
+        const p = payload.projectId ? this.state.projects.find(x => x.id === projectId) || this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
             case 'ADD_PROJECT':
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 const sKey = payload.sector || 'marketing';
                 
-                // 🚀 CREACIÓN UNIFICADA DE ROLES INICIALES
+                // 🚀 TODOS LOS ROLES NACEN LIBRES E IGUALES
+                let idCounter = 0;
                 const initialRoles = Object.keys(this.ontologyStatic.sectores[sKey]).map(level => {
+                    idCounter++;
                     return {
-                        id: `role-${level.replace('@','')}-${Date.now()}`,
+                        id: `role-${Date.now()}-${idCounter}`, // ID único genérico
                         name: this.ontologyStatic.sectores[sKey][level],
                         levelId: level,
                         price: this.ontologyStatic.niveles[level].precio,
                         multiplier: this.ontologyStatic.niveles[level].multiplier,
-                        isArchived: false,
-                        isBase: true // Etiqueta para no poder borrarlos, solo editarlos
+                        isArchived: false
                     };
                 });
 
@@ -134,13 +134,12 @@ export class TTStore {
                 if (p) {
                     const defaults = this.ontologyStatic.niveles[payload.levelId];
                     p.roles.push({ 
-                        id: `dyn-${Date.now()}`, 
+                        id: `role-${Date.now()}`, 
                         name: payload.name, 
                         levelId: payload.levelId, 
                         price: payload.price || defaults.precio, 
                         multiplier: payload.multiplier || defaults.multiplier, 
-                        isArchived: false,
-                        isBase: false
+                        isArchived: false
                     });
                 }
                 break;
@@ -149,7 +148,12 @@ export class TTStore {
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
                     if (role) {
-                        role[payload.field] = payload.field === 'name' ? payload.value : parseFloat(payload.value);
+                        // Si es texto (name o levelId) lo guarda tal cual, si es número lo parsea
+                        if (payload.field === 'name' || payload.field === 'levelId') {
+                            role[payload.field] = payload.value;
+                        } else {
+                            role[payload.field] = parseFloat(payload.value);
+                        }
                     }
                 }
                 break;
@@ -157,7 +161,8 @@ export class TTStore {
             case 'ARCHIVE_ROLE':
                 if (p) {
                     const roleToArchive = p.roles.find(r => r.id === payload.roleId);
-                    if (roleToArchive && !roleToArchive.isBase) roleToArchive.isArchived = true;
+                    // 🚀 AHORA CUALQUIER ROL PUEDE SER BORRADO
+                    if (roleToArchive) roleToArchive.isArchived = true;
                 }
                 break;
 
@@ -166,7 +171,6 @@ export class TTStore {
                     const lastTx = p.transactions[p.transactions.length - 1];
                     const nextFase = p.transactions.length + 1;
                     
-                    // 🧊 CONGELACIÓN DEL VALOR FINANCIERO
                     const originRole = p.roles.find(r => r.id === payload.tx.from);
                     const horasReales = parseFloat(payload.tx.horas) || 1;
                     let valorCalculado = 0;
@@ -180,7 +184,7 @@ export class TTStore {
                         prevHash: lastTx ? lastTx.hash : "0", 
                         hash: "", 
                         fase: nextFase,
-                        valorCongelado: valorCalculado // <- Inmutabilidad financiera
+                        valorCongelado: valorCalculado
                     };
                     newTx.hash = generateHash(JSON.stringify(newTx));
                     p.transactions.push(newTx);
