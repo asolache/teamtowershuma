@@ -7,9 +7,10 @@ document.addEventListener('click', (e) => {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name').value;
         const levelId = document.getElementById('nr-level').value;
-        if(!name) return alert("Por favor, introduce un nombre para el especialista.");
+        if(!name) return alert("Por favor, introduce un nombre para el rol o especialista.");
         
-        store.dispatch({ type: 'CREATE_CUSTOM_ROLE', payload: { projectId, name, levelId, area: 'Especialista' } });
+        // Usamos la nueva acción CREATE_ROLE de v4.4
+        store.dispatch({ type: 'CREATE_ROLE', payload: { projectId, name, levelId } });
     }
     
     if (e.target.id === 'btn-add-tx-view') {
@@ -21,7 +22,7 @@ document.addEventListener('click', (e) => {
 
         if (!entregable) return alert("Por favor, define qué se entrega en esta transacción.");
 
-        store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, tx: { from, to, entregable, tipo, liquidación: 0, horas: 1 } } });
+        store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, tx: { from, to, entregable, tipo, horas: 1 } } });
     }
 });
 
@@ -39,12 +40,9 @@ export const ProjectView = {
         const salud = store.calculateResilience(projectId);
         const colorSalud = salud > 40 ? 'var(--accent-green)' : 'var(--accent-red)';
         
-        // Recopilamos todos los nodos activos para los desplegables
-        const allActiveNodes = [
-            ...Object.keys(project.customRoles || {}).map(id => ({ id, label: project.customRoles[id] })),
-            ...(project.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ id: dr.id, label: dr.name }))
-        ];
-        const optionsHtml = allActiveNodes.map(n => `<option value="${n.id}">${n.label} (${n.id})</option>`).join('');
+        // 🚀 Leemos la nueva estructura unificada de Roles
+        const activeRoles = (project.roles || []).filter(r => !r.isArchived);
+        const optionsHtml = activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('');
 
         return `
             <div class="container">
@@ -59,6 +57,7 @@ export const ProjectView = {
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="location.hash='#/'">← Dashboard</button>
                         <button class="btn btn-outline" onclick="location.hash='#/project/${projectId}/edit'">⚙️ Diseñar Ecosistema</button>
                         <button class="btn btn-primary" onclick="location.hash='#/project/${projectId}/accounting'">💰 Contabilidad</button>
                     </div>
@@ -68,22 +67,22 @@ export const ProjectView = {
                     <aside style="display: flex; flex-direction: column; gap: 20px;">
                         
                         <div class="panel">
-                            <h3 class="text-accent text-uppercase text-small">+ Nuevo Especialista</h3>
+                            <h3 class="text-accent text-uppercase text-small">+ Nuevo Rol / Especialista</h3>
                             
                             <label class="form-label">Nombre del Nodo</label>
-                            <input id="nr-name" class="form-control" placeholder="Ej: Dr. García">
+                            <input id="nr-name" class="form-control" placeholder="Ej: Tech Lead, Dr. García...">
                             
-                            <label class="form-label">Vinculación (Órbita)</label>
+                            <label class="form-label">Nivel de Jerarquía</label>
                             <select id="nr-level" class="form-control">
-                                <option value="@anxaneta">@anxaneta (Estrategia)</option>
-                                <option value="@aixecador">@aixecador (Estructura)</option>
-                                <option value="@dosos">@dosos (Calidad)</option>
-                                <option value="@baixos">@baixos (Producción)</option>
-                                <option value="@pinya">@pinya (Soporte Base)</option>
+                                <option value="@anxaneta">Nivel: Dirección / C-Level (@anxaneta)</option>
+                                <option value="@aixecador">Nivel: Management / Directores (@aixecador)</option>
+                                <option value="@dosos">Nivel: Mandos Medios / QA (@dosos)</option>
+                                <option value="@baixos">Nivel: Operativa / Especialistas (@baixos)</option>
+                                <option value="@pinya">Nivel: Soporte / Base (@pinya)</option>
                             </select>
                             
                             <button id="btn-add-role-view" data-pid="${projectId}" class="btn btn-secondary btn-block" style="margin-top: 10px;">
-                                Añadir al Gremio
+                                Inyectar al Sistema
                             </button>
                         </div>
 
@@ -112,27 +111,32 @@ export const ProjectView = {
                     </aside>
 
                     <main style="display: flex; flex-direction: column; gap: 20px;">
+                        
                         <div class="map-container">
                             ${ValueMapView.render(projectId)}
                         </div>
 
                         <section class="panel" style="border-color: var(--accent-blue); background-color: rgba(88, 166, 255, 0.03);">
-                            <h3 class="text-accent" style="margin-top: 0; font-size: 1rem;">ℹ️ Guía del Ecosistema Simbiótico</h3>
+                            <h3 class="text-accent" style="margin-top: 0; font-size: 1rem;">ℹ️ Guía del Ecosistema y Jerarquía Corporativa</h3>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 0.85rem; color: var(--text-muted);">
                                 <div>
-                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🗺️ Nodos y Topología</h4>
+                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">🏢 Niveles de Rol (Metáfora del Castell)</h4>
+                                    <p style="margin-bottom: 10px; font-size: 0.8rem;">El ecosistema se distribuye en órbitas concéntricas desde la estrategia central hasta la operativa periférica:</p>
                                     <ul style="margin-top: 0; padding-left: 20px;">
-                                        <li style="margin-bottom: 6px;"><b>Nodos Base (Azul):</b> Representan la ontología estructural del Castell (Estrategia, Producción, Calidad, etc.). Son los cimientos.</li>
-                                        <li style="margin-bottom: 6px;"><b>Nodos Especialistas (Verde):</b> Son personas o roles específicos del Gremio que has inyectado. Aparecen orbitando a su Nodo Base correspondiente.</li>
-                                        <li style="margin-bottom: 6px;"><b>Conexión Punteada Gris:</b> Muestra la dependencia jerárquica entre un Especialista y su rol fundacional.</li>
+                                        <li style="margin-bottom: 6px;"><b class="text-accent">Dirección / C-Level (@anxaneta):</b> CEO, Socios, Estrategia global. Toman decisiones clave. Máximo multiplicador financiero. (Centro del mapa).</li>
+                                        <li style="margin-bottom: 6px;"><b class="text-accent">Management (@aixecador):</b> Directores de área, Project Managers. Conectan la estrategia con la ejecución.</li>
+                                        <li style="margin-bottom: 6px;"><b class="text-accent">Mandos Medios / QA (@dosos):</b> Team Leads, Control de Calidad, Auditores. Aseguran que el trabajo es óptimo. Vitales para la resiliencia.</li>
+                                        <li style="margin-bottom: 6px;"><b class="text-accent">Operativa (@baixos):</b> Especialistas, Desarrolladores, Técnicos. La fuerza de producción directa del ecosistema.</li>
+                                        <li style="margin-bottom: 6px;"><b class="text-accent">Soporte Base (@pinya):</b> Administración, Logística, Base de la pirámide. Sostienen la estructura corporativa.</li>
                                     </ul>
                                 </div>
                                 <div>
-                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">⚡ Flujos de Valor y Salud</h4>
+                                    <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">⚡ Flujos de Valor y Resiliencia</h4>
                                     <ul style="margin-top: 0; padding-left: 20px;">
-                                        <li style="margin-bottom: 6px;"><b>Flujo Tangible (Flecha Continua Azul):</b> Intercambio de valor directo, cuantificable o material (ej. código, dinero, un informe finalizado).</li>
-                                        <li style="margin-bottom: 6px;"><b>Flujo Intangible (Flecha Discontinua Violeta):</b> Transferencia de valor no material (ej. conocimiento, reputación, confianza, validación).</li>
-                                        <li style="margin-bottom: 6px;"><b>Resiliencia:</b> Porcentaje en la cabecera. Sube cuando se detectan flujos que pasan por el rol de auditoría/calidad (<code>@dosos</code>), asegurando que el ecosistema no genera deuda técnica.</li>
+                                        <li style="margin-bottom: 6px;"><b>Flujo Tangible (Línea Continua Azul):</b> Intercambio de valor directo, material o cuantificable (código, presupuesto, informes terminados).</li>
+                                        <li style="margin-bottom: 6px;"><b>Flujo Intangible (Línea Discontinua Violeta):</b> Transferencia de valor no material (conocimiento, ideas, feedback, validación, autoridad).</li>
+                                        <li style="margin-bottom: 6px;"><b>Secuenciación:</b> Puedes alterar el orden temporal (Fase 1, Fase 2...) de estas transacciones desde la pestaña <i>Diseñar Ecosistema</i>.</li>
+                                        <li style="margin-bottom: 6px;"><b>Resiliencia (Salud del Sistema):</b> Se calcula monitoreando cuántos flujos pasan por el nivel <code>@dosos</code> (Calidad). Un ecosistema que produce sin auditar reduce drásticamente su resiliencia.</li>
                                     </ul>
                                 </div>
                             </div>
