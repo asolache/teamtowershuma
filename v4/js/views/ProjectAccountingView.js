@@ -36,25 +36,19 @@ export const ProjectAccountingView = {
         const txs = project.transactions || [];
         const resiliencia = store.calculateResilience(projectId);
         
-        // Unificamos nodos
-        const allNodes = [
-            ...Object.keys(project.customRoles || {}).map(id => ({ id, label: project.customRoles[id] })),
-            ...(project.dynamicRoles || []).filter(dr => !dr.isArchived).map(dr => ({ id: dr.id, label: dr.name, parent: dr.levelId }))
-        ];
+        // 🚀 NUEVA LÓGICA: Leer roles unificados
+        const activeRoles = (project.roles || []).filter(r => !r.isArchived);
 
         const getNodeName = (id) => {
             if (id === 'Ecosistema') return 'Ecosistema';
-            const node = allNodes.find(n => n.id === id);
-            return node ? node.label : id;
+            const node = activeRoles.find(n => n.id === id);
+            return node ? node.name : id; 
         };
 
-        const getFinancials = (nodeId) => {
-            let baseId = nodeId;
-            const dyn = (project.dynamicRoles || []).find(r => r.id === nodeId);
-            if (dyn) baseId = dyn.levelId;
-            
-            const roleDef = state.roles.find(r => r.id === baseId);
-            return roleDef ? { multiplier: roleDef.multiplier, price: roleDef.precio_base_h } : { multiplier: 1, price: 30 };
+        // Fallback por si hay transacciones muy antiguas que no se congelaron
+        const getFallbackFinancials = (nodeId) => {
+            const roleDef = project.roles.find(r => r.id === nodeId);
+            return roleDef ? { multiplier: roleDef.multiplier, price: roleDef.price } : { multiplier: 1, price: 30 };
         };
 
         let totalValue = 0;
@@ -62,9 +56,16 @@ export const ProjectAccountingView = {
         const valueByNode = {}; 
 
         const ledgerRows = txs.map(t => {
-            const financials = getFinancials(t.from);
             const horasReales = parseFloat(t.horas) || 1; 
-            const valorTx = horasReales * financials.multiplier * financials.price;
+            
+            // 🧊 INMUTABILIDAD FINANCIERA: Usa el valor guardado
+            let valorTx = 0;
+            if (t.valorCongelado !== undefined) {
+                valorTx = t.valorCongelado;
+            } else {
+                const financials = getFallbackFinancials(t.from);
+                valorTx = horasReales * financials.multiplier * financials.price;
+            }
             
             totalValue += valorTx;
             totalHours += horasReales;
@@ -74,13 +75,16 @@ export const ProjectAccountingView = {
 
             const shortHash = t.hash ? t.hash.substring(0, 8) + '...' : 'pending';
             const fechaFormat = t.fecha ? new Date(t.fecha).toLocaleString() : new Date(t.timestamp || Date.now()).toLocaleString();
+            
+            // Mostrar ID acortado para estética
+            const idShort = t.from.includes('role-') ? `(${t.from.split('-')[1]}...)` : '';
 
             return `
                 <tr style="border-top: 1px solid var(--border-color);">
                     <td style="padding: 12px;" class="text-muted text-small"><span title="${t.hash}">${shortHash}</span></td>
                     <td style="padding: 12px; font-size: 0.8rem;">${fechaFormat}</td>
                     <td style="padding: 12px;" class="text-accent">
-                        <b>${getNodeName(t.from)}</b> <span style="font-size:0.7rem; color:var(--text-muted)">(${t.from})</span>
+                        <b>${getNodeName(t.from)}</b> <span style="font-size:0.7rem; color:var(--text-muted)">${idShort}</span>
                     </td>
                     <td style="padding: 12px;" class="text-muted">➔ ${getNodeName(t.to)}</td>
                     <td style="padding: 12px;">${t.entregable}</td>
@@ -90,24 +94,26 @@ export const ProjectAccountingView = {
             `;
         }).join('');
 
-        // 📊 LÓGICA DE ALERTAS (Inteligencia del Ecosistema)
+        // 📊 LÓGICA DE ALERTAS ADAPTADA (Lee las órbitas)
         const alertas = [];
         if (txs.length > 0) {
-            // 1. Riesgo de Deuda Técnica
+            // Riesgo de Deuda Técnica
             const hasAudit = txs.some(t => {
-                const isBaseDosos = t.from === '@dosos' || t.to === '@dosos';
-                const node = allNodes.find(n => n.id === t.from);
-                const isDynDosos = node && node.parent === '@dosos';
-                return isBaseDosos || isDynDosos;
+                const rFrom = project.roles.find(r => r.id === t.from);
+                const rTo = project.roles.find(r => r.id === t.to);
+                return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
             });
             if (!hasAudit) {
-                alertas.push({ nivel: 'CRÍTICA', color: 'var(--accent-red)', msg: 'Riesgo de Deuda Técnica: No hay flujo de auditoría o calidad (@dosos).' });
+                alertas.push({ nivel: 'CRÍTICA', color: 'var(--accent-red)', msg: 'Riesgo de Deuda Técnica: No hay flujo de auditoría o calidad (Nivel @dosos).' });
             }
 
-            // 2. Falta de Estrategia
-            const hasStrategy = txs.some(t => t.from === '@anxaneta' || (allNodes.find(n => n.id === t.from)?.parent === '@anxaneta'));
+            // Falta de Estrategia
+            const hasStrategy = txs.some(t => {
+                const rFrom = project.roles.find(r => r.id === t.from);
+                return rFrom && rFrom.levelId === '@anxaneta';
+            });
             if (!hasStrategy && txs.length > 3) {
-                alertas.push({ nivel: 'AVISO', color: '#d29922', msg: 'Desviación: El ecosistema está operando sin dirección estratégica registrada (@anxaneta).' });
+                alertas.push({ nivel: 'AVISO', color: '#d29922', msg: 'Desviación: El ecosistema está operando sin dirección estratégica registrada (Nivel @anxaneta).' });
             }
         }
 
@@ -152,9 +158,10 @@ export const ProjectAccountingView = {
                         <h1>💰 Libro Mayor: ${project.nombre}</h1>
                         <p class="text-muted" style="margin: 0;">Auditoría Inmutable de Valor y Esfuerzo</p>
                     </div>
-                    <button class="btn btn-outline" onclick="location.hash='#/project/${projectId}'">
-                        ← Volver al Mapa
-                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="location.hash='#/'">← Dashboard</button>
+                        <button class="btn btn-outline" onclick="location.hash='#/project/${projectId}'">Volver al Mapa</button>
+                    </div>
                 </header>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 20px;">
@@ -189,7 +196,7 @@ export const ProjectAccountingView = {
                             <h3 class="text-accent text-uppercase text-small">⏱️ Anotar Aportación de Valor</h3>
                             <label class="form-label">Rol / Especialista (Origen)</label>
                             <select id="acc-role" class="form-control">
-                                ${allNodes.map(n => `<option value="${n.id}">${n.label} (${n.id})</option>`).join('')}
+                                ${activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('')}
                             </select>
                             
                             <label class="form-label">Horas Invertidas</label>
@@ -237,7 +244,7 @@ export const ProjectAccountingView = {
                                 <div>
                                     <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">📊 KPIs y Estadísticas</h4>
                                     <ul style="margin-top: 0; padding-left: 20px;">
-                                        <li style="margin-bottom: 6px;"><b>Valor Generado:</b> Se calcula automáticamente multiplicando las horas aportadas por el multiplicador jerárquico del rol.</li>
+                                        <li style="margin-bottom: 6px;"><b>Valor Generado:</b> Se calcula automáticamente multiplicando las horas aportadas por el multiplicador y precio del rol <i>en el momento en que ocurrió</i>.</li>
                                         <li style="margin-bottom: 6px;"><b>Resiliencia:</b> Indicador de salud sistémica. Si baja del 40%, indica que se está produciendo valor sin el equilibrio necesario de auditoría.</li>
                                         <li style="margin-bottom: 6px;"><b>Distribución (Tarta):</b> Muestra de forma visual qué roles están inyectando mayor peso financiero en el ecosistema.</li>
                                     </ul>
@@ -245,9 +252,9 @@ export const ProjectAccountingView = {
                                 <div>
                                     <h4 style="color: var(--text-heading); margin-bottom: 8px; font-size: 0.9rem;">⚠️ Alertas de Auditoría</h4>
                                     <ul style="margin-top: 0; padding-left: 20px;">
-                                        <li style="margin-bottom: 6px;"><b>Riesgo de Deuda Técnica:</b> Se dispara si el equipo opera sin intervenciones del rol de Calidad o Refinamiento (<code>@dosos</code>).</li>
+                                        <li style="margin-bottom: 6px;"><b>Riesgo de Deuda Técnica:</b> Se dispara si el equipo opera sin intervenciones de la órbita de Calidad o Refinamiento (<code>@dosos</code>).</li>
                                         <li style="margin-bottom: 6px;"><b>Falta de Estrategia:</b> Se activa si se registran transacciones de producción pero falta la directriz de la cúspide (<code>@anxaneta</code>).</li>
-                                        <li style="margin-bottom: 6px;"><b>Hash Inmutable:</b> Cada línea del Ledger cuenta con un identificador criptográfico, garantizando que el historial de esfuerzo no pueda ser alterado.</li>
+                                        <li style="margin-bottom: 6px;"><b>Hash Inmutable:</b> Cada línea del Ledger cuenta con un identificador criptográfico único.</li>
                                     </ul>
                                 </div>
                             </div>
