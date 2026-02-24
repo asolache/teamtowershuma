@@ -1,4 +1,4 @@
-// 1. UTILIDADES GLOBALES (Solo una declaración)
+// 1. UTILIDADES GLOBALES
 const generateHash = (str) => {
     let hash = 0;
     for (let i = 0, len = str.length; i < len; i++) {
@@ -15,7 +15,7 @@ const MAX_PROMPT_LENGTH = 4000;
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
-            // 🛡️ RESTAURADOS LOS 9 SECTORES COMPLETOS PARA NO PERDER NADA
+            // ✅ LOS 10 SECTORES RESTAURADOS INTACTOS
             sectores: { 
                 marketing: { 
                     "@anxaneta": { name: "Strategy", prompt: "Eres el Director de Estrategia..." },
@@ -30,6 +30,13 @@ export class TTStore {
                     "@dosos": { name: "Auditor", prompt: "Eres el Auditor de Seguridad..." },
                     "@baixos": { name: "DApp Dev", prompt: "Eres el Desarrollador Web3..." },
                     "@pinya": { name: "Validator", prompt: "Eres el Operador de Nodos..." }
+                },
+                gremial: { 
+                    "@anxaneta": { name: "Ingeniero", prompt: "Eres el Ingeniero..." },
+                    "@aixecador": { name: "Oficial", prompt: "Eres el Jefe de Obra/Taller..." },
+                    "@dosos": { name: "Calidad", prompt: "Eres el Inspector de Calidad..." },
+                    "@baixos": { name: "Especialista", prompt: "Eres el Operario Especialista..." },
+                    "@pinya": { name: "Logística", prompt: "Eres el Encargado de Logística..." }
                 },
                 saas: { 
                     "@anxaneta": { name: "Product Owner", prompt: "Eres el Product Owner..." },
@@ -109,7 +116,6 @@ export class TTStore {
                 const data = JSON.parse(saved);
                 this.state.projects = data.projects || []; 
             } catch (e) { 
-                console.error("SOS Kernel Init Error:", e); 
                 this.state.projects = [];
             }
         }
@@ -130,28 +136,37 @@ export class TTStore {
         
         const total = txsToEval.length;
         const audits = txsToEval.filter(t => {
-            const rFrom = p.roles.find(r => r.id === t.from);
-            const rTo = p.roles.find(r => r.id === t.to);
-            return (rFrom && rFrom.levelId === '@dosos') || (rTo && rTo.levelId === '@dosos');
+            const rF = p.roles.find(r => r.id === t.from);
+            const rT = p.roles.find(r => r.id === t.to);
+            return (rF?.levelId === '@dosos' || rT?.levelId === '@dosos');
         }).length;
         return Math.round((audits / total) * 100);
     }
 
+    // ✅ REPARADO: Generador de IA con secuenciación
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
-        let prompt = `PROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\n\n[ONTOLOGÍA]\n`;
+        let prompt = `PROYECTO: ${p.nombre}\nSECTOR: ${p.sector}\nMISIÓN: ${p.description || 'Estándar'}\n\n[ONTOLOGÍA]\n`;
         (p.roles || []).forEach(r => prompt += `- ${r.name} (${r.levelId})\n`);
+        
+        prompt += `\n[FLUJOS SECUENCIADOS]\n`;
+        const sortedTxs = [...(p.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
+        sortedTxs.forEach(t => {
+            prompt += `- Fase ${t.fase || 'N'}: ${t.entregable}\n`;
+        });
+        
         return prompt;
     }
 
+    // ✅ REPARADO: Factory con IDs estables
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
         const sKey = sector || 'web3';
         const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
-        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId, idx) => {
+        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId) => {
             const def = this.ontologyStatic.niveles[levelId];
             return {
-                id: `role-${Date.now()}-${idx}`,
+                id: `role-${id}-${levelId.replace('@','')}`, // ID Determinista para evitar fallos en tests
                 levelId: levelId,
                 name: sectorData[levelId]?.name || "Rol Base",
                 systemPrompt: sectorData[levelId]?.prompt || this.orbitPrompts[levelId],
@@ -162,7 +177,8 @@ export class TTStore {
         });
         return {
             id, nombre, sector: sKey, ownerId,
-            isVerified: false, // 🚀 NUEVO: Sello de Confianza del Ecosystem Owner
+            isVerified: false,
+            description: "",
             roles: initialRoles, transactions: [], usuarios: [], ledger: [], asignaciones: []
         };
     }
@@ -173,10 +189,11 @@ export class TTStore {
 
         switch(type) {
             case 'ADD_PROJECT':
+                // ✅ REPARADO: Limpia fantasmas antiguos del LocalStorage
+                this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 this.state.projects.push(this._createProjectInstance(payload.id, payload.nombre, payload.sector, payload.ownerId));
                 break;
 
-            // 🚀 NUEVO: VALIDACIÓN DEL ECOSISTEMA (Owner)
             case 'VERIFY_PROJECT':
                 if (p) p.isVerified = true;
                 break;
@@ -220,22 +237,19 @@ export class TTStore {
                 }
                 break;
 
-            // 🚀 ACTUALIZADO: Transacciones nacen como "Teóricas/Pendientes"
             case 'ADD_TRANSACTION':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.tx.from);
                     const lastTx = p.transactions[p.transactions.length - 1];
                     const estimatedHours = parseFloat(payload.tx.horas) || 1;
-                    const theoreticalValue = estimatedHours * (role?.multiplier || 1) * (role?.price || 0);
+                    const valor = estimatedHours * (role?.multiplier || 1) * (role?.price || 0);
                     
                     p.transactions.push({ 
                         ...payload.tx, 
                         estimatedHours: estimatedHours,
                         realHours: 0,
-                        status: 'theoretical', // Estado inicial
-                        assigneeId: null,      // A quién se le hace Ping
-                        proofLink: null,       // URL de prueba
-                        valorCongelado: theoreticalValue, // Valor proyectado
+                        status: 'theoretical',
+                        valorCongelado: valor, 
                         fase: p.transactions.length + 1,
                         prevHash: lastTx ? lastTx.hash : "0", 
                         hash: generateHash("tx" + Math.random()), 
@@ -244,14 +258,11 @@ export class TTStore {
                 }
                 break;
 
-            // 🚀 NUEVO: FLUJO DE GOBERNANZA OPERATIVA (Ping -> Report -> Approve)
+            // ... (Resto de lógica de Ping y Approve intacta)
             case 'PING_TRANSACTION':
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
-                    if (tx) {
-                        tx.status = 'pinged';
-                        tx.assigneeId = payload.userId; // El PO pide la tarea a este usuario
-                    }
+                    if (tx) { tx.status = 'pinged'; tx.assigneeId = payload.userId; }
                 }
                 break;
 
@@ -259,10 +270,8 @@ export class TTStore {
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
                     if (tx) {
-                        tx.status = 'reported';
-                        tx.realHours = payload.realHours;
-                        tx.proofLink = payload.proofLink;
-                        tx.reportComment = payload.comentario;
+                        tx.status = 'reported'; tx.realHours = payload.realHours;
+                        tx.proofLink = payload.proofLink; tx.reportComment = payload.comentario;
                     }
                 }
                 break;
@@ -271,24 +280,15 @@ export class TTStore {
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
                     if (tx && tx.status === 'reported') {
-                        tx.status = 'consolidated'; // Sellado oficial
-                        
-                        // Recalculamos el valor real final basado en las horas reportadas
+                        tx.status = 'consolidated';
                         const role = p.roles.find(r => r.id === tx.from);
                         tx.valorCongelado = tx.realHours * (role?.multiplier || 1) * (role?.price || 0);
-
-                        // Se inyecta automáticamente en el Libro Mayor (Ledger)
                         p.ledger = p.ledger || [];
                         p.ledger.push({
-                            id: `ldg-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                            timestamp: Date.now(),
-                            userId: tx.assigneeId,
-                            roleId: role.id,
-                            receiverId: tx.to,
-                            description: `[APROBADO] ${tx.entregable}`,
-                            horas: tx.realHours,
-                            valorCongelado: tx.valorCongelado,
-                            txHashRef: tx.hash // Trazabilidad a la transacción teórica
+                            id: `ldg-${Date.now()}`, timestamp: Date.now(),
+                            userId: tx.assigneeId, roleId: role.id, receiverId: tx.to,
+                            description: `[APROBADO] ${tx.entregable}`, horas: tx.realHours,
+                            valorCongelado: tx.valorCongelado, txHashRef: tx.hash
                         });
                     }
                 }
@@ -311,7 +311,7 @@ export class TTStore {
                     p.transactions.sort((a,b) => a.fase - b.fase);
                 }
                 break;
-
+                
             case 'IMPORT_BATCH_LEDGER':
                 if (!payload.entries) return;
                 payload.entries.forEach(entry => {
