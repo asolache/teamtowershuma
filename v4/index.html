@@ -2,209 +2,201 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v5.6 | Ecosistema</title>
+    <title>SOS v5.7 | Suite de Validación Total</title>
     <style>
-        /* --- VARIABLES GLOBALES --- */
-        :root {
-            --bg-base: #010409; --bg-surface: #0d1117; --bg-panel: #161b22;
-            --border-color: #30363d; --text-main: #c9d1d9; --text-muted: #8b949e;
-            --text-heading: #f0f6fc; --accent-blue: #58a6ff; --accent-green: #238636;
-            --accent-green-hover: #2ea043; --accent-purple: #a371f7; --accent-red: #f85149;
-            --accent-gold: #d29922; 
-            --radius-md: 8px; --radius-lg: 12px;
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            --transition-speed: 0.2s;
-        }
-
-        [data-theme="light"] {
-            --bg-base: #f6f8fa; --bg-surface: #ffffff; --bg-panel: #f3f4f6;
-            --border-color: #d0d7de; --text-main: #24292f; --text-muted: #57606a;
-            --text-heading: #0f1419; --accent-blue: #0969da; --accent-green: #1a7f37;
-            --accent-gold: #9a6700;
-        }
-
-        * { box-sizing: border-box; }
-        
-        /* 🚀 AJUSTE: El body ahora tiene padding-top para dejar espacio a la barra fija */
-        body { 
-            background-color: var(--bg-base); color: var(--text-main); 
-            margin: 0; font-family: var(--font-family); line-height: 1.5; 
-            padding-top: 60px; /* Espacio para el App Shell */
-        }
-        
-        #app { min-height: calc(100vh - 60px); }
-
-        /* 🚀 NUEVO: APP SHELL (BARRA SUPERIOR FIJA) */
-        .app-shell {
-            position: fixed; top: 0; left: 0; right: 0; height: 60px;
-            background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color); z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        /* --- TIPOGRAFÍA Y COMPONENTES --- */
-        h1, h2, h3, h4 { color: var(--text-heading); margin-top: 0; margin-bottom: 0.5rem; }
-        p { margin-top: 0; margin-bottom: 1rem; }
-        .text-muted { color: var(--text-muted); }
-        .text-accent { color: var(--accent-blue); }
-        .text-small { font-size: 0.85rem; }
-        .text-uppercase { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
-
-        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
-        .container-sm { max-width: 1000px; margin: 0 auto; }
-        .header-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
-        .grid-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
-        
-        .panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
-        .panel-surface { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
-
-        .btn { display: inline-block; padding: 10px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-md); border: 1px solid transparent; transition: all var(--transition-speed) ease; font-family: inherit; }
-        .btn-primary { background-color: var(--accent-green); color: #ffffff; }
-        .btn-outline { background-color: transparent; color: var(--accent-blue); border-color: var(--border-color); }
-        .btn-secondary { background-color: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
-        .btn-block { display: block; width: 100%; text-align: center; }
-
-        .form-control { width: 100%; padding: 10px; font-size: 0.9rem; color: var(--text-heading); background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 12px; }
-        .form-label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
-
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
-
-        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 40px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .nav-link { color: #58a6ff; text-decoration: none; font-size: 0.9rem; margin-bottom: 20px; display: inline-block; }
+        h1 { border-bottom: 2px solid #30363d; padding-bottom: 10px; color: #f0f6fc; }
+        .test-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; }
+        .pass { border-left: 5px solid #238636; }
+        .fail { border-left: 5px solid #f85149; background: #2a1215; }
+        .msg { flex-grow: 1; font-family: 'Cascadia Code', monospace; font-size: 0.85rem; }
+        .badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; background: #30363d; margin-left: 10px; color: #8b949e; text-transform: uppercase; font-weight: bold; }
+        .summary { margin-top: 30px; padding: 20px; border-radius: 8px; background: #0d1117; border: 1px solid #3b82f6; text-align: center; }
     </style>
 </head>
 <body>
-    
-    <nav id="app-shell" class="app-shell"></nav>
+    <div class="container">
+        <a href="../index.html#/" class="nav-link">← Volver al Dashboard</a>
+        <h1>🧪 SOS v5.7: Test de Estrés del Kernel</h1>
+        <div id="results"></div>
+        <div id="summary-box"></div>
+    </div>
 
-    <div id="app"></div>
+<script type="module">
+        import { store } from '../js/core/store.js';
 
-    <script type="module">
-        import { store } from './js/core/store.js';
-        import { DashboardView } from './js/views/DashboardView.js';
-        import { ProjectView } from './js/views/ProjectView.js';
-        import { ProjectEditView } from './js/views/ProjectEditView.js';
-        import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
-        import { UserDashboardView } from './js/views/UserDashboardView.js';
-        import { ContributorProfileView } from './js/views/ContributorProfileView.js';
-        import { SettingsView } from './js/views/SettingsView.js';
-        import { AboutView } from './js/views/AboutView.js';
+        function runSuite() {
+            const results = document.getElementById('results');
+            let passed = 0; let total = 0;
 
-        const app = document.getElementById('app');
+            const assert = (condition, message, tag) => {
+                total++;
+                const div = document.createElement('div');
+                div.className = `test-card ${condition ? "pass" : "fail"}`;
+                if(condition) passed++;
+                div.innerHTML = `<span style="margin-right:15px">${condition ? '✅' : '❌'}</span>
+                                 <span class="msg">${message}</span>
+                                 <span class="badge">${tag}</span>`;
+                results.appendChild(div);
+            };
 
-        // 🧠 RENDERIZADOR DEL APP SHELL (Barra de Navegación)
-        function renderAppShell() {
-            const state = store.getState();
-            const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
-            const shellContainer = document.getElementById('app-shell');
+            // --- FASE 1: NÚCLEO ---
+            assert(typeof store.calculateResilience === 'function', "Función de Resiliencia presente", "KERNEL");
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj', nombre: 'Test Project', sector: 'marketing' } });
+            const p = store.getState().projects.find(x => x.id === 'test-proj');
+            assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
             
-            let identityHtml = '';
+            // --- FASE 2: ONTOLOGÍA BASE ---
+            assert(p.roles && p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
+            const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
+            assert(anxanetaRole !== undefined && anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
 
-            if (session.role === 'admin') {
-                identityHtml = `<span class="badge" style="background: rgba(248, 81, 73, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red);">👑 Ecosystem Owner</span>`;
-            } else {
-                const user = state.globalUsers.find(u => u.id === session.activeUserId);
-                const userName = user ? user.name : session.activeUserId;
-                identityHtml = `<span class="badge" style="background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue);">👤 ${userName} (${session.activeUserId})</span>`;
+            // --- FASE 3: EDICIÓN ---
+            const anxanetaId = anxanetaRole.id;
+            store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: 'test-proj', roleId: anxanetaId, field: 'name', value: 'CEO Global' } });
+            const pUpdated = store.getState().projects.find(x => x.id === 'test-proj');
+            assert(pUpdated.roles.find(r => r.id === anxanetaId).name === 'CEO Global', "Edición de nombres de roles", "STORE");
+            
+            store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: 'test-proj', description: 'Misión IA' } });
+            assert(store.getState().projects.find(x => x.id === 'test-proj').description === 'Misión IA', "Metadatos persistidos", "DESIGN");
+
+            // --- FASE 4: CICLO DE VIDA ---
+            store.dispatch({ type: 'CREATE_ROLE', payload: { projectId: 'test-proj', name: 'Analista', levelId: '@baixos' } });
+            let pAfterCreate = store.getState().projects.find(x => x.id === 'test-proj');
+            const newRole = pAfterCreate.roles.find(r => r.name === 'Analista');
+            assert(newRole !== undefined && newRole.price === 45, "Herencia financiera en nuevos roles", "ONTOLOGY");
+
+            store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId: 'test-proj', roleId: newRole.id } });
+            assert(store.getState().projects.find(proj => proj.id === 'test-proj').roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad vía Archivado", "STORE");
+
+            // --- FASE 5: ECONOMÍA ---
+            const dososRole = pAfterCreate.roles.find(r => r.levelId === '@dosos');
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'test-proj', tx: { from: anxanetaId, to: dososRole.id, horas: 2, entregable: 'Plan Q1', tipo: 'tangible' } } });
+            const tx1 = store.getState().projects.find(x => x.id === 'test-proj').transactions[0];
+            
+            assert(tx1.valorCongelado === (2 * 3.0 * 90), "Cálculo financiero (540€) OK", "ECONOMY");
+            assert(tx1.hash !== undefined, "Hash de seguridad generado", "SECURITY");
+
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'test-proj', tx: { from: dososRole.id, to: anxanetaId, horas: 1, entregable: 'Review', tipo: 'intangible' } } });
+            const tx2 = store.getState().projects.find(x => x.id === 'test-proj').transactions[1];
+            assert(tx2.prevHash === tx1.hash, "Triple Entrada: Chaining de hashes OK", "SECURITY");
+
+            // --- FASE 6: ANALÍTICA ---
+            const salud = store.calculateResilience('test-proj');
+            assert(salud > 0, `Salud sistémica calculada (${salud}%)`, "RESILIENCE");
+
+            // --- FASE 7: INTELIGENCIA ---
+            store.dispatch({ type: 'UPDATE_TRANSACTION_PHASE', payload: { projectId: 'test-proj', txHash: tx1.hash, fase: 1 } });
+            const prompt = store.generateSystemPrompt('test-proj');
+            assert(prompt.includes('Fase 1:'), "Prompt incluye secuenciación temporal", "INTEL");
+            assert(prompt.includes('CEO Global'), "Prompt incluye personalización de roles", "INTEL");
+
+            // --- FASE 8: CONFIGURACIÓN GLOBAL ---
+            assert(store.getState().config !== undefined, "Objeto config global inicializado", "KERNEL");
+            store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: 'light', ecosystemName: 'Test Ecosistema' } });
+            const currentConfig = store.getState().config;
+            assert(currentConfig.theme === 'light' && currentConfig.ecosystemName === 'Test Ecosistema', "Actualización de Configuración Global OK", "SETTINGS");
+
+            // --- FASE 9: AUTO-LEDGER (INYECCIÓN JSON) ---
+            assert(typeof store.importSessionJSON === 'function', "El importador JSON existe en el Kernel", "PARSER");
+            
+            const dynTestUser1 = '@test_user_' + Date.now();
+            const dynTestUser2 = '@test_ai_' + Date.now();
+
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser', uniqueId: dynTestUser1 } });
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI', uniqueId: dynTestUser2 } });
+            const pForJson = store.getState().projects.find(x => x.id === 'test-proj');
+            
+            const numLedgersBefore = pForJson.ledger ? pForJson.ledger.length : 0;
+            
+            const mockAIResponse = [
+                { userId: dynTestUser1, roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
+                { userId: dynTestUser2, roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
+            ];
+            
+            store.importSessionJSON('test-proj', mockAIResponse);
+            
+            const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
+            assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
+
+            // --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
+            assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
+            
+            const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 100000);
+
+            store.dispatch({ 
+                type: 'ADD_USER', 
+                payload: { projectId: 'test-proj', name: 'Laura (Node Dev)', uniqueId: dynLauraId, walletOrSocial: '0x123...abc' } 
+            });
+            
+            const stateAfterUser = store.getState();
+            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.id === dynLauraId);
+            
+            assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con @id único", "IDENTITY");
+            assert(lauraGlobal.wallet === '0x123...abc', "Metadatos extendidos (Wallet/Social) guardados", "IDENTITY");
+            
+            const lauraInProject = stateAfterUser.projects.find(x => x.id === 'test-proj').usuarios.find(u => u.id === dynLauraId);
+            assert(lauraInProject !== undefined, "Usuario enlazado al Proyecto local usando su @id", "IDENTITY");
+
+            let errorThrown = false;
+            try {
+                store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: dynLauraId } });
+            } catch (error) {
+                errorThrown = true;
             }
+            assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
 
-            shellContainer.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 6px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:0.9rem;">TT</div>
-                        <b style="color: var(--text-heading); font-size: 1.1rem; letter-spacing: 0.05rem;">SOS <span style="color:var(--accent-blue);">v5.6</span></b>
-                    </a>
-                </div>
-                
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    ${identityHtml}
-                    <button id="btn-global-login" class="btn btn-secondary text-small" style="padding: 6px 12px; border-radius: 20px;">
-                        ${session.role === 'admin' ? 'Simular Usuario' : 'Volver a Admin'}
-                    </button>
-                </div>
-            `;
-        }
+            // --- FASE 11: CONTROL DE ACCESO (RBAC) Y SESIONES ---
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynLauraId } });
+            const sessionActive = store.getState().session;
+            
+            assert(sessionActive !== undefined, "Objeto de sesión creado en el Kernel", "RBAC");
+            assert(sessionActive.activeUserId === dynLauraId, "El usuario activo se registró correctamente en la sesión", "RBAC");
+            assert(sessionActive.role === 'user', "Por defecto, el usuario entra con permisos básicos", "RBAC");
 
-        // 🛡️ EVENTO GLOBAL DE CAMBIO DE SESIÓN
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'btn-global-login') {
-                const state = store.getState();
-                const currentRole = state.session?.role || 'admin';
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
+            assert(store.getState().session.role === 'admin', "El Administrador recupera el rol máximo (admin)", "RBAC");
 
-                if (currentRole === 'user') {
-                    // Cierra sesión y vuelve a ser Dios (Admin)
-                    store.dispatch({ type: 'LOGOUT_USER' });
-                    window.location.hash = '#/';
-                } else {
-                    // Muestra el prompt para elegir usuario
-                    const usersList = state.globalUsers.map(u => u.id).join(', ');
-                    const id = prompt(`Simulador de Autenticación:\n\nIntroduce el @id de un usuario existente para tomar su control.\nUsuarios activos: ${usersList || 'Ninguno'}`);
-                    
-                    if (id) {
-                        try {
-                            const safeId = id.startsWith('@') ? id : '@' + id;
-                            store.dispatch({ type: 'LOGIN_USER', payload: { userId: safeId } });
-                            window.location.hash = `#/user-dashboard`; // Te lleva a TU portal
-                        } catch (error) {
-                            alert("❌ " + error.message);
-                        }
+            // 🚀 --- FASE 12: ONTOLOGÍA DINÁMICA (NUEVO v5.7) ---
+            assert(store.getState().ontology !== undefined && store.getState().ontology.sectores !== undefined, "La Ontología es accesible desde el estado dinámico", "ONTOLOGY");
+            
+            // Inyectamos un nuevo sector dinámicamente
+            store.dispatch({
+                type: 'ADD_ONTOLOGY_SECTOR',
+                payload: {
+                    sectorId: 'deep-tech',
+                    rolesData: {
+                        "@anxaneta": { name: "Lead Scientist", prompt: "Diriges la investigación..." },
+                        "@aixecador": { name: "Lab Manager", prompt: "Coordinas el laboratorio..." },
+                        "@dosos": { name: "Peer Reviewer", prompt: "Auditas la ciencia..." },
+                        "@baixos": { name: "Researcher", prompt: "Ejecutas experimentos..." },
+                        "@pinya": { name: "Data Analyst", prompt: "Procesas métricas..." }
                     }
                 }
-            }
-        });
+            });
 
-        // 🛣️ EL ENRUTADOR PRINCIPAL
-        function router() {
-            const hash = window.location.hash || '#/';
-            const parts = hash.split('/');
-            const pId = parts[2];
-            const action = parts[3];
+            const newOntology = store.getState().ontology;
+            assert(newOntology.sectores['deep-tech'] !== undefined, "El EO puede crear nuevos Sectores dinámicamente", "DATABASE");
+            assert(newOntology.sectores['deep-tech']['@anxaneta'].name === 'Lead Scientist', "Los roles del nuevo sector se guardaron correctamente", "DATABASE");
 
-            app.classList.remove('fade-in');
-            void app.offsetWidth; 
+            // Creamos un proyecto para probar que coge la ontología nueva
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj-2', nombre: 'Deep Tech Lab', sector: 'deep-tech' } });
+            const p2 = store.getState().projects.find(x => x.id === 'test-proj-2');
+            assert(p2.roles.find(r => r.levelId === '@anxaneta').name === 'Lead Scientist', "Un nuevo proyecto usa la ontología dinámica correctamente", "CORE");
 
-            try {
-                if (hash === '#/' || hash === '' || hash === '#') app.innerHTML = DashboardView.render();
-                else if (hash === '#/settings') app.innerHTML = SettingsView.render();
-                else if (hash === '#/about') app.innerHTML = AboutView.render();
-                else if (hash.startsWith('#/user-dashboard')) app.innerHTML = UserDashboardView.render();
-                else if (hash.startsWith('#/project/') && parts[3] === 'user') {
-                    const uId = parts[4];
-                    app.innerHTML = ContributorProfileView.render(pId, uId);
-                } 
-                else if (hash.startsWith('#/project/')) {
-                    if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
-                    else if (action === 'accounting') app.innerHTML = ProjectAccountingView.render(pId);
-                    else app.innerHTML = ProjectView.render(pId);
-                } 
-                else app.innerHTML = `<div class="container text-center"><h1>404</h1></div>`;
-            } catch (e) {
-                console.error("SOS Router Error:", e);
-                app.innerHTML = `<div class="container"><div class="panel" style="border-color:var(--accent-red);"><h3>Error</h3><p>${e.message}</p></div></div>`;
-            }
-            
-            app.classList.add('fade-in');
+            // --- RESULTADO ---
+            const summary = document.getElementById('summary-box');
+            summary.className = "summary";
+            const ok = passed === total;
+            summary.innerHTML = `<h3 style="margin:0">Certificación: ${passed}/${total}</h3>
+                                 <p style="font-weight:bold; color:${ok ? '#3fb950' : '#f85149'}; margin:5px 0 0 0;">
+                                    ${ok ? "🚀 KERNEL v5.7 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
+                                 </p>`;
         }
-
-        // 🔄 INICIALIZACIÓN REACTIVA
-        window.addEventListener('hashchange', router);
         
-        window.addEventListener('store-ready', () => {
-            const theme = store.getState().config?.theme || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-            renderAppShell(); // <-- Dibuja la barra superior
-            router();         // <-- Dibuja el contenido
-        });
-        
-        // Arranque en frío
-        if (store.getState()) {
-            const theme = store.getState().config?.theme || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-            renderAppShell();
-            router();
-        }
+        runSuite();
     </script>
 </body>
 </html>
