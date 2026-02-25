@@ -1,8 +1,55 @@
 import { store } from '../core/store.js';
 import { ValueMapView } from './ValueMapView.js';
 
-// 🚀 ESTADO GLOBAL DE LA VISTA DEL MAPA
 let activeMapView = 'teorico';
+
+// 🧠 HELPER: Generador de Sugerencias para el formulario de entregables
+const generateSuggestionsHtml = (roleId, project) => {
+    if (!roleId || !project) return '';
+    const role = project.roles.find(r => r.id === roleId);
+    if (!role || !role.systemPrompt) return '';
+
+    const lines = role.systemPrompt.split('\n');
+    let html = '';
+    
+    lines.forEach(line => {
+        if (line.includes('- [Tangible]') || line.includes('- [Intangible]')) {
+            const isTangible = line.includes('[Tangible]');
+            const type = isTangible ? 'tangible' : 'intangible';
+            const text = line.split('] ')[1]?.trim(); 
+            
+            if (text) {
+                const color = isTangible ? 'var(--accent-blue)' : 'var(--accent-purple)';
+                const shortTitle = text.split('.')[0]; 
+                
+                html += `
+                    <div class="btn-use-suggestion" data-tipo="${type}" data-titulo="${shortTitle}" data-texto="${text}"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid ${color}; color: ${color}; 
+                        padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; margin-top: 8px; transition: 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                        ✨ Usar: <b>[${isTangible ? 'Tangible' : 'Intangible'}]</b> ${shortTitle}
+                    </div>
+                `;
+            }
+        }
+    });
+
+    if (html === '') return '<div class="text-muted text-small" style="margin-top:10px;">Edita el System Prompt de este rol en el Configurador para ver sugerencias IA aquí.</div>';
+    
+    return `<div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 8px;">
+                <label class="form-label text-muted" style="font-size: 0.65rem; letter-spacing: 0.05rem;">✨ SUGERENCIAS DEL NODO EMISOR:</label>
+                ${html}
+            </div>`;
+};
+
+// 🛡️ EVENTOS REACTIVOS DEL FORMULARIO
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'tx-from') {
+        const projectId = e.target.getAttribute('data-pid');
+        const project = store.getState().projects.find(p => p.id === projectId);
+        document.getElementById('tx-suggestions-container').innerHTML = generateSuggestionsHtml(e.target.value, project);
+    }
+});
 
 document.addEventListener('click', (e) => {
     // --- LÓGICA DEL SELECTOR DE MAPA ---
@@ -12,7 +59,7 @@ document.addEventListener('click', (e) => {
         document.getElementById('app').innerHTML = ProjectView.render(projectId);
     }
 
-    // --- CREACIÓN RÁPIDA ---
+    // --- CREACIÓN RÁPIDA DE ROL ---
     if (e.target.id === 'btn-add-role-view') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('nr-name').value;
@@ -21,17 +68,43 @@ document.addEventListener('click', (e) => {
         store.dispatch({ type: 'CREATE_ROLE', payload: { projectId, name, levelId } });
         document.getElementById('app').innerHTML = ProjectView.render(projectId);
     }
+
+    // --- AUTOCOMPLETAR SUGERENCIAS IA ---
+    const btnSuggestion = e.target.closest('.btn-use-suggestion');
+    if (btnSuggestion) {
+        const tipo = btnSuggestion.getAttribute('data-tipo');
+        const titulo = btnSuggestion.getAttribute('data-titulo');
+        const textoCompleto = btnSuggestion.getAttribute('data-texto');
+
+        document.getElementById('tx-tipo').value = tipo;
+        document.getElementById('tx-entregable').value = titulo;
+        
+        const promptBox = document.getElementById('tx-prompt');
+        promptBox.value = `[INSTRUCCIÓN TÁCTICA PARA: #${titulo.replace(/\s+/g,'')}]\nRequerimiento: ${textoCompleto}\nDirectriz: Cumple con tu misión y valida dependencias antes de emitir.`;
+        promptBox.style.boxShadow = '0 0 15px var(--accent-green)';
+        setTimeout(() => promptBox.style.boxShadow = 'none', 500);
+    }
     
+    // --- INYECCIÓN DE TRANSACCIÓN ---
     if (e.target.id === 'btn-add-tx-view') {
         const projectId = e.target.getAttribute('data-pid');
         const from = document.getElementById('tx-from').value;
         const to = document.getElementById('tx-to').value;
         const entregable = document.getElementById('tx-entregable').value;
         const tipo = document.getElementById('tx-tipo').value;
+        const promptTactico = document.getElementById('tx-prompt').value;
 
         if (!entregable) return alert("Por favor, define qué se entrega en esta transacción.");
-        store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, tx: { from, to, entregable, tipo, horas: 1 } } });
+        store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId, tx: { from, to, entregable, tipo, systemPrompt: promptTactico, horas: 1 } } });
         document.getElementById('app').innerHTML = ProjectView.render(projectId);
+    }
+
+    // --- ORDENAR POR GRAVEDAD ---
+    if (e.target.id === 'btn-sort-gravity') {
+        const projectId = e.target.getAttribute('data-pid');
+        store.dispatch({ type: 'SORT_TRANSACTIONS_BY_GRAVITY', payload: { projectId } });
+        e.target.innerHTML = '✅ Flujos Ordenados';
+        setTimeout(() => document.getElementById('app').innerHTML = ProjectView.render(projectId), 1000); 
     }
 
     // --- GOBERNANZA OPERATIVA (PINGS Y LEDGER) ---
@@ -66,6 +139,8 @@ export const ProjectView = {
         const activeRoles = (project.roles || []).filter(r => !r.isArchived);
         const optionsHtml = activeRoles.map(n => `<option value="${n.id}">${n.name} (${n.levelId})</option>`).join('');
         const sortedTxs = [...(project.transactions || [])].sort((a,b) => (a.fase || 99) - (b.fase || 99));
+
+        const initialSuggestionsHtml = activeRoles.length > 0 ? generateSuggestionsHtml(activeRoles[0].id, project) : '';
 
         // 🚀 TABLA DE GOBERNANZA
         const tableHTML = sortedTxs.length === 0 ? '<p class="text-muted text-center" style="padding: 10px;">No hay flujos teóricos creados.</p>' : `
@@ -117,7 +192,6 @@ export const ProjectView = {
             </table>
         `;
 
-        // Lógica de estilos para los botones del mapa
         const getBtnStyle = (view) => `
             background: ${activeMapView === view ? 'var(--bg-panel)' : 'transparent'};
             color: ${activeMapView === view ? 'var(--text-heading)' : 'var(--text-muted)'};
@@ -125,7 +199,6 @@ export const ProjectView = {
             padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
         `;
 
-        // Textos dinámicos del mapa
         const mapDescriptions = {
             'teorico': 'Visualizando el <b>Diseño Estratégico</b>. Muestra qué roles deberían interactuar según la ontología.',
             'contable': 'Visualizando la <b>Realidad Operativa</b>. Muestra las interacciones que han generado Slicing Pie real en el Ledger.',
@@ -137,17 +210,17 @@ export const ProjectView = {
                 <header style="margin-bottom: 30px;">
                     <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
                         <a href="#/" style="color: var(--accent-blue); text-decoration: none;">Dashboard</a> /
-                        <b style="color: #f0f6fc;">${project.nombre}</b> /
+                        <b style="color: var(--text-heading);">${project.nombre}</b> /
                         <span style="color: var(--accent-gold); font-weight:bold;">Maping & Operación</span> /
-                        <a href="#/project/${projectId}/edit" style="color: var(--text-muted); text-decoration: none;">Configurador</a> /
-                        <a href="#/project/${projectId}/accounting" style="color: var(--text-muted); text-decoration: none;">Accounting</a>
+                        <a href="#/project/${projectId}/edit" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='var(--text-heading)'" onmouseout="this.style.color='var(--text-muted)'">Configurador</a> /
+                        <a href="#/project/${projectId}/accounting" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='var(--text-heading)'" onmouseout="this.style.color='var(--text-muted)'">Accounting</a>
                     </div>
                     
                     <div style="background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(163, 113, 247, 0.05) 100%); border: 1px solid var(--accent-blue); border-radius: 12px; padding: 25px;">
                         <h1 style="color: var(--accent-blue); margin-top: 0;">Centro de Operaciones VNA</h1>
                         <p style="margin: 0; font-size: 1rem; color: var(--text-main);">
                             <b>Propuesta de Valor:</b> Transforma el diseño estratégico en operaciones medibles. 
-                            Asigna tareas mediante <i>Pings</i>, evalúa la salud real de la red en el mapa y consolida el trabajo finalizado en <i>Equity Real (Slicing Pie)</i>.
+                            Inyecta flujos, asigna tareas mediante <i>Pings</i> y consolida el trabajo finalizado en <i>Equity Real</i>.
                         </p>
                     </div>
                 </header>
@@ -175,8 +248,44 @@ export const ProjectView = {
                 <div style="display: grid; grid-template-columns: 350px 1fr; gap: 30px;">
                     
                     <aside style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <div class="panel" style="border-color: var(--accent-green); background: linear-gradient(180deg, rgba(35, 134, 54, 0.05) 0%, transparent 100%);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h4 style="margin: 0; color: var(--accent-green);">⚡ Inyectar Flujo al Mapa</h4>
+                                <button id="btn-sort-gravity" data-pid="${projectId}" class="btn btn-outline" style="font-size: 0.6rem; padding: 4px 8px;">🪄 Auto-Ordenar</button>
+                            </div>
+                            
+                            <label class="form-label">De: (Agente Emisor)</label>
+                            <select id="tx-from" data-pid="${projectId}" class="form-control text-small" style="border-color: var(--accent-blue);">${optionsHtml}</select>
+                            
+                            <div id="tx-suggestions-container">
+                                ${initialSuggestionsHtml}
+                            </div>
+                            
+                            <hr style="border-color: rgba(255,255,255,0.05); margin: 15px 0;">
+
+                            <label class="form-label">Para: (Agente Receptor)</label>
+                            <select id="tx-to" class="form-control text-small">${optionsHtml}</select>
+                            
+                            <label class="form-label">Nombre del Entregable (#Hashtag):</label>
+                            <input id="tx-entregable" class="form-control text-small" placeholder="Ej: Diseño Completado">
+                            
+                            <label class="form-label">Naturaleza del Flujo:</label>
+                            <select id="tx-tipo" class="form-control text-small">
+                                <option value="tangible">Tangible (Material / Código)</option>
+                                <option value="intangible">Intangible (Guía / Feedback)</option>
+                            </select>
+
+                            <label class="form-label" style="margin-top:10px;">Prompt Táctico (Instrucciones IA):</label>
+                            <textarea id="tx-prompt" class="form-control" 
+                                style="height: 80px; background: var(--bg-panel); font-family: 'Cascadia Code', monospace; font-size: 0.75rem;" 
+                                placeholder="Autocompletado al usar una sugerencia..."></textarea>
+                            
+                            <button id="btn-add-tx-view" data-pid="${projectId}" class="btn btn-primary btn-block text-small" style="margin-top: 10px;">Trazar Flujo en SVG</button>
+                        </div>
+
                         <div class="panel-surface" style="border: 1px dashed var(--border-color);">
-                            <h4 style="margin-top: 0; color: var(--text-heading);">+ Inyectar Nodo</h4>
+                            <h4 style="margin-top: 0; color: var(--text-heading);">+ Inyectar Nodo Rápido</h4>
                             <input id="nr-name" class="form-control text-small" placeholder="Nombre del Rol (Ej: QA)">
                             <select id="nr-level" class="form-control text-small">
                                 <option value="@anxaneta">Dirección (@anxaneta)</option>
@@ -186,22 +295,6 @@ export const ProjectView = {
                                 <option value="@pinya">Soporte (@pinya)</option>
                             </select>
                             <button id="btn-add-role-view" data-pid="${projectId}" class="btn btn-secondary btn-block text-small">Añadir al Ecosistema</button>
-                        </div>
-
-                        <div class="panel-surface" style="border: 1px dashed var(--accent-purple);">
-                            <h4 style="margin-top: 0; color: var(--accent-purple);">⚡ Nuevo Flujo Teórico</h4>
-                            <label class="form-label">De:</label>
-                            <select id="tx-from" class="form-control text-small">${optionsHtml}</select>
-                            <label class="form-label">Para:</label>
-                            <select id="tx-to" class="form-control text-small">${optionsHtml}</select>
-                            <label class="form-label">Entregable:</label>
-                            <input id="tx-entregable" class="form-control text-small" placeholder="Ej: Código Revisado">
-                            <label class="form-label">Tipo:</label>
-                            <select id="tx-tipo" class="form-control text-small">
-                                <option value="tangible">Tangible (Azul)</option>
-                                <option value="intangible">Intangible (Morado)</option>
-                            </select>
-                            <button id="btn-add-tx-view" data-pid="${projectId}" class="btn btn-primary btn-block text-small" style="margin-top: 10px;">Trazar Flujo</button>
                         </div>
                     </aside>
 
