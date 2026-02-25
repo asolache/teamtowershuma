@@ -137,6 +137,50 @@
         ],
         "versiones": [
             {
+                "version": "v5.4",
+                "titulo": "Configurador Global & Modo Claro/Oscuro",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: SettingsView y Persistencia Global", "horas": 1.5 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Refactor store.js (state.config)", "horas": 0.2 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "UI: SettingsView.js y Theming CSS", "horas": 0.4 },
+                    { "fase": 4, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Audit: Revisión UI/UX Configurador", "horas": 0.5 }
+                ]
+            },
+            {
+                "version": "v5.3",
+                "titulo": "Portal de Contribuidor y 3 Vistas VNA",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Diseño de 3 Vistas (Teórico/Contable/Fricción)", "horas": 2.5 },
+                    { "fase": 2, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Portal de Usuario con Proof of Work", "horas": 2.0 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: UserDashboardView.js (Pings & Perfil)", "horas": 0.4 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ValueMapView.js (SVG Dinámico 3 Lentes)", "horas": 0.5 },
+                    { "fase": 5, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Scope Error en UserDashboard", "horas": 0.3 },
+                    { "fase": 6, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Corrección variable totalAportaciones", "horas": 0.1 }
+                ]
+            },
+            {
+                "version": "v5.2",
+                "titulo": "IDE Multi-Agente & Generador de Prompts",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Autogeneración de System Prompts", "horas": 3.0 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js (Generador Contexto)", "horas": 0.4 },
+                    { "fase": 3, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Fix UI de Contabilidad (ProjectAccountingView)", "horas": 1.0 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Restauración de Reducers ADD_USER", "horas": 0.3 },
+                    { "fase": 5, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Nuevo Códice IA Documentado", "horas": 1.0 },
+                    { "fase": 6, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Doc: SOS_AI_System_Prompt_v1.md", "horas": 0.2 }
+                ]
+            },
+            {
+                "version": "v5.0 & v5.1",
+                "titulo": "Gobernanza Asíncrona (Ping, Report, Approve)",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Modelo de Confianza Ecosystem Owner", "horas": 2.5 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js v5.1 (Estados de Transacción)", "horas": 0.3 },
+                    { "fase": 3, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Test: Unit Testing validation_suite.html", "horas": 1.5 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Test Pass (14/14 verdes)", "horas": 0.2 }
+                ]
+            },
+            {
                 "version": "v4.6",
                 "titulo": "Gravedad de Valor & Ontología de Prompts",
                 "transacciones": [
