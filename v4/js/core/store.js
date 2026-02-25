@@ -14,6 +14,7 @@ const MAX_PROMPT_LENGTH = 4000;
 // 2. NÚCLEO DEL SISTEMA
 export class TTStore {
     constructor() {
+        // Esta es la "Semilla" inicial. Si el sistema es nuevo, cargará esto.
         this.ontologyStatic = {
             sectores: { 
                 marketing: { 
@@ -104,8 +105,14 @@ export class TTStore {
             "@pinya": "Misión: Soporte, infraestructura y mantenimiento."
         };
 
-        // 🚀 NUEVO: El estado ahora incluye el nodo 'config', 'globalUsers' y 'session'
-        this.state = { projects: [], ontology: this.ontologyStatic, config: {}, globalUsers: [], session: {} };
+        // 🚀 INICIALIZACIÓN CON CLON PROFUNDO DE ONTOLOGÍA
+        this.state = { 
+            projects: [], 
+            ontology: JSON.parse(JSON.stringify(this.ontologyStatic)), 
+            config: {}, 
+            globalUsers: [], 
+            session: {} 
+        };
         this.init();
     }
 
@@ -117,21 +124,24 @@ export class TTStore {
                 this.state.projects = data.projects || []; 
                 this.state.config = data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
                 this.state.globalUsers = data.globalUsers || []; 
-                // 🚀 NUEVO: Cargamos la sesión o ponemos 'admin' por defecto
                 this.state.session = data.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
+                // 🚀 CARGAMOS LA ONTOLOGÍA DINÁMICA O LA DE POR DEFECTO
+                this.state.ontology = data.ontology || JSON.parse(JSON.stringify(this.ontologyStatic));
             } catch (e) { 
                 this.state.projects = [];
                 this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
                 this.state.globalUsers = []; 
                 this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
+                this.state.ontology = JSON.parse(JSON.stringify(this.ontologyStatic));
             }
         } else {
             this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
             this.state.globalUsers = []; 
             this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
+            this.state.ontology = JSON.parse(JSON.stringify(this.ontologyStatic));
         }
         
-        // 🚀 Aplicamos el tema visual al arrancar
+        // Aplicamos el tema visual al arrancar
         document.documentElement.setAttribute('data-theme', this.state.config.theme);
     }
 
@@ -140,7 +150,8 @@ export class TTStore {
             projects: this.state.projects,
             config: this.state.config,
             globalUsers: this.state.globalUsers,
-            session: this.state.session // 🚀 GUARDAMOS LA SESIÓN
+            session: this.state.session,
+            ontology: this.state.ontology // 🚀 GUARDAMOS LA BASE DE DATOS ONTOLÓGICA
         }));
         window.dispatchEvent(new CustomEvent('store-ready')); 
     }
@@ -177,7 +188,7 @@ export class TTStore {
         return prompt;
     }
 
-    // 🚀 IMPORTADOR DE SESIONES IA (JSON)
+    // IMPORTADOR DE SESIONES IA (JSON)
     importSessionJSON(projectId, jsonPayload) {
         if (!jsonPayload || !Array.isArray(jsonPayload)) {
             console.error("El payload debe ser un array JSON válido.");
@@ -203,9 +214,10 @@ export class TTStore {
 
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
         const sKey = sector || 'web3';
-        const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
-        const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId) => {
-            const def = this.ontologyStatic.niveles[levelId];
+        // 🚀 AHORA LEE DE LA ONTOLOGÍA DINÁMICA DEL ESTADO, NO DE LA ESTÁTICA
+        const sectorData = this.state.ontology.sectores[sKey] || this.state.ontology.sectores['marketing'];
+        const initialRoles = Object.keys(this.state.ontology.niveles).map((levelId) => {
+            const def = this.state.ontology.niveles[levelId];
             return {
                 id: `role-${id}-${levelId.replace('@','')}`, 
                 levelId: levelId,
@@ -229,7 +241,14 @@ export class TTStore {
         let p = (payload && payload.projectId) ? this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
-            // 🚀 NUEVO: GESTIÓN DE SESIONES (RBAC)
+            // 🚀 NUEVO: ONTOLOGÍA DINÁMICA
+            case 'ADD_ONTOLOGY_SECTOR':
+                if (payload.sectorId && payload.rolesData) {
+                    if (!this.state.ontology.sectores) this.state.ontology.sectores = {};
+                    this.state.ontology.sectores[payload.sectorId] = payload.rolesData;
+                }
+                break;
+
             case 'LOGIN_USER':
                 if (payload.userId === 'ecosystem-admin') {
                     this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
@@ -322,7 +341,7 @@ export class TTStore {
                         if (payload.field === 'systemPrompt' && payload.value.length > MAX_PROMPT_LENGTH) return;
                         role[payload.field] = payload.value;
                         if (payload.field === 'levelId') {
-                            const def = this.ontologyStatic.niveles[payload.value];
+                            const def = this.state.ontology.niveles[payload.value];
                             if (def) { role.price = def.precio; role.multiplier = def.multiplier; }
                         }
                     }
@@ -338,7 +357,7 @@ export class TTStore {
 
             case 'CREATE_ROLE':
                 if (p) {
-                    const def = this.ontologyStatic.niveles[payload.levelId];
+                    const def = this.state.ontology.niveles[payload.levelId];
                     p.roles.push({
                         id: `role-${Date.now()}`, name: payload.name, levelId: payload.levelId,
                         systemPrompt: this.orbitPrompts[payload.levelId],
