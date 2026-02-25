@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v4.5 | Ecosistema</title>
+    <title>TeamTowers SOS v5.0 | Ecosistema</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
         :root {
@@ -19,6 +19,7 @@
             --accent-green-hover: #2ea043;
             --accent-purple: #a371f7;
             --accent-red: #f85149;
+            --accent-gold: #d29922; /* Añadido para el Slicing Pie y alertas */
             
             --radius-sm: 4px;
             --radius-md: 8px;
@@ -80,7 +81,7 @@
 
         .grid-layout {
             display: grid;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 320px 1fr; /* Por defecto (Accounting y Edit pueden sobreescribirlo inline) */
             gap: 25px;
         }
 
@@ -212,18 +213,16 @@
 
     <script type="module">
         import { store } from './js/core/store.js';
-        import { HomeView } from './js/views/HomeView.js';
+        // 🚀 CORRECCIÓN: Importamos DashboardView en lugar de HomeView
+        import { DashboardView } from './js/views/DashboardView.js';
         import { ProjectView } from './js/views/ProjectView.js';
         import { AboutView } from './js/views/AboutView.js';
         import { ProjectEditView } from './js/views/ProjectEditView.js';
         import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
-        
-        // 🚀 NUEVA IMPORTACIÓN: El Portal del Contribuidor
         import { UserDashboardView } from './js/views/UserDashboardView.js';
+        // Si no tienes HomeView o no la usas, no la importamos para evitar errores 404
+        // import { HomeView } from './js/views/HomeView.js'; 
         
-        // 💡 NOTA: Si tienes un TestView.js real, descomenta la línea de abajo e impórtalo.
-        // import { TestView } from './js/views/TestView.js';
-
         const app = document.getElementById('app');
 
         function router() {
@@ -237,18 +236,18 @@
             void app.offsetWidth;
 
             try {
+                // 🚀 CORRECCIÓN: Renderizamos DashboardView en la ruta principal
                 if (hash === '#/' || hash === '' || hash === '#') {
-                    app.innerHTML = HomeView.render();
+                    app.innerHTML = DashboardView.render();
                 
                 } else if (hash === '#/about') {
                     app.innerHTML = AboutView.render();
                 
-                // 🚀 NUEVA RUTA: Carga el dashboard personal del usuario
-                } else if (hash === '#/user') {
+                // 🚀 RUTA DEL USUARIO (CONTRIBUIDOR)
+                } else if (hash === '#/user-dashboard') { // Aseguramos que coincide con el hash en DashboardView
                     app.innerHTML = UserDashboardView.render();
 
                 } else if (hash === '#/test') {
-                    // 💡 Si usas el import de arriba, cambia esta línea por: app.innerHTML = TestView.render();
                     app.innerHTML = `
                         <div class="container container-sm text-center">
                             <header class="header-main" style="justify-content: center;">
@@ -260,6 +259,7 @@
                             </div>
                         </div>`;
                 
+                // RUTAS DE PROYECTO
                 } else if (hash.startsWith('#/project/')) {
                     if (action === 'edit') {
                         app.innerHTML = ProjectEditView.render(pId);
@@ -294,7 +294,7 @@
 
         // --- SISTEMA REACTIVO ---
         window.addEventListener('hashchange', router);
-        window.addEventListener('store-ready', router); // Escucha los cambios del store sin recargar
+        window.addEventListener('store-ready', router);
         
         // Inicialización
         if (store.getState()) router();
