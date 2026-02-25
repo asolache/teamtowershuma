@@ -39,6 +39,33 @@ const generateSuggestionsHtml = (roleId, project) => {
             </div>`;
 };
 
+// 🧠 HELPER AVANZADO: Generador Dinámico de System Prompt del Proyecto
+const generateRichProjectPrompt = (project) => {
+    if (!project) return "";
+    
+    const activeRoles = (project.roles || []).filter(r => !r.isArchived).map(r => `@${r.name.replace(/\s+/g, '')}`).join(', ');
+    const txTags = (project.transactions || []).map(t => `#${t.entregable.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '')}`).join(' ');
+
+    let sectorBase = "Actúas como el orquestador central de un ecosistema de valor.";
+    if (project.sector === 'web3') sectorBase = "Eres una IA especializada en arquitecturas descentralizadas, tokenomics y desarrollo Web3. Tu objetivo es maximizar la resiliencia y el valor on-chain.";
+    if (project.sector === 'marketing') sectorBase = "Eres una IA experta en Growth, Branding y adquisición de usuarios. Tu objetivo es maximizar el ROAS y la percepción de marca.";
+    if (project.sector === 'saas') sectorBase = "Eres una IA orientada a producto digital, escalabilidad y métricas B2B (MRR, Churn).";
+    // ... añade más sectores según necesites ...
+
+    return `[CONTEXTO MAESTRO DEL ECOSISTEMA]
+Sector: ${project.sector.toUpperCase()}
+Misión: ${sectorBase}
+
+[TOPOLOGÍA DE RED]
+Nodos Activos: ${activeRoles || 'Aún sin definir'}
+Vectores Clave: ${txTags || 'Aún sin flujos definidos'}
+
+[INSTRUCCIONES METODOLÓGICAS]
+1. Al recibir un requerimiento, etiqueta tu respuesta referenciando al nodo correspondiente (ej: "Para el @TechLead...").
+2. Prioriza el análisis de riesgo y la viabilidad antes de sugerir ejecución directa.
+3. Evalúa los entregables basándote en la relación esfuerzo/impacto en el Cap Table.`;
+};
+
 // 🛡️ GESTIÓN DE EVENTOS DE EDICIÓN
 document.addEventListener('change', (e) => {
     // 1. Editar Nombre del Rol
@@ -105,7 +132,7 @@ document.addEventListener('click', (e) => {
         });
         const app = document.getElementById('app');
         app.innerHTML = ProjectEditView.render(projectId);
-        console.log("✅ Datos estratégicos sincronizados con el Contexto IA");
+        console.log("✅ Contexto IA Maestro actualizado.");
     }
 
     // Inyectar Nuevo Rol
@@ -167,14 +194,14 @@ document.addEventListener('click', (e) => {
         document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
     }
 
-    // 🚀 NUEVO: Botón para Auto-ordenar Transacciones (Gravedad de Valor)
+    // Botón para Auto-ordenar Transacciones
     if (e.target.id === 'btn-sort-gravity') {
         const projectId = e.target.getAttribute('data-pid');
         store.dispatch({ 
             type: 'SORT_TRANSACTIONS_BY_GRAVITY', 
             payload: { projectId } 
         });
-        // Pequeño feedback al usuario de que se ha ordenado internamente
+        
         const originalText = e.target.innerHTML;
         e.target.innerHTML = '✅ Mapa Ordenado por Gravedad';
         e.target.style.color = 'var(--accent-green)';
@@ -182,7 +209,7 @@ document.addEventListener('click', (e) => {
         
         setTimeout(() => {
             document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
-        }, 1000); // Recarga la vista tras 1 segundo para mostrar el mensaje
+        }, 1000); 
     }
 });
 
@@ -203,25 +230,37 @@ export const ProjectEditView = {
             { id: "@pinya", label: "Support/Base (@pinya)" }
         ];
 
-        // 🧠 Cargamos las sugerencias del primer rol por defecto
         const initialSuggestionsHtml = activeRoles.length > 0 ? generateSuggestionsHtml(activeRoles[0].id, project) : '';
+        
+        // 🧠 Auto-completado inteligente del System Prompt del Proyecto si está vacío
+        const projectDescription = project.description || generateRichProjectPrompt(project);
 
         return `
             <div class="container">
-                <header class="header-main">
-                    <div>
-                        <h1>⚙️ Diseñador de Ontología y Prompts: ${project.nombre}</h1>
-                        <p class="text-muted">Ajusta la base estratégica, los roles y las instrucciones tácticas para la IA</p>
+                <header class="header-main" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; width: 100%;">
+                        <a href="#/" style="color: var(--accent-blue); text-decoration: none;">Dashboard</a> /
+                        <b style="color: #f0f6fc;">${project.nombre}</b> /
+                        <a href="#/project/${projectId}" style="color: var(--text-muted); text-decoration: none;">Maping</a> /
+                        <span style="color: var(--accent-gold);">Edit</span> /
+                        <a href="#/project/${projectId}/accounting" style="color: var(--text-muted); text-decoration: none;">Accounting</a> /
+                        <span style="color: var(--text-muted); opacity: 0.5;">Business (TBD)</span>
                     </div>
-                    <button class="btn btn-secondary" onclick="location.hash='#/project/${projectId}'">← Volver al Mapa</button>
+                    
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-top: 10px;">
+                        <div>
+                            <h1>⚙️ Configurador de Proyecto</h1>
+                            <p class="text-muted">Ajusta la base estratégica, los roles y las instrucciones tácticas para la IA.</p>
+                        </div>
+                    </div>
                 </header>
 
                 <div style="display: grid; grid-template-columns: 380px 1fr; gap: 30px;">
                     
                     <section class="panel" style="border-left: 4px solid var(--accent-purple); align-self: start;">
                         <h3 style="display: flex; justify-content: space-between; align-items: center;">
-                            Misión y Propósito
-                            <span style="font-size: 0.7rem; background: var(--accent-purple); color: white; padding: 2px 8px; border-radius: 10px;">ESTRATÉGICO</span>
+                            Misión y Propósito (Contexto IA)
+                            <span style="font-size: 0.7rem; background: var(--accent-purple); color: white; padding: 2px 8px; border-radius: 10px;">MAESTRO</span>
                         </h3>
                         
                         <div style="margin-bottom: 20px;">
@@ -235,11 +274,11 @@ export const ProjectEditView = {
                                 `).join('')}
                             </select>
                             
-                            <label class="form-label">Descripción / Misión (Lectura IA)</label>
+                            <label class="form-label">System Prompt Global</label>
                             <textarea id="edit-desc" class="form-control" 
-                                style="height: 180px; line-height: 1.5; font-family: monospace; background: #000; color: #a5d6ff; resize: vertical;" 
-                                placeholder="Define el propósito central del proyecto...">${project.description || ''}</textarea>
-                            <p class="text-small text-muted" style="margin-top: 5px;">* Esta descripción define el comportamiento global de todos los agentes IA.</p>
+                                style="height: 250px; line-height: 1.4; font-family: 'Cascadia Code', monospace; background: rgba(0,0,0,0.4); color: #a5d6ff; resize: vertical; border-color: var(--accent-purple);" 
+                                placeholder="Estructura de prompt...">${projectDescription}</textarea>
+                            <p class="text-small text-muted" style="margin-top: 5px;">* Este texto es el "cerebro" base. Fomenta el uso de etiquetas (@rol, #tarea) para un mejor ruteo de las IAs.</p>
                         </div>
 
                         <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-bottom: 25px;">
@@ -248,14 +287,13 @@ export const ProjectEditView = {
                         
                         <div style="padding: 15px; background: rgba(163, 113, 247, 0.05); border: 1px dashed var(--accent-purple); border-radius: 12px;">
                             <h4 style="color: var(--accent-purple); margin:0 0 10px 0; display: flex; align-items: center; gap: 8px;">
-                                🧠 Contexto IA Activo
+                                🧠 Estado del Prompt
                             </h4>
                             <div id="ai-context-preview" style="font-size: 0.85rem; color: #eee;">
                                 <div style="margin-bottom: 8px;"><strong>Sector:</strong> <span style="color: var(--accent-blue);">${project.sector}</span></div>
-                                <div style="margin-bottom: 8px;"><strong>Enfoque:</strong> ${project.description ? project.description.substring(0, 100) + '...' : '<span class="text-muted">Esperando descripción...</span>'}</div>
                                 <div style="display: flex; gap: 5px; margin-top: 10px;">
                                     <span style="height: 8px; width: 8px; background: #00ff00; border-radius: 50%; display: inline-block;"></span>
-                                    <span class="text-small" style="color: #00ff00; font-weight: bold;">IA Lista para Diagnóstico</span>
+                                    <span class="text-small" style="color: #00ff00; font-weight: bold;">IA Lista para Ruteo Semántico</span>
                                 </div>
                             </div>
                         </div>
@@ -263,14 +301,21 @@ export const ProjectEditView = {
 
                     <section class="panel">
                         <h3>Gestión de Roles y Prompts de Agente</h3>
-                        <p class="text-muted text-small">Edita los nombres, niveles y el comportamiento específico (System Prompt) de cada rol.</p>
+                        <p class="text-muted text-small">Define el comportamiento específico (System Prompt) de cada rol utilizando la ontología y entregables.</p>
                         
                         <div style="margin-bottom: 25px;">
-                            ${activeRoles.map(r => `
+                            ${activeRoles.map(r => {
+                                // Enriquecer el prompt del rol si está básico
+                                let rolePrompt = r.systemPrompt || '';
+                                if (!rolePrompt.includes('[CONTEXTO DE ROL]')) {
+                                    rolePrompt = `[CONTEXTO DE ROL]\nAsignación: @${r.name.replace(/\s+/g, '')}\nNivel: ${r.levelId}\n\n${rolePrompt}\n\n[DIRECTRICES DE ENTREGA]\n- Usa # para referenciar tareas.\n- Evalúa dependencias antes de ejecutar.`;
+                                }
+
+                                return `
                                 <div class="panel-surface" style="padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
                                     <div style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center;">
                                         <div>
-                                            <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">NOMBRE DEL ROL</label>
+                                            <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">NOMBRE DEL NODO</label>
                                             <input type="text" 
                                                    class="form-control edit-role-name" 
                                                    data-pid="${projectId}" 
@@ -295,13 +340,14 @@ export const ProjectEditView = {
                                     </div>
                                     
                                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
-                                        <label class="text-small text-muted" style="display:block; font-size:0.65rem; letter-spacing: 0.05rem; color: var(--accent-purple);">SYSTEM PROMPT DEL ROL (Misión y Sugerencias)</label>
+                                        <label class="text-small text-muted" style="display:block; font-size:0.65rem; letter-spacing: 0.05rem; color: var(--accent-purple);">SYSTEM PROMPT DEL AGENTE (Misión y Sugerencias)</label>
                                         <textarea class="form-control role-prompt-input" data-pid="${projectId}" data-rid="${r.id}" 
-                                            style="min-height: 80px; background: rgba(0,0,0,0.3); color: #d2a8ff; font-family: monospace; font-size: 0.8rem; margin: 5px 0 0 0; border-color: transparent;" 
-                                            placeholder="Añade aquí las instrucciones y etiquetas [Tangible] o [Intangible] para alimentar el sugeridor...">${r.systemPrompt || ''}</textarea>
+                                            style="min-height: 120px; background: rgba(0,0,0,0.3); color: #d2a8ff; font-family: monospace; font-size: 0.8rem; margin: 5px 0 0 0; border-color: transparent;" 
+                                            placeholder="Instrucciones del rol...">${rolePrompt}</textarea>
                                     </div>
                                 </div>
-                            `).join('')}
+                                `
+                            }).join('')}
                         </div>
 
                         <div class="panel-surface" style="border: 2px dashed rgba(163, 113, 247, 0.3); background: rgba(163, 113, 247, 0.02);">
@@ -320,11 +366,11 @@ export const ProjectEditView = {
                 <section class="panel" style="border-color: var(--accent-green); margin-top: 30px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                         <div>
-                            <h3 style="color: var(--accent-green); margin-top: 0; margin-bottom: 5px;">📝 Inyección de Entregables Teóricos</h3>
-                            <p class="text-small text-muted" style="margin: 0;">Añade entregables al Mapa de Valor. Usa las sugerencias de la IA para autocompletar.</p>
+                            <h3 style="color: var(--accent-green); margin-top: 0; margin-bottom: 5px;">📝 Entregables para Mapa de Valor</h3>
+                            <p class="text-small text-muted" style="margin: 0;">Plantilla de contabilidad teórica. Transforma la estrategia en tareas ejecutables.</p>
                         </div>
                         <button id="btn-sort-gravity" data-pid="${projectId}" class="btn btn-outline" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(255,255,255,0.2);">
-                            🪄 Ordenar Flujos por Gravedad (Órbitas)
+                            🪄 Ordenar Flujos por Gravedad
                         </button>
                     </div>
                     
@@ -344,9 +390,9 @@ export const ProjectEditView = {
                             <select id="tx-to" class="form-control text-small">${optionsHtml}</select>
                             
                             <label class="form-label">Nombre del Entregable:</label>
-                            <input id="tx-entregable" class="form-control text-small" placeholder="Haz clic en una sugerencia arriba...">
+                            <input id="tx-entregable" class="form-control text-small" placeholder="Ej: Diagrama de Arquitectura">
                             
-                            <label class="form-label">Tipo de Flujo:</label>
+                            <label class="form-label">Naturaleza del Flujo:</label>
                             <select id="tx-tipo" class="form-control text-small">
                                 <option value="tangible">Tangible (Material / Contrato)</option>
                                 <option value="intangible">Intangible (Feedback / Guía)</option>
@@ -354,10 +400,10 @@ export const ProjectEditView = {
                         </div>
 
                         <div style="display: flex; flex-direction: column; height: 100%;">
-                            <label class="form-label" style="color: var(--accent-green);">Prompt del Entregable (Instrucción a la IA):</label>
+                            <label class="form-label" style="color: var(--accent-green);">Prompt del Entregable (Instrucción Específica):</label>
                             <textarea id="tx-prompt" class="form-control" 
                                 style="flex-grow: 1; min-height: 150px; background: #000; color: #7ee787; font-family: monospace; font-size: 0.8rem;" 
-                                placeholder="El texto se autocompletará aquí cuando hagas clic en una sugerencia..."></textarea>
+                                placeholder="El texto se autocompletará aquí cuando hagas clic en una sugerencia, o puedes escribir una instrucción táctica directa..."></textarea>
                             
                             <button id="btn-add-tx-edit" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px;">
                                 Inyectar al Mapa de Valor →
