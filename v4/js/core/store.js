@@ -169,7 +169,63 @@ export class TTStore {
         
         return prompt;
     }
+// 🚀 NUEVO: PARSER DE CHAT A SLICING PIE (AUTO-LEDGER)
+    parseChatToLedger(projectId, rawChatText, humanUserId, aiUserId, humanRoleId, aiRoleId) {
+        if (!rawChatText) return;
 
+        // Limpieza básica y división por saltos de línea largos o indicadores
+        const lines = rawChatText.split('\n').filter(l => l.trim().length > 0);
+        
+        let humanCount = 0;
+        let aiCount = 0;
+
+        // Lógica de heurística muy simple (prototipo): 
+        // Suponemos que líneas cortas o con "User:" son del humano, y bloques largos (código) son de IA.
+        // En este mock, contamos apariciones de ciertas palabras o simplemente iteramos.
+        lines.forEach(line => {
+            if (line.toLowerCase().startsWith('user:') || line.length < 150) {
+                humanCount++;
+            } else if (line.toLowerCase().startsWith('ai:') || line.includes('```') || line.length >= 150) {
+                aiCount++;
+            }
+        });
+
+        // Valores por defecto (Dogfooding metrics)
+        // Humano: 0.1h por prompt (Piensa y dirige)
+        // IA: 0.15h por bloque de código (Ejecuta)
+        const H_HOURS_PER_PROMPT = 0.1;
+        const AI_HOURS_PER_BLOCK = 0.15;
+
+        // Inyectamos en el Ledger por el Humano
+        for (let i = 0; i < humanCount; i++) {
+            this.dispatch({
+                type: 'ADD_LEDGER_ENTRY',
+                payload: {
+                    projectId: projectId,
+                    userId: humanUserId,
+                    roleId: humanRoleId,
+                    receiverId: aiRoleId, // Dirige a la IA
+                    description: `Prompt de Dirección (Sesión Chat #${i+1})`,
+                    horas: H_HOURS_PER_PROMPT
+                }
+            });
+        }
+
+        // Inyectamos en el Ledger por la IA
+        for (let i = 0; i < aiCount; i++) {
+            this.dispatch({
+                type: 'ADD_LEDGER_ENTRY',
+                payload: {
+                    projectId: projectId,
+                    userId: aiUserId,
+                    roleId: aiRoleId,
+                    receiverId: humanRoleId, // Entrega al Humano
+                    description: `Bloque de Ejecución IA (Sesión Chat #${i+1})`,
+                    horas: AI_HOURS_PER_BLOCK
+                }
+            });
+        }
+    }
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
         const sKey = sector || 'web3';
         const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
