@@ -242,20 +242,35 @@ export class TTStore {
                 if (p) p.isVerified = true;
                 break;
 
-           case 'ADD_USER':
+          case 'ADD_USER':
                 if (p) {
                     p.usuarios = p.usuarios || [];
                     this.state.globalUsers = this.state.globalUsers || [];
 
-                    const cleanNameId = payload.name.trim().toLowerCase().replace(/\s+/g, '-');
-                    const safeId = `usr-${cleanNameId}-${Math.random().toString(36).substr(2, 5)}`;
+                    // Si no mandan uniqueId desde la interfaz, generamos uno por retrocompatibilidad
+                    const rawNameId = payload.name.trim().toLowerCase().replace(/\s+/g, '-');
+                    const safeId = payload.uniqueId ? payload.uniqueId.toLowerCase() : `@${rawNameId}-${Math.random().toString(36).substr(2, 4)}`;
                     
-                    const newUserObj = { id: safeId, name: payload.name.trim(), rolePrompt: '' };
+                    // 🛡️ SEGURIDAD: Comprobamos si el ID ya existe en TODA la red global
+                    const existingGlobalUser = this.state.globalUsers.find(u => u.id === safeId);
                     
-                    // 1. Lo guardamos en el catálogo global de la red
+                    if (existingGlobalUser) {
+                        // Si ya existe, lanzamos un error que la UI deberá atrapar
+                        throw new Error(`El identificador único ${safeId} ya está registrado en la red TeamTowers.`);
+                    }
+                    
+                    // Creamos el objeto de identidad soberana
+                    const newUserObj = { 
+                        id: safeId, 
+                        name: payload.name.trim(),
+                        wallet: payload.walletOrSocial || '', // Guardamos la capa 2 (Web3/Social)
+                        rolePrompt: '' 
+                    };
+                    
+                    // 1. Guardamos en el Pool Global
                     this.state.globalUsers.push(newUserObj);
                     
-                    // 2. Lo vinculamos al proyecto actual (Retrocompatibilidad)
+                    // 2. Vinculamos al Proyecto Local
                     p.usuarios.push(newUserObj);
                 }
                 break;
