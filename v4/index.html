@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v5.6 | Ecosistema</title>
+    <title>TeamTowers SOS v5.7 | Ecosistema</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
         :root {
@@ -26,22 +26,29 @@
 
         * { box-sizing: border-box; }
         
-        /* 🚀 AJUSTE: El body ahora tiene padding-top para dejar espacio a la barra fija */
         body { 
             background-color: var(--bg-base); color: var(--text-main); 
             margin: 0; font-family: var(--font-family); line-height: 1.5; 
-            padding-top: 60px; /* Espacio para el App Shell */
+            padding-top: 92px; /* Espacio para App Shell + Context Bar */
         }
         
-        #app { min-height: calc(100vh - 60px); }
+        #app { min-height: calc(100vh - 92px); }
 
-        /* 🚀 NUEVO: APP SHELL (BARRA SUPERIOR FIJA) */
+        /* 🚀 APP SHELL DINÁMICO */
         .app-shell {
             position: fixed; top: 0; left: 0; right: 0; height: 60px;
             background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color); z-index: 1000;
+            border-bottom: 1px solid var(--border-color); z-index: 2000;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .context-bar {
+            position: fixed; top: 60px; left: 0; right: 0; height: 32px;
+            background: rgba(88,166,255,0.05); border-bottom: 1px solid rgba(88,166,255,0.2);
+            padding: 0 20px; font-size: 0.75rem; color: var(--accent-blue); z-index: 1999;
+            display: flex; gap: 15px; align-items: center; backdrop-filter: blur(5px);
+            transition: 0.3s;
         }
 
         /* --- TIPOGRAFÍA Y COMPONENTES --- */
@@ -50,11 +57,8 @@
         .text-muted { color: var(--text-muted); }
         .text-accent { color: var(--accent-blue); }
         .text-small { font-size: 0.85rem; }
-        .text-uppercase { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
-
-        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
-        .container-sm { max-width: 1000px; margin: 0 auto; }
-        .header-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         .grid-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
         
         .panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
@@ -70,14 +74,42 @@
         .form-label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
 
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
-
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     
-    <nav id="app-shell" class="app-shell"></nav>
+    <nav id="app-shell" class="app-shell">
+        <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+            <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:1rem; box-shadow: 0 2px 10px rgba(88,166,255,0.4);">TT</div>
+            </a>
+            <div id="navbar-title" style="font-weight: bold; border-left: 1px solid var(--border-color); padding-left: 20px; color: var(--text-heading); font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                SOS v5.7
+            </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div id="navbar-actions" style="display:flex; gap:10px; align-items: center;"></div>
+            
+            <div class="dropdown" style="position: relative;">
+                <button id="btn-user-menu" class="btn btn-secondary" style="display:flex; gap:10px; align-items:center; padding: 6px 12px; border-radius: 20px; border-color: rgba(255,255,255,0.1);">
+                    <span id="navbar-identity">Cargando...</span>
+                    <span style="font-size: 0.6rem; opacity: 0.6;">▼</span>
+                </button>
+                <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
+                    <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold; border-radius: 6px;">🔄 Cambiar de Rol</a>
+                    <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; margin-top:5px; border-radius: 6px;">🏠 Centro de Ecosistemas</a>
+                    <a href="#/backlog" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-radius: 6px;">📋 Product Backlog</a>
+                    <a href="tests/run-tests.html" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-radius: 6px;">🧪 Suite de Tests (TDD)</a>
+                    <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-radius: 6px;">⚙️ Configuración Global</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="context-bar" class="context-bar">💡 Contexto VNA Activo</div>
 
     <div id="app"></div>
 
@@ -94,73 +126,63 @@
 
         const app = document.getElementById('app');
 
-      // 🧠 RENDERIZADOR DEL APP SHELL (Barra de Navegación + Contexto)
-        function renderAppShell() {
+        // 🧠 API GLOBAL PARA QUE LAS VISTAS CONTROLEN LA NAVBAR
+        window.setNavbar = (title, actions = '', tip = '') => {
+            document.getElementById('navbar-title').innerHTML = title;
+            document.getElementById('navbar-actions').innerHTML = actions;
+            const cb = document.getElementById('context-bar');
+            if(tip) {
+                cb.innerHTML = `💡 <b>Contexto:</b> ${tip}`;
+                cb.style.display = 'flex';
+                document.body.style.paddingTop = '92px';
+            } else {
+                cb.style.display = 'none';
+                document.body.style.paddingTop = '60px';
+            }
+        };
+
+        // RENDERIZAR IDENTIDAD EN EL BOTÓN
+        function updateIdentityBadge() {
             const state = store.getState();
             const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
-            const shellContainer = document.getElementById('app-shell');
+            const idBadge = document.getElementById('navbar-identity');
             
-            let identityHtml = '';
             if (session.role === 'admin') {
-                identityHtml = `<span class="badge" style="background: rgba(248, 81, 73, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red);">👑 Ecosystem Owner</span>`;
+                idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">👑 Ecosystem Owner</span>`;
             } else {
                 const user = state.globalUsers.find(u => u.id === session.activeUserId);
-                identityHtml = `<span class="badge" style="background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue);">👤 ${user ? user.name : session.activeUserId}</span>`;
+                idBadge.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold;">👤 ${user ? user.name : session.activeUserId}</span>`;
             }
-
-            shellContainer.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 6px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:0.9rem;">TT</div>
-                        <b style="color: var(--text-heading); font-size: 1.1rem; letter-spacing: 0.05rem;">SOS <span style="color:var(--accent-blue);">v5.7</span></b>
-                    </a>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    ${identityHtml}
-                    <button id="btn-global-login" class="btn btn-secondary text-small" style="padding: 6px 12px; border-radius: 20px;">
-                        ${session.role === 'admin' ? 'Simular Usuario' : 'Volver a Admin'}
-                    </button>
-                </div>
-            `;
-
-            // 🚀 NUEVO: Barra de Tips Contextuales
-            let contextBar = document.getElementById('context-bar');
-            if (!contextBar) {
-                contextBar = document.createElement('div');
-                contextBar.id = 'context-bar';
-                contextBar.style.cssText = 'position:fixed; top:60px; left:0; right:0; background:rgba(88,166,255,0.05); border-bottom:1px solid rgba(88,166,255,0.2); padding:8px 20px; font-size:0.75rem; color:var(--accent-blue); z-index:999; display:flex; gap:15px; align-items:center; backdrop-filter:blur(5px);';
-                document.body.appendChild(contextBar);
-            }
-
-            // Cambiar el tip según la ruta actual (muy útil para enseñar la metodología)
-            const hash = window.location.hash;
-            let tipText = "💡 <b>Tip EO:</b> Diseña la red para que el valor tangible suba (Pinya -> Anxaneta) y la auditoría baje (Anxaneta -> Pinya).";
-            if (hash.includes('accounting')) tipText = "💡 <b>Tip Slicing Pie:</b> Los multiplicadores de riesgo asumen que Anxaneta (x3) no cobra si el ecosistema falla.";
-            if (hash.includes('user-dashboard')) tipText = "💡 <b>Tip Contribuidor:</b> Entrega Proof of Work (PoW) en cada Ping para acumular Equity real en el Ledger.";
-
-            contextBar.innerHTML = tipText;
-            document.body.style.paddingTop = '95px'; // Ajustar para que quepan ambas barras
         }
-        // 🛡️ EVENTO GLOBAL DE CAMBIO DE SESIÓN
+
+        // EVENTOS DEL DROPDOWN Y CAMBIO DE ROL
         document.addEventListener('click', (e) => {
-            if (e.target.id === 'btn-global-login') {
+            const dropdown = document.getElementById('dropdown-menu');
+            
+            // Toggle Dropdown
+            if (e.target.closest('#btn-user-menu')) {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            } else {
+                if(dropdown) dropdown.style.display = 'none';
+            }
+
+            // Cambiar de Rol (Simulación)
+            if (e.target.id === 'menu-switch-role') {
+                e.preventDefault();
                 const state = store.getState();
                 const currentRole = state.session?.role || 'admin';
 
                 if (currentRole === 'user') {
-                    // Cierra sesión y vuelve a ser Dios (Admin)
                     store.dispatch({ type: 'LOGOUT_USER' });
                     window.location.hash = '#/';
                 } else {
-                    // Muestra el prompt para elegir usuario
                     const usersList = state.globalUsers.map(u => u.id).join(', ');
-                    const id = prompt(`Simulador de Autenticación:\n\nIntroduce el @id de un usuario existente para tomar su control.\nUsuarios activos: ${usersList || 'Ninguno'}`);
-                    
+                    const id = prompt(`Entrar como Usuario:\n\nIntroduce el @id de un usuario existente para simular su vista.\nUsuarios activos: ${usersList || 'Ninguno'}`);
                     if (id) {
                         try {
                             const safeId = id.startsWith('@') ? id : '@' + id;
                             store.dispatch({ type: 'LOGIN_USER', payload: { userId: safeId } });
-                            window.location.hash = `#/user-dashboard`; // Te lleva a TU portal
+                            window.location.hash = `#/user-dashboard`;
                         } catch (error) {
                             alert("❌ " + error.message);
                         }
@@ -169,7 +191,7 @@
             }
         });
 
-        // 🛣️ EL ENRUTADOR PRINCIPAL
+        // ENRUTADOR
         function router() {
             const hash = window.location.hash || '#/';
             const parts = hash.split('/');
@@ -178,15 +200,19 @@
 
             app.classList.remove('fade-in');
             void app.offsetWidth; 
+            updateIdentityBadge();
 
             try {
+                // Reset Navbar por defecto (las vistas lo sobreescribirán si quieren)
+                window.setNavbar('Centro de Mando', '', 'Selecciona un ecosistema para gestionar su red de valor.');
+
                 if (hash === '#/' || hash === '' || hash === '#') app.innerHTML = DashboardView.render();
                 else if (hash === '#/settings') app.innerHTML = SettingsView.render();
                 else if (hash === '#/about') app.innerHTML = AboutView.render();
+                else if (hash === '#/backlog') app.innerHTML = `<div class="container text-center"><h1 class="text-accent">📋 Product Backlog</h1><p>En construcción: Aquí veremos el roadmap de la v5.8.</p></div>`;
                 else if (hash.startsWith('#/user-dashboard')) app.innerHTML = UserDashboardView.render();
                 else if (hash.startsWith('#/project/') && parts[3] === 'user') {
-                    const uId = parts[4];
-                    app.innerHTML = ContributorProfileView.render(pId, uId);
+                    app.innerHTML = ContributorProfileView.render(pId, parts[4]);
                 } 
                 else if (hash.startsWith('#/project/')) {
                     if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
@@ -198,25 +224,17 @@
                 console.error("SOS Router Error:", e);
                 app.innerHTML = `<div class="container"><div class="panel" style="border-color:var(--accent-red);"><h3>Error</h3><p>${e.message}</p></div></div>`;
             }
-            
             app.classList.add('fade-in');
         }
 
-        // 🔄 INICIALIZACIÓN REACTIVA
         window.addEventListener('hashchange', router);
-        
         window.addEventListener('store-ready', () => {
-            const theme = store.getState().config?.theme || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-            renderAppShell(); // <-- Dibuja la barra superior
-            router();         // <-- Dibuja el contenido
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
+            router();
         });
         
-        // Arranque en frío
         if (store.getState()) {
-            const theme = store.getState().config?.theme || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-            renderAppShell();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
             router();
         }
     </script>
