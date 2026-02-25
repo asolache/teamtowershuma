@@ -27,7 +27,9 @@ document.addEventListener('click', (e) => {
     // 1. Añadir Persona al Equipo
     if (e.target.id === 'btn-add-user') {
         const projectId = e.target.getAttribute('data-pid');
-        const name = document.getElementById('new-user-name').value;
+        const nameInput = document.getElementById('new-user-name');
+        const name = nameInput.value.trim();
+        
         if (!name) return alert("Indica el nombre del contribuidor.");
         
         store.dispatch({ type: 'ADD_USER', payload: { projectId, name } });
@@ -49,13 +51,17 @@ document.addEventListener('click', (e) => {
         document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
     }
 
-    // 3. Registrar Aportación de Valor (Ledger / Slicing Pie)
+    // 3. Registrar Aportación de Valor Directa (Ledger / Slicing Pie)
     if (e.target.id === 'btn-add-ledger') {
         const projectId = e.target.getAttribute('data-pid');
         const userId = document.getElementById('ldg-user').value;
         const roleId = document.getElementById('ldg-role').value;
         const receiverId = document.getElementById('ldg-receiver').value;
-        const description = document.getElementById('ldg-desc').value;
+        
+        // Soportamos que la descripción venga de un select o de un input normal
+        const descElement = document.getElementById('ldg-desc');
+        const description = descElement.value;
+        
         const horas = document.getElementById('ldg-horas').value;
 
         if (!userId || !roleId || !receiverId || !description || !horas) {
@@ -90,16 +96,16 @@ export const ProjectAccountingView = {
         const transactions = project.transactions || []; // El Mapa de Valor
 
         // 🧮 CÁLCULO DEL CAP TABLE (SLICING PIE)
-        const totalPie = ledger.reduce((acc, entry) => acc + entry.valorCongelado, 0);
+        const totalPie = ledger.reduce((acc, entry) => acc + (entry.valorCongelado || 0), 0);
         
         // Array de colores fijos para la tarta
         const pieColors = ['#58a6ff', '#a371f7', '#238636', '#d29922', '#f85149', '#3fb950', '#bc8cff', '#d1d5da'];
 
         const userStats = users.map((user, index) => {
             const userEntries = ledger.filter(l => l.userId === user.id);
-            const userTotalValue = userEntries.reduce((sum, l) => sum + l.valorCongelado, 0);
+            const userTotalValue = userEntries.reduce((sum, l) => sum + (l.valorCongelado || 0), 0);
             const rawOwnership = totalPie > 0 ? (userTotalValue / totalPie) * 100 : 0;
-            const ownership = rawOwnership.toFixed(2);
+            const ownership = rawOwnership.toFixed(2); // Redondeo a 2 decimales
             
             const userRoles = asignaciones
                 .filter(a => a.userId === user.id)
@@ -117,7 +123,7 @@ export const ProjectAccountingView = {
         let pieGradient = 'conic-gradient(';
         let cumulativePercent = 0;
         
-        if (totalPie === 0) {
+        if (totalPie === 0 || userStats.length === 0) {
             pieGradient = 'conic-gradient(#30363d 0% 100%)';
         } else {
             userStats.forEach((u, i) => {
@@ -140,10 +146,15 @@ export const ProjectAccountingView = {
             : (assignedActiveRoles.length > 0 ? assignedActiveRoles[0].id : "");
 
         let defaultReceiverId = "";
+        let pendingDeliverables = [];
+
         if (currentRoleId) {
+            // Buscamos transacciones que salen de este rol
             const outgoingTxs = transactions.filter(tx => tx.from === currentRoleId);
             if (outgoingTxs.length > 0) {
                 defaultReceiverId = outgoingTxs[0].to;
+                // Filtramos las que no estén ya consolidadas para mostrarlas en el select
+                pendingDeliverables = outgoingTxs.filter(tx => tx.status !== 'consolidated');
             }
         }
 
@@ -162,12 +173,30 @@ export const ProjectAccountingView = {
 
         const allActiveRoleOptions = activeRoles.map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
 
+        // 🚀 FEATURE: Input de Descripción Inteligente
+        const descInputHtml = pendingDeliverables.length > 0 
+            ? `<select id="ldg-desc" class="form-control text-small">
+                  <option value="">Selecciona un Entregable Pendiente...</option>
+                  ${pendingDeliverables.map(tx => `<option value="${tx.entregable}">${tx.entregable} (${tx.horas || tx.estimatedHours || 1}h est.)</option>`).join('')}
+                  <option value="Aportación libre fuera del mapa">-- Aportación libre (Fuera del mapa) --</option>
+               </select>`
+            : `<input id="ldg-desc" type="text" class="form-control text-small" placeholder="Ej: Backend Login Completado">`;
+
+        // 🧠 HELPER: Formateador de Nombres de Rol
+        const getRoleDisplayName = (rId) => {
+            const r = roles.find(role => role.id === rId);
+            if (!r) return '<del>Rol Eliminado</del>';
+            const asg = asignaciones.find(a => a.roleId === rId);
+            const userForRole = asg ? users.find(u => u.id === asg.userId) : null;
+            return userForRole ? `${r.name} (@${userForRole.name})` : `${r.name} (${r.levelId})`;
+        };
+
         return `
             <div class="container">
                 <header class="header-main">
                     <div>
                         <h1>💰 Contabilidad de Valor (Slicing Pie)</h1>
-                        <p class="text-muted">Proyecto: <b class="text-accent">${project.nombre}</b> | Fondo Total Generado: <b style="color: var(--accent-green);">${totalPie.toLocaleString()} €</b></p>
+                        <p class="text-muted">Proyecto: <b class="text-accent">${project.nombre}</b> | Fondo Total Generado: <b style="color: var(--accent-green);">${totalPie.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</b></p>
                     </div>
                     <button class="btn btn-secondary" onclick="location.hash='#/project/${projectId}'">← Volver al Mapa</button>
                 </header>
@@ -202,8 +231,8 @@ export const ProjectAccountingView = {
                         </div>
 
                         <div class="panel" style="border-color: var(--accent-green);">
-                            <h3 class="text-small text-uppercase" style="color: var(--accent-green);">3. Registrar Aportación</h3>
-                            <p class="text-small text-muted" style="margin-bottom: 15px;">Inyecta valor al Slicing Pie.</p>
+                            <h3 class="text-small text-uppercase" style="color: var(--accent-green);">3. Registrar Aportación (Directa)</h3>
+                            <p class="text-small text-muted" style="margin-bottom: 15px;">Inyecta valor al Slicing Pie saltándote la validación.</p>
                             
                             <label class="form-label">¿Quién aportó?</label>
                             <select id="ldg-user" data-pid="${projectId}" class="form-control text-small">
@@ -219,12 +248,11 @@ export const ProjectAccountingView = {
                             <select id="ldg-receiver" class="form-control text-small" style="border-color: var(--accent-blue);">
                                 ${receiverOptions}
                             </select>
-                            <p class="text-muted" style="font-size: 0.65rem; margin-top: -8px; margin-bottom: 10px;">*Receptor sugerido según el Mapa de Valor.</p>
                             
                             <label class="form-label">¿Qué se entregó? (Descripción)</label>
-                            <input id="ldg-desc" type="text" class="form-control text-small" placeholder="Ej: Backend Login Completado">
+                            ${descInputHtml}
                             
-                            <label class="form-label">Horas Invertidas</label>
+                            <label class="form-label" style="margin-top: 10px;">Horas Invertidas Reales</label>
                             <input id="ldg-horas" type="number" step="0.5" class="form-control text-small" placeholder="Ej: 4">
                             
                             <button id="btn-add-ledger" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 10px;">
@@ -241,7 +269,6 @@ export const ProjectAccountingView = {
                             ${users.length === 0 ? `<p class="text-muted">Añade usuarios para ver el Cap Table.</p>` : `
                                 
                                 <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 30px;">
-                                    
                                     <div style="
                                         width: 150px; 
                                         height: 150px; 
@@ -282,7 +309,7 @@ export const ProjectAccountingView = {
                                                         ${u.name}
                                                     </td>
                                                     <td style="padding: 12px 10px; font-size: 0.8rem; color: var(--accent-blue);">${u.userRoles.length > 0 ? u.userRoles.join(', ') : '<i>Sin rol</i>'}</td>
-                                                    <td style="padding: 12px 10px; text-align: right;">${u.userTotalValue.toLocaleString()} €</td>
+                                                    <td style="padding: 12px 10px; text-align: right;">${u.userTotalValue.toLocaleString(undefined, {minimumFractionDigits: 2})} €</td>
                                                     <td style="padding: 12px 10px; text-align: right; font-weight: bold; color: var(--accent-green);">${u.ownership} %</td>
                                                 </tr>
                                             `).join('')}
@@ -294,7 +321,7 @@ export const ProjectAccountingView = {
 
                         <section class="panel">
                             <h3 style="margin-top: 0;">📖 Historial del Libro Mayor</h3>
-                            <p class="text-small text-muted">Registro inmutable de aportaciones de valor. Muestra roles históricos incluso si fueron archivados.</p>
+                            <p class="text-small text-muted">Registro inmutable. En formato: Rol (@Usuario) o Rol (@Nivel) si no está asignado.</p>
                             
                             ${ledger.length === 0 ? `<p class="text-muted">El libro mayor está vacío. Registra trabajo para empezar.</p>` : `
                                 <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
@@ -303,7 +330,7 @@ export const ProjectAccountingView = {
                                             <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-align: left;">
                                                 <th style="padding: 10px;">Fecha</th>
                                                 <th style="padding: 10px;">Usuario</th>
-                                                <th style="padding: 10px;">Transacción (Rol -> Rol)</th>
+                                                <th style="padding: 10px;">De -> Para</th>
                                                 <th style="padding: 10px;">Entregable</th>
                                                 <th style="padding: 10px; text-align: center;">Horas</th>
                                                 <th style="padding: 10px; text-align: right;">Pie (€)</th>
@@ -314,18 +341,20 @@ export const ProjectAccountingView = {
                                                 const date = new Date(l.timestamp).toLocaleDateString();
                                                 const userName = users.find(u => u.id === l.userId)?.name || 'Desconocido';
                                                 
-                                                // 🛡️ REGLA HISTÓRICA: Buscamos en TODOS los roles, no solo en los activos.
-                                                const roleName = roles.find(r => r.id === l.roleId)?.name || '<del>Rol Eliminado</del>';
-                                                const receiverName = roles.find(r => r.id === l.receiverId)?.name || '<del>Rol Eliminado</del>';
+                                                // 🛡️ REGLA: Mostrar Rol (@usuario) o Rol (@nivel)
+                                                const roleDisplay = getRoleDisplayName(l.roleId);
+                                                const receiverDisplay = getRoleDisplayName(l.receiverId);
 
                                                 return `
                                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                                                     <td style="padding: 10px; color: var(--text-muted);">${date}</td>
                                                     <td style="padding: 10px; font-weight: bold;">${userName}</td>
-                                                    <td style="padding: 10px; color: var(--accent-blue);">[${roleName}] → [${receiverName}]</td>
+                                                    <td style="padding: 10px; color: var(--accent-blue); font-size: 0.75rem;">
+                                                        [${roleDisplay}]<br><span style="color:var(--text-muted);">→ [${receiverDisplay}]</span>
+                                                    </td>
                                                     <td style="padding: 10px;">${l.description}</td>
-                                                    <td style="padding: 10px; text-align: center;">${l.horas}</td>
-                                                    <td style="padding: 10px; text-align: right; color: var(--accent-green);">+${l.valorCongelado}</td>
+                                                    <td style="padding: 10px; text-align: center; color: var(--accent-gold); font-family: monospace;">${parseFloat(l.horas).toFixed(2)}h</td>
+                                                    <td style="padding: 10px; text-align: right; color: var(--accent-green); font-weight: bold;">+${(l.valorCongelado || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                                                 </tr>
                                                 `;
                                             }).join('')}
