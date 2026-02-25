@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v5.0 | Ecosistema</title>
+    <title>TeamTowers SOS v5.4 | Ecosistema</title>
     <style>
-        /* --- VARIABLES GLOBALES --- */
+        /* --- VARIABLES GLOBALES (Modo Oscuro por defecto) --- */
         :root {
             --bg-base: #010409;
             --bg-surface: #0d1117;
@@ -19,7 +19,7 @@
             --accent-green-hover: #2ea043;
             --accent-purple: #a371f7;
             --accent-red: #f85149;
-            --accent-gold: #d29922; /* Añadido para el Slicing Pie y alertas */
+            --accent-gold: #d29922; 
             
             --radius-sm: 4px;
             --radius-md: 8px;
@@ -27,6 +27,23 @@
             
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             --transition-speed: 0.2s;
+        }
+
+        /* 🚀 NUEVO: VARIABLES MODO CLARO */
+        [data-theme="light"] {
+            --bg-base: #f6f8fa;
+            --bg-surface: #ffffff;
+            --bg-panel: #f3f4f6;
+            --border-color: #d0d7de;
+            --text-main: #24292f;
+            --text-muted: #57606a;
+            --text-heading: #0f1419;
+            --accent-blue: #0969da;
+            --accent-green: #1a7f37;
+            --accent-green-hover: #219643;
+            --accent-purple: #8250df;
+            --accent-red: #cf222e;
+            --accent-gold: #9a6700;
         }
 
         /* --- RESET Y BASE --- */
@@ -39,6 +56,7 @@
             font-family: var(--font-family);
             overflow-x: hidden;
             line-height: 1.5;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
         }
 
         #app { min-height: 100vh; }
@@ -81,7 +99,7 @@
 
         .grid-layout {
             display: grid;
-            grid-template-columns: 320px 1fr; /* Por defecto (Accounting y Edit pueden sobreescribirlo inline) */
+            grid-template-columns: 320px 1fr;
             gap: 25px;
         }
 
@@ -99,7 +117,7 @@
             padding: 20px;
         }
 
-        /* --- COMPONENTES (Botones, Inputs, Cards) --- */
+        /* --- COMPONENTES --- */
         .btn {
             display: inline-block;
             padding: 10px 16px;
@@ -115,97 +133,38 @@
             font-family: var(--font-family);
         }
 
-        .btn-primary {
-            background-color: var(--accent-green);
-            color: #ffffff;
-        }
+        .btn-primary { background-color: var(--accent-green); color: #ffffff; }
         .btn-primary:hover { background-color: var(--accent-green-hover); }
 
-        .btn-outline {
-            background-color: transparent;
-            color: var(--accent-blue);
-            border-color: var(--border-color);
-        }
-        .btn-outline:hover {
-            border-color: var(--accent-blue);
-            background-color: rgba(88, 166, 255, 0.1);
-        }
+        .btn-outline { background-color: transparent; color: var(--accent-blue); border-color: var(--border-color); }
+        .btn-outline:hover { border-color: var(--accent-blue); background-color: rgba(88, 166, 255, 0.1); }
         
-        .btn-secondary {
-            background-color: var(--bg-surface);
-            color: var(--text-main);
-            border-color: var(--border-color);
-        }
+        .btn-secondary { background-color: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
         .btn-secondary:hover { background-color: var(--bg-panel); border-color: var(--text-muted); }
 
-        .btn-block {
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
+        .btn-block { display: block; width: 100%; text-align: center; }
 
         .form-control {
-            display: block;
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: var(--text-heading);
-            background-color: var(--bg-surface);
-            background-clip: padding-box;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            transition: border-color var(--transition-speed) ease;
-            font-family: var(--font-family);
-            margin-bottom: 12px;
+            display: block; width: 100%; padding: 10px 12px; font-size: 0.9rem; line-height: 1.5;
+            color: var(--text-heading); background-color: var(--bg-surface);
+            border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            transition: border-color var(--transition-speed) ease; font-family: var(--font-family); margin-bottom: 12px;
         }
-        .form-control:focus {
-            border-color: var(--accent-blue);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
-        }
+        .form-control:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3); }
 
-        .form-label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
+        .form-label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
 
         .card-interactive {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+            background-color: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); padding: 20px; cursor: pointer;
             transition: transform var(--transition-speed) ease, border-color var(--transition-speed) ease;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .card-interactive:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-blue);
-        }
-
-        /* --- MAPA --- */
-        .map-container {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            height: 750px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
-        }
+        .card-interactive:hover { transform: translateY(-2px); border-color: var(--accent-blue); }
 
         /* --- ANIMACIONES --- */
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -213,16 +172,16 @@
 
     <script type="module">
         import { store } from './js/core/store.js';
-        // 🚀 CORRECCIÓN: Importamos DashboardView en lugar de HomeView
         import { DashboardView } from './js/views/DashboardView.js';
         import { ProjectView } from './js/views/ProjectView.js';
         import { AboutView } from './js/views/AboutView.js';
         import { ProjectEditView } from './js/views/ProjectEditView.js';
         import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
         import { UserDashboardView } from './js/views/UserDashboardView.js';
-        // Si no tienes HomeView o no la usas, no la importamos para evitar errores 404
-        // import { HomeView } from './js/views/HomeView.js'; 
         
+        // 🚀 NUEVO: Importar la vista de Settings Globales
+        import { SettingsView } from './js/views/SettingsView.js'; 
+
         const app = document.getElementById('app');
 
         function router() {
@@ -231,20 +190,21 @@
             const pId = parts[2];
             const action = parts[3];
 
-            // Animación suave entre vistas
             app.classList.remove('fade-in');
             void app.offsetWidth;
 
             try {
-                // 🚀 CORRECCIÓN: Renderizamos DashboardView en la ruta principal
                 if (hash === '#/' || hash === '' || hash === '#') {
                     app.innerHTML = DashboardView.render();
                 
                 } else if (hash === '#/about') {
                     app.innerHTML = AboutView.render();
                 
-                // 🚀 RUTA DEL USUARIO (CONTRIBUIDOR)
-                } else if (hash === '#/user-dashboard') { // Aseguramos que coincide con el hash en DashboardView
+                // 🚀 NUEVA RUTA: Settings Globales
+                } else if (hash === '#/settings') {
+                    app.innerHTML = SettingsView.render();
+
+                } else if (hash === '#/user-dashboard') {
                     app.innerHTML = UserDashboardView.render();
 
                 } else if (hash === '#/test') {
@@ -259,7 +219,6 @@
                             </div>
                         </div>`;
                 
-                // RUTAS DE PROYECTO
                 } else if (hash.startsWith('#/project/')) {
                     if (action === 'edit') {
                         app.innerHTML = ProjectEditView.render(pId);
@@ -292,11 +251,9 @@
             app.classList.add('fade-in');
         }
 
-        // --- SISTEMA REACTIVO ---
         window.addEventListener('hashchange', router);
         window.addEventListener('store-ready', router);
         
-        // Inicialización
         if (store.getState()) router();
     </script>
 </body>
