@@ -118,19 +118,43 @@
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
 
-            // 🚀 --- FASE 10: IDENTIDAD GLOBAL DE USUARIO (NUEVO v5.5) ---
+            // 🚀 --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
             assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
             
-            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura (Node Dev)' } });
+            // Creamos a Laura con la nueva estructura de identidad
+            store.dispatch({ 
+                type: 'ADD_USER', 
+                payload: { 
+                    projectId: 'test-proj', 
+                    name: 'Laura (Node Dev)',
+                    uniqueId: '@laura_dev',
+                    walletOrSocial: '0x123...abc'
+                } 
+            });
             
             const stateAfterUser = store.getState();
-            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.name === 'Laura (Node Dev)');
-            assert(lauraGlobal !== undefined, "Usuario añadido correctamente al Pool Global", "IDENTITY");
+            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.id === '@laura_dev');
             
+            assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con @id único", "IDENTITY");
+            assert(lauraGlobal.wallet === '0x123...abc', "Metadatos extendidos (Wallet/Social) guardados", "IDENTITY");
+            
+            // Comprobamos retrocompatibilidad en el proyecto
             const pForUser = stateAfterUser.projects.find(x => x.id === 'test-proj');
-            const lauraInProject = pForUser.usuarios.find(u => u.id === lauraGlobal.id);
-            assert(lauraInProject !== undefined && lauraInProject.id === lauraGlobal.id, "Usuario vinculado correctamente al Proyecto local", "IDENTITY");
+            const lauraInProject = pForUser.usuarios.find(u => u.id === '@laura_dev');
+            assert(lauraInProject !== undefined, "Usuario enlazado al Proyecto local usando su @id", "IDENTITY");
 
+            // --- PRUEBA DE BLOQUEO DE DUPLICADOS ---
+            let errorThrown = false;
+            try {
+                // Intentamos registrar a otro usuario distinto, pero robando el @id de Laura
+                store.dispatch({ 
+                    type: 'ADD_USER', 
+                    payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: '@laura_dev' } 
+                });
+            } catch (error) {
+                errorThrown = true;
+            }
+            assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
