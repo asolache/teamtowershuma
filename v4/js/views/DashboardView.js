@@ -262,8 +262,7 @@ export const DashboardView = {
                             <p class="text-small text-muted" style="margin-bottom: 15px;">
                                 Los System Prompts globales determinan cómo se comportan los ecosistemas cuando integras LLMs externos.
                             </p>
-                            <button class="btn btn-outline btn-block" style="font-size: 0.8rem; border-color: rgba(255,255,255,0.2);" onclick="alert('Funcionalidad en desarrollo. Aquí definiremos el Supply, Vesting y conexión con APIs de LLMs.')">⚙️ Configuración Global del Ecosistema</button>
-                        </div>
+<button class="btn btn-outline btn-block" style="font-size: 0.8rem; border-color: rgba(255,255,255,0.2);" onclick="location.hash='#/settings'">⚙️ Configuración Global del Ecosistema</button>                        </div>
                     </aside>
                 </div>
             </div>
