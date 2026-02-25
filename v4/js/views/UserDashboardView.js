@@ -67,6 +67,7 @@ export const UserDashboardView = {
         let consolidatedLedgerHTML = '';
         let totalEquity = 0;
         let totalHours = 0;
+        let totalAportaciones = 0; // 🛠️ FIX: Variable global para contar las aportaciones totales
 
         // Recorremos todos los proyectos buscando tareas (Pings) y cobros (Ledger) de este usuario
         projects.forEach(p => {
@@ -93,7 +94,7 @@ export const UserDashboardView = {
                             </div>
                             <div style="text-align: right;">
                                 <div class="text-muted text-uppercase" style="font-size: 0.65rem;">Estimación Slicing Pie</div>
-                                <div style="color: var(--accent-gold); font-weight: bold; font-size: 1.2rem;">${tx.estimatedHours}h</div>
+                                <div style="color: var(--accent-gold); font-weight: bold; font-size: 1.2rem;">${tx.estimatedHours || 1}h</div>
                             </div>
                         </div>
 
@@ -104,7 +105,7 @@ export const UserDashboardView = {
                         </div>
 
                         <div id="report-form-${tx.hash}" style="display: none; margin-top: 15px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px dashed var(--accent-blue);">
-                            <h4 style="margin-top: 0; color: var(--accent-blue);">📤 Adjuntar Proof of Work</h4>
+                            <h4 style="margin: 0; color: var(--accent-blue);">📤 Adjuntar Proof of Work</h4>
                             <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 15px;">
                                 <div>
                                     <label class="form-label">Horas Reales Invertidas</label>
@@ -128,6 +129,8 @@ export const UserDashboardView = {
 
             // 2. Buscar Equity Consolidado en el Ledger
             const miLedger = (p.ledger || []).filter(l => l.userId === CURRENT_USER_ID);
+            totalAportaciones += miLedger.length; // 🛠️ FIX: Sumamos las aportaciones de este proyecto al total
+
             miLedger.forEach(l => {
                 totalEquity += (l.valorCongelado || 0);
                 totalHours += parseFloat(l.horas || 0);
@@ -215,18 +218,17 @@ export const UserDashboardView = {
                         </div>
 
                         <div class="panel" style="border-color: var(--accent-gold); text-align: center; background: rgba(210, 153, 34, 0.05); box-shadow: inset 0 0 20px rgba(210, 153, 34, 0.05);">
-                            <h4 style="margin-top: 0; color: var(--accent-gold); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05rem;">Mi Patrimonio / Equity</h4>
+                            <h4 style="margin: 0; color: var(--accent-gold); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05rem;">Mi Patrimonio / Equity</h4>
                             <div style="font-size: 3rem; font-weight: bold; color: var(--accent-gold); margin: 10px 0; line-height: 1;">
                                 ${totalEquity.toLocaleString(undefined, {minimumFractionDigits: 0})} <span style="font-size: 1.5rem; opacity: 0.8;">€</span>
                             </div>
                             <div style="display: flex; justify-content: center; gap: 20px; font-size: 0.85rem; color: var(--text-muted); margin-top: 15px;">
                                 <div><b>${totalHours.toFixed(1)}</b> Horas Reales</div>
-                                <div><b>${miLedger.length}</b> Aportaciones</div>
-                            </div>
+                                <div><b>${totalAportaciones}</b> Aportaciones</div> </div>
                         </div>
 
                         <div class="panel">
-                            <h4 style="margin-top: 0;">📜 Mis Aportaciones Consolidadas</h4>
+                            <h4 style="margin: 0;">📜 Mis Aportaciones Consolidadas</h4>
                             <div style="max-height: 350px; overflow-y: auto; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px;">
                                 ${consolidatedLedgerHTML}
                             </div>
