@@ -104,7 +104,8 @@ export class TTStore {
             "@pinya": "Misión: Soporte, infraestructura y mantenimiento."
         };
 
-        this.state = { projects: [], ontology: this.ontologyStatic };
+        // 🚀 NUEVO: El estado ahora incluye el nodo 'config'
+        this.state = { projects: [], ontology: this.ontologyStatic, config: {} };
         this.init();
     }
 
@@ -114,14 +115,26 @@ export class TTStore {
             try { 
                 const data = JSON.parse(saved);
                 this.state.projects = data.projects || []; 
+                // 🚀 NUEVO: Recuperamos la config si existe, o ponemos valores por defecto
+                this.state.config = data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
             } catch (e) { 
                 this.state.projects = [];
+                this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
             }
+        } else {
+            this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
         }
+        
+        // 🚀 Aplicamos el tema visual al arrancar
+        document.documentElement.setAttribute('data-theme', this.state.config.theme);
     }
 
     save() {
-        localStorage.setItem('teamtowers-v4.4-state', JSON.stringify({ projects: this.state.projects }));
+        // 🚀 NUEVO: Guardamos proyectos y config
+        localStorage.setItem('teamtowers-v4.4-state', JSON.stringify({ 
+            projects: this.state.projects,
+            config: this.state.config
+        }));
         window.dispatchEvent(new CustomEvent('store-ready')); 
     }
 
@@ -185,6 +198,15 @@ export class TTStore {
         let p = (payload && payload.projectId) ? this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
+            // 🚀 NUEVO CASO: CONFIGURACIÓN GLOBAL
+            case 'UPDATE_GLOBAL_CONFIG':
+                this.state.config = { ...this.state.config, ...payload };
+                // Cambia el tema visual en caliente
+                if (payload.theme) {
+                    document.documentElement.setAttribute('data-theme', payload.theme);
+                }
+                break;
+
             case 'ADD_PROJECT':
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 this.state.projects.push(this._createProjectInstance(payload.id, payload.nombre, payload.sector, payload.ownerId));
@@ -194,30 +216,21 @@ export class TTStore {
                 if (p) p.isVerified = true;
                 break;
 
-            // 🚀 CASOS REPARADOS: GESTIÓN DE USUARIOS Y CONTABILIDAD DIRECTA
             case 'ADD_USER':
                 if (p) {
                     p.usuarios = p.usuarios || [];
-                    // ID seguro y sin espacios
                     const cleanNameId = payload.name.trim().toLowerCase().replace(/\s+/g, '-');
                     const safeId = `usr-${cleanNameId}-${Math.random().toString(36).substr(2, 5)}`;
-                    
-                    p.usuarios.push({
-                        id: safeId,
-                        name: payload.name.trim()
-                    });
+                    p.usuarios.push({ id: safeId, name: payload.name.trim() });
                 }
                 break;
 
             case 'ASSIGN_USER_ROLE':
                 if (p) {
                     p.asignaciones = p.asignaciones || [];
-                    // Eliminamos asignaciones previas a ese mismo rol para evitar duplicados
                     p.asignaciones = p.asignaciones.filter(a => !(a.userId === payload.userId && a.roleId === payload.roleId));
                     p.asignaciones.push({
-                        id: `asg-${Date.now()}`,
-                        userId: payload.userId,
-                        roleId: payload.roleId
+                        id: `asg-${Date.now()}`, userId: payload.userId, roleId: payload.roleId
                     });
                 }
                 break;
@@ -227,25 +240,17 @@ export class TTStore {
                     p.ledger = p.ledger || [];
                     const role = p.roles.find(r => r.id === payload.roleId);
                     const safeHours = parseFloat(payload.horas) || 0;
-                    
-                    // Fórmula Core de Slicing Pie
                     const rawValue = safeHours * (role?.multiplier || 1) * (role?.price || 0);
 
                     p.ledger.push({
-                        id: `ldg-direct-${Date.now()}`,
-                        timestamp: Date.now(),
-                        userId: payload.userId,
-                        roleId: payload.roleId,
-                        receiverId: payload.receiverId,
-                        description: payload.description,
-                        horas: safeHours,
-                        valorCongelado: rawValue,
-                        txHashRef: 'direct-entry' // Marca de que no vino de un Ping
+                        id: `ldg-direct-${Date.now()}`, timestamp: Date.now(),
+                        userId: payload.userId, roleId: payload.roleId, receiverId: payload.receiverId,
+                        description: payload.description, horas: safeHours,
+                        valorCongelado: rawValue, txHashRef: 'direct-entry' 
                     });
                 }
                 break;
 
-            // ... CASOS ORIGINALES INTACTOS ...
             case 'UPDATE_ROLE':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
@@ -293,15 +298,9 @@ export class TTStore {
                     const valor = estimatedHours * (role?.multiplier || 1) * (role?.price || 0);
                     
                     p.transactions.push({ 
-                        ...payload.tx, 
-                        estimatedHours: estimatedHours,
-                        realHours: 0,
-                        status: 'theoretical',
-                        valorCongelado: valor, 
-                        fase: p.transactions.length + 1,
-                        prevHash: lastTx ? lastTx.hash : "0", 
-                        hash: generateHash("tx" + Math.random()), 
-                        timestamp: Date.now() 
+                        ...payload.tx, estimatedHours: estimatedHours, realHours: 0, status: 'theoretical',
+                        valorCongelado: valor, fase: p.transactions.length + 1,
+                        prevHash: lastTx ? lastTx.hash : "0", hash: generateHash("tx" + Math.random()), timestamp: Date.now() 
                     });
                 }
                 break;
