@@ -102,15 +102,18 @@
             // --- FASE 9: AUTO-LEDGER (INYECCIÓN JSON) ---
             assert(typeof store.importSessionJSON === 'function', "El importador JSON existe en el Kernel", "PARSER");
             
-            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser', uniqueId: '@test_user' } });
-            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI', uniqueId: '@test_ai' } });
+            const dynTestUser1 = '@test_user_' + Date.now();
+            const dynTestUser2 = '@test_ai_' + Date.now();
+
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser', uniqueId: dynTestUser1 } });
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI', uniqueId: dynTestUser2 } });
             const pForJson = store.getState().projects.find(x => x.id === 'test-proj');
             
             const numLedgersBefore = pForJson.ledger ? pForJson.ledger.length : 0;
             
             const mockAIResponse = [
-                { userId: '@test_user', roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
-                { userId: '@test_ai', roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
+                { userId: dynTestUser1, roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
+                { userId: dynTestUser2, roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
             ];
             
             store.importSessionJSON('test-proj', mockAIResponse);
@@ -118,44 +121,45 @@
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
 
-            // --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
+            // 🚀 --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
             assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
             
+            // Creamos a Laura con un ID único basado en tiempo para que no rompa el test al recargar
+            const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 100000);
+
             store.dispatch({ 
                 type: 'ADD_USER', 
-                payload: { projectId: 'test-proj', name: 'Laura (Node Dev)', uniqueId: '@laura_dev', walletOrSocial: '0x123...abc' } 
+                payload: { projectId: 'test-proj', name: 'Laura (Node Dev)', uniqueId: dynLauraId, walletOrSocial: '0x123...abc' } 
             });
             
             const stateAfterUser = store.getState();
-            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.id === '@laura_dev');
+            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.id === dynLauraId);
             
             assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con @id único", "IDENTITY");
             assert(lauraGlobal.wallet === '0x123...abc', "Metadatos extendidos (Wallet/Social) guardados", "IDENTITY");
             
-            const pForUser = stateAfterUser.projects.find(x => x.id === 'test-proj');
-            const lauraInProject = pForUser.usuarios.find(u => u.id === '@laura_dev');
+            const lauraInProject = stateAfterUser.projects.find(x => x.id === 'test-proj').usuarios.find(u => u.id === dynLauraId);
             assert(lauraInProject !== undefined, "Usuario enlazado al Proyecto local usando su @id", "IDENTITY");
 
             let errorThrown = false;
             try {
-                store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: '@laura_dev' } });
+                // Intentamos registrar el MISMO ID exacto que acabamos de crear
+                store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: dynLauraId } });
             } catch (error) {
                 errorThrown = true;
             }
             assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
 
             // 🚀 --- FASE 11: CONTROL DE ACCESO (RBAC) Y SESIONES ---
-            // Simula la conexión de un usuario a la app
-            store.dispatch({ type: 'LOGIN_USER', payload: { userId: '@laura_dev' } });
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynLauraId } });
             const sessionActive = store.getState().session;
             
             assert(sessionActive !== undefined, "Objeto de sesión creado en el Kernel", "RBAC");
-            assert(sessionActive.activeUserId === '@laura_dev', "El usuario activo se registró correctamente", "RBAC");
+            assert(sessionActive.activeUserId === dynLauraId, "El usuario activo se registró correctamente en la sesión", "RBAC");
             assert(sessionActive.role === 'user', "Por defecto, el usuario entra con permisos básicos", "RBAC");
 
-            // Simula el login del Administrador del Ecosistema
             store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
-            assert(store.getState().session.role === 'admin', "El Administrador tiene el rol máximo (admin)", "RBAC");
+            assert(store.getState().session.role === 'admin', "El Administrador recupera el rol máximo (admin)", "RBAC");
 
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
