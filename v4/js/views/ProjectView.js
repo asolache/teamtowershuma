@@ -14,6 +14,7 @@ const ROLE_COLORS = {
 };
 
 document.addEventListener('click', (e) => {
+    // Escuchar botones de la Toolbar Global
     if (e.target.classList.contains('btn-map-mode')) {
         mapDisplayMode = e.target.getAttribute('data-mode');
         const projectId = e.target.getAttribute('data-pid');
@@ -30,10 +31,8 @@ document.addEventListener('click', (e) => {
 
         if (!agileOriginId) { agileOriginId = clickedRoleId; } 
         else if (agileOriginId === clickedRoleId) { agileOriginId = null; } 
-        else {
-            agileDestinationId = clickedRoleId;
-            showAgileModal = true;
-        }
+        else { agileDestinationId = clickedRoleId; showAgileModal = true; }
+        
         document.getElementById('app').innerHTML = ProjectView.render(projectId);
         if (showAgileModal) setTimeout(() => document.getElementById('agile-entregable').focus(), 100);
     }
@@ -78,7 +77,7 @@ document.addEventListener('click', (e) => {
         const p = store.getState().projects.find(x => x.id === projectId);
         const asignacion = p.asignaciones?.find(a => a.roleId === toRoleId);
         
-        if (!asignacion) return alert("⚠️ No hay usuario asignado al rol receptor. Ve a Accounting.");
+        if (!asignacion) return alert("⚠️ No hay usuario asignado al rol receptor. Ve a Contabilidad -> Vincular Nodo.");
         store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId, txHash, userId: asignacion.userId } });
         document.getElementById('app').innerHTML = ProjectView.render(projectId);
     }
@@ -91,151 +90,74 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// [Las funciones calculateNetworkLayout y generateSVGMap permanecen intactas, las copio enteras por seguridad]
 function calculateNetworkLayout(roles, transactions, width, height) {
-    const nodes = {};
-    const radius = Math.min(width, height) / 2.5;
-    const centerX = width / 2;
-    const centerY = height / 2;
-
-    roles.forEach((r, i) => {
-        const angle = (i / roles.length) * 2 * Math.PI;
-        nodes[r.id] = { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle), vx: 0, vy: 0 };
-    });
-
-    const iterations = 100;
-    const k = Math.sqrt((width * height) / roles.length); 
-
+    const nodes = {}; const radius = Math.min(width, height) / 2.5; const centerX = width / 2; const centerY = height / 2;
+    roles.forEach((r, i) => { const angle = (i / roles.length) * 2 * Math.PI; nodes[r.id] = { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle), vx: 0, vy: 0 }; });
+    const iterations = 100; const k = Math.sqrt((width * height) / roles.length); 
     for (let iter = 0; iter < iterations; iter++) {
         for (let i = 0; i < roles.length; i++) {
             for (let j = 0; j < roles.length; j++) {
                 if (i !== j) {
                     const n1 = nodes[roles[i].id]; const n2 = nodes[roles[j].id];
-                    const dx = n1.x - n2.x; const dy = n1.y - n2.y;
-                    const distance = Math.sqrt(dx*dx + dy*dy) || 1;
-                    const force = (k * k) / distance;
-                    n1.vx += (dx / distance) * force; n1.vy += (dy / distance) * force;
+                    const dx = n1.x - n2.x; const dy = n1.y - n2.y; const distance = Math.sqrt(dx*dx + dy*dy) || 1;
+                    const force = (k * k) / distance; n1.vx += (dx / distance) * force; n1.vy += (dy / distance) * force;
                 }
             }
         }
-
         transactions.forEach(tx => {
             if (!nodes[tx.from] || !nodes[tx.to]) return;
             const n1 = nodes[tx.from]; const n2 = nodes[tx.to];
-            const dx = n1.x - n2.x; const dy = n1.y - n2.y;
-            const distance = Math.sqrt(dx*dx + dy*dy) || 1;
-            const force = (distance * distance) / k;
-            const fx = (dx / distance) * force * 0.05; const fy = (dy / distance) * force * 0.05;
+            const dx = n1.x - n2.x; const dy = n1.y - n2.y; const distance = Math.sqrt(dx*dx + dy*dy) || 1;
+            const force = (distance * distance) / k; const fx = (dx / distance) * force * 0.05; const fy = (dy / distance) * force * 0.05;
             n1.vx -= fx; n1.vy -= fy; n2.vx += fx; n2.vy += fy;
         });
-
         roles.forEach(r => {
-            const n = nodes[r.id];
-            n.x += n.vx; n.y += n.vy; n.vx *= 0.8; n.vy *= 0.8;
-            n.x = Math.max(70, Math.min(width - 70, n.x));
-            n.y = Math.max(70, Math.min(height - 70, n.y));
+            const n = nodes[r.id]; n.x += n.vx; n.y += n.vy; n.vx *= 0.8; n.vy *= 0.8;
+            n.x = Math.max(70, Math.min(width - 70, n.x)); n.y = Math.max(70, Math.min(height - 70, n.y));
         });
     }
     return nodes;
 }
 
 function generateSVGMap(project, isHealthMode) {
-    const roles = project.roles.filter(r => !r.isArchived);
-    const transactions = project.transactions || [];
-    const state = store.getState();
-    const svgWidth = 1000; const svgHeight = 600;
-
+    const roles = project.roles.filter(r => !r.isArchived); const transactions = project.transactions || [];
+    const state = store.getState(); const svgWidth = 1000; const svgHeight = 600;
     const nodeCoords = calculateNetworkLayout(roles, transactions, svgWidth, svgHeight);
     let svgNodes = ''; let svgEdges = ''; let edgeCurveCounter = {}; 
 
     transactions.forEach((tx) => {
-        const from = nodeCoords[tx.from]; const to = nodeCoords[tx.to];
-        if (!from || !to) return;
-
+        const from = nodeCoords[tx.from]; const to = nodeCoords[tx.to]; if (!from || !to) return;
         const isTangible = tx.tipo !== 'intangible';
-        let strokeDash = isTangible ? "" : "stroke-dasharray='8,8'";
-        let strokeColor = "var(--text-muted)"; let strokeWidth = "2.5";
-        let animation = ""; let opacity = "0.7";
-
+        let strokeDash = isTangible ? "" : "stroke-dasharray='8,8'"; let strokeColor = "var(--text-muted)"; let strokeWidth = "2.5"; let animation = ""; let opacity = "0.7";
         if (isHealthMode) {
-            if (tx.status === 'consolidated') {
-                strokeColor = "var(--accent-green)"; strokeWidth = "3"; opacity = "1";
-            } else if (tx.status === 'reported') {
-                strokeColor = "var(--accent-blue)"; opacity = "1"; strokeWidth = "3";
-                animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.4s" repeatCount="indefinite" />`;
-                strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'";
-            } else {
-                strokeColor = "var(--accent-red)"; opacity = "0.8";
-                animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.2s" repeatCount="indefinite" />`;
-                strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'";
-            }
+            if (tx.status === 'consolidated') { strokeColor = "var(--accent-green)"; strokeWidth = "3"; opacity = "1"; } 
+            else if (tx.status === 'reported') { strokeColor = "var(--accent-blue)"; opacity = "1"; strokeWidth = "3"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.4s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
+            else { strokeColor = "var(--accent-red)"; opacity = "0.8"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.2s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; }
         }
-
-        const pairKey = [tx.from, tx.to].sort().join('-');
-        edgeCurveCounter[pairKey] = (edgeCurveCounter[pairKey] || 0) + 1;
-        const dx = to.x - from.x; const dy = to.y - from.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
+        const pairKey = [tx.from, tx.to].sort().join('-'); edgeCurveCounter[pairKey] = (edgeCurveCounter[pairKey] || 0) + 1;
+        const dx = to.x - from.x; const dy = to.y - from.y; const dist = Math.sqrt(dx*dx + dy*dy);
         const nx = -dy / dist; const ny = dx / dist;  
         const curveStrength = 30 * (edgeCurveCounter[pairKey] % 2 === 0 ? 1 : -1) * Math.ceil(edgeCurveCounter[pairKey]/2);
-        
-        const cx = (from.x + to.x) / 2 + (nx * curveStrength);
-        const cy = (from.y + to.y) / 2 + (ny * curveStrength);
-
+        const cx = (from.x + to.x) / 2 + (nx * curveStrength); const cy = (from.y + to.y) / 2 + (ny * curveStrength);
         const pathData = `M ${from.x} ${from.y} Q ${cx} ${cy}, ${to.x} ${to.y}`;
         const pathId = `edge-${tx.hash}`; const markerId = `arrow-${tx.hash}`;
         const truncName = tx.entregable.length > 18 ? tx.entregable.substring(0, 16) + '..' : tx.entregable;
 
-        svgEdges += `
-            <defs>
-                <marker id="${markerId}" markerWidth="8" markerHeight="8" refX="28" refY="4" orient="auto-start-reverse">
-                    <path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/>
-                </marker>
-            </defs>
-            <path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">
-                ${animation}
-            </path>
-            <text font-size="12" fill="var(--text-heading)" font-family="sans-serif" font-weight="bold" opacity="${opacity}">
-                <textPath href="#${pathId}" startOffset="50%" text-anchor="middle" dominant-baseline="text-after-edge" style="transform:translateY(-5px);">
-                    ${truncName}
-                </textPath>
-            </text>
-        `;
+        svgEdges += `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="28" refY="4" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/></marker></defs><path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">${animation}</path><text font-size="12" fill="var(--text-heading)" font-family="sans-serif" font-weight="bold" opacity="${opacity}"><textPath href="#${pathId}" startOffset="50%" text-anchor="middle" dominant-baseline="text-after-edge" style="transform:translateY(-5px);">${truncName}</textPath></text>`;
     });
 
     roles.forEach((role) => {
-        const coords = nodeCoords[role.id];
-        const assignees = (project.asignaciones || []).filter(a => a.roleId === role.id);
+        const coords = nodeCoords[role.id]; const assignees = (project.asignaciones || []).filter(a => a.roleId === role.id);
         const colors = ROLE_COLORS[role.levelId] || ROLE_COLORS["@pinya"];
-        
         let userHTML = '';
         if (assignees.length === 0) userHTML = `<div style="font-size:0.6rem; color:var(--text-muted); margin-top:2px;">[Vacante]</div>`;
-        else if (assignees.length === 1) {
-            const u = state.globalUsers.find(gu => gu.id === assignees[0].userId);
-            userHTML = `<div style="font-size:0.65rem; color:var(--text-main); font-family:monospace; margin-top:2px; max-width:80%; overflow:hidden; text-overflow:ellipsis;">${u ? u.id : assignees[0].userId}</div>`;
-        } else {
-            const usersList = assignees.map(a => state.globalUsers.find(gu => gu.id === a.userId)?.name || a.userId).join('<br>');
-            userHTML = `<div class="multi-user" style="position:relative; margin-top:2px;">
-                    <div style="font-size:0.65rem; color:var(--text-main); font-family:monospace; cursor:help;">👥 ${assignees.length} Usr.</div>
-                    <div class="hover-tip" style="display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%); background:var(--bg-panel); border:1px solid var(--border-color); padding:8px; border-radius:6px; z-index:1000; white-space:nowrap; font-size:0.75rem; color:white; box-shadow:0 5px 15px rgba(0,0,0,0.5); margin-top:5px;">${usersList}</div>
-                </div>`;
-        }
-
-        svgNodes += `
-            <foreignObject x="${coords.x - 50}" y="${coords.y - 50}" width="100" height="100" style="overflow:visible;">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="background:var(--bg-panel); border:3px solid ${colors.border}; border-radius:50%; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s; position:relative;"
-                     onmouseover="this.style.boxShadow='0 0 20px ${colors.border}'; const tip = this.querySelector('.hover-tip'); if(tip) tip.style.display='block';"
-                     onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.4)'; const tip = this.querySelector('.hover-tip'); if(tip) tip.style.display='none';">
-                    <div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.1; margin: 4px 0;">${role.name.length > 15 ? role.name.substring(0,13)+'..' : role.name}</div>
-                    ${userHTML}
-                </div>
-            </foreignObject>
-        `;
+        else if (assignees.length === 1) { const u = state.globalUsers.find(gu => gu.id === assignees[0].userId); userHTML = `<div style="font-size:0.65rem; color:var(--text-main); font-family:monospace; margin-top:2px; max-width:80%; overflow:hidden; text-overflow:ellipsis;">${u ? u.id : assignees[0].userId}</div>`; } 
+        else { const usersList = assignees.map(a => state.globalUsers.find(gu => gu.id === a.userId)?.name || a.userId).join('<br>'); userHTML = `<div class="multi-user" style="position:relative; margin-top:2px;"><div style="font-size:0.65rem; color:var(--text-main); font-family:monospace; cursor:help;">👥 ${assignees.length} Usr.</div><div class="hover-tip" style="display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%); background:var(--bg-panel); border:1px solid var(--border-color); padding:8px; border-radius:6px; z-index:1000; white-space:nowrap; font-size:0.75rem; color:white; box-shadow:0 5px 15px rgba(0,0,0,0.5); margin-top:5px;">${usersList}</div></div>`; }
+        svgNodes += `<foreignObject x="${coords.x - 50}" y="${coords.y - 50}" width="100" height="100" style="overflow:visible;"><div xmlns="http://www.w3.org/1999/xhtml" style="background:var(--bg-panel); border:3px solid ${colors.border}; border-radius:50%; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s; position:relative;" onmouseover="this.style.boxShadow='0 0 20px ${colors.border}'; const tip = this.querySelector('.hover-tip'); if(tip) tip.style.display='block';" onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.4)'; const tip = this.querySelector('.hover-tip'); if(tip) tip.style.display='none';"><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.1; margin: 4px 0;">${role.name.length > 15 ? role.name.substring(0,13)+'..' : role.name}</div>${userHTML}</div></foreignObject>`;
     });
 
-    return `<div style="width:100%; overflow-x:auto; background: radial-gradient(circle, rgba(13,17,23,1) 0%, #000 100%); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;">
-                <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; margin: 0 auto; overflow:visible;">
-                    ${svgEdges}${svgNodes}
-                </svg>
-            </div>`;
+    return `<div style="width:100%; overflow-x:auto; background: radial-gradient(circle, rgba(13,17,23,1) 0%, #000 100%); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; margin: 0 auto; overflow:visible;">${svgEdges}${svgNodes}</svg></div>`;
 }
 
 export const ProjectView = {
@@ -249,27 +171,22 @@ export const ProjectView = {
         const roles = project.roles.filter(r => !r.isArchived);
         const transactions = project.transactions || [];
 
-        // 🚀 1. INYECTAR EN LA NAVBAR GLOBAL
-        const titleHTML = `<span style="font-weight:normal; opacity:0.6;">Mapa VNA /</span> ${project.nombre} ${!isAdmin ? '<span class="badge" style="background: rgba(210, 153, 34, 0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); margin-left: 10px;">👁️ LECTURA</span>' : ''}`;
-        
-        const actionsHTML = `
-            <div style="display: flex; gap: 8px; background: var(--bg-surface); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color);">
-                <button class="btn btn-map-mode ${mapDisplayMode === 'visual-theory' ? 'btn-primary' : 'btn-outline'} text-small" style="padding: 6px 12px;" data-mode="visual-theory" data-pid="${projectId}">🕸️ Red de Valor</button>
-                <button class="btn btn-map-mode ${mapDisplayMode === 'visual-health' ? 'btn-primary' : 'btn-outline'} text-small" style="padding: 6px 12px; ${mapDisplayMode === 'visual-health' ? '' : 'border-color: var(--accent-red); color: var(--accent-red);'}" data-mode="visual-health" data-pid="${projectId}">❤️ Flujo Vivo</button>
-                ${isAdmin ? `<button class="btn btn-map-mode ${mapDisplayMode === 'list' ? 'btn-primary' : 'btn-outline'} text-small" style="padding: 6px 12px;" data-mode="list" data-pid="${projectId}">📝 Modo Ágil</button>` : ''}
-            </div>
-            ${isAdmin ? `<button class="btn btn-outline text-small" style="padding: 8px 12px;" onclick="location.hash='#/project/${projectId}/edit'">✏️ Editar Nodos</button>` : ''}
-            ${isAdmin ? `<button class="btn btn-primary text-small" style="padding: 8px 12px;" onclick="location.hash='#/project/${projectId}/accounting'">💰 Slicing Pie</button>` : `<button class="btn btn-primary text-small" style="padding: 8px 12px;" onclick="location.hash='#/user-dashboard'">Mi Bandeja</button>`}
-        `;
+        // 🚀 BREADCRUMBS Y TOOLBAR GLOBAL (Se inyecta en el App Shell)
+        setTimeout(() => window.setNavbar(
+            [
+                { label: '🏠 Hub', hash: '#/' },
+                { label: project.nombre, hash: `#/project/${projectId}` },
+                { label: '🗺️ Mapa VNA' }
+            ], 
+            // Acciones Izquierda (Vistas)
+            `<button class="btn btn-map-mode ${mapDisplayMode === 'visual-theory' ? 'btn-primary' : 'btn-outline'} text-small" data-mode="visual-theory" data-pid="${projectId}">🕸️ Red de Valor</button>
+             <button class="btn btn-map-mode ${mapDisplayMode === 'visual-health' ? 'btn-primary' : 'btn-outline'} text-small" style="${mapDisplayMode === 'visual-health' ? '' : 'border-color: var(--accent-red); color: var(--accent-red);'}" data-mode="visual-health" data-pid="${projectId}">❤️ Flujo Vivo</button>
+             ${isAdmin ? `<button class="btn btn-map-mode ${mapDisplayMode === 'list' ? 'btn-primary' : 'btn-outline'} text-small" data-mode="list" data-pid="${projectId}">📝 Modo Creador Ágil</button>` : ''}`,
+            // Acciones Derecha (Ayuda contextual o atajos)
+            `<span class="badge" style="background: rgba(88,166,255,0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue);">💡 Transacciones: ${transactions.length}</span>`
+        ), 0);
 
-        const tip = isAdmin 
-            ? "VNA: Diseña la red conectando nodos. Tangibles (Continua) envían producto/ingreso; Intangibles (Discontinua) envían auditoría/feedback." 
-            : "Explora cómo fluye el valor en la red. Si la flecha es roja, hay un cuello de botella.";
-            
-        // Usamos setTimeout para asegurar que el DOM global está listo
-        setTimeout(() => window.setNavbar(titleHTML, actionsHTML, tip), 0);
-
-        // 🚀 2. RENDERIZAR MODAL Y CONTENIDO
+        // MODAL ÁGIL
         let modalHTML = '';
         if (showAgileModal && isAdmin) {
             modalHTML = `
@@ -292,30 +209,30 @@ export const ProjectView = {
 
         return `
             ${modalHTML}
-            <div class="container fade-in" style="padding-top: 20px;">
+            <div class="container fade-in">
+                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.8rem; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <b style="color: var(--accent-blue);">Simbología de Roles (VNA):</b>
+                        <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+                            <span style="color: var(--accent-gold);">● Estratégico (@anx)</span>
+                            <span style="color: var(--accent-purple);">● Coord. (@aix)</span>
+                            <span style="color: var(--accent-blue);">● Auditoría (@dos)</span>
+                            <span style="color: var(--accent-green);">● Operativo (@bx)</span>
+                            <span style="color: var(--accent-red);">● Soporte (@pny)</span>
+                        </div>
+                    </div>
+                    <div>
+                        <b style="color: var(--accent-purple);">Reglas de Flujo:</b>
+                        <ul style="margin: 5px 0; padding-left: 20px; color: var(--text-muted);">
+                            <li><b>Línea Continua:</b> Tangible (Producto, Capital).</li>
+                            <li><b>Línea Discontinua:</b> Intangible (Información, Mentoría).</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="grid-layout" style="${(isAdmin && mapDisplayMode === 'list') ? 'grid-template-columns: 2fr 1fr;' : 'grid-template-columns: 1fr; max-width: 1000px; margin: 0 auto;'}">
                     
                     <main>
-                        <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.8rem; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border: 1px solid rgba(255,255,255,0.05);">
-                            <div>
-                                <b style="color: var(--accent-blue);">Simbología de Roles (VNA):</b>
-                                <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
-                                    <span style="color: var(--accent-gold);">● Estratégico (@anxaneta)</span>
-                                    <span style="color: var(--accent-purple);">● Táctico/Coord. (@aixecador)</span>
-                                    <span style="color: var(--accent-blue);">● Auditoría/QA (@dosos)</span>
-                                    <span style="color: var(--accent-green);">● Operativo/Ejecutor (@baixos)</span>
-                                    <span style="color: var(--accent-red);">● Soporte/Base (@pinya)</span>
-                                </div>
-                            </div>
-                            <div>
-                                <b style="color: var(--accent-purple);">Reglas de Flujo:</b>
-                                <ul style="margin: 5px 0; padding-left: 20px; color: var(--text-muted);">
-                                    <li><b>Línea Continua:</b> Transacción Tangible (Producto, Código, Ingreso).</li>
-                                    <li><b>Línea Discontinua:</b> Transacción Intangible (Información, Review, Mentoría).</li>
-                                </ul>
-                            </div>
-                        </div>
-
                         ${mapDisplayMode !== 'list' ? generateSVGMap(project, mapDisplayMode === 'visual-health') : `
                             <section class="panel-surface" style="margin-bottom: 25px; border: 1px dashed var(--border-color);">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -333,36 +250,23 @@ export const ProjectView = {
 
                             <div class="list-group">
                                 ${transactions.length === 0 ? '<div class="text-center text-muted">Aún no hay transacciones.</div>' : transactions.slice().reverse().map(tx => {
-                                    const rFrom = roles.find(r => r.id === tx.from);
-                                    const rTo = roles.find(r => r.id === tx.to);
+                                    const rFrom = roles.find(r => r.id === tx.from); const rTo = roles.find(r => r.id === tx.to);
                                     let statusUI = ''; let actionBtn = '';
-
-                                    if (tx.status === 'theoretical') {
-                                        statusUI = `📦 Teórico`;
-                                        if (isAdmin) actionBtn = `<button class="btn btn-outline btn-ping text-small" data-hash="${tx.hash}" data-pid="${project.id}" data-torole="${tx.to}">Ping ⚡</button>`;
-                                    } else if (tx.status === 'reported') {
-                                        statusUI = `<span style="color:var(--accent-blue);">📝 PoW Recibido</span>`;
-                                        if (isAdmin) actionBtn = `<button class="btn btn-primary btn-approve text-small" data-hash="${tx.hash}" data-pid="${project.id}">Aprobar</button>`;
-                                    } else if (tx.status === 'consolidated') {
-                                        statusUI = `<span style="color:var(--accent-green);">✅ Ledger</span>`;
-                                    } else {
-                                        statusUI = `⏳ Esperando...`;
-                                    }
+                                    if (tx.status === 'theoretical') { statusUI = `📦 Teórico`; if (isAdmin) actionBtn = `<button class="btn btn-outline btn-ping text-small" data-hash="${tx.hash}" data-pid="${project.id}" data-torole="${tx.to}">Ping ⚡</button>`; } 
+                                    else if (tx.status === 'reported') { statusUI = `<span style="color:var(--accent-blue);">📝 PoW Recibido</span>`; if (isAdmin) actionBtn = `<button class="btn btn-primary btn-approve text-small" data-hash="${tx.hash}" data-pid="${project.id}">Aprobar</button>`; } 
+                                    else if (tx.status === 'consolidated') { statusUI = `<span style="color:var(--accent-green);">✅ Ledger</span>`; } 
+                                    else { statusUI = `⏳ Esperando...`; }
 
                                     return `
                                     <div class="panel-surface" style="margin-bottom: 12px; border-left: 4px solid ${tx.status === 'consolidated' ? 'var(--accent-green)' : 'var(--accent-blue)'};">
                                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                            <b>${tx.entregable}</b>
-                                            <span class="badge" style="background:rgba(255,255,255,0.05); color:var(--text-muted);">${tx.tipo === 'tangible' ? '⬆️ Tangible' : '⬇️ Intangible'}</span>
+                                            <b>${tx.entregable}</b> <span class="badge" style="background:rgba(255,255,255,0.05); color:var(--text-muted);">${tx.tipo === 'tangible' ? '⬆️ Tangible' : '⬇️ Intangible'}</span>
                                         </div>
                                         <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; margin-bottom:10px;">
-                                            <div style="flex:1; text-align:right; font-size:0.8rem;">${rFrom?.name || 'Borrado'}</div>
-                                            <div style="color:var(--accent-blue);">⟶</div>
-                                            <div style="flex:1; font-size:0.8rem;">${rTo?.name || 'Borrado'}</div>
+                                            <div style="flex:1; text-align:right; font-size:0.8rem;">${rFrom?.name || 'Borrado'}</div><div style="color:var(--accent-blue);">⟶</div><div style="flex:1; font-size:0.8rem;">${rTo?.name || 'Borrado'}</div>
                                         </div>
                                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                                            <div class="text-small text-muted">${statusUI} | Est: ${tx.estimatedHours}h</div>
-                                            <div>${actionBtn}</div>
+                                            <div class="text-small text-muted">${statusUI} | Est: ${tx.estimatedHours}h</div><div>${actionBtn}</div>
                                         </div>
                                     </div>`;
                                 }).join('')}
