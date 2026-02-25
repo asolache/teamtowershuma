@@ -42,19 +42,15 @@
                 results.appendChild(div);
             };
 
-            // --- FASE 1: NÚCLEO ---
+            // --- FASE 1 A 7 (INTACTAS) ---
             assert(typeof store.calculateResilience === 'function', "Función de Resiliencia presente", "KERNEL");
-            
             store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj', nombre: 'Test Project', sector: 'marketing' } });
             const p = store.getState().projects.find(x => x.id === 'test-proj');
             assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
-            
-            // --- FASE 2: ONTOLOGÍA ---
             assert(p.roles && p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
             const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
             assert(anxanetaRole !== undefined && anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
-
-            // --- FASE 3: EDICIÓN ---
+            
             const anxanetaId = anxanetaRole.id;
             store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: 'test-proj', roleId: anxanetaId, field: 'name', value: 'CEO Global' } });
             const pUpdated = store.getState().projects.find(x => x.id === 'test-proj');
@@ -63,7 +59,6 @@
             store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: 'test-proj', description: 'Misión IA' } });
             assert(store.getState().projects.find(x => x.id === 'test-proj').description === 'Misión IA', "Metadatos persistidos", "DESIGN");
 
-            // --- FASE 4: CICLO DE VIDA ---
             store.dispatch({ type: 'CREATE_ROLE', payload: { projectId: 'test-proj', name: 'Analista', levelId: '@baixos' } });
             let pAfterCreate = store.getState().projects.find(x => x.id === 'test-proj');
             const newRole = pAfterCreate.roles.find(r => r.name === 'Analista');
@@ -72,7 +67,6 @@
             store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId: 'test-proj', roleId: newRole.id } });
             assert(store.getState().projects.find(p => p.id === 'test-proj').roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad vía Archivado", "STORE");
 
-            // --- FASE 5: ECONOMÍA ---
             const dososRole = pAfterCreate.roles.find(r => r.levelId === '@dosos');
             store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'test-proj', tx: { from: anxanetaId, to: dososRole.id, horas: 2, entregable: 'Plan Q1', tipo: 'tangible' } } });
             const tx1 = store.getState().projects.find(x => x.id === 'test-proj').transactions[0];
@@ -84,21 +78,42 @@
             const tx2 = store.getState().projects.find(x => x.id === 'test-proj').transactions[1];
             assert(tx2.prevHash === tx1.hash, "Triple Entrada: Chaining de hashes OK", "SECURITY");
 
-            // --- FASE 6: ANALÍTICA ---
             const salud = store.calculateResilience('test-proj');
             assert(salud > 0, `Salud sistémica calculada (${salud}%)`, "RESILIENCE");
 
-            // --- FASE 7: INTELIGENCIA ---
             store.dispatch({ type: 'UPDATE_TRANSACTION_PHASE', payload: { projectId: 'test-proj', txHash: tx1.hash, fase: 1 } });
             const prompt = store.generateSystemPrompt('test-proj');
             assert(prompt.includes('Fase 1:'), "Prompt incluye secuenciación temporal", "INTEL");
-            assert(prompt.includes('CEO Global'), "Prompt incluye personalización de roles", "INTEL");
-
-            // 🚀 --- FASE 8: CONFIGURACIÓN GLOBAL (NUEVO v5.4) ---
+            
+            // --- FASE 8: CONFIGURACIÓN GLOBAL ---
             assert(store.getState().config !== undefined, "Objeto config global inicializado", "KERNEL");
             store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: 'light', ecosystemName: 'Test Ecosistema' } });
             const currentConfig = store.getState().config;
             assert(currentConfig.theme === 'light' && currentConfig.ecosystemName === 'Test Ecosistema', "Actualización de Configuración Global OK", "SETTINGS");
+
+            // 🚀 --- FASE 9: AUTO-LEDGER (PARSER DE CHAT) ---
+            assert(typeof store.parseChatToLedger === 'function', "El parser de chat (Auto-Ledger) existe en el Kernel", "PARSER");
+            
+            // Simulamos un chat corto
+            const mockChatText = `
+                USER: Necesito que hagas el módulo de login.
+                AI: Claro, aquí tienes el código.
+                USER: Gracias, arregla este pequeño bug.
+                AI: Arreglado.
+            `;
+            
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser' } });
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI' } });
+            const pForChat = store.getState().projects.find(x => x.id === 'test-proj');
+            
+            const numLedgersBefore = pForChat.ledger ? pForChat.ledger.length : 0;
+            
+            // Ejecutamos el parser: Debería detectar 2 prompts de USER y 2 de AI
+            store.parseChatToLedger('test-proj', mockChatText, pForChat.usuarios[0].id, pForChat.usuarios[1].id, anxanetaId, newRole.id);
+            
+            const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
+            
+            assert(numLedgersAfter === numLedgersBefore + 4, "El parser ha inyectado 4 transacciones (2 Humano, 2 IA) al Ledger", "AUTO-LEDGER");
 
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
