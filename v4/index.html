@@ -204,8 +204,19 @@
                 } else if (hash === '#/settings') {
                     app.innerHTML = SettingsView.render();
 
-                } else if (hash === '#/user-dashboard') {
-                    app.innerHTML = UserDashboardView.render();
+                // 🚀 NUEVA RUTA: Perfil del Contribuidor
+                } else if (hash.startsWith('#/project/') && hash.includes('/user/')) {
+                    const parts = hash.split('/');
+                    const pId = parts[2]; // ID del proyecto
+                    const uId = parts[4]; // @id del usuario
+                    
+                    // Importación dinámica o asegúrate de haberla importado arriba
+                    import('./js/views/ContributorProfileView.js').then(module => {
+                        app.innerHTML = module.ContributorProfileView.render(pId, uId);
+                    });
+                
+                } else if (hash.startsWith('#/project/')) {
+                    // ... resto de lógica de proyectos (edit, accounting, etc.)
 
                 } else if (hash === '#/test') {
                     app.innerHTML = `
