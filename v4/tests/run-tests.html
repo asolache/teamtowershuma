@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SOS v5.5 | Suite de Validación Total</title>
+    <title>SOS v5.7 | Suite de Validación Total</title>
     <style>
         body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 40px; }
         .container { max-width: 900px; margin: 0 auto; }
@@ -19,7 +19,7 @@
 <body>
     <div class="container">
         <a href="../index.html#/" class="nav-link">← Volver al Dashboard</a>
-        <h1>🧪 SOS v5.5: Test de Estrés del Kernel</h1>
+        <h1>🧪 SOS v5.7: Test de Estrés del Kernel</h1>
         <div id="results"></div>
         <div id="summary-box"></div>
     </div>
@@ -48,7 +48,7 @@
             const p = store.getState().projects.find(x => x.id === 'test-proj');
             assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
             
-            // --- FASE 2: ONTOLOGÍA ---
+            // --- FASE 2: ONTOLOGÍA BASE ---
             assert(p.roles && p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
             const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
             assert(anxanetaRole !== undefined && anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
@@ -121,10 +121,9 @@
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
 
-            // 🚀 --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
+            // --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
             assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
             
-            // Creamos a Laura con un ID único basado en tiempo para que no rompa el test al recargar
             const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 100000);
 
             store.dispatch({ 
@@ -143,14 +142,13 @@
 
             let errorThrown = false;
             try {
-                // Intentamos registrar el MISMO ID exacto que acabamos de crear
                 store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: dynLauraId } });
             } catch (error) {
                 errorThrown = true;
             }
             assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
 
-            // 🚀 --- FASE 11: CONTROL DE ACCESO (RBAC) Y SESIONES ---
+            // --- FASE 11: CONTROL DE ACCESO (RBAC) Y SESIONES ---
             store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynLauraId } });
             const sessionActive = store.getState().session;
             
@@ -161,13 +159,40 @@
             store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
             assert(store.getState().session.role === 'admin', "El Administrador recupera el rol máximo (admin)", "RBAC");
 
+            // 🚀 --- FASE 12: ONTOLOGÍA DINÁMICA (NUEVO v5.7) ---
+            assert(store.getState().ontology !== undefined && store.getState().ontology.sectores !== undefined, "La Ontología es accesible desde el estado dinámico", "ONTOLOGY");
+            
+            // Inyectamos un nuevo sector dinámicamente
+            store.dispatch({
+                type: 'ADD_ONTOLOGY_SECTOR',
+                payload: {
+                    sectorId: 'deep-tech',
+                    rolesData: {
+                        "@anxaneta": { name: "Lead Scientist", prompt: "Diriges la investigación..." },
+                        "@aixecador": { name: "Lab Manager", prompt: "Coordinas el laboratorio..." },
+                        "@dosos": { name: "Peer Reviewer", prompt: "Auditas la ciencia..." },
+                        "@baixos": { name: "Researcher", prompt: "Ejecutas experimentos..." },
+                        "@pinya": { name: "Data Analyst", prompt: "Procesas métricas..." }
+                    }
+                }
+            });
+
+            const newOntology = store.getState().ontology;
+            assert(newOntology.sectores['deep-tech'] !== undefined, "El EO puede crear nuevos Sectores dinámicamente", "DATABASE");
+            assert(newOntology.sectores['deep-tech']['@anxaneta'].name === 'Lead Scientist', "Los roles del nuevo sector se guardaron correctamente", "DATABASE");
+
+            // Creamos un proyecto para probar que coge la ontología nueva
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj-2', nombre: 'Deep Tech Lab', sector: 'deep-tech' } });
+            const p2 = store.getState().projects.find(x => x.id === 'test-proj-2');
+            assert(p2.roles.find(r => r.levelId === '@anxaneta').name === 'Lead Scientist', "Un nuevo proyecto usa la ontología dinámica correctamente", "CORE");
+
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
             const ok = passed === total;
             summary.innerHTML = `<h3 style="margin:0">Certificación: ${passed}/${total}</h3>
                                  <p style="font-weight:bold; color:${ok ? '#3fb950' : '#f85149'}; margin:5px 0 0 0;">
-                                    ${ok ? "🚀 KERNEL v5.6 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
+                                    ${ok ? "🚀 KERNEL v5.7 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
                                  </p>`;
         }
         
