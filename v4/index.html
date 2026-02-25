@@ -94,30 +94,27 @@
 
         const app = document.getElementById('app');
 
-        // 🧠 RENDERIZADOR DEL APP SHELL (Barra de Navegación)
+      // 🧠 RENDERIZADOR DEL APP SHELL (Barra de Navegación + Contexto)
         function renderAppShell() {
             const state = store.getState();
             const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
             const shellContainer = document.getElementById('app-shell');
             
             let identityHtml = '';
-
             if (session.role === 'admin') {
                 identityHtml = `<span class="badge" style="background: rgba(248, 81, 73, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red);">👑 Ecosystem Owner</span>`;
             } else {
                 const user = state.globalUsers.find(u => u.id === session.activeUserId);
-                const userName = user ? user.name : session.activeUserId;
-                identityHtml = `<span class="badge" style="background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue);">👤 ${userName} (${session.activeUserId})</span>`;
+                identityHtml = `<span class="badge" style="background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue);">👤 ${user ? user.name : session.activeUserId}</span>`;
             }
 
             shellContainer.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
                         <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 6px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:0.9rem;">TT</div>
-                        <b style="color: var(--text-heading); font-size: 1.1rem; letter-spacing: 0.05rem;">SOS <span style="color:var(--accent-blue);">v5.6</span></b>
+                        <b style="color: var(--text-heading); font-size: 1.1rem; letter-spacing: 0.05rem;">SOS <span style="color:var(--accent-blue);">v5.7</span></b>
                     </a>
                 </div>
-                
                 <div style="display: flex; align-items: center; gap: 15px;">
                     ${identityHtml}
                     <button id="btn-global-login" class="btn btn-secondary text-small" style="padding: 6px 12px; border-radius: 20px;">
@@ -125,8 +122,25 @@
                     </button>
                 </div>
             `;
-        }
 
+            // 🚀 NUEVO: Barra de Tips Contextuales
+            let contextBar = document.getElementById('context-bar');
+            if (!contextBar) {
+                contextBar = document.createElement('div');
+                contextBar.id = 'context-bar';
+                contextBar.style.cssText = 'position:fixed; top:60px; left:0; right:0; background:rgba(88,166,255,0.05); border-bottom:1px solid rgba(88,166,255,0.2); padding:8px 20px; font-size:0.75rem; color:var(--accent-blue); z-index:999; display:flex; gap:15px; align-items:center; backdrop-filter:blur(5px);';
+                document.body.appendChild(contextBar);
+            }
+
+            // Cambiar el tip según la ruta actual (muy útil para enseñar la metodología)
+            const hash = window.location.hash;
+            let tipText = "💡 <b>Tip EO:</b> Diseña la red para que el valor tangible suba (Pinya -> Anxaneta) y la auditoría baje (Anxaneta -> Pinya).";
+            if (hash.includes('accounting')) tipText = "💡 <b>Tip Slicing Pie:</b> Los multiplicadores de riesgo asumen que Anxaneta (x3) no cobra si el ecosistema falla.";
+            if (hash.includes('user-dashboard')) tipText = "💡 <b>Tip Contribuidor:</b> Entrega Proof of Work (PoW) en cada Ping para acumular Equity real en el Ledger.";
+
+            contextBar.innerHTML = tipText;
+            document.body.style.paddingTop = '95px'; // Ajustar para que quepan ambas barras
+        }
         // 🛡️ EVENTO GLOBAL DE CAMBIO DE SESIÓN
         document.addEventListener('click', (e) => {
             if (e.target.id === 'btn-global-login') {
