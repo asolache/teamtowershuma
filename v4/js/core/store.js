@@ -104,8 +104,8 @@ export class TTStore {
             "@pinya": "Misión: Soporte, infraestructura y mantenimiento."
         };
 
-        // 🚀 NUEVO: El estado ahora incluye el nodo 'config'
-        this.state = { projects: [], ontology: this.ontologyStatic, config: {} };
+        // 🚀 NUEVO: El estado ahora incluye el nodo 'config', 'globalUsers' y 'session'
+        this.state = { projects: [], ontology: this.ontologyStatic, config: {}, globalUsers: [], session: {} };
         this.init();
     }
 
@@ -115,28 +115,32 @@ export class TTStore {
             try { 
                 const data = JSON.parse(saved);
                 this.state.projects = data.projects || []; 
-                // 🚀 NUEVO: Recuperamos la config si existe, o ponemos valores por defecto
-                this.state.configthis.state.config = data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
-                this.state.globalUsers = data.globalUsers || []; // 🚀 NUEVO POOL GLOBAL= data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
-           } catch (e) { 
+                this.state.config = data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
+                this.state.globalUsers = data.globalUsers || []; 
+                // 🚀 NUEVO: Cargamos la sesión o ponemos 'admin' por defecto
+                this.state.session = data.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
+            } catch (e) { 
                 this.state.projects = [];
                 this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
-                this.state.globalUsers = []; // 🚀 NUEVO POOL GLOBAL
+                this.state.globalUsers = []; 
+                this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
             }
         } else {
             this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
-            this.state.globalUsers = []; // 🚀 NUEVO POOL GLOBAL
+            this.state.globalUsers = []; 
+            this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
         }
         
         // 🚀 Aplicamos el tema visual al arrancar
         document.documentElement.setAttribute('data-theme', this.state.config.theme);
     }
 
-   save() {
+    save() {
         localStorage.setItem('teamtowers-v4.4-state', JSON.stringify({ 
             projects: this.state.projects,
             config: this.state.config,
-            globalUsers: this.state.globalUsers // 🚀 NUEVO: GUARDAR USUARIOS
+            globalUsers: this.state.globalUsers,
+            session: this.state.session // 🚀 GUARDAMOS LA SESIÓN
         }));
         window.dispatchEvent(new CustomEvent('store-ready')); 
     }
@@ -172,7 +176,8 @@ export class TTStore {
         
         return prompt;
     }
-// 🚀 NUEVO: IMPORTADOR DE SESIONES IA (JSON)
+
+    // 🚀 IMPORTADOR DE SESIONES IA (JSON)
     importSessionJSON(projectId, jsonPayload) {
         if (!jsonPayload || !Array.isArray(jsonPayload)) {
             console.error("El payload debe ser un array JSON válido.");
@@ -180,7 +185,6 @@ export class TTStore {
         }
 
         jsonPayload.forEach(entry => {
-            // Validamos que la entrada tenga lo mínimo necesario
             if (entry.userId && entry.roleId && entry.description && entry.horas) {
                 this.dispatch({
                     type: 'ADD_LEDGER_ENTRY',
@@ -196,6 +200,7 @@ export class TTStore {
             }
         });
     }
+
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
         const sKey = sector || 'web3';
         const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
@@ -224,10 +229,26 @@ export class TTStore {
         let p = (payload && payload.projectId) ? this.state.projects.find(x => x.id === payload.projectId) : null;
 
         switch(type) {
-            // 🚀 NUEVO CASO: CONFIGURACIÓN GLOBAL
+            // 🚀 NUEVO: GESTIÓN DE SESIONES (RBAC)
+            case 'LOGIN_USER':
+                if (payload.userId === 'ecosystem-admin') {
+                    this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
+                } else {
+                    const foundUser = this.state.globalUsers.find(u => u.id === payload.userId);
+                    if (foundUser) {
+                        this.state.session = { activeUserId: foundUser.id, role: 'user' };
+                    } else {
+                        throw new Error("Usuario no encontrado en la red.");
+                    }
+                }
+                break;
+
+            case 'LOGOUT_USER':
+                this.state.session = { activeUserId: 'ecosystem-admin', role: 'admin' };
+                break;
+
             case 'UPDATE_GLOBAL_CONFIG':
                 this.state.config = { ...this.state.config, ...payload };
-                // Cambia el tema visual en caliente
                 if (payload.theme) {
                     document.documentElement.setAttribute('data-theme', payload.theme);
                 }
@@ -242,35 +263,28 @@ export class TTStore {
                 if (p) p.isVerified = true;
                 break;
 
-          case 'ADD_USER':
+            case 'ADD_USER':
                 if (p) {
                     p.usuarios = p.usuarios || [];
                     this.state.globalUsers = this.state.globalUsers || [];
 
-                    // Si no mandan uniqueId desde la interfaz, generamos uno por retrocompatibilidad
                     const rawNameId = payload.name.trim().toLowerCase().replace(/\s+/g, '-');
                     const safeId = payload.uniqueId ? payload.uniqueId.toLowerCase() : `@${rawNameId}-${Math.random().toString(36).substr(2, 4)}`;
                     
-                    // 🛡️ SEGURIDAD: Comprobamos si el ID ya existe en TODA la red global
                     const existingGlobalUser = this.state.globalUsers.find(u => u.id === safeId);
                     
                     if (existingGlobalUser) {
-                        // Si ya existe, lanzamos un error que la UI deberá atrapar
                         throw new Error(`El identificador único ${safeId} ya está registrado en la red TeamTowers.`);
                     }
                     
-                    // Creamos el objeto de identidad soberana
                     const newUserObj = { 
                         id: safeId, 
                         name: payload.name.trim(),
-                        wallet: payload.walletOrSocial || '', // Guardamos la capa 2 (Web3/Social)
+                        wallet: payload.walletOrSocial || '', 
                         rolePrompt: '' 
                     };
                     
-                    // 1. Guardamos en el Pool Global
                     this.state.globalUsers.push(newUserObj);
-                    
-                    // 2. Vinculamos al Proyecto Local
                     p.usuarios.push(newUserObj);
                 }
                 break;
