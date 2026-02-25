@@ -25,7 +25,7 @@
     </div>
 
     <script type="module">
-        import { store } from '../js/core/store.js';
+       import { store } from '../js/core/store.js';
 
         function runSuite() {
             const results = document.getElementById('results');
@@ -42,15 +42,18 @@
                 results.appendChild(div);
             };
 
-            // --- FASE 1 A 7 (INTACTAS) ---
+            // --- FASE 1: NÚCLEO ---
             assert(typeof store.calculateResilience === 'function', "Función de Resiliencia presente", "KERNEL");
             store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj', nombre: 'Test Project', sector: 'marketing' } });
             const p = store.getState().projects.find(x => x.id === 'test-proj');
             assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
+            
+            // --- FASE 2: ONTOLOGÍA ---
             assert(p.roles && p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
             const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
             assert(anxanetaRole !== undefined && anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
-            
+
+            // --- FASE 3: EDICIÓN ---
             const anxanetaId = anxanetaRole.id;
             store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: 'test-proj', roleId: anxanetaId, field: 'name', value: 'CEO Global' } });
             const pUpdated = store.getState().projects.find(x => x.id === 'test-proj');
@@ -59,6 +62,7 @@
             store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: 'test-proj', description: 'Misión IA' } });
             assert(store.getState().projects.find(x => x.id === 'test-proj').description === 'Misión IA', "Metadatos persistidos", "DESIGN");
 
+            // --- FASE 4: CICLO DE VIDA ---
             store.dispatch({ type: 'CREATE_ROLE', payload: { projectId: 'test-proj', name: 'Analista', levelId: '@baixos' } });
             let pAfterCreate = store.getState().projects.find(x => x.id === 'test-proj');
             const newRole = pAfterCreate.roles.find(r => r.name === 'Analista');
@@ -67,6 +71,7 @@
             store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId: 'test-proj', roleId: newRole.id } });
             assert(store.getState().projects.find(p => p.id === 'test-proj').roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad vía Archivado", "STORE");
 
+            // --- FASE 5: ECONOMÍA ---
             const dososRole = pAfterCreate.roles.find(r => r.levelId === '@dosos');
             store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'test-proj', tx: { from: anxanetaId, to: dososRole.id, horas: 2, entregable: 'Plan Q1', tipo: 'tangible' } } });
             const tx1 = store.getState().projects.find(x => x.id === 'test-proj').transactions[0];
@@ -78,13 +83,16 @@
             const tx2 = store.getState().projects.find(x => x.id === 'test-proj').transactions[1];
             assert(tx2.prevHash === tx1.hash, "Triple Entrada: Chaining de hashes OK", "SECURITY");
 
+            // --- FASE 6: ANALÍTICA ---
             const salud = store.calculateResilience('test-proj');
             assert(salud > 0, `Salud sistémica calculada (${salud}%)`, "RESILIENCE");
 
+            // --- FASE 7: INTELIGENCIA ---
             store.dispatch({ type: 'UPDATE_TRANSACTION_PHASE', payload: { projectId: 'test-proj', txHash: tx1.hash, fase: 1 } });
             const prompt = store.generateSystemPrompt('test-proj');
             assert(prompt.includes('Fase 1:'), "Prompt incluye secuenciación temporal", "INTEL");
-            
+            assert(prompt.includes('CEO Global'), "Prompt incluye personalización de roles", "INTEL");
+
             // --- FASE 8: CONFIGURACIÓN GLOBAL ---
             assert(store.getState().config !== undefined, "Objeto config global inicializado", "KERNEL");
             store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: 'light', ecosystemName: 'Test Ecosistema' } });
@@ -103,14 +111,14 @@
             // Simulamos el JSON exacto que devolverá Gemini después de auditar una sesión
             const mockAIResponse = [
                 {
-                    userId: pForJson.usuarios[0].id, // Humano
+                    userId: pForJson.usuarios[0].id, 
                     roleId: anxanetaId,
                     receiverId: newRole.id,
                     description: "Diseño de arquitectura de Inyección JSON y directrices TDD",
                     horas: 0.5
                 },
                 {
-                    userId: pForJson.usuarios[1].id, // IA
+                    userId: pForJson.usuarios[1].id, 
                     roleId: newRole.id,
                     receiverId: anxanetaId,
                     description: "Refactorización de store.js y tests para soportar JSON",
@@ -124,6 +132,16 @@
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             
             assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger correctamente", "AUTO-LEDGER");
+
+            // --- RESULTADO ---
+            const summary = document.getElementById('summary-box');
+            summary.className = "summary";
+            const ok = passed === total;
+            summary.innerHTML = `<h3 style="margin:0">Certificación: ${passed}/${total}</h3>
+                                 <p style="font-weight:bold; color:${ok ? '#3fb950' : '#f85149'}; margin:5px 0 0 0;">
+                                    ${ok ? "🚀 KERNEL v5.4 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
+                                 </p>`;
+        }
         
         runSuite();
     </script>
