@@ -142,7 +142,21 @@
                                     ${ok ? "🚀 KERNEL v5.4 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
                                  </p>`;
         }
-        
+        // 🚀 --- FASE 10: IDENTIDAD GLOBAL DE USUARIO (NUEVO v5.5) ---
+            assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
+            
+            // Creamos un usuario nuevo a través de la acción estándar
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura (Node Dev)' } });
+            
+            const stateAfterUser = store.getState();
+            // Comprobamos que Laura está en el Pool Global
+            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.name === 'Laura (Node Dev)');
+            assert(lauraGlobal !== undefined, "Usuario añadido correctamente al Pool Global", "IDENTITY");
+            
+            // Y comprobamos que Laura TAMBIÉN está vinculada al proyecto (mantenemos retrocompatibilidad)
+            const pForUser = stateAfterUser.projects.find(x => x.id === 'test-proj');
+            const lauraInProject = pForUser.usuarios.find(u => u.id === lauraGlobal.id);
+            assert(lauraInProject !== undefined && lauraInProject.id === lauraGlobal.id, "Usuario vinculado correctamente al Proyecto local", "IDENTITY");
         runSuite();
     </script>
 </body>
