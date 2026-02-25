@@ -116,24 +116,27 @@ export class TTStore {
                 const data = JSON.parse(saved);
                 this.state.projects = data.projects || []; 
                 // 🚀 NUEVO: Recuperamos la config si existe, o ponemos valores por defecto
-                this.state.config = data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
-            } catch (e) { 
+                this.state.configthis.state.config = data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
+                this.state.globalUsers = data.globalUsers || []; // 🚀 NUEVO POOL GLOBAL= data.config || { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
+           } catch (e) { 
                 this.state.projects = [];
                 this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
+                this.state.globalUsers = []; // 🚀 NUEVO POOL GLOBAL
             }
         } else {
             this.state.config = { theme: 'dark', ecosystemName: 'TeamTowers Global', globalPrompt: '' };
+            this.state.globalUsers = []; // 🚀 NUEVO POOL GLOBAL
         }
         
         // 🚀 Aplicamos el tema visual al arrancar
         document.documentElement.setAttribute('data-theme', this.state.config.theme);
     }
 
-    save() {
-        // 🚀 NUEVO: Guardamos proyectos y config
+   save() {
         localStorage.setItem('teamtowers-v4.4-state', JSON.stringify({ 
             projects: this.state.projects,
-            config: this.state.config
+            config: this.state.config,
+            globalUsers: this.state.globalUsers // 🚀 NUEVO: GUARDAR USUARIOS
         }));
         window.dispatchEvent(new CustomEvent('store-ready')); 
     }
@@ -239,12 +242,21 @@ export class TTStore {
                 if (p) p.isVerified = true;
                 break;
 
-            case 'ADD_USER':
+           case 'ADD_USER':
                 if (p) {
                     p.usuarios = p.usuarios || [];
+                    this.state.globalUsers = this.state.globalUsers || [];
+
                     const cleanNameId = payload.name.trim().toLowerCase().replace(/\s+/g, '-');
                     const safeId = `usr-${cleanNameId}-${Math.random().toString(36).substr(2, 5)}`;
-                    p.usuarios.push({ id: safeId, name: payload.name.trim() });
+                    
+                    const newUserObj = { id: safeId, name: payload.name.trim(), rolePrompt: '' };
+                    
+                    // 1. Lo guardamos en el catálogo global de la red
+                    this.state.globalUsers.push(newUserObj);
+                    
+                    // 2. Lo vinculamos al proyecto actual (Retrocompatibilidad)
+                    p.usuarios.push(newUserObj);
                 }
                 break;
 
