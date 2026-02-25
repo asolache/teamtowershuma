@@ -15,7 +15,6 @@ const MAX_PROMPT_LENGTH = 4000;
 export class TTStore {
     constructor() {
         this.ontologyStatic = {
-            // ✅ LOS 10 SECTORES RESTAURADOS INTACTOS
             sectores: { 
                 marketing: { 
                     "@anxaneta": { name: "Strategy", prompt: "Eres el Director de Estrategia..." },
@@ -143,7 +142,6 @@ export class TTStore {
         return Math.round((audits / total) * 100);
     }
 
-    // ✅ REPARADO: Generador de IA con secuenciación
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
@@ -159,14 +157,13 @@ export class TTStore {
         return prompt;
     }
 
-    // ✅ REPARADO: Factory con IDs estables
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
         const sKey = sector || 'web3';
         const sectorData = this.ontologyStatic.sectores[sKey] || this.ontologyStatic.sectores['marketing'];
         const initialRoles = Object.keys(this.ontologyStatic.niveles).map((levelId) => {
             const def = this.ontologyStatic.niveles[levelId];
             return {
-                id: `role-${id}-${levelId.replace('@','')}`, // ID Determinista para evitar fallos en tests
+                id: `role-${id}-${levelId.replace('@','')}`, 
                 levelId: levelId,
                 name: sectorData[levelId]?.name || "Rol Base",
                 systemPrompt: sectorData[levelId]?.prompt || this.orbitPrompts[levelId],
@@ -189,7 +186,6 @@ export class TTStore {
 
         switch(type) {
             case 'ADD_PROJECT':
-                // ✅ REPARADO: Limpia fantasmas antiguos del LocalStorage
                 this.state.projects = this.state.projects.filter(x => x.id !== payload.id);
                 this.state.projects.push(this._createProjectInstance(payload.id, payload.nombre, payload.sector, payload.ownerId));
                 break;
@@ -198,6 +194,58 @@ export class TTStore {
                 if (p) p.isVerified = true;
                 break;
 
+            // 🚀 CASOS REPARADOS: GESTIÓN DE USUARIOS Y CONTABILIDAD DIRECTA
+            case 'ADD_USER':
+                if (p) {
+                    p.usuarios = p.usuarios || [];
+                    // ID seguro y sin espacios
+                    const cleanNameId = payload.name.trim().toLowerCase().replace(/\s+/g, '-');
+                    const safeId = `usr-${cleanNameId}-${Math.random().toString(36).substr(2, 5)}`;
+                    
+                    p.usuarios.push({
+                        id: safeId,
+                        name: payload.name.trim()
+                    });
+                }
+                break;
+
+            case 'ASSIGN_USER_ROLE':
+                if (p) {
+                    p.asignaciones = p.asignaciones || [];
+                    // Eliminamos asignaciones previas a ese mismo rol para evitar duplicados
+                    p.asignaciones = p.asignaciones.filter(a => !(a.userId === payload.userId && a.roleId === payload.roleId));
+                    p.asignaciones.push({
+                        id: `asg-${Date.now()}`,
+                        userId: payload.userId,
+                        roleId: payload.roleId
+                    });
+                }
+                break;
+
+            case 'ADD_LEDGER_ENTRY':
+                if (p) {
+                    p.ledger = p.ledger || [];
+                    const role = p.roles.find(r => r.id === payload.roleId);
+                    const safeHours = parseFloat(payload.horas) || 0;
+                    
+                    // Fórmula Core de Slicing Pie
+                    const rawValue = safeHours * (role?.multiplier || 1) * (role?.price || 0);
+
+                    p.ledger.push({
+                        id: `ldg-direct-${Date.now()}`,
+                        timestamp: Date.now(),
+                        userId: payload.userId,
+                        roleId: payload.roleId,
+                        receiverId: payload.receiverId,
+                        description: payload.description,
+                        horas: safeHours,
+                        valorCongelado: rawValue,
+                        txHashRef: 'direct-entry' // Marca de que no vino de un Ping
+                    });
+                }
+                break;
+
+            // ... CASOS ORIGINALES INTACTOS ...
             case 'UPDATE_ROLE':
                 if (p) {
                     const role = p.roles.find(r => r.id === payload.roleId);
@@ -258,7 +306,6 @@ export class TTStore {
                 }
                 break;
 
-            // ... (Resto de lógica de Ping y Approve intacta)
             case 'PING_TRANSACTION':
                 if (p) {
                     const tx = p.transactions.find(t => t.hash === payload.txHash);
