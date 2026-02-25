@@ -22,23 +22,47 @@ document.addEventListener('change', (e) => {
 
 // 🛡️ EVENTOS DE ACCIÓN
 document.addEventListener('click', (e) => {
-    // 1. Alta de Contribuidor
+    // 🚀 NUEVO: 1. Alta de Contribuidor con Identidad Soberana
     if (e.target.id === 'btn-add-user') {
         const projectId = e.target.getAttribute('data-pid');
         const nameInput = document.getElementById('new-user-name');
+        const idInput = document.getElementById('new-user-id');
+        const walletInput = document.getElementById('new-user-wallet');
+        
         const name = nameInput.value.trim();
+        let uniqueId = idInput.value.trim();
+        const walletOrSocial = walletInput.value.trim();
         
         if (!name) return alert("⚠️ Indica el nombre del contribuidor.");
+        if (!uniqueId) return alert("⚠️ Indica el identificador único (@id).");
+
+        // Formateo automático: asegurar que empieza por @ y no tiene espacios
+        if (!uniqueId.startsWith('@')) uniqueId = '@' + uniqueId;
+        uniqueId = uniqueId.toLowerCase().replace(/\s+/g, '');
         
-        store.dispatch({ type: 'ADD_USER', payload: { projectId, name } });
-        
-        nameInput.value = '';
-        const btn = document.getElementById('btn-add-user');
-        btn.innerHTML = '✅';
-        btn.style.backgroundColor = 'var(--accent-green)';
-        setTimeout(() => {
-            document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
-        }, 500);
+        try {
+            // Intentamos inyectar al Kernel
+            store.dispatch({ 
+                type: 'ADD_USER', 
+                payload: { projectId, name, uniqueId, walletOrSocial } 
+            });
+            
+            // Si funciona, limpiamos y recargamos
+            nameInput.value = '';
+            idInput.value = '';
+            walletInput.value = '';
+            
+            const btn = document.getElementById('btn-add-user');
+            btn.innerHTML = '✅ Guardado';
+            btn.style.backgroundColor = 'var(--accent-green)';
+            setTimeout(() => {
+                document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+            }, 500);
+
+        } catch (error) {
+            // 🛡️ Capturamos el bloqueo de duplicados del Kernel
+            alert("❌ ALERTA DE SISTEMA:\n\n" + error.message);
+        }
     }
 
     // 2. Asignar Rol a Persona
@@ -93,7 +117,7 @@ document.addEventListener('click', (e) => {
         }, 800);
     }
 
-    // 🚀 EVENTO: Copiar Prompt al Portapapeles
+    // EVENTO: Copiar Prompt al Portapapeles
     if (e.target.id === 'btn-copy-prompt') {
         const promptText = `Gemini, evalúa nuestra sesión de hoy como Auditor Slicing Pie. Calcula el esfuerzo y devuélveme EXCLUSIVAMENTE un array JSON válido para inyectar en el Ledger con esta estructura exacta: [{"actor": "human", "description": "Resumen de lo que diseñó/dirigió el humano", "horas": 0.0}, {"actor": "ai", "description": "Resumen de lo que codificó/ejecutó la IA", "horas": 0.0}]`;
         navigator.clipboard.writeText(promptText);
@@ -101,7 +125,7 @@ document.addEventListener('click', (e) => {
         setTimeout(() => e.target.innerHTML = '📋 Copiar Prompt Auditor', 2000);
     }
 
-    // 🚀 NUEVO: 4. AUTO-LEDGER (INYECCIÓN JSON)
+    // 4. AUTO-LEDGER (INYECCIÓN JSON)
     if (e.target.id === 'btn-parse-chat') {
         const projectId = e.target.getAttribute('data-pid');
         const jsonText = document.getElementById('chat-input').value.trim();
@@ -115,11 +139,9 @@ document.addEventListener('click', (e) => {
         }
 
         try {
-            // Limpiamos si la IA devuelve el JSON dentro de un bloque markdown (```json ... ```)
             let cleanJsonText = jsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
             const parsedArray = JSON.parse(cleanJsonText);
 
-            // Mapeamos el "actor" genérico a los IDs reales seleccionados en la UI
             const finalPayload = parsedArray.map(entry => {
                 const isHuman = entry.actor === 'human';
                 return {
@@ -131,7 +153,6 @@ document.addEventListener('click', (e) => {
                 };
             });
 
-            // Enviamos el payload enriquecido al Kernel
             store.importSessionJSON(projectId, finalPayload);
 
             const btn = e.target;
@@ -143,7 +164,7 @@ document.addEventListener('click', (e) => {
             }, 1200);
 
         } catch (error) {
-            alert("❌ Error de Formato: El texto introducido no es un JSON válido. Asegúrate de copiar solo los corchetes [ ] y su contenido.\n\nDetalle: " + error.message);
+            alert("❌ Error de Formato: El texto introducido no es un JSON válido.\n\nDetalle: " + error.message);
         }
     }
 });
@@ -215,8 +236,9 @@ export const ProjectAccountingView = {
             }
         }
 
-        const userOptionsRaw = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
-        const userOptionsSelected = users.map(u => `<option value="${u.id}" ${u.id === currentUserId ? 'selected' : ''}>${u.name}</option>`).join('');
+        // 🚀 NUEVO UX: Mostrar el @id al lado del nombre en los selectores
+        const userOptionsRaw = users.map(u => `<option value="${u.id}">${u.name} (${u.id})</option>`).join('');
+        const userOptionsSelected = users.map(u => `<option value="${u.id}" ${u.id === currentUserId ? 'selected' : ''}>${u.name} (${u.id})</option>`).join('');
         
         const myRoleOptions = assignedActiveRoles.length > 0
             ? assignedActiveRoles.map(r => `<option value="${r.id}" ${r.id === currentRoleId ? 'selected' : ''}>${r.name} (${r.levelId})</option>`).join('')
@@ -238,7 +260,7 @@ export const ProjectAccountingView = {
             if (!r) return '<del>Rol Eliminado</del>';
             const asg = asignaciones.find(a => a.roleId === rId);
             const userForRole = asg ? users.find(u => u.id === asg.userId) : null;
-            return userForRole ? `${r.name} (@${userForRole.name})` : `${r.name} (${r.levelId})`;
+            return userForRole ? `${r.name} (${userForRole.id})` : `${r.name} (${r.levelId})`;
         };
 
         return `
@@ -271,10 +293,12 @@ export const ProjectAccountingView = {
                     <aside style="display: flex; flex-direction: column; gap: 20px;">
                         
                         <div class="panel-surface" style="border-left: 4px solid var(--accent-blue);">
-                            <h4 style="margin-top: 0; color: var(--text-heading);">1. Equipo (Alta)</h4>
-                            <div style="display: flex; gap: 10px;">
-                                <input id="new-user-name" type="text" class="form-control" placeholder="Ej: Laura (Humano)" style="margin-bottom:0;">
-                                <button id="btn-add-user" data-pid="${projectId}" class="btn btn-secondary">Añadir</button>
+                            <h4 style="margin-top: 0; color: var(--text-heading);">1. Equipo (Identidad Global)</h4>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <input id="new-user-name" type="text" class="form-control text-small" placeholder="Nombre (Ej: Laura)" style="margin:0;">
+                                <input id="new-user-id" type="text" class="form-control text-small" placeholder="@id_unico (Ej: @laura_dev)" style="margin:0; font-family: monospace; color: var(--accent-blue);">
+                                <input id="new-user-wallet" type="text" class="form-control text-small" placeholder="Wallet Web3 / Social URL (Opcional)" style="margin:0; font-family: monospace;">
+                                <button id="btn-add-user" data-pid="${projectId}" class="btn btn-secondary text-small">Añadir al Pool Global</button>
                             </div>
                         </div>
 
@@ -405,9 +429,12 @@ export const ProjectAccountingView = {
                                         <tbody>
                                             ${userStats.map(u => `
                                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                                    <td style="padding: 12px 10px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
-                                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: ${u.color};"></div>
-                                                        ${u.name}
+                                                    <td style="padding: 12px 10px; font-weight: bold; display: flex; flex-direction: column; gap: 2px;">
+                                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                                            <div style="width: 8px; height: 8px; border-radius: 50%; background: ${u.color};"></div>
+                                                            ${u.name}
+                                                        </div>
+                                                        <span style="font-size: 0.7rem; color: var(--accent-blue); font-family: monospace; margin-left: 16px;">${u.id}</span>
                                                     </td>
                                                     <td style="padding: 12px 10px; font-size: 0.8rem; color: var(--accent-purple);">
                                                         ${u.userRoles.length > 0 ? u.userRoles.map(r => `<span style="background:rgba(163, 113, 247, 0.1); padding:2px 6px; border-radius:4px;">${r}</span>`).join(' ') : '<i style="color:var(--text-muted);">Sin rol asignado</i>'}
@@ -445,14 +472,17 @@ export const ProjectAccountingView = {
                                         <tbody>
                                             ${ledger.slice().reverse().map(l => {
                                                 const date = new Date(l.timestamp).toLocaleDateString();
-                                                const userName = users.find(u => u.id === l.userId)?.name || 'Desconocido';
+                                                const userObj = users.find(u => u.id === l.userId);
+                                                const userName = userObj ? userObj.name : 'Desconocido';
                                                 const roleDisplay = getRoleDisplayName(l.roleId);
                                                 const receiverDisplay = getRoleDisplayName(l.receiverId);
 
                                                 return `
                                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                                                     <td style="padding: 12px; color: var(--text-muted); white-space: nowrap;">${date}</td>
-                                                    <td style="padding: 12px; font-weight: bold; color: var(--text-main);">${userName}</td>
+                                                    <td style="padding: 12px; font-weight: bold; color: var(--text-main);">
+                                                        ${userName}
+                                                    </td>
                                                     <td style="padding: 12px; color: var(--accent-blue); font-size: 0.75rem; line-height: 1.4;">
                                                         <span style="opacity:0.8;">[${roleDisplay}]</span><br>
                                                         <span style="color:var(--text-muted);">↳ a [${receiverDisplay}]</span>
