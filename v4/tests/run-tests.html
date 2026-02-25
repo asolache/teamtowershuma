@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SOS v5.4 | Suite de Validación Total</title>
+    <title>SOS v5.5 | Suite de Validación Total</title>
     <style>
         body { background: #010409; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 40px; }
         .container { max-width: 900px; margin: 0 auto; }
@@ -19,7 +19,7 @@
 <body>
     <div class="container">
         <a href="../index.html#/" class="nav-link">← Volver al Dashboard</a>
-        <h1>🧪 SOS v5.4: Test de Estrés del Kernel</h1>
+        <h1>🧪 SOS v5.5: Test de Estrés del Kernel</h1>
         <div id="results"></div>
         <div id="summary-box"></div>
     </div>
@@ -102,15 +102,15 @@
             // --- FASE 9: AUTO-LEDGER (INYECCIÓN JSON) ---
             assert(typeof store.importSessionJSON === 'function', "El importador JSON existe en el Kernel", "PARSER");
             
-            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser' } });
-            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI' } });
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser', uniqueId: '@test_user' } });
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI', uniqueId: '@test_ai' } });
             const pForJson = store.getState().projects.find(x => x.id === 'test-proj');
             
             const numLedgersBefore = pForJson.ledger ? pForJson.ledger.length : 0;
             
             const mockAIResponse = [
-                { userId: pForJson.usuarios[0].id, roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
-                { userId: pForJson.usuarios[1].id, roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
+                { userId: '@test_user', roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
+                { userId: '@test_ai', roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
             ];
             
             store.importSessionJSON('test-proj', mockAIResponse);
@@ -118,18 +118,12 @@
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
 
-            // 🚀 --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
+            // --- FASE 10: IDENTIDAD GLOBAL (SSO) Y @ID ÚNICO ---
             assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
             
-            // Creamos a Laura con la nueva estructura de identidad
             store.dispatch({ 
                 type: 'ADD_USER', 
-                payload: { 
-                    projectId: 'test-proj', 
-                    name: 'Laura (Node Dev)',
-                    uniqueId: '@laura_dev',
-                    walletOrSocial: '0x123...abc'
-                } 
+                payload: { projectId: 'test-proj', name: 'Laura (Node Dev)', uniqueId: '@laura_dev', walletOrSocial: '0x123...abc' } 
             });
             
             const stateAfterUser = store.getState();
@@ -138,30 +132,38 @@
             assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con @id único", "IDENTITY");
             assert(lauraGlobal.wallet === '0x123...abc', "Metadatos extendidos (Wallet/Social) guardados", "IDENTITY");
             
-            // Comprobamos retrocompatibilidad en el proyecto
             const pForUser = stateAfterUser.projects.find(x => x.id === 'test-proj');
             const lauraInProject = pForUser.usuarios.find(u => u.id === '@laura_dev');
             assert(lauraInProject !== undefined, "Usuario enlazado al Proyecto local usando su @id", "IDENTITY");
 
-            // --- PRUEBA DE BLOQUEO DE DUPLICADOS ---
             let errorThrown = false;
             try {
-                // Intentamos registrar a otro usuario distinto, pero robando el @id de Laura
-                store.dispatch({ 
-                    type: 'ADD_USER', 
-                    payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: '@laura_dev' } 
-                });
+                store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura Falsa', uniqueId: '@laura_dev' } });
             } catch (error) {
                 errorThrown = true;
             }
             assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
+
+            // 🚀 --- FASE 11: CONTROL DE ACCESO (RBAC) Y SESIONES ---
+            // Simula la conexión de un usuario a la app
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: '@laura_dev' } });
+            const sessionActive = store.getState().session;
+            
+            assert(sessionActive !== undefined, "Objeto de sesión creado en el Kernel", "RBAC");
+            assert(sessionActive.activeUserId === '@laura_dev', "El usuario activo se registró correctamente", "RBAC");
+            assert(sessionActive.role === 'user', "Por defecto, el usuario entra con permisos básicos", "RBAC");
+
+            // Simula el login del Administrador del Ecosistema
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
+            assert(store.getState().session.role === 'admin', "El Administrador tiene el rol máximo (admin)", "RBAC");
+
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
             const ok = passed === total;
             summary.innerHTML = `<h3 style="margin:0">Certificación: ${passed}/${total}</h3>
                                  <p style="font-weight:bold; color:${ok ? '#3fb950' : '#f85149'}; margin:5px 0 0 0;">
-                                    ${ok ? "🚀 KERNEL v5.5 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
+                                    ${ok ? "🚀 KERNEL v5.6 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
                                  </p>`;
         }
         
