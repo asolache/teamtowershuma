@@ -32,7 +32,6 @@ document.addEventListener('click', (e) => {
         
         store.dispatch({ type: 'ADD_USER', payload: { projectId, name } });
         
-        // Alerta suave y recarga
         nameInput.value = '';
         const btn = document.getElementById('btn-add-user');
         btn.innerHTML = '✅';
@@ -93,6 +92,31 @@ document.addEventListener('click', (e) => {
             document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
         }, 800);
     }
+
+    // 🚀 NUEVO: 4. AUTO-LEDGER (PARSER DE CHAT)
+    if (e.target.id === 'btn-parse-chat') {
+        const projectId = e.target.getAttribute('data-pid');
+        const chatText = document.getElementById('chat-input').value;
+        const hUserId = document.getElementById('parse-h-user').value;
+        const hRoleId = document.getElementById('parse-h-role').value;
+        const aiUserId = document.getElementById('parse-ai-user').value;
+        const aiRoleId = document.getElementById('parse-ai-role').value;
+
+        if (!chatText || !hUserId || !hRoleId || !aiUserId || !aiRoleId) {
+            return alert("⚠️ Debes rellenar todos los combos (Humano e IA) y pegar el texto del chat.");
+        }
+
+        // Llamamos a la función del Kernel que hicimos en el test
+        store.parseChatToLedger(projectId, chatText, hUserId, aiUserId, hRoleId, aiRoleId);
+
+        const btn = e.target;
+        btn.innerHTML = '✅ Chat Procesado y Sellado';
+        btn.style.backgroundColor = 'var(--accent-green)';
+        
+        setTimeout(() => {
+            document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+        }, 1200);
+    }
 });
 
 export const ProjectAccountingView = {
@@ -101,7 +125,6 @@ export const ProjectAccountingView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
 
-        // Datos básicos
         const roles = project.roles || [];
         const activeRoles = roles.filter(r => !r.isArchived && r.id !== 'ecosistema');
         const users = project.usuarios || [];
@@ -109,7 +132,6 @@ export const ProjectAccountingView = {
         const ledger = project.ledger || [];
         const transactions = project.transactions || []; 
 
-        // 🧮 CÁLCULO DEL CAP TABLE (SLICING PIE)
         const totalPie = ledger.reduce((acc, entry) => acc + (entry.valorCongelado || 0), 0);
         const pieColors = ['#58a6ff', '#a371f7', '#238636', '#d29922', '#f85149', '#3fb950', '#bc8cff', '#d1d5da'];
 
@@ -130,7 +152,6 @@ export const ProjectAccountingView = {
             return { ...user, userTotalValue, ownership, rawOwnership, userRoles, color };
         }).sort((a, b) => b.userTotalValue - a.userTotalValue);
 
-        // 🎨 GRÁFICO DE TARTA
         let pieGradient = 'conic-gradient(';
         let cumulativePercent = 0;
         
@@ -146,7 +167,6 @@ export const ProjectAccountingView = {
             pieGradient += ')';
         }
 
-        // ⚙️ LÓGICA DE AUTOCOMPLETADO
         const currentUserId = memoryUserId || (users.length > 0 ? users[0].id : "");
         const userAssignedRoleIds = asignaciones.filter(a => a.userId === currentUserId).map(a => a.roleId);
         const assignedActiveRoles = activeRoles.filter(r => userAssignedRoleIds.includes(r.id));
@@ -166,11 +186,13 @@ export const ProjectAccountingView = {
             }
         }
 
-        // SELECTORES HTML
-        const userOptions = users.map(u => `<option value="${u.id}" ${u.id === currentUserId ? 'selected' : ''}>${u.name}</option>`).join('');
+        const userOptionsRaw = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+        const userOptionsSelected = users.map(u => `<option value="${u.id}" ${u.id === currentUserId ? 'selected' : ''}>${u.name}</option>`).join('');
+        
         const myRoleOptions = assignedActiveRoles.length > 0
             ? assignedActiveRoles.map(r => `<option value="${r.id}" ${r.id === currentRoleId ? 'selected' : ''}>${r.name} (${r.levelId})</option>`).join('')
             : `<option value="">-- Sin roles asignados --</option>`;
+            
         const receiverOptions = activeRoles.map(r => `<option value="${r.id}" ${r.id === defaultReceiverId ? 'selected' : ''}>${r.name} (${r.levelId})</option>`).join('');
         const allActiveRoleOptions = activeRoles.map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
 
@@ -195,18 +217,17 @@ export const ProjectAccountingView = {
                 <header style="margin-bottom: 30px;">
                     <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
                         <a href="#/" style="color: var(--accent-blue); text-decoration: none;">Dashboard</a> /
-                        <b style="color: #f0f6fc;">${project.nombre}</b> /
+                        <b style="color: var(--text-heading);">${project.nombre}</b> /
                         <a href="#/project/${projectId}" style="color: var(--text-muted); text-decoration: none;">Maping</a> /
                         <a href="#/project/${projectId}/edit" style="color: var(--text-muted); text-decoration: none;">Configurador</a> /
-                        <span style="color: var(--accent-gold); font-weight:bold;">Accounting</span> /
-                        <span style="color: var(--text-muted); opacity: 0.3;" title="En desarrollo">Business (TBD)</span>
+                        <span style="color: var(--accent-gold); font-weight:bold;">Accounting</span>
                     </div>
                     
                     <div style="background: linear-gradient(135deg, rgba(210, 153, 34, 0.1) 0%, rgba(163, 113, 247, 0.05) 100%); border: 1px solid var(--accent-gold); border-radius: 12px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <h1 style="color: var(--accent-gold); margin-top: 0;">💰 Contabilidad de Valor (Slicing Pie)</h1>
                             <p style="margin: 0; font-size: 1rem; color: var(--text-main); max-width: 800px;">
-                                <b>Propuesta de Valor:</b> Registra aportaciones directas saltándote el flujo de Pings. El sistema convierte el tiempo, el rol y el riesgo en Equity real matemáticamente justo.
+                                <b>Propuesta de Valor:</b> Convierte el esfuerzo humano y de IA en Equity real. Sella transacciones directas o parsea sesiones de chat enteras automáticamente.
                             </p>
                         </div>
                         <div style="text-align: right; background: rgba(0,0,0,0.3); padding: 15px 25px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
@@ -222,66 +243,84 @@ export const ProjectAccountingView = {
                         
                         <div class="panel-surface" style="border-left: 4px solid var(--accent-blue);">
                             <h4 style="margin-top: 0; color: var(--text-heading);">1. Equipo (Alta)</h4>
-                            <p class="text-small text-muted" style="margin-bottom: 10px;">Añade humanos o IAs al proyecto.</p>
                             <div style="display: flex; gap: 10px;">
-                                <input id="new-user-name" type="text" class="form-control" placeholder="Ej: Laura (Dev)" style="margin-bottom:0;">
+                                <input id="new-user-name" type="text" class="form-control" placeholder="Ej: Laura (Humano)" style="margin-bottom:0;">
                                 <button id="btn-add-user" data-pid="${projectId}" class="btn btn-secondary">Añadir</button>
                             </div>
                         </div>
 
                         <div class="panel-surface" style="border-left: 4px solid var(--accent-purple);">
                             <h4 style="margin-top: 0; color: var(--text-heading);">2. Asignación de Nodos</h4>
-                            <p class="text-small text-muted" style="margin-bottom: 10px;">Conecta personas con los roles estratégicos.</p>
-                            
-                            <label class="form-label">Usuario:</label>
                             <select id="assign-user-id" class="form-control text-small">
                                 <option value="">Selecciona Usuario...</option>
-                                ${users.map(u => `<option value="${u.id}">${u.name}</option>`).join('')}
+                                ${userOptionsRaw}
                             </select>
-                            
-                            <label class="form-label">Asumirá el Rol de:</label>
-                            <select id="assign-role-id" class="form-control text-small">
+                            <select id="assign-role-id" class="form-control text-small" style="margin-top:5px;">
                                 <option value="">Selecciona Nodo Activo...</option>
                                 ${allActiveRoleOptions}
                             </select>
-                            
-                            <button id="btn-assign-role" data-pid="${projectId}" class="btn btn-outline btn-block" style="margin-top: 5px;">Vincular Perfil</button>
+                            <button id="btn-assign-role" data-pid="${projectId}" class="btn btn-outline btn-block" style="margin-top: 5px;">Vincular</button>
                         </div>
 
                         <div class="panel" style="border-color: var(--accent-gold); background: linear-gradient(180deg, rgba(210, 153, 34, 0.05) 0%, transparent 100%);">
-                            <h3 style="margin-top: 0; color: var(--accent-gold);">3. Sellar Aportación (Directa)</h3>
-                            <p class="text-small text-muted" style="margin-bottom: 15px;">By-pass operativo. Registra trabajo completado y conviértelo en Equity al instante.</p>
+                            <h3 style="margin-top: 0; color: var(--accent-gold);">3. Sellar Manualmente</h3>
                             
                             <label class="form-label">Autor del trabajo:</label>
                             <select id="ldg-user" data-pid="${projectId}" class="form-control text-small">
-                                ${users.length === 0 ? '<option value="">(Crea un usuario en el paso 1)</option>' : userOptions}
+                                ${users.length === 0 ? '<option value="">(Crea un usuario en el paso 1)</option>' : userOptionsSelected}
                             </select>
                             
-                            <label class="form-label">Actuando bajo el rol:</label>
-                            <select id="ldg-role" data-pid="${projectId}" class="form-control text-small" style="border-color: var(--accent-purple);">
-                                ${myRoleOptions}
-                            </select>
+                            <label class="form-label">Actuando como:</label>
+                            <select id="ldg-role" data-pid="${projectId}" class="form-control text-small" style="border-color: var(--accent-purple);">${myRoleOptions}</select>
                             
-                            <label class="form-label">Valor entregado a (Receptor):</label>
-                            <select id="ldg-receiver" class="form-control text-small" style="border-color: var(--accent-blue);">
-                                ${receiverOptions}
-                            </select>
+                            <label class="form-label">Entregado a:</label>
+                            <select id="ldg-receiver" class="form-control text-small" style="border-color: var(--accent-blue);">${receiverOptions}</select>
                             
                             <label class="form-label">¿Qué se ha entregado?</label>
                             ${descInputHtml}
                             
                             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1);">
-                                <label class="form-label" style="color: var(--text-heading);">Tiempo Invertido (Horas Reales)</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input id="ldg-horas" type="number" step="0.5" min="0.1" class="form-control" placeholder="Ej: 4.5" style="margin-bottom: 0; font-size: 1.2rem; text-align: center; font-weight: bold; color: var(--accent-gold);">
-                                    <span style="color: var(--text-muted);">Horas</span>
-                                </div>
+                                <label class="form-label" style="color: var(--text-heading);">Tiempo (Horas)</label>
+                                <input id="ldg-horas" type="number" step="0.5" min="0.1" class="form-control" placeholder="Ej: 4.5" style="font-size: 1.2rem; font-weight: bold; color: var(--accent-gold);">
                             </div>
                             
-                            <button id="btn-add-ledger" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 20px; font-size: 1rem; padding: 12px;">
-                                💾 Registrar en Libro Mayor
+                            <button id="btn-add-ledger" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 10px;">💾 Registrar Manual</button>
+                        </div>
+
+                        <div class="panel-surface" style="border: 2px dashed var(--accent-blue); background: rgba(88, 166, 255, 0.05);">
+                            <h3 style="margin-top: 0; color: var(--accent-blue); display: flex; align-items: center; gap: 8px;">
+                                🤖 4. Auto-Ledger (IA Parser)
+                            </h3>
+                            <p class="text-small text-muted" style="margin-bottom: 15px;">Pega el texto de tu sesión de Chat (Gemini, ChatGPT) y extraeremos el valor de ambos agentes automáticamente.</p>
+                            
+                            <textarea id="chat-input" class="form-control" style="height: 120px; font-family: monospace; font-size: 0.75rem;" placeholder="Pega aquí el contenido de la conversación... (Líneas cortas o 'User:' cuentan como Humano. Líneas largas o bloques de código cuentan como IA)."></textarea>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                                <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px;">
+                                    <label class="text-small text-muted" style="display:block; margin-bottom:4px;">👤 Humano (Guía)</label>
+                                    <select id="parse-h-user" class="form-control text-small" style="padding: 4px; margin-bottom: 5px;">
+                                        <option value="">Usuario...</option>${userOptionsRaw}
+                                    </select>
+                                    <select id="parse-h-role" class="form-control text-small" style="padding: 4px; margin-bottom: 0;">
+                                        <option value="">Rol...</option>${allActiveRoleOptions}
+                                    </select>
+                                </div>
+                                <div style="background: rgba(88, 166, 255, 0.1); padding: 8px; border-radius: 6px;">
+                                    <label class="text-small text-muted" style="display:block; margin-bottom:4px;">🤖 IA (Ejecutor)</label>
+                                    <select id="parse-ai-user" class="form-control text-small" style="padding: 4px; margin-bottom: 5px;">
+                                        <option value="">Usuario IA...</option>${userOptionsRaw}
+                                    </select>
+                                    <select id="parse-ai-role" class="form-control text-small" style="padding: 4px; margin-bottom: 0;">
+                                        <option value="">Rol...</option>${allActiveRoleOptions}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button id="btn-parse-chat" data-pid="${projectId}" class="btn btn-outline btn-block" style="margin-top: 15px; border-color: var(--accent-blue);">
+                                🪄 Parsear e Inyectar Slicing Pie
                             </button>
                         </div>
+
                     </aside>
 
                     <main style="display: flex; flex-direction: column; gap: 20px;">
@@ -289,7 +328,6 @@ export const ProjectAccountingView = {
                         <section class="panel" style="border-color: rgba(255,255,255,0.1);">
                             <h3 style="margin-top: 0; display: flex; align-items: center; justify-content: space-between;">
                                 <span>📊 Cap Table (Tabla de Capitalización)</span>
-                                <span style="font-size: 0.7rem; font-weight: normal; background: var(--bg-surface); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color);">Modelo Slicing Pie Activo</span>
                             </h3>
                             
                             ${users.length === 0 ? `
@@ -300,13 +338,10 @@ export const ProjectAccountingView = {
                             ` : `
                                 <div style="display: flex; gap: 40px; align-items: center; margin: 30px 0; padding: 20px; background: var(--bg-surface); border-radius: 12px;">
                                     <div style="
-                                        width: 180px; 
-                                        height: 180px; 
-                                        border-radius: 50%; 
+                                        width: 180px; height: 180px; border-radius: 50%; 
                                         background: ${pieGradient};
                                         box-shadow: 0 0 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.8);
-                                        flex-shrink: 0;
-                                        border: 2px solid var(--border-color);
+                                        flex-shrink: 0; border: 2px solid var(--border-color);
                                     "></div>
                                     
                                     <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
@@ -334,7 +369,7 @@ export const ProjectAccountingView = {
                                         </thead>
                                         <tbody>
                                             ${userStats.map(u => `
-                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                                     <td style="padding: 12px 10px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
                                                         <div style="width: 8px; height: 8px; border-radius: 50%; background: ${u.color};"></div>
                                                         ${u.name}
@@ -354,11 +389,10 @@ export const ProjectAccountingView = {
 
                         <section class="panel">
                             <h3 style="margin-top: 0;">📖 Historial Inmutable (Ledger)</h3>
-                            <p class="text-small text-muted" style="margin-bottom: 15px;">Registro cronológico de todas las aportaciones de valor consolidadas en este ecosistema.</p>
                             
                             ${ledger.length === 0 ? `
                                 <div style="text-align: center; padding: 30px 0; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 8px;">
-                                    El libro mayor está vacío. Registra trabajo para empezar.
+                                    El libro mayor está vacío.
                                 </div>
                             ` : `
                                 <div style="overflow-x: auto; max-height: 500px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
