@@ -29,7 +29,7 @@
             --transition-speed: 0.2s;
         }
 
-        /* 🚀 NUEVO: VARIABLES MODO CLARO */
+        /* 🚀 VARIABLES MODO CLARO */
         [data-theme="light"] {
             --bg-base: #f6f8fa;
             --bg-surface: #ffffff;
@@ -190,23 +190,25 @@
             const action = parts[3];
 
             app.classList.remove('fade-in');
-            void app.offsetWidth; // Trigger reflow para reiniciar la animación
+            void app.offsetWidth; // Reflow para reiniciar la animación
 
             try {
                 // 1. Dashboard Principal
                 if (hash === '#/' || hash === '' || hash === '#') {
                     app.innerHTML = DashboardView.render();
                 
-                // 2. Páginas Estáticas / Globales
+                // 2. Páginas Globales
                 } else if (hash === '#/about') {
                     app.innerHTML = AboutView.render();
                 
                 } else if (hash === '#/settings') {
                     app.innerHTML = SettingsView.render();
 
-                } else if (hash === '#/user-dashboard') {
+                // 3. Portal del Contribuidor (Soporta #/user-dashboard y #/user-dashboard/@id)
+                } else if (hash.startsWith('#/user-dashboard')) {
                     app.innerHTML = UserDashboardView.render();
 
+                // 4. Entorno de Pruebas
                 } else if (hash === '#/test') {
                     app.innerHTML = `
                         <div class="container container-sm text-center">
@@ -219,25 +221,24 @@
                             </div>
                         </div>`;
                 
-                // 3. RUTAS DE PROYECTO (Orden de especificidad: de más largo a más corto)
+                // 5. RUTAS DE PROYECTO
                 
-                // 3a. Perfil de Usuario dentro de Proyecto (#/project/ID/user/@UID)
+                // 5a. Perfil de Usuario dentro de Proyecto (#/project/ID/user/@UID)
                 } else if (hash.startsWith('#/project/') && parts[3] === 'user') {
                     const uId = parts[4];
                     app.innerHTML = ContributorProfileView.render(pId, uId);
 
-                // 3b. Vistas de Gestión de Proyecto (#/project/ID/...)
+                // 5b. Vistas de Gestión de Proyecto (#/project/ID/...)
                 } else if (hash.startsWith('#/project/')) {
                     if (action === 'edit') {
                         app.innerHTML = ProjectEditView.render(pId);
                     } else if (action === 'accounting') {
                         app.innerHTML = ProjectAccountingView.render(pId);
                     } else {
-                        // Vista por defecto: Mapa de Valor
                         app.innerHTML = ProjectView.render(pId);
                     }
                 
-                // 4. Error 404
+                // 6. Error 404
                 } else {
                      app.innerHTML = `
                         <div class="container container-sm text-center">
@@ -264,8 +265,12 @@
         window.addEventListener('hashchange', router);
         window.addEventListener('store-ready', router);
         
-        // Inicialización
-        if (store.getState()) router();
+        // Inicialización y Sincronización de Tema
+        if (store.getState()) {
+            const theme = store.getState().config?.theme || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            router();
+        }
     </script>
 </body>
 </html>
