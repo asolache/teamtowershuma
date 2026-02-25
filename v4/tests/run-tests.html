@@ -113,9 +113,7 @@
             
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             
-            assert(numLedgersAfter === numLedgersBefore + 4, "El parser ha inyectado 4 transacciones (2 Humano, 2 IA) al Ledger", "AUTO-LEDGER");
-
-            // --- RESULTADO ---
+assert(numLedgersAfter === numLedgersBefore + 2, "El parser ha inyectado 2 transacciones consolidadas al Ledger", "AUTO-LEDGER");            // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
             summary.className = "summary";
             const ok = passed === total;
