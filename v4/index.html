@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v5.4 | Ecosistema</title>
+    <title>TeamTowers SOS v5.5 | Ecosistema</title>
     <style>
         /* --- VARIABLES GLOBALES (Modo Oscuro por defecto) --- */
         :root {
@@ -179,8 +179,6 @@
         import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
         import { UserDashboardView } from './js/views/UserDashboardView.js';
         import { ContributorProfileView } from './js/views/ContributorProfileView.js';
-        
-        // 🚀 NUEVO: Importar la vista de Settings Globales
         import { SettingsView } from './js/views/SettingsView.js'; 
 
         const app = document.getElementById('app');
@@ -192,54 +190,54 @@
             const action = parts[3];
 
             app.classList.remove('fade-in');
-            void app.offsetWidth;
+            void app.offsetWidth; // Trigger reflow para reiniciar la animación
 
             try {
+                // 1. Dashboard Principal
                 if (hash === '#/' || hash === '' || hash === '#') {
                     app.innerHTML = DashboardView.render();
                 
+                // 2. Páginas Estáticas / Globales
                 } else if (hash === '#/about') {
                     app.innerHTML = AboutView.render();
                 
-                // 🚀 NUEVA RUTA: Settings Globales
                 } else if (hash === '#/settings') {
                     app.innerHTML = SettingsView.render();
 
-                // 🚀 NUEVA RUTA: Perfil del Contribuidor
-                } else if (hash.startsWith('#/project/') && hash.includes('/user/')) {
-                    const parts = hash.split('/');
-                    const pId = parts[2]; // ID del proyecto
-                    const uId = parts[4]; // @id del usuario
-                    
-                    // Importación dinámica o asegúrate de haberla importado arriba
-                    import('./js/views/ContributorProfileView.js').then(module => {
-                        app.innerHTML = module.ContributorProfileView.render(pId, uId);
-                    });
-                
-                } else if (hash.startsWith('#/project/')) {
-                    // ... resto de lógica de proyectos (edit, accounting, etc.)
+                } else if (hash === '#/user-dashboard') {
+                    app.innerHTML = UserDashboardView.render();
 
                 } else if (hash === '#/test') {
                     app.innerHTML = `
                         <div class="container container-sm text-center">
                             <header class="header-main" style="justify-content: center;">
-                                <h1>🧪 Entorno de Pruebas (Test)</h1>
+                                <h1>🧪 Entorno de Pruebas</h1>
                             </header>
                             <div class="panel" style="border-color: var(--accent-purple);">
-                                <p>Zona de experimentación aislada del sistema principal.</p>
+                                <p>Zona de experimentación aislada.</p>
                                 <button class="btn btn-secondary" onclick="location.hash='#/'">← Volver al Dashboard</button>
                             </div>
                         </div>`;
                 
+                // 3. RUTAS DE PROYECTO (Orden de especificidad: de más largo a más corto)
+                
+                // 3a. Perfil de Usuario dentro de Proyecto (#/project/ID/user/@UID)
+                } else if (hash.startsWith('#/project/') && parts[3] === 'user') {
+                    const uId = parts[4];
+                    app.innerHTML = ContributorProfileView.render(pId, uId);
+
+                // 3b. Vistas de Gestión de Proyecto (#/project/ID/...)
                 } else if (hash.startsWith('#/project/')) {
                     if (action === 'edit') {
                         app.innerHTML = ProjectEditView.render(pId);
                     } else if (action === 'accounting') {
                         app.innerHTML = ProjectAccountingView.render(pId);
                     } else {
+                        // Vista por defecto: Mapa de Valor
                         app.innerHTML = ProjectView.render(pId);
                     }
                 
+                // 4. Error 404
                 } else {
                      app.innerHTML = `
                         <div class="container container-sm text-center">
@@ -266,6 +264,7 @@
         window.addEventListener('hashchange', router);
         window.addEventListener('store-ready', router);
         
+        // Inicialización
         if (store.getState()) router();
     </script>
 </body>
