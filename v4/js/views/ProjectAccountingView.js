@@ -93,29 +93,58 @@ document.addEventListener('click', (e) => {
         }, 800);
     }
 
-    // 🚀 NUEVO: 4. AUTO-LEDGER (PARSER DE CHAT)
+    // 🚀 EVENTO: Copiar Prompt al Portapapeles
+    if (e.target.id === 'btn-copy-prompt') {
+        const promptText = `Gemini, evalúa nuestra sesión de hoy como Auditor Slicing Pie. Calcula el esfuerzo y devuélveme EXCLUSIVAMENTE un array JSON válido para inyectar en el Ledger con esta estructura exacta: [{"actor": "human", "description": "Resumen de lo que diseñó/dirigió el humano", "horas": 0.0}, {"actor": "ai", "description": "Resumen de lo que codificó/ejecutó la IA", "horas": 0.0}]`;
+        navigator.clipboard.writeText(promptText);
+        e.target.innerHTML = '✅ Copiado!';
+        setTimeout(() => e.target.innerHTML = '📋 Copiar Prompt Auditor', 2000);
+    }
+
+    // 🚀 NUEVO: 4. AUTO-LEDGER (INYECCIÓN JSON)
     if (e.target.id === 'btn-parse-chat') {
         const projectId = e.target.getAttribute('data-pid');
-        const chatText = document.getElementById('chat-input').value;
+        const jsonText = document.getElementById('chat-input').value.trim();
         const hUserId = document.getElementById('parse-h-user').value;
         const hRoleId = document.getElementById('parse-h-role').value;
         const aiUserId = document.getElementById('parse-ai-user').value;
         const aiRoleId = document.getElementById('parse-ai-role').value;
 
-        if (!chatText || !hUserId || !hRoleId || !aiUserId || !aiRoleId) {
-            return alert("⚠️ Debes rellenar todos los combos (Humano e IA) y pegar el texto del chat.");
+        if (!jsonText || !hUserId || !hRoleId || !aiUserId || !aiRoleId) {
+            return alert("⚠️ Debes seleccionar los usuarios/roles y pegar el JSON generado por la IA.");
         }
 
-        // Llamamos a la función del Kernel que hicimos en el test
-        store.parseChatToLedger(projectId, chatText, hUserId, aiUserId, hRoleId, aiRoleId);
+        try {
+            // Limpiamos si la IA devuelve el JSON dentro de un bloque markdown (```json ... ```)
+            let cleanJsonText = jsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const parsedArray = JSON.parse(cleanJsonText);
 
-        const btn = e.target;
-        btn.innerHTML = '✅ Chat Procesado y Sellado';
-        btn.style.backgroundColor = 'var(--accent-green)';
-        
-        setTimeout(() => {
-            document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
-        }, 1200);
+            // Mapeamos el "actor" genérico a los IDs reales seleccionados en la UI
+            const finalPayload = parsedArray.map(entry => {
+                const isHuman = entry.actor === 'human';
+                return {
+                    userId: isHuman ? hUserId : aiUserId,
+                    roleId: isHuman ? hRoleId : aiRoleId,
+                    receiverId: isHuman ? aiRoleId : hRoleId,
+                    description: entry.description,
+                    horas: entry.horas
+                };
+            });
+
+            // Enviamos el payload enriquecido al Kernel
+            store.importSessionJSON(projectId, finalPayload);
+
+            const btn = e.target;
+            btn.innerHTML = '✅ JSON Procesado y Sellado';
+            btn.style.backgroundColor = 'var(--accent-green)';
+            
+            setTimeout(() => {
+                document.getElementById('app').innerHTML = ProjectAccountingView.render(projectId);
+            }, 1200);
+
+        } catch (error) {
+            alert("❌ Error de Formato: El texto introducido no es un JSON válido. Asegúrate de copiar solo los corchetes [ ] y su contenido.\n\nDetalle: " + error.message);
+        }
     }
 });
 
@@ -225,9 +254,9 @@ export const ProjectAccountingView = {
                     
                     <div style="background: linear-gradient(135deg, rgba(210, 153, 34, 0.1) 0%, rgba(163, 113, 247, 0.05) 100%); border: 1px solid var(--accent-gold); border-radius: 12px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <h1 style="color: var(--accent-gold); margin-top: 0;">💰 Contabilidad de Valor (Slicing Pie)</h1>
+                            <h1 style="color: var(--accent-gold); margin: 0;">💰 Contabilidad de Valor (Slicing Pie)</h1>
                             <p style="margin: 0; font-size: 1rem; color: var(--text-main); max-width: 800px;">
-                                <b>Propuesta de Valor:</b> Convierte el esfuerzo humano y de IA en Equity real. Sella transacciones directas o parsea sesiones de chat enteras automáticamente.
+                                <b>Propuesta de Valor:</b> Convierte el esfuerzo humano y de IA en Equity real. Sella transacciones directas o inyecta sesiones auditadas vía JSON.
                             </p>
                         </div>
                         <div style="text-align: right; background: rgba(0,0,0,0.3); padding: 15px 25px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
@@ -288,16 +317,22 @@ export const ProjectAccountingView = {
                         </div>
 
                         <div class="panel-surface" style="border: 2px dashed var(--accent-blue); background: rgba(88, 166, 255, 0.05);">
-                            <h3 style="margin-top: 0; color: var(--accent-blue); display: flex; align-items: center; gap: 8px;">
-                                🤖 4. Auto-Ledger (IA Parser)
-                            </h3>
-                            <p class="text-small text-muted" style="margin-bottom: 15px;">Pega el texto de tu sesión de Chat (Gemini, ChatGPT) y extraeremos el valor de ambos agentes automáticamente.</p>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                                <h3 style="margin: 0; color: var(--accent-blue); display: flex; align-items: center; gap: 8px;">🤖 4. Importar Sesión IA</h3>
+                                <button id="btn-copy-prompt" class="btn btn-secondary text-small" style="padding: 2px 8px; font-size: 0.7rem; border-radius: 12px;">📋 Copiar Prompt Auditor</button>
+                            </div>
                             
-                            <textarea id="chat-input" class="form-control" style="height: 120px; font-family: monospace; font-size: 0.75rem;" placeholder="Pega aquí el contenido de la conversación... (Líneas cortas o 'User:' cuentan como Humano. Líneas largas o bloques de código cuentan como IA)."></textarea>
+                            <p class="text-small text-muted" style="margin-bottom: 15px;">Pide a la IA que audite la sesión y pega aquí su respuesta JSON.</p>
+                            
+                            <textarea id="chat-input" class="form-control" style="height: 120px; font-family: monospace; font-size: 0.75rem; border-color: rgba(88, 166, 255, 0.3); background: rgba(0,0,0,0.2);" placeholder='Ejemplo:
+[
+  { "actor": "human", "description": "Diseño UI", "horas": 1.5 },
+  { "actor": "ai", "description": "Código Backend", "horas": 0.8 }
+]'></textarea>
                             
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                                 <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px;">
-                                    <label class="text-small text-muted" style="display:block; margin-bottom:4px;">👤 Humano (Guía)</label>
+                                    <label class="text-small text-muted" style="display:block; margin-bottom:4px;">👤 Humano (Actor)</label>
                                     <select id="parse-h-user" class="form-control text-small" style="padding: 4px; margin-bottom: 5px;">
                                         <option value="">Usuario...</option>${userOptionsRaw}
                                     </select>
@@ -306,7 +341,7 @@ export const ProjectAccountingView = {
                                     </select>
                                 </div>
                                 <div style="background: rgba(88, 166, 255, 0.1); padding: 8px; border-radius: 6px;">
-                                    <label class="text-small text-muted" style="display:block; margin-bottom:4px;">🤖 IA (Ejecutor)</label>
+                                    <label class="text-small text-muted" style="display:block; margin-bottom:4px;">🤖 IA (Actor)</label>
                                     <select id="parse-ai-user" class="form-control text-small" style="padding: 4px; margin-bottom: 5px;">
                                         <option value="">Usuario IA...</option>${userOptionsRaw}
                                     </select>
@@ -317,7 +352,7 @@ export const ProjectAccountingView = {
                             </div>
 
                             <button id="btn-parse-chat" data-pid="${projectId}" class="btn btn-outline btn-block" style="margin-top: 15px; border-color: var(--accent-blue);">
-                                🪄 Parsear e Inyectar Slicing Pie
+                                🪄 Inyectar JSON al Slicing Pie
                             </button>
                         </div>
 
