@@ -91,37 +91,39 @@
             const currentConfig = store.getState().config;
             assert(currentConfig.theme === 'light' && currentConfig.ecosystemName === 'Test Ecosistema', "Actualización de Configuración Global OK", "SETTINGS");
 
-            // 🚀 --- FASE 9: AUTO-LEDGER (PARSER DE CHAT) ---
-            assert(typeof store.parseChatToLedger === 'function', "El parser de chat (Auto-Ledger) existe en el Kernel", "PARSER");
-            
-            // Simulamos un chat corto
-            const mockChatText = `
-                USER: Necesito que hagas el módulo de login.
-                AI: Claro, aquí tienes el código.
-                USER: Gracias, arregla este pequeño bug.
-                AI: Arreglado.
-            `;
+            // 🚀 --- FASE 9: AUTO-LEDGER (INYECCIÓN JSON) ---
+            assert(typeof store.importSessionJSON === 'function', "El importador JSON existe en el Kernel", "PARSER");
             
             store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser' } });
             store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI' } });
-            const pForChat = store.getState().projects.find(x => x.id === 'test-proj');
+            const pForJson = store.getState().projects.find(x => x.id === 'test-proj');
             
-            const numLedgersBefore = pForChat.ledger ? pForChat.ledger.length : 0;
+            const numLedgersBefore = pForJson.ledger ? pForJson.ledger.length : 0;
             
-            // Ejecutamos el parser: Debería detectar 2 prompts de USER y 2 de AI
-            store.parseChatToLedger('test-proj', mockChatText, pForChat.usuarios[0].id, pForChat.usuarios[1].id, anxanetaId, newRole.id);
+            // Simulamos el JSON exacto que devolverá Gemini después de auditar una sesión
+            const mockAIResponse = [
+                {
+                    userId: pForJson.usuarios[0].id, // Humano
+                    roleId: anxanetaId,
+                    receiverId: newRole.id,
+                    description: "Diseño de arquitectura de Inyección JSON y directrices TDD",
+                    horas: 0.5
+                },
+                {
+                    userId: pForJson.usuarios[1].id, // IA
+                    roleId: newRole.id,
+                    receiverId: anxanetaId,
+                    description: "Refactorización de store.js y tests para soportar JSON",
+                    horas: 0.8
+                }
+            ];
+            
+            // Ejecutamos el importador
+            store.importSessionJSON('test-proj', mockAIResponse);
             
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
             
-assert(numLedgersAfter === numLedgersBefore + 2, "El parser ha inyectado 2 transacciones consolidadas al Ledger", "AUTO-LEDGER");            // --- RESULTADO ---
-            const summary = document.getElementById('summary-box');
-            summary.className = "summary";
-            const ok = passed === total;
-            summary.innerHTML = `<h3 style="margin:0">Certificación: ${passed}/${total}</h3>
-                                 <p style="font-weight:bold; color:${ok ? '#3fb950' : '#f85149'}; margin:5px 0 0 0;">
-                                    ${ok ? "🚀 KERNEL v5.4 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
-                                 </p>`;
-        }
+            assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger correctamente", "AUTO-LEDGER");
         
         runSuite();
     </script>
