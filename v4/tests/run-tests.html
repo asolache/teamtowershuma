@@ -24,8 +24,8 @@
         <div id="summary-box"></div>
     </div>
 
-    <script type="module">
-       import { store } from '../js/core/store.js';
+<script type="module">
+        import { store } from '../js/core/store.js';
 
         function runSuite() {
             const results = document.getElementById('results');
@@ -69,7 +69,7 @@
             assert(newRole !== undefined && newRole.price === 45, "Herencia financiera en nuevos roles", "ONTOLOGY");
 
             store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId: 'test-proj', roleId: newRole.id } });
-            assert(store.getState().projects.find(p => p.id === 'test-proj').roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad vía Archivado", "STORE");
+            assert(store.getState().projects.find(proj => proj.id === 'test-proj').roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad vía Archivado", "STORE");
 
             // --- FASE 5: ECONOMÍA ---
             const dososRole = pAfterCreate.roles.find(r => r.levelId === '@dosos');
@@ -99,7 +99,7 @@
             const currentConfig = store.getState().config;
             assert(currentConfig.theme === 'light' && currentConfig.ecosystemName === 'Test Ecosistema', "Actualización de Configuración Global OK", "SETTINGS");
 
-            // 🚀 --- FASE 9: AUTO-LEDGER (INYECCIÓN JSON) ---
+            // --- FASE 9: AUTO-LEDGER (INYECCIÓN JSON) ---
             assert(typeof store.importSessionJSON === 'function', "El importador JSON existe en el Kernel", "PARSER");
             
             store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser' } });
@@ -108,30 +108,28 @@
             
             const numLedgersBefore = pForJson.ledger ? pForJson.ledger.length : 0;
             
-            // Simulamos el JSON exacto que devolverá Gemini después de auditar una sesión
             const mockAIResponse = [
-                {
-                    userId: pForJson.usuarios[0].id, 
-                    roleId: anxanetaId,
-                    receiverId: newRole.id,
-                    description: "Diseño de arquitectura de Inyección JSON y directrices TDD",
-                    horas: 0.5
-                },
-                {
-                    userId: pForJson.usuarios[1].id, 
-                    roleId: newRole.id,
-                    receiverId: anxanetaId,
-                    description: "Refactorización de store.js y tests para soportar JSON",
-                    horas: 0.8
-                }
+                { userId: pForJson.usuarios[0].id, roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
+                { userId: pForJson.usuarios[1].id, roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
             ];
             
-            // Ejecutamos el importador
             store.importSessionJSON('test-proj', mockAIResponse);
             
             const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
+            assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
+
+            // 🚀 --- FASE 10: IDENTIDAD GLOBAL DE USUARIO (NUEVO v5.5) ---
+            assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
             
-            assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger correctamente", "AUTO-LEDGER");
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura (Node Dev)' } });
+            
+            const stateAfterUser = store.getState();
+            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.name === 'Laura (Node Dev)');
+            assert(lauraGlobal !== undefined, "Usuario añadido correctamente al Pool Global", "IDENTITY");
+            
+            const pForUser = stateAfterUser.projects.find(x => x.id === 'test-proj');
+            const lauraInProject = pForUser.usuarios.find(u => u.id === lauraGlobal.id);
+            assert(lauraInProject !== undefined && lauraInProject.id === lauraGlobal.id, "Usuario vinculado correctamente al Proyecto local", "IDENTITY");
 
             // --- RESULTADO ---
             const summary = document.getElementById('summary-box');
@@ -139,24 +137,10 @@
             const ok = passed === total;
             summary.innerHTML = `<h3 style="margin:0">Certificación: ${passed}/${total}</h3>
                                  <p style="font-weight:bold; color:${ok ? '#3fb950' : '#f85149'}; margin:5px 0 0 0;">
-                                    ${ok ? "🚀 KERNEL v5.4 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
+                                    ${ok ? "🚀 KERNEL v5.5 VALIDADO PARA PRODUCCIÓN" : "🛠️ FALLO DETECTADO"}
                                  </p>`;
         }
-        // 🚀 --- FASE 10: IDENTIDAD GLOBAL DE USUARIO (NUEVO v5.5) ---
-            assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
-            
-            // Creamos un usuario nuevo a través de la acción estándar
-            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura (Node Dev)' } });
-            
-            const stateAfterUser = store.getState();
-            // Comprobamos que Laura está en el Pool Global
-            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.name === 'Laura (Node Dev)');
-            assert(lauraGlobal !== undefined, "Usuario añadido correctamente al Pool Global", "IDENTITY");
-            
-            // Y comprobamos que Laura TAMBIÉN está vinculada al proyecto (mantenemos retrocompatibilidad)
-            const pForUser = stateAfterUser.projects.find(x => x.id === 'test-proj');
-            const lauraInProject = pForUser.usuarios.find(u => u.id === lauraGlobal.id);
-            assert(lauraInProject !== undefined && lauraInProject.id === lauraGlobal.id, "Usuario vinculado correctamente al Proyecto local", "IDENTITY");
+        
         runSuite();
     </script>
 </body>
