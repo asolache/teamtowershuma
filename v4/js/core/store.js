@@ -169,59 +169,29 @@ export class TTStore {
         
         return prompt;
     }
-// 🚀 NUEVO: PARSER DE CHAT A SLICING PIE (AUTO-LEDGER)
-   // 🚀 NUEVO: PARSER DE CHAT A SLICING PIE (AUTO-LEDGER OPTIMIZADO)
-    parseChatToLedger(projectId, rawChatText, humanUserId, aiUserId, humanRoleId, aiRoleId) {
-        if (!rawChatText) return;
+// 🚀 NUEVO: IMPORTADOR DE SESIONES IA (JSON)
+    importSessionJSON(projectId, jsonPayload) {
+        if (!jsonPayload || !Array.isArray(jsonPayload)) {
+            console.error("El payload debe ser un array JSON válido.");
+            return;
+        }
 
-        const lines = rawChatText.split('\n').filter(l => l.trim().length > 0);
-        
-        let humanCount = 0;
-        let aiCount = 0;
-
-        lines.forEach(line => {
-            if (line.toLowerCase().startsWith('user:') || line.length < 150) {
-                humanCount++;
-            } else if (line.toLowerCase().startsWith('ai:') || line.includes('```') || line.length >= 150) {
-                aiCount++;
+        jsonPayload.forEach(entry => {
+            // Validamos que la entrada tenga lo mínimo necesario
+            if (entry.userId && entry.roleId && entry.description && entry.horas) {
+                this.dispatch({
+                    type: 'ADD_LEDGER_ENTRY',
+                    payload: {
+                        projectId: projectId,
+                        userId: entry.userId,
+                        roleId: entry.roleId,
+                        receiverId: entry.receiverId || '', 
+                        description: `[IA Audit] ${entry.description}`,
+                        horas: parseFloat(entry.horas)
+                    }
+                });
             }
         });
-
-        const H_HOURS_PER_PROMPT = 0.1;
-        const AI_HOURS_PER_BLOCK = 0.15;
-
-        // Calculamos el total de golpe
-        const totalHumanHours = humanCount * H_HOURS_PER_PROMPT;
-        const totalAiHours = aiCount * AI_HOURS_PER_BLOCK;
-
-        // 🚀 FIX: Hacemos SOLO 2 dispatches consolidados para evitar colgar la memoria RAM
-        if (totalHumanHours > 0) {
-            this.dispatch({
-                type: 'ADD_LEDGER_ENTRY',
-                payload: {
-                    projectId: projectId,
-                    userId: humanUserId,
-                    roleId: humanRoleId,
-                    receiverId: aiRoleId,
-                    description: `[Auto-Ledger] Dirección Estratégica (${humanCount} iteraciones)`,
-                    horas: totalHumanHours
-                }
-            });
-        }
-
-        if (totalAiHours > 0) {
-            this.dispatch({
-                type: 'ADD_LEDGER_ENTRY',
-                payload: {
-                    projectId: projectId,
-                    userId: aiUserId,
-                    roleId: aiRoleId,
-                    receiverId: humanRoleId,
-                    description: `[Auto-Ledger] Ejecución IA (${aiCount} bloques)`,
-                    horas: totalAiHours
-                }
-            });
-        }
     }
     _createProjectInstance(id, nombre, sector, ownerId = 'ecosystem-admin') {
         const sKey = sector || 'web3';
