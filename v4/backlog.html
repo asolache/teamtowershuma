@@ -137,6 +137,38 @@
         ],
         "versiones": [
             {
+                "version": "v5.7",
+                "titulo": "Dashboard PO Unificado & Filtros Inbox",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Estructura UX Pestañas en Dashboard PO", "horas": 1.0 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectDashboardView.js (Tabs + Aside)", "horas": 0.3 },
+                    { "fase": 3, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Filtros de Tipos de Alertas en Inbox", "horas": 0.5 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: Submenú Inbox (PoW vs Alerts)", "horas": 0.2 }
+                ]
+            },
+            {
+                "version": "v5.6",
+                "titulo": "El Mapa VNA Evolucionado (Tabs & Termografía)",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Reorganización UX en Pestañas (Grafo, Agile, Lista)", "horas": 1.5 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectView.js (Sistema Tabs)", "horas": 0.4 },
+                    { "fase": 3, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Textos Invertidos en Enlaces SVG (De Derecha a Izquierda)", "horas": 0.5 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: TextPath Invisible Direccional SVG", "horas": 0.3 }
+                ]
+            },
+            {
+                "version": "v5.5",
+                "titulo": "Compatibilidad Cross-Browser & UI Enterprise",
+                "transacciones": [
+                    { "fase": 1, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Placeholders Invisibles en Firefox", "horas": 0.5 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Inyección etiquetas <label> en Modales", "horas": 0.2 },
+                    { "fase": 3, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Texto blanco sobre fondo blanco en Tema Claro", "horas": 0.5 },
+                    { "fase": 4, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: CSS Variables dinámicas (var(--text-heading))", "horas": 0.1 },
+                    { "fase": 5, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Botón Alternar Tema Global en Menú", "horas": 0.5 },
+                    { "fase": 6, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Script Global Theme en index.html", "horas": 0.2 }
+                ]
+            },
+            {
                 "version": "v5.4",
                 "titulo": "Configurador Global & Modo Claro/Oscuro",
                 "transacciones": [
@@ -210,80 +242,4 @@
                     { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Auto-save Misión y Contexto IA", "horas": 2.5 },
                     { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: ProjectEditView.js adaptado", "horas": 0.2 },
                     { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Integrar JSON de Roles a Store.js", "horas": 1.0 },
-                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Store.js actualizado (Payload IA)", "horas": 0.1 },
-                    { "fase": 4, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Ocultar Ecosistema y Centrar Mapa", "horas": 1.5 },
-                    { "fase": 3, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Renderizado Elíptico Canvas/SVG", "horas": 0.2 }
-                ]
-            }
-        ]
-    }
-    </script>
-
-    <script>
-        const rawData = document.getElementById('vna-data').textContent;
-        const data = JSON.parse(rawData);
-        
-        document.getElementById('json-viewer').textContent = JSON.stringify(data, null, 4);
-
-        function toggleJson() {
-            const el = document.getElementById('json-viewer');
-            el.style.display = el.style.display === 'block' ? 'none' : 'block';
-        }
-
-        const timeline = document.getElementById('timeline');
-
-        data.versiones.forEach(v => {
-            let versionPieTotal = 0;
-
-            // Aplicamos el orden lógico de fases en el renderizado
-            const sortedTxs = [...v.transacciones].sort((a, b) => (a.fase || 99) - (b.fase || 99));
-
-            let txsHtml = sortedTxs.map(tx => {
-                const fromRole = data.roles.find(r => r.id === tx.from);
-                const toRole = data.roles.find(r => r.id === tx.to);
-                const typeColor = tx.tipo === 'intangible' ? 'var(--accent-purple)' : 'var(--accent-blue)';
-                
-                const valorGenerado = tx.horas * fromRole.fmv * fromRole.multiplier;
-                versionPieTotal += valorGenerado;
-                
-                return `
-                    <div class="tx-card tx-${tx.tipo}">
-                        <div>
-                            <div style="margin-bottom: 5px;">
-                                <span class="role-badge" style="color: ${typeColor}">${fromRole.levelId}</span> 
-                                <span style="color: var(--text-muted); margin: 0 2px;">→</span> 
-                                <span class="role-badge">${toRole.levelId}</span>
-                            </div>
-                            <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Flujo ${tx.tipo}</span>
-                            <br><span class="fase-indicator">FASE ${tx.fase}</span>
-                        </div>
-                        <div>
-                            <strong style="display:block; font-size: 1rem; color: #f0f6fc;">${tx.entregable}</strong>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
-                                <span style="color: var(--accent-blue)">${fromRole.name}</span> entregó a <span style="color: var(--accent-blue)">${toRole.name}</span>
-                            </div>
-                        </div>
-                        <div class="financial-pill">
-                            <strong style="display: block; font-size: 1.1rem;">+ ${valorGenerado.toFixed(3)} €</strong>
-                            <span style="font-size: 0.7rem; opacity: 0.8;">${tx.horas}h × ${fromRole.fmv}€ × ${fromRole.multiplier}x</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            timeline.innerHTML += `
-                <div class="version-block">
-                    <div class="version-header">
-                        <h2>${v.version} - <span style="color: var(--text-muted); font-size: 1.2rem; font-weight: normal;">${v.titulo}</span></h2>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05rem;">Equity Total Acumulado</div>
-                            <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-gold);">${versionPieTotal.toFixed(2)} €</div>
-                        </div>
-                    </div>
-                    ${txsHtml}
-                </div>
-            `;
-        });
-    </script>
-</body>
-</html>
+                    { "fase":
