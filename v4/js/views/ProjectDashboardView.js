@@ -270,4 +270,17 @@ export const ProjectDashboardView = {
                             </a>
 
                             <a href="#/project/${projectId}/edit" style="text-decoration:none;">
-                                <div class="panel-surface" style="padding:15px; transition:0.2s; border:1px solid var(--border-color); display:flex; align-items:center; gap:15px;" onmouseover="this.
+                                <div class="panel-surface" style="padding:15px; transition:0.2s; border:1px solid var(--border-color); display:flex; align-items:center; gap:15px;" onmouseover="this.style.borderColor='var(--accent-gold)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                                    <div style="font-size:1.5rem;">⚙️</div>
+                                    <div><b style="color:var(--text-heading); display:block;">3. Sala de Máquinas</b><span style="font-size:0.75rem; color:var(--text-muted);">Ajustes de Ontología</span></div>
+                                </div>
+                            </a>
+
+                        </div>
+                    </aside>
+
+                </div>
+            </div>
+        `;
+    }
+};
