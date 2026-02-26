@@ -1,4 +1,5 @@
 // js/core/store.js
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 const initialState = {
     config: {
@@ -6,6 +7,7 @@ const initialState = {
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.'
     },
+    // Mantenemos la ontología base inicial para no romper el Backwards Compatibility con TDD
     ontology: {
         sectores: {
             "startup": {
@@ -29,7 +31,7 @@ const initialState = {
         { id: '@user1', name: 'Alice Node', walletOrSocial: '0x123...' },
         { id: '@user2', name: 'Bob Builder', walletOrSocial: 'bob@email.com' }
     ],
-    // NUEVO: Aquí guardaremos las conexiones entre áreas/proyectos (Macro-Mapa)
+    // Aquí guardaremos las conexiones entre áreas/proyectos (Macro-Mapa)
     macroFlows: [], 
     projects: [
         {
@@ -100,22 +102,40 @@ function reducer(state = initialState, action) {
             return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
 
         case 'ADD_PROJECT': {
-            const sectorData = state.ontology.sectores[action.payload.sector] || {};
-            const baseRoles = [];
-            
-            Object.keys(sectorData).forEach(levelId => {
-                const r = sectorData[levelId];
-                baseRoles.push({
-                    id: `role-${levelId}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                    levelId: levelId,
-                    name: r.name || levelId,
-                    multiplier: r.multiplier || 1.0,
-                    fmv: r.fmv || 50,
-                    ai_prompt: r.ai_prompt || '',
-                    standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
-                    isArchived: false
+            // MAGIA: Intentamos leer primero de la nueva Ontología Global Externa, 
+            // Si no existe (ej. tests), leemos del state interno antiguo.
+            let sectorDataObj = GLOBAL_ONTOLOGY[action.payload.sector];
+            let sectorRolesArray = [];
+
+            if (sectorDataObj && sectorDataObj.roles) {
+                // Nuevo formato (Array de roles para permitir múltiples roles por nivel)
+                sectorRolesArray = sectorDataObj.roles;
+            } else {
+                // Formato antiguo de compatibilidad (Objeto clave-valor por nivelId)
+                const legacySectorData = state.ontology.sectores[action.payload.sector] || {};
+                Object.keys(legacySectorData).forEach(levelId => {
+                    const r = legacySectorData[levelId];
+                    sectorRolesArray.push({
+                        levelId: levelId,
+                        name: r.name || levelId,
+                        multiplier: r.multiplier || 1.0,
+                        fmv: r.fmv || 50,
+                        ai_prompt: r.ai_prompt || '',
+                        standard_deliverables: r.standard_deliverables || []
+                    });
                 });
-            });
+            }
+
+            const baseRoles = sectorRolesArray.map(r => ({
+                id: `role-${r.levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                levelId: r.levelId,
+                name: r.name,
+                multiplier: r.multiplier || 1.0,
+                fmv: r.fmv || 50,
+                ai_prompt: r.ai_prompt || '',
+                standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
+                isArchived: false
+            }));
 
             const newProject = {
                 id: action.payload.id || ('proj-' + Date.now()),
@@ -216,7 +236,7 @@ function reducer(state = initialState, action) {
                         const prevTx = p.transactions && p.transactions.length > 0 ? p.transactions[p.transactions.length - 1] : null;
                         const newTx = {
                             hash: '0x' + Math.random().toString(16).slice(2, 10),
-                            prevHash: prevTx ? prevTx.hash : null, // Chaining criptográfico para el TDD
+                            prevHash: prevTx ? prevTx.hash : null,
                             timestamp: Date.now(),
                             status: action.payload.tx.status || 'theoretical',
                             ...action.payload.tx
@@ -342,8 +362,6 @@ class Store {
     
     subscribe(listener) { this.listeners.push(listener); }
 
-    // --- MÉTODOS DEL KERNEL (REQUERIDOS POR EL TDD) ---
-    
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.transactions || p.transactions.length === 0) return 100;
