@@ -15,7 +15,6 @@
             --radius-md: 8px; --radius-lg: 12px;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             --transition-speed: 0.2s;
-            /* Inversión de logo para modo oscuro (hace que lo negro sea blanco) */
             --logo-filter: brightness(0) invert(1);
         }
 
@@ -23,7 +22,6 @@
             --bg-base: #f6f8fa; --bg-surface: #ffffff; --bg-panel: #f3f4f6;
             --border-color: #d0d7de; --text-main: #24292f; --text-muted: #57606a;
             --text-heading: #0f1419; --accent-blue: #0969da; --accent-green: #1a7f37;
-            /* Logo original en modo claro */
             --logo-filter: none;
         }
 
@@ -99,7 +97,6 @@
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        .brand-name { font-weight: bold; font-size: 1.1rem; color: var(--text-heading); letter-spacing: -0.5px; }
         .brand-logo { filter: var(--logo-filter); height: 32px; width: auto; object-fit: contain; }
     </style>
 </head>
@@ -144,7 +141,7 @@
         import { UserDashboardView } from './js/views/UserDashboardView.js';
         import { SettingsView } from './js/views/SettingsView.js';
 
-        // 🧠 API GLOBAL DE NAVEGACIÓN (Inyecta solo en la Toolbar Inferior)
+        // 🧠 API GLOBAL DE NAVEGACIÓN
         window.setNavbar = (breadcrumbs = [], actionsLeft = '', actionsRight = '') => {
             const toolbar = document.getElementById('app-toolbar');
             const leftContainer = document.getElementById('toolbar-left');
@@ -221,4 +218,57 @@
                 state.config.theme = nuevoTema;
                 
                 localStorage.setItem('tt_sos_state', JSON.stringify(state));
-                document
+                document.body.setAttribute('data-theme', nuevoTema);
+                store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: nuevoTema } });
+                
+                if(dropdown) dropdown.style.display = 'none';
+            }
+        });
+
+        // ENRUTADOR PRINCIPAL
+        function router() {
+            const hash = window.location.hash || '#/';
+            const parts = hash.split('/');
+            const pId = parts[2];
+            const action = parts[3];
+
+            document.getElementById('app').classList.remove('fade-in');
+            void document.getElementById('app').offsetWidth; 
+            
+            updateIdentityBadge();
+
+            try {
+                if (hash === '#/' || hash === '' || hash === '#') app.innerHTML = DashboardView.render();
+                else if (hash === '#/settings') app.innerHTML = SettingsView.render();
+                else if (hash.startsWith('#/user-dashboard')) app.innerHTML = UserDashboardView.render();
+                else if (hash.startsWith('#/project/')) {
+                    if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
+                    else if (action === 'accounting') app.innerHTML = ProjectAccountingView.render(pId);
+                    else if (action === 'map') app.innerHTML = ProjectView.render(pId);
+                    else app.innerHTML = ProjectDashboardView.render(pId);
+                } 
+                else app.innerHTML = `<div class="container text-center"><h1>404</h1></div>`;
+            } catch (e) {
+                console.error("SOS Router Error:", e);
+                app.innerHTML = `<div class="container"><h3>Error</h3><p>${e.message}</p></div>`;
+            }
+            document.getElementById('app').classList.add('fade-in');
+        }
+
+        window.addEventListener('hashchange', router);
+        
+        // SUSCRIPCIÓN A ESTADO
+        store.subscribe(() => {
+            updateIdentityBadge();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
+        });
+
+        // ARRANQUE
+        if (store.getState()) {
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); 
+            updateIdentityBadge();
+            router();
+        }
+    </script>
+</body>
+</html>
