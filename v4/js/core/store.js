@@ -93,7 +93,8 @@ function reducer(state = initialState, action) {
         }
 
         case 'LOGIN_USER':
-            return { ...state, session: { activeUserId: action.payload.userId, role: 'user' } };
+            const isAdmin = action.payload.userId === 'ecosystem-admin';
+            return { ...state, session: { activeUserId: action.payload.userId, role: isAdmin ? 'admin' : 'user' } };
             
         case 'LOGOUT_USER':
             return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
