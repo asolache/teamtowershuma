@@ -1,5 +1,7 @@
 import { store } from '../core/store.js';
 
+let dashboardDisplayMode = 'inbox'; // Modos: inbox, analytics
+
 // --- SIMULADOR DE AGENTE IA (Dosos) ---
 // En el futuro, aquí haremos el fetch() a la API de OpenAI o Anthropic
 async function simulateAIAudit(tx, project, state) {
@@ -32,6 +34,13 @@ async function simulateAIAudit(tx, project, state) {
 // --- EVENTOS DEL DASHBOARD ---
 document.addEventListener('click', async (e) => {
     
+    // --- NAVEGACIÓN POR PESTAÑAS (TABS) ---
+    if (e.target.classList.contains('dash-tab-btn')) {
+        dashboardDisplayMode = e.target.getAttribute('data-mode');
+        const projectId = e.target.getAttribute('data-pid');
+        document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
+    }
+
     // 1. Aprobar Manualmente (POW -> LEDGER)
     if (e.target.classList.contains('btn-dash-approve')) {
         const txHash = e.target.getAttribute('data-hash');
@@ -43,14 +52,13 @@ document.addEventListener('click', async (e) => {
         }
     }
 
-    // 2. Rechazar PoW (Nueva función lógica)
+    // 2. Rechazar PoW
     if (e.target.classList.contains('btn-dash-reject')) {
         const txHash = e.target.getAttribute('data-hash');
         const projectId = e.target.getAttribute('data-pid');
         
         const motivo = prompt("Indica el motivo del rechazo para informar al nodo:");
         if (motivo !== null) {
-            // Cambiamos el estado a 'rejected' (necesita estar soportado en el reducer, lo simulamos cambiando fase o status)
             const state = store.getState();
             const project = state.projects.find(p => p.id === projectId);
             const tx = project.transactions.find(t => t.hash === txHash);
@@ -82,7 +90,7 @@ document.addEventListener('click', async (e) => {
         // Llamada al Agente
         const auditResult = await simulateAIAudit(tx, project, state);
 
-        // Guardar el resultado del agente en la transacción para mostrarlo
+        // Guardar el resultado del agente en la transacción
         tx.aiAudit = auditResult;
         
         // Forzar renderizado
@@ -109,6 +117,12 @@ export const ProjectDashboardView = {
         // 🚀 BREADCRUMBS ESTÁNDAR
         setTimeout(() => window.setNavbar ? window.setNavbar([], '', '') : null, 0);
 
+        // ESTILOS DE PESTAÑAS (TABS) - Igual que en ProjectView
+        const tabStyle = (mode) => `
+            padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${dashboardDisplayMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
+            color: ${dashboardDisplayMode === mode ? 'var(--text-heading)' : 'var(--text-muted)'}; transition: 0.2s; background: transparent; border-top: none; border-left: none; border-right: none;
+        `;
+
         return `
             <div style="background: var(--bg-surface); border-bottom: 1px solid var(--border-color); padding: 15px 30px; position: sticky; top: 0; z-index: 100;">
                 <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
@@ -125,108 +139,120 @@ export const ProjectDashboardView = {
             <div class="container fade-in" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
                 
                 <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Dashboard Sistémico</h1>
-                <p style="margin: 0 0 30px 0; color: var(--text-muted);">Audita el trabajo de la red y mantén la resiliencia al 100%.</p>
+                <p style="margin: 0 0 20px 0; color: var(--text-muted);">Audita el trabajo de la red y mantén la resiliencia al 100%.</p>
 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
-                    <div class="panel-surface" style="border-top: 4px solid var(--accent-green); text-align: center; padding: 20px;">
-                        <div class="text-muted text-small text-uppercase">Slices Consolidados (Valor)</div>
-                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--text-heading);">${totalFrozen.toLocaleString()}</div>
-                    </div>
-                    <div class="panel-surface" style="border-top: 4px solid var(--accent-blue); text-align: center; padding: 20px;">
-                        <div class="text-muted text-small text-uppercase">Resiliencia Organizacional</div>
-                        <div style="font-size: 2.5rem; font-weight: bold; color: ${resilience < 50 ? 'var(--accent-red)' : 'var(--accent-blue)'};">${resilience}%</div>
-                    </div>
-                    <div class="panel-surface" style="border-top: 4px solid var(--accent-purple); text-align: center; padding: 20px;">
-                        <div class="text-muted text-small text-uppercase">Cuellos de Botella (Trombos)</div>
-                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--accent-purple);">${bottlenecks}</div>
-                    </div>
+                <div style="display:flex; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; gap: 10px; overflow-x: auto;">
+                    <button class="dash-tab-btn" data-mode="inbox" data-pid="${projectId}" style="${tabStyle('inbox')}">📥 Bandeja de Auditoría (Inbox)</button>
+                    <button class="dash-tab-btn" data-mode="analytics" data-pid="${projectId}" style="${tabStyle('analytics')}">📈 Analítica Sistémica (Próximamente)</button>
                 </div>
 
                 <div class="grid-layout" style="grid-template-columns: 2fr 1fr; gap: 30px;">
                     
                     <main>
-                        <h3 style="display: flex; align-items: center; justify-content: space-between; margin-top: 0; margin-bottom: 20px;">
-                            <span>📥 Auditoría de Entregables (PoW)</span>
-                            ${pendingApprovals.length > 0 ? `<span class="badge" style="background: var(--accent-blue); color: #fff; padding: 5px 10px;">${pendingApprovals.length} Pendientes</span>` : ''}
-                        </h3>
+                        ${dashboardDisplayMode === 'inbox' ? `
+                            
+                            <h3 style="display: flex; align-items: center; justify-content: space-between; margin-top: 0; margin-bottom: 20px;">
+                                <span>📥 Entregables Pendientes (PoW)</span>
+                                ${pendingApprovals.length > 0 ? `<span class="badge" style="background: var(--accent-blue); color: #fff; padding: 5px 10px;">${pendingApprovals.length} Pendientes</span>` : ''}
+                            </h3>
 
-                        ${pendingApprovals.length === 0 ? `
-                            <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--border-color);">
-                                <div style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;">✅</div>
-                                <h4 style="margin: 0 0 5px 0; color: var(--text-muted);">Todo al día</h4>
-                                <p class="text-small text-muted">No hay Proof of Works pendientes de auditar por el PO.</p>
-                            </div>
-                        ` : `
-                            <div class="list-group">
-                                ${pendingApprovals.map(tx => {
-                                    const rFrom = project.roles.find(r => r.id === tx.from);
-                                    const assignee = state.globalUsers.find(u => u.id === tx.assigneeId);
-                                    
-                                    // Comprobar si ya fue auditado por la IA
-                                    const aiAudit = tx.aiAudit;
-                                    
-                                    return `
-                                    <div class="panel-surface" style="margin-bottom: 20px; border-left: 4px solid var(--accent-blue);">
+                            ${pendingApprovals.length === 0 ? `
+                                <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--border-color);">
+                                    <div style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;">✅</div>
+                                    <h4 style="margin: 0 0 5px 0; color: var(--text-muted);">Todo al día</h4>
+                                    <p class="text-small text-muted">No hay Proof of Works pendientes de auditar por el PO.</p>
+                                </div>
+                            ` : `
+                                <div class="list-group">
+                                    ${pendingApprovals.map(tx => {
+                                        const rFrom = project.roles.find(r => r.id === tx.from);
+                                        const assignee = state.globalUsers.find(u => u.id === tx.assigneeId);
+                                        const aiAudit = tx.aiAudit;
                                         
-                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                                            <div>
-                                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform:uppercase; margin-bottom: 4px;">
-                                                    👤 Nodo: <b style="color:var(--text-heading);">${assignee ? assignee.name : tx.assigneeId}</b> 
-                                                    | 🎭 Rol: <b style="color:var(--accent-purple);">${rFrom ? rFrom.name : 'Desc.'}</b>
+                                        return `
+                                        <div class="panel-surface" style="margin-bottom: 20px; border-left: 4px solid var(--accent-blue);">
+                                            
+                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                                <div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform:uppercase; margin-bottom: 4px;">
+                                                        👤 Nodo: <b style="color:var(--text-heading);">${assignee ? assignee.name : tx.assigneeId}</b> 
+                                                        | 🎭 Rol: <b style="color:var(--accent-purple);">${rFrom ? rFrom.name : 'Desc.'}</b>
+                                                    </div>
+                                                    <h4 style="margin:0; font-size:1.2rem; color: var(--text-heading);">${tx.entregable}</h4>
                                                 </div>
-                                                <h4 style="margin:0; font-size:1.2rem; color: var(--text-heading);">${tx.entregable}</h4>
+                                                <span class="badge" style="background:rgba(88,166,255,0.1); color:var(--accent-blue); font-size: 0.9rem; padding: 5px 10px;">
+                                                    Reclama: ${tx.realHours}h
+                                                </span>
                                             </div>
-                                            <span class="badge" style="background:rgba(88,166,255,0.1); color:var(--accent-blue); font-size: 0.9rem; padding: 5px 10px;">
-                                                Reclama: ${tx.realHours}h
-                                            </span>
-                                        </div>
-                                        
-                                        <div style="background:var(--bg-base); padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid var(--border-color);">
-                                            <div style="margin-bottom: 8px;">
-                                                <b>🔗 Evidencia (Proof):</b> <a href="${tx.proofLink}" target="_blank" style="color:var(--accent-blue); text-decoration: underline;">${tx.proofLink}</a>
+                                            
+                                            <div style="background:var(--bg-base); padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid var(--border-color);">
+                                                <div style="margin-bottom: 8px;">
+                                                    <b>🔗 Evidencia (Proof):</b> <a href="${tx.proofLink}" target="_blank" style="color:var(--accent-blue); text-decoration: underline;">${tx.proofLink}</a>
+                                                </div>
+                                                ${tx.reportComment ? `
+                                                    <div style="color:var(--text-muted); font-size: 0.9rem; font-style: italic; border-left: 2px solid var(--border-color); padding-left: 10px; margin-top: 10px;">
+                                                        "${tx.reportComment}"
+                                                    </div>
+                                                ` : ''}
                                             </div>
-                                            ${tx.reportComment ? `
-                                                <div style="color:var(--text-muted); font-size: 0.9rem; font-style: italic; border-left: 2px solid var(--border-color); padding-left: 10px; margin-top: 10px;">
-                                                    "${tx.reportComment}"
+
+                                            ${aiAudit ? `
+                                                <div style="background: rgba(163, 113, 247, 0.05); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                                        <span style="font-size: 1.2rem;">🤖</span>
+                                                        <b style="color: var(--accent-purple);">Reporte del Agente 'Dosos'</b>
+                                                        <span class="badge" style="background: ${aiAudit.veredicto === 'Aprobado' ? 'var(--accent-green)' : 'var(--accent-red)'}; color: #000;">
+                                                            ${aiAudit.veredicto}
+                                                        </span>
+                                                    </div>
+                                                    <p style="font-size: 0.9rem; color: var(--text-main); margin: 0 0 10px 0;">${aiAudit.analisis}</p>
+                                                    <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">> ${aiAudit.contextUsed}</div>
                                                 </div>
                                             ` : ''}
-                                        </div>
 
-                                        ${aiAudit ? `
-                                            <div style="background: rgba(163, 113, 247, 0.05); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                                    <span style="font-size: 1.2rem;">🤖</span>
-                                                    <b style="color: var(--accent-purple);">Reporte del Agente 'Dosos'</b>
-                                                    <span class="badge" style="background: ${aiAudit.veredicto === 'Aprobado' ? 'var(--accent-green)' : 'var(--accent-red)'}; color: #000;">
-                                                        ${aiAudit.veredicto}
-                                                    </span>
-                                                </div>
-                                                <p style="font-size: 0.9rem; color: var(--text-main); margin: 0 0 10px 0;">${aiAudit.analisis}</p>
-                                                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">> ${aiAudit.contextUsed}</div>
-                                            </div>
-                                        ` : ''}
-
-                                        <div style="display: flex; gap: 10px;">
-                                            ${!aiAudit ? `
-                                                <button class="btn btn-outline btn-dash-ai-audit" style="flex: 1; border-color: var(--accent-purple); color: var(--accent-purple);" data-hash="${tx.hash}" data-pid="${project.id}">
-                                                    🤖 Solicitar Auditoría IA
+                                            <div style="display: flex; gap: 10px;">
+                                                ${!aiAudit ? `
+                                                    <button class="btn btn-outline btn-dash-ai-audit" style="flex: 1; border-color: var(--accent-purple); color: var(--accent-purple);" data-hash="${tx.hash}" data-pid="${project.id}">
+                                                        🤖 Solicitar Auditoría IA
+                                                    </button>
+                                                ` : ''}
+                                                <button class="btn btn-outline btn-dash-reject" style="flex: 1; border-color: var(--accent-red); color: var(--accent-red);" data-hash="${tx.hash}" data-pid="${project.id}">
+                                                    ❌ Rechazar
                                                 </button>
-                                            ` : ''}
-                                            <button class="btn btn-outline btn-dash-reject" style="flex: 1; border-color: var(--accent-red); color: var(--accent-red);" data-hash="${tx.hash}" data-pid="${project.id}">
-                                                ❌ Rechazar
-                                            </button>
-                                            <button class="btn btn-primary btn-dash-approve" style="flex: 2; background: var(--accent-green); color: #000; font-weight: bold; border: none;" data-hash="${tx.hash}" data-pid="${project.id}">
-                                                ✅ Sellar Ledger (+${tx.valorCongelado} Slices)
-                                            </button>
-                                        </div>
-                                    </div>`;
-                                }).join('')}
+                                                <button class="btn btn-primary btn-dash-approve" style="flex: 2; background: var(--accent-green); color: #000; font-weight: bold; border: none;" data-hash="${tx.hash}" data-pid="${project.id}">
+                                                    ✅ Sellar Ledger (+${tx.valorCongelado} Slices)
+                                                </button>
+                                            </div>
+                                        </div>`;
+                                    }).join('')}
+                                </div>
+                            `}
+                        ` : `
+                            <div class="panel-surface text-center" style="padding: 50px; border: 1px dashed var(--border-color);">
+                                <h3 style="color: var(--text-muted);">Módulo de Analítica en Desarrollo</h3>
+                                <p class="text-small text-muted">Próximamente verás aquí gráficos de velocidad de entrega y reparto de equity.</p>
                             </div>
                         `}
                     </main>
 
                     <aside>
-                        <h3 style="margin-top: 0; margin-bottom: 20px;">🧭 Accesos Rápidos</h3>
+                        <h3 style="margin-top: 0; margin-bottom: 20px;">📊 Salud General</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+                            <div class="panel-surface" style="border-left: 4px solid var(--accent-green); padding: 15px;">
+                                <div class="text-muted text-small text-uppercase">Slices Consolidados</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--text-heading);">${totalFrozen.toLocaleString()}</div>
+                            </div>
+                            <div class="panel-surface" style="border-left: 4px solid ${resilience < 50 ? 'var(--accent-red)' : 'var(--accent-blue)'}; padding: 15px;">
+                                <div class="text-muted text-small text-uppercase">Resiliencia</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: ${resilience < 50 ? 'var(--accent-red)' : 'var(--accent-blue)'};">${resilience}%</div>
+                            </div>
+                            <div class="panel-surface" style="border-left: 4px solid var(--accent-purple); padding: 15px;">
+                                <div class="text-muted text-small text-uppercase">Cuellos de Botella</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-purple);">${bottlenecks}</div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-bottom: 20px;">🧭 Accesos Rápidos</h3>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
                             
                             <a href="#/project/${projectId}/map" style="text-decoration:none;">
@@ -244,17 +270,4 @@ export const ProjectDashboardView = {
                             </a>
 
                             <a href="#/project/${projectId}/edit" style="text-decoration:none;">
-                                <div class="panel-surface" style="padding:15px; transition:0.2s; border:1px solid var(--border-color); display:flex; align-items:center; gap:15px;" onmouseover="this.style.borderColor='var(--accent-gold)'" onmouseout="this.style.borderColor='var(--border-color)'">
-                                    <div style="font-size:1.5rem;">⚙️</div>
-                                    <div><b style="color:var(--text-heading); display:block;">3. Sala de Máquinas</b><span style="font-size:0.75rem; color:var(--text-muted);">Ajustes de Ontología</span></div>
-                                </div>
-                            </a>
-
-                        </div>
-                    </aside>
-
-                </div>
-            </div>
-        `;
-    }
-};
+                                <div class="panel-surface" style="padding:15px; transition:0.2s; border:1px solid var(--border-color); display:flex; align-items:center; gap:15px;" onmouseover="this.
