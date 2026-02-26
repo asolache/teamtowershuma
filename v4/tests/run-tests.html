@@ -83,6 +83,91 @@
         <div id="summary-box"></div>
     </div>
 
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS v5.7 | Suite de Validación Total</title>
+    <style>
+        :root {
+            --bg-base: #010409; --bg-surface: #0d1117; --bg-panel: #161b22;
+            --border-color: #30363d; --text-main: #c9d1d9; --text-muted: #8b949e;
+            --text-heading: #f0f6fc; --accent-blue: #58a6ff; --accent-green: #238636;
+            --accent-purple: #a371f7; --accent-red: #f85149; --accent-gold: #d29922; 
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        body { 
+            background-color: var(--bg-base); color: var(--text-main); 
+            margin: 0; font-family: var(--font-family); line-height: 1.5; 
+            padding-top: 90px;
+        }
+
+        /* 🚀 TOPBAR NATIVA */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            background: rgba(13, 17, 23, 0.95); border-bottom: 1px solid var(--border-color);
+            z-index: 2000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; backdrop-filter: blur(10px);
+        }
+
+        .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: 0.2s; }
+        .breadcrumb a:hover { color: var(--accent-blue); }
+        .breadcrumb span.separator { margin: 0 8px; color: var(--border-color); }
+        .breadcrumb span.current { color: var(--text-heading); font-weight: bold; }
+
+        .btn-back-nav { 
+            margin-right: 12px; font-size: 1.2rem; text-decoration: none; display: inline-block; 
+        }
+
+        /* --- UI DE LOS TESTS --- */
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        h1 { border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-top: 0; color: var(--text-heading); display: flex; align-items: center; gap: 15px; }
+        
+        .test-card { 
+            background: var(--bg-panel); border: 1px solid var(--border-color); 
+            border-radius: 8px; padding: 12px 15px; margin-bottom: 10px; 
+            display: flex; align-items: center;
+        }
+        .pass { border-left: 5px solid var(--accent-green); }
+        .fail { border-left: 5px solid var(--accent-red); background: rgba(248, 81, 73, 0.05); }
+        
+        .msg { flex-grow: 1; font-family: 'Cascadia Code', monospace; font-size: 0.85rem; }
+        .badge { 
+            font-size: 0.65rem; padding: 4px 10px; border-radius: 12px; 
+            background: var(--bg-base); border: 1px solid var(--border-color); 
+            margin-left: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; 
+        }
+        
+        .summary { 
+            margin-top: 40px; padding: 25px; border-radius: 12px; 
+            background: var(--bg-surface); border: 2px solid var(--accent-blue); 
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="topbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="../index.html#/" style="text-decoration: none;">
+                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">TT</div>
+            </a>
+            <div class="breadcrumb" style="font-size: 0.95rem; display: flex; align-items: center;">
+                <a href="../index.html#/" class="btn-back-nav" title="Volver Atrás">⬅️</a>
+                <a href="../index.html#/">Hub</a> <span class="separator">/</span>
+                <span class="current">🧪 Suite de Validación Total</span>
+            </div>
+        </div>
+        <div><span class="badge" style="background: rgba(163, 113, 247, 0.1); color: var(--accent-purple); border-color: var(--accent-purple);">MODO INGENIERO</span></div>
+    </nav>
+
+    <div class="container">
+        <h1>⚙️ Test de Estrés del Kernel <span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">(v5.7.1)</span></h1>
+        <div id="results"></div>
+        <div id="summary-box"></div>
+    </div>
+
     <script type="module">
         import { store } from '../js/core/store.js';
 
@@ -156,5 +241,103 @@
             const dynTestUser2 = '@test_ai_' + Date.now();
             store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestUser', id: dynTestUser1 } });
             store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI', id: dynTestUser2 } });
+            
+            const pForJson = store.getState().projects.find(x => x.id === 'test-proj');
+            const numLedgersBefore = pForJson.ledger ? pForJson.ledger.length : 0;
+            const mockAIResponse = [
+                { userId: dynTestUser1, roleId: anxanetaId, receiverId: newRole.id, description: "Diseño TDD", horas: 0.5 },
+                { userId: dynTestUser2, roleId: newRole.id, receiverId: anxanetaId, description: "Refactor", horas: 0.8 }
+            ];
+            store.importSessionJSON('test-proj', mockAIResponse);
+            const numLedgersAfter = store.getState().projects.find(x => x.id === 'test-proj').ledger.length;
+            assert(numLedgersAfter === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
+
+            assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
+            const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 100000);
+            store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura (Node Dev)', id: dynLauraId, walletOrSocial: '0x123...abc' } });
+            
+            const stateAfterUser = store.getState();
+            const lauraGlobal = stateAfterUser.globalUsers.find(u => u.id === dynLauraId);
+            assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con @id único", "IDENTITY");
+            assert(lauraGlobal.walletOrSocial === '0x123...abc', "Metadatos extendidos (Wallet/Social) guardados", "IDENTITY");
+            
+            const lauraInProject = stateAfterUser.projects.find(x => x.id === 'test-proj').usuarios.find(u => u.id === dynLauraId);
+            assert(lauraInProject !== undefined, "Usuario enlazado al Proyecto local usando su @id", "IDENTITY");
+
+            let errorThrown = false;
+            try { store.dispatch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'Laura Falsa', id: dynLauraId } }); } 
+            catch (error) { errorThrown = true; }
+            assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
+
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynLauraId } });
+            const sessionActive = store.getState().session;
+            assert(sessionActive !== undefined, "Objeto de sesión creado en el Kernel", "RBAC");
+            assert(sessionActive.activeUserId === dynLauraId, "El usuario activo se registró correctamente en la sesión", "RBAC");
+            assert(sessionActive.role === 'user', "Por defecto, el usuario entra con permisos básicos", "RBAC");
+
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
+            assert(store.getState().session.role === 'admin', "El Administrador recupera el rol máximo (admin)", "RBAC");
+
+            assert(store.getState().ontology !== undefined && store.getState().ontology.sectores !== undefined, "La Ontología es accesible desde el estado dinámico", "ONTOLOGY");
+            
+            store.dispatch({
+                type: 'ADD_ONTOLOGY_SECTOR',
+                payload: {
+                    sectorId: 'deep-tech',
+                    rolesData: {
+                        "@anxaneta": { name: "Lead Scientist", prompt: "Diriges la investigación..." },
+                        "@aixecador": { name: "Lab Manager", prompt: "Coordinas el laboratorio..." },
+                        "@dosos": { name: "Peer Reviewer", prompt: "Auditas la ciencia..." },
+                        "@baixos": { name: "Researcher", prompt: "Ejecutas experimentos..." },
+                        "@pinya": { name: "Data Analyst", prompt: "Procesas métricas..." }
+                    }
+                }
+            });
+
+            const newOntology = store.getState().ontology;
+            assert(newOntology.sectores['deep-tech'] !== undefined, "El EO puede crear nuevos Sectores dinámicamente", "DATABASE");
+            assert(newOntology.sectores['deep-tech']['@anxaneta'].name === 'Lead Scientist', "Los roles del nuevo sector se guardaron correctamente", "DATABASE");
+
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-proj-2', nombre: 'Deep Tech Lab', sector: 'deep-tech' } });
+            const p2 = store.getState().projects.find(x => x.id === 'test-proj-2');
+            assert(p2.roles.find(r => r.levelId === '@anxaneta').name === 'Lead Scientist', "Un nuevo proyecto usa la ontología dinámica correctamente", "CORE");
+
+            // 🚀 --- FASE 13: LOS 5 TESTS NUEVOS (v5.7) ---
+            
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-eco', nombre: 'DAO Project', sector: 'general', tipo: 'ecosystem' } });
+            let pEco = store.getState().projects.find(x => x.id === 'test-eco');
+            assert(pEco.tipo === 'ecosystem', "El Kernel diferencia estructuralmente entre Proyectos y Ecosistemas", "NETWORK");
+
+            store.dispatch({ type: 'UPDATE_PROJECT_CONFIG', payload: { projectId: 'test-eco', config: { tokenomics: 'dao' } } });
+            assert(store.getState().projects.find(x => x.id === 'test-eco').config?.tokenomics === 'dao', "Modelo Tokenomics (DAO) guardado en el Kernel", "TOKENOMICS");
+
+            store.dispatch({ type: 'ADD_ROLE', payload: { projectId: 'test-eco', role: { id: 'role-inversor', name: 'Angel Investor', levelId: '@anxaneta', multiplier: 2.5 } } });
+            let investorRole = store.getState().projects.find(x => x.id === 'test-eco').roles.find(r => r.id === 'role-inversor');
+            assert(investorRole.multiplier === 2.5, "El Multiplicador de Riesgo (Slicing Pie) se ancla al Rol Teórico", "ECONOMY");
+
+            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: 'test-eco', tx: { from: anxanetaId, to: 'role-inversor', horas: 10, entregable: 'Inversión Semilla', tipo: 'tangible' } } });
+            let txPull = store.getState().projects.find(x => x.id === 'test-eco').transactions[0];
+            assert(txPull.status === 'theoretical', "El Entregable nace como Teórico (Disponible en el mercado)", "PULL-SYSTEM");
+
+            store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: 'test-eco', txHash: txPull.hash, userId: dynLauraId } });
+            txPull = store.getState().projects.find(x => x.id === 'test-eco').transactions[0];
+            assert(txPull.status === 'pinged' && txPull.assigneeId === dynLauraId, "El usuario puede auto-asignarse el entregable (Pull Method)", "PULL-SYSTEM");
+
+            // --- RESULTADO ---
+            const summary = document.getElementById('summary-box');
+            summary.className = "summary";
+            const ok = passed === total;
+            summary.innerHTML = `<h2 style="margin:0; color: ${ok ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${ok ? '🚀 KERNEL v5.7 VALIDADO' : '🛠️ FALLO EN KERNEL DETECTADO'}
+                                 </h2>
+                                 <p style="font-size: 1.2rem; color: var(--text-heading); margin-top: 10px;">
+                                    Certificación: ${passed}/${total}
+                                 </p>`;
+        }
+        
+        runSuite();
+    </script>
+</body>
+</html>patch({ type: 'ADD_USER', payload: { projectId: 'test-proj', name: 'TestAI', id: dynTestUser2 } });
             
             const p
