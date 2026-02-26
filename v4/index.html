@@ -172,4 +172,126 @@
                 <span id="navbar-identity">Cargando...</span> <span style="font-size: 0.6rem;">▼</span>
             </button>
             <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
-                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border
+                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Usuario (Nodo)</a>
+                <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub de Redes de Valor</a>
+                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración Global</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="app-toolbar" class="toolbar" style="display: none;">
+        <div id="toolbar-left" style="display:flex; gap:10px; align-items: center;"></div>
+        <div id="toolbar-right" style="display:flex; gap:10px; align-items: center;"></div>
+    </div>
+
+    <div id="app"></div>
+
+    <script type="module">
+        import { store } from './js/core/store.js';
+        import { DashboardView } from './js/views/DashboardView.js';
+        import { ProjectDashboardView } from './js/views/ProjectDashboardView.js';
+        import { ProjectView } from './js/views/ProjectView.js';
+        import { ProjectEditView } from './js/views/ProjectEditView.js';
+        import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
+        import { UserDashboardView } from './js/views/UserDashboardView.js';
+        import { SettingsView } from './js/views/SettingsView.js';
+
+        // 🧠 API GLOBAL DE NAVEGACIÓN
+        window.setNavbar = (breadcrumbs = [], actionsLeft = '', actionsRight = '') => {
+            const bcContainer = document.getElementById('navbar-breadcrumbs');
+            const toolbar = document.getElementById('app-toolbar');
+            
+            let bcHTML = '';
+            breadcrumbs.forEach((item, index) => {
+                if (index === breadcrumbs.length - 1) {
+                    bcHTML += `<span class="current">${item.label}</span>`;
+                } else {
+                    bcHTML += `<a href="${item.hash}">${item.label}</a> <span class="separator">/</span> `;
+                }
+            });
+            bcContainer.innerHTML = bcHTML;
+
+            if (actionsLeft || actionsRight) {
+                document.getElementById('toolbar-left').innerHTML = actionsLeft;
+                document.getElementById('toolbar-right').innerHTML = actionsRight;
+                toolbar.style.display = 'flex';
+                document.body.style.paddingTop = '110px';
+            } else {
+                toolbar.style.display = 'none';
+                document.body.style.paddingTop = '60px';
+            }
+        };
+
+        // IDENTIDAD
+        function updateIdentityBadge() {
+            const state = store.getState();
+            const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
+            const idBadge = document.getElementById('navbar-identity');
+            if (session.role === 'admin') idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">👑 Ecosystem Owner</span>`;
+            else {
+                const user = state.globalUsers.find(u => u.id === session.activeUserId);
+                idBadge.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold;">👤 ${user ? user.name : session.activeUserId}</span>`;
+            }
+        }
+
+        // EVENTOS GLOBALES
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('dropdown-menu');
+            if (e.target.closest('#btn-user-menu')) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            else if(dropdown) dropdown.style.display = 'none';
+
+            if (e.target.id === 'menu-switch-role') {
+                e.preventDefault();
+                const state = store.getState();
+                if ((state.session?.role || 'admin') === 'user') {
+                    store.dispatch({ type: 'LOGOUT_USER' }); window.location.hash = '#/';
+                } else {
+                    const usersList = state.globalUsers.map(u => u.id).join(', ');
+                    const id = prompt(`Simulador de Nodos:\nIntroduce el @id de un usuario.\nUsuarios disponibles: ${usersList || 'Ninguno'}`);
+                    if (id) {
+                        store.dispatch({ type: 'LOGIN_USER', payload: { userId: id.startsWith('@') ? id : '@'+id } });
+                        window.location.hash = `#/user-dashboard`;
+                    }
+                }
+            }
+        });
+
+        // ENRUTADOR
+        function router() {
+            const hash = window.location.hash || '#/';
+            const parts = hash.split('/');
+            const pId = parts[2];
+            const action = parts[3];
+
+            document.getElementById('app').classList.remove('fade-in');
+            void document.getElementById('app').offsetWidth; 
+            updateIdentityBadge();
+
+            try {
+                if (hash === '#/' || hash === '' || hash === '#') app.innerHTML = DashboardView.render();
+                else if (hash === '#/settings') app.innerHTML = SettingsView.render();
+                else if (hash.startsWith('#/user-dashboard')) app.innerHTML = UserDashboardView.render();
+                else if (hash.startsWith('#/project/')) {
+                    if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
+                    else if (action === 'accounting') app.innerHTML = ProjectAccountingView.render(pId);
+                    else if (action === 'map') app.innerHTML = ProjectView.render(pId);
+                    else app.innerHTML = ProjectDashboardView.render(pId);
+                } 
+                else app.innerHTML = `<div class="container text-center"><h1>404</h1></div>`;
+            } catch (e) {
+                console.error("SOS Router Error:", e);
+                app.innerHTML = `<div class="container"><h3>Error</h3><p>${e.message}</p></div>`;
+            }
+            document.getElementById('app').classList.add('fade-in');
+        }
+
+        window.addEventListener('hashchange', router);
+        window.addEventListener('store-ready', () => {
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
+        });
+        if (store.getState()) {
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
+        }
+    </script>
+</body>
+</html>
