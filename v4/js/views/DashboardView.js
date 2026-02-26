@@ -216,6 +216,13 @@ export const DashboardView = {
                                 </span>
                             </div>
                             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Dibuja cómo las distintas áreas de tu empresa o DAO se nutren de valor entre sí antes de hacer <i>zoom in</i> en sus propios roles.</p>
+                            
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                                <button class="btn btn-outline text-small btn-export-svg" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+                                    📸 Exportar Mapa (SVG)
+                                </button>
+                            </div>
+
                             ${generateMacroSVG(projects, macroFlows, macroOriginId)}
                         ` : ''}
 
