@@ -94,6 +94,7 @@
 
     <script type="module">
         import { store } from '../js/core/store.js';
+        import { GLOBAL_ONTOLOGY } from '../js/data/ontology.js';
 
         function runSuite() {
             const results = document.getElementById('results');
@@ -122,9 +123,14 @@
                 const p = store.getState().projects.find(x => x.id === PID_1);
                 assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
                 
-                assert(p.roles && p.roles.length === 5, "Ontología Unificada inyectada (5 roles)", "ONTOLOGY");
+                // 🔥 TEST DINÁMICO 1: Cuenta los roles reales en la Ontología
+                const expectedRolesCount = GLOBAL_ONTOLOGY['marketing'] ? GLOBAL_ONTOLOGY['marketing'].roles.length : 5;
+                assert(p.roles && p.roles.length === expectedRolesCount, `Ontología inyectada dinámicamente (${expectedRolesCount} roles)`, "ONTOLOGY");
+                
+                // 🔥 TEST DINÁMICO 2: Busca el nombre real del líder en la Ontología
                 const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
-                assert(anxanetaRole !== undefined && anxanetaRole.name === 'Strategy', "Alias de marketing inyectado correctamente", "ONTOLOGY");
+                const expectedLeaderName = GLOBAL_ONTOLOGY['marketing'] ? GLOBAL_ONTOLOGY['marketing'].roles.find(r=>r.levelId==='@anxaneta').name : 'Strategy';
+                assert(anxanetaRole !== undefined && anxanetaRole.name === expectedLeaderName, `Líder inyectado como: ${expectedLeaderName}`, "ONTOLOGY");
 
                 const anxanetaId = anxanetaRole.id;
                 store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: PID_1, roleId: anxanetaId, field: 'name', value: 'CEO Global' } });
@@ -256,7 +262,6 @@
                                      </p>`;
 
             } catch (error) {
-                // 💥 CAZADOR DE ERRORES FATALES
                 const results = document.getElementById('results');
                 results.innerHTML += `
                     <div class="test-card fail" style="border: 2px solid var(--accent-red); margin-top: 20px; flex-direction: column; align-items: flex-start;">
@@ -266,7 +271,6 @@
                         </div>
                         <div class="msg" style="color: var(--accent-red); background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; width: 100%;">
                             <b>Mensaje:</b> ${error.message}<br><br>
-                            <span style="color: var(--text-muted); font-size: 0.8rem;">Dime qué dice exactamente este mensaje para arreglar el Kernel.</span>
                         </div>
                     </div>`;
             }
