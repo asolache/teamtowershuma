@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    <title>TeamTowers SOS v5.7 | Red de Valor</title>
+    <title>TeamTowers SOS | Red de Valor</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
         :root {
@@ -28,7 +28,7 @@
         body { 
             background-color: var(--bg-base); color: var(--text-main); 
             margin: 0; font-family: var(--font-family); line-height: 1.5; 
-            padding-top: 110px; /* Topbar + Toolbar */
+            padding-top: 110px;
         }
         
         #app { min-height: calc(100vh - 110px); }
@@ -41,7 +41,6 @@
             padding: 0 20px; backdrop-filter: blur(10px);
         }
         
-        /* Asegurar que la topbar se vea bien en modo claro también */
         [data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.95); }
 
         .toolbar {
@@ -85,58 +84,40 @@
         .btn-block { display: block; width: 100%; text-align: center; }
 
         /* ========================================================= */
-        /* 🎨 SISTEMA GLOBAL DE FORMULARIOS ESTANDARIZADOS           */
-        /* ========================================================= */
         
-        .form-label { 
-            display: block; margin-bottom: 8px; font-size: 0.85rem; 
-            font-weight: 600; color: var(--text-muted); 
-        }
-
-        .form-control { 
-            width: 100%; padding: 10px 14px; font-size: 0.95rem; 
-            color: var(--text-heading); background-color: var(--bg-base); 
-            border: 1px solid var(--border-color); border-radius: var(--radius-md); 
-            margin-bottom: 16px; font-family: inherit; transition: all var(--transition-speed) ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); 
-        }
-
+        .form-label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        .form-control { width: 100%; padding: 10px 14px; font-size: 0.95rem; color: var(--text-heading); background-color: var(--bg-base); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 16px; font-family: inherit; transition: all var(--transition-speed) ease; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
         .form-control:hover { border-color: #484f58; }
-        .form-control:focus {
-            outline: none; border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2);
-            background-color: var(--bg-panel);
-        }
+        .form-control:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2); background-color: var(--bg-panel); }
         .form-control::placeholder { color: #484f58; opacity: 1; }
 
-        select.form-control {
-            appearance: none; -webkit-appearance: none; -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238b949e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
-            background-repeat: no-repeat; background-position: right 14px center;
-            background-size: 16px; padding-right: 40px; cursor: pointer;
-        }
-        select.form-control:focus {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2358a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
-        }
+        select.form-control { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238b949e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 40px; cursor: pointer; }
+        select.form-control:focus { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2358a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'); }
         select.form-control option { background-color: var(--bg-panel); color: var(--text-heading); padding: 10px; }
         textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.5; }
-
-        /* ========================================================= */
 
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Estilos del Logo */
+        .brand-logo { height: 32px; width: auto; object-fit: contain; }
+        .brand-name { font-weight: bold; font-size: 1.1rem; color: var(--text-heading); letter-spacing: -0.5px; }
     </style>
 </head>
 <body>
     
     <nav class="topbar">
         <div style="display: flex; align-items: center; gap: 15px;">
-            <a href="#/" style="text-decoration: none;">
-                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; box-shadow: 0 2px 8px rgba(88,166,255,0.3);">TT</div>
+            <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                <img src="logoteamtowers.png" alt="Logo" class="brand-logo" onerror="this.outerHTML='<div style=\\'width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;\\'>TT</div>'">
+                <span id="navbar-ecosystem-name" class="brand-name">TeamTowers</span>
             </a>
+            
+            <div style="height: 20px; width: 1px; background: var(--border-color); margin: 0 5px;"></div>
+            
             <div id="navbar-breadcrumbs" class="breadcrumb" style="font-size: 0.95rem; display: flex; align-items: center;">
-                </div>
+            </div>
         </div>
         
         <div class="dropdown" style="position: relative;">
@@ -146,7 +127,9 @@
             <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
                 <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Nodo (Usuario)</a>
                 <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub de Redes de Valor</a>
-                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-bottom:1px solid var(--border-color);">⚙️ Configuración Global</a>
+                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración Global</a>
+                <a href="landing.html" target="_blank" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🌐 Ver Landing Page</a>
+                <a href="backlog.html" target="_blank" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-bottom:1px solid var(--border-color);">📜 Libro Mayor (Backlog)</a>
                 <a href="#" id="btn-toggle-theme" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🌗 Alternar Modo Claro/Oscuro</a>
             </div>
         </div>
@@ -176,7 +159,6 @@
             
             let bcHTML = '';
             
-            // Lógica de "Volver Atrás" si hay más de 1 miga de pan
             if (breadcrumbs.length > 1) {
                 bcHTML += `<a href="javascript:history.back()" class="btn-back-nav" title="Volver Atrás">⬅️</a>`;
             }
@@ -201,10 +183,14 @@
             }
         };
 
-        // IDENTIDAD
         function updateIdentityBadge() {
             const state = store.getState();
             const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
+            
+            // Actualizar nombre de Ecosistema en la barra superior
+            const ecoNameEl = document.getElementById('navbar-ecosystem-name');
+            if(ecoNameEl) ecoNameEl.innerText = state.config?.ecosystemName || 'TeamTowers Network';
+
             const idBadge = document.getElementById('navbar-identity');
             if (session.role === 'admin') idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">👑 Ecosystem Owner</span>`;
             else {
@@ -213,18 +199,15 @@
             }
         }
 
-        // EVENTOS GLOBALES (Menú y Tema)
         document.addEventListener('click', (e) => {
             const dropdown = document.getElementById('dropdown-menu');
             
-            // Abrir/cerrar menú
             if (e.target.closest('#btn-user-menu')) {
                 dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
             } else if(dropdown && !e.target.closest('#dropdown-menu')) {
                 dropdown.style.display = 'none';
             }
 
-            // Cambiar Usuario Simulador
             if (e.target.id === 'menu-switch-role') {
                 e.preventDefault();
                 const state = store.getState();
@@ -240,7 +223,6 @@
                 }
             }
 
-            // LÓGICA DEL TEMA CLARO/OSCURO
             if (e.target.id === 'btn-toggle-theme') {
                 e.preventDefault();
                 const state = JSON.parse(localStorage.getItem('tt_sos_state')) || {};
@@ -251,15 +233,12 @@
                 
                 localStorage.setItem('tt_sos_state', JSON.stringify(state));
                 document.body.setAttribute('data-theme', nuevoTema);
-                
-                // Actualizar store en memoria también
                 store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: nuevoTema } });
                 
                 if(dropdown) dropdown.style.display = 'none';
             }
         });
 
-        // ENRUTADOR
         function router() {
             const hash = window.location.hash || '#/';
             const parts = hash.split('/');
