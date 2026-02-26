@@ -283,4 +283,272 @@ export const GLOBAL_ONTOLOGY = {
             }
         ]
     }
+    // ==========================================
+    // 🔬 SECTOR 6: I+D & DEEP TECH (Ciencia / Lab)
+    // ==========================================
+    "deeptech": {
+        nombre: "I+D & Deep Tech (Ciencia/Lab)",
+        roles: [
+            {
+                levelId: "@anxaneta", name: "Principal Investigator (PI)", multiplier: 3.0, fmv: 70,
+                ai_prompt: "Eres el Investigador Principal. Indicadores: 1) Viabilidad científica y comercial. 2) Rigor metodológico. Rechaza hipótesis sin base bibliográfica sólida.",
+                standard_deliverables: [
+                    { estimatedHours: 20.0, name: "Draft de Patente / IP (PoW: Documento PDF Formato Oficina de Patentes)" },
+                    { estimatedHours: 15.0, name: "Propuesta de Subvención (Grant) (PoW: Dossier de Aplicación H2020/NSF)" }
+                ]
+            },
+            {
+                levelId: "@aixecador", name: "Lab Manager / R&D Project Mgr", multiplier: 2.0, fmv: 50,
+                ai_prompt: "Eres el Lab Manager. Indicadores: 1) Asignación de recursos (equipos/reactivos). 2) Cumplimiento estricto de normativas de seguridad (ISO/GLP).",
+                standard_deliverables: [
+                    { estimatedHours: 4.0, name: "Plan de Sprint Experimental (PoW: Gantt/Kanban de Laboratorio)" },
+                    { estimatedHours: 3.0, name: "Auditoría de Seguridad y Compliance (PoW: Check-list GLP Firmado)" }
+                ]
+            },
+            {
+                levelId: "@dosos", name: "Peer Reviewer / QA Scientist", multiplier: 1.5, fmv: 55,
+                ai_prompt: "Eres Revisor Científico. Indicadores: 1) Significancia estadística (p-value). 2) Reproducibilidad. Rechaza datos sesgados o sin grupo de control.",
+                standard_deliverables: [
+                    { estimatedHours: 8.0, name: "Validación Estadística de Resultados (PoW: Reporte R/Python o Jupyter Notebook)" },
+                    { estimatedHours: 5.0, name: "Revisión de Paper / Artículo (PoW: Documento con control de cambios y notas)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "Research Scientist / Engineer", multiplier: 1.2, fmv: 45,
+                ai_prompt: "Eres Científico de R&D. Indicadores: 1) Ejecución impecable de protocolos. 2) Documentación exhaustiva de anomalías.",
+                standard_deliverables: [
+                    { estimatedHours: 12.0, name: "Ejecución de Lote Experimental (PoW: Raw Data CSV + Fotos de Muestras)" },
+                    { estimatedHours: 8.0, name: "Prototipo Técnico Inicial (PoW: Esquema/Video funcional del prototipo)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "Bioinformatic / Data Scientist", multiplier: 1.2, fmv: 50,
+                ai_prompt: "Eres Data Scientist. Indicadores: 1) Limpieza extrema de datos. 2) Modelos predictivos sin overfitting.",
+                standard_deliverables: [
+                    { estimatedHours: 16.0, name: "Entrenamiento Modelo Machine Learning (PoW: Link a Repo + Métricas de Precisión)" },
+                    { estimatedHours: 6.0, name: "Pipeline de Procesamiento de Datos (PoW: Script ETL en Github)" }
+                ]
+            },
+            {
+                levelId: "@pinya", name: "Lab Technician", multiplier: 1.0, fmv: 25,
+                ai_prompt: "Eres Técnico de Lab. Indicadores: 1) Precisión en preparación de muestras. 2) Calibración de equipos. Tolerancia cero a la contaminación cruzada.",
+                standard_deliverables: [
+                    { estimatedHours: 4.0, name: "Preparación de Reactivos / Muestras (PoW: Log de Cuaderno de Laboratorio)" },
+                    { estimatedHours: 2.0, name: "Mantenimiento y Calibración (PoW: Registro Fotográfico y Firma)" }
+                ]
+            }
+        ]
+    },
+
+    // ==========================================
+    // 🏭 SECTOR 7: HARDWARE & MANUFACTURA
+    // ==========================================
+    "hardware": {
+        nombre: "Hardware & Manufactura",
+        roles: [
+            {
+                levelId: "@anxaneta", name: "VP Engineering / Plant Mgr", multiplier: 3.0, fmv: 65,
+                ai_prompt: "Eres el Director de Planta. Indicadores: 1) Reducción de Coste Unitario (BOM). 2) Tiempos de ciclo (Takt time). Rechaza diseños imposibles de escalar.",
+                standard_deliverables: [
+                    { estimatedHours: 12.0, name: "Optimización de Bill of Materials (BOM) (PoW: Excel Financiero de Costes)" },
+                    { estimatedHours: 8.0, name: "Estrategia de Mass Production (PoW: PDF DFM - Design for Manufacturing)" }
+                ]
+            },
+            {
+                levelId: "@aixecador", name: "Supply Chain Manager", multiplier: 2.0, fmv: 45,
+                ai_prompt: "Eres Supply Chain Mgr. Indicadores: 1) Cero roturas de stock. 2) Diversificación de proveedores. 3) Logística Inbound/Outbound.",
+                standard_deliverables: [
+                    { estimatedHours: 6.0, name: "Cierre de Acuerdo con Proveedor Tier 1 (PoW: Contrato NDA/MSA PDF)" },
+                    { estimatedHours: 4.0, name: "Planificación de Lote de Compras (PoW: Órdenes de Compra (PO) emitidas)" }
+                ]
+            },
+            {
+                levelId: "@dosos", name: "Quality Control (QC) Inspector", multiplier: 1.5, fmv: 35,
+                ai_prompt: "Eres Inspector de Calidad. Indicadores: 1) Tolerancias mecánicas estrictas. 2) Normativa CE/FCC. Rechaza lotes que no superen el test de estrés.",
+                standard_deliverables: [
+                    { estimatedHours: 5.0, name: "Auditoría de Lote de Producción (PoW: Reporte AQL con % de defectos)" },
+                    { estimatedHours: 4.0, name: "Test de Estrés / Ciclos de Vida (PoW: Video de máquina de test + Gráficas)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "Mechanical / Electrical Eng.", multiplier: 1.2, fmv: 45,
+                ai_prompt: "Eres Ingeniero de Hardware. Indicadores: 1) Precisión en CAD. 2) Eficiencia térmica/eléctrica. 3) Código de firmware limpio.",
+                standard_deliverables: [
+                    { estimatedHours: 15.0, name: "Diseño CAD 3D de Enclosure (PoW: Archivo STEP/IGES o Link Fusion360)" },
+                    { estimatedHours: 10.0, name: "Diseño de Placa (PCB Layout) (PoW: Archivos Gerber)" }
+                ]
+            },
+            {
+                levelId: "@pinya", name: "Assembly Tech / CNC Operator", multiplier: 1.0, fmv: 25,
+                ai_prompt: "Eres Operario/Técnico de Ensamblaje. Indicadores: 1) Velocidad sin sacrificar calidad. 2) Seguimiento de SOPs (Standard Operating Procedures).",
+                standard_deliverables: [
+                    { estimatedHours: 8.0, name: "Ensamblaje de 50 Unidades Beta (PoW: Foto de palé finalizado + Check de encendido)" },
+                    { estimatedHours: 4.0, name: "Mecanizado de Piezas (CNC/3D Print) (PoW: Registro de G-code ejecutado)" }
+                ]
+            }
+        ]
+    },
+
+    // ==========================================
+    // 🏗️ SECTOR 8: ARQUITECTURA & REAL ESTATE
+    // ==========================================
+    "arquitectura": {
+        nombre: "Arquitectura & Real Estate",
+        roles: [
+            {
+                levelId: "@anxaneta", name: "Lead Architect / Developer", multiplier: 3.0, fmv: 70,
+                ai_prompt: "Eres Arquitecto Jefe. Indicadores: 1) Aprovechamiento de edificabilidad. 2) ROI del promotor. 3) Sostenibilidad (LEED/BREEAM).",
+                standard_deliverables: [
+                    { estimatedHours: 20.0, name: "Diseño Conceptual / Masterplan (PoW: Presentación PDF / Renders Base)" },
+                    { estimatedHours: 6.0, name: "Estudio de Viabilidad Urbanística (PoW: Informe Legal y de Cabida)" }
+                ]
+            },
+            {
+                levelId: "@aixecador", name: "Project Mgr / Aparejador", multiplier: 2.0, fmv: 50,
+                ai_prompt: "Eres Project Manager. Indicadores: 1) Control de certificaciones mensuales. 2) Cumplimiento de plazos de obra. 3) Negociación de contratas.",
+                standard_deliverables: [
+                    { estimatedHours: 8.0, name: "Planificación Gantt de Obra (PoW: Link a MS Project/TeamGantt)" },
+                    { estimatedHours: 5.0, name: "Certificación Mensual de Obra (PoW: Excel de Certificación Firmado)" }
+                ]
+            },
+            {
+                levelId: "@dosos", name: "Safety & Code Compliance", multiplier: 1.5, fmv: 45,
+                ai_prompt: "Eres Auditor de Seguridad y Normativa. Indicadores: 1) Cero accidentes. 2) Cumplimiento del CTE (Código Técnico). Rechaza planos con fallos estructurales.",
+                standard_deliverables: [
+                    { estimatedHours: 6.0, name: "Plan de Seguridad y Salud (PoW: Documento PSS Visado)" },
+                    { estimatedHours: 4.0, name: "Auditoría de Obra Viva (PoW: Reporte Fotográfico de Riesgos)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "BIM Modeler / Draftsman", multiplier: 1.2, fmv: 35,
+                ai_prompt: "Eres Modelador BIM. Indicadores: 1) Nivel de Desarrollo (LOD) correcto. 2) Detección de colisiones (Clash detection MEP vs Estructura).",
+                standard_deliverables: [
+                    { estimatedHours: 16.0, name: "Modelo BIM Completo (Fase Ejecución) (PoW: Archivo Revit .rvt o Link a BIM360)" },
+                    { estimatedHours: 8.0, name: "Extracción de Planos Constructivos (PoW: Set de PDFs 2D Acotados)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "Structural / MEP Engineer", multiplier: 1.2, fmv: 50,
+                ai_prompt: "Eres Ingeniero de Estructuras/Instalaciones. Indicadores: 1) Optimización de hierro/hormigón. 2) Eficiencia energética.",
+                standard_deliverables: [
+                    { estimatedHours: 12.0, name: "Cálculo de Cargas y Estructura (PoW: Memoria de Cálculo CYPE/SAP2000)" },
+                    { estimatedHours: 8.0, name: "Diseño Instalaciones (HVAC/Fontanería) (PoW: Esquema Unifilar PDF)" }
+                ]
+            },
+            {
+                levelId: "@pinya", name: "Site Supervisor / Capataz", multiplier: 1.0, fmv: 25,
+                ai_prompt: "Eres Capataz de Obra. Indicadores: 1) Coordinación de gremios. 2) Control de materiales recepcionados. 3) Limpieza de la obra.",
+                standard_deliverables: [
+                    { estimatedHours: 5.0, name: "Reporte Semanal de Ejecución (PoW: Diario de Obra + Fotos Procore)" },
+                    { estimatedHours: 2.0, name: "Recepción de Materiales (PoW: Albaranes Escaneados y Cotejados)" }
+                ]
+            }
+        ]
+    },
+
+    // ==========================================
+    // 🎪 SECTOR 9: EVENTOS & ENTRETENIMIENTO
+    // ==========================================
+    "eventos": {
+        nombre: "Eventos & Live Entertainment",
+        roles: [
+            {
+                levelId: "@anxaneta", name: "Event Director / Showrunner", multiplier: 3.0, fmv: 60,
+                ai_prompt: "Eres el Showrunner. Indicadores: 1) Experiencia WOW del asistente. 2) ROI de sponsors. 3) Venta de tickets. Rechaza conceptos sin rentabilidad clara.",
+                standard_deliverables: [
+                    { estimatedHours: 10.0, name: "Master Concept & P&L del Evento (PoW: Deck Creativo + Excel Financiero)" },
+                    { estimatedHours: 6.0, name: "Dossier de Venta para Sponsors (PoW: PDF Interactivo de Patrocinios)" }
+                ]
+            },
+            {
+                levelId: "@aixecador", name: "Production Manager", multiplier: 2.0, fmv: 40,
+                ai_prompt: "Eres Stage Manager. Indicadores: 1) Sincronización al segundo. 2) Gestión de proveedores. 3) Resolución de crisis en directo.",
+                standard_deliverables: [
+                    { estimatedHours: 8.0, name: "Run of Show (Minutado Técnico) (PoW: Excel/Shoflo Minute-by-Minute)" },
+                    { estimatedHours: 4.0, name: "Plano de Implantación (Layout) (PoW: Plano CAD/PDF de distribución de espacios)" }
+                ]
+            },
+            {
+                levelId: "@dosos", name: "Crowd Control & Safety", multiplier: 1.5, fmv: 35,
+                ai_prompt: "Eres H&S Auditor. Indicadores: 1) Flujo de evacuación. 2) Aforos legales. Rechaza montajes que bloqueen salidas de emergencia.",
+                standard_deliverables: [
+                    { estimatedHours: 5.0, name: "Plan de Autoprotección y Evacuación (PoW: Documento PAE visado)" },
+                    { estimatedHours: 3.0, name: "Auditoría de Aforo y Accesos (PoW: Reporte Fotográfico de Validadores)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "A/V Engineer (Sonido/Luces)", multiplier: 1.2, fmv: 40,
+                ai_prompt: "Eres Ingeniero Audiovisual. Indicadores: 1) Cero acoples (feedback). 2) Sincronización SMPTE/Timecode. 3) Iluminación inmersiva.",
+                standard_deliverables: [
+                    { estimatedHours: 6.0, name: "Diseño de Rigging y Patch List (PoW: Plano de Luces/Sonido PDF)" },
+                    { estimatedHours: 4.0, name: "Prueba de Sonido y Ajuste de Sala (PoW: Firma de Soundcheck Completed)" }
+                ]
+            },
+            {
+                levelId: "@pinya", name: "Hospitality & On-site Staff", multiplier: 1.0, fmv: 20,
+                ai_prompt: "Eres Staff de Hospitality. Indicadores: 1) Sonrisa y empatía. 2) Velocidad de acreditación. 3) Atención a VIPs.",
+                standard_deliverables: [
+                    { estimatedHours: 5.0, name: "Gestión de Acreditaciones (Check-in) (PoW: Log de plataforma Eventbrite/TiTo)" },
+                    { estimatedHours: 3.0, name: "Cumplimiento Rider de Artistas/Speakers (PoW: Foto de Camerinos Preparados)" }
+                ]
+            }
+        ]
+    },
+
+    // ==========================================
+    // 📚 SECTOR 10: EDTECH & FORMACIÓN
+    // ==========================================
+    "edtech": {
+        nombre: "EdTech & E-Learning",
+        roles: [
+            {
+                levelId: "@anxaneta", name: "Chief Academic Officer", multiplier: 3.0, fmv: 60,
+                ai_prompt: "Eres Director Académico. Indicadores: 1) Tasas de finalización (Completion rate). 2) Empleabilidad del alumno. 3) Innovación pedagógica.",
+                standard_deliverables: [
+                    { estimatedHours: 12.0, name: "Diseño Curricular Master (Syllabus) (PoW: Documento Notion/PDF con Mapa Académico)" },
+                    { estimatedHours: 5.0, name: "Estrategia de Acreditación Institucional (PoW: Dossier de Acreditación Oficial)" }
+                ]
+            },
+            {
+                levelId: "@aixecador", name: "Instructional Designer", multiplier: 2.0, fmv: 40,
+                ai_prompt: "Eres Diseñador Instruccional. Indicadores: 1) Curva de aprendizaje progresiva. 2) Engagement. 3) Carga cognitiva equilibrada.",
+                standard_deliverables: [
+                    { estimatedHours: 10.0, name: "Storyboard de Módulo Completo (PoW: Guion en GDocs o Miro)" },
+                    { estimatedHours: 6.0, name: "Diseño de Rúbricas de Evaluación (PoW: Tabla de Evaluación de Competencias)" }
+                ]
+            },
+            {
+                levelId: "@dosos", name: "Education QA / Evaluator", multiplier: 1.5, fmv: 30,
+                ai_prompt: "Eres Auditor Educativo. Indicadores: 1) Precisión del contenido (cero errores fácticos). 2) UX de la plataforma LMS. Rechaza videos con mal audio.",
+                standard_deliverables: [
+                    { estimatedHours: 6.0, name: "Auditoría Beta de Curso LMS (PoW: Reporte de Bugs en Moodle/Canvas)" },
+                    { estimatedHours: 4.0, name: "Fact-checking de Material Didáctico (PoW: Documento de correcciones cruzadas)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "Subject Matter Expert (Teacher)", multiplier: 1.2, fmv: 50,
+                ai_prompt: "Eres Profesor / SME. Indicadores: 1) Dominio absoluto de la materia. 2) Dicción clara y motivadora. 3) Ejemplos del mundo real.",
+                standard_deliverables: [
+                    { estimatedHours: 15.0, name: "Grabación de Lecciones en Video (PoW: Enlaces a Raw Footage en Drive)" },
+                    { estimatedHours: 8.0, name: "Redacción de Apuntes Técnicos (PoW: PDFs de Lectura Complementaria)" }
+                ]
+            },
+            {
+                levelId: "@baixos", name: "Multimedia Learning Creator", multiplier: 1.2, fmv: 35,
+                ai_prompt: "Eres Creador EdTech. Indicadores: 1) Ayudas visuales claras. 2) Interactividad. 3) Paquetes SCORM ligeros.",
+                standard_deliverables: [
+                    { estimatedHours: 10.0, name: "Edición de Video Educativo + Motion Graphics (PoW: Link a Video Finalizado)" },
+                    { estimatedHours: 5.0, name: "Creación de Quizzes Interactivos (PoW: Módulo publicado en el LMS)" }
+                ]
+            },
+            {
+                levelId: "@pinya", name: "Student Success Tutor", multiplier: 1.0, fmv: 20,
+                ai_prompt: "Eres Tutor. Indicadores: 1) Velocidad de resolución de dudas (<24h). 2) Reducción de tasa de abandono (Churn). 3) Empatía docente.",
+                standard_deliverables: [
+                    { estimatedHours: 6.0, name: "Resolución de Dudas en Foro/Discord (PoW: Screenshot de Inbox a 0)" },
+                    { estimatedHours: 4.0, name: "Corrección de Proyectos Prácticos (PoW: Log de Calificaciones enviadas)" }
+                ]
+            }
+        ]
+    }
 };
