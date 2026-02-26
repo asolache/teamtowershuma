@@ -1,201 +1,137 @@
 import { store } from '../core/store.js';
 
-// 🛡️ ESTADO TEMPORAL PARA LA IMPORTACIÓN
-let pendingImport = null;
-
-const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        try {
-            const data = JSON.parse(event.target.result);
-            pendingImport = Array.isArray(data) ? { entries: data } : data; 
-            document.getElementById('app').innerHTML = DashboardView.render();
-        } catch (err) {
-            alert("Error: El archivo no es un JSON válido.");
-        }
-    };
-    reader.readAsText(file);
-};
-
-// 🛡️ GESTOR ÚNICO DE EVENTOS (Delegación)
-document.addEventListener('change', (e) => {
-    if (e.target.id === 'input-import-file') handleFileSelect(e);
-});
-
 document.addEventListener('click', (e) => {
-    // 1. Crear nuevo proyecto y redirigir
-    if (e.target.id === 'btn-create-project') {
-        const nameInput = document.getElementById('new-proj-name');
-        const sectorInput = document.getElementById('new-proj-sector');
-        const name = nameInput.value.trim();
-        const sector = sectorInput.value;
+    if (e.target.id === 'btn-add-project') {
+        const id = document.getElementById('new-proj-id').value.trim().toLowerCase().replace(/\s+/g, '-');
+        const nombre = document.getElementById('new-proj-name').value.trim();
+        const sector = document.getElementById('new-proj-sector').value;
 
-        if (!name) return alert("⚠️ Dale un nombre a tu ecosistema.");
-        
-        const newId = '0x' + Math.random().toString(16).slice(2, 10);
-        
-        store.dispatch({ 
-            type: 'ADD_PROJECT', 
-            payload: { id: newId, nombre: name, sector, ownerId: 'ecosystem-admin' } 
+        if (!id || !nombre) return alert("⚠️ Define un identificador y un nombre para el ecosistema.");
+
+        store.dispatch({
+            type: 'ADD_PROJECT',
+            payload: { id, nombre, sector, ownerId: store.getState().session.activeUserId }
         });
         
-        // 🚀 REDIRECCIÓN GARANTIZADA AL CONFIGURADOR
-        window.location.hash = `#/project/${newId}/edit`;
-    }
-
-    // 2. Click en una Tarjeta de Proyecto (Delegación robusta)
-    const projectCard = e.target.closest('.project-card-link');
-    if (projectCard) {
-        const pId = projectCard.getAttribute('data-pid');
-        window.location.hash = `#/project/${pId}`;
-    }
-
-    // 3. Historia Dogfooding
-    if (e.target.id === 'btn-import-history') {
-        const batchData = {
-            entries: [
-                { projectId: "SOS_CORE", userId: "@admin", levelId: "@anxaneta", description: "Arquitectura SOS v5.5", horas: 3, timestamp: Date.now() }
-            ]
-        };
-        if(confirm("¿Inyectar historial de construcción real?")) {
-            store.dispatch({ type: 'IMPORT_BATCH_LEDGER', payload: batchData });
-            document.getElementById('app').innerHTML = DashboardView.render();
-        }
-    }
-
-    // 4. Confirmar/Cancelar Importación
-    if (e.target.id === 'btn-cancel-import') {
-        pendingImport = null;
-        document.getElementById('app').innerHTML = DashboardView.render();
-    }
-
-    if (e.target.id === 'btn-confirm-import') {
-        const ownerId = document.getElementById('import-assign-owner').value;
-        store.dispatch({ 
-            type: 'IMPORT_BATCH_LEDGER', 
-            payload: { ...pendingImport, ownerId } 
-        });
-        alert("✅ Ecosistema importado correctamente.");
-        pendingImport = null;
-        document.getElementById('app').innerHTML = DashboardView.render();
+        window.location.hash = `#/project/${id}`;
     }
 });
 
 export const DashboardView = {
     render: () => {
         const state = store.getState();
-        const projects = state.projects || [];
-        const sectoresCore = Object.keys(state.ontology.sectores);
+        const isAdmin = (state.session?.role || 'admin') === 'admin';
+        const activeUserId = state.session.activeUserId;
 
-        // KPIs
-        let totalGlobalPie = 0;
-        let totalHealthScore = 0;
-        let totalNodes = 0;
-        
-        projects.forEach(p => {
-            totalGlobalPie += (p.ledger || []).reduce((acc, l) => acc + (l.valorCongelado || 0), 0);
-            totalHealthScore += store.calculateResilience ? store.calculateResilience(p.id) : 100;
-            totalNodes += (p.roles || []).filter(r => !r.isArchived).length;
-        });
-        const avgHealth = projects.length > 0 ? Math.round(totalHealthScore / projects.length) : 0;
+        // 🚀 BREADCRUMBS GLOBALES
+        setTimeout(() => window.setNavbar(
+            [{ label: '🏠 Hub de Ecosistemas', hash: '#/' }], 
+            ``, `` // Sin botones extra
+        ), 0);
 
-        if (pendingImport) {
-            const entries = pendingImport.entries || [];
-            return `
-            <div class="container fade-in">
-                <header class="header-main">
-                    <div>
-                        <h1 class="text-accent">🔍 Validador de Importación</h1>
-                        <p class="text-muted">Revisando integridad del Backlog externo.</p>
-                    </div>
-                    <button id="btn-cancel-import" class="btn btn-secondary">Cancelar</button>
-                </header>
-                <div class="panel" style="border-top: 4px solid var(--accent-gold);">
-                    <div style="margin-bottom: 20px; display: flex; gap: 20px; align-items: flex-end;">
-                        <div style="flex: 1;">
-                            <label class="form-label">Asignar Proyecto a (Owner):</label>
-                            <select id="import-assign-owner" class="form-control">
-                                <option value="ecosystem-admin">Ecosystem Owner (Tú)</option>
-                            </select>
-                        </div>
-                        <button id="btn-confirm-import" class="btn btn-primary" style="height: 42px; flex: 1;">✅ Validar y Generar</button>
-                    </div>
-                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
-                        <table style="width:100%; font-size: 0.8rem; border-collapse: collapse;">
-                            ${entries.map(e => `<tr style="border-top: 1px solid rgba(255,255,255,0.05);"><td style="padding:10px;">${e.description}</td><td style="text-align:right; padding:10px;"><b>${e.horas}h</b></td></tr>`).join('')}
-                        </table>
-                    </div>
-                </div>
-            </div>`;
+        // Filtrar ecosistemas: El Admin ve todos, el Usuario ve solo donde participa
+        let visibleProjects = state.projects;
+        if (!isAdmin) {
+            visibleProjects = state.projects.filter(p => 
+                (p.asignaciones || []).some(a => a.userId === activeUserId)
+            );
         }
+
+        // Métricas Globales
+        const totalEcosystems = visibleProjects.length;
+        let totalSlices = 0;
+        let totalTxs = 0;
+        
+        visibleProjects.forEach(p => {
+            (p.ledger || []).forEach(l => totalSlices += l.valorCongelado);
+            totalTxs += (p.transactions || []).length;
+        });
 
         return `
             <div class="container fade-in">
-                <header class="header-main">
-                    <div>
-                        <h1 class="text-accent" style="margin: 0;">🚀 TeamTowers: Ecosystem Center</h1>
-                        <p class="text-muted" style="margin: 5px 0 0 0;">Gestión de Redes de Valor e Identidades.</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+                    <div class="panel-surface" style="border-top: 4px solid var(--accent-blue); text-align: center;">
+                        <div class="text-muted text-small text-uppercase">Ecosistemas Activos</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--text-heading);">${totalEcosystems}</div>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <label for="input-import-file" class="btn btn-outline" style="cursor:pointer; border-color: var(--accent-purple); color: var(--accent-purple);">📥 Importar</label>
-                        <input type="file" id="input-import-file" style="display:none;" accept=".json">
-                        <button class="btn btn-primary" onclick="location.hash='#/user-dashboard'" style="background: var(--accent-green); color: #000;">🧑‍🚀 Mi Portal</button>
+                    <div class="panel-surface" style="border-top: 4px solid var(--accent-purple); text-align: center;">
+                        <div class="text-muted text-small text-uppercase">Flujos Diseñados (VNA)</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--text-heading);">${totalTxs}</div>
                     </div>
-                </header>
-
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
-                    <div class="panel" style="text-align: center;">
-                        <div class="text-small text-muted text-uppercase">Redes</div>
-                        <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-blue);">${projects.length}</div>
-                    </div>
-                    <div class="panel" style="text-align: center;">
-                        <div class="text-small text-muted text-uppercase">Nodos</div>
-                        <div style="font-size: 1.8rem; font-weight: bold;">${totalNodes}</div>
-                    </div>
-                    <div class="panel" style="text-align: center;">
-                        <div class="text-small text-muted text-uppercase">Salud Avg</div>
-                        <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-green);">${avgHealth}%</div>
-                    </div>
-                    <div class="panel" style="text-align: center; border-color: var(--accent-gold);">
-                        <div class="text-small text-muted text-uppercase">TVL (Pie)</div>
-                        <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-gold);">${totalGlobalPie.toLocaleString()} €</div>
+                    <div class="panel-surface" style="border-top: 4px solid var(--accent-green); text-align: center;">
+                        <div class="text-muted text-small text-uppercase">Valor Total (Slices)</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--accent-green);">${totalSlices.toLocaleString()}</div>
                     </div>
                 </div>
 
-                <div class="grid-layout">
+                <div class="grid-layout" style="${isAdmin ? 'grid-template-columns: 2fr 1fr;' : 'grid-template-columns: 1fr; max-width: 900px; margin: 0 auto;'}">
+                    
                     <main>
-                        <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Redes Activas</h3>
-                        ${projects.length === 0 ? '<p class="text-muted">No hay redes. Despliega una nueva →</p>' : projects.map(p => `
-                            <div class="panel-surface project-card-link" data-pid="${p.id}" style="cursor: pointer; margin-bottom: 12px; transition: 0.2s; display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <b style="color: var(--accent-blue); font-size: 1.1rem;">${p.nombre}</b>
-                                    <div class="text-small text-muted text-uppercase">${p.sector} • ${p.id}</div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="color: var(--accent-gold); font-weight: bold;">${((p.ledger || []).reduce((acc, l) => acc + (l.valorCongelado || 0), 0)).toLocaleString()} €</div>
-                                    <div class="text-small text-muted">Equity Sellado</div>
-                                </div>
+                        <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            🌍 Tus Ecosistemas 
+                        </h3>
+                        
+                        ${visibleProjects.length === 0 ? `
+                            <div class="panel text-center" style="padding: 40px; border-style: dashed;">
+                                <div style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;">🌱</div>
+                                <h4 style="margin: 0; color: var(--text-muted);">No hay ecosistemas activos</h4>
+                                ${isAdmin ? '<p class="text-small text-muted">Utiliza el panel lateral para inicializar tu primera red de valor.</p>' : '<p class="text-small text-muted">Aún no has sido invitado a ninguna red de valor.</p>'}
                             </div>
-                        `).join('')}
+                        ` : `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                                ${visibleProjects.map(p => {
+                                    const res = store.calculateResilience(p.id);
+                                    const txCount = (p.transactions || []).length;
+                                    const nodeCount = (p.asignaciones || []).length;
+                                    const roleCount = (p.roles || []).filter(r => !r.isArchived).length;
+
+                                    return `
+                                    <div class="panel-surface" style="border-left: 4px solid var(--accent-blue); display: flex; flex-direction: column; transition: 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                            <div class="badge" style="background: rgba(88,166,255,0.1); color: var(--accent-blue);">${p.sector || 'General'}</div>
+                                            <div class="text-small text-muted" style="font-family: monospace;">ID: ${p.id}</div>
+                                        </div>
+                                        <h3 style="margin: 0 0 10px 0; color: var(--text-heading);">${p.nombre}</h3>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
+                                            <div>👥 ${nodeCount} / ${roleCount} Nodos</div>
+                                            <div>📈 ${txCount} Flujos</div>
+                                            <div style="grid-column: span 2; display:flex; align-items:center; gap:5px;">
+                                                ❤️ Salud de Red: <b style="color:${res < 50 ? 'var(--accent-red)' : 'var(--accent-green)'}">${res}%</b>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: auto;">
+                                            <a href="#/project/${p.id}" class="btn btn-primary btn-block" style="text-decoration: none;">Entrar a la Red ➔</a>
+                                        </div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        `}
                     </main>
 
-                    <aside>
-                        <div class="panel" style="border-color: var(--accent-purple);">
-                            <h4 style="margin-top:0; color: var(--accent-purple);">⚡ Desplegar Ecosistema</h4>
-                            <label class="form-label">Nombre</label>
-                            <input type="text" id="new-proj-name" class="form-control" placeholder="Nombre de la red...">
-                            <label class="form-label">Sector</label>
-                            <select id="new-proj-sector" class="form-control">
-                                ${sectoresCore.map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('')}
-                            </select>
-                            <button id="btn-create-project" class="btn btn-primary btn-block">Lanzar y Configurar →</button>
-                        </div>
-                        <button class="btn btn-outline btn-block" style="margin-top: 15px;" onclick="location.hash='#/settings'">⚙️ Ajustes Globales</button>
-                    </aside>
+                    ${isAdmin ? `
+                        <aside>
+                            <div class="panel" style="position: sticky; top: 130px; border-color: var(--accent-green);">
+                                <h3 style="margin-top: 0; color: var(--accent-green);">🌱 Inicializar Ecosistema</h3>
+                                <p class="text-small text-muted">Crea una nueva red de valor e inyecta la ontología base (Sectores y Roles).</p>
+                                
+                                <label class="form-label">ID Único (Sin espacios):</label>
+                                <input type="text" id="new-proj-id" class="form-control" placeholder="Ej: dao-huma">
+                                
+                                <label class="form-label">Nombre del Ecosistema:</label>
+                                <input type="text" id="new-proj-name" class="form-control" placeholder="Ej: Proyecto HUMA">
+                                
+                                <label class="form-label">Ontología Inicial (Sector):</label>
+                                <select id="new-proj-sector" class="form-control">
+                                    ${Object.keys(state.ontology.sectores).map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('')}
+                                </select>
+                                
+                                <button id="btn-add-project" class="btn btn-primary btn-block" style="margin-top: 15px;">Diseñar Red</button>
+                            </div>
+                        </aside>
+                    ` : ''}
+
                 </div>
-            </div>`;
+            </div>
+        `;
     }
 };
