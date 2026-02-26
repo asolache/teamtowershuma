@@ -1,11 +1,15 @@
 import { store } from '../core/store.js';
-import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Importamos la librería para el Modal
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 let ecoTabMode = 'macro-map'; // macro-map, directory, health
 let macroOriginId = null;
 let macroDestId = null;
 let showMacroModal = false;
-let currentMacroZoom = 1; // 🔍 Estado Global del Zoom para el Ecosistema
+let currentMacroZoom = 1; 
+
+// Nuevas variables para el Modal de Salud
+let selectedHealthProjectId = null;
+let showHealthModal = false;
 
 document.addEventListener('click', (e) => {
     
@@ -30,22 +34,31 @@ document.addEventListener('click', (e) => {
     if (e.target.classList.contains('eco-tab-btn')) {
         ecoTabMode = e.target.getAttribute('data-mode');
         macroOriginId = null; macroDestId = null; showMacroModal = false;
+        selectedHealthProjectId = null; showHealthModal = false;
         document.getElementById('app').innerHTML = DashboardView.render();
     }
 
-    // --- CREADOR ÁGIL DE MACRO-FLUJOS ---
+    // --- CLICS EN NODOS (ÁREAS/PROYECTOS) ---
     const nodeElement = e.target.closest('.macro-node');
-    if (nodeElement && ecoTabMode === 'macro-map') {
+    if (nodeElement) {
         const clickedProjId = nodeElement.getAttribute('data-id');
 
-        if (!macroOriginId) { macroOriginId = clickedProjId; } 
-        else if (macroOriginId === clickedProjId) { macroOriginId = null; } 
-        else { macroDestId = clickedProjId; showMacroModal = true; }
-        
-        document.getElementById('app').innerHTML = DashboardView.render();
+        if (ecoTabMode === 'macro-map') {
+            // Modo Creador de Enlaces
+            if (!macroOriginId) { macroOriginId = clickedProjId; } 
+            else if (macroOriginId === clickedProjId) { macroOriginId = null; } 
+            else { macroDestId = clickedProjId; showMacroModal = true; }
+            document.getElementById('app').innerHTML = DashboardView.render();
+        } 
+        else if (ecoTabMode === 'health') {
+            // Modo Salud: Abrir Detalles de Incidencia
+            selectedHealthProjectId = clickedProjId;
+            showHealthModal = true;
+            document.getElementById('app').innerHTML = DashboardView.render();
+        }
     }
 
-    // --- MODALES MACRO-FLUJO ---
+    // --- MODAL: MACRO-FLUJOS ---
     if (e.target.id === 'btn-macro-cancel') {
         macroOriginId = null; macroDestId = null; showMacroModal = false;
         document.getElementById('app').innerHTML = DashboardView.render();
@@ -65,7 +78,24 @@ document.addEventListener('click', (e) => {
         document.getElementById('app').innerHTML = DashboardView.render();
     }
 
-    // --- MODAL CREAR NUEVA ÁREA/PROYECTO ---
+    // --- MODAL: SALUD Y PING AL PO ---
+    if (e.target.id === 'btn-close-health-modal') {
+        showHealthModal = false; selectedHealthProjectId = null;
+        document.getElementById('app').innerHTML = DashboardView.render();
+    }
+
+    if (e.target.id === 'btn-send-health-ping') {
+        const msg = document.getElementById('health-ping-msg').value.trim();
+        if (!msg) return alert("⚠️ Escribe un mensaje antes de enviar el Ping.");
+        
+        // Aquí en el futuro enviaríamos el mensaje real al Store de Notificaciones.
+        alert("✅ Ping de Alerta enviado al Project Owner de esta red con éxito.");
+        
+        showHealthModal = false; selectedHealthProjectId = null;
+        document.getElementById('app').innerHTML = DashboardView.render();
+    }
+
+    // --- MODAL: CREAR NUEVA ÁREA ---
     if (e.target.id === 'btn-open-new-project') document.getElementById('modal-new-project').style.display = 'flex';
     if (e.target.id === 'btn-close-new-project') document.getElementById('modal-new-project').style.display = 'none';
 
@@ -82,10 +112,9 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 🧠 FÍSICAS DEL MACRO-MAPA (Refactorizado con Gravedad Central)
+// 🧠 FÍSICAS DEL MACRO-MAPA
 function calculateMacroLayout(projects, macroFlows, width, height) {
     const nodes = {}; const radius = Math.min(width, height) / 3; const centerX = width / 2; const centerY = height / 2;
-    
     projects.forEach((p, i) => { 
         const angle = (i / projects.length) * 2 * Math.PI; 
         nodes[p.id] = { 
@@ -95,11 +124,8 @@ function calculateMacroLayout(projects, macroFlows, width, height) {
         }; 
     });
     
-    const iterations = 150; 
-    const k = Math.sqrt((width * height) / (projects.length || 1)); 
-    
+    const iterations = 150; const k = Math.sqrt((width * height) / (projects.length || 1)); 
     for (let iter = 0; iter < iterations; iter++) {
-        // Repulsión
         for (let i = 0; i < projects.length; i++) {
             for (let j = 0; j < projects.length; j++) {
                 if (i !== j) {
@@ -109,7 +135,6 @@ function calculateMacroLayout(projects, macroFlows, width, height) {
                 }
             }
         }
-        // Atracción
         macroFlows.forEach(tx => {
             if (!nodes[tx.from] || !nodes[tx.to]) return;
             const n1 = nodes[tx.from]; const n2 = nodes[tx.to];
@@ -117,43 +142,34 @@ function calculateMacroLayout(projects, macroFlows, width, height) {
             const force = (distance * distance) / k; const fx = (dx / distance) * force * 0.05; const fy = (dy / distance) * force * 0.05;
             n1.vx -= fx; n1.vy -= fy; n2.vx += fx; n2.vy += fy;
         });
-        // Gravedad y Límites
         projects.forEach(p => {
             const n = nodes[p.id]; 
-            n.vx += (centerX - n.x) * 0.02; // Gravedad
-            n.vy += (centerY - n.y) * 0.02;
-
-            n.x += n.vx; n.y += n.vy; 
-            n.vx *= 0.7; n.vy *= 0.7;
-            n.x = Math.max(80, Math.min(width - 80, n.x)); 
-            n.y = Math.max(80, Math.min(height - 80, n.y));
+            n.vx += (centerX - n.x) * 0.02; n.vy += (centerY - n.y) * 0.02;
+            n.x += n.vx; n.y += n.vy; n.vx *= 0.7; n.vy *= 0.7;
+            n.x = Math.max(80, Math.min(width - 80, n.x)); n.y = Math.max(80, Math.min(height - 80, n.y));
         });
     }
     return nodes;
 }
 
-// 🎨 RENDERIZADO DEL MACRO-GRAFO CON ZOOM Y TERMOGRAFÍA
+// 🎨 RENDERIZADO SVG
 function generateMacroSVG(projects, macroFlows, originId, isHealthMode) {
     if(projects.length === 0) return `<div class="text-center text-muted" style="padding:40px;">El ecosistema está vacío. Crea tu primera Área.</div>`;
     
     const svgWidth = 1000; const svgHeight = 600;
     const nodeCoords = calculateMacroLayout(projects, macroFlows, svgWidth, svgHeight);
-    let svgNodes = ''; let svgEdges = ''; let edgeCurveCounter = {}; 
+    let svgNodes = ''; let svgEdges = ''; let svgAlerts = ''; let edgeCurveCounter = {}; 
 
     macroFlows.forEach((tx) => {
         const from = nodeCoords[tx.from]; const to = nodeCoords[tx.to]; if (!from || !to) return;
         const isTangible = tx.tipo !== 'intangible';
-        
         let strokeDash = isTangible ? "" : "stroke-dasharray='8,8'"; 
         let strokeColor = "var(--accent-purple)"; 
         let opacity = "0.7"; let strokeWidth = "3"; let animation = "";
 
-        // LÓGICA DE TERMOGRAFÍA PARA MACRO-MAPA
         if (isHealthMode) {
-            // Buscamos si el proyecto de origen tiene cuellos de botella
             const pFrom = projects.find(p => p.id === tx.from);
             const atascos = pFrom?.transactions?.filter(t => t.status === 'reported' || t.status === 'pinged').length || 0;
-            
             if (atascos > 3) { strokeColor = "var(--accent-red)"; opacity = "1"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.3s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
             else if (atascos > 0) { strokeColor = "var(--accent-gold)"; opacity = "0.9"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.8s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
             else { strokeColor = "var(--accent-green)"; opacity = "0.6"; }
@@ -176,26 +192,29 @@ function generateMacroSVG(projects, macroFlows, originId, isHealthMode) {
 
     projects.forEach((p) => {
         const coords = nodeCoords[p.id];
-        const isSelected = p.id === originId;
+        const isSelected = p.id === originId || p.id === selectedHealthProjectId;
         const borderColor = isSelected ? 'var(--accent-gold)' : 'var(--border-color)';
         const bgColor = isSelected ? 'rgba(210, 153, 34, 0.1)' : 'var(--bg-panel)';
         
-        // Indicador de atascos en el nodo para el modo salud
-        let nodeAlert = '';
+        // Nodo Base HTML
+        svgNodes += `<foreignObject x="${coords.x - 65}" y="${coords.y - 45}" width="130" height="90" style="overflow:visible;"><div class="macro-node" data-id="${p.id}" xmlns="http://www.w3.org/1999/xhtml" style="background:${bgColor}; border:2px solid ${borderColor}; border-radius:12px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='${borderColor}'"><div style="font-size:1.2rem; margin-bottom:2px;">🏢</div><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.2;">${p.nombre}</div><div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px; font-family:monospace;">${GLOBAL_ONTOLOGY[p.sector]?.nombre || p.sector}</div></div></foreignObject>`;
+
+        // SVG NATIVO PARA LA ALERTA ROJA (No se recorta nunca)
         if (isHealthMode) {
             const atascos = p.transactions?.filter(t => t.status === 'reported' || t.status === 'pinged').length || 0;
             if (atascos > 0) {
-                const color = atascos > 3 ? 'var(--accent-red)' : 'var(--accent-gold)';
-                nodeAlert = `<div style="position:absolute; top:-10px; right:-10px; background:${color}; color:#fff; border-radius:50%; width:24px; height:24px; font-size:0.7rem; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px ${color};">${atascos}</div>`;
+                const badgeColor = atascos > 3 ? 'var(--accent-red)' : 'var(--accent-gold)';
+                svgAlerts += `<g transform="translate(${coords.x + 60}, ${coords.y - 40})" style="pointer-events: none;">
+                                <circle cx="0" cy="0" r="14" fill="${badgeColor}" stroke="var(--bg-surface)" stroke-width="3"/>
+                                <text x="0" y="4" fill="#ffffff" font-size="11" font-weight="bold" font-family="sans-serif" text-anchor="middle">${atascos}</text>
+                              </g>`;
             }
         }
-        
-        svgNodes += `<foreignObject x="${coords.x - 65}" y="${coords.y - 45}" width="130" height="90" style="overflow:visible;"><div class="macro-node" data-id="${p.id}" xmlns="http://www.w3.org/1999/xhtml" style="background:${bgColor}; border:2px solid ${borderColor}; border-radius:12px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s; position:relative;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='${borderColor}'">${nodeAlert}<div style="font-size:1.2rem; margin-bottom:2px;">🏢</div><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.2;">${p.nombre}</div><div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px; font-family:monospace;">${GLOBAL_ONTOLOGY[p.sector]?.nombre || p.sector}</div></div></foreignObject>`;
     });
 
-    // CONTROLES DE ZOOM INTEGRADOS
+    // ZOOM CONTROLS (Movidos a la esquina inferior izquierda, alta visibilidad y z-index)
     const zoomControls = `
-        <div style="position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 8px; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <div style="position: absolute; bottom: 20px; left: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; background: rgba(22, 27, 34, 0.9); backdrop-filter: blur(5px); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.8);">
             <button id="btn-macro-zoom-in" title="Acercar (+)" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">➕</button>
             <button id="btn-macro-zoom-out" title="Alejar (-)" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">➖</button>
             <button id="btn-macro-zoom-fit" title="Ajustar a Pantalla" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">⛶</button>
@@ -206,7 +225,7 @@ function generateMacroSVG(projects, macroFlows, originId, isHealthMode) {
                 ${zoomControls}
                 <div id="svg-macro-zoom-wrapper" style="width:100%; height:100%; transform: scale(${currentMacroZoom}); transform-origin: center center; transition: transform 0.2s ease-out; display: flex; align-items: center; justify-content: center;">
                     <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; overflow:visible;">
-                        ${svgEdges}${svgNodes}
+                        ${svgEdges}${svgNodes}${svgAlerts}
                     </svg>
                 </div>
             </div>`;
@@ -219,16 +238,12 @@ function renderEcosystemHealth(projects) {
     let totalAtascos = 0;
     let alerts = [];
 
-    const projectHealths = projects.map(p => {
+    projects.forEach(p => {
         const txs = p.transactions || [];
         const atascos = txs.filter(t => t.status === 'reported' || t.status === 'pinged').length;
         totalAtascos += atascos;
-        const salud = Math.max(0, 100 - (atascos * 10)); 
-
         if (atascos > 3) alerts.push({ level: 'CRITICAL', msg: `Bloqueo severo en "${p.nombre}" (${atascos} tareas atascadas).` });
         else if (atascos > 0) alerts.push({ level: 'WARNING', msg: `Fricción en "${p.nombre}" (${atascos} tareas en revisión).` });
-
-        return { name: p.nombre, salud, atascos };
     });
 
     const globalSalud = Math.max(0, 100 - (totalAtascos * 5));
@@ -257,12 +272,6 @@ function renderEcosystemHealth(projects) {
                     </div>
                 `).join('')}
             </div>
-
-            ${globalSalud < 30 ? `
-                <div style="padding: 15px; background: rgba(248, 81, 73, 0.1); border: 1px solid var(--accent-red); border-radius: 8px; font-size: 0.85rem; color: var(--accent-red);">
-                    <b>🛑 BLOQUEO ACTIVO:</b> El ecosistema presenta un fallo sistémico en su cadena de valor. El Ecosystem Owner debe intervenir y auditar los departamentos bloqueados inmediatamente.
-                </div>
-            ` : ''}
         </div>
     `;
 }
@@ -279,7 +288,6 @@ export const DashboardView = {
         const totalRoles = projects.reduce((acc, p) => acc + (p.roles?.filter(r=>!r.isArchived).length || 0), 0);
         const totalSlices = projects.reduce((acc, p) => acc + (p.ledger?.reduce((sum, l) => sum + l.valorCongelado, 0) || 0), 0);
 
-        // 🚀 SET NAVBAR GLOBAL (Breadcrumb Corregido)
         setTimeout(() => window.setNavbar(
             [{ label: config.ecosystemName, hash: '#/' }, { label: 'Dashboard' }], 
             ``, 
@@ -319,10 +327,54 @@ export const DashboardView = {
                 </div>`;
         }
 
-        
+        // MODAL DE SALUD (PING AL PO)
+        let modalHealthHTML = '';
+        if (showHealthModal && selectedHealthProjectId) {
+            const hp = projects.find(p => p.id === selectedHealthProjectId);
+            const txs = hp.transactions || [];
+            const atascos = txs.filter(t => t.status === 'reported' || t.status === 'pinged');
+            
+            modalHealthHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                    <div class="panel-surface fade-in" style="width: 500px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-red);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3 style="margin-top: 0; color: var(--accent-red); display:flex; align-items:center; gap:10px;">
+                                <span>🛑</span> Diagnóstico: ${hp.nombre}
+                            </h3>
+                            <span class="badge" style="background:rgba(248,81,73,0.1); color:var(--accent-red);">${atascos.length} Incidencias</span>
+                        </div>
+                        
+                        <div style="margin: 20px 0; max-height: 200px; overflow-y: auto; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px;">
+                            ${atascos.length === 0 ? '<div style="color:var(--accent-green); padding:10px; font-size:0.9rem;">No hay atascos activos en este departamento.</div>' : 
+                              atascos.map(t => {
+                                  const rFrom = hp.roles.find(r=>r.id===t.from)?.name || 'Desc.';
+                                  return `
+                                  <div style="padding: 10px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem;">
+                                      <div style="color: var(--text-heading); font-weight: bold; margin-bottom: 4px;">${t.entregable}</div>
+                                      <div style="display:flex; justify-content:space-between; color: var(--text-muted);">
+                                          <span>Responsable: ${rFrom}</span>
+                                          <span style="color: ${t.status === 'reported' ? 'var(--accent-blue)' : 'var(--accent-gold)'}; font-family:monospace;">${t.status.toUpperCase()}</span>
+                                      </div>
+                                  </div>`;
+                              }).join('')
+                            }
+                        </div>
+                        
+                        <label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Enviar Mensaje / Ping al Project Owner:</label>
+                        <textarea id="health-ping-msg" class="form-input" placeholder="Ej: He notado un bloqueo en el entregable de auditoría. ¿Necesitáis recursos adicionales?" style="width:100%; min-height: 80px; margin-bottom:20px; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px; resize:vertical;"></textarea>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button id="btn-close-health-modal" class="btn btn-outline" style="flex:1;">Cerrar Vista</button>
+                            <button id="btn-send-health-ping" data-pid="${hp.id}" class="btn btn-primary" style="flex:2; background:var(--accent-red); border:none; color:#fff; font-weight:bold;">🚨 Enviar Ping de Alerta</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         return `
             ${modalMacroHTML}
+            ${modalHealthHTML}
 
             <div class="container fade-in" style="max-width: 1300px; margin: 20px auto; padding: 0 20px;">
                 
@@ -354,6 +406,9 @@ export const DashboardView = {
                             ` : `
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                 <h3 style="margin:0; color:var(--accent-red);">❤️ Diagnóstico en Vivo</h3>
+                                <span class="badge" style="background: rgba(248,81,73,0.1); color: var(--accent-red); padding: 6px 12px; font-size: 0.85rem;">
+                                    🖱️ Haz clic en un nodo atascado para enviar un Ping
+                                </span>
                             </div>
                             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Visualiza en tiempo real qué departamentos están atascados.</p>
                             `}
