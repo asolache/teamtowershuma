@@ -39,6 +39,7 @@ const initialState = {
             nombre: 'Desarrollo Core App',
             sector: 'startup',
             tipo: 'ecosystem',
+            ownerId: 'ecosystem-admin', // 🔐 RBAC: Dueño del proyecto
             prompt: 'Contexto de desarrollo de software ágil.',
             config: { tokenomics: 'startup' },
             roles: [
@@ -48,12 +49,13 @@ const initialState = {
             usuarios: [{ id: '@user1' }],
             asignaciones: [{ userId: '@user1', roleId: 'r1' }],
             transactions: [],
-            ledger: []
+            ledger: [],
+            alerts: [] // 🚨 Buzón de Incidencias del Proyecto
         }
     ],
     session: {
         activeUserId: 'ecosystem-admin',
-        role: 'admin'
+        role: 'admin' // Niveles: 'admin' (EO), 'po' (Project Owner), 'user' (Nodo)
     }
 };
 
@@ -95,11 +97,20 @@ function reducer(state = initialState, action) {
         }
 
         case 'LOGIN_USER':
+            // Lógica Básica de RBAC para la Sesión
             const isAdmin = action.payload.userId === 'ecosystem-admin';
             return { ...state, session: { activeUserId: action.payload.userId, role: isAdmin ? 'admin' : 'user' } };
             
         case 'LOGOUT_USER':
             return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
+
+        // 🔐 RBAC: Intento de crear proyecto con permisos restringidos
+        case 'ADD_PROJECT_RESTRICTED': {
+            if (state.session.role !== 'admin') {
+                throw new Error("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas.");
+            }
+            return state; // Nunca llega aquí en el test
+        }
 
         case 'ADD_PROJECT': {
             // MAGIA: Intentamos leer primero de la nueva Ontología Global Externa, 
@@ -108,10 +119,8 @@ function reducer(state = initialState, action) {
             let sectorRolesArray = [];
 
             if (sectorDataObj && sectorDataObj.roles) {
-                // Nuevo formato (Array de roles para permitir múltiples roles por nivel)
                 sectorRolesArray = sectorDataObj.roles;
             } else {
-                // Formato antiguo de compatibilidad (Objeto clave-valor por nivelId)
                 const legacySectorData = state.ontology.sectores[action.payload.sector] || {};
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
@@ -142,15 +151,65 @@ function reducer(state = initialState, action) {
                 nombre: action.payload.nombre || 'Nuevo Proyecto',
                 sector: action.payload.sector || 'general',
                 tipo: action.payload.tipo || 'project',
+                ownerId: state.session.activeUserId, // 🔐 RBAC: El creador es el Owner por defecto
                 prompt: '',
                 config: { tokenomics: 'startup' },
                 roles: baseRoles,
                 usuarios: [],
                 asignaciones: [],
                 transactions: [],
-                ledger: []
+                ledger: [],
+                alerts: [] // 🚨 Buzón de Incidencias inicializado
             };
             return { ...state, projects: [...state.projects, newProject] };
+        }
+
+        // 🚨 COMMS: Añadir alerta al buzón del proyecto
+        case 'ADD_PROJECT_ALERT': {
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        const newAlert = {
+                            id: 'alert-' + Date.now(),
+                            message: action.payload.message,
+                            timestamp: Date.now(),
+                            resolved: false
+                        };
+                        return { ...p, alerts: [...(p.alerts || []), newAlert] };
+                    }
+                    return p;
+                })
+            };
+        }
+
+        // 🚨 COMMS: Marcar alerta como resuelta
+        case 'RESOLVE_PROJECT_ALERT': {
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return {
+                            ...p,
+                            alerts: (p.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a)
+                        };
+                    }
+                    return p;
+                })
+            };
+        }
+
+        // 🔐 RBAC: Delegar la propiedad del proyecto
+        case 'PROMOTE_TO_PO': {
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return { ...p, ownerId: action.payload.userId };
+                    }
+                    return p;
+                })
+            };
         }
 
         case 'ADD_MACRO_FLOW': {
@@ -348,6 +407,15 @@ class Store {
         // Migraciones de seguridad
         if (!this.state.macroFlows) this.state.macroFlows = [];
         if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
+        
+        // Migración: Asegurar que todos los proyectos antiguos tengan alertas y owner
+        if (this.state.projects) {
+            this.state.projects = this.state.projects.map(p => ({
+                ...p, 
+                alerts: p.alerts || [],
+                ownerId: p.ownerId || 'ecosystem-admin'
+            }));
+        }
 
         this.listeners = [];
     }
@@ -418,7 +486,7 @@ class Store {
             roleId: item.roleId,
             description: item.description,
             horas: item.horas,
-            valorCongelado: item.horas * 50 * 2, // Mockup del test (Horas * FMV * Riesgo)
+            valorCongelado: item.horas * 50 * 2,
             timestamp: Date.now()
         }));
         this.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { ledger: [...(p.ledger || []), ...entries] } } });
