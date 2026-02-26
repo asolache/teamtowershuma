@@ -114,8 +114,18 @@ export const ProjectDashboardView = {
         let totalFrozen = 0;
         (project.ledger || []).forEach(l => totalFrozen += l.valorCongelado);
 
-        // Limpiar Topbar/Toolbar antigua
-        setTimeout(() => window.setNavbar ? window.setNavbar([], '', '') : null, 0);
+        // 🚀 SET NAVBAR GLOBAL (Breadcrumbs Izq, Acciones rápidas Der)
+        setTimeout(() => window.setNavbar(
+            [
+                { label: '🏠 Hub', hash: '#/' }, 
+                { label: project.nombre, hash: `#/project/${projectId}` },
+                { label: 'Dashboard PO' }
+            ], 
+            ``, 
+            `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Ver el Grafo" style="border-color: var(--accent-blue); color: var(--accent-blue);">🗺️ Mapa VNA</button>
+             <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
+             <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/edit'" title="Ajustes raíz" style="border-color: var(--accent-purple); color: var(--accent-purple);">⚙️ Ontología</button>`
+        ), 0);
 
         const tabStyle = (mode) => `
             padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${dashboardDisplayMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
@@ -128,33 +138,7 @@ export const ProjectDashboardView = {
             color: ${inboxFilterMode === filter ? '#fff' : 'var(--text-muted)'};
         `;
 
-        
-
         return `
-            <div style="background: var(--bg-surface); border-bottom: 1px solid var(--border-color); padding: 15px 30px; position: sticky; top: 0; z-index: 100;">
-                <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
-                    <div style="font-size: 0.95rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px;">
-                        <a href="#/" style="color: var(--accent-blue); text-decoration: none; font-weight: bold;">🏠 Hub</a> 
-                        <span>/</span> 
-                        <a href="#/project/${projectId}" style="color: var(--text-main); text-decoration: none;">${project.nombre}</a> 
-                        <span>/</span> 
-                        <span style="color: var(--text-heading); font-weight: bold;">Panel del Project Owner (PO)</span>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Añadir roles o flujos">
-                            🎭 Mapear Rol
-                        </button>
-                        <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Asignar humanos">
-                            👤 Vincular Nodo
-                        </button>
-                        <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/edit'" title="Ajustes raíz" style="border-color: var(--accent-purple); color: var(--accent-purple);">
-                            ⚙️ Ontología
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <div class="container fade-in" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
                 
                 <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Dashboard Sistémico</h1>
