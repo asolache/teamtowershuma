@@ -113,8 +113,24 @@ export const ProjectAccountingView = {
             const project = state.projects.find(p => p.id === projectId);
             if (!project) return `<div class="container" style="padding: 50px; text-align:center;"><h2>Red no encontrada</h2></div>`;
 
-            const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
-            if (session.role !== 'admin') return `<div class="container text-center" style="padding-top:10vh;"><h3>⛔ Acceso Denegado</h3><p>La Contabilidad de Valor es exclusiva del Owner.</p></div>`;
+            // 🔐 RBAC: Verificación de permisos de Contabilidad
+            const session = state.session || { activeUserId: 'unknown', role: 'user' };
+            const isEcosystemOwner = session.role === 'admin';
+            const isProjectOwner = project.ownerId === session.activeUserId;
+            
+            // Si no eres EO ni PO de esta red, fuera.
+            if (!isEcosystemOwner && !isProjectOwner) {
+                // Seteamos una navbar vacía para evitar que se quede pegada la anterior
+                setTimeout(() => window.setNavbar([{ label: '🏠 Hub', hash: '#/' }]), 0);
+                return `
+                    <div class="container fade-in" style="padding-top:15vh; text-align:center;">
+                        <div class="panel-surface" style="display:inline-block; border-top: 4px solid var(--accent-red); padding: 40px; border-radius: 12px;">
+                            <h2 style="color: var(--accent-red); margin-top: 0;">🔒 Acceso Denegado</h2>
+                            <p class="text-muted">El Libro Mayor y la Contabilidad (Cap Table) son información confidencial.<br>Solo el <b>Project Owner</b> de esta red o el <b>Ecosystem Owner</b> pueden acceder.</p>
+                            <button class="btn btn-outline" style="margin-top: 20px;" onclick="history.back()">Volver atrás</button>
+                        </div>
+                    </div>`;
+            }
 
             const roles = project.roles?.filter(r => !r.isArchived) || [];
             const ledger = project.ledger || [];
@@ -138,28 +154,30 @@ export const ProjectAccountingView = {
             const predefColors = ['var(--accent-blue)', 'var(--accent-purple)', 'var(--accent-green)', 'var(--accent-gold)', 'var(--accent-red)'];
             capTableArray.forEach((u, i) => { if(i < 5) u.color = predefColors[i]; });
 
-            // 🚀 SET NAVBAR GLOBAL (Breadcrumbs Izq, Acciones rápidas Der)
-            setTimeout(() => window.setNavbar(
-                [
-                    { label: '🏠 Hub', hash: '#/' }, 
-                    { label: project.nombre, hash: `#/project/${projectId}` },
-                    { label: 'Contabilidad de Valor' }
-                ], 
-                ``, 
-                `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Ver el Grafo" style="border-color: var(--accent-blue); color: var(--accent-blue);">🗺️ Mapa VNA</button>
-                 <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}'" title="Ir al Dashboard PO">📥 Dashboard PO</button>
-                 <span class="badge" style="background: rgba(163, 113, 247, 0.1); color: var(--accent-purple); border-color: var(--accent-purple); margin-left: 10px;">
-                     TOKENOMICS: ${project.config?.tokenomics?.toUpperCase() || 'STARTUP'}
-                 </span>`
-            ), 0);
+            // 🚀 SET NAVBAR GLOBAL LIMPIA (Inyecta solo en la sub-barra)
+            setTimeout(() => {
+                if(window.setNavbar) {
+                    window.setNavbar(
+                        [
+                            { label: `${state.config?.ecosystemName || 'Ecosistema'} > Contabilidad: ${project.nombre}` }
+                        ], 
+                        ``, 
+                        `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Ver el Grafo" style="border-color: var(--accent-blue); color: var(--accent-blue);">🗺️ Mapa VNA</button>
+                         <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}'" title="Ir al Dashboard PO">📥 Dashboard PO</button>
+                         <span class="badge" style="background: rgba(163, 113, 247, 0.1); color: var(--accent-purple); border-color: var(--accent-purple); margin-left: 10px;">
+                             TOKENOMICS: ${project.config?.tokenomics?.toUpperCase() || 'STARTUP'}
+                         </span>`
+                    );
+                    const backBtn = document.querySelector('.btn-back-nav');
+                    if(backBtn) backBtn.style.display = 'none';
+                }
+            }, 0);
 
             // ESTILOS DE PESTAÑAS (TABS)
             const tabStyle = (mode) => `
                 padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${accountingTabMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
                 color: ${accountingTabMode === mode ? 'var(--text-heading)' : 'var(--text-muted)'}; transition: 0.2s; background: transparent; border-top: none; border-left: none; border-right: none;
             `;
-
-            
 
             return `
                 <div class="container fade-in" style="max-width: 1200px; margin: 20px auto; padding: 0 20px;">
@@ -273,11 +291,8 @@ export const ProjectAccountingView = {
                             <div class="panel-surface" style="margin-bottom: 25px;">
                                 <h3 style="margin-top: 0; margin-bottom: 20px;">🛠️ Operaciones Ledger</h3>
                                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                                    <button id="btn-open-user" class="btn btn-outline" style="text-align: left; display: flex; align-items: center; gap: 10px;">
-                                        <span style="font-size: 1.2rem;">👤</span> Añadir Nuevo Usuario
-                                    </button>
                                     <button id="btn-open-role" class="btn btn-outline" style="text-align: left; display: flex; align-items: center; gap: 10px;">
-                                        <span style="font-size: 1.2rem;">🎭</span> Asignar Rol a Usuario
+                                        <span style="font-size: 1.2rem;">🎭</span> Asignar Rol a Nodo
                                     </button>
                                     <div style="height: 1px; background: var(--border-color); margin: 5px 0;"></div>
                                     <button id="btn-open-cash" class="btn btn-primary" style="text-align: left; display: flex; align-items: center; gap: 10px; background: var(--accent-green); color: #000; font-weight: bold;">
@@ -299,31 +314,10 @@ export const ProjectAccountingView = {
                     </div>
                 </div>
 
-                <div id="modal-user" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
-                    <div class="panel-surface fade-in" style="width: 400px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-blue);">
-                        <h3 style="margin-top:0; color: var(--text-heading);">👤 Añadir Usuario</h3>
-                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Registra a un humano en la base de datos global de la red.</p>
-                        
-                        <label class="form-label">Identificador Único (@id)</label>
-                        <input type="text" id="new-user-id" class="form-control" placeholder="Ej: @laura">
-                        
-                        <label class="form-label">Nombre Completo</label>
-                        <input type="text" id="new-user-name" class="form-control" placeholder="Ej: Laura García">
-                        
-                        <label class="form-label">Wallet / Email (Opcional)</label>
-                        <input type="text" id="new-user-wallet" class="form-control" placeholder="0x... o email@...">
-                        
-                        <div style="display:flex; gap:10px; margin-top: 20px;">
-                            <button id="btn-close-user" class="btn btn-outline" style="flex:1;">Cancelar</button>
-                            <button id="btn-create-user" data-pid="${projectId}" class="btn btn-primary" style="flex:1; background:var(--accent-blue); border:none;">Registrar</button>
-                        </div>
-                    </div>
-                </div>
-
                 <div id="modal-role" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
                     <div class="panel-surface fade-in" style="width: 400px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-purple);">
                         <h3 style="margin-top:0; color: var(--text-heading);">🎭 Asignar Rol a Usuario</h3>
-                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Vincula un usuario existente con un rol del Mapa de Valor.</p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Vincula un usuario existente con un rol del Mapa de Valor de esta red.</p>
                         
                         <label class="form-label">Selecciona el Nodo (Usuario)</label>
                         <select id="assign-user" class="form-control">
@@ -347,7 +341,7 @@ export const ProjectAccountingView = {
                 <div id="modal-cash" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
                     <div class="panel-surface fade-in" style="width: 450px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-green);">
                         <h3 style="margin-top:0; color: var(--text-heading);">💰 Aportar Valor Extra</h3>
-                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Inyecta Slices manualmente por aportaciones de capital o recursos que no sean Proof of Work de tiempo.</p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Inyecta Slices manualmente por aportaciones de capital o recursos.</p>
                         
                         <label class="form-label">Nodo Inversor / Aportador</label>
                         <select id="cash-user" class="form-control">
