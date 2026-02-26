@@ -145,7 +145,7 @@ export const DashboardView = {
         const macroFlows = state.macroFlows || [];
         const sectores = state.ontology?.sectores || {};
 
-        // 🚀 SET NAVBAR GLOBAL (Breadcrumbs a la izquierda, Acciones a la derecha)
+        // 🚀 SET NAVBAR GLOBAL
         setTimeout(() => window.setNavbar(
             [{ label: '🏠 Hub' }], 
             ``, 
@@ -185,8 +185,6 @@ export const DashboardView = {
                 </div>`;
         }
 
-        
-
         return `
             ${modalMacroHTML}
 
@@ -218,8 +216,8 @@ export const DashboardView = {
                             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Dibuja cómo las distintas áreas de tu empresa o DAO se nutren de valor entre sí antes de hacer <i>zoom in</i> en sus propios roles.</p>
                             
                             <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-                                <button class="btn btn-outline text-small btn-export-svg" style="border-color: var(--accent-gold); color: var(--accent-gold);">
-                                    📸 Exportar Mapa (SVG)
+                                <button class="btn btn-outline text-small btn-export-svg" style="border-color: var(--accent-gold); color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 1.2rem;">📸</span> Exportar Mapa (SVG)
                                 </button>
                             </div>
 
