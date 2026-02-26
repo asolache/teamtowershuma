@@ -173,13 +173,13 @@ export const UserDashboardView = {
                 </div>`;
         }
 
-        // 🚀 BREADCRUMBS GLOBALES: Ahora sí incluye la jerarquía visual perfecta
+        // 🚀 BREADCRUMBS GLOBALES INYECTADOS EN LA TOOLBAR INFERIOR
         setTimeout(() => {
             if (window.setNavbar) {
                 window.setNavbar(
                     [
                         { label: state.config?.ecosystemName || 'Ecosistema', hash: '#/' },
-                        { label: 'Bandeja de Nodo' }
+                        { label: 'Tu Dashboard' }
                     ], 
                     '', 
                     ''
