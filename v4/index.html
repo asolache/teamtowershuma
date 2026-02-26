@@ -609,6 +609,52 @@
             router();
             updateIdentityBadge(); // Forzamos pintado inicial
         }
+
+        function router() {
+            const hash = window.location.hash || '#/';
+            const parts = hash.split('/');
+            const pId = parts[2];
+            const action = parts[3];
+
+            document.getElementById('app').classList.remove('fade-in');
+            void document.getElementById('app').offsetWidth; 
+            
+            // 🔴 ESTA ES LA FUNCIÓN QUE QUITA EL "CARGANDO"
+            updateIdentityBadge();
+
+            try {
+                if (hash === '#/' || hash === '' || hash === '#') app.innerHTML = DashboardView.render();
+                else if (hash === '#/settings') app.innerHTML = SettingsView.render();
+                else if (hash.startsWith('#/user-dashboard')) app.innerHTML = UserDashboardView.render();
+                else if (hash.startsWith('#/project/')) {
+                    if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
+                    else if (action === 'accounting') app.innerHTML = ProjectAccountingView.render(pId);
+                    else if (action === 'map') app.innerHTML = ProjectView.render(pId);
+                    else app.innerHTML = ProjectDashboardView.render(pId);
+                } 
+                else app.innerHTML = `<div class="container text-center"><h1>404</h1></div>`;
+            } catch (e) {
+                console.error("SOS Router Error:", e);
+                app.innerHTML = `<div class="container"><h3>Error</h3><p>${e.message}</p></div>`;
+            }
+            document.getElementById('app').classList.add('fade-in');
+        }
+
+        window.addEventListener('hashchange', router);
+        
+        // 🔴 ESTO HACE QUE SE ACTUALICE AL CAMBIAR DE USUARIO O TEMA
+        store.subscribe(() => {
+            updateIdentityBadge();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
+        });
+
+        // 🔴 ESTO FUERZA LA CARGA AL ENTRAR A LA WEB
+        if (store.getState()) {
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); 
+            updateIdentityBadge(); 
+            router();
+        }
+        
     </script>
 </body>
 </html>
