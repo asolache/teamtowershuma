@@ -130,7 +130,7 @@ function calculateNetworkLayout(roles, transactions, width, height) {
     return nodes;
 }
 
-// 🎨 RENDERIZADO DEL GRAFO ORIGINAL (CON COLORES MEJORADOS DE SALUD)
+// 🎨 RENDERIZADO DEL GRAFO ORIGINAL (CON BUG DE TEXTO CORREGIDO)
 function generateSVGMap(project, isHealthMode) {
     const roles = project.roles.filter(r => !r.isArchived); const transactions = project.transactions || [];
     const state = store.getState(); const svgWidth = 1000; const svgHeight = 600;
@@ -153,11 +153,35 @@ function generateSVGMap(project, isHealthMode) {
         const nx = -dy / dist; const ny = dx / dist;  
         const curveStrength = 30 * (edgeCurveCounter[pairKey] % 2 === 0 ? 1 : -1) * Math.ceil(edgeCurveCounter[pairKey]/2);
         const cx = (from.x + to.x) / 2 + (nx * curveStrength); const cy = (from.y + to.y) / 2 + (ny * curveStrength);
+        
         const pathData = `M ${from.x} ${from.y} Q ${cx} ${cy}, ${to.x} ${to.y}`;
-        const pathId = `edge-${tx.hash}`; const markerId = `arrow-${tx.hash}`;
+        
+        // 🐛 BUGFIX: Crear un path invisible que SIEMPRE vaya de izquierda a derecha para el texto
+        let textPathData = pathData;
+        if (from.x > to.x) {
+            // Si la línea va hacia la izquierda, le damos la vuelta a las coordenadas del texto
+            textPathData = `M ${to.x} ${to.y} Q ${cx} ${cy}, ${from.x} ${from.y}`;
+        }
+
+        const pathId = `edge-${tx.hash}`; 
+        const textPathId = `textedge-${tx.hash}`; // ID para el path invisible
+        const markerId = `arrow-${tx.hash}`;
         const truncName = tx.entregable.length > 18 ? tx.entregable.substring(0, 16) + '..' : tx.entregable;
 
-        svgEdges += `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="28" refY="4" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/></marker></defs><path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">${animation}</path><text font-size="12" fill="var(--text-heading)" font-family="sans-serif" font-weight="bold" opacity="${opacity}"><textPath href="#${pathId}" startOffset="50%" text-anchor="middle" dominant-baseline="text-after-edge" style="transform:translateY(-5px);">${truncName}</textPath></text>`;
+        svgEdges += `
+        <defs>
+            <marker id="${markerId}" markerWidth="8" markerHeight="8" refX="28" refY="4" orient="auto-start-reverse">
+                <path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/>
+            </marker>
+            <path id="${textPathId}" d="${textPathData}" fill="none" stroke="none" />
+        </defs>
+        <path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">${animation}</path>
+        
+        <text font-size="11" fill="var(--text-main)" font-family="sans-serif" font-weight="bold" opacity="${opacity}">
+            <textPath href="#${textPathId}" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                <tspan dy="-8">${truncName}</tspan>
+            </textPath>
+        </text>`;
     });
 
     roles.forEach((role) => {
@@ -173,17 +197,6 @@ function generateSVGMap(project, isHealthMode) {
 
     return `<div style="width:100%; overflow-x:auto; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; margin: 0 auto; overflow:visible;">${svgEdges}${svgNodes}</svg></div>`;
 }
-
-export const ProjectView = {
-    render: (projectId) => {
-        const state = store.getState();
-        const project = state.projects.find(p => p.id === projectId);
-        if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
-
-        const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
-        const isAdmin = session.role === 'admin';
-        const roles = project.roles.filter(r => !r.isArchived);
-        const transactions = project.transactions || [];
 
         // Forzar modo visual-theory si el usuario no es admin (por seguridad)
         if (!isAdmin && mapDisplayMode === 'agile-creator') {
