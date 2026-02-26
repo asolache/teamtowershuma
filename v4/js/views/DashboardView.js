@@ -5,9 +5,27 @@ let ecoTabMode = 'macro-map'; // macro-map, directory, health
 let macroOriginId = null;
 let macroDestId = null;
 let showMacroModal = false;
+let currentMacroZoom = 1; // 🔍 Estado Global del Zoom para el Ecosistema
 
 document.addEventListener('click', (e) => {
     
+    // --- CONTROLES DE ZOOM DEL MAPA SVG ---
+    if (e.target.id === 'btn-macro-zoom-in') {
+        currentMacroZoom += 0.2;
+        const wrapper = document.getElementById('svg-macro-zoom-wrapper');
+        if (wrapper) wrapper.style.transform = `scale(${currentMacroZoom})`;
+    }
+    if (e.target.id === 'btn-macro-zoom-out') {
+        currentMacroZoom = Math.max(0.4, currentMacroZoom - 0.2);
+        const wrapper = document.getElementById('svg-macro-zoom-wrapper');
+        if (wrapper) wrapper.style.transform = `scale(${currentMacroZoom})`;
+    }
+    if (e.target.id === 'btn-macro-zoom-fit') {
+        currentMacroZoom = 1;
+        const wrapper = document.getElementById('svg-macro-zoom-wrapper');
+        if (wrapper) wrapper.style.transform = `scale(${currentMacroZoom})`;
+    }
+
     // --- TABS ---
     if (e.target.classList.contains('eco-tab-btn')) {
         ecoTabMode = e.target.getAttribute('data-mode');
@@ -64,13 +82,24 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 🧠 FÍSICAS DEL MACRO-MAPA
+// 🧠 FÍSICAS DEL MACRO-MAPA (Refactorizado con Gravedad Central)
 function calculateMacroLayout(projects, macroFlows, width, height) {
     const nodes = {}; const radius = Math.min(width, height) / 3; const centerX = width / 2; const centerY = height / 2;
-    projects.forEach((p, i) => { const angle = (i / projects.length) * 2 * Math.PI; nodes[p.id] = { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle), vx: 0, vy: 0 }; });
-    const iterations = 120; const k = Math.sqrt((width * height) / (projects.length || 1)); 
+    
+    projects.forEach((p, i) => { 
+        const angle = (i / projects.length) * 2 * Math.PI; 
+        nodes[p.id] = { 
+            x: centerX + radius * Math.cos(angle) + (Math.random() * 20 - 10), 
+            y: centerY + radius * Math.sin(angle) + (Math.random() * 20 - 10), 
+            vx: 0, vy: 0 
+        }; 
+    });
+    
+    const iterations = 150; 
+    const k = Math.sqrt((width * height) / (projects.length || 1)); 
     
     for (let iter = 0; iter < iterations; iter++) {
+        // Repulsión
         for (let i = 0; i < projects.length; i++) {
             for (let j = 0; j < projects.length; j++) {
                 if (i !== j) {
@@ -80,6 +109,7 @@ function calculateMacroLayout(projects, macroFlows, width, height) {
                 }
             }
         }
+        // Atracción
         macroFlows.forEach(tx => {
             if (!nodes[tx.from] || !nodes[tx.to]) return;
             const n1 = nodes[tx.from]; const n2 = nodes[tx.to];
@@ -87,27 +117,48 @@ function calculateMacroLayout(projects, macroFlows, width, height) {
             const force = (distance * distance) / k; const fx = (dx / distance) * force * 0.05; const fy = (dy / distance) * force * 0.05;
             n1.vx -= fx; n1.vy -= fy; n2.vx += fx; n2.vy += fy;
         });
+        // Gravedad y Límites
         projects.forEach(p => {
-            const n = nodes[p.id]; n.x += n.vx; n.y += n.vy; n.vx *= 0.7; n.vy *= 0.7;
-            n.x = Math.max(80, Math.min(width - 80, n.x)); n.y = Math.max(80, Math.min(height - 80, n.y));
+            const n = nodes[p.id]; 
+            n.vx += (centerX - n.x) * 0.02; // Gravedad
+            n.vy += (centerY - n.y) * 0.02;
+
+            n.x += n.vx; n.y += n.vy; 
+            n.vx *= 0.7; n.vy *= 0.7;
+            n.x = Math.max(80, Math.min(width - 80, n.x)); 
+            n.y = Math.max(80, Math.min(height - 80, n.y));
         });
     }
     return nodes;
 }
 
-function generateMacroSVG(projects, macroFlows, originId) {
+// 🎨 RENDERIZADO DEL MACRO-GRAFO CON ZOOM Y TERMOGRAFÍA
+function generateMacroSVG(projects, macroFlows, originId, isHealthMode) {
     if(projects.length === 0) return `<div class="text-center text-muted" style="padding:40px;">El ecosistema está vacío. Crea tu primera Área.</div>`;
     
-    const svgWidth = 1000; const svgHeight = 500;
+    const svgWidth = 1000; const svgHeight = 600;
     const nodeCoords = calculateMacroLayout(projects, macroFlows, svgWidth, svgHeight);
     let svgNodes = ''; let svgEdges = ''; let edgeCurveCounter = {}; 
 
     macroFlows.forEach((tx) => {
         const from = nodeCoords[tx.from]; const to = nodeCoords[tx.to]; if (!from || !to) return;
         const isTangible = tx.tipo !== 'intangible';
-        const strokeDash = isTangible ? "" : "stroke-dasharray='8,8'"; 
-        const strokeColor = "var(--accent-purple)"; 
         
+        let strokeDash = isTangible ? "" : "stroke-dasharray='8,8'"; 
+        let strokeColor = "var(--accent-purple)"; 
+        let opacity = "0.7"; let strokeWidth = "3"; let animation = "";
+
+        // LÓGICA DE TERMOGRAFÍA PARA MACRO-MAPA
+        if (isHealthMode) {
+            // Buscamos si el proyecto de origen tiene cuellos de botella
+            const pFrom = projects.find(p => p.id === tx.from);
+            const atascos = pFrom?.transactions?.filter(t => t.status === 'reported' || t.status === 'pinged').length || 0;
+            
+            if (atascos > 3) { strokeColor = "var(--accent-red)"; opacity = "1"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.3s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
+            else if (atascos > 0) { strokeColor = "var(--accent-gold)"; opacity = "0.9"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.8s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
+            else { strokeColor = "var(--accent-green)"; opacity = "0.6"; }
+        }
+
         const pairKey = [tx.from, tx.to].sort().join('-'); edgeCurveCounter[pairKey] = (edgeCurveCounter[pairKey] || 0) + 1;
         const dx = to.x - from.x; const dy = to.y - from.y; const dist = Math.sqrt(dx*dx + dy*dy);
         const nx = -dy / dist; const ny = dx / dist;  
@@ -120,7 +171,7 @@ function generateMacroSVG(projects, macroFlows, originId) {
 
         const pathId = `medge-${tx.id}`; const textPathId = `mtextedge-${tx.id}`; const markerId = `marrow-${tx.id}`;
 
-        svgEdges += `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="35" refY="4" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="0.6"/></marker><path id="${textPathId}" d="${textPathData}" fill="none" stroke="none" /></defs><path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="3" ${strokeDash} opacity="0.6" marker-end="url(#${markerId})"></path><text font-size="12" fill="var(--text-main)" font-family="sans-serif" font-weight="bold" opacity="0.9"><textPath href="#${textPathId}" startOffset="50%" text-anchor="middle" dominant-baseline="central"><tspan dy="-10">${tx.entregable}</tspan></textPath></text>`;
+        svgEdges += `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="35" refY="4" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/></marker><path id="${textPathId}" d="${textPathData}" fill="none" stroke="none" /></defs><path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">${animation}</path><text font-size="12" fill="var(--text-main)" font-family="sans-serif" font-weight="bold" opacity="0.9"><textPath href="#${textPathId}" startOffset="50%" text-anchor="middle" dominant-baseline="central"><tspan dy="-10">${tx.entregable}</tspan></textPath></text>`;
     });
 
     projects.forEach((p) => {
@@ -129,13 +180,39 @@ function generateMacroSVG(projects, macroFlows, originId) {
         const borderColor = isSelected ? 'var(--accent-gold)' : 'var(--border-color)';
         const bgColor = isSelected ? 'rgba(210, 153, 34, 0.1)' : 'var(--bg-panel)';
         
-        svgNodes += `<foreignObject x="${coords.x - 65}" y="${coords.y - 45}" width="130" height="90" style="overflow:visible;"><div class="macro-node" data-id="${p.id}" xmlns="http://www.w3.org/1999/xhtml" style="background:${bgColor}; border:2px solid ${borderColor}; border-radius:12px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='${borderColor}'"><div style="font-size:1.2rem; margin-bottom:2px;">🏢</div><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.2;">${p.nombre}</div><div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px; font-family:monospace;">${GLOBAL_ONTOLOGY[p.sector]?.nombre || p.sector}</div></div></foreignObject>`;
+        // Indicador de atascos en el nodo para el modo salud
+        let nodeAlert = '';
+        if (isHealthMode) {
+            const atascos = p.transactions?.filter(t => t.status === 'reported' || t.status === 'pinged').length || 0;
+            if (atascos > 0) {
+                const color = atascos > 3 ? 'var(--accent-red)' : 'var(--accent-gold)';
+                nodeAlert = `<div style="position:absolute; top:-10px; right:-10px; background:${color}; color:#fff; border-radius:50%; width:24px; height:24px; font-size:0.7rem; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px ${color};">${atascos}</div>`;
+            }
+        }
+        
+        svgNodes += `<foreignObject x="${coords.x - 65}" y="${coords.y - 45}" width="130" height="90" style="overflow:visible;"><div class="macro-node" data-id="${p.id}" xmlns="http://www.w3.org/1999/xhtml" style="background:${bgColor}; border:2px solid ${borderColor}; border-radius:12px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s; position:relative;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='${borderColor}'">${nodeAlert}<div style="font-size:1.2rem; margin-bottom:2px;">🏢</div><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.2;">${p.nombre}</div><div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px; font-family:monospace;">${GLOBAL_ONTOLOGY[p.sector]?.nombre || p.sector}</div></div></foreignObject>`;
     });
 
-    return `<div style="width:100%; overflow-x:auto; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; margin: 0 auto; overflow:visible;">${svgEdges}${svgNodes}</svg></div>`;
+    // CONTROLES DE ZOOM INTEGRADOS
+    const zoomControls = `
+        <div style="position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 8px; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+            <button id="btn-macro-zoom-in" title="Acercar (+)" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">➕</button>
+            <button id="btn-macro-zoom-out" title="Alejar (-)" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">➖</button>
+            <button id="btn-macro-zoom-fit" title="Ajustar a Pantalla" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">⛶</button>
+        </div>
+    `;
+
+    return `<div style="width:100%; height:600px; overflow:hidden; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px; position:relative;">
+                ${zoomControls}
+                <div id="svg-macro-zoom-wrapper" style="width:100%; height:100%; transform: scale(${currentMacroZoom}); transform-origin: center center; transition: transform 0.2s ease-out; display: flex; align-items: center; justify-content: center;">
+                    <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; overflow:visible;">
+                        ${svgEdges}${svgNodes}
+                    </svg>
+                </div>
+            </div>`;
 }
 
-// 🩺 MÓDULO DE DIAGNÓSTICO (Resilience Bar Adaptada)
+// 🩺 MÓDULO DE DIAGNÓSTICO
 function renderEcosystemHealth(projects) {
     if (projects.length === 0) return '<div class="text-muted text-center panel-surface" style="padding:40px;">No hay redes para analizar.</div>';
 
@@ -242,6 +319,8 @@ export const DashboardView = {
                 </div>`;
         }
 
+        
+
         return `
             ${modalMacroHTML}
 
@@ -256,14 +335,15 @@ export const DashboardView = {
 
                 <div style="display:flex; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; gap: 10px; overflow-x: auto;">
                     <button class="eco-tab-btn" data-mode="macro-map" style="${tabStyle('macro-map')}">🌍 Macro Mapa (Interdepartamental)</button>
+                    <button class="eco-tab-btn" data-mode="health" style="${tabStyle('health')}">❤️ Salud Termográfica</button>
                     <button class="eco-tab-btn" data-mode="directory" style="${tabStyle('directory')}">🏢 Directorio de Redes Activas</button>
-                    <button class="eco-tab-btn" data-mode="health" style="${tabStyle('health')}">📈 Salud del Ecosistema</button>
                 </div>
 
                 <div class="grid-layout" style="grid-template-columns: 2fr 1fr; gap: 30px;">
                     
                     <main>
-                        ${ecoTabMode === 'macro-map' ? `
+                        ${ecoTabMode === 'macro-map' || ecoTabMode === 'health' ? `
+                            ${ecoTabMode === 'macro-map' ? `
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                 <h3 style="margin:0;">Diseñador de Ecosistema</h3>
                                 <span class="badge" style="background: rgba(210,153,34,0.1); color: var(--accent-gold); padding: 6px 12px; font-size: 0.85rem;">
@@ -271,6 +351,12 @@ export const DashboardView = {
                                 </span>
                             </div>
                             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Dibuja cómo las distintas áreas de tu empresa o DAO se nutren de valor entre sí antes de hacer <i>zoom in</i> en sus propios roles.</p>
+                            ` : `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h3 style="margin:0; color:var(--accent-red);">❤️ Diagnóstico en Vivo</h3>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Visualiza en tiempo real qué departamentos están atascados.</p>
+                            `}
                             
                             <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
                                 <button class="btn btn-outline text-small btn-export-svg" style="border-color: var(--accent-gold); color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">
@@ -278,7 +364,9 @@ export const DashboardView = {
                                 </button>
                             </div>
 
-                            ${generateMacroSVG(projects, macroFlows, macroOriginId)}
+                            ${generateMacroSVG(projects, macroFlows, macroOriginId, ecoTabMode === 'health')}
+                            
+                            ${ecoTabMode === 'health' ? renderEcosystemHealth(projects) : ''}
                         ` : ''}
 
                         ${ecoTabMode === 'directory' ? `
@@ -301,8 +389,6 @@ export const DashboardView = {
                                 </div>
                             `}
                         ` : ''}
-
-                        ${ecoTabMode === 'health' ? renderEcosystemHealth(projects) : ''}
                     </main>
 
                     <aside>
