@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers SOS v5.7 | Ecosistema</title>
+    <title>TeamTowers SOS v5.7 | Red de Valor</title>
     <style>
+        /* --- VARIABLES GLOBALES --- */
         :root {
             --bg-base: #010409; --bg-surface: #0d1117; --bg-panel: #161b22;
             --border-color: #30363d; --text-main: #c9d1d9; --text-muted: #8b949e;
@@ -12,6 +13,7 @@
             --accent-purple: #a371f7; --accent-red: #f85149; --accent-gold: #d29922; 
             --radius-md: 8px; --radius-lg: 12px;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --transition-speed: 0.2s;
         }
 
         [data-theme="light"] {
@@ -30,15 +32,14 @@
         
         #app { min-height: calc(100vh - 110px); }
 
-        /* 🚀 TOPBAR (Identidad y Migas de Pan) */
+        /* 🚀 TOPBAR Y TOOLBAR */
         .topbar {
             position: fixed; top: 0; left: 0; right: 0; height: 60px;
             background: rgba(13, 17, 23, 0.95); border-bottom: 1px solid var(--border-color);
             z-index: 2000; display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px;
+            padding: 0 20px; backdrop-filter: blur(10px);
         }
 
-        /* 🚀 TOOLBAR SECUNDARIA (Botones de Acción) */
         .toolbar {
             position: fixed; top: 60px; left: 0; right: 0; height: 50px;
             background: var(--bg-surface); border-bottom: 1px solid var(--border-color);
@@ -62,11 +63,95 @@
         .panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
         .panel-surface { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
 
-        .btn { display: inline-block; padding: 8px 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-md); border: 1px solid transparent; transition: 0.2s; font-family: inherit; }
+        /* --- BOTONES --- */
+        .btn { display: inline-block; padding: 8px 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-md); border: 1px solid transparent; transition: all var(--transition-speed) ease; font-family: inherit; text-decoration: none; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn:active { transform: translateY(1px); }
         .btn-primary { background-color: var(--accent-green); color: #ffffff; }
         .btn-outline { background-color: transparent; color: var(--accent-blue); border-color: var(--border-color); }
+        .btn-outline:hover { border-color: var(--accent-blue); }
         .btn-secondary { background-color: var(--bg-panel); color: var(--text-main); border-color: var(--border-color); }
+        .btn-secondary:hover { border-color: var(--text-muted); }
         .btn-block { display: block; width: 100%; text-align: center; }
+
+        /* ========================================================= */
+        /* 🎨 SISTEMA GLOBAL DE FORMULARIOS ESTANDARIZADOS          */
+        /* ========================================================= */
+        
+        .form-label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+        }
+
+        .form-control { 
+            width: 100%; 
+            padding: 10px 14px; 
+            font-size: 0.95rem; 
+            color: var(--text-heading); 
+            background-color: var(--bg-base); /* Fondo hundido para contraste */
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); 
+            margin-bottom: 16px; 
+            font-family: inherit;
+            transition: all var(--transition-speed) ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Sombra interior */
+        }
+
+        /* Hover sutil */
+        .form-control:hover {
+            border-color: #484f58;
+        }
+
+        /* Estado activo / Foco (El brillo) */
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2);
+            background-color: #05080f;
+        }
+
+        .form-control::placeholder {
+            color: #484f58;
+            opacity: 1;
+        }
+
+        /* 🚀 MAGIA PARA LOS DESPLEGABLES (<select>) */
+        select.form-control {
+            appearance: none; /* Quita la flecha fea de Windows/Mac */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            /* Inyectamos nuestra propia flecha SVG a juego con el diseño */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238b949e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        /* Cambiar color de la flecha al hacer focus */
+        select.form-control:focus {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2358a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+        }
+
+        /* Opciones del select en modo oscuro */
+        select.form-control option {
+            background-color: var(--bg-panel);
+            color: var(--text-heading);
+            padding: 10px;
+        }
+
+        /* 🚀 MAGIA PARA CAJAS DE TEXTO (<textarea>) */
+        textarea.form-control {
+            resize: vertical; /* Solo se puede estirar hacia abajo */
+            min-height: 80px;
+            line-height: 1.5;
+        }
+
+        /* ========================================================= */
 
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
@@ -78,137 +163,13 @@
     <nav class="topbar">
         <div style="display: flex; align-items: center; gap: 15px;">
             <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">TT</div>
-            <div id="navbar-breadcrumbs" class="breadcrumb" style="font-size: 1rem; display: flex; align-items: center;">
+            <div id="navbar-breadcrumbs" class="breadcrumb" style="font-size: 0.95rem; display: flex; align-items: center;">
                 </div>
         </div>
         
         <div class="dropdown" style="position: relative;">
-            <button id="btn-user-menu" class="btn btn-secondary" style="display:flex; gap:10px; align-items:center; border-radius: 20px;">
+            <button id="btn-user-menu" class="btn btn-secondary" style="display:flex; gap:10px; align-items:center; border-radius: 20px; padding: 6px 14px;">
                 <span id="navbar-identity">Cargando...</span> <span style="font-size: 0.6rem;">▼</span>
             </button>
             <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
-                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Usuario</a>
-                <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub de Ecosistemas</a>
-                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración Global</a>
-            </div>
-        </div>
-    </nav>
-
-    <div id="app-toolbar" class="toolbar" style="display: none;">
-        <div id="toolbar-left" style="display:flex; gap:10px; align-items: center;"></div>
-        <div id="toolbar-right" style="display:flex; gap:10px; align-items: center;"></div>
-    </div>
-
-    <div id="app"></div>
-
-    <script type="module">
-        import { store } from './js/core/store.js';
-        import { DashboardView } from './js/views/DashboardView.js';
-        import { ProjectDashboardView } from './js/views/ProjectDashboardView.js'; // NUEVA VISTA
-        import { ProjectView } from './js/views/ProjectView.js';
-        import { ProjectEditView } from './js/views/ProjectEditView.js';
-        import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
-        import { UserDashboardView } from './js/views/UserDashboardView.js';
-        import { SettingsView } from './js/views/SettingsView.js';
-
-        // 🧠 API GLOBAL DE NAVEGACIÓN
-        window.setNavbar = (breadcrumbs = [], actionsLeft = '', actionsRight = '') => {
-            const bcContainer = document.getElementById('navbar-breadcrumbs');
-            const toolbar = document.getElementById('app-toolbar');
-            
-            // Renderizar Migas de pan
-            let bcHTML = '';
-            breadcrumbs.forEach((item, index) => {
-                if (index === breadcrumbs.length - 1) {
-                    bcHTML += `<span class="current">${item.label}</span>`;
-                } else {
-                    bcHTML += `<a href="${item.hash}">${item.label}</a> <span class="separator">/</span> `;
-                }
-            });
-            bcContainer.innerHTML = bcHTML;
-
-            // Renderizar Toolbar secundaria
-            if (actionsLeft || actionsRight) {
-                document.getElementById('toolbar-left').innerHTML = actionsLeft;
-                document.getElementById('toolbar-right').innerHTML = actionsRight;
-                toolbar.style.display = 'flex';
-                document.body.style.paddingTop = '110px';
-            } else {
-                toolbar.style.display = 'none';
-                document.body.style.paddingTop = '60px';
-            }
-        };
-
-        // IDENTIDAD
-        function updateIdentityBadge() {
-            const state = store.getState();
-            const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
-            const idBadge = document.getElementById('navbar-identity');
-            if (session.role === 'admin') idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">👑 Ecosystem Owner</span>`;
-            else {
-                const user = state.globalUsers.find(u => u.id === session.activeUserId);
-                idBadge.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold;">👤 ${user ? user.name : session.activeUserId}</span>`;
-            }
-        }
-
-        // EVENTOS GLOBALES
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('dropdown-menu');
-            if (e.target.closest('#btn-user-menu')) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            else if(dropdown) dropdown.style.display = 'none';
-
-            if (e.target.id === 'menu-switch-role') {
-                e.preventDefault();
-                const state = store.getState();
-                if ((state.session?.role || 'admin') === 'user') {
-                    store.dispatch({ type: 'LOGOUT_USER' }); window.location.hash = '#/';
-                } else {
-                    const usersList = state.globalUsers.map(u => u.id).join(', ');
-                    const id = prompt(`Simulador de Nodos:\nIntroduce el @id de un usuario.\nUsuarios: ${usersList || 'Ninguno'}`);
-                    if (id) {
-                        store.dispatch({ type: 'LOGIN_USER', payload: { userId: id.startsWith('@') ? id : '@'+id } });
-                        window.location.hash = `#/user-dashboard`;
-                    }
-                }
-            }
-        });
-
-        // ENRUTADOR
-        function router() {
-            const hash = window.location.hash || '#/';
-            const parts = hash.split('/');
-            const pId = parts[2];
-            const action = parts[3];
-
-            document.getElementById('app').classList.remove('fade-in');
-            void document.getElementById('app').offsetWidth; 
-            updateIdentityBadge();
-
-            try {
-                if (hash === '#/' || hash === '' || hash === '#') app.innerHTML = DashboardView.render();
-                else if (hash === '#/settings') app.innerHTML = SettingsView.render();
-                else if (hash.startsWith('#/user-dashboard')) app.innerHTML = UserDashboardView.render();
-                else if (hash.startsWith('#/project/')) {
-                    if (action === 'edit') app.innerHTML = ProjectEditView.render(pId);
-                    else if (action === 'accounting') app.innerHTML = ProjectAccountingView.render(pId);
-                    else if (action === 'map') app.innerHTML = ProjectView.render(pId);
-                    else app.innerHTML = ProjectDashboardView.render(pId); // 🚀 POR DEFECTO: EL NUEVO DASHBOARD PO
-                } 
-                else app.innerHTML = `<div class="container text-center"><h1>404</h1></div>`;
-            } catch (e) {
-                console.error("SOS Router Error:", e);
-                app.innerHTML = `<div class="container"><h3>Error</h3><p>${e.message}</p></div>`;
-            }
-            document.getElementById('app').classList.add('fade-in');
-        }
-
-        window.addEventListener('hashchange', router);
-        window.addEventListener('store-ready', () => {
-            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
-        });
-        if (store.getState()) {
-            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
-        }
-    </script>
-</body>
-</html>
+                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border
