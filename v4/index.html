@@ -110,7 +110,204 @@
     <nav class="topbar">
         <div style="display: flex; align-items: center; gap: 15px;">
             <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
-                <img src="logoteamtowers.png" alt="Logo" class="brand-logo" onerror="this.outerHTML='<div style=\\'width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;\\'>TT</div>'">
+                <img src="assets/img/logoteamtowers.png" alt="Logo" class="brand-logo" onerror="this.outerHTML='<div style=\\'width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;\\'>TT</div>'">
+                <span id="navbar-ecosystem-name" class="brand-name">TeamTowers</span>
+            </a>
+            
+            <div style="height: 20px; width: 1px; background: var(--border-color); margin: 0 5px;"></div>
+            
+            <div id="navbar-breadcrumbs" class="breadcrumb" style="font-size: 0.95rem; display: flex; align-items: center;">
+            </div>
+        </div>
+        
+        <div class="dropdown" style="position: relative;">
+            <button id="btn-user-menu" class="btn btn-secondary" style="display:flex; gap:10px; align-items:center; border-radius: 20px; padding: 6px 14px;">
+                <span id="navbar-identity">Cargando...</span> <span style="font-size: 0.6rem;">▼</span>
+            </button>
+            <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
+                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Nodo (Usuario)</a>
+                <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub de Redes de Valor</a>
+                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración Global</a>
+                <a href="landing.html" target="_blank" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🌐 Ver Landing Page</a>
+                <a href="backlog.html" target="_blank" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-bottom:1px solid var(--border-color);">📜 Libro Mayor (Backlog)</a>
+                <a href="#" id="btn-toggle-theme" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🌗 Alternar Modo Claro/Oscuro</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="app-toolbar" class="toolbar" style="display: none;">
+        <div id="toolbar-left" style="display:flex; gap:10px; align-items: center;"></div>
+        <div id="toolbar-right" style="display:flex; gap:10px; align-items: center;"></div>
+    </div>
+
+    <div id="app"></div>
+
+    <script type="module">
+        import { store } from './js/core/store.js';
+        import { DashboardView } from './js/views/DashboardView.js';
+        import { ProjectDashboardView } from './js/views/ProjectDashboardView.js';
+        import { ProjectView } from './js/views/ProjectView.js';
+        import { ProjectEditView } from './js/views/ProjectEditView.js';
+        import { ProjectAccountingView } from './js/views/ProjectAccountingView.js';
+        import { UserDashboardView } from './js/views/UserDashboardView.js';
+        import { SettingsView } from './js/views/SettingsView.js';
+
+        // 🧠 API GLOBAL DE NAVEGACIÓN
+        window.setNavbar = (breadcrumbs = [], actionsLeft = '', actionsRight = '') => {
+            const bcContainer = document.getElementById('navbar-breadcrumbs');
+            const toolbar = document.getElementById('app-toolbar');
+            
+            let bcHTML = '';
+            
+            if (breadcrumbs.length > 1) {
+                bcHTML += `<a href="javascript:history.back()" class="btn-back-nav" title="Volver Atrás">⬅️</a>`;
+            }
+
+            breadcrumbs.forEach((item, index) => {
+                if (index === breadcrumbs.length - 1) {
+                    bcHTML += `<span class="current">${item.label}</span>`;
+                } else {
+                    bcHTML += `<a href="${item.hash}">${item.label}</a> <span class="separator">/</span> `;
+                }
+            });
+            bcContainer.innerHTML = bcHTML;
+
+            if (actionsLeft || actionsRight) {
+                document.getElementById('toolbar-left').innerHTML = actionsLeft;
+                document.getElementById('toolbar-right').innerHTML = actionsRight;
+                toolbar.style.display = 'flex';
+                document.body.style.paddingTop = '110px';
+            } else {
+                toolbar.style.display = 'none';
+                document.body.style.paddingTop = '60px';
+            }
+        };
+
+        function updateIdentityBadge() {
+            const state = store.getState();
+            const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
+            
+            // Actualizar nombre de Ecosistema en la barra superior
+            const ecoNameEl = document.getElementById('navbar-ecosystem-name');
+            if(ecoNameEl) ecoNameEl.innerText = state.config?.ecosystemName || 'TeamTowers Network';
+
+            const idBadge = document.getElementById('navbar-identity');
+            if (session.role === 'admin') idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">👑 Ecosystem Owner</span>`;
+            else {
+                const user = state.globalUsers.find(u => u.id === session.activeUserId);
+                idBadge.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold;">👤 ${user ? user.name : session.activeUserId}</span>`;<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>TeamTowers SOS | Red de Valor</title>
+    <style>
+        /* --- VARIABLES GLOBALES --- */
+        :root {
+            --bg-base: #010409; --bg-surface: #0d1117; --bg-panel: #161b22;
+            --border-color: #30363d; --text-main: #c9d1d9; --text-muted: #8b949e;
+            --text-heading: #f0f6fc; --accent-blue: #58a6ff; --accent-green: #238636;
+            --accent-purple: #a371f7; --accent-red: #f85149; --accent-gold: #d29922; 
+            --radius-md: 8px; --radius-lg: 12px;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --transition-speed: 0.2s;
+        }
+
+        [data-theme="light"] {
+            --bg-base: #f6f8fa; --bg-surface: #ffffff; --bg-panel: #f3f4f6;
+            --border-color: #d0d7de; --text-main: #24292f; --text-muted: #57606a;
+            --text-heading: #0f1419; --accent-blue: #0969da; --accent-green: #1a7f37;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body { 
+            background-color: var(--bg-base); color: var(--text-main); 
+            margin: 0; font-family: var(--font-family); line-height: 1.5; 
+            padding-top: 110px;
+        }
+        
+        #app { min-height: calc(100vh - 110px); }
+
+        /* 🚀 TOPBAR Y TOOLBAR */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            background: rgba(13, 17, 23, 0.95); border-bottom: 1px solid var(--border-color);
+            z-index: 2000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; backdrop-filter: blur(10px);
+        }
+        
+        [data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.95); }
+
+        .toolbar {
+            position: fixed; top: 60px; left: 0; right: 0; height: 50px;
+            background: var(--bg-surface); border-bottom: 1px solid var(--border-color);
+            z-index: 1999; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: 0.2s; }
+        .breadcrumb a:hover { color: var(--accent-blue); }
+        .breadcrumb span.separator { margin: 0 8px; color: var(--border-color); }
+        .breadcrumb span.current { color: var(--text-heading); font-weight: bold; }
+
+        .btn-back-nav { 
+            margin-right: 12px; font-size: 1.2rem; text-decoration: none; 
+            transition: transform 0.2s; display: inline-block; 
+        }
+        .btn-back-nav:hover { transform: translateX(-3px); }
+
+        /* --- COMPONENTES BÁSICOS --- */
+        h1, h2, h3, h4 { color: var(--text-heading); margin-top: 0; margin-bottom: 0.5rem; }
+        p { margin-top: 0; margin-bottom: 1rem; }
+        .text-muted { color: var(--text-muted); }
+        .text-small { font-size: 0.85rem; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .grid-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
+        .panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
+        .panel-surface { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
+
+        /* --- BOTONES --- */
+        .btn { display: inline-block; padding: 8px 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-md); border: 1px solid transparent; transition: all var(--transition-speed) ease; font-family: inherit; text-decoration: none; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background-color: var(--accent-green); color: #ffffff; }
+        .btn-outline { background-color: transparent; color: var(--accent-blue); border-color: var(--border-color); }
+        .btn-outline:hover { border-color: var(--accent-blue); }
+        .btn-secondary { background-color: var(--bg-panel); color: var(--text-main); border-color: var(--border-color); }
+        .btn-secondary:hover { border-color: var(--text-muted); }
+        .btn-block { display: block; width: 100%; text-align: center; }
+
+        /* ========================================================= */
+        
+        .form-label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        .form-control { width: 100%; padding: 10px 14px; font-size: 0.95rem; color: var(--text-heading); background-color: var(--bg-base); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 16px; font-family: inherit; transition: all var(--transition-speed) ease; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+        .form-control:hover { border-color: #484f58; }
+        .form-control:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2); background-color: var(--bg-panel); }
+        .form-control::placeholder { color: #484f58; opacity: 1; }
+
+        select.form-control { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238b949e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 40px; cursor: pointer; }
+        select.form-control:focus { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2358a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'); }
+        select.form-control option { background-color: var(--bg-panel); color: var(--text-heading); padding: 10px; }
+        textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Estilos del Logo */
+        .brand-logo { height: 32px; width: auto; object-fit: contain; }
+        .brand-name { font-weight: bold; font-size: 1.1rem; color: var(--text-heading); letter-spacing: -0.5px; }
+    </style>
+</head>
+<body>
+    
+    <nav class="topbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                <img src="assets/img/logoteamtowers.png" alt="Logo" class="brand-logo" onerror="this.outerHTML='<div style=\\'width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;\\'>TT</div>'">
                 <span id="navbar-ecosystem-name" class="brand-name">TeamTowers</span>
             </a>
             
@@ -236,6 +433,33 @@
                 store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: nuevoTema } });
                 
                 if(dropdown) dropdown.style.display = 'none';
+            }
+
+            // --- 📸 SCRIPT EXPORTADOR DE MAPAS SVG ---
+            if (e.target.classList.contains('btn-export-svg') || e.target.closest('.btn-export-svg')) {
+                e.preventDefault();
+                
+                const svgElement = document.querySelector('svg');
+                if (!svgElement) return alert("⚠️ No hay ningún mapa visible en pantalla para exportar.");
+
+                const serializer = new XMLSerializer();
+                let svgString = serializer.serializeToString(svgElement);
+
+                if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+                    svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+                }
+
+                const blob = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `TeamTowers_ValueMap_${Date.now()}.svg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert("📸 ¡Mapa SVG exportado con éxito! Revisa tu carpeta de descargas.");
             }
         });
 
