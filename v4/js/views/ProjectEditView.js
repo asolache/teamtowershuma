@@ -1,78 +1,41 @@
 import { store } from '../core/store.js';
 
-// 🧠 HELPER IA: Constructor Inteligente de System Prompt (Global)
-const generateRichProjectPrompt = (project) => {
-    if (!project) return "";
-    
-    const activeRoles = (project.roles || []).filter(r => !r.isArchived).map(r => `@${r.name.replace(/\s+/g, '')}`).join(', ');
-    const txTags = (project.transactions || []).map(t => `#${t.entregable.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '')}`).join(' ');
-
-    let sectorBase = "Actúas como el orquestador central de un ecosistema de valor.";
-    if (project.sector === 'web3') sectorBase = "Eres una IA especializada en arquitecturas descentralizadas, tokenomics y desarrollo Web3. Tu objetivo es maximizar la resiliencia y el valor on-chain.";
-    if (project.sector === 'marketing') sectorBase = "Eres una IA experta en Growth, Branding y adquisición de usuarios. Tu objetivo es maximizar el ROAS y la percepción de marca.";
-    if (project.sector === 'saas') sectorBase = "Eres una IA orientada a producto digital, escalabilidad y métricas B2B (MRR, Churn).";
-    if (project.sector === 'gremial') sectorBase = "Eres una IA especializada en procesos industriales, cadenas de montaje y control de calidad físico.";
-
-    return `[CONTEXTO MAESTRO DEL ECOSISTEMA]
-Sector: ${project.sector.toUpperCase()}
-Misión Central: ${sectorBase}
-
-[TOPOLOGÍA DE LA RED DE VALOR]
-Nodos Activos (Menciónalos para enrutar tareas): ${activeRoles || 'Aún sin definir'}
-Vectores/Flujos Clave (Usa estos hashtags): ${txTags || 'Aún sin flujos definidos'}
-
-[MARCO DE REFERENCIA Y DIRECTRICES]
-1. Al recibir un requerimiento, etiqueta tu respuesta referenciando al nodo responsable (ej: "Derivando al @TechLead...").
-2. Etiqueta los entregables con su hashtag correspondiente.
-3. Evalúa siempre la viabilidad antes de sugerir ejecución directa.`;
-};
-
-// 🛡️ EVENTOS REACTIVOS
-document.addEventListener('change', (e) => {
-    if (e.target.classList.contains('edit-role-name')) {
-        const projectId = e.target.getAttribute('data-pid');
-        const roleId = e.target.getAttribute('data-rid');
-        store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId, roleId, field: 'name', value: e.target.value } });
-    }
-
-    if (e.target.classList.contains('edit-role-level')) {
-        const projectId = e.target.getAttribute('data-pid');
-        const roleId = e.target.getAttribute('data-rid');
-        store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId, roleId, field: 'levelId', value: e.target.value } });
-        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
-    }
-
-    if (e.target.classList.contains('role-prompt-input')) {
-        const projectId = e.target.getAttribute('data-pid');
-        const roleId = e.target.getAttribute('data-rid');
-        store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId, roleId, field: 'systemPrompt', value: e.target.value } });
-    }
-});
-
-// 🛡️ GESTIÓN DE ACCIONES
 document.addEventListener('click', (e) => {
-    if (e.target.closest('#btn-save-meta')) {
-        const btnSave = e.target.closest('#btn-save-meta');
-        const projectId = btnSave.getAttribute('data-pid');
-        store.dispatch({ 
-            type: 'UPDATE_PROJECT_INFO', 
-            payload: { 
-                projectId, 
-                nombre: document.getElementById('edit-name').value, 
-                sector: document.getElementById('edit-sector').value, 
-                description: document.getElementById('edit-desc').value 
-            } 
+    // 1. Añadir Rol a la Ontología
+    if (e.target.id === 'btn-add-role') {
+        const projectId = e.target.getAttribute('data-pid');
+        const name = document.getElementById('new-role-name').value.trim();
+        const levelId = document.getElementById('new-role-level').value;
+        const multiplier = document.getElementById('new-role-multiplier').value;
+
+        if (!name) return alert("⚠️ Ponle un nombre al rol.");
+
+        store.dispatch({
+            type: 'ADD_ROLE',
+            payload: { projectId, role: { id: 'role-' + Date.now(), name, levelId, multiplier: parseFloat(multiplier) || 1 } }
         });
         document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
     }
 
+    // 2. Archivar/Desarchivar Rol
     if (e.target.classList.contains('btn-archive-role')) {
-        const roleId = e.target.getAttribute('data-rid');
         const projectId = e.target.getAttribute('data-pid');
-        if(confirm('¿Desactivar este nodo del ecosistema?')) {
-            store.dispatch({ type: 'ARCHIVE_ROLE', payload: { projectId, roleId } });
-            document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
-        }
+        const roleId = e.target.getAttribute('data-role');
+        store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId, roleId } });
+        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
+    }
+
+    // 3. Guardar Modelo de Tokenomics (La Cosecha)
+    if (e.target.id === 'btn-save-tokenomics') {
+        const projectId = e.target.getAttribute('data-pid');
+        const preset = document.getElementById('tokenomics-preset').value;
+        
+        store.dispatch({
+            type: 'UPDATE_PROJECT_CONFIG',
+            payload: { projectId, config: { tokenomics: preset } }
+        });
+        alert("✅ Modelo de Tokenomics actualizado.");
+        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
     }
 });
 
@@ -80,106 +43,124 @@ export const ProjectEditView = {
     render: (projectId) => {
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
-        if (!project) return `<div class="container"><h2>Proyecto no encontrado</h2></div>`;
+        if (!project) return `<div class="container"><h2>Red no encontrada</h2></div>`;
+
+        // Seguridad: Solo el Admin (Owner) puede editar la configuración
+        const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
+        if (session.role !== 'admin') {
+            return `<div class="container text-center" style="padding-top:10vh;"><h3>⛔ Acceso Denegado</h3><p>La configuración del Tokenomics y la Ontología es exclusiva del Owner.</p></div>`;
+        }
+
+        const esProyecto = project.tipo !== 'ecosystem';
+        const tipoLabel = esProyecto ? '🎯 PROYECTO' : '🌍 ECOSISTEMA';
+        const tipoColor = esProyecto ? 'var(--accent-blue)' : 'var(--accent-gold)';
 
         const activeRoles = project.roles.filter(r => !r.isArchived);
+        const archivedRoles = project.roles.filter(r => r.isArchived);
         
-        const levelOptions = [
-            { id: "@anxaneta", label: "Strategy (@anxaneta)" },
-            { id: "@aixecador", label: "Creative/Coord (@aixecador)" },
-            { id: "@dosos", label: "Quality/Audit (@dosos)" },
-            { id: "@baixos", label: "Operational (@baixos)" },
-            { id: "@pinya", label: "Support/Base (@pinya)" }
-        ];
+        // Cargar el tokenomics actual o uno por defecto
+        const currentTokenomics = project.config?.tokenomics || 'startup';
 
-        const projectDescription = project.description || generateRichProjectPrompt(project);
+        // 🚀 BREADCRUMBS Y TOOLBAR GLOBAL
+        setTimeout(() => window.setNavbar(
+            [
+                { label: '🏠 Hub', hash: '#/' },
+                { label: project.nombre, hash: `#/project/${projectId}` },
+                { label: '⚙️ Configuración y Tokenomics' }
+            ], 
+            `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}'">Volver al Panel</button>`,
+            `<span class="badge" style="background: rgba(255,255,255,0.05); color: ${tipoColor}; border: 1px solid ${tipoColor};">${tipoLabel}</span>`
+        ), 0);
 
         return `
-            <div class="container">
-                <header class="header-main" style="flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 20px;">
-                    <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; width: 100%;">
-                        <a href="#/" style="color: var(--accent-blue); text-decoration: none;">Dashboard</a> <span style="opacity:0.5;">/</span>
-                        <b style="color: var(--text-heading);">${project.nombre}</b> <span style="opacity:0.5;">/</span>
-                        <a href="#/project/${projectId}" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='var(--text-heading)'" onmouseout="this.style.color='var(--text-muted)'">Maping</a> <span style="opacity:0.5;">/</span>
-                        <span style="color: var(--accent-gold); font-weight:bold;">Configurador</span> <span style="opacity:0.5;">/</span>
-                        <a href="#/project/${projectId}/accounting" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='var(--text-heading)'" onmouseout="this.style.color='var(--text-muted)'">Accounting</a>
-                    </div>
-                    
-                    <div style="margin-top: 10px;">
-                        <h1 class="text-accent" style="margin: 0 0 5px 0;">⚙️ Configurador Estratégico</h1>
-                        <p class="text-muted" style="margin: 0;">Ajusta la base narrativa, la identidad y el rol de los agentes de este proyecto.</p>
-                    </div>
-                </header>
+            <div class="container fade-in">
+                
+                <div class="panel-surface" style="margin-bottom: 30px; border-left: 4px solid ${tipoColor}; background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);">
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 15px;">
+                        Configuración de la Red
+                    </h2>
+                    <p class="text-muted" style="margin-top: 5px; font-size: 0.9rem;">
+                        Estás configurando las reglas base de <b>${project.nombre}</b>. Define cómo se repartirá la cosecha (Slicing Pie) y qué roles conforman el mapa de valor (Ontología).
+                    </p>
+                </div>
 
-                <div style="display: grid; grid-template-columns: 400px 1fr; gap: 30px;">
+                <div class="grid-layout" style="grid-template-columns: 1fr 1fr; gap: 30px;">
                     
-                    <section class="panel" style="border-color: var(--accent-purple); align-self: start; background: linear-gradient(180deg, rgba(163, 113, 247, 0.05) 0%, transparent 100%);">
-                        <h3 style="display: flex; justify-content: space-between; align-items: center; color: var(--accent-purple); margin-top: 0;">
-                            Misión y Propósito
-                            <span style="font-size: 0.65rem; border: 1px solid var(--accent-purple); padding: 2px 6px; border-radius: 4px;">CONTEXTO IA MAESTRO</span>
+                    <main>
+                        <h3 style="margin-bottom: 20px; color: var(--accent-green); display: flex; align-items: center; gap: 10px;">
+                            🍰 Modelo de Recompensa (Tokenomics)
                         </h3>
                         
-                        <div style="margin-bottom: 20px;">
-                            <label class="form-label">Nombre del Proyecto</label>
-                            <input id="edit-name" type="text" class="form-control" value="${project.nombre}">
+                        <div class="panel" style="border-color: var(--accent-green);">
+                            <p class="text-small text-muted" style="margin-bottom: 20px;">
+                                El Slicing Pie calcula el valor aportado en el Ledger. Elige cómo ese valor se traduce en <b>La Cosecha</b> real (Equity, Tokens o Cash) cuando la red genera beneficios.
+                            </p>
                             
-                            <label class="form-label">Sector Operativo</label>
-                            <select id="edit-sector" class="form-control">
-                                ${Object.keys(state.ontology.sectores).map(s => `
-                                    <option value="${s}" ${project.sector === s ? 'selected' : ''}>${s.toUpperCase()}</option>
-                                `).join('')}
+                            <label class="form-label">Selecciona el Preset Operativo:</label>
+                            <select id="tokenomics-preset" class="form-control" style="font-size: 1rem; padding: 12px; border-color: var(--accent-green);">
+                                <option value="startup" ${currentTokenomics === 'startup' ? 'selected' : ''}>🚀 The Startup Slicer (100% Equity Dinámico)</option>
+                                <option value="dao" ${currentTokenomics === 'dao' ? 'selected' : ''}>🌍 Comunidad Web3 / DAO (20% Core / 80% Comunidad)</option>
+                                <option value="profit-share" ${currentTokenomics === 'profit-share' ? 'selected' : ''}>🏢 Profit-Share Pyme (Reparto de Dividendos / Bonus)</option>
                             </select>
+
+                            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 15px; margin-bottom: 20px; font-size: 0.85rem; border-left: 2px solid var(--accent-green);">
+                                ${currentTokenomics === 'startup' ? `<b>🚀 Dinámica Startup:</b> Todo el Equity de la compañía es líquido y se recalcula diariamente basado en el Ledger. Ideal para bootstrapping sin caja.` : ''}
+                                ${currentTokenomics === 'dao' ? `<b>🌍 Dinámica DAO:</b> Se reserva un % fijo para los fundadores. El resto se emite en Tokens a la comunidad en proporción a los Slices ganados resolviendo Pings.` : ''}
+                                ${currentTokenomics === 'profit-share' ? `<b>🏢 Profit-Share:</b> Las acciones de la empresa no cambian. Se utiliza el Ledger de Slices para repartir un bote económico (Bonus anual o dividendos) de forma 100% meritocrática.` : ''}
+                            </div>
+
+                            <button id="btn-save-tokenomics" data-pid="${projectId}" class="btn btn-primary btn-block">Sellar Modelo Económico</button>
+                        </div>
+                    </main>
+
+                    <aside>
+                        <h3 style="margin-bottom: 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+                            ⚙️ Ontología VNA (Roles)
+                        </h3>
+
+                        <div class="panel" style="margin-bottom: 20px; border-color: var(--accent-blue);">
+                            <h4 style="margin-top: 0; color: var(--accent-blue);">Crear Nuevo Nodo Teórico</h4>
+                            <p class="text-small text-muted">Añade roles al ecosistema y define su riesgo (Multiplicador de Slicing Pie).</p>
                             
-                            <label class="form-label">Descripción (System Prompt del Sistema)</label>
-                            <textarea id="edit-desc" class="form-control" 
-                                style="height: 300px; line-height: 1.5; font-family: 'Cascadia Code', monospace; background: var(--bg-panel); color: var(--text-main); resize: vertical; font-size: 0.8rem; border-color: rgba(163, 113, 247, 0.3);" 
-                                placeholder="Estructura general del prompt...">${projectDescription}</textarea>
-                        </div>
-
-                        <button id="btn-save-meta" data-pid="${projectId}" class="btn btn-primary btn-block">
-                            💾 Guardar y Sincronizar Contexto
-                        </button>
-                    </section>
-
-                    <section class="panel">
-                        <h3 style="margin-top: 0;">Identidad de los Nodos (Agentes)</h3>
-                        <p class="text-muted text-small" style="margin-bottom: 20px;">Personaliza la personalidad, nivel de autoridad y directrices de cada nodo del ecosistema.</p>
-                        
-                        <div style="margin-bottom: 30px;">
-                            ${activeRoles.map(r => {
-                                let rolePrompt = r.systemPrompt || '';
-                                if (!rolePrompt.includes('[CONTEXTO DE ROL]')) {
-                                    const tareasRol = project.transactions.filter(t => t.from === r.id).map(t => `#${t.entregable.replace(/\s+/g,'')}`).join(', ');
-                                    rolePrompt = `[CONTEXTO DE ROL]\nIdentidad: @${r.name.replace(/\s+/g, '')}\nAutoridad: Nivel ${r.levelId}\n\n[MISIÓN]\n${rolePrompt}\n\n[DIRECTRICES DE OPERACIÓN]\n- Entregables a tu cargo: ${tareasRol || 'Por definir'}\n- Coordínate con otros nodos mencionándolos con @.\n- Valida la calidad antes de emitir flujo hacia @dosos.`;
-                                }
-
-                                return `
-                                <div class="panel-surface" style="padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid var(--text-muted); transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; align-items: center;">
-                                        <div>
-                                            <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">NOMBRE DEL NODO / AGENTE</label>
-                                            <input type="text" class="form-control edit-role-name" data-pid="${projectId}" data-rid="${r.id}" value="${r.name}" style="margin:0; background: var(--bg-panel); font-weight: bold; color: var(--text-heading);">
-                                        </div>
-                                        <div>
-                                            <label class="text-small text-muted" style="display:block; font-size:0.6rem; letter-spacing: 0.05rem;">ÓRBITA (NIVEL DE AUTORIDAD)</label>
-                                            <select class="form-control edit-role-level" data-pid="${projectId}" data-rid="${r.id}" style="margin:0; font-size: 0.85rem; background: var(--bg-panel);">
-                                                ${levelOptions.map(opt => `<option value="${opt.id}" ${r.levelId === opt.id ? 'selected' : ''}>${opt.label}</option>`).join('')}
-                                            </select>
-                                        </div>
-                                        <button class="btn-archive-role" data-pid="${projectId}" data-rid="${r.id}" style="background:none; border:none; cursor:pointer; font-size:1.2rem; opacity:0.5; transition: 0.2s;" onmouseover="this.style.opacity=1; this.style.color='var(--accent-red)'" onmouseout="this.style.opacity=0.5; this.style.color='inherit'">🗑️</button>
-                                    </div>
-                                    
-                                    <div style="margin-top: 15px;">
-                                        <label class="text-small" style="display:block; font-size:0.7rem; color: var(--accent-blue); margin-bottom: 5px;">🤖 System Prompt Específico del Agente</label>
-                                        <textarea class="form-control role-prompt-input" data-pid="${projectId}" data-rid="${r.id}" 
-                                            style="min-height: 120px; background: var(--bg-panel); color: var(--text-main); font-family: 'Cascadia Code', monospace; font-size: 0.8rem; margin: 0; border: 1px solid rgba(88, 166, 255, 0.2);" 
-                                            placeholder="Define cómo debe pensar y actuar este nodo...">${rolePrompt}</textarea>
-                                    </div>
+                            <label class="form-label">Nombre del Rol:</label>
+                            <input type="text" id="new-role-name" class="form-control" placeholder="Ej: Auditor Smart Contracts">
+                            
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                                <div>
+                                    <label class="form-label">Nivel VNA (Casteller):</label>
+                                    <select id="new-role-level" class="form-control">
+                                        <option value="@anxaneta">👑 @anxaneta (Estrategia)</option>
+                                        <option value="@aixecador">👁️ @aixecador (Táctico)</option>
+                                        <option value="@dosos">⚖️ @dosos (QA / Auditor)</option>
+                                        <option value="@baixos">🛠️ @baixos (Ejecución)</option>
+                                        <option value="@pinya">🧱 @pinya (Soporte)</option>
+                                    </select>
                                 </div>
-                                `
-                            }).join('')}
+                                <div>
+                                    <label class="form-label">Riesgo (X):</label>
+                                    <input type="number" step="0.1" id="new-role-multiplier" class="form-control" placeholder="1.0" value="1.0" title="Multiplicador de Slicing Pie">
+                                </div>
+                            </div>
+                            
+                            <button id="btn-add-role" data-pid="${projectId}" class="btn btn-outline btn-block" style="margin-top: 10px; border-color: var(--accent-blue); color: var(--accent-blue);">Inyectar Rol a la Red</button>
                         </div>
-                    </section>
+
+                        <h4 style="margin-bottom: 10px;">Roles Activos en la Red</h4>
+                        ${activeRoles.length === 0 ? '<p class="text-muted text-small">No hay roles activos.</p>' : `
+                            <div class="list-group" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                                ${activeRoles.map(r => `
+                                    <div class="panel-surface" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 10px;">
+                                        <div>
+                                            <b style="color: var(--text-heading); font-size: 0.9rem;">${r.name}</b>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted);">${r.levelId} | Mul: ${r.multiplier}x</div>
+                                        </div>
+                                        <button class="btn btn-secondary text-small btn-archive-role" data-pid="${projectId}" data-role="${r.id}">Ocultar</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </aside>
+
                 </div>
             </div>
         `;
