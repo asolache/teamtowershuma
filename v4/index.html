@@ -596,12 +596,18 @@
             document.getElementById('app').classList.add('fade-in');
         }
 
-        window.addEventListener('hashchange', router);
-        window.addEventListener('store-ready', () => {
-            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
+       window.addEventListener('hashchange', router);
+        
+        // 🛠️ FIX: Hacemos que la barra superior reaccione en tiempo real al Kernel
+        store.subscribe(() => {
+            updateIdentityBadge();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
         });
+
         if (store.getState()) {
-            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); 
+            router();
+            updateIdentityBadge(); // Forzamos pintado inicial
         }
     </script>
 </body>
