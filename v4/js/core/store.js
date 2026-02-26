@@ -1,68 +1,130 @@
-// --- 📚 ONTOLOGÍA DINÁMICA DE SECTORES ---
-const INITIAL_ONTOLOGY = {
-    sectores: {
-        general: {
-            "@anxaneta": { name: "Director", multiplier: 3.0 },
-            "@aixecador": { name: "Coordinador", multiplier: 2.0 },
-            "@dosos": { name: "Auditor", multiplier: 1.5 },
-            "@baixos": { name: "Especialista", multiplier: 1.0 },
-            "@pinya": { name: "Soporte", multiplier: 0.7 }
-        },
-        marketing: {
-            "@anxaneta": { name: "Strategy", multiplier: 3.0 },
-            "@aixecador": { name: "Account Manager", multiplier: 2.0 },
-            "@dosos": { name: "Creative Review", multiplier: 1.5 },
-            "@baixos": { name: "Copy/Designer", multiplier: 1.0 },
-            "@pinya": { name: "Admin", multiplier: 0.7 }
+// js/core/store.js
+
+const initialState = {
+    config: {
+        theme: 'dark',
+        ecosystemName: 'TeamTowers Network',
+        globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.'
+    },
+    ontology: {
+        sectores: {
+            "startup": {
+                "@anxaneta": { name: "CEO / Founder", multiplier: 3.0, ai_prompt: "Eres el CEO. Evalúas impacto en negocio y runway.", standard_deliverables: [{estimatedHours: 10, name: "Pitch Deck"}, {estimatedHours: 5, name: "Roadmap Q1"}] },
+                "@aixecador": { name: "Product Manager", multiplier: 2.0, ai_prompt: "Eres el PM. Evalúas viabilidad y scope.", standard_deliverables: [{estimatedHours: 5, name: "Backlog Grooming"}] },
+                "@dosos": { name: "QA / Auditor", multiplier: 1.5, ai_prompt: "Eres QA. Buscas fallos y riesgos.", standard_deliverables: [{estimatedHours: 3, name: "Test Plan"}] },
+                "@baixos": { name: "Desarrollador Senior", multiplier: 1.2, ai_prompt: "Eres Dev Senior. Revisas calidad de código.", standard_deliverables: [{estimatedHours: 8, name: "Feature Core"}] },
+                "@pinya": { name: "Soporte / Junior", multiplier: 1.0, ai_prompt: "Eres Soporte. Validas ejecución de tareas base.", standard_deliverables: [{estimatedHours: 2, name: "Bugfix Minor"}] }
+            }
         }
+    },
+    globalUsers: [
+        { id: '@user1', name: 'Alice Node', walletOrSocial: '0x123...' },
+        { id: '@user2', name: 'Bob Builder', walletOrSocial: 'bob@email.com' }
+    ],
+    // NUEVO: Aquí guardaremos las conexiones entre áreas/proyectos
+    macroFlows: [], 
+    projects: [
+        {
+            id: 'proj-1',
+            nombre: 'Desarrollo Core App',
+            sector: 'software',
+            tipo: 'ecosystem',
+            prompt: 'Contexto de desarrollo de software ágil.',
+            config: { tokenomics: 'startup' },
+            roles: [
+                { id: 'r1', name: 'Arquitecto', levelId: '@anxaneta', multiplier: 3, fmv: 50, ai_prompt: '', standard_deliverables: [] },
+                { id: 'r2', name: 'Frontend', levelId: '@baixos', multiplier: 1.5, fmv: 30, ai_prompt: '', standard_deliverables: [] }
+            ],
+            asignaciones: [
+                { userId: '@user1', roleId: 'r1' }
+            ],
+            transactions: [],
+            ledger: []
+        },
+        {
+            id: 'proj-2',
+            nombre: 'Marketing & Ventas',
+            sector: 'agencia',
+            tipo: 'ecosystem',
+            prompt: 'Contexto comercial.',
+            config: { tokenomics: 'profit-share' },
+            roles: [
+                { id: 'r3', name: 'CMO', levelId: '@anxaneta', multiplier: 2.5, fmv: 40, ai_prompt: '', standard_deliverables: [] }
+            ],
+            asignaciones: [],
+            transactions: [],
+            ledger: []
+        }
+    ],
+    session: {
+        activeUserId: 'ecosystem-admin',
+        role: 'admin'
     }
 };
 
-// --- 💾 ESTADO INICIAL Y PERSISTENCIA ---
-const initialState = JSON.parse(localStorage.getItem('tt_sos_state')) || {
-    projects: [],
-    globalUsers: [],
-    ontology: INITIAL_ONTOLOGY,
-    session: { activeUserId: 'ecosystem-admin', role: 'admin' },
-    config: { theme: 'dark', ecosystemName: 'TeamTowers Network' }
-};
-
-// --- ⚙️ REDUCER: EL MOTOR DE LÓGICA ---
-function reducer(state, action) {
+function reducer(state = initialState, action) {
     switch (action.type) {
         
-        // 🏗️ GESTIÓN DE REDES (PROYECTOS / ECOSISTEMAS)
-        case 'ADD_PROJECT':
-            const sectorKey = action.payload.sector || 'general';
-            const baseRoles = state.ontology.sectores[sectorKey] || state.ontology.sectores.general;
+        case 'UPDATE_GLOBAL_CONFIG':
+            return { ...state, config: { ...state.config, ...action.payload } };
+
+        case 'ADD_ONTOLOGY_SECTOR':
+            return {
+                ...state,
+                ontology: {
+                    ...state.ontology,
+                    sectores: {
+                        ...state.ontology.sectores,
+                        [action.payload.sectorId]: action.payload.rolesData
+                    }
+                }
+            };
+
+        case 'ADD_USER':
+            if (state.globalUsers.find(u => u.id === action.payload.id)) {
+                throw new Error("El identificador ya existe.");
+            }
+            return { ...state, globalUsers: [...state.globalUsers, action.payload] };
+
+        case 'LOGIN_USER':
+            return { ...state, session: { activeUserId: action.payload.userId, role: 'user' } };
             
+        case 'LOGOUT_USER':
+            return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
+
+        case 'CREATE_PROJECT':
             const newProject = {
-                id: action.payload.id,
+                id: 'proj-' + Date.now(),
                 nombre: action.payload.nombre,
-                tipo: action.payload.tipo || 'project', 
-                sector: sectorKey,
-                prompt: action.payload.prompt || '',
+                sector: action.payload.sector,
+                tipo: action.payload.tipo,
+                prompt: '',
                 config: { tokenomics: 'startup' },
-                roles: Object.entries(baseRoles).map(([level, data]) => ({
-                    id: `role-${level}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                    levelId: level,
-                    name: data.name,
-                    multiplier: data.multiplier || 1.0,
-                    price: 90, 
-                    isArchived: false
-                })),
+                roles: [],
+                asignaciones: [],
                 transactions: [],
-                ledger: [],
-                usuarios: [],
-                asignaciones: []
+                ledger: []
             };
             return { ...state, projects: [...state.projects, newProject] };
+
+        // NUEVO: Acción para crear flechas en el Macro-Mapa
+        case 'ADD_MACRO_FLOW':
+            const newFlow = {
+                id: 'mflow-' + Date.now(),
+                from: action.payload.fromProjectId,
+                to: action.payload.toProjectId,
+                entregable: action.payload.entregable || 'Intercambio de Valor',
+                tipo: action.payload.tipo || 'tangible'
+            };
+            return { ...state, macroFlows: [...(state.macroFlows || []), newFlow] };
 
         case 'UPDATE_PROJECT_INFO':
             return {
                 ...state,
                 projects: state.projects.map(p => 
-                    p.id === action.payload.projectId ? { ...p, ...action.payload.updates } : p
+                    p.id === action.payload.projectId 
+                        ? { ...p, ...action.payload.updates } 
+                        : p
                 )
             };
 
@@ -71,37 +133,19 @@ function reducer(state, action) {
                 ...state,
                 projects: state.projects.map(p => 
                     p.id === action.payload.projectId 
-                        ? { ...p, config: { ...p.config, ...action.payload.config } } : p
+                        ? { ...p, config: { ...p.config, ...action.payload.config } } 
+                        : p
                 )
             };
 
-        // 🎭 GESTIÓN DE ROLES Y ONTOLOGÍA
         case 'ADD_ROLE':
             return {
                 ...state,
                 projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    const newRole = {
-                        id: action.payload.role.id || `role-${Date.now()}`,
-                        name: action.payload.role.name,
-                        levelId: action.payload.role.levelId || '@baixos',
-                        multiplier: parseFloat(action.payload.role.multiplier) || 1.0,
-                        price: 45, // Mantenemos herencia para compatibilidad de tests
-                        isArchived: false
-                    };
-                    return { ...p, roles: [...p.roles, newRole] };
-                })
-            };
-
-        case 'UPDATE_ROLE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    return {
-                        ...p,
-                        roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, [action.payload.field]: action.payload.value } : r)
-                    };
+                    if (p.id === action.payload.projectId) {
+                        return { ...p, roles: [...p.roles, action.payload.role] };
+                    }
+                    return p;
                 })
             };
 
@@ -109,127 +153,13 @@ function reducer(state, action) {
             return {
                 ...state,
                 projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    return {
-                        ...p,
-                        roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, isArchived: !r.isArchived } : r)
-                    };
-                })
-            };
-
-        // 🕸️ VNA: TRANSACCIONES Y PULL SYSTEM
-        case 'ADD_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    const lastTx = p.transactions[p.transactions.length - 1];
-                    const fromRole = p.roles.find(r => r.id === action.payload.tx.from);
-                    
-                    const multiplier = fromRole ? fromRole.multiplier : 1.0;
-                    const priceBase = fromRole?.price || 90;
-
-                    const newTx = {
-                        hash: 'tx-' + Math.random().toString(36).substr(2, 9),
-                        prevHash: lastTx ? lastTx.hash : '0',
-                        status: 'theoretical', 
-                        timestamp: Date.now(),
-                        estimatedHours: parseFloat(action.payload.tx.horas),
-                        valorCongelado: parseFloat(action.payload.tx.horas) * multiplier * priceBase,
-                        ...action.payload.tx
-                    };
-                    return { ...p, transactions: [...p.transactions, newTx] };
-                })
-            };
-
-        case 'PING_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    return {
-                        ...p,
-                        transactions: p.transactions.map(tx => 
-                            tx.hash === action.payload.txHash 
-                                ? { ...tx, status: 'pinged', assigneeId: action.payload.userId } : tx
-                        )
-                    };
-                })
-            };
-
-        case 'REPORT_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    return {
-                        ...p,
-                        transactions: p.transactions.map(tx => 
-                            tx.hash === action.payload.txHash 
-                                ? { ...tx, status: 'reported', realHours: action.payload.realHours, proofLink: action.payload.proofLink, reportComment: action.payload.comentario } : tx
-                        )
-                    };
-                })
-            };
-
-        case 'APPROVE_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    const tx = p.transactions.find(t => t.hash === action.payload.txHash);
-                    if (!tx) return p; 
-                    const newEntry = {
-                        userId: tx.assigneeId,
-                        roleId: tx.to,
-                        valorCongelado: tx.valorCongelado,
-                        horas: tx.realHours || tx.estimatedHours,
-                        description: tx.entregable,
-                        timestamp: Date.now()
-                    };
-                    return {
-                        ...p,
-                        transactions: p.transactions.map(t => t.hash === action.payload.txHash ? { ...t, status: 'consolidated' } : t),
-                        ledger: [...p.ledger, newEntry]
-                    };
-                })
-            };
-
-        case 'UPDATE_TRANSACTION_PHASE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    return {
-                        ...p,
-                        transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, fase: action.payload.fase } : tx)
-                    };
-                })
-            };
-
-        // 👤 IDENTIDADES Y RBAC
-        case 'ADD_USER':
-            const targetId = action.payload.id || action.payload.uniqueId;
-            const project = state.projects.find(proj => proj.id === action.payload.projectId);
-            
-            // 🔥 CORRECCIÓN SEGURIDAD: Lanzar error si ya existe en el proyecto local
-            if (project && project.usuarios.find(u => u.id === targetId)) {
-                throw new Error("ID Duplicado");
-            }
-            
-            const userExists = state.globalUsers.find(u => u.id === targetId);
-            const newUserRecord = userExists || { 
-                id: targetId, 
-                name: action.payload.name, 
-                walletOrSocial: action.payload.walletOrSocial || '' 
-            };
-
-            return {
-                ...state,
-                globalUsers: userExists ? state.globalUsers : [...state.globalUsers, newUserRecord],
-                projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    return { ...p, usuarios: [...p.usuarios, { id: newUserRecord.id, name: newUserRecord.name }] };
+                    if (p.id === action.payload.projectId) {
+                        return {
+                            ...p,
+                            roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, isArchived: !r.isArchived } : r)
+                        };
+                    }
+                    return p;
                 })
             };
 
@@ -237,117 +167,177 @@ function reducer(state, action) {
             return {
                 ...state,
                 projects: state.projects.map(p => {
-                    if (p.id !== action.payload.projectId) return p;
-                    const cleanAsignaciones = (p.asignaciones || []).filter(a => a.roleId !== action.payload.roleId);
-                    return { ...p, asignaciones: [...cleanAsignaciones, { userId: action.payload.userId, roleId: action.payload.roleId }] };
+                    if (p.id === action.payload.projectId) {
+                        const exists = p.asignaciones.find(a => a.roleId === action.payload.roleId);
+                        if (exists) {
+                            return {
+                                ...p,
+                                asignaciones: p.asignaciones.map(a => a.roleId === action.payload.roleId ? { ...a, userId: action.payload.userId } : a)
+                            };
+                        } else {
+                            return { ...p, asignaciones: [...p.asignaciones, { userId: action.payload.userId, roleId: action.payload.roleId }] };
+                        }
+                    }
+                    return p;
                 })
             };
 
-        case 'LOGIN_USER':
-            return { ...state, session: { activeUserId: action.payload.userId, role: action.payload.userId === 'ecosystem-admin' ? 'admin' : 'user' } };
-
-        case 'LOGOUT_USER':
-            return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
-
-        case 'ADD_ONTOLOGY_SECTOR':
+        case 'ADD_TRANSACTION':
             return {
                 ...state,
-                ontology: {
-                    ...state.ontology,
-                    sectores: { ...state.ontology.sectores, [action.payload.sectorId]: action.payload.rolesData }
-                }
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        const newTx = {
+                            hash: '0x' + Math.random().toString(16).slice(2, 10),
+                            timestamp: Date.now(),
+                            status: action.payload.tx.status || 'theoretical',
+                            ...action.payload.tx
+                        };
+                        return { ...p, transactions: [...(p.transactions || []), newTx] };
+                    }
+                    return p;
+                })
             };
 
-        case 'UPDATE_GLOBAL_CONFIG':
-            return { ...state, config: { ...state.config, ...action.payload } };
+        case 'PING_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return {
+                            ...p,
+                            transactions: p.transactions.map(tx => {
+                                if (tx.hash === action.payload.txHash) {
+                                    return { ...tx, status: 'pinged', assigneeId: action.payload.userId };
+                                }
+                                return tx;
+                            })
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        case 'REPORT_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return {
+                            ...p,
+                            transactions: p.transactions.map(tx => {
+                                if (tx.hash === action.payload.txHash) {
+                                    return { 
+                                        ...tx, 
+                                        status: 'reported', 
+                                        realHours: action.payload.realHours,
+                                        proofLink: action.payload.proofLink,
+                                        reportComment: action.payload.comentario 
+                                    };
+                                }
+                                return tx;
+                            })
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        case 'APPROVE_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        let txToApprove = p.transactions.find(tx => tx.hash === action.payload.txHash);
+                        if (!txToApprove) return p;
+
+                        const roleFrom = p.roles.find(r => r.id === txToApprove.from);
+                        const roleMultiplier = roleFrom ? (roleFrom.multiplier || 1) : 1;
+                        const fmv = roleFrom ? (roleFrom.fmv || 50) : 50;
+                        const horas = txToApprove.realHours || txToApprove.horas || 0;
+                        
+                        const valorGenerado = horas * fmv * roleMultiplier;
+
+                        const newLedgerEntry = {
+                            userId: txToApprove.assigneeId,
+                            roleId: roleFrom ? roleFrom.id : 'unknown',
+                            description: `[PoW] ${txToApprove.entregable}`,
+                            horas: horas,
+                            valorCongelado: valorGenerado,
+                            timestamp: Date.now()
+                        };
+
+                        return {
+                            ...p,
+                            transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'consolidated', valorCongelado: valorGenerado } : tx),
+                            ledger: [...(p.ledger || []), newLedgerEntry]
+                        };
+                    }
+                    return p;
+                })
+            };
 
         default:
             return state;
     }
 }
 
-// --- 🏛️ LA FACHADA DEL STORE ---
-let currentState = initialState;
-const listeners = [];
+class Store {
+    constructor() {
+        const saved = localStorage.getItem('tt_sos_state');
+        if (saved) {
+            try { this.state = JSON.parse(saved); } catch(e) { this.state = initialState; }
+        } else {
+            this.state = initialState;
+        }
+        // Migración de datos viejos: asegurar que existe macroFlows
+        if (!this.state.macroFlows) this.state.macroFlows = [];
+        if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
 
-export const store = {
-    getState: () => currentState,
-    dispatch: (action) => {
-        currentState = reducer(currentState, action);
-        localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
-        listeners.forEach(l => l());
-    },
-    subscribe: (l) => listeners.push(l),
+        this.listeners = [];
+    }
+    getState() { return this.state; }
+    dispatch(action) {
+        this.state = reducer(this.state, action);
+        localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
+        this.listeners.forEach(l => l());
+    }
+    subscribe(listener) { this.listeners.push(listener); }
 
-    // 🔥 --- ANALÍTICA SISTÉMICA ACTUALIZADA (VITALIDAD PONDERADA) ---
-    calculateResilience: (projectId) => {
-        const p = currentState.projects.find(x => x.id === projectId);
-        if (!p || p.transactions.length === 0) return 100;
-        
-        // Asignamos pesos a cada estado para que la salud no sea 0 si hay intención
-        const weights = {
-            consolidated: 1.0,
-            reported: 0.7,
-            pinged: 0.3,
-            theoretical: 0.1
-        };
-        
-        const totalVitality = p.transactions.reduce((acc, tx) => acc + (weights[tx.status] || 0), 0);
-        const health = Math.round((totalVitality / p.transactions.length) * 100);
-        
-        return Math.min(100, health);
-    },
+    // Helpers
+    calculateResilience(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || !p.transactions || p.transactions.length === 0) return 100;
+        const atascos = p.transactions.filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        const res = Math.max(0, 100 - (atascos * 5));
+        return Math.round(res);
+    }
 
-    generateSystemPrompt: (projectId) => {
-        const p = currentState.projects.find(x => x.id === projectId);
-        if (!p) return "";
-        let prompt = `Eres el Ecosystem Owner de ${p.nombre}. Ontología: `;
-        p.roles.forEach(r => prompt += `[${r.levelId}: ${r.name}] `);
-        prompt += `. Contexto: ${p.prompt}. Flujos: `;
-        p.transactions.forEach(t => prompt += `Fase ${t.fase || '?'}: ${t.entregable} (${t.status}). `);
-        return prompt;
-    },
-
-    importSessionJSON: (projectId, jsonArray) => {
-        const p = currentState.projects.find(x => x.id === projectId);
-        if (!p) return;
-        jsonArray.forEach(entry => {
-            p.ledger.push({
-                userId: entry.userId,
-                roleId: entry.roleId,
-                description: entry.description,
-                horas: entry.horas,
-                valorCongelado: entry.horas * 100,
-                timestamp: Date.now()
-            });
-        });
-        store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: {} } }); 
-    },
-
-    // 💰 --- NUEVO: CÁLCULO DE LA COSECHA (TOKENOMICS) ---
-    calculateHarvest: (projectId, totalValue) => {
-        const p = currentState.projects.find(x => x.id === projectId);
+    calculateHarvest(projectId, totalValuation) {
+        const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.ledger || p.ledger.length === 0) return [];
 
-        const totalSlices = p.ledger.reduce((acc, entry) => acc + entry.valorCongelado, 0);
-        
-        // Agrupamos los slices por usuario
-        const userSlices = p.ledger.reduce((acc, entry) => {
-            acc[entry.userId] = (acc[entry.userId] || 0) + entry.valorCongelado;
-            return acc;
-        }, {});
+        let capTable = {};
+        let totalSlices = 0;
 
-        // Convertimos a array, calculamos porcentaje y valor económico
-        return Object.entries(userSlices).map(([userId, slices]) => {
-            const percentage = totalSlices > 0 ? (slices / totalSlices) : 0;
+        p.ledger.forEach(l => {
+            if (!capTable[l.userId]) capTable[l.userId] = 0;
+            capTable[l.userId] += l.valorCongelado;
+            totalSlices += l.valorCongelado;
+        });
+
+        if (totalSlices === 0) return [];
+
+        return Object.keys(capTable).map(userId => {
+            const percentage = (capTable[userId] / totalSlices);
             return {
                 userId,
-                slices,
+                slices: capTable[userId],
                 percentage: (percentage * 100).toFixed(2) + '%',
-                financialValue: (percentage * totalValue).toLocaleString() + '€'
+                financialValue: (percentage * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
             };
         }).sort((a, b) => b.slices - a.slices);
     }
-};
+}
 
-window.dispatchEvent(new CustomEvent('store-ready'));
+export const store = new Store();
