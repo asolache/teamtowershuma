@@ -4,6 +4,7 @@ let agileOriginId = null;
 let agileDestinationId = null;
 let showAgileModal = false;
 let mapDisplayMode = 'agile-creator'; // Modo por defecto al entrar
+let currentZoom = 1; // 🔍 Estado Global del Zoom
 
 const ROLE_COLORS = {
     "@anxaneta": { bg: "rgba(210, 153, 34, 0.15)", border: "var(--accent-gold)", text: "var(--accent-gold)" },
@@ -15,6 +16,23 @@ const ROLE_COLORS = {
 
 document.addEventListener('click', (e) => {
     
+    // --- CONTROLES DE ZOOM DEL MAPA SVG ---
+    if (e.target.id === 'btn-zoom-in') {
+        currentZoom += 0.2;
+        const wrapper = document.getElementById('svg-zoom-wrapper');
+        if (wrapper) wrapper.style.transform = `scale(${currentZoom})`;
+    }
+    if (e.target.id === 'btn-zoom-out') {
+        currentZoom = Math.max(0.4, currentZoom - 0.2); // Límite de alejamiento
+        const wrapper = document.getElementById('svg-zoom-wrapper');
+        if (wrapper) wrapper.style.transform = `scale(${currentZoom})`;
+    }
+    if (e.target.id === 'btn-zoom-fit') {
+        currentZoom = 1;
+        const wrapper = document.getElementById('svg-zoom-wrapper');
+        if (wrapper) wrapper.style.transform = `scale(${currentZoom})`;
+    }
+
     // --- NAVEGACIÓN POR PESTAÑAS (TABS) ---
     if (e.target.classList.contains('tab-btn')) {
         mapDisplayMode = e.target.getAttribute('data-mode');
@@ -45,16 +63,16 @@ document.addEventListener('click', (e) => {
     }
 
     // --- MAGIA: AUTOCOMPLETADO DESDE PÍLDORAS ONTOLÓGICAS ---
-    if (e.target.classList.contains('btn-suggest-deliverable')) {
+    if (e.target.classList.contains('btn-suggest-deliverable') || e.target.closest('.btn-suggest-deliverable')) {
         e.preventDefault();
-        const title = e.target.getAttribute('data-title');
-        const hours = e.target.getAttribute('data-hours');
+        const btn = e.target.classList.contains('btn-suggest-deliverable') ? e.target : e.target.closest('.btn-suggest-deliverable');
+        const title = btn.getAttribute('data-title');
+        const hours = btn.getAttribute('data-hours');
         document.getElementById('agile-entregable').value = title;
         document.getElementById('agile-horas').value = hours;
         
-        // Efecto visual de selección
         document.querySelectorAll('.btn-suggest-deliverable').forEach(b => b.style.borderColor = 'var(--border-color)');
-        e.target.style.borderColor = 'var(--accent-gold)';
+        btn.style.borderColor = 'var(--accent-gold)';
     }
 
     // --- CANCELAR / GUARDAR MODO ÁGIL ---
@@ -114,39 +132,69 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 🧠 FÍSICAS ORIGINALES
+// 🧠 FÍSICAS REFACTORIZADAS (Grafo Orgánico a prueba de bugs)
 function calculateNetworkLayout(roles, transactions, width, height) {
     const nodes = {}; const radius = Math.min(width, height) / 2.5; const centerX = width / 2; const centerY = height / 2;
-    roles.forEach((r, i) => { const angle = (i / roles.length) * 2 * Math.PI; nodes[r.id] = { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle), vx: 0, vy: 0 }; });
-    const iterations = 100; const k = Math.sqrt((width * height) / roles.length); 
+    
+    roles.forEach((r, i) => { 
+        const angle = (i / roles.length) * 2 * Math.PI; 
+        // FIX: Inyección de entropía para evitar que nodos solitarios se solapen en la misma coordenada
+        nodes[r.id] = { 
+            x: centerX + radius * Math.cos(angle) + (Math.random() * 20 - 10), 
+            y: centerY + radius * Math.sin(angle) + (Math.random() * 20 - 10), 
+            vx: 0, vy: 0 
+        }; 
+    });
+    
+    const iterations = 150; // Más iteraciones para que se asienten mejor
+    const k = Math.sqrt((width * height) / (roles.length || 1)); 
+    
     for (let iter = 0; iter < iterations; iter++) {
+        // Repulsión
         for (let i = 0; i < roles.length; i++) {
             for (let j = 0; j < roles.length; j++) {
                 if (i !== j) {
                     const n1 = nodes[roles[i].id]; const n2 = nodes[roles[j].id];
-                    const dx = n1.x - n2.x; const dy = n1.y - n2.y; const distance = Math.sqrt(dx*dx + dy*dy) || 1;
-                    const force = (k * k) / distance; n1.vx += (dx / distance) * force; n1.vy += (dy / distance) * force;
+                    const dx = n1.x - n2.x; const dy = n1.y - n2.y; 
+                    const distance = Math.sqrt(dx*dx + dy*dy) || 1;
+                    const force = (k * k) / distance; 
+                    n1.vx += (dx / distance) * force; n1.vy += (dy / distance) * force;
                 }
             }
         }
+        // Atracción por Flujos
         transactions.forEach(tx => {
             if (!nodes[tx.from] || !nodes[tx.to]) return;
             const n1 = nodes[tx.from]; const n2 = nodes[tx.to];
-            const dx = n1.x - n2.x; const dy = n1.y - n2.y; const distance = Math.sqrt(dx*dx + dy*dy) || 1;
-            const force = (distance * distance) / k; const fx = (dx / distance) * force * 0.05; const fy = (dy / distance) * force * 0.05;
+            const dx = n1.x - n2.x; const dy = n1.y - n2.y; 
+            const distance = Math.sqrt(dx*dx + dy*dy) || 1;
+            const force = (distance * distance) / k; 
+            const fx = (dx / distance) * force * 0.05; const fy = (dy / distance) * force * 0.05;
             n1.vx -= fx; n1.vy -= fy; n2.vx += fx; n2.vy += fy;
         });
+        // Fricción, Gravedad Central y Límites
         roles.forEach(r => {
-            const n = nodes[r.id]; n.x += n.vx; n.y += n.vy; n.vx *= 0.8; n.vy *= 0.8;
-            n.x = Math.max(70, Math.min(width - 70, n.x)); n.y = Math.max(70, Math.min(height - 70, n.y));
+            const n = nodes[r.id]; 
+            // FIX: Gravedad central para evitar que los nodos sin flechas huyan a las esquinas
+            n.vx += (centerX - n.x) * 0.02;
+            n.vy += (centerY - n.y) * 0.02;
+
+            n.x += n.vx; n.y += n.vy; 
+            n.vx *= 0.8; n.vy *= 0.8;
+            
+            // Márgenes de rebote ampliados
+            n.x = Math.max(60, Math.min(width - 60, n.x)); 
+            n.y = Math.max(60, Math.min(height - 60, n.y));
         });
     }
     return nodes;
 }
 
-// 🎨 RENDERIZADO DEL GRAFO ORIGINAL
+// 🎨 RENDERIZADO DEL GRAFO CON ZOOM
 function generateSVGMap(project, isHealthMode) {
-    const roles = project.roles.filter(r => !r.isArchived); const transactions = project.transactions || [];
+    // FIX: Filtrado robusto para asegurar que los roles no archivados pasen al mapa
+    const roles = project.roles.filter(r => r.isArchived !== true); 
+    const transactions = project.transactions || [];
     const state = store.getState(); const svgWidth = 1000; const svgHeight = 600;
     const nodeCoords = calculateNetworkLayout(roles, transactions, svgWidth, svgHeight);
     let svgNodes = ''; let svgEdges = ''; let edgeCurveCounter = {}; 
@@ -192,7 +240,23 @@ function generateSVGMap(project, isHealthMode) {
         svgNodes += `<foreignObject x="${coords.x - 50}" y="${coords.y - 50}" width="100" height="100" style="overflow:visible;"><div xmlns="http://www.w3.org/1999/xhtml" style="background:var(--bg-panel); border:3px solid ${colors.border}; border-radius:50%; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s; position:relative;" onmouseover="this.style.boxShadow='0 0 20px ${colors.border}'; const tip = this.querySelector('.hover-tip'); if(tip) tip.style.display='block';" onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.4)'; const tip = this.querySelector('.hover-tip'); if(tip) tip.style.display='none';"><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.1; margin: 4px 0;">${role.name.length > 15 ? role.name.substring(0,13)+'..' : role.name}</div>${userHTML}</div></foreignObject>`;
     });
 
-    return `<div style="width:100%; overflow-x:auto; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; margin: 0 auto; overflow:visible;">${svgEdges}${svgNodes}</svg></div>`;
+    // CONTROLES DE ZOOM INTEGRADOS
+    const zoomControls = `
+        <div style="position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 8px; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+            <button id="btn-zoom-in" title="Acercar (+)" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">➕</button>
+            <button id="btn-zoom-out" title="Alejar (-)" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">➖</button>
+            <button id="btn-zoom-fit" title="Ajustar a Pantalla" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-main); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">⛶</button>
+        </div>
+    `;
+
+    return `<div style="width:100%; height: 600px; overflow:hidden; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px; position: relative;">
+                ${zoomControls}
+                <div id="svg-zoom-wrapper" style="width:100%; height:100%; transform: scale(${currentZoom}); transform-origin: center center; transition: transform 0.2s ease-out; display: flex; align-items: center; justify-content: center;">
+                    <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; overflow:visible;">
+                        ${svgEdges}${svgNodes}
+                    </svg>
+                </div>
+            </div>`;
 }
 
 export const ProjectView = {
@@ -203,26 +267,29 @@ export const ProjectView = {
 
         const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
         const isAdmin = session.role === 'admin';
-        const roles = project.roles.filter(r => !r.isArchived);
+        const roles = project.roles.filter(r => r.isArchived !== true);
         const transactions = project.transactions || [];
 
-        // Forzar modo visual-theory si el usuario no es admin
+        // Forzar modo visual si el usuario no es admin
         if (!isAdmin && mapDisplayMode === 'agile-creator') {
             mapDisplayMode = 'visual-theory';
         }
 
-        // 🚀 SET NAVBAR GLOBAL (Con atajos uniformes)
-        setTimeout(() => window.setNavbar(
-            [
-                { label: '🏠 Hub', hash: '#/' }, 
-                { label: project.nombre, hash: `#/project/${projectId}` },
-                { label: 'Mapa VNA' }
-            ], 
-            ``, 
-            `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
-             <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}'" title="Dashboard PO">📥 Dashboard PO</button>
-             ${isAdmin ? `<button id="btn-open-manual-tx" class="btn text-small" style="background: var(--accent-purple); border:none; color:#fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-left:10px;">➕ Inyectar Flujo Manual</button>` : ''}`
-        ), 0);
+        // 🚀 SET NAVBAR GLOBAL (Breadcrumb unificado y sin flecha atrás visible)
+        setTimeout(() => {
+            window.setNavbar(
+                [
+                    { label: `${state.config?.ecosystemName || 'Ecosistema Fractal'} > Mapa de la red` }
+                ], 
+                ``, 
+                `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
+                 <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}'" title="Dashboard PO">📥 Dashboard PO</button>
+                 ${isAdmin ? `<button id="btn-open-manual-tx" class="btn text-small" style="background: var(--accent-purple); border:none; color:#fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-left:10px;">➕ Inyectar Flujo Manual</button>` : ''}`
+            );
+            // Ocultar flecha atrás específicamente en esta vista según petición
+            const backBtn = document.querySelector('.btn-back-nav');
+            if(backBtn) backBtn.style.display = 'none';
+        }, 0);
 
         const tabStyle = (mode) => `
             padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${mapDisplayMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
@@ -237,7 +304,6 @@ export const ProjectView = {
             const rOri = roles.find(r => r.id === agileOriginId);
             const rDes = roles.find(r => r.id === agileDestinationId);
             
-            // Buscar sugerencias para el Rol Emisor
             let sugerenciasHTML = '';
             if (rOri && rOri.standard_deliverables && rOri.standard_deliverables.length > 0) {
                 sugerenciasHTML = `
@@ -296,7 +362,7 @@ export const ProjectView = {
                 
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
                     <div>
-                        <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Ontología y Flujos (VNA)</h1>
+                        <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Mapa de la red > ${project.nombre}</h1>
                         <p style="margin: 0; color: var(--text-muted);">Visualiza el grafo orgánico, audita cuellos de botella y diseña flujos teóricos.</p>
                     </div>
                     <span class="badge" style="background: rgba(88,166,255,0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); padding: 6px 12px; font-size: 0.9rem;">💡 Transacciones Totales: ${transactions.length}</span>
@@ -322,13 +388,21 @@ export const ProjectView = {
                                 </span>
                             </div>
                             <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                                ${roles.map(r => `
+                                ${roles.map(r => {
+                                    const rColors = ROLE_COLORS[r.levelId] || ROLE_COLORS["@pinya"];
+                                    const isSelected = r.id === agileOriginId;
+                                    return `
                                     <div class="node-bubble" data-id="${r.id}" data-pid="${projectId}" 
-                                         style="background: ${r.id === agileOriginId ? 'rgba(88,166,255,0.2)' : 'var(--bg-panel)'}; 
-                                                border: ${r.id === agileOriginId ? '2px solid var(--accent-blue)' : '1px solid var(--border-color)'}; 
-                                                padding: 12px 25px; border-radius: 30px; cursor: pointer; transition: 0.2s;">
-                                        <b style="color:var(--text-heading);">${r.name}</b> <span style="font-size:0.7rem; color:var(--text-muted); font-family:monospace; margin-left:5px;">${r.levelId}</span>
-                                    </div>`).join('')}
+                                         style="background: ${isSelected ? rColors.bg : 'var(--bg-panel)'}; 
+                                                border: 2px solid ${rColors.border}; 
+                                                padding: 12px 25px; border-radius: 30px; cursor: pointer; transition: 0.2s; box-shadow: ${isSelected ? '0 0 15px '+rColors.border : 'none'};">
+                                        <b style="color:var(--text-heading);">${r.name}</b> <span style="font-size:0.7rem; color:${rColors.text}; font-family:monospace; margin-left:5px;">${r.levelId}</span>
+                                    </div>`
+                                }).join('')}
+                                
+                                <div onclick="location.hash='#/project/${projectId}/edit'" style="background: transparent; border: 2px dashed var(--text-muted); color: var(--text-muted); padding: 12px 25px; border-radius: 30px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-weight: bold;" onmouseover="this.style.borderColor='var(--accent-blue)'; this.style.color='var(--accent-blue)';" onmouseout="this.style.borderColor='var(--text-muted)'; this.style.color='var(--text-muted)';">
+                                    ➕ Añadir Nuevo Rol
+                                </div>
                             </div>
                         </section>
                         
