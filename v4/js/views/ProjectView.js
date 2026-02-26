@@ -130,7 +130,7 @@ function calculateNetworkLayout(roles, transactions, width, height) {
     return nodes;
 }
 
-// 🎨 RENDERIZADO DEL GRAFO ORIGINAL (CON COLORES MEJORADOS DE SALUD)
+// 🎨 RENDERIZADO DEL GRAFO ORIGINAL (CON BUG DE TEXTOS BOCA ABAJO CORREGIDO)
 function generateSVGMap(project, isHealthMode) {
     const roles = project.roles.filter(r => !r.isArchived); const transactions = project.transactions || [];
     const state = store.getState(); const svgWidth = 1000; const svgHeight = 600;
@@ -144,8 +144,8 @@ function generateSVGMap(project, isHealthMode) {
         
         if (isHealthMode) {
             if (tx.status === 'consolidated') { strokeColor = "var(--accent-green)"; strokeWidth = "3"; opacity = "1"; } 
-            else if (tx.status === 'reported') { strokeColor = "var(--accent-blue)"; opacity = "1"; strokeWidth = "3"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.4s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
-            else { strokeColor = "var(--accent-red)"; opacity = "0.8"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.2s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; }
+            else if (tx.status === 'reported') { strokeColor = "var(--accent-gold)"; opacity = "1"; strokeWidth = "3"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="0.4s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; } 
+            else { strokeColor = "var(--accent-blue)"; opacity = "0.8"; animation = `<animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.2s" repeatCount="indefinite" />`; strokeDash = isTangible ? "stroke-dasharray='12,6'" : "stroke-dasharray='8,8'"; }
         }
         
         const pairKey = [tx.from, tx.to].sort().join('-'); edgeCurveCounter[pairKey] = (edgeCurveCounter[pairKey] || 0) + 1;
@@ -153,11 +153,21 @@ function generateSVGMap(project, isHealthMode) {
         const nx = -dy / dist; const ny = dx / dist;  
         const curveStrength = 30 * (edgeCurveCounter[pairKey] % 2 === 0 ? 1 : -1) * Math.ceil(edgeCurveCounter[pairKey]/2);
         const cx = (from.x + to.x) / 2 + (nx * curveStrength); const cy = (from.y + to.y) / 2 + (ny * curveStrength);
+        
         const pathData = `M ${from.x} ${from.y} Q ${cx} ${cy}, ${to.x} ${to.y}`;
-        const pathId = `edge-${tx.hash}`; const markerId = `arrow-${tx.hash}`;
+        
+        // BUGFIX: Crear un path invisible que siempre vaya de izquierda a derecha para el texto
+        let textPathData = pathData;
+        if (from.x > to.x) {
+            textPathData = `M ${to.x} ${to.y} Q ${cx} ${cy}, ${from.x} ${from.y}`;
+        }
+
+        const pathId = `edge-${tx.hash}`; 
+        const textPathId = `textedge-${tx.hash}`;
+        const markerId = `arrow-${tx.hash}`;
         const truncName = tx.entregable.length > 18 ? tx.entregable.substring(0, 16) + '..' : tx.entregable;
 
-        svgEdges += `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="28" refY="4" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/></marker></defs><path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">${animation}</path><text font-size="12" fill="var(--text-heading)" font-family="sans-serif" font-weight="bold" opacity="${opacity}"><textPath href="#${pathId}" startOffset="50%" text-anchor="middle" dominant-baseline="text-after-edge" style="transform:translateY(-5px);">${truncName}</textPath></text>`;
+        svgEdges += `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="28" refY="4" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="${strokeColor}" opacity="${opacity}"/></marker><path id="${textPathId}" d="${textPathData}" fill="none" stroke="none" /></defs><path id="${pathId}" d="${pathData}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${strokeDash} opacity="${opacity}" marker-end="url(#${markerId})">${animation}</path><text font-size="11" fill="var(--text-main)" font-family="sans-serif" font-weight="bold" opacity="${opacity}"><textPath href="#${textPathId}" startOffset="50%" text-anchor="middle" dominant-baseline="central"><tspan dy="-8">${truncName}</tspan></textPath></text>`;
     });
 
     roles.forEach((role) => {
