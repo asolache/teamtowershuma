@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-dark: #010409; --bg-card: #0d1117; --border-color: #30363d;
-            --text-main: #c9d1d9; --text-heading: #f0f6fc;
+            --text-main: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
             --accent-blue: #58a6ff; --accent-purple: #a371f7; --accent-green: #238636;
             --accent-gold: #d29922; --accent-red: #f85149;
         }
@@ -19,7 +19,7 @@
             margin: 0; line-height: 1.6; overflow-x: hidden;
         }
 
-        h1, h2, h3, h4 { color: var(--text-heading); line-height: 1.1; }
+        h1, h2, h3, h4 { color: var(--text-heading); line-height: 1.1; margin-bottom: 1rem; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
         .btn { display: inline-block; padding: 14px 28px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-align: center; border: none; text-decoration: none; }
@@ -27,32 +27,43 @@
         .btn-outline { border: 1px solid var(--border-color); color: var(--text-main); background: transparent; }
         .btn-outline:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
 
-        /* NAV */
-        nav { height: 80px; display: flex; align-items: center; position: fixed; width: 100%; z-index: 1000; background: rgba(1, 4, 9, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); }
+        nav { height: 80px; display: flex; align-items: center; position: fixed; width: 100%; z-index: 1000; background: rgba(1, 4, 9, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); }
 
-        /* SECCIONES */
+        /* HERO & SWITCHER */
         .hero { padding: 180px 0 80px 0; text-align: center; }
-        .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 20px; }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; }
         .hero h1 span { background: linear-gradient(to right, var(--accent-blue), var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 60px 0; }
-        .product-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 30px; border-radius: 20px; display: flex; flex-direction: column; transition: 0.3s; }
-        .product-card:hover { transform: translateY(-10px); border-color: var(--accent-blue); }
+        .switcher { background: var(--bg-card); border: 1px solid var(--border-color); padding: 6px; border-radius: 14px; display: inline-flex; gap: 5px; margin-bottom: 40px; }
+        .switcher-opt { padding: 12px 24px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: #8b949e; transition: 0.3s; }
+        .switcher-opt.active { background: #21262d; color: var(--text-heading); }
 
-        /* APP SECTION */
-        .app-alpha-section { padding: 100px 0; background: radial-gradient(circle at center, #0d1117 0%, #010409 100%); border-top: 1px solid var(--border-color); }
-        .app-infographic { background: #000; border: 1px solid var(--accent-blue); border-radius: 24px; padding: 40px; margin: 40px 0; box-shadow: 0 0 40px rgba(88, 166, 255, 0.1); }
-        
-        /* FORMULARIOS */
-        .contact-section { padding: 100px 0; background: #05080f; border-top: 1px solid var(--border-color); }
-        .form-container { max-width: 600px; margin: 0 auto; background: var(--bg-card); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color); }
+        /* PRODUCT CARDS */
+        .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 60px 0; }
+        .product-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 30px; border-radius: 20px; text-align: left; transition: 0.3s; }
+        .product-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
+
+        /* SECCIONES DE FLUJO */
+        .section-flow { padding: 100px 0; border-top: 1px solid var(--border-color); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+
+        /* SVG ANIMATION STYLES */
+        .vna-viz { background: #000; border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .pulse { animation: pulse-blue 2s infinite; }
+        @keyframes pulse-blue { 0% { filter: drop-shadow(0 0 2px var(--accent-blue)); } 50% { filter: drop-shadow(0 0 10px var(--accent-blue)); } 100% { filter: drop-shadow(0 0 2px var(--accent-blue)); } }
+        .flow-line { stroke-dasharray: 100; animation: dash 5s linear infinite; }
+        @keyframes dash { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
+
+        /* METHODOLOGY & TECH */
+        .method-block { background: var(--bg-card); padding: 40px; border-radius: 20px; margin: 20px 0; border-left: 4px solid var(--accent-gold); }
+        .tech-pill { display: inline-block; padding: 4px 12px; border-radius: 6px; background: rgba(163, 113, 247, 0.1); color: var(--accent-purple); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
+
+        /* FORMS */
+        .form-container { max-width: 600px; margin: 40px auto; background: var(--bg-card); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color); }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: #fff; outline: none; font-family: inherit; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-family: inherit; }
 
-        .badge { background: rgba(88, 166, 255, 0.1); color: var(--accent-blue); padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
-        
-        @media (max-width: 992px) { .product-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 992px) { .grid-2, .product-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -60,81 +71,139 @@
     <nav>
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div style="font-weight: 800; font-size: 1.4rem; display:flex; align-items:center; gap:12px;">
-                <div style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px;"></div>
+                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 6px;"></div>
                 teamtowers<span style="opacity: 0.7; font-weight: 300;">huma</span>
             </div>
-            <div style="display: flex; gap: 20px; align-items: center;">
-                <a href="#app" style="color: var(--text-muted); font-size: 0.85rem;">Alpha App</a>
-                <a href="#contacto" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.8rem;">Consultoría</a>
+            <div style="display: flex; gap: 20px;">
+                <a href="#metodologia" style="color: var(--text-muted); font-size: 0.85rem;">Metodología</a>
+                <a href="#app-alpha" style="color: var(--accent-red); font-size: 0.85rem; font-weight: bold;">Alpha SOS</a>
             </div>
         </div>
     </nav>
 
     <section class="hero">
         <div class="container">
-            <h1>Ingeniería de<br><span>Ecosistemas Resilientes</span></h1>
-            <p>Sustituimos el caos organizacional por una arquitectura de Nodos vivos y Equity dinámico. Diseñamos la red, implementamos el software.</p>
-            
+            <div class="switcher">
+                <div class="switcher-opt active" onclick="updateHero('startups', this)">🚀 Startups</div>
+                <div class="switcher-opt" onclick="updateHero('corp', this)">🏢 Corporativo</div>
+                <div class="switcher-opt" onclick="updateHero('daos', this)">🌍 DAOs</div>
+            </div>
+            <h1 id="hero-title">La organización no es un dibujo.<br>Es un <span>Flujo de Valor</span>.</h1>
+            <p id="hero-desc">Visualizamos lo invisible. Aplicamos ingeniería sistémica para transformar organigramas estáticos en redes de alto rendimiento.</p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <a href="#contacto-consultoria" class="btn btn-primary">Diagnóstico de Red ➔</a>
+                <a href="#metodologia" class="btn btn-outline">Nuestra Tesis</a>
+            </div>
+
             <div class="product-grid">
                 <div class="product-card">
-                    <span class="badge">Startups</span>
-                    <h3>Founders Equity Protocol</h3>
-                    <a href="#startup-flow" style="color: var(--accent-blue); font-weight: bold; font-size: 0.9rem;">Ver Workflow ➔</a>
+                    <span class="tech-pill">Slicing Pie</span>
+                    <h3>Founders Equity</h3>
+                    <p class="text-small text-muted">Contabilidad de méritos para equipos en fase semilla.</p>
+                    <a href="#startup-flow" style="color: var(--accent-blue); font-size: 0.8rem; font-weight: bold;">VER WORKFLOW ➔</a>
                 </div>
-                <div class="product-card" style="border-color: var(--accent-purple);">
-                    <span class="badge" style="color: var(--accent-purple); background: rgba(163, 113, 247, 0.1);">Corporativo</span>
+                <div class="product-card">
+                    <span class="tech-pill">VNA Analysis</span>
                     <h3>Nodal Architecture</h3>
-                    <a href="#corp-flow" style="color: var(--accent-purple); font-weight: bold; font-size: 0.9rem;">Ver Workflow ➔</a>
+                    <p class="text-small text-muted">Optimización de eficiencia para empresas establecidas.</p>
+                    <a href="#corp-flow" style="color: var(--accent-blue); font-size: 0.8rem; font-weight: bold;">VER WORKFLOW ➔</a>
                 </div>
-                <div class="product-card" style="border-color: var(--accent-gold);">
-                    <span class="badge" style="color: var(--accent-gold); background: rgba(210, 153, 34, 0.1);">DAOs</span>
-                    <h3>Liquid Governance OS</h3>
-                    <a href="#dao-flow" style="color: var(--accent-gold); font-weight: bold; font-size: 0.9rem;">Ver Workflow ➔</a>
+                <div class="product-card">
+                    <span class="tech-pill">Web3/IA</span>
+                    <h3>Liquid Governance</h3>
+                    <p class="text-small text-muted">Gobernanza distribuida con validación por IA Agents.</p>
+                    <a href="#dao-flow" style="color: var(--accent-blue); font-size: 0.8rem; font-weight: bold;">VER WORKFLOW ➔</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="app" class="app-alpha-section">
-        <div class="container">
-            <div style="text-align: center; max-width: 800px; margin: 0 auto;">
-                <span class="badge" style="background: var(--accent-red); color: #fff;">Versión Alpha v5.8</span>
-                <h2 style="font-size: 3rem; margin: 10px 0;">TeamTowers <span>SOS</span></h2>
-                <p style="font-size: 1.2rem; color: var(--text-muted);">El primer Sistema Operativo de Valor. Una herramienta inmutable para orquestar nodos humanos y automatizar la justicia distributiva.</p>
-            </div>
-
-            <div class="app-infographic">
-                <h3 style="text-align: center; margin-bottom: 40px; color: var(--accent-blue);">Ciclo de Vida de la Red</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center;">
-                    <div>
-                        <div style="font-size: 2rem;">🗺️</div>
-                        <h4 style="margin: 10px 0;">VNA Mapping</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">El Ecosystem Owner diseña el mapa de nodos y flujos tangibles.</p>
-                    </div>
-                    <div style="color: var(--accent-blue);">➔</div>
-                    <div>
-                        <div style="font-size: 2rem;">🎭</div>
-                        <h4 style="margin: 10px 0;">Pull Execution</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">Los Nodos asumen entregables (PoW) del catálogo de su rol.</p>
-                    </div>
-                    <div style="color: var(--accent-blue);">➔</div>
-                    <div>
-                        <div style="font-size: 2rem;">🤖</div>
-                        <h4 style="margin: 10px 0;">IA Audit</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">Dosos (Agente IA) valida la prueba de trabajo contra la ontología.</p>
-                    </div>
-                    <div style="color: var(--accent-blue);">➔</div>
-                    <div>
-                        <div style="font-size: 2rem;">📜</div>
-                        <h4 style="margin: 10px 0;">Ledger Slices</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">El valor se consolida en el Libro Mayor generando Equity dinámico.</p>
-                    </div>
+    <section id="metodologia" class="section-flow">
+        <div class="container grid-2">
+            <div class="vna-viz">
+                <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="150" r="30" fill="#161b22" stroke="#58a6ff" stroke-width="2" class="pulse"/>
+                    <circle cx="300" cy="150" r="30" fill="#161b22" stroke="#a371f7" stroke-width="2"/>
+                    <text x="85" y="155" fill="#58a6ff" font-size="10" font-family="monospace">NODO A</text>
+                    <text x="285" y="155" fill="#a371f7" font-size="10" font-family="monospace">NODO B</text>
+                    
+                    <path d="M130 140 H270" stroke="#58a6ff" stroke-width="2" stroke-dasharray="5 5" class="flow-line">
+                        <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" repeatCount="indefinite" />
+                    </path>
+                    <path d="M130 160 Q200 190 270 160" stroke="#a371f7" stroke-width="1" stroke-dasharray="2 2" opacity="0.6"/>
+                    <text x="170" y="130" fill="#fff" font-size="8" opacity="0.5">FLUJO DE VALOR</text>
+                </svg>
+                <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px; font-size: 0.7rem; font-family: monospace; color: var(--accent-green);">
+                    > ANALYZING_SYSTEM_HEALTH: 92% RESILIENCE...<br>
+                    > DETECTING_INTANGIBLE_ASSETS... DONE.
                 </div>
             </div>
+            <div>
+                <span class="tech-pill" style="background: rgba(210, 153, 34, 0.1); color: var(--accent-gold);">Visual Thinking Orgánico</span>
+                <h2>La visualización como<br>Suministro de Vida.</h2>
+                <p>En TeamTowers HUMA, el mapeo no es decoración. Es una <b>radiografía sistémica</b>. Cuando los nodos visualizan su impacto en la red, la entropía disminuye y la resiliencia aumenta.</p>
+                
+                <div class="method-block">
+                    <h4>Verna Allee (VNA)</h4>
+                    <p class="text-small">Inspirados por el <i>Value Network Analysis</i>, tratamos las relaciones humanas como intercambios de valor que nutren el ecosistema.</p>
+                </div>
+                <div class="method-block" style="border-left-color: var(--accent-green);">
+                    <h4>Mike Moyer (Slicing Pie)</h4>
+                    <p class="text-small">Implementamos el modelo dinámico de Moyer para que la propiedad de la red sea un reflejo matemático del riesgo y la aportación real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <section id="startup-flow" class="section-flow" style="background: #0d1117;">
+        <div class="container">
+            <h2 style="text-align: center;"><span style="color: var(--accent-blue);">Startup:</span> Founders Equity Protocol</h2>
+            <div class="grid-2" style="margin-top: 50px;">
+                <div>
+                    <h3 style="color: var(--accent-blue);">Flujo de Trabajo:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">1️⃣ <b>Mapeo de Capacidad:</b> Definimos qué aporta cada socio (IP, Red, Capital).</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">2️⃣ <b>Inyección SOS:</b> Despliegue del Ledger inmutable en la nube.</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">3️⃣ <b>Gobernanza Líquida:</b> Ajuste mensual de acciones basado en PoW.</li>
+                    </ul>
+                </div>
+                <div style="background: var(--bg-dark); padding: 30px; border-radius: 12px; border: 1px solid var(--accent-blue);">
+                    <h4>Entregables del Paquete:</h4>
+                    <p class="text-small text-muted">
+                        • Mapa VNA de Nodos Fundadores<br>
+                        • Licencia TeamTowers SOS v5.8 (12 meses)<br>
+                        • Acta de Constitución de Slicing Pie<br>
+                        • 4 Sesiones de Mentoría Sistémica
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-flow">
+        <div class="container text-center">
+            <span class="tech-pill">The Future Stack</span>
+            <h2 style="font-size: 2.5rem;">IA Agents + Immutable Proofs</h2>
+            <p style="max-width: 800px; margin: 0 auto 50px auto;">Nuestra App no solo registra datos. Orquestamos <b>Agentes de IA (Dosos)</b> con gestión avanzada de prompts para auditar la calidad del valor reportado. En la fase final, cada <i>Slice</i> se registra vía <b>Blockchain</b> para asegurar una transparencia absoluta.</p>
+            
+            <div class="grid-2">
+                <div style="text-align: left; padding: 20px;">
+                    <h4 style="color: var(--accent-purple);">🤖 IA-Driven Audit</h4>
+                    <p class="text-small text-muted">Utilizamos modelos LLM con prompts ontológicos específicos por sector (Software, Marketing, Legal) para validar que un entregable cumple con los estándares de la red antes de emitir Slices.</p>
+                </div>
+                <div style="text-align: left; padding: 20px;">
+                    <h4 style="color: var(--accent-green);">⛓️ Blockchain Settlement</h4>
+                    <p class="text-small text-muted">Preparamos el ecosistema para la Web3. El registro de Proof of Work (PoW) se convierte en un activo inmutable, permitiendo rondas de financiación transparentes y liquidaciones automáticas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="app-alpha" class="section-flow" style="background: linear-gradient(180deg, #05080f, #010409);">
+        <div class="container">
             <div class="form-container" style="border-top: 4px solid var(--accent-red);">
-                <h3 style="text-align: center;">🛡️ Programa de Alpha Testers</h3>
-                <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 30px;">Buscamos pioneros que quieran reportar bugs y feedbacks estratégicos. Inscríbete para recibir tu acceso.</p>
+                <h2 style="text-align: center; color: var(--accent-red);">🛡️ Beta Testers: SOS v5.8</h2>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 30px;">Estamos en fase Alpha cerrada. Si eres fundador o líder de comunidad, solicita acceso para enviarnos tu feedback estratégico.</p>
                 
                 <form action="https://formspree.io/f/xojnrzke" method="POST">
                     <div class="form-group">
@@ -142,40 +211,28 @@
                         <input type="text" name="alias" placeholder="@nombre" required>
                     </div>
                     <div class="form-group">
-                        <label>Email para acceso</label>
+                        <label>Email profesional</label>
                         <input type="email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label>¿Qué ecosistema quieres testear?</label>
-                        <select name="tester-type">
-                            <option value="startup">Startup Bootstrapping</option>
-                            <option value="dao">Gobernanza DAO</option>
-                            <option value="corporate">Eficiencia Corporativa</option>
-                        </select>
+                        <label>Tu principal inquietud (Bug/Mejora/Duda)</label>
+                        <textarea name="feedback" rows="3" placeholder="Ej: Me gustaría integrar mi propio agente de IA..."></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Tu Feedback inicial / Expectativas</label>
-                        <textarea name="feedback" rows="3" placeholder="¿Qué problema te gustaría que SOS resolviera en tu red?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; background: var(--accent-red); box-shadow: 0 4px 15px rgba(248, 81, 73, 0.3);">Solicitar Acceso Alpha ➔</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; background: var(--accent-red);">Enviar Reporte Alpha ➔</button>
                 </form>
             </div>
         </div>
     </section>
 
-    <section id="contacto" class="contact-section">
+    <section id="contacto-consultoria" class="section-flow">
         <div class="container">
             <div class="form-container">
-                <h2 style="text-align: center;">Consultoría de Ingeniería</h2>
-                <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Transforma tu organización en un sistema vivo con el acompañamiento de Álvaro Solache.</p>
+                <h2 style="text-align: center;">Transforma tu Red hoy</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Inicia el camino con el acompañamiento de Álvaro Solache.</p>
                 <form action="https://formspree.io/f/xojnrzle" method="POST">
                     <div class="form-group">
                         <label>Nombre completo</label>
                         <input type="text" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email profesional</label>
-                        <input type="email" name="email" required>
                     </div>
                     <div class="form-group">
                         <label>Paquete de Interés</label>
@@ -185,7 +242,11 @@
                             <option value="liquid">Liquid Governance OS</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Consulta ➔</button>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Solicitar Ingeniería ➔</button>
                 </form>
             </div>
         </div>
@@ -196,13 +257,12 @@
     </footer>
 
     <script>
-        // Lógica de los bloques de producto (mantenida de la versión anterior)
         const content = {
-            startups: { title: "Justicia Matemática para <span>Startups</span>", desc: "Elimina el miedo al 50/50 con Slicing Pie." },
-            corp: { title: "Nodos de Valor para <span>Corporativos</span>", desc: "Optimiza flujos y detecta el valor invisible." },
-            daos: { title: "Gobernanza Líquida para <span>DAOs</span>", desc: "Meritocracia real basada en Proof of Work." }
+            startups: { title: "Justicia Matemática para <span>Startups</span>", desc: "Mapeo VNA y Slicing Pie dinámico." },
+            corp: { title: "Nodos de Valor para <span>Corporativos</span>", desc: "Optimización de flujos y resiliencia sistémica." },
+            daos: { title: "Gobernanza Líquida para <span>DAOs</span>", desc: "Meritocracia on-chain validada por IA Agents." }
         };
-        function updateView(type, el) {
+        function updateHero(type, el) {
             document.querySelectorAll('.switcher-opt').forEach(opt => opt.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('hero-title').innerHTML = content[type].title;
