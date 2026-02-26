@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOS v5.7 | Suite de Validación Total</title>
+    <title>SOS v5.8 | Suite de Validación Total</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
         :root {
@@ -85,8 +85,8 @@
     </nav>
 
     <div class="container fade-in">
-        <h1>⚙️ Test de Estrés del Kernel <span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">(v5.7.1)</span></h1>
-        <p class="text-muted" style="margin-bottom: 30px;">Ejecutando 36 validaciones en tiempo real sobre la inmutabilidad, el Value Accounting y las nuevas dinámicas de Tokenomics.</p>
+        <h1>⚙️ Test de Estrés del Kernel <span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">(v5.8.0)</span></h1>
+        <p class="text-muted" style="margin-bottom: 30px;">Ejecutando 34 validaciones en tiempo real sobre la inmutabilidad, el Value Accounting y las nuevas dinámicas de Tokenomics.</p>
         
         <div id="results"></div>
         <div id="summary-box"></div>
@@ -116,7 +116,7 @@
             const PID_ECO = 'test-eco-' + Date.now();
 
             try {
-                // --- TUS 31 TESTS ORIGINALES (FASES 1 A 12) ---
+                // --- TUS 34 TESTS ORIGINALES ---
                 assert(typeof store.calculateResilience === 'function', "Función de Resiliencia presente", "KERNEL");
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_1, nombre: 'Test Project', sector: 'marketing' } });
                 const p = store.getState().projects.find(x => x.id === PID_1);
@@ -223,7 +223,7 @@
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_2, nombre: 'Deep Tech Lab', sector: sectorDynId } });
                 assert(store.getState().projects.find(x => x.id === PID_2).roles.find(r => r.levelId === '@anxaneta').name === 'Lead Scientist', "Un nuevo proyecto usa la ontología dinámica correctamente", "CORE");
 
-                // 🚀 --- FASE 13: LOS 5 TESTS NUEVOS (v5.7) ---
+                // 🚀 --- LOS 5 TESTS NUEVOS (v5.7) ---
                 
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_ECO, nombre: 'DAO Project', sector: 'general', tipo: 'ecosystem' } });
                 let pEco = store.getState().projects.find(x => x.id === PID_ECO);
@@ -249,7 +249,7 @@
                 summary.className = "summary";
                 const ok = passed === total;
                 summary.innerHTML = `<h2 style="margin:0; color: ${ok ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                        ${ok ? '🚀 KERNEL v5.7 VALIDADO' : '🛠️ FALLO EN KERNEL DETECTADO'}
+                                        ${ok ? '🚀 KERNEL v5.8 VALIDADO' : '🛠️ FALLO EN KERNEL DETECTADO'}
                                      </h2>
                                      <p style="font-size: 1.2rem; color: var(--text-heading); margin-top: 10px;">
                                         Certificación: ${passed}/${total}
