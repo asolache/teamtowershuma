@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <title>TeamTowers SOS v5.7 | Red de Valor</title>
     <style>
         /* --- VARIABLES GLOBALES --- */
@@ -39,6 +40,9 @@
             z-index: 2000; display: flex; justify-content: space-between; align-items: center;
             padding: 0 20px; backdrop-filter: blur(10px);
         }
+        
+        /* Asegurar que la topbar se vea bien en modo claro también */
+        [data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.95); }
 
         .toolbar {
             position: fixed; top: 60px; left: 0; right: 0; height: 50px;
@@ -101,7 +105,7 @@
         .form-control:focus {
             outline: none; border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2);
-            background-color: #05080f;
+            background-color: var(--bg-panel);
         }
         .form-control::placeholder { color: #484f58; opacity: 1; }
 
@@ -142,7 +146,8 @@
             <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
                 <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Nodo (Usuario)</a>
                 <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub de Redes de Valor</a>
-                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración Global</a>
+                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-bottom:1px solid var(--border-color);">⚙️ Configuración Global</a>
+                <a href="#" id="btn-toggle-theme" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🌗 Alternar Modo Claro/Oscuro</a>
             </div>
         </div>
     </nav>
@@ -208,12 +213,18 @@
             }
         }
 
-        // EVENTOS GLOBALES
+        // EVENTOS GLOBALES (Menú y Tema)
         document.addEventListener('click', (e) => {
             const dropdown = document.getElementById('dropdown-menu');
-            if (e.target.closest('#btn-user-menu')) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            else if(dropdown) dropdown.style.display = 'none';
+            
+            // Abrir/cerrar menú
+            if (e.target.closest('#btn-user-menu')) {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            } else if(dropdown && !e.target.closest('#dropdown-menu')) {
+                dropdown.style.display = 'none';
+            }
 
+            // Cambiar Usuario Simulador
             if (e.target.id === 'menu-switch-role') {
                 e.preventDefault();
                 const state = store.getState();
@@ -227,6 +238,24 @@
                         window.location.hash = `#/user-dashboard`;
                     }
                 }
+            }
+
+            // LÓGICA DEL TEMA CLARO/OSCURO
+            if (e.target.id === 'btn-toggle-theme') {
+                e.preventDefault();
+                const state = JSON.parse(localStorage.getItem('tt_sos_state')) || {};
+                if (!state.config) state.config = {};
+                
+                const nuevoTema = state.config.theme === 'light' ? 'dark' : 'light';
+                state.config.theme = nuevoTema;
+                
+                localStorage.setItem('tt_sos_state', JSON.stringify(state));
+                document.body.setAttribute('data-theme', nuevoTema);
+                
+                // Actualizar store en memoria también
+                store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: nuevoTema } });
+                
+                if(dropdown) dropdown.style.display = 'none';
             }
         });
 
