@@ -136,7 +136,20 @@
             { "id": "ai_dev", "name": "Gemini IA", "levelId": "@baixos", "desc": "AI Developer", "fmv": 0.08, "multiplier": 1.5 }
         ],
         "versiones": [
-            {
+        {
+                "version": "v5.8",
+                "titulo": "Ecosistema Fractal, Macro-Mapas y Exportador SVG",
+                "transacciones": [
+                    { "fase": 1, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Hub Fractal (Macro-Mapa de Áreas)", "horas": 2.0 },
+                    { "fase": 2, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: macroFlows en store.js y Reducer", "horas": 0.5 },
+                    { "fase": 3, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "UI: DashboardView.js (Físicas Proyectos)", "horas": 1.0 },
+                    { "fase": 4, "from": "user_arch", "to": "ai_dev", "tipo": "intangible", "entregable": "Req: Script Global Exportador SVG", "horas": 1.0 },
+                    { "fase": 5, "from": "ai_dev", "to": "user_arch", "tipo": "tangible", "entregable": "Core: Blob Serializer en index.html", "horas": 0.5 },
+                    { "fase": 6, "from": "user_qa", "to": "ai_dev", "tipo": "intangible", "entregable": "Bug: Test TDD roto por refactor de Proyectos", "horas": 1.0 },
+                    { "fase": 7, "from": "ai_dev", "to": "user_qa", "tipo": "tangible", "entregable": "Fix: Backwards Compatibility en Kernel (34/34)", "horas": 0.5 }
+                ]
+            },    
+        {
                 "version": "v5.7",
                 "titulo": "Dashboard PO Unificado & Filtros Inbox",
                 "transacciones": [
