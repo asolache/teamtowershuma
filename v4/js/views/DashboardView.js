@@ -302,4 +302,11 @@ export const DashboardView = {
                     </select>
                     
                     <div style="display:flex; gap:10px; margin-top: 25px;">
-                        <button id="btn-close-new-
+                        <button id="btn-close-new-project" class="btn btn-outline" style="flex:1;">Cancelar</button>
+                        <button id="btn-save-new-project" class="btn btn-primary" style="flex:1; background:var(--accent-blue); border:none;">Instanciar Red</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+};
