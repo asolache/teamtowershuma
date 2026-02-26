@@ -44,6 +44,20 @@ document.addEventListener('click', (e) => {
         if (showAgileModal) setTimeout(() => document.getElementById('agile-entregable').focus(), 100);
     }
 
+    // --- MAGIA: AUTOCOMPLETADO DESDE PÍLDORAS ONTOLÓGICAS ---
+    if (e.target.classList.contains('btn-suggest-deliverable')) {
+        e.preventDefault();
+        const title = e.target.getAttribute('data-title');
+        const hours = e.target.getAttribute('data-hours');
+        document.getElementById('agile-entregable').value = title;
+        document.getElementById('agile-horas').value = hours;
+        
+        // Efecto visual de selección
+        document.querySelectorAll('.btn-suggest-deliverable').forEach(b => b.style.borderColor = 'var(--border-color)');
+        e.target.style.borderColor = 'var(--accent-gold)';
+    }
+
+    // --- CANCELAR / GUARDAR MODO ÁGIL ---
     if (e.target.id === 'btn-agile-cancel') {
         agileOriginId = null; agileDestinationId = null; showAgileModal = false;
         document.getElementById('app').innerHTML = ProjectView.render(e.target.getAttribute('data-pid'));
@@ -100,7 +114,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 🧠 FÍSICAS ORIGINALES (Grafo Orgánico Force-Directed - Tu código intacto)
+// 🧠 FÍSICAS ORIGINALES
 function calculateNetworkLayout(roles, transactions, width, height) {
     const nodes = {}; const radius = Math.min(width, height) / 2.5; const centerX = width / 2; const centerY = height / 2;
     roles.forEach((r, i) => { const angle = (i / roles.length) * 2 * Math.PI; nodes[r.id] = { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle), vx: 0, vy: 0 }; });
@@ -130,7 +144,7 @@ function calculateNetworkLayout(roles, transactions, width, height) {
     return nodes;
 }
 
-// 🎨 RENDERIZADO DEL GRAFO ORIGINAL (CON BUG DE TEXTOS BOCA ABAJO CORREGIDO)
+// 🎨 RENDERIZADO DEL GRAFO ORIGINAL
 function generateSVGMap(project, isHealthMode) {
     const roles = project.roles.filter(r => !r.isArchived); const transactions = project.transactions || [];
     const state = store.getState(); const svgWidth = 1000; const svgHeight = 600;
@@ -156,11 +170,8 @@ function generateSVGMap(project, isHealthMode) {
         
         const pathData = `M ${from.x} ${from.y} Q ${cx} ${cy}, ${to.x} ${to.y}`;
         
-        // BUGFIX: Crear un path invisible que siempre vaya de izquierda a derecha para el texto
         let textPathData = pathData;
-        if (from.x > to.x) {
-            textPathData = `M ${to.x} ${to.y} Q ${cx} ${cy}, ${from.x} ${from.y}`;
-        }
+        if (from.x > to.x) { textPathData = `M ${to.x} ${to.y} Q ${cx} ${cy}, ${from.x} ${from.y}`; }
 
         const pathId = `edge-${tx.hash}`; 
         const textPathId = `textedge-${tx.hash}`;
@@ -195,41 +206,84 @@ export const ProjectView = {
         const roles = project.roles.filter(r => !r.isArchived);
         const transactions = project.transactions || [];
 
-        // Forzar modo visual-theory si el usuario no es admin (por seguridad)
+        // Forzar modo visual-theory si el usuario no es admin
         if (!isAdmin && mapDisplayMode === 'agile-creator') {
             mapDisplayMode = 'visual-theory';
         }
 
-        // LIMPIAR TOOLBAR ANTIGUA
-        setTimeout(() => window.setNavbar ? window.setNavbar([], '', '') : null, 0);
+        // 🚀 SET NAVBAR GLOBAL (Con atajos uniformes)
+        setTimeout(() => window.setNavbar(
+            [
+                { label: '🏠 Hub', hash: '#/' }, 
+                { label: project.nombre, hash: `#/project/${projectId}` },
+                { label: 'Mapa VNA' }
+            ], 
+            ``, 
+            `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
+             <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}'" title="Dashboard PO">📥 Dashboard PO</button>
+             ${isAdmin ? `<button id="btn-open-manual-tx" class="btn text-small" style="background: var(--accent-purple); border:none; color:#fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-left:10px;">➕ Inyectar Flujo Manual</button>` : ''}`
+        ), 0);
 
-        // ESTILOS DE PESTAÑAS (TABS)
         const tabStyle = (mode) => `
             padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${mapDisplayMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
             color: ${mapDisplayMode === mode ? 'var(--text-heading)' : 'var(--text-muted)'}; transition: 0.2s; background: transparent; border-top: none; border-left: none; border-right: none;
         `;
 
-        // MODAL ÁGIL (Aparece cuando clickas 2 nodos en agile-creator)
+        
+
+        // MODAL ÁGIL CON AUTOCOMPLETADO ONTOLÓGICO
         let modalAgileHTML = '';
         if (showAgileModal && isAdmin) {
             const rOri = roles.find(r => r.id === agileOriginId);
             const rDes = roles.find(r => r.id === agileDestinationId);
+            
+            // Buscar sugerencias para el Rol Emisor
+            let sugerenciasHTML = '';
+            if (rOri && rOri.standard_deliverables && rOri.standard_deliverables.length > 0) {
+                sugerenciasHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:8px; color:var(--accent-gold); font-size:0.75rem; font-weight:bold; text-transform:uppercase;">✨ Sugerencias de Ontología (Clic para aplicar)</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            ${rOri.standard_deliverables.map(sd => `
+                                <button class="btn-suggest-deliverable" data-title="${sd.name}" data-hours="${sd.estimatedHours}" style="background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); text-align: left; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; display: flex; justify-content: space-between;">
+                                    <span>${sd.name}</span>
+                                    <span style="color: var(--accent-gold); font-family: monospace;">${sd.estimatedHours}h</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                sugerenciasHTML = `<div style="margin-bottom: 15px; font-size:0.75rem; color:var(--text-muted); font-style:italic;">No hay entregables predefinidos para el rol emisor en el Kernel.</div>`;
+            }
+
             modalAgileHTML = `
                 <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-                    <div class="panel-surface fade-in" style="width: 400px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-blue);">
+                    <div class="panel-surface fade-in" style="width: 450px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-blue);">
                         <h3 style="margin-top: 0; color: var(--accent-blue);">⚡ Nuevo Flujo de Valor</h3>
-                        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">De: <b>${rOri?.name}</b> ⟶ Para: <b>${rDes?.name}</b></p>
+                        <p style="font-size:0.85rem; color:var(--text-heading); margin-bottom:20px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">De: <b style="color:var(--accent-blue);">${rOri?.name}</b> <br> Para: <b>${rDes?.name}</b></p>
                         
-                        <label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Entregable (PoW):</label>
-                        <input type="text" id="agile-entregable" class="form-input" placeholder="Ej: Auditoría de Contratos" style="width:100%; margin-bottom:15px; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px;">
+                        ${sugerenciasHTML}
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:20px;">
-                            <div><label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Slicing (Horas):</label><input type="number" step="0.5" id="agile-horas" class="form-input" placeholder="2.5" style="width:100%; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px;"></div>
-                            <div><label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Tipo VNA:</label><select id="agile-tipo" class="form-input" style="width:100%; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px;"><option value="tangible">Tangible</option><option value="intangible">Intangible</option></select></div>
+                        <label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Entregable y Prueba (PoW):</label>
+                        <input type="text" id="agile-entregable" class="form-input" placeholder="O escribe uno personalizado..." style="width:100%; margin-bottom:15px; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px;">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:25px;">
+                            <div>
+                                <label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Slicing (Horas Est.):</label>
+                                <input type="number" step="0.5" id="agile-horas" class="form-input" placeholder="Ej: 2.5" style="width:100%; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px; font-family:monospace; font-size: 1.1rem;">
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.85rem;">Tipo VNA:</label>
+                                <select id="agile-tipo" class="form-input" style="width:100%; background:var(--bg-base); border:1px solid var(--border-color); padding:10px; color:var(--text-heading); border-radius:6px;">
+                                    <option value="tangible">Tangible</option>
+                                    <option value="intangible">Intangible</option>
+                                </select>
+                            </div>
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button id="btn-agile-cancel" data-pid="${projectId}" class="btn btn-outline" style="flex:1;">Cancelar</button>
-                            <button id="btn-agile-save" data-pid="${projectId}" class="btn btn-primary" style="flex:1; background:var(--accent-blue); border:none;">Sellar</button>
+                            <button id="btn-agile-save" data-pid="${projectId}" class="btn btn-primary" style="flex:1; background:var(--accent-blue); border:none; font-weight:bold;">Sellar Flujo</button>
                         </div>
                     </div>
                 </div>`;
@@ -237,21 +291,6 @@ export const ProjectView = {
 
         return `
             ${modalAgileHTML}
-            
-            <div style="background: var(--bg-surface); border-bottom: 1px solid var(--border-color); padding: 15px 30px; position: sticky; top: 0; z-index: 100;">
-                <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
-                    <div style="font-size: 0.95rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px;">
-                        <a href="#/" style="color: var(--accent-blue); text-decoration: none; font-weight: bold;">🏠 Hub</a> 
-                        <span>/</span> 
-                        <a href="#/project/${projectId}" style="color: var(--text-main); text-decoration: none;">${project.nombre}</a> 
-                        <span>/</span> 
-                        <span style="color: var(--text-heading); font-weight: bold;">Mapa de Valor VNA</span>
-                    </div>
-                    <div>
-                        ${isAdmin ? `<button id="btn-open-manual-tx" class="btn text-small" style="background: var(--accent-purple); border:none; color:#fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">➕ Inyectar Flujo Manual</button>` : ''}
-                    </div>
-                </div>
-            </div>
 
             <div class="container fade-in" style="max-width: 1200px; margin: 20px auto; padding: 0 20px;">
                 
@@ -275,8 +314,8 @@ export const ProjectView = {
                         <section class="panel-surface" style="margin-bottom: 25px; border: 2px dashed var(--accent-blue); padding: 25px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                                 <div>
-                                    <h3 style="margin: 0; color: var(--accent-blue);">🖱️ Diseñador de Flujos</h3>
-                                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 5px 0 0 0;">Haz clic en el nodo <b>Emisor</b> y luego en el <b>Receptor</b> para crear un enlace en el mapa.</p>
+                                    <h3 style="margin: 0; color: var(--accent-blue);">🖱️ Diseñador de Flujos (con IA)</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 5px 0 0 0;">Haz clic en el nodo <b>Emisor</b> y luego en el <b>Receptor</b>. La base de datos te sugerirá entregables expertos.</p>
                                 </div>
                                 <span class="badge" style="background: rgba(88,166,255,0.1); color: var(--accent-blue); font-size: 1rem; padding: 10px;">
                                     ${!agileOriginId ? '1️⃣ Selecciona Origen' : '2️⃣ Selecciona Destino'}
@@ -292,33 +331,46 @@ export const ProjectView = {
                                     </div>`).join('')}
                             </div>
                         </section>
-                        <h4 style="margin-bottom: 15px; color: var(--text-muted);">🕸️ Vista Previa del Grafo:</h4>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px;">
+                            <h4 style="margin: 0; color: var(--text-muted);">🕸️ Vista Previa del Grafo:</h4>
+                            <button class="btn btn-outline text-small btn-export-svg" style="border-color: var(--accent-gold); color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 1.2rem;">📸</span> Exportar Mapa (SVG)
+                            </button>
+                        </div>
                         ${generateSVGMap(project, false)}
                     ` : ''}
 
                     ${mapDisplayMode === 'visual-theory' || mapDisplayMode === 'visual-health' ? `
-                        <div style="display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.8rem; flex-wrap: wrap;">
-                            <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); display:flex; gap:15px; align-items:center;">
-                                <b style="color: var(--text-heading);">Niveles:</b>
-                                <span style="color: var(--accent-gold);">● Estratégico (@anx)</span>
-                                <span style="color: var(--accent-purple);">● Coord. (@aix)</span>
-                                <span style="color: var(--accent-blue);">● Auditoría (@dos)</span>
-                                <span style="color: var(--accent-green);">● Operativo (@bx)</span>
-                                <span style="color: var(--accent-red);">● Soporte (@pny)</span>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 15px; font-size: 0.8rem;">
+                                <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); display:flex; gap:15px; align-items:center;">
+                                    <b style="color: var(--text-heading);">Niveles:</b>
+                                    <span style="color: var(--accent-gold);">● Estratégico (@anx)</span>
+                                    <span style="color: var(--accent-purple);">● Coord. (@aix)</span>
+                                    <span style="color: var(--accent-blue);">● Auditoría (@dos)</span>
+                                    <span style="color: var(--accent-green);">● Operativo (@bx)</span>
+                                    <span style="color: var(--accent-red);">● Soporte (@pny)</span>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); display:flex; gap:15px; align-items:center;">
+                                    <b style="color: var(--text-heading);">Líneas:</b>
+                                    <span style="color: var(--text-muted);">— Tangible</span>
+                                    <span style="color: var(--text-muted);">- - Intangible</span>
+                                </div>
+                                ${mapDisplayMode === 'visual-health' ? `
+                                <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); display:flex; gap:15px; align-items:center;">
+                                    <b style="color: var(--text-heading);">Termografía:</b>
+                                    <span style="color: var(--accent-blue);">Flujo Normal</span>
+                                    <span style="color: var(--accent-red);">Alerta / Atasco</span>
+                                    <span style="color: var(--accent-green);">Consolidado</span>
+                                </div>` : ''}
                             </div>
-                            <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); display:flex; gap:15px; align-items:center;">
-                                <b style="color: var(--text-heading);">Líneas:</b>
-                                <span style="color: var(--text-muted);">— Tangible</span>
-                                <span style="color: var(--text-muted);">- - Intangible</span>
-                            </div>
-                            ${mapDisplayMode === 'visual-health' ? `
-                            <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); display:flex; gap:15px; align-items:center;">
-                                <b style="color: var(--text-heading);">Termografía:</b>
-                                <span style="color: var(--accent-blue);">Flujo Normal</span>
-                                <span style="color: var(--accent-red);">Alerta / Atasco</span>
-                                <span style="color: var(--accent-green);">Consolidado</span>
-                            </div>` : ''}
+                            
+                            <button class="btn btn-outline text-small btn-export-svg" style="border-color: var(--accent-gold); color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 1.2rem;">📸</span> Exportar Mapa (SVG)
+                            </button>
                         </div>
+                        
                         ${generateSVGMap(project, mapDisplayMode === 'visual-health')}
                     ` : ''}
 
@@ -362,7 +414,7 @@ export const ProjectView = {
                                         <td style="padding: 12px 10px; color: var(--text-muted);">
                                             ${rFrom?.name || 'Borrado'} <span style="color:var(--accent-blue); margin:0 5px;">⟶</span> ${rTo?.name || 'Borrado'}
                                         </td>
-                                        <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${tx.realHours || tx.estimatedHours}h</td>
+                                        <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${tx.realHours || tx.estimatedHours || tx.horas}h</td>
                                         <td style="padding: 12px 10px; text-align: right;">${actionBtn}</td>
                                     </tr>`;
                                 }).join('')}
