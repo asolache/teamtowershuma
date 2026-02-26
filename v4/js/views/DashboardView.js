@@ -1,4 +1,5 @@
 import { store } from '../core/store.js';
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Importamos la librería para el Modal
 
 let ecoTabMode = 'macro-map'; // macro-map, directory, health
 let macroOriginId = null;
@@ -128,24 +129,82 @@ function generateMacroSVG(projects, macroFlows, originId) {
         const borderColor = isSelected ? 'var(--accent-gold)' : 'var(--border-color)';
         const bgColor = isSelected ? 'rgba(210, 153, 34, 0.1)' : 'var(--bg-panel)';
         
-        svgNodes += `<foreignObject x="${coords.x - 65}" y="${coords.y - 45}" width="130" height="90" style="overflow:visible;"><div class="macro-node" data-id="${p.id}" xmlns="http://www.w3.org/1999/xhtml" style="background:${bgColor}; border:2px solid ${borderColor}; border-radius:12px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='${borderColor}'"><div style="font-size:1.2rem; margin-bottom:2px;">🏢</div><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.2;">${p.nombre}</div><div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px; font-family:monospace;">${p.sector}</div></div></foreignObject>`;
+        svgNodes += `<foreignObject x="${coords.x - 65}" y="${coords.y - 45}" width="130" height="90" style="overflow:visible;"><div class="macro-node" data-id="${p.id}" xmlns="http://www.w3.org/1999/xhtml" style="background:${bgColor}; border:2px solid ${borderColor}; border-radius:12px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='${borderColor}'"><div style="font-size:1.2rem; margin-bottom:2px;">🏢</div><div style="font-weight:bold; color:var(--text-heading); font-size:0.8rem; line-height:1.2;">${p.nombre}</div><div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px; font-family:monospace;">${GLOBAL_ONTOLOGY[p.sector]?.nombre || p.sector}</div></div></foreignObject>`;
     });
 
     return `<div style="width:100%; overflow-x:auto; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="display:block; margin: 0 auto; overflow:visible;">${svgEdges}${svgNodes}</svg></div>`;
 }
 
-// ESTA ES LA CLAVE QUE FALTABA O SE SOBRESCRIBIÓ
+// 🩺 MÓDULO DE DIAGNÓSTICO (Resilience Bar Adaptada)
+function renderEcosystemHealth(projects) {
+    if (projects.length === 0) return '<div class="text-muted text-center panel-surface" style="padding:40px;">No hay redes para analizar.</div>';
+
+    let totalAtascos = 0;
+    let alerts = [];
+
+    const projectHealths = projects.map(p => {
+        const txs = p.transactions || [];
+        const atascos = txs.filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        totalAtascos += atascos;
+        const salud = Math.max(0, 100 - (atascos * 10)); 
+
+        if (atascos > 3) alerts.push({ level: 'CRITICAL', msg: `Bloqueo severo en "${p.nombre}" (${atascos} tareas atascadas).` });
+        else if (atascos > 0) alerts.push({ level: 'WARNING', msg: `Fricción en "${p.nombre}" (${atascos} tareas en revisión).` });
+
+        return { name: p.nombre, salud, atascos };
+    });
+
+    const globalSalud = Math.max(0, 100 - (totalAtascos * 5));
+
+    let color = "var(--accent-green)";
+    if (globalSalud < 70) color = "var(--accent-gold)";
+    if (globalSalud < 30) color = "var(--accent-red)";
+
+    return `
+        <div class="panel-surface" style="border-top: 4px solid ${color}; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin:0;">Termómetro de Resiliencia Global</h3>
+                <span style="font-size: 1.8rem; font-weight: bold; color: ${color};">${globalSalud}%</span>
+            </div>
+            
+            <div style="width: 100%; height: 12px; background: var(--bg-base); border-radius: 6px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border-color);">
+                <div style="width: ${globalSalud}%; height: 100%; background: ${color}; transition: width 0.5s ease-in-out;"></div>
+            </div>
+
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--text-muted);">Diagnóstico de Nodos Activos:</h4>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                ${alerts.length === 0 ? '<div style="font-size: 0.85rem; color: var(--accent-green); background: rgba(35,134,54,0.1); padding: 10px; border-radius: 6px;">✅ Todos los flujos operan de forma óptima. No hay fricciones detectadas.</div>' : 
+                  alerts.map(a => `
+                    <div style="font-size: 0.85rem; color: ${a.level === 'CRITICAL' ? 'var(--accent-red)' : 'var(--accent-gold)'}; background: rgba(255,255,255,0.05); border-left: 3px solid ${a.level === 'CRITICAL' ? 'var(--accent-red)' : 'var(--accent-gold)'}; padding: 10px 15px; border-radius: 4px;">
+                        ⚠️ ${a.msg}
+                    </div>
+                `).join('')}
+            </div>
+
+            ${globalSalud < 30 ? `
+                <div style="padding: 15px; background: rgba(248, 81, 73, 0.1); border: 1px solid var(--accent-red); border-radius: 8px; font-size: 0.85rem; color: var(--accent-red);">
+                    <b>🛑 BLOQUEO ACTIVO:</b> El ecosistema presenta un fallo sistémico en su cadena de valor. El Ecosystem Owner debe intervenir y auditar los departamentos bloqueados inmediatamente.
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
 export const DashboardView = {
     render: () => {
         const state = store.getState();
         const config = state.config || { ecosystemName: 'TeamTowers Network' };
         const projects = state.projects || [];
         const macroFlows = state.macroFlows || [];
-        const sectores = state.ontology?.sectores || {};
+        const totalUsers = state.globalUsers?.length || 0;
 
-        // 🚀 SET NAVBAR GLOBAL
+        // 🧠 KPIs REALES DEL ECOSISTEMA
+        const totalRoles = projects.reduce((acc, p) => acc + (p.roles?.filter(r=>!r.isArchived).length || 0), 0);
+        const totalSlices = projects.reduce((acc, p) => acc + (p.ledger?.reduce((sum, l) => sum + l.valorCongelado, 0) || 0), 0);
+
+        // 🚀 SET NAVBAR GLOBAL (Breadcrumb Corregido)
         setTimeout(() => window.setNavbar(
-            [{ label: '🏠 Hub' }], 
+            [{ label: config.ecosystemName, hash: '#/' }, { label: 'Dashboard' }], 
             ``, 
             `<button id="btn-open-new-project" class="btn text-small" style="background: var(--accent-blue); border:none; color:#fff; padding: 8px 15px; border-radius: 6px; font-weight: bold;">➕ Crear Área / Proyecto</button>
              <button onclick="location.hash='#/settings'" class="btn btn-outline text-small" style="border-color: var(--accent-purple); color: var(--accent-purple); padding: 8px 15px; border-radius: 6px;">⚙️ Kernel Settings</button>`
@@ -230,10 +289,10 @@ export const DashboardView = {
                                         <div class="panel-surface" style="border-top: 4px solid var(--accent-blue); transition: transform 0.2s; cursor:pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'" onclick="location.hash='#/project/${p.id}'">
                                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 15px;">
                                                 <h3 style="margin: 0; font-size: 1.2rem;">${p.nombre}</h3>
-                                                <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted);">${p.sector.toUpperCase()}</span>
+                                                <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted);">${GLOBAL_ONTOLOGY[p.sector]?.nombre || p.sector}</span>
                                             </div>
                                             <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">
-                                                <span>🎭 ${p.roles?.length || 0} Roles base</span>
+                                                <span>🎭 ${p.roles?.filter(r=>!r.isArchived).length || 0} Roles base</span>
                                                 <span>📝 ${p.transactions?.length || 0} Flujos</span>
                                             </div>
                                             <button class="btn btn-outline btn-block text-small">Entrar (Zoom In) 🔍</button>
@@ -243,12 +302,7 @@ export const DashboardView = {
                             `}
                         ` : ''}
 
-                        ${ecoTabMode === 'health' ? `
-                            <div class="panel-surface text-center" style="padding: 50px; border: 1px dashed var(--border-color);">
-                                <h3 style="color: var(--text-muted);">Analítica Global en Desarrollo</h3>
-                                <p class="text-small text-muted">Próximamente: Gráficas de rendimiento cruzado entre todos los departamentos del Ecosistema.</p>
-                            </div>
-                        ` : ''}
+                        ${ecoTabMode === 'health' ? renderEcosystemHealth(projects) : ''}
                     </main>
 
                     <aside>
@@ -263,17 +317,17 @@ export const DashboardView = {
 
                         <h3 style="margin-bottom: 15px;">📊 Resumen Ecosistema</h3>
                         <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="panel-surface" style="padding: 15px; border-left: 3px solid var(--accent-green);">
+                                <div class="text-muted text-small text-uppercase">Total Valor Aportado</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-green);">${totalSlices.toLocaleString()} <span style="font-size:1rem; font-weight:normal;">Slices</span></div>
+                            </div>
                             <div class="panel-surface" style="padding: 15px; border-left: 3px solid var(--text-muted);">
                                 <div class="text-muted text-small text-uppercase">Nodos Humanos Totales</div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--text-heading);">${state.globalUsers?.length || 0}</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--text-heading);">${totalUsers}</div>
                             </div>
                             <div class="panel-surface" style="padding: 15px; border-left: 3px solid var(--accent-purple);">
-                                <div class="text-muted text-small text-uppercase">Áreas / Redes Creadas</div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-purple);">${projects.length}</div>
-                            </div>
-                            <div class="panel-surface" style="padding: 15px; border-left: 3px solid var(--accent-gold);">
-                                <div class="text-muted text-small text-uppercase">Macro-Flujos Definidos</div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-gold);">${macroFlows.length}</div>
+                                <div class="text-muted text-small text-uppercase">Roles Orquestados</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-purple);">${totalRoles}</div>
                             </div>
                         </div>
                     </aside>
@@ -284,7 +338,7 @@ export const DashboardView = {
             <div id="modal-new-project" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3000; align-items:center; justify-content:center; backdrop-filter: blur(8px);">
                 <div class="panel-surface fade-in" style="width: 450px; padding: 30px; border-radius: 12px; border-top: 4px solid var(--accent-blue);">
                     <h2 style="margin-top:0; color: var(--text-heading);">🏢 Crear Área / Red</h2>
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Instancia un nuevo departamento clonando el ADN de una plantilla de la Ontología.</p>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px;">Instancia un nuevo departamento clonando el ADN de la Ontología Universal.</p>
                     
                     <label class="form-label">Nombre del Área (Ej: Dev, Marketing)</label>
                     <input type="text" id="new-proj-name" class="form-control" placeholder="Nombre de la Red">
@@ -292,7 +346,7 @@ export const DashboardView = {
                     <label class="form-label">Sector / Plantilla Ontológica Base</label>
                     <select id="new-proj-sector" class="form-control">
                         <option value="">Seleccionar del Kernel...</option>
-                        ${Object.keys(sectores).map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('')}
+                        ${Object.keys(GLOBAL_ONTOLOGY).map(k => `<option value="${k}">${GLOBAL_ONTOLOGY[k].nombre}</option>`).join('')}
                     </select>
 
                     <label class="form-label">Tipo Sistémico</label>
