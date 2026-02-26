@@ -52,6 +52,12 @@
         .breadcrumb span.separator { margin: 0 8px; color: var(--border-color); }
         .breadcrumb span.current { color: var(--text-heading); font-weight: bold; }
 
+        .btn-back-nav { 
+            margin-right: 12px; font-size: 1.2rem; text-decoration: none; 
+            transition: transform 0.2s; display: inline-block; 
+        }
+        .btn-back-nav:hover { transform: translateX(-3px); }
+
         /* --- COMPONENTES BÁSICOS --- */
         h1, h2, h3, h4 { color: var(--text-heading); margin-top: 0; margin-bottom: 0.5rem; }
         p { margin-top: 0; margin-bottom: 1rem; }
@@ -75,81 +81,41 @@
         .btn-block { display: block; width: 100%; text-align: center; }
 
         /* ========================================================= */
-        /* 🎨 SISTEMA GLOBAL DE FORMULARIOS ESTANDARIZADOS          */
+        /* 🎨 SISTEMA GLOBAL DE FORMULARIOS ESTANDARIZADOS           */
         /* ========================================================= */
         
         .form-label { 
-            display: block; 
-            margin-bottom: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            color: var(--text-muted); 
+            display: block; margin-bottom: 8px; font-size: 0.85rem; 
+            font-weight: 600; color: var(--text-muted); 
         }
 
         .form-control { 
-            width: 100%; 
-            padding: 10px 14px; 
-            font-size: 0.95rem; 
-            color: var(--text-heading); 
-            background-color: var(--bg-base); /* Fondo hundido para contraste */
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); 
-            margin-bottom: 16px; 
-            font-family: inherit;
-            transition: all var(--transition-speed) ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Sombra interior */
+            width: 100%; padding: 10px 14px; font-size: 0.95rem; 
+            color: var(--text-heading); background-color: var(--bg-base); 
+            border: 1px solid var(--border-color); border-radius: var(--radius-md); 
+            margin-bottom: 16px; font-family: inherit; transition: all var(--transition-speed) ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); 
         }
 
-        /* Hover sutil */
-        .form-control:hover {
-            border-color: #484f58;
-        }
-
-        /* Estado activo / Foco (El brillo) */
+        .form-control:hover { border-color: #484f58; }
         .form-control:focus {
-            outline: none;
-            border-color: var(--accent-blue);
+            outline: none; border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2);
             background-color: #05080f;
         }
+        .form-control::placeholder { color: #484f58; opacity: 1; }
 
-        .form-control::placeholder {
-            color: #484f58;
-            opacity: 1;
-        }
-
-        /* 🚀 MAGIA PARA LOS DESPLEGABLES (<select>) */
         select.form-control {
-            appearance: none; /* Quita la flecha fea de Windows/Mac */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Inyectamos nuestra propia flecha SVG a juego con el diseño */
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238b949e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            background-size: 16px;
-            padding-right: 40px;
-            cursor: pointer;
+            background-repeat: no-repeat; background-position: right 14px center;
+            background-size: 16px; padding-right: 40px; cursor: pointer;
         }
-
-        /* Cambiar color de la flecha al hacer focus */
         select.form-control:focus {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2358a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
         }
-
-        /* Opciones del select en modo oscuro */
-        select.form-control option {
-            background-color: var(--bg-panel);
-            color: var(--text-heading);
-            padding: 10px;
-        }
-
-        /* 🚀 MAGIA PARA CAJAS DE TEXTO (<textarea>) */
-        textarea.form-control {
-            resize: vertical; /* Solo se puede estirar hacia abajo */
-            min-height: 80px;
-            line-height: 1.5;
-        }
+        select.form-control option { background-color: var(--bg-panel); color: var(--text-heading); padding: 10px; }
+        textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.5; }
 
         /* ========================================================= */
 
@@ -162,7 +128,9 @@
     
     <nav class="topbar">
         <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">TT</div>
+            <a href="#/" style="text-decoration: none;">
+                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; box-shadow: 0 2px 8px rgba(88,166,255,0.3);">TT</div>
+            </a>
             <div id="navbar-breadcrumbs" class="breadcrumb" style="font-size: 0.95rem; display: flex; align-items: center;">
                 </div>
         </div>
@@ -172,7 +140,7 @@
                 <span id="navbar-identity">Cargando...</span> <span style="font-size: 0.6rem;">▼</span>
             </button>
             <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
-                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Usuario (Nodo)</a>
+                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Nodo (Usuario)</a>
                 <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub de Redes de Valor</a>
                 <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración Global</a>
             </div>
@@ -202,6 +170,12 @@
             const toolbar = document.getElementById('app-toolbar');
             
             let bcHTML = '';
+            
+            // Lógica de "Volver Atrás" si hay más de 1 miga de pan
+            if (breadcrumbs.length > 1) {
+                bcHTML += `<a href="javascript:history.back()" class="btn-back-nav" title="Volver Atrás">⬅️</a>`;
+            }
+
             breadcrumbs.forEach((item, index) => {
                 if (index === breadcrumbs.length - 1) {
                     bcHTML += `<span class="current">${item.label}</span>`;
