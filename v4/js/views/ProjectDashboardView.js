@@ -1,7 +1,7 @@
 import { store } from '../core/store.js';
 
 let dashboardDisplayMode = 'inbox'; // Modos: inbox, analytics
-let inboxFilterMode = 'pow'; // Filtros: all, pow, alerts, requests
+let inboxFilterMode = 'pow'; // Filtros: pow, alerts
 
 // --- SIMULADOR DE AGENTE IA (Dosos) ---
 async function simulateAIAudit(tx, project, state) {
@@ -9,7 +9,6 @@ async function simulateAIAudit(tx, project, state) {
         setTimeout(() => {
             const role = project.roles.find(r => r.id === tx.from);
             const globalPrompt = state.config.globalPrompt;
-            const projectPrompt = project.prompt;
             const rolePrompt = role?.ai_prompt || "Rol sin instrucciones específicas.";
 
             let veredicto = "Aprobado";
@@ -46,7 +45,7 @@ document.addEventListener('click', async (e) => {
         document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
     }
 
-    // --- APROBAR POW ---
+    // --- APROBAR POW (Requiere permisos PO) ---
     if (e.target.classList.contains('btn-dash-approve')) {
         const txHash = e.target.getAttribute('data-hash');
         const projectId = e.target.getAttribute('data-pid');
@@ -57,7 +56,7 @@ document.addEventListener('click', async (e) => {
         }
     }
 
-    // --- RECHAZAR POW ---
+    // --- RECHAZAR POW (Requiere permisos PO) ---
     if (e.target.classList.contains('btn-dash-reject')) {
         const txHash = e.target.getAttribute('data-hash');
         const projectId = e.target.getAttribute('data-pid');
@@ -75,6 +74,14 @@ document.addEventListener('click', async (e) => {
                 document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
             }
         }
+    }
+
+    // --- RESOLVER ALERTA DEL EO ---
+    if (e.target.classList.contains('btn-resolve-alert')) {
+        const alertId = e.target.getAttribute('data-alert');
+        const projectId = e.target.getAttribute('data-pid');
+        store.dispatch({ type: 'RESOLVE_PROJECT_ALERT', payload: { projectId, alertId } });
+        document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
     }
 
     // --- AUDITORÍA IA ---
@@ -105,27 +112,38 @@ export const ProjectDashboardView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return `<div class="container text-center" style="padding: 50px;"><h2>Proyecto no encontrado</h2></div>`;
 
+        // 🔐 RBAC: Verificación de permisos
+        const session = state.session || { activeUserId: 'unknown', role: 'user' };
+        const isEcosystemOwner = session.role === 'admin';
+        const isProjectOwner = project.ownerId === session.activeUserId || isEcosystemOwner; // El EO es PO de todo por herencia
+        const canManage = isProjectOwner;
+
         // Analítica
         const txs = project.transactions || [];
         const resilience = store.calculateResilience(projectId);
         const pendingApprovals = txs.filter(tx => tx.status === 'reported');
         const bottlenecks = txs.filter(tx => tx.status === 'theoretical' || tx.status === 'pinged').length;
+        const activeAlerts = (project.alerts || []).filter(a => !a.resolved);
         
         let totalFrozen = 0;
         (project.ledger || []).forEach(l => totalFrozen += l.valorCongelado);
 
-        // 🚀 SET NAVBAR GLOBAL (Breadcrumbs Izq, Acciones rápidas Der)
-        setTimeout(() => window.setNavbar(
-            [
-                { label: '🏠 Hub', hash: '#/' }, 
-                { label: project.nombre, hash: `#/project/${projectId}` },
-                { label: 'Dashboard PO' }
-            ], 
-            ``, 
-            `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Ver el Grafo" style="border-color: var(--accent-blue); color: var(--accent-blue);">🗺️ Mapa VNA</button>
-             <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
-             <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/edit'" title="Ajustes raíz" style="border-color: var(--accent-purple); color: var(--accent-purple);">⚙️ Ontología</button>`
-        ), 0);
+        
+
+        // 🚀 SET NAVBAR GLOBAL
+        setTimeout(() => {
+            window.setNavbar(
+                [
+                    { label: `${state.config?.ecosystemName || 'Ecosistema Fractal'} > Dashboard de ${project.nombre}` }
+                ], 
+                ``, 
+                `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Ver el Grafo" style="border-color: var(--accent-blue); color: var(--accent-blue);">🗺️ Mapa VNA</button>
+                 <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
+                 ${canManage ? `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/edit'" title="Ajustes raíz" style="border-color: var(--accent-purple); color: var(--accent-purple);">⚙️ Configuración</button>` : ''}`
+            );
+            const backBtn = document.querySelector('.btn-back-nav');
+            if(backBtn) backBtn.style.display = 'none';
+        }, 0);
 
         const tabStyle = (mode) => `
             padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${dashboardDisplayMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
@@ -136,13 +154,20 @@ export const ProjectDashboardView = {
             padding: 5px 12px; font-size: 0.8rem; border-radius: 20px; cursor: pointer; border: 1px solid var(--border-color);
             background: ${inboxFilterMode === filter ? 'var(--accent-blue)' : 'transparent'};
             color: ${inboxFilterMode === filter ? '#fff' : 'var(--text-muted)'};
+            display: flex; align-items: center; gap: 5px;
         `;
 
         return `
             <div class="container fade-in" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
                 
-                <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Dashboard Sistémico</h1>
+                <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Proyecto > ${project.nombre}</h1>
                 <p style="margin: 0 0 20px 0; color: var(--text-muted);">Audita el trabajo de la red y mantén la resiliencia al 100%.</p>
+
+                ${!canManage ? `
+                    <div style="background: rgba(210,153,34,0.1); border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 20px; color: var(--accent-gold); border-radius: 4px; font-size: 0.9rem;">
+                        <b>🔒 Modo Lectura:</b> No eres el Owner de este proyecto. Solo puedes visualizar el estado de la red, pero no puedes aprobar entregables ni modificar configuraciones.
+                    </div>
+                ` : ''}
 
                 <div style="display:flex; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; gap: 10px; overflow-x: auto;">
                     <button class="dash-tab-btn" data-mode="inbox" data-pid="${projectId}" style="${tabStyle('inbox')}">📥 Centro de Control (Inbox)</button>
@@ -157,26 +182,54 @@ export const ProjectDashboardView = {
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                                 <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
                                     Bandeja de Entrada
-                                    ${pendingApprovals.length > 0 ? `<span class="badge" style="background: var(--accent-blue); color: #fff;">${pendingApprovals.length} Nuevos</span>` : ''}
+                                    ${pendingApprovals.length > 0 && inboxFilterMode === 'pow' ? `<span class="badge" style="background: var(--accent-blue); color: #fff;">${pendingApprovals.length} Nuevos</span>` : ''}
+                                    ${activeAlerts.length > 0 && inboxFilterMode === 'alerts' ? `<span class="badge" style="background: var(--accent-red); color: #fff;">${activeAlerts.length} Pings</span>` : ''}
                                 </h3>
                                 <div style="display: flex; gap: 8px;">
                                     <button class="inbox-filter-btn" data-filter="pow" data-pid="${projectId}" style="${filterStyle('pow')}">📝 Entregables (PoW)</button>
-                                    <button class="inbox-filter-btn" data-filter="alerts" data-pid="${projectId}" style="${filterStyle('alerts')}">⚠️ Alertas del Sistema</button>
+                                    <button class="inbox-filter-btn" data-filter="alerts" data-pid="${projectId}" style="${filterStyle('alerts')}">
+                                        ⚠️ Alertas del Sistema ${activeAlerts.length > 0 ? `<span style="background:var(--accent-red); width:8px; height:8px; border-radius:50%; display:inline-block;"></span>` : ''}
+                                    </button>
                                 </div>
                             </div>
 
                             ${inboxFilterMode === 'alerts' ? `
-                                <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--accent-gold);">
-                                    <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
-                                    <h4 style="margin: 0; color: var(--accent-gold);">Sistema Sano</h4>
-                                    <p class="text-small text-muted">No hay cuellos de botella críticos ni incidencias ontológicas reportadas.</p>
-                                </div>
+                                ${activeAlerts.length === 0 ? `
+                                    <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--accent-gold);">
+                                        <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
+                                        <h4 style="margin: 0; color: var(--accent-gold);">Sistema Sano</h4>
+                                        <p class="text-small text-muted">No hay Pings de incidencia enviados por el Ecosystem Owner.</p>
+                                    </div>
+                                ` : `
+                                    <div class="list-group">
+                                        ${activeAlerts.map(alert => {
+                                            const date = new Date(alert.timestamp).toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                                            return `
+                                            <div class="panel-surface" style="margin-bottom: 15px; border-left: 4px solid var(--accent-red);">
+                                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                                    <div>
+                                                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform:uppercase; margin-bottom: 8px;">
+                                                            🕒 Recibido: ${date} | 👑 De: Ecosystem Owner
+                                                        </div>
+                                                        <p style="margin:0; font-size:1rem; color: var(--text-heading); font-weight: 500;">"${alert.message}"</p>
+                                                    </div>
+                                                    ${canManage ? `
+                                                        <button class="btn btn-outline btn-resolve-alert" data-alert="${alert.id}" data-pid="${projectId}" style="border-color: var(--accent-green); color: var(--accent-green); font-size: 0.8rem; padding: 6px 12px;">
+                                                            ✅ Marcar Resuelto
+                                                        </button>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                `}
                             ` : `
                                 ${pendingApprovals.length === 0 ? `
                                     <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--border-color);">
                                         <div style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;">✅</div>
                                         <h4 style="margin: 0 0 5px 0; color: var(--text-muted);">Inbox Limpio</h4>
-                                        <p class="text-small text-muted">No hay Proof of Works pendientes de auditar por el PO.</p>
+                                        <p class="text-small text-muted">No hay Proof of Works pendientes de auditar.</p>
                                     </div>
                                 ` : `
                                     <div class="list-group">
@@ -226,6 +279,7 @@ export const ProjectDashboardView = {
                                                     </div>
                                                 ` : ''}
 
+                                                ${canManage ? `
                                                 <div style="display: flex; gap: 10px;">
                                                     ${!aiAudit ? `
                                                         <button class="btn btn-outline btn-dash-ai-audit" style="flex: 1; border-color: var(--accent-purple); color: var(--accent-purple);" data-hash="${tx.hash}" data-pid="${project.id}">
@@ -239,6 +293,7 @@ export const ProjectDashboardView = {
                                                         ✅ Sellar Ledger (+${tx.valorCongelado} Slices)
                                                     </button>
                                                 </div>
+                                                ` : ''}
                                             </div>`;
                                         }).join('')}
                                     </div>
@@ -271,7 +326,7 @@ export const ProjectDashboardView = {
 
                         <div class="panel" style="background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05);">
                             <h4 style="margin-top:0; color:var(--text-muted); font-size:0.9rem;">💡 Tip del Sistema</h4>
-                            <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Usa la Auditoría de IA para validar que el trabajo cumple con las reglas ontológicas que configuraste en "Ajustes".</p>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Revisa regularmente la pestaña de <b>Alertas del Sistema</b>. El Ecosystem Owner te enviará Pings directos si detecta que la red pierde resiliencia.</p>
                         </div>
                     </aside>
 
