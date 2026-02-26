@@ -139,7 +139,7 @@
 
     <div id="app"></div>
 
-    <script type="module">
+   <script type="module">
         import { store } from './js/core/store.js';
         import { DashboardView } from './js/views/DashboardView.js';
         import { ProjectDashboardView } from './js/views/ProjectDashboardView.js';
@@ -260,6 +260,7 @@
             }
         });
 
+        // 🔴 UNA SOLA FUNCIÓN ROUTER
         function router() {
             const hash = window.location.hash || '#/';
             const parts = hash.split('/');
@@ -268,6 +269,8 @@
 
             document.getElementById('app').classList.remove('fade-in');
             void document.getElementById('app').offsetWidth; 
+            
+            // Forzamos que se pinte el nombre del usuario SIEMPRE al cambiar de página
             updateIdentityBadge();
 
             try {
@@ -289,12 +292,20 @@
         }
 
         window.addEventListener('hashchange', router);
-        window.addEventListener('store-ready', () => {
-            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
+        
+        // Suscripción a cambios del Kernel para repintar UI al vuelo
+        store.subscribe(() => {
+            updateIdentityBadge();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
         });
+
+        // Arranque inicial de la App
         if (store.getState()) {
-            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); router();
+            document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); 
+            updateIdentityBadge();
+            router();
         }
+    </script>
     </script><!DOCTYPE html>
 <html lang="es">
 <head>
