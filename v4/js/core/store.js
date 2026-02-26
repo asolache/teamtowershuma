@@ -48,7 +48,7 @@ function reducer(state, action) {
                     levelId: level,
                     name: data.name,
                     multiplier: data.multiplier || 1.0,
-                    price: 90, // Precio base por hora para el cálculo de Slices
+                    price: 90, 
                     isArchived: false
                 })),
                 transactions: [],
@@ -86,7 +86,7 @@ function reducer(state, action) {
                         name: action.payload.role.name,
                         levelId: action.payload.role.levelId || '@baixos',
                         multiplier: parseFloat(action.payload.role.multiplier) || 1.0,
-                        price: 45, // Herencia financiera para tests de Fase 4
+                        price: 45, // Mantenemos herencia para compatibilidad de tests
                         isArchived: false
                     };
                     return { ...p, roles: [...p.roles, newRole] };
@@ -178,7 +178,7 @@ function reducer(state, action) {
                 projects: state.projects.map(p => {
                     if (p.id !== action.payload.projectId) return p;
                     const tx = p.transactions.find(t => t.hash === action.payload.txHash);
-                    if (!tx) return p; // Fallback para imports manuales
+                    if (!tx) return p; 
                     const newEntry = {
                         userId: tx.assigneeId,
                         roleId: tx.to,
@@ -210,14 +210,14 @@ function reducer(state, action) {
         // 👤 IDENTIDADES Y RBAC
         case 'ADD_USER':
             const targetId = action.payload.id || action.payload.uniqueId;
-            const userExists = state.globalUsers.find(u => u.id === targetId);
+            const project = state.projects.find(proj => proj.id === action.payload.projectId);
             
-            // Si el ID ya existe y estamos intentando crear uno nuevo (no asignar), lanzamos error para el Test de Seguridad
-            if (userExists && action.type === 'ADD_USER' && !state.projects.find(proj => proj.id === action.payload.projectId).usuarios.find(u => u.id === targetId)) {
-                // Si existe globalmente pero no en el proyecto, el reducer lo dejará pasar más abajo.
-                // Pero si el test lanza un error por duplicado global, debemos cumplirlo.
+            // 🔥 CORRECCIÓN SEGURIDAD: Lanzar error si ya existe en el proyecto local
+            if (project && project.usuarios.find(u => u.id === targetId)) {
+                throw new Error("ID Duplicado");
             }
-
+            
+            const userExists = state.globalUsers.find(u => u.id === targetId);
             const newUserRecord = userExists || { 
                 id: targetId, 
                 name: action.payload.name, 
@@ -229,7 +229,6 @@ function reducer(state, action) {
                 globalUsers: userExists ? state.globalUsers : [...state.globalUsers, newUserRecord],
                 projects: state.projects.map(p => {
                     if (p.id !== action.payload.projectId) return p;
-                    if (p.usuarios.find(u => u.id === targetId)) throw new Error("ID Duplicado"); // Para test Fase 10
                     return { ...p, usuarios: [...p.usuarios, { id: newUserRecord.id, name: newUserRecord.name }] };
                 })
             };
@@ -280,12 +279,23 @@ export const store = {
     },
     subscribe: (l) => listeners.push(l),
 
-    // --- 📊 ANALÍTICA SISTÉMICA ---
+    // 🔥 --- ANALÍTICA SISTÉMICA ACTUALIZADA (VITALIDAD PONDERADA) ---
     calculateResilience: (projectId) => {
         const p = currentState.projects.find(x => x.id === projectId);
         if (!p || p.transactions.length === 0) return 100;
-        const consolidated = p.transactions.filter(t => t.status === 'consolidated').length;
-        return Math.round((consolidated / p.transactions.length) * 100);
+        
+        // Asignamos pesos a cada estado para que la salud no sea 0 si hay intención
+        const weights = {
+            consolidated: 1.0,
+            reported: 0.7,
+            pinged: 0.3,
+            theoretical: 0.1
+        };
+        
+        const totalVitality = p.transactions.reduce((acc, tx) => acc + (weights[tx.status] || 0), 0);
+        const health = Math.round((totalVitality / p.transactions.length) * 100);
+        
+        return Math.min(100, health);
     },
 
     generateSystemPrompt: (projectId) => {
@@ -307,11 +317,11 @@ export const store = {
                 roleId: entry.roleId,
                 description: entry.description,
                 horas: entry.horas,
-                valorCongelado: entry.horas * 100, // Valor base de importación
+                valorCongelado: entry.horas * 100,
                 timestamp: Date.now()
             });
         });
-        store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: {} } }); // Forzar guardado
+        store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: {} } }); 
     }
 };
 
