@@ -322,6 +322,31 @@ export const store = {
             });
         });
         store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: {} } }); 
+    },
+
+    // 💰 --- NUEVO: CÁLCULO DE LA COSECHA (TOKENOMICS) ---
+    calculateHarvest: (projectId, totalValue) => {
+        const p = currentState.projects.find(x => x.id === projectId);
+        if (!p || !p.ledger || p.ledger.length === 0) return [];
+
+        const totalSlices = p.ledger.reduce((acc, entry) => acc + entry.valorCongelado, 0);
+        
+        // Agrupamos los slices por usuario
+        const userSlices = p.ledger.reduce((acc, entry) => {
+            acc[entry.userId] = (acc[entry.userId] || 0) + entry.valorCongelado;
+            return acc;
+        }, {});
+
+        // Convertimos a array, calculamos porcentaje y valor económico
+        return Object.entries(userSlices).map(([userId, slices]) => {
+            const percentage = totalSlices > 0 ? (slices / totalSlices) : 0;
+            return {
+                userId,
+                slices,
+                percentage: (percentage * 100).toFixed(2) + '%',
+                financialValue: (percentage * totalValue).toLocaleString() + '€'
+            };
+        }).sort((a, b) => b.slices - a.slices);
     }
 };
 
