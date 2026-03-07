@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kernel v6.0 | Doc TeamTowers</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #4CAF50;
+            --code-bg: #2d2d2d;
+            --border-color: #333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            line-height: 1.6;
+        }
+        nav {
+            width: 250px;
+            background-color: var(--surface-color);
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--accent-color);
+        }
+        .back-link {
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        main {
+            margin-left: 280px;
+            padding: 3rem;
+            max-width: 800px;
+        }
+        h1, h2, h3 { color: #ffffff; }
+        h1 { border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; }
+        h2 { margin-top: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ff9800;
+        }
+        ul { padding-left: 1.5rem; color: var(--text-secondary); }
+        li { margin-bottom: 0.5rem; }
+        strong { color: var(--text-primary); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-link">&larr; Volver al Índice</a>
+    <a href="#vision" class="active">1. Visión General</a>
+    <a href="#estado">2. Estructura del Estado</a>
+    <a href="#modulos">3. Funcionalidades Clave</a>
+    <a href="#acciones">4. Acciones (Reducers)</a>
+</nav>
+
+<main>
+    <h1>Documentación de Arquitectura: Kernel v6.0</h1>
+    <p><em>Actualizado: Marzo 2026 | Certificación: 43/43 Tests Superados</em></p>
+
+    <h2 id="vision">1. Visión General</h2>
+    <p>El Kernel (<code>js/core/store.js</code>) actúa como el cerebro central (State Manager) de la aplicación TeamTowers. Gestiona el estado global de la DAO, la seguridad, la jerarquía de permisos (RBAC), la contabilidad inmutable de las aportaciones y la inyección de contexto para la IA.</p>
+
+    <h2 id="estado">2. Estructura del Estado (<code>initialState</code>)</h2>
+    <p>La base de datos en memoria está dividida en 6 grandes bloques:</p>
+    <ul>
+        <li><strong><code>config</code></strong>: Configuración global del ecosistema (tema, nombre, prompt IA).</li>
+        <li><strong><code>ontology</code></strong>: Diccionario de sectores y roles. Guarda multiplicadores, FMV y entregables estándar. Soporta inyección dinámica.</li>
+        <li><strong><code>globalUsers</code></strong>: Pool de identidad. Directorio de todos los usuarios registrados.</li>
+        <li><strong><code>macroFlows</code></strong>: Trazabilidad de intercambios de valor inter-proyectos.</li>
+        <li><strong><code>projects</code></strong>: El corazón del sistema. Cada red con su estructura (roles, asignaciones, ledger, transacciones, alertas).</li>
+        <li><strong><code>session</code></strong>: Control de acceso global (<code>admin</code> o <code>user</code>).</li>
+    </ul>
+
+    <h2 id="modulos">3. Módulos y Funcionalidades Clave</h2>
+    
+    <h3>🔐 Seguridad y RBAC</h3>
+    <ul>
+        <li><strong>Control de Identidad:</strong> Bloqueo de <code>@id</code> duplicados en el Pool Global.</li>
+        <li><strong>Gobernanza:</strong> Solo el <code>admin</code> puede instanciar redes nuevas, salvo excepciones de flujo controlado (bypass).</li>
+        <li><strong>Delegación:</strong> Propiedad de proyecto delegable mediante <code>PROMOTE_TO_PO</code>.</li>
+    </ul>
+
+    <h3>🧬 Ontologías Dinámicas</h3>
+    <ul>
+        <li><strong>Parser Universal:</strong> Acepta formatos Array, Objeto Clásico (Legacy) o Diccionarios Anidados.</li>
+        <li><strong>Fallback de Supervivencia:</strong> Si se inyecta una ontología vacía, el Kernel crea un Mínimo Viable o la matriz de Marketing para evitar colapsos.</li>
+    </ul>
+
+    <h3>⛓️ Contabilidad Criptográfica (Triple Entrada)</h3>
+    <ul>
+        <li><strong>Chaining de Hashes:</strong> Cada transacción consolidada inscribe el hash del bloque anterior como <code>prevHash</code> en el nuevo bloque del Ledger.</li>
+        <li><strong>Value Accounting:</strong> <code>Valor = Horas × FMV × Multiplicador de Rol × Multiplicador de Arquetipo</code>.</li>
+    </ul>
+
+    <h3>🧠 Módulo INTEL</h3>
+    <ul>
+        <li>Generación de prompts dinámicos con <strong>Secuenciación Temporal</strong> y <strong>Personalización de Roles</strong> según la fase activa del proyecto.</li>
+    </ul>
+
+    <h2 id="acciones">4. Acciones Principales (Reducers)</h2>
+    <ul>
+        <li><code>ADD_PROJECT</code>: Instancia un proyecto (parseo de ontología, RBAC y Owner).</li>
+        <li><code>ADD_TRANSACTION</code> / <code>REPORT_TRANSACTION</code>: Motor del Pull System.</li>
+        <li><code>APPROVE_TRANSACTION</code>: Convierte trabajo en valor consolidado (Ledger sellado).</li>
+        <li><code>ASSIGN_USER_ROLE</code>: Vincula ID global a Rol local.</li>
+    </ul>
+</main>
+
+</body>
+</html>
