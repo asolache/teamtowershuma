@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo Enfoque | TeamTowers App</title>
+    <style>
+        :root {
+            --bg-base: #0a0a0c;
+            --glass-bg: rgba(30, 30, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --accent-orange: #ff9100;
+            --accent-orange-glow: rgba(255, 145, 0, 0.3);
+            --accent-green: #00e676;
+            --role-anxaneta: #ff5252;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background-color: #1a1a24; /* Fondo del navegador */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Phone Frame Simulator */
+        .device-frame {
+            width: 390px;
+            height: 844px;
+            background: var(--bg-base);
+            border-radius: 40px;
+            border: 8px solid #2c2c35;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Notch */
+        .notch {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 150px; height: 30px;
+            background: #2c2c35;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        /* Header */
+        .focus-header {
+            padding: 3rem 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            background: linear-gradient(180deg, rgba(255, 145, 0, 0.1) 0%, transparent 100%);
+        }
+        .role-badge {
+            font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 12px;
+            background: rgba(255, 82, 82, 0.2); color: var(--role-anxaneta);
+            display: inline-block; margin-bottom: 0.5rem;
+        }
+        .task-title { font-size: 1.2rem; font-weight: 600; line-height: 1.2; }
+        .project-context { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
+
+        /* Timer UI (Pomodoro) */
+        .timer-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .timer-ring {
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--glass-bg), transparent);
+            border: 2px dashed var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 0 40px var(--accent-orange-glow);
+            animation: pulse 4s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px var(--accent-orange-glow); }
+            100% { box-shadow: 0 0 60px rgba(255, 145, 0, 0.5); }
+        }
+
+        .time-display { font-size: 3.5rem; font-weight: 200; font-variant-numeric: tabular-nums; }
+        .time-label { font-size: 0.8rem; color: var(--accent-orange); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* Pedagogía en tiempo real */
+        .live-equity {
+            margin-top: 1.5rem;
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* Orquestador IA Mini-Chat */
+        .ai-assistant {
+            margin: 0 1rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        .ai-header { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .ai-msg { font-size: 0.9rem; line-height: 1.4; color: #d0d0d5; margin-bottom: 10px; }
+        .ai-input-btn {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            color: var(--text-main); padding: 0.8rem; border-radius: 8px; text-align: left;
+            font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Action Footer */
+        .action-footer { padding: 1.5rem; padding-bottom: 2.5rem; }
+        .consolidate-btn {
+            width: 100%; padding: 1rem;
+            background: var(--text-main);
+            color: var(--bg-base);
+            border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: bold;
+            cursor: pointer; display: flex; justify-content: center; gap: 8px;
+            transition: transform 0.2s;
+        }
+        .consolidate-btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <div class="device-frame">
+        <div class="notch"></div>
+
+        <header class="focus-header">
+            <div class="role-badge">@anxaneta</div>
+            <h1 class="task-title">Pitch Deck y Contexto IA</h1>
+            <div class="project-context">Desarrollo NeoApp • Fase 1 (Intangible)</div>
+        </header>
+
+        <div class="timer-container">
+            <div class="timer-ring">
+                <div class="time-label">Deep Work</div>
+                <div class="time-display">24:15</div>
+            </div>
+            
+            <div class="live-equity">
+                ✨ +1.2 Slices generados
+            </div>
+        </div>
+
+        <div class="ai-assistant">
+            <div class="ai-header">
+                <span>🤖 Dosos IA</span>
+                <span style="color: var(--accent-orange);">Escuchando...</span>
+            </div>
+            <p class="ai-msg">"He revisado el modelo de negocio. ¿Quieres que iteremos sobre el perfil del cliente ideal (Buyer Persona) basado en First Principles?"</p>
+            <button class="ai-input-btn">
+                <span>Escribir prompt o usar voz...</span>
+                <span>🎙️</span>
+            </button>
+        </div>
+
+        <footer class="action-footer">
+            <button class="consolidate-btn">
+                <span>⛓️</span> Terminar y Consolidar
+            </button>
+            <p style="text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 10px;">
+                Se registrará un Hash en el Ledger por tu trabajo.
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
