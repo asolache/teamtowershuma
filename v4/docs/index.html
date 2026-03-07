@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers | Documentación Oficial</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #4CAF50; /* Verde victoria */
+            --border-color: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--surface-color);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        h1 { margin: 0; color: var(--accent-color); }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+        }
+        .card h2 { margin-top: 0; font-size: 1.25rem; }
+        .card p { color: var(--text-secondary); font-size: 0.9rem; }
+        .card a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .card a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>TeamTowers Network</h1>
+    <p>Índice General de Documentación y Arquitectura</p>
+</header>
+
+<div class="container">
+    <div class="grid" id="doc-index">
+        <div class="card">
+            <h2>🧠 Arquitectura del Kernel (v6.0)</h2>
+            <p>Documentación técnica sobre el State Manager, jerarquía RBAC, Triple Entrada y ontologías dinámicas.</p>
+            <a href="kernel-architecture.html">Leer Documento &rarr;</a>
+        </div>
+
+        <div class="card" style="opacity: 0.5; border-style: dashed;">
+            <h2>📊 Módulo Tokenomics (Próximamente)</h2>
+            <p>Reglas de emisión, Slicing Pie y cálculo del FMV.</p>
+            <a href="#">Pendiente</a>
+        </div>
+
+        <div class="card" style="opacity: 0.5; border-style: dashed;">
+            <h2>🤖 Módulo INTEL (Próximamente)</h2>
+            <p>Sistema de prompts dinámicos, secuenciación temporal y evaluación de IA.</p>
+            <a href="#">Pendiente</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
