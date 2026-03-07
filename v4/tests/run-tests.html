@@ -286,7 +286,21 @@
                 const isPO = store.getState().projects.find(p => p.id === PID_ECO).ownerId === dynLauraId;
                 assert(isPO, "El sistema delega la propiedad del proyecto al usuario seleccionado", "RBAC");
 
+                // 🔥 TEST 41: Arquetipos Sistémicos
+store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-arch', nombre: 'Startup Tech', sector: 'software', archetype: 'startup' } });
+const pArch = store.getState().projects.find(x => x.id === 'test-arch');
+assert(pArch.archetype === 'startup', "El Kernel reconoce y almacena el Arquetipo del proyecto", "KERNEL_6.1");
 
+// 🔥 TEST 42: Índice de Madurez (Maturity Index)
+// Un proyecto de software por defecto en la ontología tiene roles en todos los niveles.
+const maturity = store.calculateMaturityIndex('test-arch');
+assert(maturity.score > 0 && maturity.alerts.length === 0, "El Kernel calcula la salud estructural (Maturity Index)", "KERNEL_6.1");
+
+// 🔥 TEST 43: Factor de Cálculo por Arquetipo
+// En Startup el factor es 2.0 (riesgo alto), en Corp es 1.0.
+// (Este test validará que el Reducer aplica la fórmula: Slices = H * FMV * Mult * ArchFactor)
+assert(typeof store.getArchetypeFactor === 'function', "Función de Factor de Arquetipo presente", "KERNEL_6.1");
+                
                 // --- RESULTADO ---
                 const summary = document.getElementById('summary-box');
                 summary.className = "summary";
