@@ -6,84 +6,85 @@ export default class ValueMapView {
         document.title = "Value Network Analysis | TeamTowers";
         this.activeProjectId = null;
         this.selectedRoleId = null;
+        this.isDragging = false;
+        this.draggedElement = null;
     }
 
     async getHtml() {
         return `
             <style>
-                .vna-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-base); }
+                .vna-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-base); font-family: 'Segoe UI', sans-serif; }
                 
                 /* LIENZO PRINCIPAL */
                 .map-container { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-                .map-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; background: linear-gradient(to bottom, rgba(10,10,12,0.9), transparent); }
                 
-                .map-canvas { flex: 1; position: relative; width: 100%; height: 100%; }
+                .map-canvas { 
+                    flex: 1; position: relative; width: 100%; height: 100%; 
+                    background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
+                    background-size: 40px 40px;
+                }
                 
-                /* SVG PARA LÍNEAS DE CONEXIÓN */
                 #edges-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-                .edge-line { fill: none; stroke-width: 2; opacity: 0.7; animation: dashAnim 30s linear infinite; }
+                
+                .edge-line { fill: none; stroke-width: 2.5; opacity: 0.7; transition: stroke-width 0.3s; }
                 .edge-tangible { stroke: var(--accent-green); }
-                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; }
+                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; }
+                
                 @keyframes dashAnim { to { stroke-dashoffset: -1000; } }
 
-                /* NODOS DEL CASTELL */
+                /* NODOS */
                 .node {
-                    position: absolute; z-index: 2; border-radius: 50%;
+                    position: absolute; z-index: 5; border-radius: 50%;
                     display: flex; flex-direction: column; justify-content: center; align-items: center;
-                    text-align: center; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s, left 0.5s, top 0.5s;
-                    background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--glass-border);
-                    color: white; font-weight: bold; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-                    transform: translate(-50%, -50%);
+                    text-align: center; cursor: grab; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s;
+                    background: rgba(15, 15, 25, 0.8); backdrop-filter: blur(12px); border: 2px solid var(--glass-border);
+                    color: white; font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    transform: translate(-50%, -50%); user-select: none;
                 }
-                .node:hover { transform: translate(-50%, -50%) scale(1.1); z-index: 10; }
-                .node.selected { border-color: var(--accent-blue); box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); }
-                .node-name { font-size: 0.75rem; margin-top: 5px; pointer-events: none; line-height: 1.1; padding: 0 5px; }
-                .node-value { font-size: 0.65rem; color: var(--text-muted); pointer-events: none; font-family: monospace; margin-top: 2px;}
+                .node:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
+                .node.selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.4); z-index: 10; }
+                .node-name { font-size: 0.7rem; margin-top: 4px; pointer-events: none; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; width: 80%; }
+                .node-value { font-size: 0.65rem; color: var(--accent-green); pointer-events: none; font-family: monospace; margin-top: 4px; opacity: 0.9; }
 
-                /* DIAGNÓSTICO EDUCACIONAL */
+                /* UI OVERLAYS */
+                .map-ui-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem 2rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start; }
+                .ui-left, .ui-right { pointer-events: auto; }
+
                 .diagnosis-panel {
-                    position: absolute; bottom: 20px; left: 20px; z-index: 10; width: 320px;
-                    background: rgba(20, 20, 25, 0.85); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur);
-                    border-radius: 12px; padding: 1.2rem;
+                    position: absolute; bottom: 25px; left: 25px; z-index: 10; width: 320px;
+                    background: rgba(10, 10, 15, 0.9); border: 1px solid var(--glass-border); backdrop-filter: blur(20px);
+                    border-radius: 16px; padding: 1.5rem; box-shadow: 0 15px 50px rgba(0,0,0,0.8);
                 }
-                .alert-item { font-size: 0.8rem; margin-top: 8px; padding: 10px; border-radius: 6px; border-left: 3px solid; animation: fadeIn 0.5s; }
-                .alert-warning { background: rgba(255, 145, 0, 0.1); border-color: var(--accent-orange); color: #ffd180; }
-                .alert-ok { background: rgba(0, 230, 118, 0.1); border-color: var(--accent-green); color: #b9f6ca; }
 
-                /* PANEL INSPECTOR */
+                /* INSPECTOR */
                 .inspector-panel {
-                    width: 350px; background: rgba(15, 15, 20, 0.95); border-left: 1px solid var(--glass-border);
-                    display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease;
-                    z-index: 20; box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+                    width: 380px; background: rgba(10, 10, 15, 0.98); border-left: 1px solid var(--glass-border);
+                    display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    z-index: 1000; backdrop-filter: blur(30px);
                 }
                 .inspector-panel.open { transform: translateX(0); }
-                .inspector-header { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
-                .inspector-body { padding: 1.5rem; flex: 1; overflow-y: auto; }
+                .inspector-header { padding: 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
                 
-                .form-group { margin-bottom: 1.5rem; }
-                .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-                .form-control { width: 100%; background: #0a0a0c; border: 1px solid var(--glass-border); color: white; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 1rem;}
-                .form-control:focus { outline: none; border-color: var(--accent-blue); }
+                .form-control { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 1.1rem; margin-top: 5px; }
+                .form-control:focus { border-color: var(--accent-blue); outline: none; }
 
-                .metric-card { background: rgba(255,255,255,0.03); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05);}
-                .metric-value { font-size: 1.8rem; font-weight: bold; color: var(--accent-green); font-family: monospace; margin-top: 5px; }
+                .metric-card { background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
 
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes pulseNode { 0% { box-shadow: 0 0 0 0 rgba(0, 176, 255, 0.7); } 100% { box-shadow: 0 0 0 20px rgba(0, 176, 255, 0); } }
             </style>
 
             <div class="vna-layout">
                 <div class="map-container">
-                    <header style="position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem 2rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: center;">
-                        <a href="/project" class="btn btn-outline" data-link style="font-size: 0.8rem; pointer-events: auto;">&larr; Volver al Kanban</a>
-                        <div style="pointer-events: auto;">
-                            <button class="btn btn-primary" id="btnSimulateTx">✨ Simular Transacción</button>
+                    <div class="map-ui-overlay">
+                        <div class="ui-left">
+                            <a href="/v5/project" class="btn btn-outline" data-link style="background: rgba(0,0,0,0.5);">&larr; Volver al Kanban</a>
+                            <div style="margin-top: 20px;">
+                                <h1 id="mapTitle" style="font-size: 2rem; margin: 0; letter-spacing: -1px;">Cargando...</h1>
+                                <p style="color: var(--text-muted); font-size: 0.85rem;">Arquetipo: <span id="mapArchetype" class="badge">--</span></p>
+                            </div>
                         </div>
-                    </header>
-
-                    <div class="map-header" style="margin-top: 70px;">
-                        <div>
-                            <h1 id="mapTitle" style="font-size: 1.8rem;">Cargando...</h1>
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Arquetipo: <span id="mapArchetype" class="badge">--</span></p>
+                        <div class="ui-right">
+                            <button class="btn btn-primary" id="btnSimulateTx" style="box-shadow: 0 0 20px rgba(0, 176, 255, 0.3);">✨ Simular Transacción</button>
                         </div>
                     </div>
 
@@ -92,38 +93,42 @@ export default class ValueMapView {
                     </div>
 
                     <div class="diagnosis-panel">
-                        <h3 style="font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px;">
-                            <span>🧠</span> Diagnóstico de Red
-                        </h3>
-                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Maturity Index: <span id="maturityScore" style="color: white; font-weight: bold; font-family: monospace;">--%</span></div>
+                        <h3 style="font-size: 0.8rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Diagnóstico de Flujo</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Maturity Index</span>
+                            <span id="maturityScore" style="font-size: 1.2rem; font-weight: bold; font-family: monospace;">--%</span>
+                        </div>
                         <div id="alertsContainer"></div>
                     </div>
                 </div>
 
                 <aside class="inspector-panel" id="inspectorPanel">
                     <div class="inspector-header">
-                        <h2 id="insName" style="font-size: 1.2rem;">Nodo</h2>
-                        <button id="btnCloseInspector" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">&times;</button>
+                        <h2 id="insName" style="font-size: 1.4rem;">Configurar Nodo</h2>
+                        <button id="btnCloseInspector" style="background: transparent; border: none; color: #555; cursor: pointer; font-size: 2rem;">&times;</button>
                     </div>
                     <div class="inspector-body" id="inspectorBody" style="display: none;">
-                        <span class="badge" id="insLevel" style="margin-bottom: 1.5rem; display: inline-block;">@rol</span>
+                        <span class="badge" id="insLevel" style="margin-bottom: 2rem;">@rol</span>
                         
                         <div class="metric-card">
-                            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Slices Acumulados (Equity)</div>
-                            <div class="metric-value" id="insEquity">0</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Slices Totales (Equity)</div>
+                            <div class="metric-value" id="insEquity" style="font-size: 2.5rem; font-weight: 800; color: var(--accent-green); font-family: monospace;">0</div>
                         </div>
 
                         <div class="form-group">
-                            <label>Valor Mercado (FMV - €/h)</label>
-                            <input type="number" id="inputFmv" class="form-control">
+                            <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Valor Hora Mercado (FMV)</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="number" id="inputFmv" class="form-control">
+                                <span style="color: #444;">€/h</span>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Multiplicador Slicing Pie</label>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Multiplicador Slicing Pie</label>
                             <input type="number" step="0.1" id="inputMult" class="form-control">
                         </div>
 
-                        <button class="btn btn-primary" id="btnSaveRole" style="width: 100%; margin-top: 1rem;">Actualizar Nodo</button>
+                        <button class="btn btn-primary" id="btnSaveRole" style="width: 100%; margin-top: 2rem; padding: 1.2rem;">✓ Actualizar Parámetros</button>
                     </div>
                 </aside>
             </div>
@@ -136,7 +141,7 @@ export default class ValueMapView {
 
         if (!project) {
             store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
-            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'vna-demo', nombre: 'NeoApp VNA Engine', sector: 'startup', archetype: 'startup' } });
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'vna-demo', nombre: 'NeoApp VNA System', sector: 'software', archetype: 'startup' } });
             project = store.getState().projects.find(p => p.id === 'vna-demo');
         }
 
@@ -159,7 +164,9 @@ export default class ValueMapView {
         this.renderMap();
         this.updateDiagnosis();
 
+        // RE-DIBUJAR AL CAMBIAR TAMAÑO
         window.addEventListener('resize', () => this.drawEdges());
+
         this.dom.btnClose.addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
@@ -169,38 +176,74 @@ export default class ValueMapView {
         this.dom.btnSave.addEventListener('click', () => {
             const newFmv = parseFloat(document.getElementById('inputFmv').value);
             const newMult = parseFloat(document.getElementById('inputMult').value);
-            store.dispatch({ 
-                type: 'UPDATE_ROLE', 
-                payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId, field: 'fmv', value: newFmv } 
-            });
-            store.dispatch({ 
-                type: 'UPDATE_ROLE', 
-                payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId, field: 'multiplier', value: newMult } 
-            });
+            store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId, field: 'fmv', value: newFmv } });
+            store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId, field: 'multiplier', value: newMult } });
             this.renderMap();
-            this.dom.btnSave.innerText = "✓ Nodo Actualizado";
-            setTimeout(() => this.dom.btnSave.innerText = "Actualizar Nodo", 2000);
+            this.dom.btnSave.innerText = "¡Actualizado!";
+            setTimeout(() => this.dom.btnSave.innerText = "Actualizar Parámetros", 2000);
         });
 
         this.dom.btnSimulateTx.addEventListener('click', () => {
-            const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-            if(p.roles.length < 2) return;
-            const r1 = p.roles[Math.floor(Math.random() * p.roles.length)];
-            const r2 = p.roles.filter(r => r.id !== r1.id)[Math.floor(Math.random() * (p.roles.length - 1))];
-            const esTangible = Math.random() > 0.4;
-            const entregables = esTangible ? ['Código Core', 'Diseño UI', 'Smart Contract', 'Pitch Deck'] : ['Feedback UX', 'Mentoria', 'Revisión Estratégica', 'Cultura'];
-            const desc = entregables[Math.floor(Math.random() * entregables.length)];
-            const horas = Math.floor(Math.random() * 6) + 1;
-            const txHash = '0x' + Math.random().toString(16).slice(2, 10);
-
-            store.dispatch({ 
-                type: 'ADD_TRANSACTION', 
-                payload: { projectId: this.activeProjectId, tx: { hash: txHash, from: r1.id, to: r2.id, horas, entregable: desc, tipo: esTangible ? 'tangible' : 'intangible', status: 'approved' } } 
-            });
-            store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: this.activeProjectId, txHash: txHash } });
-            this.renderMap();
-            this.updateDiagnosis();
+            this.simulateValueFlow();
         });
+
+        // MOTOR DE ARRASTRE (DRAG)
+        this.dom.canvas.addEventListener('mousedown', (e) => this.startDrag(e));
+        window.addEventListener('mousemove', (e) => this.doDrag(e));
+        window.addEventListener('mouseup', () => this.stopDrag());
+    }
+
+    startDrag(e) {
+        const node = e.target.closest('.node');
+        if (node) {
+            this.isDragging = true;
+            this.draggedElement = node;
+            node.style.zIndex = 1000;
+        }
+    }
+
+    doDrag(e) {
+        if (!this.isDragging || !this.draggedElement) return;
+        const rect = this.dom.canvas.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        
+        this.draggedElement.style.left = `${x}%`;
+        this.draggedElement.style.top = `${y}%`;
+        this.drawEdges(); // Recalcular líneas en vivo
+    }
+
+    stopDrag() {
+        if (this.draggedElement) this.draggedElement.style.zIndex = 5;
+        this.isDragging = false;
+        this.draggedElement = null;
+    }
+
+    simulateValueFlow() {
+        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        if(p.roles.length < 2) return;
+        
+        const r1 = p.roles[Math.floor(Math.random() * p.roles.length)];
+        const r2 = p.roles.filter(r => r.id !== r1.id)[Math.floor(Math.random() * (p.roles.length - 1))];
+        const esTangible = Math.random() > 0.4;
+        const desc = esTangible ? ['Diseño UI', 'Código API', 'Contrato'] : ['Feedback', 'Mentoría', 'Estrategia'];
+        const horas = Math.floor(Math.random() * 5) + 1;
+        const hash = '0x' + Math.random().toString(16).slice(2, 10);
+
+        store.dispatch({ 
+            type: 'ADD_TRANSACTION', 
+            payload: { projectId: this.activeProjectId, tx: { hash, from: r1.id, to: r2.id, horas, entregable: desc[Math.floor(Math.random()*desc.length)], tipo: esTangible ? 'tangible' : 'intangible', status: 'approved' } } 
+        });
+        store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: this.activeProjectId, txHash: hash } });
+
+        // Animación visual de pulso en el emisor
+        if(r1._dom) {
+            r1._dom.style.animation = 'pulseNode 1s ease-out';
+            setTimeout(() => r1._dom.style.animation = '', 1000);
+        }
+
+        this.renderMap();
+        this.updateDiagnosis();
     }
 
     updateHeader() {
@@ -212,7 +255,13 @@ export default class ValueMapView {
     renderMap() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const harvest = store.calculateHarvest(this.activeProjectId);
-        document.querySelectorAll('.node').forEach(n => n.remove());
+        
+        // No borramos todo para no romper el drag; actualizamos si ya existen
+        const existingNodes = document.querySelectorAll('.node');
+        const nodesData = {};
+        existingNodes.forEach(n => nodesData[n.dataset.id] = { left: n.style.left, top: n.style.top });
+        
+        existingNodes.forEach(n => n.remove());
 
         const layoutMap = {
             '@anxaneta': { x: 50, y: 15 },
@@ -229,24 +278,27 @@ export default class ValueMapView {
             levelCounts[level] = (levelCounts[level] || 0) + 1;
             const hData = harvest.find(h => h.roleId === rol.id);
             const totalVal = hData ? hData.totalValue : 0;
-            const finalSize = 85 + Math.min(totalVal / 12, 65);
-
-            let pos = { ...layoutMap[level] } || { x: 50, y: 50 };
-            if (levelCounts[level] > 1) {
-                pos.x += (levelCounts[level] - 1) * 18;
-                pos.x -= 9; 
-            }
+            const finalSize = 85 + Math.min(totalVal / 10, 70);
 
             const nodeEl = document.createElement('div');
             nodeEl.className = `node ${this.selectedRoleId === rol.id ? 'selected' : ''}`;
+            nodeEl.dataset.id = rol.id;
             nodeEl.style.width = `${finalSize}px`;
             nodeEl.style.height = `${finalSize}px`;
-            nodeEl.style.left = `${pos.x}%`;
-            nodeEl.style.top = `${pos.y}%`;
-            nodeEl.style.borderColor = this.getColorForLevel(rol.levelId);
             
-            const isAssigned = p.asignaciones && p.asignaciones.find(a => a.roleId === rol.id);
-            if(!isAssigned) nodeEl.style.opacity = '0.65';
+            // Si el nodo ya existía (fue movido), respetamos su posición
+            if (nodesData[rol.id]) {
+                nodeEl.style.left = nodesData[rol.id].left;
+                nodeEl.style.top = nodesData[rol.id].top;
+            } else {
+                let pos = { ...layoutMap[level] } || { x: 50, y: 50 };
+                if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
+                nodeEl.style.left = `${pos.x}%`;
+                nodeEl.style.top = `${pos.y}%`;
+            }
+
+            nodeEl.style.borderColor = this.getColorForLevel(rol.levelId);
+            if(!(p.asignaciones?.find(a => a.roleId === rol.id))) nodeEl.style.opacity = '0.6';
 
             nodeEl.innerHTML = `
                 <div style="font-size: 1.4rem;">${this.getIconForLevel(rol.levelId)}</div>
@@ -254,7 +306,8 @@ export default class ValueMapView {
                 <div class="node-value">${totalVal} ${p.archetype === 'startup' ? 'Slices' : '€'}</div>
             `;
 
-            nodeEl.addEventListener('click', () => {
+            nodeEl.addEventListener('click', (e) => {
+                if(this.isDragging) return;
                 this.selectedRoleId = rol.id;
                 this.renderMap();
                 this.openInspector(rol, totalVal, p.archetype === 'startup' ? 'Slices' : '€', this.getColorForLevel(rol.levelId));
@@ -264,7 +317,7 @@ export default class ValueMapView {
             this.dom.canvas.appendChild(nodeEl);
         });
 
-        setTimeout(() => this.drawEdges(), 100);
+        setTimeout(() => this.drawEdges(), 50);
     }
 
     drawEdges() {
@@ -273,83 +326,57 @@ export default class ValueMapView {
         if(!p.transactions) return;
 
         const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="context-stroke" />
-            </marker>
-        `;
+        defs.innerHTML = `<marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="context-stroke"/></marker>`;
         this.dom.svg.appendChild(defs);
 
         p.transactions.forEach(tx => {
             const rFrom = p.roles.find(r => r.id === tx.from);
             const rTo = p.roles.find(r => r.id === tx.to);
-            
-            if(rFrom && rTo && rFrom._dom && rTo._dom && rFrom.id !== rTo.id) {
-                const rectFrom = rFrom._dom.getBoundingClientRect();
-                const rectTo = rTo._dom.getBoundingClientRect();
-                const canvasRect = this.dom.canvas.getBoundingClientRect();
+            if(rFrom?._dom && rTo?._dom && rFrom.id !== rTo.id) {
+                const rectF = rFrom._dom.getBoundingClientRect();
+                const rectT = rTo._dom.getBoundingClientRect();
+                const canvas = this.dom.canvas.getBoundingClientRect();
 
-                const x1 = rectFrom.left + (rectFrom.width/2) - canvasRect.left;
-                const y1 = rectFrom.top + (rectFrom.height/2) - canvasRect.top;
-                const x2 = rectTo.left + (rectTo.width/2) - canvasRect.left;
-                const y2 = rectTo.top + (rectTo.height/2) - canvasRect.top;
+                const x1 = rectF.left + rectF.width/2 - canvas.left;
+                const y1 = rectF.top + rectF.height/2 - canvas.top;
+                const x2 = rectT.left + rectT.width/2 - canvas.left;
+                const y2 = rectT.top + rectT.height/2 - canvas.top;
 
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1);
                 line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('marker-end', 'url(#arrowhead)');
+                line.setAttribute('marker-end', 'url(#arrow)');
                 line.classList.add('edge-line', tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
                 this.dom.svg.appendChild(line);
 
-                const midX = (x1 + x2) / 2;
-                const midY = (y1 + y2) / 2;
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', midX); text.setAttribute('y', midY - 12);
-                text.setAttribute('text-anchor', 'middle');
-                text.style.fill = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-                text.style.fontSize = '9px';
-                text.style.fontFamily = 'monospace';
-                text.style.fontWeight = 'bold';
-                text.style.paintOrder = 'stroke';
-                text.style.stroke = 'black';
-                text.style.strokeWidth = '4px';
-                text.textContent = tx.entregable.toUpperCase();
-                this.dom.svg.appendChild(text);
+                const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 10);
+                txt.setAttribute('text-anchor', 'middle');
+                txt.style.cssText = `fill:${tx.tipo==='tangible'?'#00e676':'#e040fb'};font-size:9px;font-weight:bold;font-family:monospace;paint-order:stroke;stroke:black;stroke-width:4px;text-transform:uppercase;`;
+                txt.textContent = tx.entregable;
+                this.dom.svg.appendChild(txt);
             }
         });
     }
 
-    openInspector(rol, totalVal, moneda, color) {
+    openInspector(rol, val, mon, col) {
         this.dom.inspector.classList.add('open');
         this.dom.insBody.style.display = 'block';
         document.getElementById('insName').innerText = rol.name;
-        const badge = document.getElementById('insLevel');
-        badge.innerText = rol.levelId;
-        badge.style.color = color; badge.style.borderColor = color;
-        document.getElementById('insEquity').innerText = `${totalVal} ${moneda}`;
+        const b = document.getElementById('insLevel');
+        b.innerText = rol.levelId; b.style.color = col; b.style.borderColor = col;
+        document.getElementById('insEquity').innerText = `${val} ${mon}`;
         document.getElementById('inputFmv').value = rol.fmv || 0;
         document.getElementById('inputMult').value = rol.multiplier || 1.0;
     }
 
     updateDiagnosis() {
-        const maturity = store.calculateMaturityIndex(this.activeProjectId);
-        this.dom.maturityScore.innerText = `${maturity.score}%`;
-        this.dom.maturityScore.style.color = maturity.score > 70 ? 'var(--accent-green)' : (maturity.score > 40 ? 'var(--accent-orange)' : '#ff5252');
-        this.dom.alertsContainer.innerHTML = '';
-        if(maturity.alerts.length === 0) {
-            this.dom.alertsContainer.innerHTML = `<div class="alert-item alert-ok">Flujo de valor equilibrado. Estructura de "Castell" sólida.</div>`;
-        } else {
-            maturity.alerts.forEach(alerta => {
-                this.dom.alertsContainer.innerHTML += `<div class="alert-item alert-warning">⚠️ ${alerta}</div>`;
-            });
-        }
+        const m = store.calculateMaturityIndex(this.activeProjectId);
+        this.dom.maturityScore.innerText = `${m.score}%`;
+        this.dom.maturityScore.style.color = m.score > 70 ? '#00e676' : (m.score > 40 ? '#ff9100' : '#ff5252');
+        this.dom.alertsContainer.innerHTML = m.alerts.length === 0 ? `<div class="alert-item alert-ok">Flujo Óptimo: La red tiene una estructura de Castell equilibrada.</div>` : m.alerts.map(a => `<div class="alert-item alert-warning">⚠️ ${a}</div>`).join('');
     }
 
-    getIconForLevel(levelId) {
-        return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[levelId] || '💠';
-    }
-
-    getColorForLevel(levelId) {
-        return { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[levelId] || '#ffffff';
-    }
+    getIconForLevel(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
+    getColorForLevel(l) { return { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 }
