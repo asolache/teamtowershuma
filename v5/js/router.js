@@ -1,27 +1,23 @@
 // v5/js/router.js
-import { store } from './core/store.js';
 
-// Mapa de Rutas de la Aplicación
+// 1. Añadimos la ruta de los tests
 const routes = {
-    '/': 'HomeView',                // La Landing Page
-    '/create': 'ProjectCreatorView',// El creador de IA
-    '/eco': 'EcoDashboardView',     // Macro-Mapa VNA
-    '/project': 'ProjectView',      // El Kanban (Desktop)
-    '/focus': 'FocusView',          // El Pomodoro Móvil
-    '/me': 'UserDashboardView',     // Mi GTD Inbox
-    '/ledger': 'LedgerView'         // La Triple Entrada
+    '/': 'HomeView',
+    '/create': 'ProjectCreatorView',
+    '/project': 'ProjectView',
+    '/tests': 'TestsView' // <--- NUEVA RUTA
 };
 
 class Router {
     constructor() {
         this.appContainer = document.getElementById('app');
-        // Escuchar los botones de "Atrás/Adelante" del navegador
         window.addEventListener('popstate', () => this.handleRoute());
-        // Interceptar todos los clics en enlaces (<a>)
         document.body.addEventListener('click', (e) => {
-            if (e.target.matches('[data-link]')) {
+            // Si hacen clic en un elemento dentro de un enlace (ej: un <span> dentro de un <a>)
+            const link = e.target.closest('[data-link]');
+            if (link) {
                 e.preventDefault();
-                this.navigateTo(e.target.href);
+                this.navigateTo(link.href);
             }
         });
     }
@@ -32,37 +28,40 @@ class Router {
     }
 
     async handleRoute() {
-        // Extraer la ruta actual (ej: "/project" o "/")
         let path = window.location.pathname;
         
-        // Adaptación para subcarpetas (Si lo alojas en teamtowers.com/v5/)
+        // Limpiamos el path de la subcarpeta para saber qué vista cargar
         const basePath = '/v5';
         if (path.startsWith(basePath)) {
             path = path.slice(basePath.length) || '/';
         }
 
-        const viewName = routes[path] || 'HomeView'; // Fallback a Home si no existe
+        const viewName = routes[path] || 'HomeView';
 
         try {
-            // Importación dinámica (Lazy Loading). Solo carga el JS de la vista que necesitas.
-            const { default: View } = await import(`./views/${viewName}.js`);
+            // RUTA ABSOLUTA PARA EL IMPORT (Previene el error de "Iniciando Kernel...")
+            const modulePath = `/v5/js/views/${viewName}.js`;
+            const { default: View } = await import(modulePath);
             const view = new View();
             
-            // Inyectar el HTML de la vista en el DOM
             this.appContainer.innerHTML = await view.getHtml();
             
-            // Ejecutar la lógica de esa vista (botones, listeners, suscripción al store)
             if (typeof view.executeViewScript === 'function') {
                 view.executeViewScript();
             }
         } catch (error) {
-            console.error(`Error cargando la vista ${viewName}:`, error);
-            this.appContainer.innerHTML = `<h2 style="color: white; padding: 2rem;">Error 404: Módulo no encontrado.</h2>`;
+            console.error(`💥 Error cargando la vista ${viewName}:`, error);
+            this.appContainer.innerHTML = `
+                <div style="padding: 3rem; text-align: center;">
+                    <h2 style="color: #ff5252;">Error 404/500</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">No se pudo cargar el módulo JS de la vista.</p>
+                    <a href="/v5/" data-link class="btn btn-outline">Volver al Inicio</a>
+                </div>
+            `;
         }
     }
 }
 
-// Inicializar el router cuando carga la página
 document.addEventListener('DOMContentLoaded', () => {
     const router = new Router();
     router.handleRoute();
