@@ -1,20 +1,25 @@
-// v5/js/router.js
+/**
+ * TEAMTOWERS OS - SPA ROUTER (v5.1)
+ * Orquestador de navegación sin recarga de página.
+ */
 
-// 1. Añadimos la ruta de los tests
 const routes = {
     '/': 'HomeView',
     '/create': 'ProjectCreatorView',
     '/project': 'ProjectView',
-    '/tests': 'TestsView' // <--- NUEVA RUTA
-    '/map': 'ValueMapView'
+    '/tests': 'TestsView',
+    '/map': 'ValueMapView' // <-- Coma corregida aquí
 };
 
 class Router {
     constructor() {
         this.appContainer = document.getElementById('app');
+        
+        // Escuchar el botón "Atrás" del navegador
         window.addEventListener('popstate', () => this.handleRoute());
+        
+        // Delegación de eventos para capturar clics en enlaces con [data-link]
         document.body.addEventListener('click', (e) => {
-            // Si hacen clic en un elemento dentro de un enlace (ej: un <span> dentro de un <a>)
             const link = e.target.closest('[data-link]');
             if (link) {
                 e.preventDefault();
@@ -23,46 +28,75 @@ class Router {
         });
     }
 
+    /**
+     * Cambia la URL sin recargar y dispara el controlador de rutas
+     */
     navigateTo(url) {
         window.history.pushState(null, null, url);
         this.handleRoute();
     }
 
+    /**
+     * Procesa la URL actual y carga el módulo JS correspondiente
+     */
     async handleRoute() {
         let path = window.location.pathname;
         
-        // Limpiamos el path de la subcarpeta para saber qué vista cargar
+        // Normalización para Netlify y subcarpetas
         const basePath = '/v5';
         if (path.startsWith(basePath)) {
-            path = path.slice(basePath.length) || '/';
+            // Extraemos la ruta real (ej: de '/v5/map' pasamos a '/map')
+            path = path.slice(basePath.length);
+        }
+        
+        // Si el path queda vacío o es solo '/', cargamos HomeView
+        if (path === '' || path === '/') {
+            path = '/';
         }
 
         const viewName = routes[path] || 'HomeView';
 
         try {
-            // RUTA ABSOLUTA PARA EL IMPORT (Previene el error de "Iniciando Kernel...")
+            // Importación dinámica del componente de vista
             const modulePath = `/v5/js/views/${viewName}.js`;
             const { default: View } = await import(modulePath);
             const view = new View();
             
+            // Inyectar el HTML de la vista en el contenedor principal
             this.appContainer.innerHTML = await view.getHtml();
             
+            // Ejecutar la lógica de la vista si existe
             if (typeof view.executeViewScript === 'function') {
                 view.executeViewScript();
             }
+
+            // Scroll automático al inicio tras cambiar de vista
+            window.scrollTo(0, 0);
+
         } catch (error) {
-            console.error(`💥 Error cargando la vista ${viewName}:`, error);
-            this.appContainer.innerHTML = `
-                <div style="padding: 3rem; text-align: center;">
-                    <h2 style="color: #ff5252;">Error 404/500</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">No se pudo cargar el módulo JS de la vista.</p>
-                    <a href="/v5/" data-link class="btn btn-outline">Volver al Inicio</a>
-                </div>
-            `;
+            console.error(`💥 Error crítico cargando la vista [${viewName}]:`, error);
+            this.renderError(viewName, error);
         }
+    }
+
+    /**
+     * Renderiza una pantalla de error amigable en caso de fallo de carga
+     */
+    renderError(viewName, error) {
+        this.appContainer.innerHTML = `
+            <div style="padding: 4rem 2rem; text-align: center; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #ff5252; font-size: 3rem; margin-bottom: 1rem;">404</h1>
+                <h2 style="color: white; margin-bottom: 1rem;">Módulo "${viewName}" no hallado</h2>
+                <p style="color: var(--text-muted); font-family: monospace; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                    ${error.message}
+                </p>
+                <a href="/v5/" data-link class="btn btn-primary">Reboot System (Inicio)</a>
+            </div>
+        `;
     }
 }
 
+// Inicialización del enrutador al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
     const router = new Router();
     router.handleRoute();
