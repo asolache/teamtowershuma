@@ -6,6 +6,7 @@ const routes = {
     '/create': 'ProjectCreatorView',
     '/project': 'ProjectView',
     '/tests': 'TestsView' // <--- NUEVA RUTA
+    '/map': 'ValueMapView'
 };
 
 class Router {
