@@ -35,7 +35,7 @@
         
         #app { min-height: calc(100vh - 110px); }
 
-        /* 🚀 TOPBAR (Solo Logo y Perfil) */
+        /* 🚀 TOPBAR (Global) */
         .topbar {
             position: fixed; top: 0; left: 0; right: 0; height: 60px;
             background: rgba(13, 17, 23, 0.95); border-bottom: 1px solid var(--border-color);
@@ -44,7 +44,7 @@
         }
         [data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.95); }
 
-        /* 🚀 TOOLBAR (Breadcrumbs y Botones de Acción) */
+        /* 🚀 TOOLBAR (Contextual & Breadcrumbs) */
         .toolbar {
             position: fixed; top: 60px; left: 0; right: 0; height: 50px;
             background: var(--bg-surface); border-bottom: 1px solid var(--border-color);
@@ -52,81 +52,72 @@
             padding: 0 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: 0.2s; }
-        .breadcrumb a:hover { color: var(--accent-blue); }
-        .breadcrumb span.separator { margin: 0 8px; color: var(--border-color); }
-        .breadcrumb span.current { color: var(--text-heading); font-weight: bold; }
+        /* 🍞 BREADCRUMB STYLING v4.1 */
+        .breadcrumb-container {
+            display: flex; align-items: center; gap: 8px;
+            overflow: hidden; white-space: nowrap; max-width: 70%;
+        }
+        .breadcrumb-item {
+            display: flex; align-items: center; font-size: 0.85rem; color: var(--text-muted);
+        }
+        .breadcrumb-item a { color: var(--text-muted); text-decoration: none; transition: 0.2s; }
+        .breadcrumb-item a:hover { color: var(--accent-blue); }
+        .breadcrumb-separator { margin: 0 4px; opacity: 0.3; font-size: 0.7rem; }
+        
+        /* El "Dónde estoy" ahora es prominente */
+        .breadcrumb-current {
+            font-size: 1.1rem; font-weight: 800; color: var(--text-heading);
+            letter-spacing: -0.3px; padding-left: 4px;
+        }
 
         .btn-back-nav { 
-            margin-right: 12px; font-size: 1.2rem; text-decoration: none; 
-            transition: transform 0.2s; display: inline-block; 
+            margin-right: 8px; font-size: 1rem; text-decoration: none; 
+            padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.05);
         }
-        .btn-back-nav:hover { transform: translateX(-3px); }
 
-        /* --- COMPONENTES BÁSICOS --- */
-        h1, h2, h3, h4 { color: var(--text-heading); margin-top: 0; margin-bottom: 0.5rem; }
-        p { margin-top: 0; margin-bottom: 1rem; }
-        .text-muted { color: var(--text-muted); }
-        .text-small { font-size: 0.85rem; }
-        
+        /* --- UI HELPERS --- */
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .grid-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
-        .panel { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
-        .panel-surface { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
-
-        /* --- BOTONES --- */
-        .btn { display: inline-block; padding: 8px 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-md); border: 1px solid transparent; transition: all var(--transition-speed) ease; font-family: inherit; text-decoration: none; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn:active { transform: translateY(1px); }
+        .btn { display: inline-block; padding: 8px 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: var(--radius-md); border: 1px solid transparent; transition: all var(--transition-speed) ease; text-decoration: none; }
         .btn-primary { background-color: var(--accent-green); color: #ffffff; }
-        .btn-outline { background-color: transparent; color: var(--accent-blue); border-color: var(--border-color); }
-        .btn-outline:hover { border-color: var(--accent-blue); }
         .btn-secondary { background-color: var(--bg-panel); color: var(--text-main); border-color: var(--border-color); }
-        .btn-secondary:hover { border-color: var(--text-muted); }
-        .btn-block { display: block; width: 100%; text-align: center; }
-
-        .form-label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-        .form-control { width: 100%; padding: 10px 14px; font-size: 0.95rem; color: var(--text-heading); background-color: var(--bg-base); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 16px; font-family: inherit; transition: all var(--transition-speed) ease; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
-        .form-control:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), inset 0 1px 3px rgba(0,0,0,0.2); background-color: var(--bg-panel); }
-
-        select.form-control { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238b949e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 40px; cursor: pointer; }
-        select.form-control option { background-color: var(--bg-panel); color: var(--text-heading); padding: 10px; }
-        textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.5; }
-
+        .btn-outline { background-color: transparent; color: var(--accent-blue); border-color: var(--border-color); }
+        
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        .brand-logo { filter: var(--logo-filter); height: 32px; width: auto; object-fit: contain; }
+        .brand-logo { filter: var(--logo-filter); height: 28px; width: auto; }
     </style>
 </head>
 <body>
     
     <nav class="topbar">
         <div style="display: flex; align-items: center; gap: 15px;">
-            <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 4px;">
+            <a href="#/" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
                 <img src="assets/img/logoteamtowers.png" alt="TeamTowers" class="brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="display:none; width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; align-items:center; justify-content:center; color:white; font-weight:bold;">TT</div>
+                <div style="display:none; width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; align-items:center; justify-content:center; color:white; font-weight:bold; font-size: 0.8rem;">TT</div>
             </a>
         </div>
         
         <div class="dropdown" style="position: relative;">
             <button id="btn-user-menu" class="btn btn-secondary" style="display:flex; gap:10px; align-items:center; border-radius: 20px; padding: 6px 14px;">
-                <span id="navbar-identity">Cargando...</span> <span style="font-size: 0.6rem;">▼</span>
+                <span id="navbar-identity">Cargando...</span> <span style="font-size: 0.5rem;">▼</span>
             </button>
             <div id="dropdown-menu" style="display:none; position:absolute; right:0; top:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:8px; width:220px; box-shadow:0 10px 40px rgba(0,0,0,0.6); margin-top:8px;">
-                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold;">🔄 Simular Nodo (Usuario)</a>
-                <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">🏠 Hub Global</a>
-                <a href="#/user-dashboard" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">👤 Tu Dashboard</a>
-                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none;">⚙️ Configuración</a>
-                <a href="#" id="btn-toggle-theme" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-top:1px solid var(--border-color);">🌗 Alternar Tema</a>
+                <a href="#" id="menu-switch-role" style="display:block; padding:10px; color:var(--accent-blue); text-decoration:none; border-bottom:1px solid var(--border-color); font-weight:bold; font-size: 0.85rem;">🔄 Simular Nodo</a>
+                <a href="#/" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; font-size: 0.85rem;">🏠 Hub Global</a>
+                <a href="#/user-dashboard" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; font-size: 0.85rem;">👤 Tu Dashboard</a>
+                <a href="#/settings" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; font-size: 0.85rem;">⚙️ Configuración</a>
+                <a href="#" id="btn-toggle-theme" style="display:block; padding:10px; color:var(--text-main); text-decoration:none; border-top:1px solid var(--border-color); font-size: 0.85rem;">🌗 Alternar Tema</a>
             </div>
         </div>
     </nav>
 
     <div id="app-toolbar" class="toolbar" style="display: none;">
-        <div id="toolbar-left" style="display:flex; gap:10px; align-items: center;" class="breadcrumb"></div>
-        <div id="toolbar-right" style="display:flex; gap:10px; align-items: center;"></div>
+        <div id="toolbar-left" style="display:flex; align-items: center; overflow: hidden;">
+            </div>
+        <div id="toolbar-right" style="display:flex; gap:10px; align-items: center; flex-shrink: 0;">
+            </div>
     </div>
 
     <div id="app"></div>
@@ -141,53 +132,65 @@
         import { UserDashboardView } from './js/views/UserDashboardView.js';
         import { SettingsView } from './js/views/SettingsView.js';
 
-        // 🧠 API GLOBAL DE NAVEGACIÓN
+        // 🍞 API DE NAVEGACIÓN v4.1 (Mejorada para visualización y truncado)
         window.setNavbar = (breadcrumbs = [], actionsLeft = '', actionsRight = '') => {
             const toolbar = document.getElementById('app-toolbar');
             const leftContainer = document.getElementById('toolbar-left');
             const rightContainer = document.getElementById('toolbar-right');
             
-            let bcHTML = '';
+            if (breadcrumbs.length === 0 && !actionsLeft && !actionsRight) {
+                toolbar.style.display = 'none';
+                document.body.style.paddingTop = '60px';
+                return;
+            }
+
+            let html = `<div class="breadcrumb-container">`;
             
+            // Botón atrás inteligente
             if (breadcrumbs.length > 1) {
-                bcHTML += `<a href="javascript:history.back()" class="btn-back-nav" title="Volver Atrás">⬅️</a>`;
+                html += `<a href="javascript:history.back()" class="btn-back-nav">⬅️</a>`;
             }
 
             breadcrumbs.forEach((item, index) => {
-                if (index === breadcrumbs.length - 1) {
-                    bcHTML += `<span class="current">${item.label}</span>`;
+                const isLast = index === breadcrumbs.length - 1;
+                
+                if (isLast) {
+                    html += `<span class="breadcrumb-current">${item.label}</span>`;
                 } else {
-                    bcHTML += `<a href="${item.hash}">${item.label}</a> <span class="separator">/</span> `;
+                    // Truncado: Si hay muchos pasos, solo mostramos el texto si es el primero o el penúltimo
+                    const hideLabel = breadcrumbs.length > 3 && index !== 0 && index !== breadcrumbs.length - 2;
+                    html += `
+                        <div class="breadcrumb-item">
+                            <a href="${item.hash}">${hideLabel ? '...' : item.label}</a>
+                            <span class="breadcrumb-separator">/</span>
+                        </div>`;
                 }
             });
+
+            html += `</div>`;
             
-            leftContainer.innerHTML = bcHTML + actionsLeft;
+            leftContainer.innerHTML = html + actionsLeft;
             rightContainer.innerHTML = actionsRight;
 
-            if (breadcrumbs.length > 0 || actionsLeft || actionsRight) {
-                toolbar.style.display = 'flex';
-                document.body.style.paddingTop = '110px';
-            } else {
-                toolbar.style.display = 'none';
-                document.body.style.paddingTop = '60px';
-            }
+            toolbar.style.display = 'flex';
+            document.body.style.paddingTop = '110px';
         };
 
         function updateIdentityBadge() {
             const state = store.getState();
             const session = state.session || { activeUserId: 'ecosystem-admin', role: 'admin' };
-            
             const idBadge = document.getElementById('navbar-identity');
-            if (session.role === 'admin') idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">👑 Ecosystem Owner</span>`;
-            else {
+            
+            if (session.role === 'admin') {
+                idBadge.innerHTML = `<span style="color:var(--accent-red); font-weight:bold; font-size:0.8rem;">👑 Owner</span>`;
+            } else {
                 const user = state.globalUsers.find(u => u.id === session.activeUserId);
-                idBadge.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold;">👤 ${user ? user.name : session.activeUserId}</span>`;
+                idBadge.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold; font-size:0.8rem;">👤 ${user ? user.name.split(' ')[0] : session.activeUserId}</span>`;
             }
         }
 
         document.addEventListener('click', (e) => {
             const dropdown = document.getElementById('dropdown-menu');
-            
             if (e.target.closest('#btn-user-menu')) {
                 dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
             } else if(dropdown && !e.target.closest('#dropdown-menu')) {
@@ -200,8 +203,7 @@
                 if ((state.session?.role || 'admin') === 'user') {
                     store.dispatch({ type: 'LOGOUT_USER' }); window.location.hash = '#/';
                 } else {
-                    const usersList = state.globalUsers.map(u => u.id).join(', ');
-                    const id = prompt(`Simulador de Nodos:\nIntroduce el @id de un usuario.\nUsuarios disponibles: ${usersList || 'Ninguno'}`);
+                    const id = prompt(`Simular Nodo (@id):`, state.globalUsers[0]?.id || '@user1');
                     if (id) {
                         store.dispatch({ type: 'LOGIN_USER', payload: { userId: id.startsWith('@') ? id : '@'+id } });
                         window.location.hash = `#/user-dashboard`;
@@ -211,21 +213,13 @@
 
             if (e.target.id === 'btn-toggle-theme') {
                 e.preventDefault();
-                const state = JSON.parse(localStorage.getItem('tt_sos_state')) || {};
-                if (!state.config) state.config = {};
-                
-                const nuevoTema = state.config.theme === 'light' ? 'dark' : 'light';
-                state.config.theme = nuevoTema;
-                
-                localStorage.setItem('tt_sos_state', JSON.stringify(state));
-                document.body.setAttribute('data-theme', nuevoTema);
-                store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: nuevoTema } });
-                
+                const state = store.getState();
+                const newTheme = state.config?.theme === 'light' ? 'dark' : 'light';
+                store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { theme: newTheme } });
                 if(dropdown) dropdown.style.display = 'none';
             }
         });
 
-        // ENRUTADOR PRINCIPAL
         function router() {
             const hash = window.location.hash || '#/';
             const parts = hash.split('/');
@@ -234,7 +228,6 @@
 
             document.getElementById('app').classList.remove('fade-in');
             void document.getElementById('app').offsetWidth; 
-            
             updateIdentityBadge();
 
             try {
@@ -247,23 +240,20 @@
                     else if (action === 'map') app.innerHTML = ProjectView.render(pId);
                     else app.innerHTML = ProjectDashboardView.render(pId);
                 } 
-                else app.innerHTML = `<div class="container text-center"><h1>404</h1></div>`;
+                else app.innerHTML = `<div class="container text-center"><h1>404</h1><a href="#/">Volver al Hub</a></div>`;
             } catch (e) {
                 console.error("SOS Router Error:", e);
-                app.innerHTML = `<div class="container"><h3>Error</h3><p>${e.message}</p></div>`;
+                app.innerHTML = `<div class="container"><h3>Error de Renderizado</h3><p>${e.message}</p></div>`;
             }
             document.getElementById('app').classList.add('fade-in');
         }
 
         window.addEventListener('hashchange', router);
-        
-        // SUSCRIPCIÓN A ESTADO
         store.subscribe(() => {
             updateIdentityBadge();
             document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark');
         });
 
-        // ARRANQUE
         if (store.getState()) {
             document.documentElement.setAttribute('data-theme', store.getState().config?.theme || 'dark'); 
             updateIdentityBadge();
