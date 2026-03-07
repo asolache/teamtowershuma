@@ -37,7 +37,8 @@
         }
         .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
         .logo span { color: var(--accent-blue); }
-        .global-links a { color: var(--text-muted); text-decoration: none; margin-left: 2rem; font-size: 0.9rem; font-weight: 500;}
+        .global-links { display: flex; align-items: center; gap: 2rem; }
+        .global-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s;}
         .global-links a:hover, .global-links a.active { color: var(--accent-blue); }
 
         .app-body { display: flex; height: calc(100vh - var(--top-nav-height)); }
@@ -82,11 +83,13 @@
         #node-mkt { top: 50%; left: 50%; border-color: var(--accent-purple); }
         #node-legal { top: 70%; left: 20%; border-color: var(--text-muted); }
 
-        /* SVG para líneas de conexión */
+        /* CORRECCIÓN VNA: Líneas de conexión */
         .connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .flow-line { stroke-width: 3; fill: none; animation: dash 30s linear infinite; }
-        .flow-tangible { stroke: var(--tangible-color); stroke-dasharray: 10, 10; }
-        .flow-intangible { stroke: var(--intangible-color); stroke-dasharray: 5, 15; }
+        .flow-line { fill: none; animation: dash 30s linear infinite; }
+        /* Tangible: Continua y gruesa, el movimiento se simula con un dash muy largo */
+        .flow-tangible { stroke: var(--tangible-color); stroke-width: 4; stroke-dasharray: 100, 20; }
+        /* Intangible: Discontinua (punteada) */
+        .flow-intangible { stroke: var(--intangible-color); stroke-width: 3; stroke-dasharray: 8, 12; }
         @keyframes dash { to { stroke-dashoffset: -1000; } }
         
         .flow-label { background: var(--bg-base); border: 1px solid var(--glass-border); padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; color: var(--text-main); font-weight: bold; }
@@ -125,8 +128,9 @@
     <header class="top-navbar">
         <div class="logo">🗼 <span>TeamTowers</span></div>
         <nav class="global-links">
-            <a href="mockup-desktop.html">Mi Kanban</a>
-            <a href="#" class="active">Macro-Mapa (VNA)</a>
+            <a href="mockup-user-dashboard.html">Mi Inbox GTD</a>
+            <a href="mockup-app-shell.html">Mis Proyectos</a>
+            <a href="mockup-eco-dashboard.html" class="active">Macro-Mapa (VNA)</a>
             <a href="#">Ledger</a>
         </nav>
         <div style="font-size: 0.9rem; font-weight: bold; color: var(--accent-gold, #ffd700); border: 1px solid rgba(255,215,0,0.3); padding: 5px 10px; border-radius: 12px;">👑 Ecosystem Owner</div>
@@ -174,8 +178,8 @@
             </div>
 
             <div class="legend">
-                <div class="legend-item"><div class="dot-t"></div> Transacción Tangible (Código, Diseño)</div>
-                <div class="legend-item"><div class="dot-i"></div> Transacción Intangible (Visión, Cultura)</div>
+                <div class="legend-item"><div class="dot-t"></div> Transacción Tangible (Línea Continua)</div>
+                <div class="legend-item"><div class="dot-i"></div> Transacción Intangible (Línea Discontinua)</div>
             </div>
         </main>
 
