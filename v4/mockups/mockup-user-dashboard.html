@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers | Mi Espacio (GTD & Equity)</title>
+    <style>
+        :root {
+            --bg-base: #0a0a0c;
+            --glass-bg: rgba(30, 30, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --accent-blue: #00b0ff;
+            --accent-green: #00e676;
+            --accent-orange: #ff9100;
+            --accent-purple: #b388ff;
+            --top-nav-height: 60px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top left, #1a1a24, var(--bg-base));
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOP NAVBAR GLOBAL */
+        .top-navbar {
+            height: var(--top-nav-height); background: rgba(10, 10, 12, 0.9); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; backdrop-filter: blur(10px);
+        }
+        .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .logo span { color: var(--accent-blue); }
+        .global-links a { color: var(--text-muted); text-decoration: none; margin-left: 2rem; font-size: 0.9rem; font-weight: 500;}
+        .global-links a:hover, .global-links a.active { color: var(--accent-blue); }
+        .user-profile { width: 32px; height: 32px; background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.8rem; }
+
+        /* MAIN LAYOUT */
+        .app-body { display: flex; height: calc(100vh - var(--top-nav-height)); padding: 2rem 3rem; gap: 2rem; overflow-y: auto; }
+
+        /* LEFT COLUMN: GTD Inbox */
+        .gtd-column { flex: 2; display: flex; flex-direction: column; gap: 2rem; }
+        
+        .section-header { margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; }
+        .section-header h2 { font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .section-header p { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Task Cards */
+        .task-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; backdrop-filter: blur(10px); transition: transform 0.2s;
+        }
+        .task-card:hover { transform: translateX(5px); border-color: rgba(255,255,255,0.2); }
+        .task-card.active-pomodoro { border-left: 4px solid var(--accent-orange); background: linear-gradient(90deg, rgba(255, 145, 0, 0.05), var(--glass-bg)); }
+
+        .task-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+        .task-project { font-size: 0.8rem; color: var(--accent-blue); font-weight: 600; margin-bottom: 8px; display: inline-block; background: rgba(0, 176, 255, 0.1); padding: 2px 8px; border-radius: 12px;}
+        .task-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 15px; }
+
+        .action-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s; }
+        .action-btn:hover { background: rgba(255,255,255,0.1); }
+        .btn-focus { background: linear-gradient(45deg, var(--accent-orange), #ff5722); color: white; border: none; }
+        .btn-focus:hover { box-shadow: 0 5px 15px rgba(255, 145, 0, 0.3); }
+
+        /* RIGHT COLUMN: Equity Portfolio */
+        .portfolio-column { flex: 1; }
+        
+        .portfolio-card {
+            background: linear-gradient(180deg, rgba(30, 30, 35, 0.8), rgba(20, 20, 25, 0.9)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; position: sticky; top: 0;
+        }
+        
+        .total-equity { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 2rem; }
+        .total-equity h3 { color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .equity-value { font-size: 3.5rem; font-weight: 300; line-height: 1; color: var(--accent-green); margin-bottom: 5px; }
+        .equity-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+
+        .project-breakdown { display: flex; flex-direction: column; gap: 1rem; }
+        .breakdown-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .breakdown-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <div class="logo">🗼 <span>TeamTowers</span></div>
+        <nav class="global-links">
+            <a href="mockup-user-dashboard.html" class="active">Mi Inbox GTD</a>
+            <a href="mockup-app-shell.html">Mis Proyectos</a>
+            <a href="mockup-eco-dashboard.html">Macro-Redes</a>
+        </nav>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">🔔<span style="position: absolute; top: 15px; right: 65px; background: red; width: 8px; height: 8px; border-radius: 50%;"></span></div>
+            <div class="user-profile">AL</div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        
+        <div class="gtd-column">
+            
+            <div class="section-header">
+                <h2>🔥 Haciendo Ahora (Deep Work)</h2>
+                <p>Tu única prioridad en este momento.</p>
+            </div>
+
+            <div class="task-card active-pomodoro">
+                <div>
+                    <span class="task-project" style="color: var(--accent-orange); background: rgba(255, 145, 0, 0.1);">NeoApp Startup</span>
+                    <div class="task-info">
+                        <h3>Pitch Deck y Contexto IA</h3>
+                        <div class="task-meta">
+                            <span>Rol: @anxaneta (x3.0)</span>
+                            <span>⏱️ 24:15 transcurridos</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="action-btn btn-focus">Ir al Pomodoro ↗</button>
+            </div>
+
+            <div class="section-header" style="margin-top: 2rem;">
+                <h2>📥 Siguientes Acciones (To-Do)</h2>
+                <p>Tareas de todos tus ecosistemas listas para procesar según GTD.</p>
+            </div>
+
+            <div class="task-card">
+                <div>
+                    <span class="task-project">Growth & Marketing</span>
+                    <div class="task-info">
+                        <h3>Setup de Campañas Ads (Meta)</h3>
+                        <div class="task-meta">
+                            <span>Rol: @aixecador (x2.0)</span>
+                            <span>Est: 10h</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="action-btn">Iniciar Deep Work</button>
+            </div>
+
+            <div class="task-card">
+                <div>
+                    <span class="task-project" style="color: var(--accent-purple); background: rgba(179, 136, 255, 0.1);">NeoApp Startup</span>
+                    <div class="task-info">
+                        <h3>Arquitectura de Base de Datos</h3>
+                        <div class="task-meta">
+                            <span>Rol: @baixos (x1.2)</span>
+                            <span>Est: 8h</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="action-btn">Iniciar Deep Work</button>
+            </div>
+
+        </div>
+
+        <div class="portfolio-column">
+            <div class="portfolio-card">
+                
+                <div class="total-equity">
+                    <h3>Mi Portafolio (Equity Global)</h3>
+                    <div class="equity-value">4,350 €</div>
+                    <p class="equity-subtitle">Valor total sellado en los Ledgers de la red</p>
+                </div>
+
+                <h4 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Distribución por Proyecto</h4>
+                
+                <div class="project-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-name"><div class="dot" style="background: var(--accent-blue);"></div> NeoApp Startup</div>
+                        <div>2,500 € <span style="color: var(--text-muted); font-size: 0.8rem;">(58%)</span></div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-name"><div class="dot" style="background: var(--accent-purple);"></div> Growth & Marketing</div>
+                        <div>1,850 € <span style="color: var(--text-muted); font-size: 0.8rem;">(42%)</span></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px dashed var(--glass-border); text-align: center;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Tienes <strong style="color: var(--accent-main);">12h</strong> en estado "Auditoría". Cuando @dosos las apruebe, sumarán a tu portafolio.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
