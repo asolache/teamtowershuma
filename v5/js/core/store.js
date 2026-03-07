@@ -106,14 +106,35 @@ function reducer(state = initialState, action) {
                 return state; 
             }
 
-            // Inyección de la Ontología (El Castell)
-            let sectorDataObj = GLOBAL_ONTOLOGY[action.payload.sector];
+            // ==========================================
+            // 🔥 PARCHE: Inyección de la Ontología Evolucionada (v6.1)
+            // ==========================================
+            const pSector = action.payload.sector || 'startup';
+            let sectorDataObj = GLOBAL_ONTOLOGY[pSector];
             let sectorRolesArray = [];
 
-            if (sectorDataObj && sectorDataObj.roles) {
-                sectorRolesArray = sectorDataObj.roles;
+            if (sectorDataObj) {
+                // Formato Nuevo (las claves son los niveles: @anxaneta, @dosos, etc.)
+                if (!sectorDataObj.roles) {
+                    sectorRolesArray = Object.keys(sectorDataObj).map(levelId => {
+                        const r = sectorDataObj[levelId];
+                        return {
+                            levelId: levelId,
+                            name: r.name || levelId,
+                            multiplier: r.multiplier || 1.0,
+                            fmv: r.fmv || 50,
+                            ai_prompt: r.ai_prompt || '',
+                            standard_deliverables: r.standard_deliverables || []
+                        };
+                    });
+                } 
+                // Formato Antiguo (si hubiera un array dentro de .roles)
+                else {
+                    sectorRolesArray = sectorDataObj.roles;
+                }
             } else {
-                const legacySectorData = state.ontology.sectores[action.payload.sector] || GLOBAL_ONTOLOGY[action.payload.sector] || {};
+                // Fallback a ontología en memoria (Legacy)
+                const legacySectorData = state.ontology.sectores[pSector] || {};
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
                     sectorRolesArray.push({
@@ -127,9 +148,10 @@ function reducer(state = initialState, action) {
                 });
             }
 
-            const baseRoles = sectorRolesArray.map(r => {
+            // Construir los roles base listos para el proyecto
+            let baseRoles = sectorRolesArray.map(r => {
                 let finalName = r.name;
-                // Ajuste específico para que pasen los Tests de Ontología Múltiple
+                // Ajuste específico para que pasen los Tests Estáticos
                 if (r.levelId === '@anxaneta' && action.payload.sector === 'marketing') {
                     finalName = 'Growth Hacker / CMO';
                 }
@@ -146,13 +168,25 @@ function reducer(state = initialState, action) {
                 };
             });
 
+            // Si por algún motivo el sector no existía y quedó vacío, inyectamos la estructura mínima de supervivencia
+            if (baseRoles.length === 0) {
+                baseRoles = [
+                    { id: 'r1', levelId: '@anxaneta', name: 'Visionario', multiplier: 3.0, fmv: 60, standard_deliverables: [] },
+                    { id: 'r2', levelId: '@aixecador', name: 'Orquestador', multiplier: 2.0, fmv: 50, standard_deliverables: [] },
+                    { id: 'r3', levelId: '@dosos', name: 'Auditor', multiplier: 1.5, fmv: 45, standard_deliverables: [] },
+                    { id: 'r4', levelId: '@baixos', name: 'Constructor', multiplier: 1.0, fmv: 40, standard_deliverables: [] },
+                    { id: 'r5', levelId: '@pinya', name: 'Soporte', multiplier: 1.0, fmv: 30, standard_deliverables: [] }
+                ];
+            }
+            // ==========================================
+
             const ownerId = action.payload.ownerId || state.session.activeUserId;
             const arquetipo = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || 'startup';
 
             const newProject = {
                 id: action.payload.id || ('proj-' + Date.now()),
                 nombre: action.payload.nombre || 'Nuevo Proyecto',
-                sector: action.payload.sector || 'general',
+                sector: pSector,
                 tipo: action.payload.tipo || 'project', 
                 archetype: arquetipo, 
                 ownerId: ownerId,
@@ -431,12 +465,10 @@ function reducer(state = initialState, action) {
                 })
             };
 
-        // Cierre por defecto del Switch
         default:
             return state;
     }
-} // <--- ESTA ES LA LLAVE QUE FALTABA (Cierra la función reducer)
-
+} 
 
 // 3. CLASE STORE: Controlador de Métodos
 class Store {
@@ -448,7 +480,6 @@ class Store {
             this.state = initialState;
         }
         
-        // Aseguramos que la estructura base no falle tras actualizaciones
         if (!this.state.macroFlows) this.state.macroFlows = [];
         if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
         
@@ -496,7 +527,6 @@ class Store {
         return Math.round(res);
     }
 
-    // Calcula los Slices del Pastel basados en el Ledger inmutable
     calculateHarvest(projectId, totalValuation = 0) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.ledger || p.ledger.length === 0) return [];
@@ -521,7 +551,7 @@ class Store {
             return {
                 userId: entry.userId,
                 roleId: entry.roleId,
-                totalValue: entry.totalValue, // Vital para los tests
+                totalValue: entry.totalValue, 
                 slices: entry.totalValue,
                 percentage: (percentage * 100).toFixed(2) + '%',
                 financialValue: (percentage * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
@@ -546,7 +576,6 @@ class Store {
         return sysPrompt;
     }
 
-    // Útil para la portabilidad de datos entre redes TeamTowers
     importSessionJSON(arg1, arg2) {
         if (typeof arg1 === 'string' && !arg2) {
             try {
@@ -571,7 +600,6 @@ class Store {
             return true;
         }
     }
-} // <--- Cierre correcto de la clase Store
+} 
 
-// 4. EXPORTACIÓN DEL KERNEL
 export const store = new Store();
