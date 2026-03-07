@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers | App Shell & Análisis</title>
+    <style>
+        :root {
+            --bg-base: #0a0a0c;
+            --glass-bg: rgba(30, 30, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --accent-blue: #00b0ff;
+            --accent-green: #00e676;
+            --accent-orange: #ff9100;
+            --accent-purple: #b388ff;
+            --role-anxaneta: #ff5252;
+            --top-nav-height: 60px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top right, #1a1a24, var(--bg-base));
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. TOP NAVBAR (Navegación Global / Ecosistema) */
+        .top-navbar {
+            height: var(--top-nav-height);
+            background: rgba(10, 10, 12, 0.9);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 2rem; }
+        .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .logo span { color: var(--accent-blue); }
+        .ecosystem-selector {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main);
+            padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.9rem; cursor: pointer;
+        }
+        .global-links a { color: var(--text-muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; font-weight: 500;}
+        .global-links a:hover, .global-links a.active { color: var(--accent-blue); }
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+        .user-profile { width: 32px; height: 32px; background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.8rem; }
+
+        /* Contenedor Inferior (Sidebar + Contenido) */
+        .app-body {
+            display: flex;
+            height: calc(100vh - var(--top-nav-height));
+        }
+
+        /* 2. SIDEBAR (Navegación Local / Proyecto) */
+        .sidebar {
+            width: 250px;
+            background: var(--glass-bg);
+            border-right: 1px solid var(--glass-border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .project-context-header {
+            padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); margin-bottom: 1rem;
+        }
+        .project-context-header h3 { font-size: 1rem; margin-bottom: 4px; }
+        .project-context-header p { font-size: 0.75rem; color: var(--accent-green); }
+        
+        .side-link {
+            padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; display: block; transition: all 0.2s;
+        }
+        .side-link:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-left: 3px solid var(--accent-blue); }
+
+        /* 3. MAIN WORKSPACE (Vista de Análisis Existente Integrada) */
+        .workspace {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end;}
+        .view-header h1 { font-size: 2rem; font-weight: 700; }
+        .view-header p { color: var(--text-muted); }
+
+        /* Grids de Análisis (Maturity, Resilience, Slicing Pie) */
+        .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        
+        .card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px); }
+        .card h2 { font-size: 1rem; color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .metric-big { font-size: 3rem; font-weight: 300; line-height: 1; margin-bottom: 0.5rem; }
+        .metric-good { color: var(--accent-green); }
+        .metric-warn { color: var(--accent-orange); }
+
+        /* Slicing Pie Table */
+        .pie-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .pie-table th, .pie-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; }
+        .pie-table th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        .pie-bar-bg { width: 100px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 10px;}
+        .pie-bar-fill { height: 100%; background: var(--accent-blue); }
+
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <div class="nav-left">
+            <div class="logo">🗼 <span>TeamTowers</span></div>
+            <select class="ecosystem-selector">
+                <option>Ecosistema Huma</option>
+                <option>Global Network</option>
+            </select>
+            <nav class="global-links">
+                <a href="#">Dashboard Global</a>
+                <a href="#" class="active">Proyectos</a>
+                <a href="#">Macro-Mapa (VNA)</a>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <div style="color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">🔔</div>
+            <div class="user-profile">AL</div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        
+        <aside class="sidebar">
+            <div class="project-context-header">
+                <h3>NeoApp Startup</h3>
+                <p>Arquetipo: Startup (x2.0)</p>
+            </div>
+            
+            <a href="mockup-desktop.html" class="side-link">📋 Backlog GTD (Pull)</a>
+            <a href="mockup-app-shell.html" class="side-link active">📊 Análisis & Salud</a>
+            <a href="mockup-mobile-focus.html" class="side-link">⏱️ Deep Work (IA)</a>
+            <a href="#" class="side-link">⛓️ Ledger (Auditoría)</a>
+            <a href="#" class="side-link">⚙️ Configuración DAO</a>
+        </aside>
+
+        <main class="workspace">
+            <div class="view-header">
+                <div>
+                    <h1>Análisis de Proyecto</h1>
+                    <p>Métricas calculadas en tiempo real por el Kernel v6.0</p>
+                </div>
+                <button style="background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--glass-border); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                    Exportar Reporte
+                </button>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="card">
+                    <h2>Salud Sistémica (Resilience)</h2>
+                    <div class="metric-big metric-good">100%</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">0 transacciones bloqueadas o reportadas. El flujo es perfecto.</p>
+                </div>
+
+                <div class="card">
+                    <h2>Índice de Madurez (ADN)</h2>
+                    <div class="metric-big metric-warn">80%</div>
+                    <p style="font-size: 0.85rem; color: var(--accent-orange);">⚠️ Alerta: Falta cubrir el rol de @dosos (Auditor) en la ontología activa.</p>
+                </div>
+
+                <div class="card">
+                    <h2>Valor Congelado Total</h2>
+                    <div class="metric-big" style="color: var(--accent-blue);">4,250 €</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Basado en horas reportadas × FMV × Multiplicador de riesgo.</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2>Distribución de Equity (Slicing The Pie)</h2>
+                <table class="pie-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario / Nodo</th>
+                            <th>Rol Principal</th>
+                            <th>Slices (Valor)</th>
+                            <th>Equity (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>@alice_founder</strong></td>
+                            <td><span style="color: var(--role-anxaneta);">@anxaneta</span></td>
+                            <td>2,500 €</td>
+                            <td>
+                                58.8% 
+                                <div class="pie-bar-bg"><div class="pie-bar-fill" style="width: 58.8%;"></div></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>@bob_dev</strong></td>
+                            <td><span style="color: var(--accent-purple);">@baixos</span></td>
+                            <td>1,200 €</td>
+                            <td>
+                                28.2% 
+                                <div class="pie-bar-bg"><div class="pie-bar-fill" style="width: 28.2%; background: var(--accent-purple);"></div></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>@carol_pm</strong></td>
+                            <td><span style="color: #ff4081;">@aixecador</span></td>
+                            <td>550 €</td>
+                            <td>
+                                12.9% 
+                                <div class="pie-bar-bg"><div class="pie-bar-fill" style="width: 12.9%; background: #ff4081;"></div></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>
