@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTEL & Pomodoro | Doc TeamTowers</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #ff9800; /* Naranja para la IA y el tiempo */
+            --success-color: #4CAF50;
+            --code-bg: #2d2d2d;
+            --border-color: #333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            line-height: 1.6;
+        }
+        nav {
+            width: 250px;
+            background-color: var(--surface-color);
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover, nav a.active { color: var(--accent-color); }
+        .back-link {
+            font-size: 0.9rem; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem; margin-bottom: 1rem;
+        }
+        main { margin-left: 280px; padding: 3rem; max-width: 800px; }
+        h1, h2, h3 { color: #ffffff; }
+        h1 { border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; }
+        h2 { margin-top: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
+        code { background-color: var(--code-bg); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; color: #ffcc80; }
+        .quote { background: var(--surface-color); padding: 1rem 1.5rem; border-left: 4px solid var(--accent-color); font-style: italic; margin: 1.5rem 0; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-link">&larr; Volver al Índice</a>
+    <a href="#vision" class="active">1. Visión y Pedagogía</a>
+    <a href="#gtd-pomodoro">2. GTD + Pomodoro Líquido</a>
+    <a href="#arquitectura">3. Integración en Kernel</a>
+    <a href="#tokenomics">4. Prompt a Equity (Slicing Pie)</a>
+</nav>
+
+<main>
+    <h1>🤖 Módulo INTEL & Sincronización Temporal</h1>
+    <p><em>Metodología: Pomodoro, GTD y Prompt Engineering como Trabajo de Alto Valor.</em></p>
+
+    <div class="quote">
+        "El objetivo es crear la herramienta total para aprender haciendo. Que el usuario interiorice Slicing Pie, Value Network Analysis y GTD mientras interactúa con la IA."
+    </div>
+
+    <h2 id="vision">1. La Visión: Aprender Haciendo</h2>
+    <p>El Prompt Engineering no es una acción pasiva; es la programación del cerebro de la red (Intangible de Nivel 3). Por lo tanto, el tiempo que un Estratega (<code>@anxaneta</code>) dedica a pensar, debatir y elaborar un contexto con la IA, debe ser contabilizado y recompensado financieramente en el ecosistema.</p>
+
+    <h2 id="gtd-pomodoro">2. GTD y el "Pomodoro Líquido"</h2>
+    <p>Se integra una mezcla de <strong>Getting Things Done (GTD)</strong> y la técnica <strong>Pomodoro</strong>, pero adaptada al flujo creativo (sin ser un cronómetro radical que corte la inspiración):</p>
+    <ul>
+        <li><strong>Fase GTD (Captura y Clarificación):</strong> Antes de empezar, el usuario abre el modal de IA. El sistema le pide definir su "Siguiente Acción" (Ej: <em>"Definir el modelo de negocio"</em>).</li>
+        <li><strong>Fase Pomodoro (Enfoque):</strong> Se activa el <code>Deep Work Tracker</code>. Un temporizador sutil comienza a contar en la UI. El usuario entra en "estado de flujo" conversando y entrenando a la IA.</li>
+        <li><strong>Cierre:</strong> Al finalizar la sesión de IA, el temporizador se detiene. El usuario revisa el tiempo (ej: 34 minutos).</li>
+    </ul>
+
+    <h2 id="arquitectura">3. Integración Técnica en el Kernel</h2>
+    <p>Para soportar esto sin romper la inmutabilidad actual, se añadirán dos nuevas acciones al <code>store.js</code> en futuras versiones:</p>
+    <ul>
+        <li><code>START_INTEL_SESSION</code>: Registra un <code>timestamp</code> de inicio en el estado local del cliente.</li>
+        <li><code>END_INTEL_SESSION</code>: Dispara una cadena automática en el Kernel. Calcula la diferencia de tiempo, y hace un <code>dispatch</code> automático de <code>ADD_TRANSACTION</code>.</li>
+    </ul>
+    <p>La transacción generada automáticamente se verá así en el código:</p>
+    <pre><code>{
+  entregable: "[INTEL] Diseño de Prompt y Contexto AI",
+  fase: 1,
+  from: "role-anxaneta-...",
+  horas: 0.56, // (34 minutos / 60)
+  status: "reported"
+}</code></pre>
+
+    <h2 id="tokenomics">4. Del Prompt al Equity (Slicing Pie)</h2>
+    <p>Una vez que la transacción del "Deep Work" se auto-reporta, pasa al flujo normal de Slicing The Pie.</p>
+    <p>El sistema toma esos 34 minutos (0.56 horas), los multiplica por el FMV del líder (Ej: 50€) y le aplica el multiplicador de riesgo del rol (Ej: x3.0). El resultado se inyecta en el <strong>Ledger de Triple Entrada</strong>.</p>
+    <p><strong>Resultado Pedagógico:</strong> El usuario acaba de aprender que <em>pensar estratégicamente</em> y generar contexto para la IA tiene un valor cuantificable y real en su Cap Table.</p>
+</main>
+
+</body>
+</html>
