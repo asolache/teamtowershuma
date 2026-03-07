@@ -12,17 +12,17 @@ async function simulateAIAudit(tx, project, state) {
             const rolePrompt = role?.ai_prompt || "Rol sin instrucciones específicas.";
 
             let veredicto = "Aprobado";
-            let analisis = `He analizado el entregable "${tx.entregable}" contra la ontología del rol ${role?.name || 'Desconocido'}. Las horas reclamadas (${tx.realHours}h) parecen coherentes con la carga estándar. El enlace proporcionado es accesible.`;
+            let analisis = `He analizado el entregable "${tx.entregable}" contra la ontología del rol ${role?.name || 'Desconocido'}. Las horas reclamadas (${tx.realHours}h) parecen coherentes con la carga estándar.`;
 
             if (tx.realHours > 40) {
-                veredicto = "Revisión Manual Requerida";
-                analisis = `⚠️ ALERTA: Las ${tx.realHours} horas reclamadas para "${tx.entregable}" exceden la desviación estándar para el rol ${role?.name}. Recomiendo que el Project Owner revise el enlace detenidamente.`;
+                veredicto = "Revisión Requerida";
+                analisis = `⚠️ ALERTA: Las ${tx.realHours} horas reclamadas exceden la desviación estándar. El PO debe validar la complejidad manualmente.`;
             }
 
             resolve({
                 veredicto,
                 analisis,
-                contextUsed: `Contexto analizado: ${globalPrompt.substring(0, 20)}... | Rol: ${rolePrompt.substring(0, 20)}...`
+                contextUsed: `Contexto: ${globalPrompt.substring(0, 15)}... | Rol: ${rolePrompt.substring(0, 15)}...`
             });
         }, 1500); 
     });
@@ -30,43 +30,35 @@ async function simulateAIAudit(tx, project, state) {
 
 // --- EVENTOS DEL DASHBOARD ---
 document.addEventListener('click', async (e) => {
-    
-    // --- NAVEGACIÓN POR PESTAÑAS PRINCIPALES ---
     if (e.target.classList.contains('dash-tab-btn')) {
         dashboardDisplayMode = e.target.getAttribute('data-mode');
         const projectId = e.target.getAttribute('data-pid');
         document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
     }
 
-    // --- FILTROS DEL INBOX ---
     if (e.target.classList.contains('inbox-filter-btn')) {
         inboxFilterMode = e.target.getAttribute('data-filter');
         const projectId = e.target.getAttribute('data-pid');
         document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
     }
 
-    // --- APROBAR POW (Requiere permisos PO) ---
     if (e.target.classList.contains('btn-dash-approve')) {
         const txHash = e.target.getAttribute('data-hash');
         const projectId = e.target.getAttribute('data-pid');
-        
-        if (confirm("¿Consolidar este Proof of Work en el Ledger? Esto generará Slices inmutables.")) {
+        if (confirm("¿Consolidar este PoW? Se generarán Slices inmutables.")) {
             store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId, txHash } });
             document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
         }
     }
 
-    // --- RECHAZAR POW (Requiere permisos PO) ---
     if (e.target.classList.contains('btn-dash-reject')) {
         const txHash = e.target.getAttribute('data-hash');
         const projectId = e.target.getAttribute('data-pid');
-        
-        const motivo = prompt("Indica el motivo del rechazo para informar al nodo:");
-        if (motivo !== null) {
+        const motivo = prompt("Motivo del rechazo:");
+        if (motivo) {
             const state = store.getState();
             const project = state.projects.find(p => p.id === projectId);
             const tx = project.transactions.find(t => t.hash === txHash);
-            
             if(tx) {
                 tx.status = 'rejected';
                 tx.reportComment = `❌ RECHAZADO: ${motivo}`;
@@ -76,7 +68,6 @@ document.addEventListener('click', async (e) => {
         }
     }
 
-    // --- RESOLVER ALERTA DEL EO ---
     if (e.target.classList.contains('btn-resolve-alert')) {
         const alertId = e.target.getAttribute('data-alert');
         const projectId = e.target.getAttribute('data-pid');
@@ -84,23 +75,17 @@ document.addEventListener('click', async (e) => {
         document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
     }
 
-    // --- AUDITORÍA IA ---
     if (e.target.classList.contains('btn-dash-ai-audit')) {
         const txHash = e.target.getAttribute('data-hash');
         const projectId = e.target.getAttribute('data-pid');
         const btn = e.target;
-        
-        btn.innerHTML = '🤖 Analizando Ontología...';
+        btn.innerHTML = '🤖 Analizando...';
         btn.disabled = true;
-        btn.style.background = 'var(--text-muted)';
-        
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
         const tx = project.transactions.find(t => t.hash === txHash);
-
         const auditResult = await simulateAIAudit(tx, project, state);
         tx.aiAudit = auditResult;
-        
         store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: {} } });
         document.getElementById('app').innerHTML = ProjectDashboardView.render(projectId);
     }
@@ -110,223 +95,136 @@ export const ProjectDashboardView = {
     render: (projectId) => {
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
-        if (!project) return `<div class="container text-center" style="padding: 50px;"><h2>Proyecto no encontrado</h2></div>`;
+        if (!project) return `<div class="container text-center"><h2>Proyecto no encontrado</h2></div>`;
 
-        // 🔐 RBAC: Verificación de permisos
         const session = state.session || { activeUserId: 'unknown', role: 'user' };
         const isEcosystemOwner = session.role === 'admin';
-        const isProjectOwner = project.ownerId === session.activeUserId || isEcosystemOwner; // El EO es PO de todo por herencia
-        const canManage = isProjectOwner;
-
-        // Analítica
-        const txs = project.transactions || [];
+        const isProjectOwner = project.ownerId === session.activeUserId || isEcosystemOwner;
+        
+        // 📊 Cálculos de Madurez y Resiliencia
+        const maturity = store.calculateMaturityIndex(projectId);
         const resilience = store.calculateResilience(projectId);
+        const txs = project.transactions || [];
         const pendingApprovals = txs.filter(tx => tx.status === 'reported');
-        const bottlenecks = txs.filter(tx => tx.status === 'theoretical' || tx.status === 'pinged').length;
         const activeAlerts = (project.alerts || []).filter(a => !a.resolved);
-        
-        let totalFrozen = 0;
-        (project.ledger || []).forEach(l => totalFrozen += l.valorCongelado);
+        let totalSlices = 0;
+        (project.ledger || []).forEach(l => totalSlices += l.valorCongelado);
 
-        
+        // 🎨 Colores por Arquetipo
+        const archColors = { 'startup': 'var(--accent-blue)', 'corporate': 'var(--accent-green)', 'dao': 'var(--accent-gold)' };
+        const themeColor = archColors[project.archetype] || 'var(--accent-blue)';
 
-        // 🚀 SET NAVBAR GLOBAL
+        // 🚀 SET NAVBAR v4.1
         setTimeout(() => {
-            window.setNavbar(
-                [
-                    { label: `${state.config?.ecosystemName || 'Ecosistema Fractal'} > Dashboard de ${project.nombre}` }
-                ], 
-                ``, 
-                `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/map'" title="Ver el Grafo" style="border-color: var(--accent-blue); color: var(--accent-blue);">🗺️ Mapa VNA</button>
-                 <button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/accounting'" title="Ir a Contabilidad" style="border-color: var(--accent-green); color: var(--accent-green);">💰 Contabilidad</button>
-                 ${canManage ? `<button class="btn btn-outline text-small" onclick="location.hash='#/project/${projectId}/edit'" title="Ajustes raíz" style="border-color: var(--accent-purple); color: var(--accent-purple);">⚙️ Configuración</button>` : ''}`
-            );
-            const backBtn = document.querySelector('.btn-back-nav');
-            if(backBtn) backBtn.style.display = 'none';
+            if (window.setNavbar) {
+                window.setNavbar(
+                    [
+                        { label: state.config.ecosystemName, hash: '#/' },
+                        { label: project.nombre }
+                    ], 
+                    `<span class="badge" style="background:${themeColor}22; color:${themeColor}; margin-left:10px;">${project.archetype.toUpperCase()}</span>`, 
+                    `<button class="btn btn-outline" onclick="location.hash='#/project/${projectId}/map'">🗺️ Mapa</button>
+                     <button class="btn btn-outline" onclick="location.hash='#/project/${projectId}/accounting'">💰 Equity</button>
+                     ${isProjectOwner ? `<button class="btn btn-outline" onclick="location.hash='#/project/${projectId}/edit'">⚙️ ADN</button>` : ''}`
+                );
+            }
         }, 0);
 
-        const tabStyle = (mode) => `
-            padding: 10px 20px; font-weight: bold; cursor: pointer; border-bottom: 3px solid ${dashboardDisplayMode === mode ? 'var(--accent-blue)' : 'transparent'}; 
-            color: ${dashboardDisplayMode === mode ? 'var(--text-heading)' : 'var(--text-muted)'}; transition: 0.2s; background: transparent; border-top: none; border-left: none; border-right: none;
-        `;
-
-        const filterStyle = (filter) => `
-            padding: 5px 12px; font-size: 0.8rem; border-radius: 20px; cursor: pointer; border: 1px solid var(--border-color);
-            background: ${inboxFilterMode === filter ? 'var(--accent-blue)' : 'transparent'};
-            color: ${inboxFilterMode === filter ? '#fff' : 'var(--text-muted)'};
-            display: flex; align-items: center; gap: 5px;
-        `;
-
         return `
-            <div class="container fade-in" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
+            <div class="container fade-in" style="max-width: 1200px; margin: 30px auto;">
                 
-                <h1 style="margin: 0 0 5px 0; font-size: 2.2rem; color: var(--text-heading);">Proyecto > ${project.nombre}</h1>
-                <p style="margin: 0 0 20px 0; color: var(--text-muted);">Audita el trabajo de la red y mantén la resiliencia al 100%.</p>
-
-                ${!canManage ? `
-                    <div style="background: rgba(210,153,34,0.1); border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 20px; color: var(--accent-gold); border-radius: 4px; font-size: 0.9rem;">
-                        <b>🔒 Modo Lectura:</b> No eres el Owner de este proyecto. Solo puedes visualizar el estado de la red, pero no puedes aprobar entregables ni modificar configuraciones.
-                    </div>
-                ` : ''}
-
-                <div style="display:flex; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; gap: 10px; overflow-x: auto;">
-                    <button class="dash-tab-btn" data-mode="inbox" data-pid="${projectId}" style="${tabStyle('inbox')}">📥 Centro de Control (Inbox)</button>
-                    <button class="dash-tab-btn" data-mode="analytics" data-pid="${projectId}" style="${tabStyle('analytics')}">📈 Analítica de Red</button>
-                </div>
-
-                <div class="grid-layout" style="grid-template-columns: 2fr 1fr; gap: 30px;">
+                <div class="grid-layout" style="grid-template-columns: 1.8fr 1.2fr; gap: 30px;">
                     
                     <main>
+                        <div style="display:flex; border-bottom:1px solid var(--border-color); margin-bottom:25px; gap:15px;">
+                            <button class="dash-tab-btn" data-mode="inbox" data-pid="${projectId}" style="padding:10px; background:none; border:none; color:${dashboardDisplayMode==='inbox'?'var(--text-heading)':'var(--text-muted)'}; border-bottom:2px solid ${dashboardDisplayMode==='inbox'?themeColor:'transparent'}; font-weight:bold; cursor:pointer;">📥 Inbox de Valor</button>
+                            <button class="dash-tab-btn" data-mode="analytics" data-pid="${projectId}" style="padding:10px; background:none; border:none; color:${dashboardDisplayMode==='analytics'?'var(--text-heading)':'var(--text-muted)'}; border-bottom:2px solid ${dashboardDisplayMode==='analytics'?themeColor:'transparent'}; font-weight:bold; cursor:pointer;">📈 Análisis Sistémico</button>
+                        </div>
+
                         ${dashboardDisplayMode === 'inbox' ? `
-                            
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
-                                    Bandeja de Entrada
-                                    ${pendingApprovals.length > 0 && inboxFilterMode === 'pow' ? `<span class="badge" style="background: var(--accent-blue); color: #fff;">${pendingApprovals.length} Nuevos</span>` : ''}
-                                    ${activeAlerts.length > 0 && inboxFilterMode === 'alerts' ? `<span class="badge" style="background: var(--accent-red); color: #fff;">${activeAlerts.length} Pings</span>` : ''}
-                                </h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="inbox-filter-btn" data-filter="pow" data-pid="${projectId}" style="${filterStyle('pow')}">📝 Entregables (PoW)</button>
-                                    <button class="inbox-filter-btn" data-filter="alerts" data-pid="${projectId}" style="${filterStyle('alerts')}">
-                                        ⚠️ Alertas del Sistema ${activeAlerts.length > 0 ? `<span style="background:var(--accent-red); width:8px; height:8px; border-radius:50%; display:inline-block;"></span>` : ''}
-                                    </button>
-                                </div>
+                            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                                <button class="inbox-filter-btn" data-filter="pow" data-pid="${projectId}" style="padding:5px 12px; border-radius:20px; border:1px solid var(--border-color); background:${inboxFilterMode==='pow'?themeColor:'transparent'}; color:${inboxFilterMode==='pow'?'#000':'var(--text-muted)'}; cursor:pointer;">📝 Entregables (${pendingApprovals.length})</button>
+                                <button class="inbox-filter-btn" data-filter="alerts" data-pid="${projectId}" style="padding:5px 12px; border-radius:20px; border:1px solid var(--border-color); background:${inboxFilterMode==='alerts'?'var(--accent-red)':'transparent'}; color:${inboxFilterMode==='alerts'?'#fff':'var(--text-muted)'}; cursor:pointer;">⚠️ Pings SOS (${activeAlerts.length})</button>
                             </div>
 
-                            ${inboxFilterMode === 'alerts' ? `
-                                ${activeAlerts.length === 0 ? `
-                                    <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--accent-gold);">
-                                        <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
-                                        <h4 style="margin: 0; color: var(--accent-gold);">Sistema Sano</h4>
-                                        <p class="text-small text-muted">No hay Pings de incidencia enviados por el Ecosystem Owner.</p>
-                                    </div>
-                                ` : `
-                                    <div class="list-group">
-                                        ${activeAlerts.map(alert => {
-                                            const date = new Date(alert.timestamp).toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                                            return `
-                                            <div class="panel-surface" style="margin-bottom: 15px; border-left: 4px solid var(--accent-red);">
-                                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="list-group">
+                                ${inboxFilterMode === 'pow' ? (
+                                    pendingApprovals.length === 0 ? `<p class="text-muted text-center" style="padding:40px;">No hay reportes pendientes.</p>` :
+                                    pendingApprovals.map(tx => {
+                                        const assignee = state.globalUsers.find(u => u.id === tx.assigneeId);
+                                        return `
+                                            <div class="panel-surface" style="margin-bottom:15px; border-left:4px solid ${themeColor};">
+                                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                                     <div>
-                                                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform:uppercase; margin-bottom: 8px;">
-                                                            🕒 Recibido: ${date} | 👑 De: Ecosystem Owner
-                                                        </div>
-                                                        <p style="margin:0; font-size:1rem; color: var(--text-heading); font-weight: 500;">"${alert.message}"</p>
+                                                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">De: ${assignee?.name || tx.assigneeId}</div>
+                                                        <h4 style="margin:5px 0;">${tx.entregable}</h4>
+                                                        <div style="font-size:0.8rem; margin-bottom:10px;"><b>Reclama:</b> ${tx.realHours}h | <a href="${tx.proofLink}" target="_blank" style="color:${themeColor}">Ver Evidencia 🔗</a></div>
                                                     </div>
-                                                    ${canManage ? `
-                                                        <button class="btn btn-outline btn-resolve-alert" data-alert="${alert.id}" data-pid="${projectId}" style="border-color: var(--accent-green); color: var(--accent-green); font-size: 0.8rem; padding: 6px 12px;">
-                                                            ✅ Marcar Resuelto
-                                                        </button>
-                                                    ` : ''}
+                                                    <div style="display:flex; gap:5px;">
+                                                        <button class="btn btn-outline btn-dash-ai-audit" data-hash="${tx.hash}" data-pid="${projectId}">🤖 Audit</button>
+                                                        <button class="btn btn-outline btn-dash-reject" data-hash="${tx.hash}" data-pid="${projectId}" style="color:var(--accent-red); border-color:var(--accent-red);">❌</button>
+                                                        <button class="btn btn-primary btn-dash-approve" data-hash="${tx.hash}" data-pid="${projectId}" style="background:var(--accent-green); color:#000;">✅ Aprobar</button>
+                                                    </div>
                                                 </div>
+                                                ${tx.aiAudit ? `<div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; margin-top:10px; font-size:0.85rem; border:1px solid var(--accent-purple);"><b style="color:var(--accent-purple);">🤖 IA:</b> ${tx.aiAudit.analisis}</div>` : ''}
                                             </div>
-                                            `;
-                                        }).join('')}
-                                    </div>
-                                `}
-                            ` : `
-                                ${pendingApprovals.length === 0 ? `
-                                    <div class="panel-surface text-center" style="padding: 40px; border: 1px dashed var(--border-color);">
-                                        <div style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;">✅</div>
-                                        <h4 style="margin: 0 0 5px 0; color: var(--text-muted);">Inbox Limpio</h4>
-                                        <p class="text-small text-muted">No hay Proof of Works pendientes de auditar.</p>
-                                    </div>
-                                ` : `
-                                    <div class="list-group">
-                                        ${pendingApprovals.map(tx => {
-                                            const rFrom = project.roles.find(r => r.id === tx.from);
-                                            const assignee = state.globalUsers.find(u => u.id === tx.assigneeId);
-                                            const aiAudit = tx.aiAudit;
-                                            
-                                            return `
-                                            <div class="panel-surface" style="margin-bottom: 20px; border-left: 4px solid var(--accent-blue);">
-                                                
-                                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                                                    <div>
-                                                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform:uppercase; margin-bottom: 4px;">
-                                                            👤 Nodo: <b style="color:var(--text-heading);">${assignee ? assignee.name : tx.assigneeId}</b> 
-                                                            | 🎭 Rol: <b style="color:var(--accent-purple);">${rFrom ? rFrom.name : 'Desc.'}</b>
-                                                        </div>
-                                                        <h4 style="margin:0; font-size:1.2rem; color: var(--text-heading);">${tx.entregable}</h4>
-                                                    </div>
-                                                    <span class="badge" style="background:rgba(88,166,255,0.1); color:var(--accent-blue); font-size: 0.9rem; padding: 5px 10px;">
-                                                        Reclama: ${tx.realHours}h
-                                                    </span>
-                                                </div>
-                                                
-                                                <div style="background:var(--bg-base); padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid var(--border-color);">
-                                                    <div style="margin-bottom: 8px;">
-                                                        <b>🔗 Evidencia (Proof):</b> <a href="${tx.proofLink}" target="_blank" style="color:var(--accent-blue); text-decoration: underline;">${tx.proofLink}</a>
-                                                    </div>
-                                                    ${tx.reportComment ? `
-                                                        <div style="color:var(--text-muted); font-size: 0.9rem; font-style: italic; border-left: 2px solid var(--border-color); padding-left: 10px; margin-top: 10px;">
-                                                            "${tx.reportComment}"
-                                                        </div>
-                                                    ` : ''}
-                                                </div>
-
-                                                ${aiAudit ? `
-                                                    <div style="background: rgba(163, 113, 247, 0.05); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                                            <span style="font-size: 1.2rem;">🤖</span>
-                                                            <b style="color: var(--accent-purple);">Reporte del Agente 'Dosos'</b>
-                                                            <span class="badge" style="background: ${aiAudit.veredicto === 'Aprobado' ? 'var(--accent-green)' : 'var(--accent-red)'}; color: #000;">
-                                                                ${aiAudit.veredicto}
-                                                            </span>
-                                                        </div>
-                                                        <p style="font-size: 0.9rem; color: var(--text-main); margin: 0 0 10px 0;">${aiAudit.analisis}</p>
-                                                        <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">> ${aiAudit.contextUsed}</div>
-                                                    </div>
-                                                ` : ''}
-
-                                                ${canManage ? `
-                                                <div style="display: flex; gap: 10px;">
-                                                    ${!aiAudit ? `
-                                                        <button class="btn btn-outline btn-dash-ai-audit" style="flex: 1; border-color: var(--accent-purple); color: var(--accent-purple);" data-hash="${tx.hash}" data-pid="${project.id}">
-                                                            🤖 Solicitar Auditoría IA
-                                                        </button>
-                                                    ` : ''}
-                                                    <button class="btn btn-outline btn-dash-reject" style="flex: 1; border-color: var(--accent-red); color: var(--accent-red);" data-hash="${tx.hash}" data-pid="${project.id}">
-                                                        ❌ Rechazar
-                                                    </button>
-                                                    <button class="btn btn-primary btn-dash-approve" style="flex: 2; background: var(--accent-green); color: #000; font-weight: bold; border: none;" data-hash="${tx.hash}" data-pid="${project.id}">
-                                                        ✅ Sellar Ledger (+${tx.valorCongelado} Slices)
-                                                    </button>
-                                                </div>
-                                                ` : ''}
-                                            </div>`;
-                                        }).join('')}
-                                    </div>
-                                `}
-                            `}
+                                        `;
+                                    }).join('')
+                                ) : (
+                                    activeAlerts.length === 0 ? `<p class="text-muted text-center" style="padding:40px;">Sin alertas críticas.</p>` :
+                                    activeAlerts.map(a => `
+                                        <div class="panel-surface" style="border-left:4px solid var(--accent-red); margin-bottom:10px;">
+                                            <p style="margin:0;">${a.message}</p>
+                                            <button class="btn-resolve-alert" data-alert="${a.id}" data-pid="${projectId}" style="background:none; border:none; color:var(--accent-green); cursor:pointer; font-weight:bold; margin-top:5px;">Marcar como leído ✓</button>
+                                        </div>
+                                    `).join('')
+                                )}
+                            </div>
                         ` : `
-                            <div class="panel-surface text-center" style="padding: 50px; border: 1px dashed var(--border-color);">
-                                <h3 style="color: var(--text-muted);">Módulo de Analítica en Desarrollo</h3>
-                                <p class="text-small text-muted">Próximamente verás aquí gráficos de velocidad de entrega, resiliencia estructural y simulación de Slicing Pie avanzada.</p>
+                            <div class="panel-surface text-center" style="padding:60px;">
+                                <h3>📊 Próximamente: Graph Analytics</h3>
+                                <p class="text-muted">Visualiza el flujo de valor entre nodos en tiempo real.</p>
                             </div>
                         `}
                     </main>
 
                     <aside>
-                        <h3 style="margin-top: 0; margin-bottom: 20px;">📊 Salud General</h3>
-                        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
-                            <div class="panel-surface" style="border-left: 4px solid var(--accent-green); padding: 15px;">
-                                <div class="text-muted text-small text-uppercase">Slices Consolidados</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--text-heading);">${totalFrozen.toLocaleString()}</div>
+                        <div class="panel-surface" style="border-top:4px solid ${maturity.score > 70 ? 'var(--accent-green)' : 'var(--accent-gold)'}; margin-bottom:20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                                <h4 style="margin:0;">Madurez Estructural</h4>
+                                <span style="font-size:1.5rem; font-weight:800; color:${maturity.score > 70 ? 'var(--accent-green)' : 'var(--accent-gold)'}">${maturity.score}%</span>
                             </div>
-                            <div class="panel-surface" style="border-left: 4px solid ${resilience < 50 ? 'var(--accent-red)' : 'var(--accent-blue)'}; padding: 15px;">
-                                <div class="text-muted text-small text-uppercase">Resiliencia Organizacional</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: ${resilience < 50 ? 'var(--accent-red)' : 'var(--accent-blue)'};">${resilience}%</div>
+                            <div style="height:8px; background:var(--bg-base); border-radius:10px; margin-bottom:15px;">
+                                <div style="height:100%; width:${maturity.score}%; background:${maturity.score > 70 ? 'var(--accent-green)' : 'var(--accent-gold)'}; border-radius:10px; transition:0.5s;"></div>
                             </div>
-                            <div class="panel-surface" style="border-left: 4px solid var(--accent-purple); padding: 15px;">
-                                <div class="text-muted text-small text-uppercase">Cuellos de Botella</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: var(--accent-purple);">${bottlenecks}</div>
+                            ${maturity.alerts.length > 0 ? `
+                                <div style="background:rgba(210,153,34,0.1); padding:10px; border-radius:6px; font-size:0.75rem; color:var(--accent-gold);">
+                                    <b>💡 Tip de Diseño:</b><br>
+                                    ${maturity.alerts.map(a => `<div style="margin-top:5px;">${a}</div>`).join('')}
+                                </div>
+                            ` : `<p style="font-size:0.75rem; color:var(--accent-green);">✅ Tu red tiene una estructura HUMA equilibrada.</p>`}
+                        </div>
+
+                        <div class="panel-surface" style="margin-bottom:20px;">
+                            <h4 style="margin-bottom:15px;">Métricas de Salud</h4>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <div style="background:var(--bg-base); padding:10px; border-radius:8px; text-align:center;">
+                                    <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase;">Resiliencia</div>
+                                    <div style="font-size:1.2rem; font-weight:bold; color:var(--accent-blue);">${resilience}%</div>
+                                </div>
+                                <div style="background:var(--bg-base); padding:10px; border-radius:8px; text-align:center;">
+                                    <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase;">Equity Total</div>
+                                    <div style="font-size:1.1rem; font-weight:bold; color:var(--accent-green);">${totalSlices.toLocaleString()}</div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="panel" style="background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05);">
-                            <h4 style="margin-top:0; color:var(--text-muted); font-size:0.9rem;">💡 Tip del Sistema</h4>
-                            <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Revisa regularmente la pestaña de <b>Alertas del Sistema</b>. El Ecosystem Owner te enviará Pings directos si detecta que la red pierde resiliencia.</p>
+                        <div class="panel" style="background:rgba(255,255,255,0.02); border-style:dashed;">
+                            <h5 style="margin-top:0;">📚 Lección de Hoy</h5>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">
+                                El <b>${project.archetype.toUpperCase()}</b> requiere un equilibrio entre el aporte tangible (horas) e intangible (IP/Red). 
+                                Asegúrate de que los roles @dosos estén auditando la calidad del PoW para evitar inflación de Slices.
+                            </p>
                         </div>
                     </aside>
 
