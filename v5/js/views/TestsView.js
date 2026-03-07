@@ -255,6 +255,9 @@ export default class TestsView {
                 assert(isPO, "El sistema delega la propiedad del proyecto al usuario seleccionado", "RBAC");
 
                 // 41-43. ARQUETIPOS Y MATURITY INDEX
+                // 🚨 FIX: Recuperamos permisos de administrador para poder crear las redes de prueba
+                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
+
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-arch', nombre: 'Startup Tech', sector: 'software', archetype: 'startup' } });
                 const pArch = store.getState().projects.find(x => x.id === 'test-arch');
                 assert(pArch.archetype === 'startup', "El Kernel reconoce y almacena el Arquetipo", "KERNEL_6.1");
@@ -316,17 +319,3 @@ export default class TestsView {
                 }
 
             } catch (error) {
-                terminal.innerHTML += `
-                    <div style="margin-top: 25px; padding: 20px; border: 1px solid #ff5252; background: rgba(255, 82, 82, 0.1); border-radius: 8px; animation: fadeIn 0.5s ease-in;">
-                        <h2 style="color: #ff5252; margin: 0;">💥 ERROR FATAL (CRASH EN KERNEL)</h2>
-                        <p style="color: white; margin-top: 10px; font-family: monospace;">${error.message}</p>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 10px;">Revisa la consola del navegador para más detalles del stack trace.</p>
-                    </div>
-                `;
-            }
-            
-            // Auto-scroll final
-            terminal.scrollTop = terminal.scrollHeight;
-        });
-    }
-}
