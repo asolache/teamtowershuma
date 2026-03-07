@@ -40,7 +40,7 @@ export default class TestsView {
 
             <div class="test-container">
                 <div class="test-header">
-                    <h1>KERNEL v6.1 VALIDATION</h1>
+                    <h1>KERNEL v6.2 VALIDATION</h1>
                     <p style="color: #888;">Ejecutando 46 validaciones: RBAC, Inmutabilidad, Slicing Pie y VNA</p>
                 </div>
 
@@ -66,6 +66,8 @@ export default class TestsView {
     }
 
     executeViewScript() {
+        console.log("🚀 ARCHIVO DE TESTS v6.2 CARGADO CORRECTAMENTE EN EL NAVEGADOR");
+        
         const btn = document.getElementById('runTestsBtn');
         const terminal = document.getElementById('terminalLog');
         const score = document.getElementById('testScore');
@@ -110,10 +112,11 @@ export default class TestsView {
                 const p = store.getState().projects.find(x => x.id === PID_1);
                 assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
                 
-                // 🔥 PARCHE V6.1: Lectura Segura de la Ontología sin romper si no existe .roles
+                // 🔥 PARCHE V6.2: Lectura Segura de la Ontología sin romper si no existe .roles
                 let expectedRolesCount = 5;
                 let expectedLeaderName = 'Growth Hacker / CMO';
                 if (GLOBAL_ONTOLOGY['marketing']) {
+                    // Contamos las claves del objeto en lugar de un array
                     expectedRolesCount = Object.keys(GLOBAL_ONTOLOGY['marketing']).length;
                     if(GLOBAL_ONTOLOGY['marketing']['@anxaneta']) {
                         expectedLeaderName = GLOBAL_ONTOLOGY['marketing']['@anxaneta'].name;
@@ -318,7 +321,7 @@ export default class TestsView {
                 if(passed === total) {
                     terminal.innerHTML += `
                         <div style="margin-top: 25px; padding: 20px; border: 1px solid #00e676; background: rgba(0, 230, 118, 0.1); border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease-in;">
-                            <h2 style="color: #00e676; margin: 0; font-size: 2rem;">🚀 KERNEL v6.1 VALIDADO AL 100%</h2>
+                            <h2 style="color: #00e676; margin: 0; font-size: 2rem;">🚀 KERNEL v6.2 VALIDADO AL 100%</h2>
                             <p style="color: white; margin-top: 10px; font-size: 1.1rem;">Los ${total} vectores de prueba han sido superados sin fallos.</p>
                         </div>
                     `;
