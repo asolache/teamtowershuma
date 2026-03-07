@@ -20,98 +20,37 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-        body {
-            background: radial-gradient(circle at top, #1a1a24, var(--bg-base) 80%);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 3rem 1rem;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
+        body { background: radial-gradient(circle at top, #1a1a24, var(--bg-base) 80%); color: var(--text-main); min-height: 100vh; padding: 3rem 1rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 4rem; }
         .header h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent-blue); }
         .header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
 
-        /* Timeline Flow */
-        .flow-container {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            position: relative;
-        }
+        .flow-container { display: flex; flex-direction: column; gap: 2rem; position: relative; }
+        .flow-container::before { content: ''; position: absolute; top: 20px; bottom: 20px; left: 30px; width: 2px; background: linear-gradient(to bottom, var(--accent-blue), var(--accent-orange), var(--accent-green), var(--accent-purple), var(--accent-gold)); z-index: 0; opacity: 0.5; }
 
-        /* Línea conectora central */
-        .flow-container::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            bottom: 20px;
-            left: 30px;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--accent-blue), var(--accent-green), var(--accent-gold));
-            z-index: 0;
-            opacity: 0.5;
-        }
-
-        .flow-stage {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-left: 60px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: transform 0.2s, border-color 0.2s;
-        }
+        .flow-stage { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; margin-left: 60px; position: relative; backdrop-filter: blur(10px); transition: transform 0.2s, border-color 0.2s; }
         .flow-stage:hover { border-color: rgba(255,255,255,0.2); transform: translateX(5px); }
-
-        /* Punto en la línea de tiempo */
-        .flow-stage::before {
-            content: '';
-            position: absolute;
-            top: 30px;
-            left: -37px;
-            width: 14px;
-            height: 14px;
-            background: var(--bg-base);
-            border: 3px solid var(--accent-blue);
-            border-radius: 50%;
-            z-index: 1;
-        }
+        .flow-stage::before { content: ''; position: absolute; top: 30px; left: -37px; width: 14px; height: 14px; background: var(--bg-base); border: 3px solid var(--accent-blue); border-radius: 50%; z-index: 1; }
         
         .stage-1::before { border-color: var(--accent-blue); }
         .stage-2::before { border-color: var(--accent-orange); }
         .stage-3::before { border-color: var(--accent-green); }
-        .stage-4::before { border-color: var(--accent-gold); }
+        .stage-4::before { border-color: var(--accent-purple); }
+        .stage-5::before { border-color: var(--accent-gold); }
 
-        .stage-badge {
-            display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 1rem;
-        }
+        .stage-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; }
         .badge-1 { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.3); }
         .badge-2 { background: rgba(255, 145, 0, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 145, 0, 0.3); }
         .badge-3 { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
-        .badge-4 { background: rgba(255, 215, 0, 0.1); color: var(--accent-gold); border: 1px solid rgba(255, 215, 0, 0.3); }
+        .badge-4 { background: rgba(179, 136, 255, 0.1); color: var(--accent-purple); border: 1px solid rgba(179, 136, 255, 0.3); }
+        .badge-5 { background: rgba(255, 215, 0, 0.1); color: var(--accent-gold); border: 1px solid rgba(255, 215, 0, 0.3); }
 
         .stage-title { font-size: 1.4rem; margin-bottom: 0.5rem; }
         .stage-desc { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5; }
 
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .mockup-link {
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 500; border: 1px solid transparent; transition: all 0.2s;
-        }
+        .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .mockup-link { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 500; border: 1px solid transparent; transition: all 0.2s; }
         .mockup-link:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted); }
         .mockup-link span.arrow { color: var(--text-muted); }
         .mockup-link:hover span.arrow { color: var(--text-main); transform: translateX(3px); }
@@ -124,7 +63,7 @@
         
         <header class="header">
             <h1>Mapa del User Journey</h1>
-            <p>Directorio interactivo de mockups. Sigue el flujo desde el descubrimiento hasta la mentalidad de Ecosystem Owner.</p>
+            <p>De Creador a Inversor. Flujo completo de la Experiencia de Usuario (Galactic Frontend).</p>
         </header>
 
         <div class="flow-container">
@@ -132,56 +71,49 @@
             <div class="flow-stage stage-1">
                 <div class="stage-badge badge-1">Fase 1: Descubrimiento (Gratis)</div>
                 <h2 class="stage-title">El Gancho y la Magia IA</h2>
-                <p class="stage-desc">El usuario llega buscando "software de gestión". Se encuentra con una filosofía. Escribe su idea y la IA genera un organigrama perfecto que le vuela la cabeza.</p>
+                <p class="stage-desc">El usuario llega buscando "software de gestión". Escribe su idea y la IA le diseña un "Castell" (Organigrama) perfecto.</p>
                 <div class="links-grid">
-                    <a href="mockup-landing.html" target="_blank" class="mockup-link">
-                        <span>1. Home / Landing Page</span> <span class="arrow">&rarr;</span>
-                    </a>
-                    <a href="mockup-project-creator.html" target="_blank" class="mockup-link">
-                        <span>2. Motor Creador IA</span> <span class="arrow">&rarr;</span>
-                    </a>
+                    <a href="mockup-landing.html" target="_blank" class="mockup-link"><span>1. Landing Page</span> <span class="arrow">&rarr;</span></a>
+                    <a href="mockup-project-creator.html" target="_blank" class="mockup-link"><span>2. Motor Creador IA</span> <span class="arrow">&rarr;</span></a>
                 </div>
             </div>
 
             <div class="flow-stage stage-2">
                 <div class="stage-badge badge-2">Fase 2: Ejecución GTD (Gratis)</div>
                 <h2 class="stage-title">Modo Nodo / Trabajador</h2>
-                <p class="stage-desc">El usuario entra a su espacio personal. Solo ve lo que tiene que hacer hoy. Hace "Pull" de una tarea, arranca el Pomodoro y ve cómo genera Equity (Slicing Pie).</p>
+                <p class="stage-desc">Su espacio personal. Entra, hace "Pull" de una tarea, arranca el Pomodoro y acumula Slices.</p>
                 <div class="links-grid">
-                    <a href="mockup-user-dashboard.html" target="_blank" class="mockup-link">
-                        <span>3. Dashboard Personal (Inbox)</span> <span class="arrow">&rarr;</span>
-                    </a>
-                    <a href="mockup-mobile-focus.html" target="_blank" class="mockup-link">
-                        <span>4. Pomodoro Deep Work</span> <span class="arrow">&rarr;</span>
-                    </a>
+                    <a href="mockup-user-dashboard.html" target="_blank" class="mockup-link"><span>3. Dashboard GTD</span> <span class="arrow">&rarr;</span></a>
+                    <a href="mockup-mobile-focus.html" target="_blank" class="mockup-link"><span>4. Pomodoro Deep Work</span> <span class="arrow">&rarr;</span></a>
                 </div>
             </div>
 
             <div class="flow-stage stage-3">
                 <div class="stage-badge badge-3">Fase 3: Orquestación (Gratis)</div>
                 <h2 class="stage-title">Modo Project Owner</h2>
-                <p class="stage-desc">El usuario hace "zoom out". Entra a su proyecto para ver el Kanban completo, la ontología, los roles asignados y la salud estructural calculada por el Kernel.</p>
+                <p class="stage-desc">Zoom out. Ve la salud estructural de la red, los KPIs y el embudo Kanban completo.</p>
                 <div class="links-grid">
-                    <a href="mockup-app-shell.html" target="_blank" class="mockup-link">
-                        <span>5. App Shell & Análisis</span> <span class="arrow">&rarr;</span>
-                    </a>
-                    <a href="mockup-desktop.html" target="_blank" class="mockup-link">
-                        <span>6. Kanban del Proyecto</span> <span class="arrow">&rarr;</span>
-                    </a>
+                    <a href="mockup-app-shell.html" target="_blank" class="mockup-link"><span>5. App Shell & Análisis</span> <span class="arrow">&rarr;</span></a>
+                    <a href="mockup-desktop.html" target="_blank" class="mockup-link"><span>6. Kanban del Proyecto</span> <span class="arrow">&rarr;</span></a>
                 </div>
             </div>
 
             <div class="flow-stage stage-4">
-                <div class="stage-badge badge-4">Fase 4: Ecosistema (Premium 1€)</div>
-                <h2 class="stage-title">El Paywall y el Macro-Mapa VNA</h2>
-                <p class="stage-desc">Llega el "Aha! Moment". El usuario quiere invitar a más gente y conectar proyectos. Paga 1€ y desbloquea el modo "Visual Thinking" de transacciones tangibles e intangibles.</p>
+                <div class="stage-badge badge-4">Fase 4: Transparencia (@dosos)</div>
+                <h2 class="stage-title">Auditoría y Triple Entrada</h2>
+                <p class="stage-desc">Verifica que las matemáticas sean correctas y que cada aportación esté sellada criptográficamente para evitar disputas legales.</p>
                 <div class="links-grid">
-                    <a href="mockup-premium-flow.html" target="_blank" class="mockup-link">
-                        <span>7. Gatillo Paywall (1€)</span> <span class="arrow">&rarr;</span>
-                    </a>
-                    <a href="mockup-eco-dashboard.html" target="_blank" class="mockup-link">
-                        <span>8. Macro-Mapa VNA (Premium)</span> <span class="arrow">&rarr;</span>
-                    </a>
+                    <a href="mockup-ledger.html" target="_blank" class="mockup-link"><span>7. Ledger Triple Entrada</span> <span class="arrow">&rarr;</span></a>
+                </div>
+            </div>
+
+            <div class="flow-stage stage-5">
+                <div class="stage-badge badge-5">Fase 5: Ecosistema (Premium 1€)</div>
+                <h2 class="stage-title">Modo Visual Thinking / VNA</h2>
+                <p class="stage-desc">El usuario quiere conectar redes y personas. Paga 1€ y accede al Macro-Mapa de flujos tangibles e intangibles.</p>
+                <div class="links-grid">
+                    <a href="mockup-premium-flow.html" target="_blank" class="mockup-link"><span>8. Gatillo Paywall (1€)</span> <span class="arrow">&rarr;</span></a>
+                    <a href="mockup-eco-dashboard.html" target="_blank" class="mockup-link"><span>9. Macro-Mapa VNA</span> <span class="arrow">&rarr;</span></a>
                 </div>
             </div>
 
