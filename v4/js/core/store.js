@@ -7,17 +7,15 @@ const initialState = {
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.'
     },
-    // Mantenemos la ontología base inicial para no romper el Backwards Compatibility con TDD
     ontology: {
         sectores: {
             "startup": {
-                "@anxaneta": { name: "CEO / Founder", multiplier: 3.0, ai_prompt: "Eres el CEO. Evalúas impacto en negocio y runway.", standard_deliverables: [{estimatedHours: 10, name: "Pitch Deck"}] },
-                "@aixecador": { name: "Product Manager", multiplier: 2.0, ai_prompt: "Eres el PM. Evalúas viabilidad y scope.", standard_deliverables: [] },
-                "@dosos": { name: "QA / Auditor", multiplier: 1.5, ai_prompt: "Eres QA. Buscas fallos y riesgos.", standard_deliverables: [] },
-                "@baixos": { name: "Desarrollador Senior", multiplier: 1.2, ai_prompt: "Eres Dev Senior. Revisas calidad de código.", standard_deliverables: [] },
-                "@pinya": { name: "Soporte / Junior", multiplier: 1.0, ai_prompt: "Eres Soporte. Validas ejecución.", standard_deliverables: [] }
+                "@anxaneta": { name: "CEO / Founder", multiplier: 3.0, ai_prompt: "Eres el CEO.", standard_deliverables: [] },
+                "@aixecador": { name: "Product Manager", multiplier: 2.0, ai_prompt: "Eres el PM.", standard_deliverables: [] },
+                "@dosos": { name: "QA / Auditor", multiplier: 1.5, ai_prompt: "Eres QA.", standard_deliverables: [] },
+                "@baixos": { name: "Desarrollador Senior", multiplier: 1.2, ai_prompt: "Eres Dev.", standard_deliverables: [] },
+                "@pinya": { name: "Soporte / Junior", multiplier: 1.0, ai_prompt: "Eres Soporte.", standard_deliverables: [] }
             },
-            // Sector usado en tu Test Suite para validación
             "marketing": {
                 "@anxaneta": { name: "Strategy", multiplier: 3.0 },
                 "@aixecador": { name: "Campaign Manager", multiplier: 2.0 },
@@ -31,90 +29,27 @@ const initialState = {
         { id: '@user1', name: 'Alice Node', walletOrSocial: '0x123...' },
         { id: '@user2', name: 'Bob Builder', walletOrSocial: 'bob@email.com' }
     ],
-    // Aquí guardaremos las conexiones entre áreas/proyectos (Macro-Mapa)
     macroFlows: [], 
-    projects: [
-        {
-            id: 'proj-1',
-            nombre: 'Desarrollo Core App',
-            sector: 'startup',
-            tipo: 'ecosystem',
-            ownerId: 'ecosystem-admin', // 🔐 RBAC: Dueño del proyecto
-            prompt: 'Contexto de desarrollo de software ágil.',
-            config: { tokenomics: 'startup' },
-            roles: [
-                { id: 'r1', name: 'Arquitecto', levelId: '@anxaneta', multiplier: 3, fmv: 50, ai_prompt: '', standard_deliverables: [] },
-                { id: 'r2', name: 'Frontend', levelId: '@baixos', multiplier: 1.5, fmv: 30, ai_prompt: '', standard_deliverables: [] }
-            ],
-            usuarios: [{ id: '@user1' }],
-            asignaciones: [{ userId: '@user1', roleId: 'r1' }],
-            transactions: [],
-            ledger: [],
-            alerts: [] // 🚨 Buzón de Incidencias del Proyecto
-        }
-    ],
+    projects: [],
     session: {
         activeUserId: 'ecosystem-admin',
-        role: 'admin' // Niveles: 'admin' (EO), 'po' (Project Owner), 'user' (Nodo)
+        role: 'admin'
     }
 };
 
 function reducer(state = initialState, action) {
     switch (action.type) {
-        
         case 'UPDATE_GLOBAL_CONFIG':
             return { ...state, config: { ...state.config, ...action.payload } };
 
-        case 'ADD_ONTOLOGY_SECTOR':
-            return {
-                ...state,
-                ontology: {
-                    ...state.ontology,
-                    sectores: {
-                        ...state.ontology.sectores,
-                        [action.payload.sectorId]: action.payload.rolesData
-                    }
-                }
-            };
-
-        case 'ADD_USER': {
-            const existsGlobal = state.globalUsers.find(u => u.id === action.payload.id);
-            if (existsGlobal) {
-                throw new Error("El identificador ya existe.");
-            }
-            const newUser = { id: action.payload.id, name: action.payload.name, walletOrSocial: action.payload.walletOrSocial };
-            
-            let newProjects = state.projects;
-            if (action.payload.projectId) {
-                newProjects = state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, usuarios: [...(p.usuarios || []), { id: action.payload.id }] };
-                    }
-                    return p;
-                });
-            }
-            return { ...state, globalUsers: [...state.globalUsers, newUser], projects: newProjects };
-        }
-
         case 'LOGIN_USER':
-            // Lógica Básica de RBAC para la Sesión
             const isAdmin = action.payload.userId === 'ecosystem-admin';
             return { ...state, session: { activeUserId: action.payload.userId, role: isAdmin ? 'admin' : 'user' } };
             
         case 'LOGOUT_USER':
             return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
 
-        // 🔐 RBAC: Intento de crear proyecto con permisos restringidos
-        case 'ADD_PROJECT_RESTRICTED': {
-            if (state.session.role !== 'admin') {
-                throw new Error("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas.");
-            }
-            return state; // Nunca llega aquí en el test
-        }
-
         case 'ADD_PROJECT': {
-            // MAGIA: Intentamos leer primero de la nueva Ontología Global Externa, 
-            // Si no existe (ej. tests), leemos del state interno antiguo.
             let sectorDataObj = GLOBAL_ONTOLOGY[action.payload.sector];
             let sectorRolesArray = [];
 
@@ -125,25 +60,16 @@ function reducer(state = initialState, action) {
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
                     sectorRolesArray.push({
-                        levelId: levelId,
-                        name: r.name || levelId,
-                        multiplier: r.multiplier || 1.0,
-                        fmv: r.fmv || 50,
-                        ai_prompt: r.ai_prompt || '',
-                        standard_deliverables: r.standard_deliverables || []
+                        levelId, name: r.name || levelId, multiplier: r.multiplier || 1.0,
+                        fmv: r.fmv || 50, ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables || []
                     });
                 });
             }
 
             const baseRoles = sectorRolesArray.map(r => ({
                 id: `role-${r.levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                levelId: r.levelId,
-                name: r.name,
-                multiplier: r.multiplier || 1.0,
-                fmv: r.fmv || 50,
-                ai_prompt: r.ai_prompt || '',
-                standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
-                isArchived: false
+                levelId: r.levelId, name: r.name, multiplier: r.multiplier || 1.0, fmv: r.fmv || 50,
+                ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables || [], isArchived: false
             }));
 
             const newProject = {
@@ -151,215 +77,17 @@ function reducer(state = initialState, action) {
                 nombre: action.payload.nombre || 'Nuevo Proyecto',
                 sector: action.payload.sector || 'general',
                 tipo: action.payload.tipo || 'project',
-                ownerId: state.session.activeUserId, // 🔐 RBAC: El creador es el Owner por defecto
+                archetype: action.payload.archetype || 'startup', // 🚀 v6.1: Startup, Corporate o DAO
+                ownerId: state.session.activeUserId,
                 prompt: '',
                 config: { tokenomics: 'startup' },
                 roles: baseRoles,
-                usuarios: [],
-                asignaciones: [],
-                transactions: [],
-                ledger: [],
-                alerts: [] // 🚨 Buzón de Incidencias inicializado
+                usuarios: [], asignaciones: [], transactions: [], ledger: [], alerts: []
             };
             return { ...state, projects: [...state.projects, newProject] };
         }
 
-        // 🚨 COMMS: Añadir alerta al buzón del proyecto
-        case 'ADD_PROJECT_ALERT': {
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const newAlert = {
-                            id: 'alert-' + Date.now(),
-                            message: action.payload.message,
-                            timestamp: Date.now(),
-                            resolved: false
-                        };
-                        return { ...p, alerts: [...(p.alerts || []), newAlert] };
-                    }
-                    return p;
-                })
-            };
-        }
-
-        // 🚨 COMMS: Marcar alerta como resuelta
-        case 'RESOLVE_PROJECT_ALERT': {
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            alerts: (p.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a)
-                        };
-                    }
-                    return p;
-                })
-            };
-        }
-
-        // 🔐 RBAC: Delegar la propiedad del proyecto
-        case 'PROMOTE_TO_PO': {
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, ownerId: action.payload.userId };
-                    }
-                    return p;
-                })
-            };
-        }
-
-        case 'ADD_MACRO_FLOW': {
-            const newFlow = {
-                id: 'mflow-' + Date.now(),
-                from: action.payload.fromProjectId,
-                to: action.payload.toProjectId,
-                entregable: action.payload.entregable || 'Intercambio de Valor',
-                tipo: action.payload.tipo || 'tangible'
-            };
-            return { ...state, macroFlows: [...(state.macroFlows || []), newFlow] };
-        }
-
-        case 'UPDATE_PROJECT_INFO':
-            return {
-                ...state,
-                projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, ...action.payload.updates } : p)
-            };
-
-        case 'UPDATE_PROJECT_CONFIG':
-            return {
-                ...state,
-                projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, config: { ...p.config, ...action.payload.config } } : p)
-            };
-
-        case 'UPDATE_ROLE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, [action.payload.field]: action.payload.value } : r)
-                        };
-                    }
-                    return p;
-                })
-            };
-
-        case 'ADD_ROLE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, roles: [...p.roles, action.payload.role] };
-                    }
-                    return p;
-                })
-            };
-
-        case 'TOGGLE_ROLE_ARCHIVE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, isArchived: !r.isArchived } : r) };
-                    }
-                    return p;
-                })
-            };
-
-        case 'ASSIGN_USER_ROLE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const exists = p.asignaciones.find(a => a.roleId === action.payload.roleId);
-                        if (exists) {
-                            return { ...p, asignaciones: p.asignaciones.map(a => a.roleId === action.payload.roleId ? { ...a, userId: action.payload.userId } : a) };
-                        } else {
-                            return { ...p, asignaciones: [...p.asignaciones, { userId: action.payload.userId, roleId: action.payload.roleId }] };
-                        }
-                    }
-                    return p;
-                })
-            };
-
-        case 'ADD_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const prevTx = p.transactions && p.transactions.length > 0 ? p.transactions[p.transactions.length - 1] : null;
-                        const newTx = {
-                            hash: '0x' + Math.random().toString(16).slice(2, 10),
-                            prevHash: prevTx ? prevTx.hash : null,
-                            timestamp: Date.now(),
-                            status: action.payload.tx.status || 'theoretical',
-                            ...action.payload.tx
-                        };
-                        return { ...p, transactions: [...(p.transactions || []), newTx] };
-                    }
-                    return p;
-                })
-            };
-
-        case 'UPDATE_TRANSACTION_PHASE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, fase: action.payload.fase } : tx)
-                        };
-                    }
-                    return p;
-                })
-            };
-
-        case 'PING_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            transactions: p.transactions.map(tx => {
-                                if (tx.hash === action.payload.txHash) return { ...tx, status: 'pinged', assigneeId: action.payload.userId };
-                                return tx;
-                            })
-                        };
-                    }
-                    return p;
-                })
-            };
-
-        case 'REPORT_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            transactions: p.transactions.map(tx => {
-                                if (tx.hash === action.payload.txHash) {
-                                    return { 
-                                        ...tx, status: 'reported', realHours: action.payload.realHours,
-                                        proofLink: action.payload.proofLink, reportComment: action.payload.comentario 
-                                    };
-                                }
-                                return tx;
-                            })
-                        };
-                    }
-                    return p;
-                })
-            };
-
-        case 'APPROVE_TRANSACTION':
+        case 'APPROVE_TRANSACTION': {
             return {
                 ...state,
                 projects: state.projects.map(p => {
@@ -371,7 +99,12 @@ function reducer(state = initialState, action) {
                         const roleMultiplier = roleFrom ? (roleFrom.multiplier || 1) : 1;
                         const fmv = roleFrom ? (roleFrom.fmv || 50) : 50;
                         const horas = txToApprove.realHours || txToApprove.horas || 0;
-                        const valorGenerado = horas * fmv * roleMultiplier;
+
+                        // 🚀 v6.1: Cálculo con Factor de Arquetipo
+                        const factors = { 'startup': 2.0, 'corporate': 1.0, 'dao': 1.5 };
+                        const archFactor = factors[p.archetype] || 1.0;
+                        
+                        const valorGenerado = horas * fmv * roleMultiplier * archFactor;
 
                         const newLedgerEntry = {
                             userId: txToApprove.assigneeId,
@@ -389,107 +122,86 @@ function reducer(state = initialState, action) {
                     return p;
                 })
             };
+        }
 
-        default:
-            return state;
+        // Casos persistidos de versiones anteriores
+        case 'ADD_PROJECT_ALERT':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, alerts: [...(p.alerts || []), { id: 'alt-'+Date.now(), message: action.payload.message, timestamp: Date.now(), resolved: false }] } : p) };
+        case 'RESOLVE_PROJECT_ALERT':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, alerts: (p.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a) } : p) };
+        case 'UPDATE_PROJECT_INFO':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, ...action.payload.updates } : p) };
+        case 'UPDATE_PROJECT_CONFIG':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, config: { ...p.config, ...action.payload.config } } : p) };
+        case 'ADD_TRANSACTION':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, transactions: [...(p.transactions || []), { hash: '0x' + Math.random().toString(16).slice(2, 10), timestamp: Date.now(), status: action.payload.tx.status || 'theoretical', ...action.payload.tx }] } : p) };
+        case 'PING_TRANSACTION':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'pinged', assigneeId: action.payload.userId } : tx) } : p) };
+        case 'REPORT_TRANSACTION':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'reported', realHours: action.payload.realHours, proofLink: action.payload.proofLink, reportComment: action.payload.comentario } : tx) } : p) };
+        case 'ASSIGN_USER_ROLE':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, asignaciones: [...p.asignaciones.filter(a => a.roleId !== action.payload.roleId), { userId: action.payload.userId, roleId: action.payload.roleId }] } : p) };
+        case 'PROMOTE_TO_PO':
+            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, ownerId: action.payload.userId } : p) };
+
+        default: return state;
     }
 }
 
 class Store {
     constructor() {
         const saved = localStorage.getItem('tt_sos_state');
-        if (saved) {
-            try { this.state = JSON.parse(saved); } catch(e) { this.state = initialState; }
-        } else {
-            this.state = initialState;
-        }
-        
-        // Migraciones de seguridad
-        if (!this.state.macroFlows) this.state.macroFlows = [];
-        if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
-        
-        // Migración: Asegurar que todos los proyectos antiguos tengan alertas y owner
-        if (this.state.projects) {
-            this.state.projects = this.state.projects.map(p => ({
-                ...p, 
-                alerts: p.alerts || [],
-                ownerId: p.ownerId || 'ecosystem-admin'
-            }));
-        }
-
+        this.state = saved ? JSON.parse(saved) : initialState;
         this.listeners = [];
     }
-
     getState() { return this.state; }
-    
     dispatch(action) {
         this.state = reducer(this.state, action);
         localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
         this.listeners.forEach(l => l());
     }
-    
     subscribe(listener) { this.listeners.push(listener); }
+
+    // 🚀 v6.1: MÉTODOS PEDAGÓGICOS
+    getArchetypeFactor(archetype) {
+        const factors = { 'startup': 2.0, 'corporate': 1.0, 'dao': 1.5 };
+        return factors[archetype] || 1.0;
+    }
+
+    calculateMaturityIndex(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return { score: 0, alerts: [] };
+        const roles = p.roles.filter(r => !r.isArchived);
+        let alerts = [];
+        if (!roles.some(r => r.levelId === '@anxaneta')) alerts.push("⚠️ Falta dirección estratégica (@anxaneta).");
+        if (!roles.some(r => r.levelId === '@dosos')) alerts.push("⚠️ Falta rol de Auditoría (@dosos). Riesgo de deuda técnica.");
+        if (!roles.some(r => r.levelId === '@pinya')) alerts.push("ℹ️ No hay roles de Soporte (@pinya).");
+        return { score: Math.max(0, 100 - (alerts.length * 20)), alerts };
+    }
 
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || !p.transactions || p.transactions.length === 0) return 100;
-        const atascos = p.transactions.filter(t => t.status === 'reported' || t.status === 'pinged').length;
-        const res = Math.max(0, 100 - (atascos * 5));
-        return Math.round(res);
+        if (!p || !p.transactions.length) return 100;
+        const bottlenecks = p.transactions.filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        return Math.max(0, 100 - (bottlenecks * 5));
     }
 
     calculateHarvest(projectId, totalValuation) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || !p.ledger || p.ledger.length === 0) return [];
-
-        let capTable = {};
-        let totalSlices = 0;
-
+        if (!p || !p.ledger.length) return [];
+        let capTable = {}; let totalSlices = 0;
         p.ledger.forEach(l => {
-            if (!capTable[l.userId]) capTable[l.userId] = 0;
-            capTable[l.userId] += l.valorCongelado;
+            capTable[l.userId] = (capTable[l.userId] || 0) + l.valorCongelado;
             totalSlices += l.valorCongelado;
         });
-
-        if (totalSlices === 0) return [];
-
         return Object.keys(capTable).map(userId => {
-            const percentage = (capTable[userId] / totalSlices);
+            const ratio = capTable[userId] / totalSlices;
             return {
                 userId, slices: capTable[userId],
-                percentage: (percentage * 100).toFixed(2) + '%',
-                financialValue: (percentage * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
+                percentage: (ratio * 100).toFixed(2) + '%',
+                financialValue: (ratio * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
             };
         }).sort((a, b) => b.slices - a.slices);
-    }
-
-    generateSystemPrompt(projectId) {
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return "";
-        let sysPrompt = `Contexto Global: ${this.state.config.globalPrompt}. Contexto Local: ${p.prompt}. `;
-        sysPrompt += `Roles: ${p.roles.map(r => r.name).join(', ')}. `;
-        
-        let activePhase = 1;
-        if (p.transactions && p.transactions.length > 0) {
-            const withPhase = p.transactions.filter(t => t.fase);
-            if (withPhase.length > 0) activePhase = withPhase[withPhase.length - 1].fase;
-        }
-        sysPrompt += `Fase actual: Fase ${activePhase}:`;
-        return sysPrompt;
-    }
-
-    importSessionJSON(projectId, jsonArray) {
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return;
-        const entries = jsonArray.map(item => ({
-            userId: item.userId,
-            roleId: item.roleId,
-            description: item.description,
-            horas: item.horas,
-            valorCongelado: item.horas * 50 * 2,
-            timestamp: Date.now()
-        }));
-        this.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { ledger: [...(p.ledger || []), ...entries] } } });
     }
 }
 
