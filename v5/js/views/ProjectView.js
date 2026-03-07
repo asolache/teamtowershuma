@@ -8,154 +8,119 @@ export default class ProjectView {
     }
 
     async getHtml() {
-        const state = store.getState();
-        // Intentar obtener el último proyecto creado o uno por defecto
-        const project = state.projects[state.projects.length - 1] || { 
-            nombre: "Sin Proyecto", 
-            archetype: "startup", 
-            transactions: [],
-            id: 'null'
-        };
-        this.activeProjectId = project.id;
-
-        const resiliencia = store.calculateResilience(this.activeProjectId);
-        const madurez = store.calculateMaturityIndex(this.activeProjectId).score;
-
         return `
             <style>
-                .top-navbar {
-                    height: var(--top-nav-height); background: rgba(10, 10, 12, 0.95);
-                    border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between;
-                    align-items: center; padding: 0 2rem; z-index: 100; backdrop-filter: var(--glass-blur);
-                }
-                .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-                .logo span { color: var(--accent-blue); }
-                
-                .app-body { display: flex; height: calc(100vh - var(--top-nav-height)); overflow: hidden; }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: 'Segoe UI', sans-serif; }
                 
                 /* Sidebar Local */
                 .sidebar {
-                    width: var(--sidebar-width); background: rgba(15, 15, 18, 0.5); border-right: 1px solid var(--glass-border);
-                    padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.5rem;
+                    width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid rgba(255,255,255,0.05);
+                    padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 10px; z-index: 10;
                 }
                 .project-context-header { 
                     padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px;
-                    border: 1px solid var(--glass-border); margin-bottom: 1.5rem; 
+                    border: 1px solid rgba(255,255,255,0.05); margin-bottom: 1.5rem; 
                 }
-                .project-context-header h3 { font-size: 0.95rem; margin-bottom: 4px; color: white; }
-                .project-context-header p { font-size: 0.7rem; color: var(--accent-blue); text-transform: uppercase; font-weight: bold; }
+                .project-context-header h3 { font-size: 1rem; margin: 0 0 5px 0; color: white; }
+                .project-context-header p { font-size: 0.7rem; color: #00b0ff; text-transform: uppercase; font-weight: bold; margin: 0;}
                 
-                .health-mini-card { margin-top: auto; padding: 1rem; background: #000; border-radius: 10px; border: 1px solid #222; }
-                .health-bar { height: 4px; background: #222; border-radius: 2px; margin-top: 8px; overflow: hidden; }
-                .health-fill { height: 100%; background: var(--accent-green); transition: width 0.5s; }
-
                 .side-link {
-                    padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: var(--text-muted);
-                    font-size: 0.85rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s; text-decoration: none;
+                    padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: #888; text-decoration: none;
+                    font-size: 0.85rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
                 }
-                .side-link:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-                .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); font-weight: bold; }
+                .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
+                .side-link.active { background: rgba(0, 176, 255, 0.1); color: #00b0ff; font-weight: bold; border-left: 3px solid #00b0ff; }
 
                 /* Workspace Central */
-                .workspace { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; background: #0a0a0c; }
+                .workspace { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; }
                 .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;}
-                .view-header h1 { font-size: 1.8rem; letter-spacing: -1px; }
+                .view-header h1 { font-size: 2rem; color: white; margin: 0; letter-spacing: -1px; }
                 
+                /* KANBAN COLUMNS */
                 .kanban-container { display: flex; gap: 1.5rem; flex: 1; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
                 .kanban-col {
                     flex: 1; min-width: 320px; background: rgba(255,255,255,0.02); border-radius: 16px;
-                    padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid rgba(255,255,255,0.05);
+                    padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid rgba(255,255,255,0.05);
                     max-height: 100%; overflow-y: auto;
                 }
                 .col-title { 
-                    font-size: 0.75rem; font-weight: 800; color: var(--text-muted); 
+                    font-size: 0.8rem; font-weight: 800; color: #888; 
                     text-transform: uppercase; display: flex; justify-content: space-between; 
-                    padding: 0 5px 10px 5px; border-bottom: 1px solid #222; margin-bottom: 5px;
+                    padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; letter-spacing: 1px;
                 }
                 
-                /* Task Cards Evolucionadas */
+                /* TASK CARDS */
                 .task-card {
                     background: #16161a; border: 1px solid #2a2a30; border-radius: 12px;
-                    padding: 1.2rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    animation: fadeInTask 0.4s ease forwards;
+                    padding: 1.2rem; transition: all 0.3s; animation: fadeInTask 0.4s ease forwards;
                 }
                 @keyframes fadeInTask { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 
-                .task-card:hover { border-color: var(--accent-blue); transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-                .task-title { font-size: 0.95rem; margin: 0.6rem 0; line-height: 1.4; color: #eee; font-weight: 500; }
-                .task-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #222;}
+                .task-card:hover { border-color: #00b0ff; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+                .task-title { font-size: 1rem; margin: 0.8rem 0; line-height: 1.4; color: white; font-weight: 600; }
+                .task-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #666; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #222;}
                 
+                /* BOTONES ACCIÓN */
                 .btn-pull { 
-                    background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue);
-                    padding: 6px 12px; border-radius: 6px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
+                    background: transparent; border: 1px solid #00b0ff; color: #00b0ff; width: 100%;
+                    padding: 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-weight: bold;
                 }
-                .btn-pull:hover { background: var(--accent-blue); color: white; }
+                .btn-pull:hover { background: rgba(0, 176, 255, 0.2); }
 
-                @media (max-width: 768px) {
-                    .sidebar { display: none; }
-                    .workspace { padding: 1rem; }
-                    .view-header h1 { font-size: 1.4rem; }
+                .btn-focus { 
+                    background: #00e676; border: none; color: black; width: 100%; display: block; text-align: center;
+                    padding: 10px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: bold; text-decoration: none;
                 }
+                .btn-focus:hover { background: #00c853; transform: scale(1.02); }
+
+                .btn-approve {
+                    background: transparent; border: 1px solid #e040fb; color: #e040fb; width: 100%;
+                    padding: 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 10px;
+                }
+                .btn-approve:hover { background: rgba(224, 64, 251, 0.2); }
+
             </style>
 
-            <header class="top-navbar">
-                <div class="logo" onclick="location.href='/v5/'">🗼 <span>TeamTowers</span></div>
-                <nav style="display: flex; gap: 1.5rem;">
-                    <a href="/v5/map" class="side-link" data-link style="padding: 5px 10px;">🌐 Mapa de Valor</a>
-                    <div style="width: 32px; height: 32px; background: #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; border: 1px solid var(--accent-blue);">AL</div>
-                </nav>
-            </header>
-
-            <div class="app-body">
+            <div class="app-layout">
                 <aside class="sidebar">
+                    <div style="font-weight: bold; font-family: monospace; color: white; margin-bottom: 2rem; font-size: 1.2rem;">
+                        🗼 TeamTowers
+                    </div>
+
                     <div class="project-context-header">
-                        <h3>${project.nombre}</h3>
-                        <p>MODELO: ${project.archetype.toUpperCase()}</p>
+                        <h3 id="projNameSide">Cargando...</h3>
+                        <p id="projArchSide">--</p>
                     </div>
                     
-                    <a href="/v5/project" class="side-link active" data-link>📋 Backlog (Tracción)</a>
-                    <a href="/v5/map" class="side-link" data-link>📊 VNA (Flujos de Valor)</a>
+                    <a href="/v5/project" class="side-link active" data-link>📋 Kanban (Tracción)</a>
+                    <a href="/v5/map" class="side-link" data-link>🌐 Mapa VNA (Diseño)</a>
                     <a href="/v5/tests" class="side-link" data-link>🛠 Diagnóstico Kernel</a>
-                    
-                    <div class="health-mini-card">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888;">
-                            <span>RESILIENCIA</span>
-                            <span style="color: var(--accent-green);">${resiliencia}%</span>
-                        </div>
-                        <div class="health-bar"><div class="health-fill" style="width: ${resiliencia}%"></div></div>
-                        
-                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; margin-top: 12px;">
-                            <span>MADUREZ</span>
-                            <span style="color: var(--accent-blue);">${madurez}%</span>
-                        </div>
-                        <div class="health-bar"><div class="health-fill" style="width: ${madurez}%; background: var(--accent-blue);"></div></div>
-                    </div>
                 </aside>
 
                 <main class="workspace">
                     <div class="view-header">
                         <div>
                             <h1>Tracción de Red</h1>
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">Gestiona los entregables y consolida el valor en el Ledger.</p>
+                            <p style="color: #888; font-size: 0.9rem; margin-top: 5px;">Convierte los entregables teóricos en Slices de Equity reales.</p>
                         </div>
-                        <button class="btn btn-primary" id="btnRequest">✨ Solicitar Prompt</button>
+                        <a href="/v5/map" class="btn btn-outline" data-link>+ Diseñar Nuevo Entregable</a>
                     </div>
 
                     <div class="kanban-container">
-                        <div class="kanban-col" id="col-theoretical">
+                        <div class="kanban-col">
                             <div class="col-title">📥 Mercado Teórico <span id="count-theo">0</span></div>
                             <div id="theo-list" style="display: flex; flex-direction: column; gap: 1rem;">
                                 </div>
                         </div>
 
-                        <div class="kanban-col" id="col-work" style="background: rgba(0, 176, 255, 0.03); border-color: rgba(0, 176, 255, 0.1);">
-                            <div class="col-title" style="color: var(--accent-blue);">🔥 Deep Work <span id="count-work">0</span></div>
+                        <div class="kanban-col" style="background: rgba(0, 176, 255, 0.03); border-color: rgba(0, 176, 255, 0.1);">
+                            <div class="col-title" style="color: #00b0ff;">🔥 Deep Work <span id="count-work">0</span></div>
                             <div id="work-list" style="display: flex; flex-direction: column; gap: 1rem;">
                                 </div>
                         </div>
 
-                        <div class="kanban-col" id="col-done">
-                            <div class="col-title" style="color: var(--accent-green);">⛓️ Ledger <span id="count-done">0</span></div>
+                        <div class="kanban-col">
+                            <div class="col-title" style="color: #00e676;">⛓️ Ledger <span id="count-done">0</span></div>
                             <div id="done-list" style="display: flex; flex-direction: column; gap: 1rem;">
                                 </div>
                         </div>
@@ -167,14 +132,22 @@ export default class ProjectView {
 
     executeViewScript() {
         const state = store.getState();
-        const project = state.projects[state.projects.length - 1];
-        if (!project) return;
+        let project = state.projects[state.projects.length - 1];
+
+        // Fallback de seguridad
+        if (!project) {
+            store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'admin' } });
+            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'demo-kanban', nombre: 'Red Demo', sector: 'startup' } });
+            project = store.getState().projects[store.getState().projects.length - 1];
+        }
+
+        this.activeProjectId = project.id;
+        
+        // Actualizar Sidebar
+        document.getElementById('projNameSide').innerText = project.nombre;
+        document.getElementById('projArchSide').innerText = `MODO: ${project.archetype.toUpperCase()}`;
 
         this.renderTasks(project);
-
-        document.getElementById('btnRequest').addEventListener('click', () => {
-            alert("Sincronizando con la IA para generar nuevos entregables tácticos...");
-        });
     }
 
     renderTasks(project) {
@@ -184,7 +157,6 @@ export default class ProjectView {
             done: document.getElementById('done-list')
         };
         
-        // Limpiar
         Object.values(lists).forEach(l => l.innerHTML = '');
 
         const txs = project.transactions || [];
@@ -215,37 +187,82 @@ export default class ProjectView {
         const card = document.createElement('div');
         card.className = 'task-card';
         
-        const isStartup = project.archetype === 'startup';
         const color = this.getColorForLevel(role.levelId);
+        const tipoColor = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+
+        let actionHtml = '';
+
+        // LÓGICA DE ESTADOS DEL KANBAN
+        if (tx.status === 'theoretical') {
+            actionHtml = `<button class="btn-pull" data-hash="${tx.hash}">Hacer PULL</button>`;
+        } 
+        else if (tx.status === 'pinged') {
+            // Tarea asignada, lista para trabajar. Botón va al Pomodoro
+            actionHtml = `
+                <div style="color: #ff9100; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN PROCESO</div>
+                <a href="/v5/focus" class="btn-focus" data-link>▶ Iniciar Pomodoro</a>
+            `;
+        } 
+        else if (tx.status === 'reported') {
+            // Tarea terminada, esperando al Auditor
+            actionHtml = `
+                <div style="color: #00b0ff; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">🛡️ ESPERANDO AUDITORÍA</div>
+                <div style="font-size: 0.8rem; color: #888; background: #000; padding: 5px; border-radius: 4px;">Horas Reales: ${tx.realHours}h</div>
+                <button class="btn-approve" data-hash="${tx.hash}">Aprobar y Consolidar</button>
+            `;
+        }
+        else if (tx.status === 'consolidated') {
+            actionHtml = `
+                <div style="color: #00e676; font-size: 0.8rem; font-weight: bold; font-family: monospace;">
+                    +${Math.round(tx.valorCongelado)} Slices
+                </div>
+            `;
+        }
 
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span class="badge" style="color: ${color}; border-color: ${color}; font-size: 0.65rem;">${role.levelId}</span>
                 <span style="font-size: 0.6rem; color: #555; font-family: monospace;">#${tx.hash.substring(0,6)}</span>
             </div>
+            
             <h3 class="task-title">${tx.entregable}</h3>
             
-            ${tx.status === 'theoretical' ? `<button class="btn-pull">Hacer PULL</button>` : ''}
-            ${tx.status === 'pinged' ? `<div style="color: var(--accent-orange); font-size: 0.7rem; font-weight: bold;">⏳ EN PROCESO</div>` : ''}
+            <div style="margin-bottom: 1rem;">
+                ${actionHtml}
+            </div>
 
             <div class="task-meta">
                 <span>⏱ ${tx.horas}h Est.</span>
-                <span style="color: ${tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)'}; font-weight: bold;">
-                    ${tx.tipo.toUpperCase()}
+                <span style="color: ${tipoColor}; font-weight: bold; text-transform: uppercase;">
+                    ${tx.tipo}
                 </span>
             </div>
         `;
 
-        if (tx.status === 'theoretical') {
-            card.querySelector('.btn-pull').addEventListener('click', (e) => {
-                e.stopPropagation();
-                store.dispatch({
-                    type: 'PING_TRANSACTION',
-                    payload: { projectId: project.id, txHash: tx.hash, userId: 'current-user' }
+        // Añadir Event Listeners Dinámicos a los botones recién creados
+        setTimeout(() => {
+            const pullBtn = card.querySelector('.btn-pull');
+            if (pullBtn) {
+                pullBtn.addEventListener('click', () => {
+                    store.dispatch({
+                        type: 'PING_TRANSACTION',
+                        payload: { projectId: project.id, txHash: tx.hash, userId: 'usuario-activo' }
+                    });
+                    this.executeViewScript(); // Re-renderizar la pantalla
                 });
-                this.executeViewScript(); // Re-render
-            });
-        }
+            }
+
+            const approveBtn = card.querySelector('.btn-approve');
+            if (approveBtn) {
+                approveBtn.addEventListener('click', () => {
+                    store.dispatch({
+                        type: 'APPROVE_TRANSACTION',
+                        payload: { projectId: project.id, txHash: tx.hash }
+                    });
+                    this.executeViewScript(); // Re-renderizar la pantalla
+                });
+            }
+        }, 10); // Pequeño timeout para asegurar que el DOM ha digerido el innerHTML
 
         return card;
     }
