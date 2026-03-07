@@ -300,7 +300,53 @@ assert(maturity.score > 0 && maturity.alerts.length === 0, "El Kernel calcula la
 // En Startup el factor es 2.0 (riesgo alto), en Corp es 1.0.
 // (Este test validará que el Reducer aplica la fórmula: Slices = H * FMV * Mult * ArchFactor)
 assert(typeof store.getArchetypeFactor === 'function', "Función de Factor de Arquetipo presente", "KERNEL_6.1");
-                
+
+// 🔥 TEST 44: Slicing Pie y Consolidación (Harvesting)
+// Validamos la matemática exacta: Horas(10) * FMV(50) * Mult(2.5) * Arch(1.0) = 1250 Slices
+const testHarvestId = 'test-harvest-' + Date.now();
+store.dispatch({ type: 'ADD_PROJECT', payload: { id: testHarvestId, nombre: 'Harvest Test', sector: 'software', archetype: 'corp' } });
+store.dispatch({ type: 'ADD_ROLE', payload: { projectId: testHarvestId, role: { id: 'r-dev', name: 'Dev', levelId: '@baixos', fmv: 50, multiplier: 2.5 } } });
+store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: testHarvestId, tx: { from: 'r-dev', to: 'r-dev', horas: 10, entregable: 'Test Math', tipo: 'tangible', status: 'approved' } } });
+
+const harvestResult = typeof store.calculateHarvest === 'function' ? store.calculateHarvest(testHarvestId) : null;
+// Asumiendo que calculateHarvest devuelve un array de usuarios/roles con su valor total
+const devHarvest = harvestResult ? harvestResult.find(h => h.roleId === 'r-dev') : null;
+// (10 * 50 * 2.5 * 1.0 = 1250)
+assert(devHarvest !== null && devHarvest.totalValue === 1250, "Value Accounting: El Kernel calcula matemáticamente los Slices (1250) al aprobar transacciones.", "SLICING-PIE");
+
+
+// 🔥 TEST 45: Auto-Contabilidad Deep Work (Pomodoro AI)
+// Simulamos el cierre del temporizador que inyecta una transacción de Prompt Engineering
+const pomodoroUserId = '@pomo_user_' + Date.now();
+store.dispatch({ type: 'ADD_USER', payload: { projectId: testHarvestId, name: 'AI Thinker', id: pomodoroUserId } });
+store.dispatch({ 
+    type: 'ADD_TRANSACTION', 
+    payload: { 
+        projectId: testHarvestId, 
+        tx: { 
+            from: 'r-dev', assigneeId: pomodoroUserId, horas: 0.75, // 45 minutos de Pomodoro
+            entregable: '[INTEL] Diseño de Prompt', tipo: 'intangible', status: 'reported' 
+        } 
+    } 
+});
+const pomoTx = store.getState().projects.find(p => p.id === testHarvestId).transactions.find(t => t.entregable.includes('[INTEL]'));
+assert(pomoTx !== undefined && pomoTx.horas === 0.75, "Auto-Contabilidad: El sistema registra el tiempo del Pomodoro AI como transacción intangible.", "INTEL");
+
+
+// 🔥 TEST 46: Macro-Flujos (Value Network Analysis)
+// Validamos que el sistema pueda registrar un intercambio de valor entre dos Redes distintas
+const ecoProjA = 'eco-A-' + Date.now();
+const ecoProjB = 'eco-B-' + Date.now();
+store.dispatch({ type: 'ADD_PROJECT', payload: { id: ecoProjA, nombre: 'Tech Node' } });
+store.dispatch({ type: 'ADD_PROJECT', payload: { id: ecoProjB, nombre: 'Marketing Node' } });
+
+// Suponiendo que tienes un array global `macroFlows` en el initialState del Kernel
+store.dispatch({ 
+    type: 'ADD_MACRO_FLOW', 
+    payload: { fromProjectId: ecoProjA, toProjectId: ecoProjB, tipo: 'tangible', description: 'API Access' } 
+});
+const macroExists = store.getState().macroFlows && store.getState().macroFlows.length > 0;
+assert(macroExists, "Macro-Redes: El Kernel registra flujos de valor inter-proyectos (VNA).", "NETWORK");                
                 // --- RESULTADO ---
                 const summary = document.getElementById('summary-box');
                 summary.className = "summary";
