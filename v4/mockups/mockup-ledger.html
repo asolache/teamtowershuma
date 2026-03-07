@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers | Ledger Criptográfico</title>
+    <style>
+        :root {
+            --bg-base: #0a0a0c;
+            --glass-bg: rgba(30, 30, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --accent-blue: #00b0ff;
+            --accent-green: #00e676;
+            --accent-purple: #b388ff;
+            --hash-color: #ffb74d; /* Naranja cripto para los hashes */
+            --top-nav-height: 60px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background: radial-gradient(circle at bottom right, #1a1a24, var(--bg-base));
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. TOP NAVBAR GLOBAL */
+        .top-navbar {
+            height: var(--top-nav-height); background: rgba(10, 10, 12, 0.9); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; backdrop-filter: blur(10px); z-index: 100;
+        }
+        .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .logo span { color: var(--accent-blue); }
+        .user-profile { width: 32px; height: 32px; background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.8rem; }
+
+        .app-body { display: flex; height: calc(100vh - var(--top-nav-height)); }
+
+        /* 2. SIDEBAR DEL PROYECTO */
+        .sidebar {
+            width: 250px; background: var(--glass-bg); border-right: 1px solid var(--glass-border); padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .project-context-header { padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); margin-bottom: 1rem; }
+        .project-context-header h3 { font-size: 1rem; margin-bottom: 4px; }
+        .project-context-header p { font-size: 0.75rem; color: var(--accent-green); }
+        
+        .side-link { padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; display: block; transition: all 0.2s; }
+        .side-link:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .side-link.active { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border-left: 3px solid var(--accent-green); }
+
+        /* 3. WORKSPACE (LEDGER) */
+        .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
+
+        .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end;}
+        .view-header h1 { font-size: 2rem; font-weight: 700; color: var(--accent-green); display: flex; align-items: center; gap: 10px;}
+        .view-header p { color: var(--text-muted); margin-top: 5px;}
+
+        .btn-export { background: transparent; color: var(--text-main); border: 1px solid var(--glass-border); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; gap: 8px; align-items: center;}
+        .btn-export:hover { border-color: var(--accent-green); color: var(--accent-green); }
+
+        /* KPIs del Ledger */
+        .ledger-stats { display: flex; gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 1rem 1.5rem; border-radius: 12px; flex: 1; }
+        .stat-box h4 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-box .val { font-size: 1.8rem; font-weight: 300; font-family: monospace; }
+
+        /* Blockchain UI (Lista de Bloques) */
+        .blockchain-container { position: relative; padding-left: 30px; }
+        .blockchain-container::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 11px; width: 2px; background: var(--glass-border);
+        }
+
+        .block-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; position: relative; backdrop-filter: blur(10px);
+        }
+        
+        /* Conector a la línea central */
+        .block-card::before {
+            content: ''; position: absolute; top: 30px; left: -26px; width: 14px; height: 14px; background: var(--bg-base); border: 3px solid var(--accent-green); border-radius: 50%;
+        }
+
+        .block-header { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px dashed var(--glass-border); padding-bottom: 1rem;}
+        
+        .hash-info { font-family: monospace; font-size: 0.85rem; }
+        .hash-info div { margin-bottom: 4px; }
+        .hash-label { color: var(--text-muted); user-select: none; }
+        .hash-value { color: var(--hash-color); background: rgba(255, 183, 77, 0.1); padding: 2px 6px; border-radius: 4px;}
+        .hash-prev { color: var(--text-muted); font-size: 0.75rem; }
+
+        .block-timestamp { color: var(--text-muted); font-size: 0.85rem; text-align: right; }
+        .badge-consolidated { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 5px; border: 1px solid rgba(0,230,118,0.3);}
+
+        .block-body { display: flex; justify-content: space-between; align-items: center; }
+        
+        .work-details h3 { font-size: 1.1rem; margin-bottom: 5px; }
+        .work-author { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        .role-tag { background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: var(--accent-blue); }
+
+        .value-math { text-align: right; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid var(--glass-border); }
+        .math-formula { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; margin-bottom: 5px; }
+        .math-result { font-size: 1.5rem; font-weight: 700; color: var(--accent-green); }
+
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <div class="logo">🗼 <span>TeamTowers</span></div>
+        <div class="user-profile">AL</div>
+    </header>
+
+    <div class="app-body">
+        
+        <aside class="sidebar">
+            <div class="project-context-header">
+                <h3>NeoApp Startup</h3>
+                <p>Arquetipo: Startup (x2.0)</p>
+            </div>
+            <a href="mockup-desktop.html" class="side-link">📋 Backlog GTD (Pull)</a>
+            <a href="mockup-app-shell.html" class="side-link">📊 Análisis & Salud</a>
+            <a href="mockup-mobile-focus.html" class="side-link">⏱️ Deep Work (IA)</a>
+            <a href="mockup-ledger.html" class="side-link active">⛓️ Ledger (Auditoría)</a>
+        </aside>
+
+        <main class="workspace">
+            
+            <div class="view-header">
+                <div>
+                    <h1>⛓️ Libro Mayor (Triple Entrada)</h1>
+                    <p>Registro inmutable de aportaciones de valor. Hash chaining verificado.</p>
+                </div>
+                <button class="btn-export">
+                    <span>📄</span> Exportar a JSON (Auditoría Legal)
+                </button>
+            </div>
+
+            <div class="ledger-stats">
+                <div class="stat-box">
+                    <h4>Bloques (Transacciones)</h4>
+                    <div class="val">002</div>
+                </div>
+                <div class="stat-box">
+                    <h4>Valor Total Acuñado</h4>
+                    <div class="val" style="color: var(--accent-green);">4,250 Slices</div>
+                </div>
+                <div class="stat-box">
+                    <h4>Último Hash (State Root)</h4>
+                    <div class="val" style="color: var(--hash-color); font-size: 1.2rem; margin-top: 8px;">0x7f8a9b2c...</div>
+                </div>
+            </div>
+
+            <div class="blockchain-container">
+                
+                <div class="block-card">
+                    <div class="block-header">
+                        <div class="hash-info">
+                            <div><span class="hash-label">Tx Hash:</span> <span class="hash-value">0x7f8a9b2c4d1e</span></div>
+                            <div class="hash-prev"><span class="hash-label">Prev Hash:</span> 0x9b21a4f00d88 🔗</div>
+                        </div>
+                        <div class="block-timestamp">
+                            <div>07 Mar 2026, 16:45 CET</div>
+                            <div class="badge-consolidated">✓ Sellado (Immutable)</div>
+                        </div>
+                    </div>
+                    <div class="block-body">
+                        <div class="work-details">
+                            <h3>[PoW] Setup de Arquitectura de Repositorio</h3>
+                            <div class="work-author">
+                                <span>👤 @bob_dev</span>
+                                <span class="role-tag">@baixos</span>
+                            </div>
+                        </div>
+                        <div class="value-math">
+                            <div class="math-formula">10h × 40€ (FMV) × 1.2 (Rol) × 2.0 (Arq)</div>
+                            <div class="math-result">+ 960 Slices</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="block-card" style="opacity: 0.8;">
+                    <div class="block-header">
+                        <div class="hash-info">
+                            <div><span class="hash-label">Tx Hash:</span> <span class="hash-value">0x9b21a4f00d88</span></div>
+                            <div class="hash-prev"><span class="hash-label">Prev Hash:</span> 0x000000000000 (Génesis) 🔗</div>
+                        </div>
+                        <div class="block-timestamp">
+                            <div>05 Mar 2026, 10:15 CET</div>
+                            <div class="badge-consolidated">✓ Sellado (Immutable)</div>
+                        </div>
+                    </div>
+                    <div class="block-body">
+                        <div class="work-details">
+                            <h3>[INTEL] Diseño de Pitch Deck y Contexto IA</h3>
+                            <div class="work-author">
+                                <span>👤 @alice_founder</span>
+                                <span class="role-tag" style="color: var(--role-anxaneta);">@anxaneta</span>
+                            </div>
+                        </div>
+                        <div class="value-math">
+                            <div class="math-formula">11h × 50€ (FMV) × 3.0 (Rol) × 2.0 (Arq)</div>
+                            <div class="math-result">+ 3,300 Slices</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>
