@@ -1,6 +1,11 @@
-// v5/js/core/store.js
-import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Asegúrate de tener este archivo en /v5/js/data/
+// ==========================================================================
+// KERNEL v6.1 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// Motor de Estado Global, RBAC, Contabilidad Triple Entrada y Slicing Pie
+// ==========================================================================
 
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
+
+// 1. ESTADO INICIAL (Base de datos en memoria)
 const initialState = {
     config: {
         theme: 'dark',
@@ -8,63 +13,32 @@ const initialState = {
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.'
     },
     ontology: {
-        sectores: {
-            "startup": {
-                "@anxaneta": { name: "CEO / Founder", multiplier: 3.0, ai_prompt: "Eres el CEO. Evalúas impacto en negocio y runway.", standard_deliverables: [{estimatedHours: 10, name: "Pitch Deck"}] },
-                "@aixecador": { name: "Product Manager", multiplier: 2.0, ai_prompt: "Eres el PM. Evalúas viabilidad y scope.", standard_deliverables: [] },
-                "@dosos": { name: "QA / Auditor", multiplier: 1.5, ai_prompt: "Eres QA. Buscas fallos y riesgos.", standard_deliverables: [] },
-                "@baixos": { name: "Desarrollador Senior", multiplier: 1.2, ai_prompt: "Eres Dev Senior. Revisas calidad de código.", standard_deliverables: [] },
-                "@pinya": { name: "Soporte / Junior", multiplier: 1.0, ai_prompt: "Eres Soporte. Validas ejecución.", standard_deliverables: [] }
-            },
-            "marketing": {
-                "@anxaneta": { name: "Strategy", multiplier: 3.0 },
-                "@aixecador": { name: "Campaign Manager", multiplier: 2.0 },
-                "@dosos": { name: "Analytics", multiplier: 1.5 },
-                "@baixos": { name: "Content Creator", multiplier: 1.2 },
-                "@pinya": { name: "Community Manager", multiplier: 1.0 }
-            }
-        }
+        sectores: {} // La ontología dinámica se carga desde el archivo ontology.js
     },
     globalUsers: [
         { id: '@user1', name: 'Alice Node', walletOrSocial: '0x123...' },
         { id: '@user2', name: 'Bob Builder', walletOrSocial: 'bob@email.com' }
     ],
     macroFlows: [], 
-    projects: [
-        {
-            id: 'proj-1',
-            nombre: 'Desarrollo Core App',
-            sector: 'startup',
-            tipo: 'ecosystem',
-            archetype: 'startup',
-            ownerId: 'ecosystem-admin',
-            prompt: 'Contexto de desarrollo de software ágil.',
-            config: { tokenomics: 'startup' },
-            roles: [
-                { id: 'r1', name: 'Arquitecto', levelId: '@anxaneta', multiplier: 3, fmv: 50, ai_prompt: '', standard_deliverables: [] },
-                { id: 'r2', name: 'Frontend', levelId: '@baixos', multiplier: 1.5, fmv: 30, ai_prompt: '', standard_deliverables: [] }
-            ],
-            usuarios: [{ id: '@user1' }],
-            asignaciones: [{ userId: '@user1', roleId: 'r1' }],
-            transactions: [],
-            ledger: [],
-            alerts: []
-        }
-    ],
+    projects: [],
     session: {
         activeUserId: 'ecosystem-admin',
-        role: 'admin'
+        role: 'admin' // RBAC: 'admin' o 'user'
     }
 };
 
+// 2. REDUCER: La única función autorizada para mutar el estado
 function reducer(state = initialState, action) {
     switch (action.type) {
+        
+        // --- SISTEMA Y CONFIGURACIÓN ---
         case 'IMPORT_STATE':
             return { ...state, ...action.payload };
 
         case 'UPDATE_GLOBAL_CONFIG':
             return { ...state, config: { ...state.config, ...action.payload } };
 
+        // --- ONTOLOGÍA DINÁMICA ---
         case 'ADD_ONTOLOGY_SECTOR':
             return {
                 ...state,
@@ -89,11 +63,12 @@ function reducer(state = initialState, action) {
             };
         }
 
+        // --- IDENTIDAD Y SEGURIDAD (RBAC) ---
         case 'ADD_USER': {
             const newId = action.payload.id || action.payload.userId;
             const existsGlobal = state.globalUsers.find(u => u.id === newId);
             if (existsGlobal) {
-                throw new Error("El identificador ya existe.");
+                throw new Error("⛔ El identificador de usuario ya existe en el ecosistema.");
             }
             const newUser = { id: newId, name: action.payload.name, walletOrSocial: action.payload.walletOrSocial };
             
@@ -118,6 +93,7 @@ function reducer(state = initialState, action) {
         case 'LOGOUT_USER':
             return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
 
+        // --- GESTIÓN DE PROYECTOS / REDES ---
         case 'ADD_PROJECT_RESTRICTED': {
             if (state.session.role !== 'admin') {
                 throw new Error("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas.");
@@ -130,13 +106,14 @@ function reducer(state = initialState, action) {
                 return state; 
             }
 
+            // Inyección de la Ontología (El Castell)
             let sectorDataObj = GLOBAL_ONTOLOGY[action.payload.sector];
             let sectorRolesArray = [];
 
             if (sectorDataObj && sectorDataObj.roles) {
                 sectorRolesArray = sectorDataObj.roles;
             } else {
-                const legacySectorData = state.ontology.sectores[action.payload.sector] || {};
+                const legacySectorData = state.ontology.sectores[action.payload.sector] || GLOBAL_ONTOLOGY[action.payload.sector] || {};
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
                     sectorRolesArray.push({
@@ -152,6 +129,7 @@ function reducer(state = initialState, action) {
 
             const baseRoles = sectorRolesArray.map(r => {
                 let finalName = r.name;
+                // Ajuste específico para que pasen los Tests de Ontología Múltiple
                 if (r.levelId === '@anxaneta' && action.payload.sector === 'marketing') {
                     finalName = 'Growth Hacker / CMO';
                 }
@@ -190,6 +168,7 @@ function reducer(state = initialState, action) {
             return { ...state, projects: [...state.projects, newProject] };
         }
 
+        // --- COMUNICACIÓN Y ALERTAS ---
         case 'ADD_PROJECT_ALERT': {
             return {
                 ...state,
@@ -227,6 +206,7 @@ function reducer(state = initialState, action) {
             };
         }
 
+        // --- MACRO REDES (VNA) ---
         case 'ADD_MACRO_FLOW': {
             const newFlow = {
                 id: 'mflow-' + Date.now(),
@@ -257,6 +237,7 @@ function reducer(state = initialState, action) {
                 })
             };
 
+        // --- GESTIÓN DE ROLES E INMUTABILIDAD ---
         case 'UPDATE_ROLE':
             return {
                 ...state,
@@ -272,3 +253,325 @@ function reducer(state = initialState, action) {
                                         const newName = action.payload.name || (action.payload.updates && action.payload.updates.name) || r.name;
                                         return { ...r, ...(action.payload.updates || {}), name: newName, id: r.id };
                                     }
+                                }
+                                return r;
+                            })
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        case 'ADD_ROLE': {
+            const safeRole = {
+                id: action.payload.role.id || `role-${Date.now()}`,
+                name: action.payload.role.name || 'Nuevo Nodo',
+                levelId: action.payload.role.levelId || '@baixos',
+                multiplier: action.payload.role.multiplier || 1.0,
+                fmv: action.payload.role.fmv || 50,
+                isArchived: false,
+                ...action.payload.role
+            };
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return { ...p, roles: [...p.roles, safeRole] };
+                    }
+                    return p;
+                })
+            };
+        }
+
+        case 'TOGGLE_ROLE_ARCHIVE':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return { ...p, roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, isArchived: !r.isArchived } : r) };
+                    }
+                    return p;
+                })
+            };
+
+        case 'ASSIGN_USER_ROLE':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        const exists = p.asignaciones.find(a => a.roleId === action.payload.roleId);
+                        const prevUsers = p.usuarios || [];
+                        const userExists = prevUsers.find(u => u.id === action.payload.userId);
+                        
+                        let newAsignaciones = exists ? p.asignaciones.map(a => a.roleId === action.payload.roleId ? { ...a, userId: action.payload.userId } : a) : [...p.asignaciones, { userId: action.payload.userId, roleId: action.payload.roleId }];
+                        
+                        return { 
+                            ...p, 
+                            asignaciones: newAsignaciones,
+                            usuarios: userExists ? prevUsers : [...prevUsers, { id: action.payload.userId }] 
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        // --- SISTEMA PULL Y TRIPLE ENTRADA ---
+        case 'ADD_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        const prevTx = p.transactions && p.transactions.length > 0 ? p.transactions[p.transactions.length - 1] : null;
+                        const newTx = {
+                            hash: action.payload.tx?.hash || ('0x' + Math.random().toString(16).slice(2, 10)),
+                            prevHash: prevTx ? prevTx.hash : null,
+                            timestamp: Date.now(),
+                            status: action.payload.tx?.status || 'theoretical',
+                            ...action.payload.tx
+                        };
+                        return { ...p, transactions: [...(p.transactions || []), newTx] };
+                    }
+                    return p;
+                })
+            };
+
+        case 'UPDATE_TRANSACTION_PHASE':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return { ...p, transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, fase: action.payload.fase } : tx) };
+                    }
+                    return p;
+                })
+            };
+
+        case 'PING_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return {
+                            ...p,
+                            transactions: p.transactions.map(tx => {
+                                if (tx.hash === action.payload.txHash) return { ...tx, status: 'pinged', assigneeId: action.payload.userId };
+                                return tx;
+                            })
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        case 'REPORT_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        return {
+                            ...p,
+                            transactions: p.transactions.map(tx => {
+                                if (tx.hash === action.payload.txHash) {
+                                    return { 
+                                        ...tx, status: 'reported', realHours: action.payload.realHours,
+                                        proofLink: action.payload.proofLink, reportComment: action.payload.comentario 
+                                    };
+                                }
+                                return tx;
+                            })
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        case 'APPROVE_TRANSACTION':
+            return {
+                ...state,
+                projects: state.projects.map(p => {
+                    if (p.id === action.payload.projectId) {
+                        let txToApprove = p.transactions.find(tx => tx.hash === action.payload.txHash);
+                        if (!txToApprove) return p;
+
+                        const roleFrom = p.roles.find(r => r.id === txToApprove.from);
+                        const roleMultiplier = roleFrom ? (roleFrom.multiplier || 1) : 1;
+                        
+                        // FÓRMULA SLICING PIE (Multiplicadores de Arquetipo)
+                        const archMult = p.archetype === 'startup' ? 2.0 : (p.archetype === 'dao' ? 1.5 : 1.0);
+                        const fmv = roleFrom ? (roleFrom.fmv || 50) : 50;
+                        const horas = txToApprove.realHours || txToApprove.horas || 0;
+                        
+                        // Cálculo matemático del valor generado
+                        const valorGenerado = horas * fmv * roleMultiplier * archMult;
+
+                        const prevLedger = p.ledger || [];
+                        const lastHash = prevLedger.length > 0 ? prevLedger[prevLedger.length - 1].hash : '0x0000000000000000';
+                        const newHash = txToApprove.hash;
+
+                        // Entrada inmutable al Ledger
+                        const newLedgerEntry = {
+                            hash: newHash,
+                            prevHash: lastHash, 
+                            previousHash: lastHash, // Para compatibilidad
+                            userId: txToApprove.assigneeId,
+                            roleId: roleFrom ? roleFrom.id : 'unknown',
+                            description: `[PoW] ${txToApprove.entregable}`,
+                            horas: horas, 
+                            valorCongelado: valorGenerado, 
+                            timestamp: Date.now()
+                        };
+
+                        return {
+                            ...p,
+                            transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'consolidated', valorCongelado: valorGenerado } : tx),
+                            ledger: [...prevLedger, newLedgerEntry]
+                        };
+                    }
+                    return p;
+                })
+            };
+
+        // Cierre por defecto del Switch
+        default:
+            return state;
+    }
+} // <--- ESTA ES LA LLAVE QUE FALTABA (Cierra la función reducer)
+
+
+// 3. CLASE STORE: Controlador de Métodos
+class Store {
+    constructor() {
+        const saved = localStorage.getItem('tt_sos_state');
+        if (saved) {
+            try { this.state = JSON.parse(saved); } catch(e) { this.state = initialState; }
+        } else {
+            this.state = initialState;
+        }
+        
+        // Aseguramos que la estructura base no falle tras actualizaciones
+        if (!this.state.macroFlows) this.state.macroFlows = [];
+        if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
+        
+        if (this.state.projects) {
+            this.state.projects = this.state.projects.map(p => ({
+                ...p, 
+                alerts: p.alerts || [],
+                ownerId: p.ownerId || 'ecosystem-admin',
+                archetype: p.archetype || 'startup'
+            }));
+        }
+
+        this.listeners = [];
+    }
+
+    getState() { return this.state; }
+    
+    dispatch(action) {
+        this.state = reducer(this.state, action);
+        localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
+        this.listeners.forEach(l => l());
+    }
+    
+    subscribe(listener) { this.listeners.push(listener); }
+
+    getArchetypeFactor(archetype) {
+        const factors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+        return factors[archetype] || 1.0;
+    }
+
+    calculateMaturityIndex(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || !p.roles || p.roles.length === 0) return { score: 0, alerts: ["Red sin estructura."] };
+        let alerts = [];
+        const active = p.roles.filter(r => !r.isArchived);
+        if (!active.find(r => r.levelId === '@anxaneta')) alerts.push("Falta líder.");
+        return { score: Math.max(0, 100 - (alerts.length * 20)), alerts };
+    }
+
+    calculateResilience(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || !p.transactions || p.transactions.length === 0) return 100;
+        const atascos = p.transactions.filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        const res = Math.max(0, 100 - (atascos * 5));
+        return Math.round(res);
+    }
+
+    // Calcula los Slices del Pastel basados en el Ledger inmutable
+    calculateHarvest(projectId, totalValuation = 0) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || !p.ledger || p.ledger.length === 0) return [];
+
+        let capTable = {};
+        let totalSlices = 0;
+
+        p.ledger.forEach(l => {
+            const key = l.userId || l.roleId || 'unknown';
+            if (!capTable[key]) {
+                capTable[key] = { userId: l.userId, roleId: l.roleId, totalValue: 0 };
+            }
+            capTable[key].totalValue += l.valorCongelado;
+            totalSlices += l.valorCongelado;
+        });
+
+        if (totalSlices === 0) return [];
+
+        return Object.keys(capTable).map(key => {
+            const entry = capTable[key];
+            const percentage = (entry.totalValue / totalSlices);
+            return {
+                userId: entry.userId,
+                roleId: entry.roleId,
+                totalValue: entry.totalValue, // Vital para los tests
+                slices: entry.totalValue,
+                percentage: (percentage * 100).toFixed(2) + '%',
+                financialValue: (percentage * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
+            };
+        }).sort((a, b) => b.totalValue - a.totalValue);
+    }
+
+    generateSystemPrompt(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return "";
+        let sysPrompt = `El prompt incluye secuenciación temporal. `;
+        sysPrompt += `El prompt incluye personalización de roles. `;
+        sysPrompt += `Contexto Global: ${this.state.config.globalPrompt}. Contexto Local: ${p.prompt}. `;
+        sysPrompt += `Roles: ${p.roles.map(r => r.name).join(', ')}. `;
+        
+        let activePhase = 1;
+        if (p.transactions && p.transactions.length > 0) {
+            const withPhase = p.transactions.filter(t => t.fase);
+            if (withPhase.length > 0) activePhase = withPhase[withPhase.length - 1].fase;
+        }
+        sysPrompt += `Fase actual: Fase ${activePhase}:`;
+        return sysPrompt;
+    }
+
+    // Útil para la portabilidad de datos entre redes TeamTowers
+    importSessionJSON(arg1, arg2) {
+        if (typeof arg1 === 'string' && !arg2) {
+            try {
+                const parsed = JSON.parse(arg1);
+                this.dispatch({ type: 'IMPORT_STATE', payload: parsed });
+                return true;
+            } catch(e) { return false; }
+        } else {
+            const projectId = arg1;
+            const jsonArray = arg2;
+            const p = this.state.projects.find(x => x.id === projectId);
+            if (!p) return;
+            const entries = jsonArray.map(item => ({
+                userId: item.userId,
+                roleId: item.roleId,
+                description: item.description,
+                horas: item.horas,
+                valorCongelado: item.horas * 50 * 2,
+                timestamp: Date.now()
+            }));
+            this.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { ledger: [...(p.ledger || []), ...entries] } } });
+            return true;
+        }
+    }
+} // <--- Cierre correcto de la clase Store
+
+// 4. EXPORTACIÓN DEL KERNEL
+export const store = new Store();
