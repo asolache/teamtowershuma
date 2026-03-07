@@ -3,16 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TeamTowers | OS</title>
+    <title>TeamTowers | OS v6.1</title>
     
+    <meta name="description" content="Sistema Operativo para equipos de alto rendimiento: Slicing Pie, GTD e Inteligencia Artificial.">
+    <meta property="og:title" content="TeamTowers OS">
+    <meta property="og:description" content="Construye tu Exoesqueleto Cognitivo.">
+    <meta property="og:image" content="/v5/assets/preview.png"> <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗼</text></svg>">
+
     <link rel="stylesheet" href="/v5/css/global.css">
+    
     <script type="module" src="/v5/js/router.js"></script>
+
+    <style>
+        /* Pantalla de carga ultra-rápida (Inline para evitar parpadeos) */
+        #app:empty + #loading-screen,
+        #app:has(div) ~ #loading-screen { display: none; } /* Ocultar cuando el router inyecte algo */
+
+        .kernel-loader {
+            height: 100vh; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            background: #0a0a0c; color: #00b0ff; 
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        .pulse {
+            animation: pulse-animation 2s infinite;
+            font-family: monospace; letter-spacing: 2px;
+        }
+        @keyframes pulse-animation {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
+
     <div id="app">
-        <div style="height: 100vh; display: flex; justify-content: center; align-items: center; background: #0a0a0c; color: #00b0ff; font-family: sans-serif;">
-            <p>Iniciando Kernel v6.0...</p>
+        <div class="kernel-loader">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🗼</div>
+            <p class="pulse">INICIALIZANDO KERNEL v6.1...</p>
+            <div style="margin-top: 20px; font-size: 0.7rem; color: #333;">MEMORIA STACK OK | RBAC INITIALIZED</div>
         </div>
     </div>
+
+    <noscript>
+        <div style="text-align: center; padding: 50px; color: white; background: #000; height: 100vh;">
+            <h1>Se requiere JavaScript</h1>
+            <p>TeamTowers OS es un sistema dinámico y requiere JavaScript para funcionar.</p>
+        </div>
+    </noscript>
 </body>
 </html>
