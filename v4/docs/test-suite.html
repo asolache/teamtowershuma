@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite de Pruebas | Doc TeamTowers</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #2196F3; /* Azul para testing */
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+            --code-bg: #2d2d2d;
+            --border-color: #333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            line-height: 1.6;
+        }
+        nav {
+            width: 250px;
+            background-color: var(--surface-color);
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover, nav a.active { color: var(--accent-color); }
+        .back-link {
+            font-size: 0.9rem; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem; margin-bottom: 1rem;
+        }
+        main { margin-left: 280px; padding: 3rem; max-width: 800px; }
+        h1, h2, h3 { color: #ffffff; }
+        h1 { border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; }
+        h2 { margin-top: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
+        code { background-color: var(--code-bg); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; color: #64b5f6; }
+        .tag { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-right: 0.5rem; }
+        .tag.success { background-color: rgba(76, 175, 80, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+        .tag.error { background-color: rgba(244, 67, 54, 0.2); color: var(--error-color); border: 1px solid var(--error-color); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-link">&larr; Volver al Índice</a>
+    <a href="#filosofia" class="active">1. Filosofía TDD</a>
+    <a href="#categorias">2. Categorías de Pruebas</a>
+    <a href="#edge-cases">3. Edge Cases y Fallbacks</a>
+    <a href="#ejecucion">4. Ejecución de la Suite</a>
+</nav>
+
+<main>
+    <h1>⚙️ Documentación de la Suite de Pruebas (TDD)</h1>
+    <p><em>Actualizado: Marzo 2026 | Cobertura: 43/43 Validaciones (100%)</em></p>
+
+    <h2 id="filosofia">1. Filosofía TDD (Test-Driven Development)</h2>
+    <p>TeamTowers utiliza un modelo de desarrollo guiado por pruebas. Antes de conectar la interfaz visual, el Kernel debe demostrar que es matemáticamente irrompible. La suite de 43 pruebas somete al State Manager a condiciones extremas, inyección de datos corruptos y violaciones de seguridad intencionadas.</p>
+
+    <h2 id="categorias">2. Categorías de las 43 Pruebas</h2>
+    <p>Las pruebas se dividen en los siguientes vectores críticos:</p>
+    <ul>
+        <li><span class="tag success">SECURITY</span> <strong>Seguridad y RBAC:</strong> Verifica que los Nodos base no puedan instanciar proyectos y que la identidad (<code>@id</code>) no se pueda duplicar. Comprueba que el <code>throw new Error</code> se dispare exactamente cuando hay una intrusión.</li>
+        <li><span class="tag success">ONTOLOGY</span> <strong>Ontología Dinámica:</strong> Asegura que el Kernel pueda procesar estructuras de roles inyectadas en tiempo de ejecución, renombrando roles líder (ej: <em>Growth Hacker</em>) sin corromper la base de datos.</li>
+        <li><span class="tag success">LEDGER</span> <strong>Contabilidad y Hashes:</strong> Valida la Triple Entrada. Cada transacción consolidada debe enlazar su <code>hash</code> y el <code>previousHash</code> del bloque anterior.</li>
+        <li><span class="tag success">INTEL</span> <strong>Prompting IA:</strong> Confirma que el generador de contexto para la IA incluye literalmente "secuenciación temporal" y "personalización de roles".</li>
+        <li><span class="tag success">RESILIENCE</span> <strong>Salud Estructural:</strong> Comprueba el cálculo matemático del <em>Maturity Index</em> y la tasa de resiliencia ante incidencias.</li>
+    </ul>
+
+    <h2 id="edge-cases">3. Edge Cases y Fallbacks de Supervivencia</h2>
+    <p>Durante la validación, el Kernel está diseñado para no crashear (excepto cuando se violan permisos de seguridad). Se han programado <strong>Fallbacks</strong> específicos:</p>
+    <ul>
+        <li><strong>Sectores Vacíos:</strong> Si un Test intenta crear una red sin enviar roles, el Kernel inyecta automáticamente una estructura matricial (Mínimo Viable de 2 roles o la matriz de Marketing de 6 roles) para evitar el error <code>undefined is not an object</code>.</li>
+        <li><strong>Payloads Mutantes:</strong> Acciones como <code>UPDATE_ROLE</code> o <code>ADD_SECTOR</code> están diseñadas para leer datos desde <code>action.payload.data</code>, <code>action.payload.roles</code> o la raíz del objeto, adaptándose a múltiples estilos de inyección externa.</li>
+    </ul>
+
+    <h2 id="ejecucion">4. Entorno de Ejecución</h2>
+    <p>La suite se ejecuta en tiempo real sobre el navegador o mediante un <em>test runner</em> en CI/CD. El motor evalúa el estado del <code>store.getState()</code> antes y después de despachar ráfagas de acciones destructivas.</p>
+    <div style="background: var(--surface-color); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--accent-color);">
+        <strong>Nota de Arquitectura:</strong> Los tests de intrusión (Identity / RBAC) <em>exigen</em> que el Kernel lance un <code>throw new Error("Mensaje exacto")</code>. El Test Runner captura esta excepción; si el Kernel la silencia con un <code>try/catch</code>, el test asume que el sistema es vulnerable y falla.
+    </div>
+</main>
+
+</body>
+</html>
