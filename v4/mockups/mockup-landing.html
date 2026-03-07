@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers | El Sistema Operativo para Creadores</title>
+    <style>
+        :root {
+            --bg-base: #08080a;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a0a0a5;
+            --accent-blue: #00b0ff;
+            --accent-green: #00e676;
+            --accent-orange: #ff9100;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top, #1a1a2e, var(--bg-base) 70%);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(8,8,10,0.8);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            width: 100%;
+            top: 0; z-index: 100;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .logo span { color: var(--accent-blue); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--text-main); }
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-blue), #0044ff);
+            color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-top: 50px;
+        }
+        .tagline {
+            background: rgba(0, 230, 118, 0.1); color: var(--accent-green);
+            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(0, 230, 118, 0.3);
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 { font-size: 4.5rem; line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; }
+        .hero h1 span { background: -webkit-linear-gradient(45deg, var(--accent-blue), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin-bottom: 2.5rem; }
+        
+        /* Features Grid */
+        .features { padding: 5rem 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .feature-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 16px; backdrop-filter: blur(10px); transition: transform 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-10px); border-color: var(--accent-blue); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.3rem; margin-bottom: 1rem; }
+        .feature-card p { color: var(--text-muted); font-size: 0.95rem; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🗼 <span>TeamTowers</span></div>
+        <nav class="nav-links">
+            <a href="#filosofia">Filosofía</a>
+            <a href="#metodologias">Aprender Haciendo</a>
+            <a href="#precios">Ecosistemas</a>
+        </nav>
+        <a href="mockup-project-creator.html" class="btn-primary">Entrar a la Red</a>
+    </header>
+
+    <section class="hero">
+        <div class="tagline">Slicing Pie + GTD + Inteligencia Artificial</div>
+        <h1>No uses software.<br>Construye tu <span>Exoesqueleto Cognitivo.</span></h1>
+        <p>TeamTowers es el primer sistema operativo diseñado para equipos que quieren repartir el valor de forma justa (Slicing Pie), trabajar profundo (Pomodoro) y organizarse orgánicamente (Ontologías DAO).</p>
+        <a href="mockup-project-creator.html" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Inicia un Proyecto IA</a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🥧</div>
+            <h3>Slicing The Pie Automático</h3>
+            <p>Aprende a valorar el trabajo. El sistema calcula automáticamente el Equity (patrimonio) basado en horas, roles y valor de mercado (FMV) inyectándolo en un Ledger Inmutable.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Ontologías Dinámicas IA</h3>
+            <p>Dile a la IA qué quieres lograr. Ella generará los 5 roles exactos (del Anxaneta al Pinya) con sus responsabilidades y entregables estándar listos para ejecutar.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⏱️</div>
+            <h3>Pomodoro y GTD</h3>
+            <p>Aprende a enfocarte. Convierte el tiempo de pensar y crear prompts en "Trabajo de Alto Valor". El reloj integrado contabiliza tu Deep Work y lo transforma en valor real para tu red.</p>
+        </div>
+    </section>
+
+</body>
+</html>
