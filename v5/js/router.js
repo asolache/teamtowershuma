@@ -6,6 +6,7 @@ const routes = {
     '/project': 'ProjectView',
     '/tests': 'TestsView',
     '/map': 'ValueMapView'
+    '/focus': 'FocusView'
 };
 
 class Router {
