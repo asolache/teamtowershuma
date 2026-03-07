@@ -3,7 +3,7 @@ import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 const initialState = {
     config: { theme: 'dark', ecosystemName: 'TeamTowers Network', globalPrompt: '' },
-    ontology: { sectores: {} },
+    ontology: { sectores: GLOBAL_ONTOLOGY || {} },
     globalUsers: [],
     projects: [],
     session: { activeUserId: 'ecosystem-admin', role: 'admin' }
@@ -15,20 +15,42 @@ function reducer(state = initialState, action) {
             return { ...state, config: { ...state.config, ...action.payload } };
 
         case 'ADD_PROJECT': {
+            // 🧬 v6.3: Lógica de Inyección de ADN Robusta
+            const sectorKey = action.payload.sector || 'general';
+            const sectorData = GLOBAL_ONTOLOGY[sectorKey] || GLOBAL_ONTOLOGY['general'] || { roles: [] };
+            
+            // Si la ontología viene como objeto directo o con propiedad .roles
+            const sourceRoles = sectorData.roles || (Array.isArray(sectorData) ? sectorData : []);
+
+            const baseRoles = sourceRoles.map(r => ({
+                id: `role-${r.levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                levelId: r.levelId,
+                name: r.name,
+                multiplier: r.multiplier || 1.0,
+                fmv: r.fmv || 50,
+                ai_prompt: r.ai_prompt || '',
+                standard_deliverables: r.standard_deliverables || [],
+                isArchived: false
+            }));
+
             const newProject = {
                 id: action.payload.id || ('proj-' + Date.now()),
                 nombre: action.payload.nombre || 'Nueva Red',
-                sector: action.payload.sector || 'general',
+                sector: sectorKey,
                 archetype: action.payload.archetype || 'startup', 
                 ownerId: state.session.activeUserId,
                 prompt: '',
                 config: { tokenomics: 'startup' },
-                roles: [], usuarios: [], asignaciones: [], transactions: [], ledger: [], alerts: []
+                roles: baseRoles, // Aquí nacen los 5-6 roles de golpe
+                usuarios: [], 
+                asignaciones: [], 
+                transactions: [], 
+                ledger: [], 
+                alerts: []
             };
             return { ...state, projects: [...state.projects, newProject] };
         }
 
-        // 🔥 FIX TEST: Edición de nombres de roles (Atomic Update)
         case 'UPDATE_ROLE': {
             return {
                 ...state,
@@ -45,7 +67,6 @@ function reducer(state = initialState, action) {
         }
 
         case 'ADD_ROLE': {
-            if (!action.payload.role) return state; // Prevent Crash
             return {
                 ...state,
                 projects: state.projects.map(p => {
@@ -83,12 +104,6 @@ function reducer(state = initialState, action) {
         case 'LOGIN_USER':
             return { ...state, session: { activeUserId: action.payload.userId, role: action.payload.userId === 'ecosystem-admin' ? 'admin' : 'user' } };
 
-        case 'UPDATE_PROJECT_INFO':
-            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, ...action.payload.updates } : p) };
-
-        case 'ASSIGN_USER_ROLE':
-            return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, asignaciones: [...p.asignaciones.filter(a => a.roleId !== action.payload.roleId), { userId: action.payload.userId, roleId: action.payload.roleId }] } : p) };
-
         case 'ADD_USER':
             if (state.globalUsers.find(u => u.id === action.payload.id)) return state;
             return { ...state, globalUsers: [...state.globalUsers, action.payload] };
@@ -109,20 +124,18 @@ class Store {
             this.state = reducer(this.state, action);
             localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
             this.listeners.forEach(l => l());
-        } catch (e) { console.error("KRNL_ERR:", e); }
+        } catch (e) { console.error("FATAL_KRNL_CRASH:", e); }
     }
     subscribe(listener) { this.listeners.push(listener); }
 
-    // 🎓 CAPA DIDÁCTICA (Verna Allee + Mike Moyer)
     calculateMaturityIndex(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return { score: 0, alerts: [] };
+        if (!p || !p.roles.length) return { score: 0, alerts: ["⚠️ Red sin ADN (roles vacíos)."] };
         let alerts = [];
         const roles = p.roles.filter(r => !r.isArchived);
-        if (!roles.some(r => r.levelId === '@anxaneta')) alerts.push("🔴 <b>Falta Estrategia:</b> Sin un @anxaneta, el flujo intangible de 'Dirección' se pierde.");
-        if (!roles.some(r => r.levelId === '@dosos')) alerts.push("🟡 <b>Falta Auditoría:</b> Sin @dosos, no hay control de calidad sobre el PoW.");
-        if (!roles.some(r => r.levelId === '@pinya')) alerts.push("🔵 <b>Falta Soporte:</b> Los niveles altos se quemarán haciendo tareas base.");
-        return { score: Math.max(0, 100 - (alerts.length * 25)), alerts };
+        if (!roles.some(r => r.levelId === '@anxaneta')) alerts.push("🔴 <b>Falta Estrategia:</b> Sin dirección, la red colapsará por entropía.");
+        if (!roles.some(r => r.levelId === '@dosos')) alerts.push("🟡 <b>Falta Auditoría:</b> Nadie valida el PoW. Riesgo de fraude.");
+        return { score: Math.max(0, 100 - (alerts.length * 30)), alerts };
     }
 
     calculateResilience(projectId) {
@@ -130,6 +143,23 @@ class Store {
         if (!p) return 100;
         const pending = p.transactions.filter(t => t.status === 'reported').length;
         return Math.max(0, 100 - (pending * 10));
+    }
+
+    calculateHarvest(projectId, totalValuation) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || !p.ledger.length) return [];
+        let capTable = {}; let totalSlices = 0;
+        p.ledger.forEach(l => {
+            capTable[l.userId] = (capTable[l.userId] || 0) + l.valorCongelado;
+            totalSlices += l.valorCongelado;
+        });
+        return Object.keys(capTable).map(userId => {
+            const ratio = capTable[userId] / totalSlices;
+            return {
+                userId, percentage: (ratio * 100).toFixed(2) + '%',
+                financialValue: (ratio * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
+            };
+        });
     }
 }
 
