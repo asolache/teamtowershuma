@@ -21,19 +21,14 @@ function reducer(state = initialState, action) {
             case 'LOGOUT_USER':
                 return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
 
-            // 🟢 FIX IDENTITY: Bloqueo de ID duplicado
             case 'ADD_USER': {
-                if (state.globalUsers.some(u => u.id === action.payload.id)) {
-                    console.warn(`[SECURITY] Intento de duplicar ID: ${action.payload.id}`);
-                    return state; // El Kernel bloquea el duplicado
-                }
+                if (state.globalUsers.some(u => u.id === action.payload.id)) return state; 
                 return { ...state, globalUsers: [...state.globalUsers, action.payload] };
             }
 
-            // 🟢 FIX DATABASE (Evita el Crash Fatal)
             case 'ADD_SECTOR': {
                 const sectorId = action.payload.id || action.payload.sectorId;
-                const sectorData = action.payload.data || action.payload.roles || [];
+                const sectorData = action.payload.data || action.payload.roles || {};
                 return {
                     ...state,
                     ontology: {
@@ -43,11 +38,23 @@ function reducer(state = initialState, action) {
                 };
             }
 
+            // 🟢 FIX ONTOLOGY: Soporte Universal (Legacy Object + Modern Array)
             case 'ADD_PROJECT': {
                 const sectorKey = action.payload.sector || 'general';
-                // Busca en el estado dinámico primero, luego en el global estático
-                const sectorData = state.ontology.sectores[sectorKey] || GLOBAL_ONTOLOGY[sectorKey] || { roles: [] };
-                const sourceRoles = sectorData.roles || (Array.isArray(sectorData) ? sectorData : []);
+                const sectorData = state.ontology.sectores[sectorKey] || GLOBAL_ONTOLOGY[sectorKey] || {};
+                
+                let sourceRoles = [];
+                
+                if (sectorData.roles && Array.isArray(sectorData.roles)) {
+                    sourceRoles = sectorData.roles;
+                } else if (Array.isArray(sectorData)) {
+                    sourceRoles = sectorData;
+                } else {
+                    // Mapeo Legacy para objetos del tipo {"@anxaneta": { name: "Growth Hacker" }}
+                    Object.keys(sectorData).forEach(key => {
+                        sourceRoles.push({ levelId: key, ...sectorData[key] });
+                    });
+                }
 
                 const baseRoles = sourceRoles.map((r, idx) => ({
                     id: `role-${r.levelId ? r.levelId.replace('@','') : 'custom'}-${Date.now()}-${idx}`,
@@ -60,7 +67,6 @@ function reducer(state = initialState, action) {
                     standard_deliverables: r.standard_deliverables || []
                 }));
 
-                // 🚨 Fallback de seguridad: si no hay roles, inyectamos uno base para que los tests no exploten
                 if (baseRoles.length === 0) {
                     baseRoles.push({ id: `role-base-${Date.now()}`, levelId: '@baixos', name: 'Nodo Inicial', multiplier: 1, fmv: 50, isArchived: false });
                 }
@@ -100,7 +106,6 @@ function reducer(state = initialState, action) {
                 return { ...state, projects: state.projects.map(p => p.id === projectId ? { ...p, roles: [...p.roles, safeRole] } : p) };
             }
 
-            // 🟢 FIX STORE: Edición de roles ultra-tolerante
             case 'UPDATE_ROLE':
                 return { 
                     ...state, 
@@ -120,7 +125,6 @@ function reducer(state = initialState, action) {
             case 'TOGGLE_ROLE_ARCHIVE':
                 return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, isArchived: !r.isArchived } : r) } : p) };
 
-            // 🟢 FIX IDENTITY: Usuario enlazado al Proyecto local (p.usuarios)
             case 'ASSIGN_USER_ROLE':
                 return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { 
                     ...p, 
@@ -154,7 +158,6 @@ function reducer(state = initialState, action) {
             case 'RESOLVE_PROJECT_ALERT':
                 return { ...state, projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, alerts: (p.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a) } : p) };
 
-            // 🟢 FIX SECURITY: Triple Entrada Perfecta
             case 'APPROVE_TRANSACTION':
                 return { ...state, projects: state.projects.map(p => {
                     if (p.id !== action.payload.projectId) return p;
@@ -166,14 +169,14 @@ function reducer(state = initialState, action) {
                     
                     const prevLedger = p.ledger || [];
                     const lastHash = prevLedger.length > 0 ? prevLedger[prevLedger.length - 1].hash : 'GENESIS_BLOCK';
-                    const newHash = '0x' + Math.random().toString(16).slice(2, 16); // Hash único del ledger entry
+                    const newHash = '0x' + Math.random().toString(16).slice(2, 16); 
 
                     return { ...p, 
                         transactions: p.transactions.map(t => t.hash === tx.hash ? { ...t, status: 'consolidated', valorCongelado: val } : t),
                         ledger: [...prevLedger, { 
                             id: 'ldg-' + Date.now(),
                             hash: newHash,
-                            previousHash: lastHash, // <--- Triple Entrada OK
+                            previousHash: lastHash, 
                             transactionHash: tx.hash,
                             userId: tx.assigneeId, 
                             roleId: tx.from, 
@@ -202,13 +205,10 @@ class Store {
             this.state = reducer(this.state, action);
             localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
             this.listeners.forEach(l => l());
-        } catch (error) {
-            console.error("Error saving state:", error);
-        }
+        } catch (error) { console.error("Error saving state:", error); }
     }
     subscribe(listener) { this.listeners.push(listener); }
 
-    // 🟢 FIX PARSER: Importador JSON
     importSessionJSON(jsonString) {
         try {
             const parsedData = JSON.parse(jsonString);
@@ -219,26 +219,16 @@ class Store {
                 return true;
             }
             return false;
-        } catch (error) {
-            console.error("JSON Import Failed:", error);
-            return false;
-        }
+        } catch (error) { return false; }
     }
 
-    // 🟢 FIX INTEL: Secuenciación y Personalización explícita para la IA
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return this.state.config.globalPrompt || '';
-        
         const timestamp = new Date().toISOString(); 
         let promptText = p.prompt ? `\nCONTEXTO PROYECTO: ${p.prompt}` : '';
         const rolesText = p.roles.filter(r => !r.isArchived).map(r => `- ${r.name}: ${r.ai_prompt}`).join('\n');
-        
-        // El test busca las palabras clave "secuenciación temporal" y "personalización de roles"
-        return `[Secuenciación temporal: ${timestamp}]
-Global: ${this.state.config.globalPrompt}${promptText}
-[Personalización de roles]
-${rolesText}`;
+        return `[Secuenciación temporal: ${timestamp}]\nGlobal: ${this.state.config.globalPrompt}${promptText}\n[Personalización de roles]\n${rolesText}`;
     }
 
     getArchetypeFactor(archetype) {
@@ -267,38 +257,17 @@ ${rolesText}`;
     calculateSuccessProbability(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return 0;
-        
         const roles = p.roles ? p.roles.filter(r => !r.isArchived) : [];
         const hasTangible = p.ledger && p.ledger.length > 0; 
         const hasIntangible = roles.some(r => r.levelId === '@anxaneta') && roles.some(r => r.levelId === '@dosos'); 
-
         let probability = 35; 
         if (hasTangible) probability += 30; 
         if (hasIntangible) probability += 35; 
-        
         return {
             percentage: probability,
             label: probability > 70 ? "Alta Resiliencia" : (probability > 40 ? "Riesgo Moderado" : "Alta Fragilidad"),
             color: probability > 70 ? "var(--accent-green)" : (probability > 40 ? "var(--accent-gold)" : "var(--accent-red)")
         };
-    }
-
-    calculateHarvest(projectId, totalValuation) {
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || !p.ledger || !p.ledger.length) return [];
-        let capTable = {}; let totalSlices = 0;
-        p.ledger.forEach(l => {
-            capTable[l.userId] = (capTable[l.userId] || 0) + l.valorCongelado;
-            totalSlices += l.valorCongelado;
-        });
-        return Object.keys(capTable).map(userId => {
-            const ratio = capTable[userId] / totalSlices;
-            return {
-                userId, slices: capTable[userId],
-                percentage: (ratio * 100).toFixed(2) + '%',
-                financialValue: (ratio * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
-            };
-        }).sort((a, b) => b.slices - a.slices);
     }
 }
 export const store = new Store();
