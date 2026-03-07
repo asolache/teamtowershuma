@@ -1,5 +1,4 @@
 // v5/js/views/HomeView.js
-
 export default class HomeView {
     constructor() {
         // Título que se mostrará en la pestaña del navegador
@@ -13,18 +12,19 @@ export default class HomeView {
                 .landing-header {
                     display: flex; justify-content: space-between; align-items: center;
                     padding: 1.5rem 5%; background: rgba(10,10,12,0.8);
-                    backdrop-filter: blur(20px); position: fixed; width: 100%; top: 0; z-index: 100;
+                    backdrop-filter: blur(20px); position: fixed; width: 100%; top: 0; left: 0; z-index: 100;
                     border-bottom: 1px solid var(--glass-border);
                 }
                 .logo { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
                 .logo span { color: var(--accent-blue); }
-                .nav-links { display: flex; gap: 2rem; }
-                .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+                
+                .nav-links { display: flex; gap: 2rem; align-items: center; }
+                .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; cursor: pointer; }
                 .nav-links a:hover { color: var(--text-main); }
                 
                 .hero {
-                    height: 100vh; display: flex; flex-direction: column; justify-content: center;
-                    align-items: center; text-align: center; padding: 0 20px;
+                    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+                    align-items: center; text-align: center; padding: 120px 20px 60px 20px;
                 }
                 .tagline {
                     background: rgba(0, 230, 118, 0.1); color: var(--accent-green);
@@ -36,20 +36,26 @@ export default class HomeView {
                 .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin-bottom: 2.5rem; }
                 
                 .features { padding: 5rem 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-                .feature-card { padding: 2.5rem; transition: transform 0.3s; }
+                .feature-card { padding: 2.5rem; transition: transform 0.3s; border: 1px solid var(--glass-border); border-radius: 16px; }
                 .feature-card:hover { transform: translateY(-10px); border-color: var(--accent-blue); }
                 .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+
+                @media (max-width: 768px) {
+                    .hero h1 { font-size: 2.8rem; }
+                    .nav-links.hide-on-mobile { display: none; }
+                }
             </style>
 
             <div class="view-container">
                 <header class="landing-header">
                     <div class="logo">🗼 <span>TeamTowers</span></div>
-                    <nav class="nav-links hide-on-mobile">
-                        <a href="#filosofia">Filosofía</a>
-                        <a href="#metodologias">Aprender Haciendo</a>
-                        <a href="/eco" data-link>Ecosistemas</a>
+                    <nav class="nav-links">
+                        <div class="hide-on-mobile" style="display: flex; gap: 2rem;">
+                            <a href="#filosofia">Filosofía</a>
+                            <a href="/v5/map" data-link>Mapa de Valor</a>
+                        </div>
+                        <a href="/v5/create" class="btn btn-primary" data-link>Entrar a la Red</a>
                     </nav>
-                    <a href="/create" class="btn btn-primary" data-link>Entrar a la Red</a>
                 </header>
 
                 <section class="hero">
@@ -57,10 +63,10 @@ export default class HomeView {
                     <h1>No uses software.<br>Construye tu <span>Exoesqueleto Cognitivo.</span></h1>
                     <p>TeamTowers es el primer sistema operativo diseñado para equipos que quieren repartir el valor de forma justa (Slicing Pie), trabajar profundo (Pomodoro) y organizarse orgánicamente (Ontologías DAO).</p>
                     
-                    <a href="/create" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" data-link>Inicia un Proyecto IA</a>
+                    <a href="/v5/create" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" data-link>Inicia un Proyecto IA</a>
                 </section>
 
-                <section class="features">
+                <section class="features" id="filosofia">
                     <div class="glass-panel feature-card">
                         <div class="feature-icon">🥧</div>
                         <h3>Slicing The Pie Automático</h3>
@@ -81,9 +87,7 @@ export default class HomeView {
         `;
     }
 
-    // Este método se ejecuta justo después de que el HTML se inyecta en el DOM
     executeViewScript() {
-        console.log("🚀 HomeView cargada correctamente. Sistema Base Operativo.");
-        // Aquí podríamos añadir animaciones de scroll o lógicas de la landing page.
+        console.log("🚀 HomeView (v5) sincronizada con el Router.");
     }
 }
