@@ -1,51 +1,54 @@
 import { store } from '../core/store.js';
 
+// --- CONTROLADORES DE EVENTOS ---
 document.addEventListener('click', (e) => {
-    // 1. GUARDAR IDENTIDAD Y CONTEXTO (SYSTEM PROMPT)
-    if (e.target.id === 'btn-save-project-info') {
+    
+    // 🛡️ GUARDAR IDENTIDAD Y ARQUETIPO
+    if (e.target.id === 'btn-save-project-basic') {
         const projectId = e.target.getAttribute('data-pid');
         const nombre = document.getElementById('edit-proj-name').value.trim();
+        const archetype = document.getElementById('edit-proj-archetype').value;
         const sector = document.getElementById('edit-proj-sector').value;
-        const prompt = document.getElementById('edit-proj-prompt').value.trim();
 
-        if (!nombre) return alert("⚠️ El nombre de la red no puede estar vacío.");
+        if (!nombre) return alert("⚠️ El nombre es obligatorio.");
 
         store.dispatch({
             type: 'UPDATE_PROJECT_INFO',
-            payload: { projectId, updates: { nombre, sector, prompt } }
+            payload: { projectId, updates: { nombre, archetype, sector } }
         });
         
-        const btn = document.getElementById('btn-save-project-info');
-        btn.innerHTML = '✅ Identidad Guardada';
-        btn.style.backgroundColor = 'var(--accent-blue)';
-        btn.style.color = '#fff';
-        
+        const btn = e.target;
+        btn.innerHTML = '✅ ADN Actualizado';
         setTimeout(() => document.getElementById('app').innerHTML = ProjectEditView.render(projectId), 1000);
     }
 
-    // 2. GUARDAR MODELO DE TOKENOMICS (LA COSECHA)
-    if (e.target.id === 'btn-save-tokenomics') {
+    // 🤖 ASISTENTE DE PROMPTS (DNA BUILDER)
+    if (e.target.id === 'btn-build-dna') {
         const projectId = e.target.getAttribute('data-pid');
-        const preset = document.getElementById('tokenomics-preset').value;
-        
+        const q1 = document.getElementById('dna-q1').value.trim();
+        const q2 = document.getElementById('dna-q2').value.trim();
+        const q3 = document.getElementById('dna-q3').value.trim();
+
+        // Construimos el System Prompt basado en las respuestas
+        const finalPrompt = `PROYECTO: ${q1}. CRITERIO DE VALOR: ${q2}. MÉTRICA DE ÉXITO: ${q3}.`;
+
         store.dispatch({
-            type: 'UPDATE_PROJECT_CONFIG',
-            payload: { projectId, config: { tokenomics: preset } }
+            type: 'UPDATE_PROJECT_INFO',
+            payload: { projectId, updates: { prompt: finalPrompt } }
         });
-        
-        const btn = document.getElementById('btn-save-tokenomics');
-        btn.innerHTML = '✅ Tokenomics Sellado';
-        setTimeout(() => document.getElementById('app').innerHTML = ProjectEditView.render(projectId), 1000);
+
+        alert("🤖 Inteligencia de Red actualizada. El agente Dosos ahora es más preciso.");
+        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
     }
 
-    // 3. INYECTAR ROL A LA ONTOLOGÍA (MANUAL)
+    // ➕ AÑADIR ROL Y ACTUALIZAR MADUREZ
     if (e.target.id === 'btn-add-role') {
         const projectId = e.target.getAttribute('data-pid');
         const name = document.getElementById('new-role-name').value.trim();
         const levelId = document.getElementById('new-role-level').value;
         const multiplier = document.getElementById('new-role-multiplier').value;
 
-        if (!name) return alert("⚠️ Define un nombre para el nodo teórico.");
+        if (!name) return alert("⚠️ Define un nombre para el nodo.");
 
         store.dispatch({
             type: 'ADD_ROLE',
@@ -53,104 +56,38 @@ document.addEventListener('click', (e) => {
                 projectId, 
                 role: { 
                     id: 'role-' + Date.now(), 
-                    name, 
-                    levelId, 
+                    name, levelId, 
                     multiplier: parseFloat(multiplier) || 1,
-                    ai_prompt: '', 
-                    standard_deliverables: [] 
+                    ai_prompt: '', standard_deliverables: [] 
                 } 
             }
         });
         document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
     }
 
-    // 4. OCULTAR / MOSTRAR ROL 
-    if (e.target.classList.contains('btn-archive-role')) {
-        const projectId = e.target.getAttribute('data-pid');
-        const roleId = e.target.getAttribute('data-role');
-        store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId, roleId } });
-        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
-    }
-
-    // 5. IMPORTAR PLANTILLA GLOBAL AL PROYECTO
+    // 📦 IMPORTAR PLANTILLA
     if (e.target.id === 'btn-import-template') {
         const projectId = e.target.getAttribute('data-pid');
         const sectorKey = document.getElementById('select-template').value;
-        
-        if (!sectorKey) return alert("Selecciona una plantilla primero.");
-        if (!confirm(`¿Añadir los roles de la plantilla '${sectorKey}' a este proyecto?`)) return;
+        if (!sectorKey) return;
 
+        // Reutilizamos la lógica del Kernel v6.1 para inyectar roles
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
         const template = state.ontology?.sectores[sectorKey];
 
-        if (!template) return alert("Error: Plantilla no encontrada.");
-
-        const newRoles = [...project.roles];
-        Object.keys(template).forEach(levelId => {
-            const tmplData = template[levelId];
-            newRoles.push({
-                id: `role-${levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                levelId: levelId,
-                name: tmplData.name || levelId,
-                multiplier: tmplData.multiplier || 1.0,
-                ai_prompt: tmplData.ai_prompt || '',
-                standard_deliverables: tmplData.standard_deliverables ? JSON.parse(JSON.stringify(tmplData.standard_deliverables)) : [],
-                price: 90,
-                isArchived: false
+        if (template) {
+            const newRoles = [...project.roles];
+            Object.keys(template).forEach(levelId => {
+                const r = template[levelId];
+                newRoles.push({
+                    id: `role-${levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                    levelId, name: r.name, multiplier: r.multiplier, ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables || [], isArchived: false
+                });
             });
-        });
-
-        store.dispatch({
-            type: 'UPDATE_PROJECT_INFO',
-            payload: { projectId, updates: { roles: newRoles } }
-        });
-
-        document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
-    }
-
-    // 6. GUARDAR EDICIONES LOCALES (PROMPTS Y ENTREGABLES)
-    if (e.target.id === 'btn-save-local-ontology') {
-        const projectId = e.target.getAttribute('data-pid');
-        const state = store.getState();
-        const project = state.projects.find(p => p.id === projectId);
-
-        const updatedRoles = project.roles.map(r => {
-            if (r.isArchived) return r; 
-
-            const promptInput = document.getElementById(`local-prompt-${r.id}`);
-            const delivInput = document.getElementById(`local-deliv-${r.id}`);
-            
-            if (promptInput && delivInput) {
-                const parsedDeliverables = delivInput.value.split('\n')
-                    .filter(line => line.trim() !== '')
-                    .map(line => {
-                        const parts = line.split('|');
-                        return {
-                            estimatedHours: parseFloat(parts[0]) || 0,
-                            name: parts.slice(1).join('|').trim() || 'Entregable sin nombre'
-                        };
-                    });
-
-                return {
-                    ...r,
-                    ai_prompt: promptInput.value.trim(),
-                    standard_deliverables: parsedDeliverables
-                };
-            }
-            return r;
-        });
-
-        store.dispatch({
-            type: 'UPDATE_PROJECT_INFO',
-            payload: { projectId, updates: { roles: updatedRoles } }
-        });
-
-        const btn = document.getElementById('btn-save-local-ontology');
-        btn.innerHTML = '✅ Ontología Local Guardada';
-        btn.style.background = 'var(--accent-purple)';
-        btn.style.color = '#fff';
-        setTimeout(() => document.getElementById('app').innerHTML = ProjectEditView.render(projectId), 1000);
+            store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { roles: newRoles } } });
+            document.getElementById('app').innerHTML = ProjectEditView.render(projectId);
+        }
     }
 });
 
@@ -160,174 +97,140 @@ export const ProjectEditView = {
         const project = state.projects.find(p => p.id === projectId);
         if (!project) return `<div class="container"><h2>Red no encontrada</h2></div>`;
 
-        // 🔐 RBAC: Verificación de permisos (Solo EO o el PO de esta red)
-        const session = state.session || { activeUserId: 'unknown', role: 'user' };
-        const isEcosystemOwner = session.role === 'admin';
-        const isProjectOwner = project.ownerId === session.activeUserId;
-        
-        if (!isEcosystemOwner && !isProjectOwner) {
-            setTimeout(() => { if(window.setNavbar) window.setNavbar([{ label: '🏠 Hub', hash: '#/' }]) }, 0);
-            return `
-                <div class="container fade-in" style="padding-top:15vh; text-align:center;">
-                    <div class="panel-surface" style="display:inline-block; border-top: 4px solid var(--accent-red); padding: 40px; border-radius: 12px;">
-                        <h2 style="color: var(--accent-red); margin-top: 0;">🔒 Acceso Denegado</h2>
-                        <p class="text-muted">La configuración estructural de esta red está restringida.<br>Solo el <b>Project Owner</b> o el <b>Ecosystem Owner</b> pueden modificar su ADN.</p>
-                        <button class="btn btn-outline" style="margin-top: 20px;" onclick="history.back()">Volver atrás</button>
-                    </div>
-                </div>`;
-        }
+        const session = state.session || { activeUserId: 'unknown', role: 'admin' };
+        if (session.role !== 'admin') return `<div class="container text-center" style="padding-top:10vh;"><h3>⛔ Acceso Denegado</h3></div>`;
 
-        const esProyecto = project.tipo !== 'ecosystem';
-        const tipoLabel = esProyecto ? '🎯 PROYECTO (Finito)' : '🌍 ECOSISTEMA (Continuo)';
-        const tipoColor = esProyecto ? 'var(--accent-blue)' : 'var(--accent-gold)';
-
+        const maturity = store.calculateMaturityIndex(projectId);
         const activeRoles = project.roles.filter(r => !r.isArchived);
-        const currentTokenomics = project.config?.tokenomics || 'startup';
-        const projectPrompt = project.prompt || '';
-        const sectores = state.ontology?.sectores || {};
+        
+        // Colores por arquetipo para la coherencia visual
+        const archColors = { 'startup': 'var(--accent-blue)', 'corporate': 'var(--accent-green)', 'dao': 'var(--accent-gold)' };
+        const themeColor = archColors[project.archetype] || 'var(--accent-blue)';
 
-        // 🚀 BREADCRUMBS GLOBALES INYECTADOS EN TOOLBAR
+        // 🚀 SET NAVBAR v4.1 (Independiente y Destacada)
         setTimeout(() => {
             if (window.setNavbar) {
                 window.setNavbar(
                     [
-                        { label: state.config?.ecosystemName || 'Ecosistema', hash: '#/' },
+                        { label: state.config.ecosystemName, hash: '#/' },
                         { label: project.nombre, hash: `#/project/${projectId}` },
-                        { label: '⚙️ Configuración' }
+                        { label: 'Ingeniería de ADN' }
                     ], 
-                    '', 
-                    `<span class="badge" style="background: rgba(255,255,255,0.05); color: ${tipoColor}; border: 1px solid ${tipoColor};">${tipoLabel}</span>`
+                    `<span class="badge" style="background:${themeColor}22; color:${themeColor}; margin-left:10px;">${project.archetype.toUpperCase()}</span>`, 
+                    `<button class="btn btn-outline" onclick="location.hash='#/project/${projectId}'">🔙 Volver al Dashboard</button>`
                 );
             }
         }, 0);
 
         return `
-            <div class="container fade-in" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
+            <div class="container fade-in" style="max-width: 1300px; margin: 30px auto; padding: 0 20px;">
                 
-                <div class="panel-surface" style="margin-bottom: 30px; border-left: 4px solid var(--accent-purple); background: linear-gradient(135deg, rgba(163, 113, 247, 0.05) 0%, transparent 100%); padding: 25px; border-radius: 12px;">
-                    <h2 style="margin: 0; display: flex; align-items: center; gap: 15px; color: var(--accent-purple);">
-                        Sala de Máquinas: ${project.nombre}
-                    </h2>
-                    <p class="text-muted" style="margin-top: 5px; font-size: 0.9rem;">
-                        Configura la Identidad, Tokenomics, y el <b>ADN de la IA y el Pull System (Entregables)</b>.
-                    </p>
-                </div>
-
-                <div class="grid-layout" style="grid-template-columns: 1fr 1.5fr; gap: 30px;">
+                <div class="grid-layout" style="grid-template-columns: 1fr 1.8fr; gap: 30px;">
                     
-                    <main style="display: flex; flex-direction: column; gap: 20px;">
+                    <aside style="display: flex; flex-direction: column; gap: 25px;">
                         
-                        <div class="panel-surface" style="border-top: 3px solid var(--accent-blue); border-radius: 12px; padding: 25px;">
-                            <h3 style="margin-top: 0; color: var(--accent-blue);">1. Identidad y Contexto IA</h3>
-                            <p class="text-small text-muted" style="margin-bottom: 15px;">Define qué es esta red y dale un contexto a los Agentes IA que operen en ella.</p>
-                            
-                            <label class="form-label">Nombre de la Red:</label>
-                            <input type="text" id="edit-proj-name" class="form-control" value="${project.nombre}" placeholder="Ej: Proyecto TeamTowers">
-                            
-                            <label class="form-label">Sector Base:</label>
+                        <div class="panel-surface" style="border-top: 4px solid ${maturity.score > 70 ? 'var(--accent-green)' : 'var(--accent-gold)'};">
+                            <h4 style="margin: 0 0 10px 0;">Salud Estructural</h4>
+                            <div style="font-size: 2rem; font-weight: 800; color: ${maturity.score > 70 ? 'var(--accent-green)' : 'var(--accent-gold)'};">${maturity.score}%</div>
+                            <p class="text-small text-muted">Este índice mide si tu red tiene roles equilibrados entre Estrategia, Auditoría y Ejecución.</p>
+                            ${maturity.alerts.map(a => `<div style="font-size:0.75rem; color:var(--accent-gold); margin-top:5px; background:rgba(210,153,34,0.1); padding:8px; border-radius:6px;">${a}</div>`).join('')}
+                        </div>
+
+                        <div class="panel-surface" style="border-left: 4px solid ${themeColor};">
+                            <h3 style="margin-top:0;">Configuración Base</h3>
+                            <label class="form-label">Nombre de la Red</label>
+                            <input id="edit-proj-name" type="text" class="form-control" value="${project.nombre}">
+
+                            <label class="form-label">Arquetipo Sistémico</label>
+                            <select id="edit-proj-archetype" class="form-control" style="border-color: ${themeColor}; font-weight: bold;">
+                                <option value="startup" ${project.archetype === 'startup' ? 'selected' : ''}>🚀 Startup (Riesgo x2.0)</option>
+                                <option value="corporate" ${project.archetype === 'corporate' ? 'selected' : ''}>🏢 Corporativo (Riesgo x1.0)</option>
+                                <option value="dao" ${project.archetype === 'dao' ? 'selected' : ''}>🌍 DAO (Reputación x1.5)</option>
+                            </select>
+
+                            <label class="form-label">Sector Industrial</label>
                             <select id="edit-proj-sector" class="form-control">
-                                <option value="${project.sector || 'general'}">${(project.sector || 'General').toUpperCase()}</option>
-                                ${Object.keys(sectores).map(s => s !== project.sector ? `<option value="${s}">${s.toUpperCase()}</option>` : '').join('')}
+                                ${Object.keys(state.ontology.sectores).map(s => `<option value="${s}" ${project.sector === s ? 'selected' : ''}>${s.toUpperCase()}</option>`).join('')}
                             </select>
 
-                            <label class="form-label" style="margin-top: 15px; display:flex; justify-content:space-between;">
-                                <span>System Prompt (Contexto Local):</span>
-                                <span class="badge" style="background:var(--bg-surface); color:var(--text-muted); border:1px solid var(--border-color);">🤖 IA</span>
-                            </label>
-                            <textarea id="edit-proj-prompt" class="form-control" style="height: 120px; font-family: 'Cascadia Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.1);" placeholder="Ej: Esta red se dedica al desarrollo...">${projectPrompt}</textarea>
-
-                            <button id="btn-save-project-info" data-pid="${projectId}" class="btn btn-outline btn-block" style="border-color: var(--accent-blue); color: var(--accent-blue); margin-top: 10px;">💾 Guardar Identidad</button>
+                            <button id="btn-save-project-basic" data-pid="${projectId}" class="btn btn-primary btn-block" style="background:${themeColor}; color:#000; border:none; margin-top:10px;">💾 Guardar ADN</button>
                         </div>
 
-                        <div class="panel-surface" style="border-top: 3px solid var(--accent-green); border-radius: 12px; padding: 25px;">
-                            <h3 style="margin-top: 0; color: var(--accent-green);">2. Modelo de Recompensa (Tokenomics)</h3>
-                            <p class="text-small text-muted" style="margin-bottom: 15px;">Elige cómo el Slicing Pie se convierte en <b>Equity o Cash</b>.</p>
+                        <div class="panel-surface" style="background: linear-gradient(180deg, rgba(163,113,247,0.05) 0%, transparent 100%); border-top: 3px solid var(--accent-purple);">
+                            <h3 style="margin-top:0; color: var(--accent-purple);">Asistente de IA (Dosos)</h3>
+                            <p class="text-small text-muted" style="margin-bottom:20px;">Define el contexto para que el auditor automático sea implacable pero justo.</p>
                             
-                            <select id="tokenomics-preset" class="form-control" style="font-weight: bold; border-color: var(--accent-green);">
-                                <option value="startup" ${currentTokenomics === 'startup' ? 'selected' : ''}>🚀 Startup Slicer (100% Equity Dinámico)</option>
-                                <option value="dao" ${currentTokenomics === 'dao' ? 'selected' : ''}>🌍 Comunidad Web3 (Tokens)</option>
-                                <option value="profit-share" ${currentTokenomics === 'profit-share' ? 'selected' : ''}>🏢 Profit-Share (Bonus Pyme)</option>
-                            </select>
+                            <label class="form-label">1. ¿Qué valor aporta esta red?</label>
+                            <textarea id="dna-q1" class="form-control" rows="2" placeholder="Ej: Creamos software de logística..."></textarea>
 
-                            <button id="btn-save-tokenomics" data-pid="${projectId}" class="btn btn-outline btn-block" style="border-color: var(--accent-green); color: var(--accent-green); margin-top: 15px;">⚖️ Sellar Tokenomics</button>
-                        </div>
-                    </main>
+                            <label class="form-label">2. ¿Qué define la excelencia aquí?</label>
+                            <textarea id="dna-q2" class="form-control" rows="2" placeholder="Ej: Código limpio, sin bugs y bien documentado..."></textarea>
 
-                    <aside style="display: flex; flex-direction: column; gap: 20px;">
-                        
-                        <div class="panel-surface" style="border-top: 3px solid var(--accent-gold); background: rgba(210, 153, 34, 0.05); border-radius: 12px; padding: 25px;">
-                            <h3 style="margin-top: 0; color: var(--accent-gold); font-size: 1.1rem;">⚡ Setup Ágil: Importar Plantilla</h3>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <select id="select-template" style="flex: 1; background: var(--bg-dark); border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 6px;">
-                                    <option value="">-- Seleccionar de la Biblioteca Global --</option>
-                                    ${Object.keys(sectores).map(k => `<option value="${k}">${k}</option>`).join('')}
-                                </select>
-                                <button id="btn-import-template" data-pid="${projectId}" class="btn" style="background: var(--accent-gold); color: #000; font-weight: bold;">⬇️ Inyectar</button>
-                            </div>
-                        </div>
+                            <label class="form-label">3. ¿Cuál es el objetivo final?</label>
+                            <textarea id="dna-q3" class="form-control" rows="2" placeholder="Ej: Lanzar MVP en 3 meses..."></textarea>
 
-                        <div class="panel-surface" style="border-top: 3px solid var(--border-color); border-radius: 12px; padding: 25px;">
-                            <h3 style="margin-top: 0; font-size: 1.1rem;">➕ Añadir Rol Personalizado</h3>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="new-role-name" class="form-control" placeholder="Nombre Rol" style="flex:2; margin-bottom: 0;">
-                                <select id="new-role-level" class="form-control" style="flex:1; margin-bottom: 0;">
-                                    <option value="@anxaneta">@anxaneta</option>
-                                    <option value="@aixecador">@aixecador</option>
-                                    <option value="@dosos">@dosos</option>
-                                    <option value="@baixos">@baixos</option>
-                                    <option value="@pinya">@pinya</option>
-                                </select>
-                                <input type="number" step="0.1" id="new-role-multiplier" class="form-control" placeholder="Riesgo x1.0" value="1.0" style="flex:1; margin-bottom: 0;">
-                            </div>
-                            <button id="btn-add-role" data-pid="${projectId}" class="btn btn-outline btn-block" style="margin-top: 15px;">Añadir Rol Manual</button>
-                        </div>
-
-                        <div class="panel-surface" style="border-top: 3px solid var(--accent-purple); border-radius: 12px; padding: 25px; height: 100%;">
-                            <h3 style="margin-top: 0; color: var(--accent-purple); display: flex; justify-content: space-between; align-items: center;">
-                                3. Nodos Activos y Entregables
-                                <span class="badge" style="background: rgba(163, 113, 247, 0.1); color: var(--accent-purple); border: 1px solid var(--accent-purple);">${activeRoles.length} Roles</span>
-                            </h3>
-                            <p class="text-small text-muted" style="margin-bottom: 20px;">Edita localmente el Prompt de IA y el listado de Entregables (Pull System) para cada rol.</p>
-
-                            ${activeRoles.length === 0 ? '<p class="text-muted text-small text-center" style="padding: 20px; border: 1px dashed var(--border-color); border-radius: 8px;">La topología está vacía. Importa una plantilla o añade un rol manual.</p>' : `
-                                <div style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
-                                    ${activeRoles.map(r => {
-                                        let delivString = '';
-                                        if (r.standard_deliverables) {
-                                            delivString = r.standard_deliverables.map(d => `${d.estimatedHours} | ${d.name}`).join('\n');
-                                        }
-
-                                        return `
-                                        <div style="margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: var(--bg-panel);">
-                                            <div style="background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); border-left: 3px solid var(--accent-purple);">
-                                                <div>
-                                                    <b style="color: var(--text-heading); font-size: 0.95rem;">${r.name}</b>
-                                                    <div style="display: flex; gap: 10px; margin-top: 4px;">
-                                                        <span class="badge" style="background: var(--bg-base); color: var(--text-muted); border: 1px solid var(--border-color);">${r.levelId}</span>
-                                                        <span class="text-small" style="color: var(--accent-gold); font-weight: bold;">Riesgo: ${r.multiplier}x</span>
-                                                    </div>
-                                                </div>
-                                                <button class="btn btn-secondary text-small btn-archive-role" style="padding: 4px 10px;" data-pid="${projectId}" data-role="${r.id}">Ocultar</button>
-                                            </div>
-                                            
-                                            <div style="padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                                <div>
-                                                    <label style="display:block; margin-bottom:5px; color:var(--text-muted); font-size:0.75rem;">🤖 Prompt de Auditoría Local</label>
-                                                    <textarea id="local-prompt-${r.id}" style="width:100%; height: 80px; background:var(--bg-base); border:1px solid var(--border-color); padding:8px; color:var(--accent-blue); border-radius: 4px; font-family: monospace; font-size: 0.75rem;" placeholder="Responsabilidades de este rol...">${r.ai_prompt || ''}</textarea>
-                                                </div>
-                                                <div>
-                                                    <label style="display:block; margin-bottom:5px; color:var(--accent-green); font-size:0.75rem; font-weight: bold;">📦 Entregables (Horas | Tarea)</label>
-                                                    <textarea id="local-deliv-${r.id}" placeholder="10 | Ejemplo tarea..." style="width:100%; height: 80px; background:var(--bg-base); border:1px solid var(--border-color); padding:8px; color:var(--accent-green); border-radius: 4px; font-family: monospace; font-size: 0.75rem; white-space: pre;">${delivString}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                                <button id="btn-save-local-ontology" data-pid="${projectId}" class="btn btn-primary btn-block" style="margin-top: 15px; background: var(--border-color);">💾 Guardar Prompts y Entregables</button>
-                            `}
+                            <button id="btn-build-dna" data-pid="${projectId}" class="btn btn-outline btn-block" style="border-color: var(--accent-purple); color: var(--accent-purple);">🤖 Sincronizar IA</button>
                         </div>
                     </aside>
+
+                    <main style="display: flex; flex-direction: column; gap: 25px;">
+                        
+                        <div class="panel-surface">
+                            <h3 style="margin-top:0; display:flex; justify-content:space-between; align-items:center;">
+                                Nodos de la Red
+                                <span class="badge" style="background:var(--bg-base);">${activeRoles.length} Activos</span>
+                            </h3>
+
+                            <div style="display: flex; gap: 10px; margin-bottom: 30px; background: var(--bg-base); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color);">
+                                <div style="flex:1;">
+                                    <label class="form-label">Sector Global</label>
+                                    <select id="select-template" class="form-control" style="margin-bottom:0;">
+                                        <option value="">-- Importar roles de... --</option>
+                                        ${Object.keys(state.ontology.sectores).map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div style="display:flex; align-items:flex-end;">
+                                    <button id="btn-import-template" data-pid="${projectId}" class="btn btn-secondary">Inyectar Plantilla</button>
+                                </div>
+                            </div>
+
+                            <div class="list-group">
+                                ${activeRoles.map(r => `
+                                    <div class="panel-surface" style="margin-bottom:15px; background: rgba(255,255,255,0.02); border-left: 3px solid var(--accent-blue);">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <div>
+                                                <b style="font-size:1.1rem; color:var(--text-heading);">${r.name}</b>
+                                                <div style="font-size:0.75rem; color:var(--text-muted); font-family:monospace; margin-top:5px;">
+                                                    ${r.levelId} | Multiplicador: x${r.multiplier} | FMV: ${r.fmv}€/h
+                                                </div>
+                                            </div>
+                                            <div style="display:flex; gap:10px;">
+                                                <button class="btn btn-outline text-small" style="padding:4px 8px; font-size:0.7rem;">⚙️ Editar Ontología</button>
+                                                <button class="btn btn-secondary text-small btn-archive-role" data-pid="${projectId}" data-role="${r.id}" style="padding:4px 8px; font-size:0.7rem;">Ocultar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${activeRoles.length === 0 ? `<p class="text-center text-muted" style="padding:40px;">No hay roles definidos. Importa una plantilla para empezar.</p>` : ''}
+                            </div>
+
+                            <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border-color);">
+                                <h4>Añadir Rol Manual</h4>
+                                <div style="display:flex; gap:10px;">
+                                    <input type="text" id="new-role-name" class="form-control" placeholder="Nombre" style="flex:2;">
+                                    <select id="new-role-level" class="form-control" style="flex:1;">
+                                        <option value="@anxaneta">@anxaneta</option>
+                                        <option value="@aixecador">@aixecador</option>
+                                        <option value="@dosos">@dosos</option>
+                                        <option value="@baixos" selected>@baixos</option>
+                                        <option value="@pinya">@pinya</option>
+                                    </select>
+                                    <button id="btn-add-role" data-pid="${projectId}" class="btn btn-primary">➕</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </main>
 
                 </div>
             </div>
