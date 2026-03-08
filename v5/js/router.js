@@ -8,7 +8,8 @@ const routes = {
     '/map': 'ValueMapView',
     '/focus': 'FocusView',
     '/ledger': 'LedgerView',
-    '/team': 'TeamView'  // <--- Añadida la Vista de Tripulación
+    '/team': 'TeamView',
+    '/profile': 'ProfileView' // <--- AÑADIDO
 };
 
 class Router {
