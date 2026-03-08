@@ -6,7 +6,7 @@ const routes = {
     '/project': 'ProjectView',
     '/tests': 'TestsView',
     '/map': 'ValueMapView',
-    '/focus': 'FocusView'  // <--- Añadida la vista de Pomodoro / Deep Work
+    '/focus': 'FocusView',
     '/ledger': 'LedgerView'
 };
 
@@ -14,10 +14,10 @@ class Router {
     constructor() {
         this.appContainer = document.getElementById('app');
         
-        // Escuchar la navegación hacia atrás/adelante del navegador (Botones del navegador)
+        // Escuchar la navegación hacia atrás/adelante del navegador
         window.addEventListener('popstate', () => this.handleRoute());
         
-        // Interceptar los clics en enlaces con 'data-link' para hacer navegación SPA (sin recargar)
+        // Interceptar los clics en enlaces SPA
         document.body.addEventListener('click', (e) => {
             const link = e.target.closest('[data-link]');
             if (link) {
@@ -35,43 +35,38 @@ class Router {
     async handleRoute() {
         let path = window.location.pathname;
         
-        // 1. Limpiamos el prefijo /v5 (Vital para servidores como Netlify o GitHub Pages)
+        // 1. Limpiamos el prefijo /v5
         const basePath = '/v5';
         if (path.startsWith(basePath)) {
             path = path.slice(basePath.length);
         }
         
-        // 2. Limpiamos la barra final (Trailing slash) si la hay (ej: /tests/ -> /tests)
+        // 2. Limpiamos la barra final
         if (path.length > 1 && path.endsWith('/')) {
             path = path.slice(0, -1);
         }
 
-        // 3. Fallback de seguridad al home si el path se queda vacío
+        // 3. Fallback de seguridad al home
         if (path === '' || path === '/') {
             path = '/';
         }
 
-        // 4. Buscar la vista correspondiente, o forzar al Home si no existe en el diccionario
         const viewName = routes[path] || 'HomeView';
 
         try {
-            // 5. Importación dinámica del módulo de la vista
             const modulePath = `/v5/js/views/${viewName}.js`;
             const { default: View } = await import(modulePath);
             const view = new View();
             
-            // 6. Inyectar HTML y ejecutar Scripts de la vista
             this.appContainer.innerHTML = await view.getHtml();
             
             if (typeof view.executeViewScript === 'function') {
                 view.executeViewScript();
             }
 
-            // 7. Subir el scroll arriba del todo en cada cambio de pantalla
             window.scrollTo(0, 0);
 
         } catch (error) {
-            // 8. Trampa de Errores: Si la vista no existe o el JS falla al cargar
             console.error(`💥 Error crítico cargando la vista [${viewName}]:`, error);
             this.renderError(viewName, error);
         }
@@ -93,7 +88,6 @@ class Router {
     }
 }
 
-// Iniciar el router cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     const router = new Router();
     router.handleRoute();
