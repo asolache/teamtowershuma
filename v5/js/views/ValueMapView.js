@@ -11,7 +11,7 @@ export default class ValueMapView {
         this.editingTxIndex = null; 
         this.isDragging = false;
         this.draggedElement = null;
-        this.hasMoved = false; // <-- Bandera para detectar si se ha arrastrado
+        this.hasMoved = false; 
         this.isSimulating = false;
         this.simulationTimeouts = [];
         this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
@@ -118,8 +118,8 @@ export default class ValueMapView {
                         </select>
                         <div class="form-row">
                             <select id="selType" class="form-control">
-                                <option value="tangible">🟢 Tangible</option>
-                                <option value="intangible">🟣 Intangible</option>
+                                <option value="tangible">🟢 Tangible (Doc)</option>
+                                <option value="intangible">🟣 Intangible (Sync)</option>
                             </select>
                             <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
                         </div>
@@ -353,7 +353,8 @@ export default class ValueMapView {
         document.getElementById('btnCloseInspector').addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
-            this.renderMap();
+            // Limpiar visualmente la selección sin repintar todo
+            this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
         });
 
         document.getElementById('btnSaveRole').addEventListener('click', () => {
@@ -392,7 +393,7 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ DRAG & CLICK LOGIC (ARREGLADO) ------------------
+        // ------------------ DRAG & CLICK LOGIC (LA CORRECCIÓN MÁGICA) ------------------
         this.dom.canvas.addEventListener('mousedown', (e) => {
             const node = e.target.closest('.node');
             if (node && !this.isSimulating) { 
@@ -540,7 +541,6 @@ export default class ValueMapView {
     }
 
     drawSingleEdgeAnim(tx, index, project, isSick) {
-        // Query Segura del DOM en tiempo real
         const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
         const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
         
@@ -564,7 +564,6 @@ export default class ValueMapView {
         line.style.strokeDashoffset = distance;
         line.style.animation = `drawLine 0.8s ease-out forwards`;
         
-        // Uso de setAttribute en SVG para máxima compatibilidad
         const lineClass = isSick ? 'edge-sick' : (tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
         line.setAttribute('class', `edge-line ${lineClass}`);
 
@@ -680,9 +679,9 @@ export default class ValueMapView {
             el.style.borderColor = this.getColor(level);
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name">${rol.name}</div>`;
 
-            // 1 CLIC: SELECCIONAR PARA CONECTAR
+            // 🟢 SOLUCIÓN AL BUG: Toggle visual en lugar de repintar todo
             el.addEventListener('click', (e) => {
-                if(this.hasMoved || this.isSimulating) return; // Si ha arrastrado, ignora el clic
+                if(this.hasMoved || this.isSimulating) return; 
                 
                 if (this.selectedRoleId && this.selectedRoleId !== rol.id) {
                     this.dom.selFrom.value = this.selectedRoleId;
@@ -691,12 +690,20 @@ export default class ValueMapView {
                 }
 
                 this.selectedRoleId = rol.id;
-                this.renderMap();
+                
+                // Actualizamos solo las clases CSS para no destruir el elemento
+                this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+                el.classList.add('selected');
             });
 
-            // DOBLE CLIC: ABRIR INSPECTOR DE EDICIÓN
+            // 🟢 AHORA SÍ FUNCIONA EL DOBLE CLIC
             el.addEventListener('dblclick', (e) => {
                 if(this.isSimulating) return;
+                
+                this.selectedRoleId = rol.id;
+                this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+                el.classList.add('selected');
+
                 this.dom.inspector.classList.add('open');
                 this.dom.insName.value = rol.name;
                 this.dom.insLevel.value = rol.levelId;
@@ -721,7 +728,6 @@ export default class ValueMapView {
         this.dom.svg.appendChild(defs);
 
         txs.forEach((tx, index) => {
-            // SAFE DOM QUERY (La clave para que no desaparezcan)
             const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
             const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
             
