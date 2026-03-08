@@ -8,9 +8,10 @@ export default class ValueMapView {
         document.title = "Diseñador VNA | TeamTowers";
         this.activeProjectId = null;
         this.selectedRoleId = null; 
-        this.editingTxIndex = null; // Para saber si estamos creando o editando un flujo
+        this.editingTxIndex = null; 
         this.isDragging = false;
         this.draggedElement = null;
+        this.hasMoved = false; // <-- Bandera para detectar si se ha arrastrado
         this.isSimulating = false;
         this.simulationTimeouts = [];
         this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
@@ -34,7 +35,6 @@ export default class ValueMapView {
                 .step-route { display: flex; align-items: center; gap: 5px; font-weight: bold; color: white; }
                 .step-deliverable { color: #00b0ff; text-transform: uppercase; font-size: 0.75rem; }
 
-                /* Botonera de Edición de Flujo */
                 .step-actions { display: flex; gap: 4px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px;}
                 .btn-step { background: rgba(255,255,255,0.05); border: none; color: #aaa; border-radius: 4px; padding: 3px 6px; cursor: pointer; font-size: 0.7rem; transition: background 0.2s;}
                 .btn-step:hover { background: rgba(255,255,255,0.15); color: white; }
@@ -73,7 +73,7 @@ export default class ValueMapView {
                 .vna-legend { background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; pointer-events: auto; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 10px; }
                 #sickAlert { display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid #ff5252; color: #ff5252; padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; }
 
-                /* INSPECTOR (Actualizado) */
+                /* INSPECTOR */
                 .inspector-panel { position: absolute; top: 0; right: 0; height: 100%; width: 380px; background: #0c0c10; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.7); overflow-y: auto;}
                 .inspector-panel.open { transform: translateX(0); }
                 
@@ -132,6 +132,7 @@ export default class ValueMapView {
                     <div class="ui-overlay">
                         <div class="interactive">
                             <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Red de Valor</h1>
+                            <p style="color: #888; font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos para organizar. 1 clic: Conectar | Doble clic: Editar</p>
                         </div>
                         <div class="action-panel interactive">
                             <div style="display: flex; gap: 10px;">
@@ -252,7 +253,7 @@ export default class ValueMapView {
         this.renderMap();
         this.renderSequence();
 
-        // ------------------ LISTENERS DEL WIZARD DE FLUJOS ------------------
+        // ------------------ WIZARD DE FLUJOS ------------------
         this.dom.selFrom.addEventListener('change', () => this.updateOntologyTemplates());
         this.dom.selTemplate.addEventListener('change', (e) => {
             const val = e.target.value;
@@ -278,14 +279,12 @@ export default class ValueMapView {
             const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
             
             if (this.editingTxIndex !== null) {
-                // MODO EDICIÓN
                 currentState.projects[pIndex].transactions[this.editingTxIndex] = {
                     ...currentState.projects[pIndex].transactions[this.editingTxIndex],
                     from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value
                 };
                 this.exitEditMode();
             } else {
-                // MODO CREACIÓN
                 store.dispatch({ 
                     type: 'ADD_TRANSACTION', 
                     payload: { projectId: this.activeProjectId, tx: { hash: '0x'+Math.random().toString(16).slice(2,10), from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value, status: 'theoretical' } } 
@@ -300,7 +299,6 @@ export default class ValueMapView {
 
         this.dom.btnCancelEditFlow.addEventListener('click', () => this.exitEditMode());
 
-        // Event Delegation para los botones CRUD de la secuencia
         this.dom.seqList.addEventListener('click', (e) => {
             const target = e.target;
             const idx = parseInt(target.getAttribute('data-idx'));
@@ -330,8 +328,7 @@ export default class ValueMapView {
             }
         });
 
-
-        // ------------------ LISTENERS DEL MAPA Y NODOS ------------------
+        // ------------------ MAPA Y NODOS ------------------
         this.dom.btnSimulate.addEventListener('click', () => this.startSimulation());
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
 
@@ -352,7 +349,7 @@ export default class ValueMapView {
             this.renderMap();
         });
 
-        // ------------------ INSPECTOR DE NODOS (CRUD) ------------------
+        // ------------------ INSPECTOR DE NODOS ------------------
         document.getElementById('btnCloseInspector').addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
@@ -395,26 +392,36 @@ export default class ValueMapView {
             }
         });
 
-        // Drag Overlay
+        // ------------------ DRAG & CLICK LOGIC (ARREGLADO) ------------------
         this.dom.canvas.addEventListener('mousedown', (e) => {
             const node = e.target.closest('.node');
-            if (node && !this.isSimulating) { this.isDragging = true; this.draggedElement = node; node.style.zIndex = 1000; }
+            if (node && !this.isSimulating) { 
+                this.isDragging = true; 
+                this.hasMoved = false; // Reset al pulsar
+                this.draggedElement = node; 
+                node.style.zIndex = 1000; 
+            }
         });
+        
         window.addEventListener('mousemove', (e) => {
             if (!this.isDragging || !this.draggedElement) return;
+            this.hasMoved = true; // El ratón se ha movido (Es un Arrastre)
             const rect = this.dom.canvas.getBoundingClientRect();
             this.draggedElement.style.left = `${((e.clientX - rect.left) / rect.width) * 100}%`;
             this.draggedElement.style.top = `${((e.clientY - rect.top) / rect.height) * 100}%`;
             this.drawEdges();
         });
+        
         window.addEventListener('mouseup', () => { 
             if (this.draggedElement) this.draggedElement.style.zIndex = 5;
-            this.isDragging = false; this.draggedElement = null; 
+            this.isDragging = false; 
+            this.draggedElement = null; 
         });
+        
         window.addEventListener('resize', () => { if(!this.isSimulating) this.drawEdges(); });
     }
 
-    // --- MÉTODOS DE EDICIÓN DE TRANSACCIÓN ---
+    // --- MÉTODOS DE EDICIÓN ---
     enterEditMode(idx, tx) {
         this.editingTxIndex = idx;
         this.dom.seqFooter.classList.add('edit-mode');
@@ -453,7 +460,7 @@ export default class ValueMapView {
     }
 
 
-    // --- EL MOTOR DE SIMULACIÓN Y DIAGNÓSTICO ---
+    // --- SIMULACIÓN ---
     startSimulation() {
         if (this.isSimulating) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -495,8 +502,10 @@ export default class ValueMapView {
                     if (Math.abs(level1 - level2) > 1) {
                         isSickFlow = true;
                         this.dom.sickAlert.style.display = 'block';
-                        r1._dom.classList.add('sick-node');
-                        r2._dom.classList.add('sick-node');
+                        const dom1 = this.dom.canvas.querySelector(`.node[data-id="${r1.id}"]`);
+                        const dom2 = this.dom.canvas.querySelector(`.node[data-id="${r2.id}"]`);
+                        if(dom1) dom1.classList.add('sick-node');
+                        if(dom2) dom2.classList.add('sick-node');
                     } else {
                         this.dom.sickAlert.style.display = 'none';
                         this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
@@ -531,12 +540,14 @@ export default class ValueMapView {
     }
 
     drawSingleEdgeAnim(tx, index, project, isSick) {
-        const r1 = project.roles.find(r => r.id === tx.from);
-        const r2 = project.roles.find(r => r.id === tx.to);
-        if (!r1?._dom || !r2?._dom) return;
+        // Query Segura del DOM en tiempo real
+        const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
+        const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
+        
+        if (!dom1 || !dom2) return;
 
-        const rect1 = r1._dom.getBoundingClientRect();
-        const rect2 = r2._dom.getBoundingClientRect();
+        const rect1 = dom1.getBoundingClientRect();
+        const rect2 = dom2.getBoundingClientRect();
         const canv = this.dom.canvas.getBoundingClientRect();
         const x1 = rect1.left + rect1.width / 2 - canv.left;
         const y1 = rect1.top + rect1.height / 2 - canv.top;
@@ -552,13 +563,10 @@ export default class ValueMapView {
         line.style.strokeDasharray = distance;
         line.style.strokeDashoffset = distance;
         line.style.animation = `drawLine 0.8s ease-out forwards`;
-        line.classList.add('edge-line');
         
-        if (isSick) {
-            line.classList.add('edge-sick'); 
-        } else {
-            line.classList.add(tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
-        }
+        // Uso de setAttribute en SVG para máxima compatibilidad
+        const lineClass = isSick ? 'edge-sick' : (tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
+        line.setAttribute('class', `edge-line ${lineClass}`);
 
         this.dom.svg.appendChild(line);
 
@@ -621,11 +629,10 @@ export default class ValueMapView {
             stepEl.className = 'flow-step';
             stepEl.style.borderLeft = `3px solid ${color}`;
             
-            // Botones CRUD de la transacción
             const actions = `
                 <div class="step-actions">
-                    ${i > 0 ? `<button class="btn-step" data-idx="${i}" class="btn-move-up">↑</button>` : ''}
-                    ${i < txs.length - 1 ? `<button class="btn-step" data-idx="${i}" class="btn-move-down">↓</button>` : ''}
+                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}">↑</button>` : ''}
+                    ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}">↓</button>` : ''}
                     <button class="btn-step btn-edit" data-idx="${i}">✎</button>
                     <button class="btn-step del btn-del" data-idx="${i}">🗑️</button>
                 </div>
@@ -673,8 +680,10 @@ export default class ValueMapView {
             el.style.borderColor = this.getColor(level);
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name">${rol.name}</div>`;
 
+            // 1 CLIC: SELECCIONAR PARA CONECTAR
             el.addEventListener('click', (e) => {
-                if(this.isDragging || this.isSimulating) return;
+                if(this.hasMoved || this.isSimulating) return; // Si ha arrastrado, ignora el clic
+                
                 if (this.selectedRoleId && this.selectedRoleId !== rol.id) {
                     this.dom.selFrom.value = this.selectedRoleId;
                     this.dom.selTo.value = rol.id;
@@ -683,7 +692,11 @@ export default class ValueMapView {
 
                 this.selectedRoleId = rol.id;
                 this.renderMap();
-                
+            });
+
+            // DOBLE CLIC: ABRIR INSPECTOR DE EDICIÓN
+            el.addEventListener('dblclick', (e) => {
+                if(this.isSimulating) return;
                 this.dom.inspector.classList.add('open');
                 this.dom.insName.value = rol.name;
                 this.dom.insLevel.value = rol.levelId;
@@ -691,7 +704,6 @@ export default class ValueMapView {
                 this.dom.inputMult.value = rol.multiplier || 1.0;
             });
 
-            rol._dom = el;
             this.dom.canvas.appendChild(el);
         });
 
@@ -709,12 +721,15 @@ export default class ValueMapView {
         this.dom.svg.appendChild(defs);
 
         txs.forEach((tx, index) => {
-            const r1 = p.roles.find(r => r.id === tx.from);
-            const r2 = p.roles.find(r => r.id === tx.to);
-            if (r1?._dom && r2?._dom && r1.id !== r2.id) {
-                const rect1 = r1._dom.getBoundingClientRect();
-                const rect2 = r2._dom.getBoundingClientRect();
+            // SAFE DOM QUERY (La clave para que no desaparezcan)
+            const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
+            const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
+            
+            if (dom1 && dom2 && tx.from !== tx.to) {
+                const rect1 = dom1.getBoundingClientRect();
+                const rect2 = dom2.getBoundingClientRect();
                 const canv = this.dom.canvas.getBoundingClientRect();
+                
                 const x1 = rect1.left + rect1.width / 2 - canv.left;
                 const y1 = rect1.top + rect1.height / 2 - canv.top;
                 const x2 = rect2.left + rect2.width / 2 - canv.left;
@@ -723,7 +738,10 @@ export default class ValueMapView {
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
                 line.setAttribute('marker-end', 'url(#arrow)');
-                line.classList.add('edge-line', tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
+                
+                const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
+                line.setAttribute('class', `edge-line ${lineClass}`);
+                
                 this.dom.svg.appendChild(line);
 
                 const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
