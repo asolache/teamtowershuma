@@ -9,7 +9,8 @@ const routes = {
     '/focus': 'FocusView',
     '/ledger': 'LedgerView',
     '/team': 'TeamView',
-    '/profile': 'ProfileView' // <--- AÑADIDO
+    '/profile': 'ProfileView',
+    '/network': 'NetworkView' // <--- LA NUEVA RUTA MACRO
 };
 
 class Router {
