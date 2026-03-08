@@ -91,6 +91,7 @@ export default class LedgerView {
                     <a href="/v5/map" class="side-link" data-link>🌐 Mapa VNA (Diseño)</a>
                     <a href="/v5/ledger" class="side-link active" data-link>⚖️ Ledger (Equity)</a>
                     <a href="/v5/tests" class="side-link" data-link style="margin-top: auto;">🛠 Diagnóstico Kernel</a>
+                    <a href="/v5/team" class="side-link" data-link>👥 Tripulación & DAO</a>
                 </aside>
 
                 <main class="workspace">
