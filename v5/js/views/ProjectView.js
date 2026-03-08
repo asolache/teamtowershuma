@@ -133,4 +133,80 @@ export default class ProjectView {
         if (tx.status === 'theoretical') {
             actionHtml = `<button class="btn-pull" data-hash="${tx.hash}">Hacer PULL</button>`;
         } 
-        else if (tx.status === 'ping
+        else if (tx.status === 'pinged') {
+            actionHtml = `
+                <div style="color: #ff9100; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN PROCESO</div>
+                <a href="/v5/focus" class="btn-focus" data-link>▶ Iniciar Pomodoro</a>
+            `;
+        } 
+        else if (tx.status === 'reported') {
+            actionHtml = `
+                <div style="color: #00b0ff; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">🛡️ ESPERANDO AUDITORÍA</div>
+                <div style="font-size: 0.8rem; color: #888; background: #000; padding: 5px; border-radius: 4px;">Horas Reales: ${tx.realHours}h</div>
+                <button class="btn-approve" data-hash="${tx.hash}">Aprobar y Consolidar</button>
+            `;
+        }
+        else if (tx.status === 'consolidated') {
+            actionHtml = `
+                <div style="color: #00e676; font-size: 0.8rem; font-weight: bold; font-family: monospace;">
+                    +${Math.round(tx.valorCongelado)} Slices
+                </div>
+            `;
+        }
+
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge" style="color: ${color}; border-color: ${color}; font-size: 0.65rem;">${role.levelId}</span>
+                <span style="font-size: 0.6rem; color: #555; font-family: monospace;">#${tx.hash.substring(0,6)}</span>
+            </div>
+            <h3 class="task-title">${tx.entregable}</h3>
+            <div style="margin-bottom: 1rem;">${actionHtml}</div>
+            <div class="task-meta">
+                <span>⏱ ${tx.horas}h Est.</span>
+                <span style="color: ${tipoColor}; font-weight: bold; text-transform: uppercase;">${tx.tipo}</span>
+            </div>
+        `;
+
+        setTimeout(() => {
+            const pullBtn = card.querySelector('.btn-pull');
+            if (pullBtn) {
+                pullBtn.addEventListener('click', () => {
+                    const state = store.getState();
+                    const activeUser = state.session.activeUserId;
+                    
+                    // VALIDACIÓN DE EDGE CASES INTACTA
+                    if (activeUser === 'ecosystem-admin') {
+                        alert("⚠️ Estás operando como Administrador Global. Para asumir una tarea, ve a 'Tripulación', identifícate con un usuario y asígnate un rol.");
+                        return;
+                    }
+                    const hasRole = project.asignaciones.find(a => a.userId === activeUser);
+                    if (!hasRole) {
+                        alert("⚠️ No tienes ninguna silla (Rol) asignada en este Castell. Ve a 'Tripulación' y asígnate un rol antes de trabajar.");
+                        return;
+                    }
+
+                    store.dispatch({
+                        type: 'PING_TRANSACTION',
+                        payload: { projectId: project.id, txHash: tx.hash, userId: activeUser }
+                    });
+                    this.executeViewScript();
+                });
+            }
+
+            const approveBtn = card.querySelector('.btn-approve');
+            if (approveBtn) {
+                approveBtn.addEventListener('click', () => {
+                    store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash } });
+                    this.executeViewScript();
+                });
+            }
+        }, 10);
+
+        return card;
+    }
+
+    getColorForLevel(levelId) {
+        const colors = { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' };
+        return colors[levelId] || '#ffffff';
+    }
+}
