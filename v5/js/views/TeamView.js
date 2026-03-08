@@ -134,7 +134,7 @@ export default class TeamView {
 
     initGoogleAuth() {
         // 🔥 ATENCIÓN COMANDANTE: PEGA AQUÍ TU CLIENT ID 🔥
-        const GOOGLE_CLIENT_ID = "PEGAR_AQUI_TU_CLIENT_ID_QUE_ACABA_EN_apps.googleusercontent.com";
+        const GOOGLE_CLIENT_ID = "778991708293-c4f7s4l4339ooldpun0eitfdb12gjfdn.apps.googleusercontent.com";
         
         // Si no has puesto el Client ID real, no intentamos renderizar el botón para no generar errores visuales
         if (GOOGLE_CLIENT_ID.includes("PEGAR_AQUI")) {
