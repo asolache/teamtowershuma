@@ -97,6 +97,7 @@ export default class ProjectView {
                     <a href="/v5/tests" class="side-link" data-link>🛠 Diagnóstico Kernel</a>
                     <a href="/v5/ledger" class="side-link" data-link>⚖️ Ledger (Equity)</a>
                     <a href="/v5/team" class="side-link" data-link>👥 Tripulación & DAO</a>
+                    <a href="/v5/profile" class="side-link" data-link>👤 Mi Perfil</a>
                 </aside>
 
                 <main class="workspace">
