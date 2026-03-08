@@ -7,7 +7,8 @@ const routes = {
     '/tests': 'TestsView',
     '/map': 'ValueMapView',
     '/focus': 'FocusView',
-    '/ledger': 'LedgerView'
+    '/ledger': 'LedgerView',
+    '/team': 'TeamView'  // <--- Añadida la Vista de Tripulación
 };
 
 class Router {
