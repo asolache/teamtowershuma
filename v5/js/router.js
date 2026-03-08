@@ -10,7 +10,8 @@ const routes = {
     '/ledger': 'LedgerView',
     '/team': 'TeamView',
     '/profile': 'ProfileView',
-    '/network': 'NetworkView' // <--- LA NUEVA RUTA MACRO
+    '/network': 'NetworkView',
+    '/settings': 'SettingsView' // <--- NUEVA RUTA
 };
 
 class Router {
