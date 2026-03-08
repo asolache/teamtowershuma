@@ -15,26 +15,23 @@ export default class ProjectCreatorView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: 'Segoe UI', sans-serif; }
                 
-                /* NUEVA ARQUITECTURA DEL SIDEBAR */
+                /* ARQUITECTURA DEL SIDEBAR */
                 .sidebar { width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid rgba(255,255,255,0.05); padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 10px; z-index: 10; flex-shrink: 0; overflow-y: auto;}
                 .side-section { margin-bottom: 1rem; }
                 .side-link { padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: #888; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
                 .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
                 .side-link.active { background: rgba(0, 176, 255, 0.1); color: #00b0ff; font-weight: bold; border-left: 3px solid #00b0ff; }
                 
-                /* Footer del Sidebar (Sistema) */
                 .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; }
                 .user-status { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05);}
                 .user-status .name { color: white; font-size: 0.8rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;}
                 .btn-logout { background: transparent; border: none; color: #ff5252; cursor: pointer; font-size: 1.2rem; transition: transform 0.2s; }
                 .btn-logout:hover { transform: scale(1.2); }
 
-                /* Workspace Central */
+                /* WORKSPACE Y WIZARD */
                 .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; }
-                
-                /* WIZARD CONTAINER */
                 .wizard-card { background: #121216; border: 1px solid #222; border-radius: 16px; width: 100%; max-width: 800px; padding: 3rem; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
-                .wizard-header { text-align: center; margin-bottom: 3rem; }
+                .wizard-header { text-align: center; margin-bottom: 2rem; }
                 .wizard-header h1 { font-size: 2.5rem; color: white; margin: 0; letter-spacing: -1px; }
                 .wizard-header p { color: #888; margin-top: 10px; }
                 
@@ -48,14 +45,27 @@ export default class ProjectCreatorView {
                 .form-control { width: 100%; background: #050505; border: 1px solid #333; color: white; padding: 12px 15px; border-radius: 8px; font-size: 1rem; transition: border-color 0.2s; }
                 .form-control:focus { border-color: #00b0ff; outline: none; }
 
-                /* STEP 2: ROLES DINÁMICOS */
-                .role-draft-list { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
-                .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; }
-                .role-inputs { display: flex; gap: 10px; flex: 1; align-items: center; }
-                .role-inputs input { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #333; padding: 5px; width: 100%; }
+                /* LEYENDA EDUCATIVA */
+                .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                .legend-item { display: flex; align-items: flex-start; gap: 8px; }
+                .legend-item span { font-weight: bold; }
+
+                /* ROLES DINÁMICOS */
+                .role-draft-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
+                .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 8px; gap: 15px;}
+                
+                .role-inputs { display: flex; gap: 15px; flex: 1; align-items: center; }
+                
+                /* Nuevo Select para el Nivel */
+                .inp-role-level { background: #050505; border: 1px solid #333; border-radius: 6px; padding: 6px; font-size: 0.75rem; font-weight: bold; outline: none; cursor: pointer; transition: border-color 0.2s; }
+                .inp-role-level:focus { border-color: #00b0ff; }
+                .inp-role-level option { background: #121216; color: white; }
+
+                .role-inputs input { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #333; padding: 5px; flex: 1; min-width: 150px;}
                 .role-inputs input:focus { border-bottom-color: #00b0ff; outline: none; }
-                .role-inputs .fmv-input { width: 80px; text-align: center; color: #00e676; font-family: monospace; }
-                .btn-del-role { background: transparent; border: none; color: #ff5252; cursor: pointer; font-size: 1.2rem; padding: 5px; }
+                .role-inputs .fmv-input { width: 70px; min-width: 70px; text-align: center; color: #00e676; font-family: monospace; }
+                .btn-del-role { background: transparent; border: none; color: #ff5252; cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
+                .btn-del-role:hover { transform: scale(1.2); }
 
                 .actions { display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); }
                 .btn { padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: all 0.2s; border: none; }
@@ -70,7 +80,10 @@ export default class ProjectCreatorView {
                     .app-layout { flex-direction: column; }
                     .sidebar { width: 100%; padding: 1rem; flex-direction: row; overflow-x: auto; flex-wrap: nowrap; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
                     .sidebar-footer { margin-top: 0; border-top: none; padding-top: 0; display: flex; gap: 10px; align-items: center; }
-                    .role-inputs { flex-direction: column; align-items: flex-start; }
+                    .role-draft-item { flex-direction: column; align-items: stretch; }
+                    .role-inputs { flex-direction: column; align-items: stretch; }
+                    .btn-del-role { align-self: flex-end; }
+                    .educational-legend { grid-template-columns: 1fr; }
                 }
             </style>
 
@@ -81,15 +94,14 @@ export default class ProjectCreatorView {
                     <div class="side-section">
                         <a href="/v5/" class="side-link" data-link>🏠 Inicio</a>
                         <a href="/v5/network" class="side-link" data-link>🌐 Explorar DAOs</a>
-                        <a href="/v5/create" class="side-link active" data-link>➕ Crear Red</a>
+                        <a href="/v5/create" class="side-link active" data-link>➕ Instanciar Red</a>
                     </div>
                     
                     <div class="sidebar-footer">
                         <a href="#" class="side-link" style="font-size: 0.8rem;">📚 Documentación (Docs)</a>
                         <a href="#" class="side-link" style="font-size: 0.8rem;">⚙️ Configuración Global</a>
                         
-                        <div class="user-status" id="authStatusContainer">
-                            </div>
+                        <div class="user-status" id="authStatusContainer"></div>
                     </div>
                 </aside>
 
@@ -141,9 +153,17 @@ export default class ProjectCreatorView {
                         </div>
 
                         <div id="step2" style="display: none;">
-                            <div class="wizard-header">
+                            <div class="wizard-header" style="margin-bottom: 1.5rem;">
                                 <h1>Modelado de Nodos</h1>
-                                <p>La IA ha pre-cargado la estructura base de tu sector. Edita, añade o elimina roles antes de lanzar.</p>
+                                <p>Reubica y edita la estructura sugerida por la IA antes de desplegar.</p>
+                            </div>
+
+                            <div class="educational-legend">
+                                <div class="legend-item"><span style="color:#ff5252;">👑 @anxaneta:</span> Dirección, Visión y Estrategia (Riesgo x3)</div>
+                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Coordinación, PM y Enlace (Riesgo x2)</div>
+                                <div class="legend-item"><span style="color:#e040fb;">👁️ @dosos:</span> Auditoría, QA y Seguridad (Riesgo x1.5)</div>
+                                <div class="legend-item"><span style="color:#7c4dff;">⚙️ @baixos:</span> Especialista Técnico / Core (Riesgo x1.2)</div>
+                                <div class="legend-item"><span style="color:#536dfe;">🤝 @pinya:</span> Operaciones, Soporte y Base (Riesgo x1)</div>
                             </div>
 
                             <div class="role-draft-list" id="draftRolesContainer">
@@ -182,7 +202,6 @@ export default class ProjectCreatorView {
 
         this.renderAuthStatus();
 
-        // NAVEGACIÓN DEL WIZARD
         this.dom.btnNext.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
             this.selectedSector = this.dom.inpSector.value;
@@ -201,7 +220,6 @@ export default class ProjectCreatorView {
             this.dom.dot1.classList.add('active');
         });
 
-        // AÑADIR ROL MANUAL EN DRAFT
         this.dom.btnAddCustom.addEventListener('click', () => {
             this.draftRoles.push({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
@@ -213,11 +231,9 @@ export default class ProjectCreatorView {
             this.renderDraftRoles();
         });
 
-        // LANZAR PROYECTO FINAL
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
-    // --- NUEVA LÓGICA DE LOGIN/LOGOUT EN EL SIDEBAR ---
     renderAuthStatus() {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
@@ -235,9 +251,8 @@ export default class ProjectCreatorView {
             `;
             
             document.getElementById('btnLogout').addEventListener('click', () => {
-                // Hacemos logout bajando la sesión al admin por defecto
                 store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
-                window.location.href = '/v5/team'; // Redirigimos a tripulación para que se vuelva a loguear
+                window.location.href = '/v5/team'; 
             });
         } else {
             this.dom.authStatus.innerHTML = `
@@ -248,7 +263,6 @@ export default class ProjectCreatorView {
         }
     }
 
-    // --- LÓGICA DEL INSTANCIADOR DINÁMICO ---
     loadDraftRolesFromOntology() {
         const sectorData = GLOBAL_ONTOLOGY[this.selectedSector];
         this.draftRoles = [];
@@ -270,15 +284,31 @@ export default class ProjectCreatorView {
     renderDraftRoles() {
         this.dom.container.innerHTML = '';
         const colors = { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' };
+        
+        // Niveles disponibles con descripciones cortas para el dropdown
+        const levels = [
+            { id: '@anxaneta', label: '@anxaneta (Dirección)' },
+            { id: '@aixecador', label: '@aixecador (Coordinación)' },
+            { id: '@dosos', label: '@dosos (Auditoría)' },
+            { id: '@baixos', label: '@baixos (Técnico)' },
+            { id: '@pinya', label: '@pinya (Base)' }
+        ];
 
         this.draftRoles.forEach((role, index) => {
             const color = colors[role.levelId] || '#fff';
             const row = document.createElement('div');
             row.className = 'role-draft-item';
             
+            // Construir el dropdown
+            let selectHtml = `<select class="inp-role-level" data-idx="${index}" style="color: ${color}; border-color: ${color};">`;
+            levels.forEach(l => {
+                selectHtml += `<option value="${l.id}" ${role.levelId === l.id ? 'selected' : ''}>${l.label}</option>`;
+            });
+            selectHtml += `</select>`;
+
             row.innerHTML = `
                 <div class="role-inputs">
-                    <span style="color: ${color}; font-weight: bold; width: 90px; font-size: 0.8rem;">${role.levelId}</span>
+                    ${selectHtml}
                     <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Nombre del Rol">
                     <div style="display:flex; align-items:center; gap: 5px;">
                         <span style="color: #888; font-size: 0.7rem;">FMV:</span>
@@ -291,7 +321,20 @@ export default class ProjectCreatorView {
             this.dom.container.appendChild(row);
         });
 
-        // Listeners de edición en tiempo real
+        // Listeners de edición
+        this.dom.container.querySelectorAll('.inp-role-level').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                const idx = e.target.dataset.idx;
+                const newLevel = e.target.value;
+                this.draftRoles[idx].levelId = newLevel;
+                
+                // Actualizamos matematicas automáticamente según el nuevo nivel
+                const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
+                this.draftRoles[idx].multiplier = multipliers[newLevel];
+                
+                this.renderDraftRoles(); // Repintamos para actualizar los colores
+            });
+        });
         this.dom.container.querySelectorAll('.inp-role-name').forEach(inp => {
             inp.addEventListener('input', (e) => this.draftRoles[e.target.dataset.idx].name = e.target.value);
         });
@@ -312,12 +355,10 @@ export default class ProjectCreatorView {
             nombre: this.dom.inpName.value.trim(),
             sector: this.selectedSector,
             archetype: this.dom.inpArch.value,
-            customRoles: this.draftRoles // Le pasamos los roles editados
+            customRoles: this.draftRoles 
         };
 
         store.dispatch({ type: 'ADD_PROJECT', payload });
-        
-        // Redirigimos al mapa VNA de la nueva red
         window.location.href = '/v5/map';
     }
 }
