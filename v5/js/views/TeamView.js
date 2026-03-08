@@ -133,10 +133,9 @@ export default class TeamView {
     }
 
     initGoogleAuth() {
-        // 🔥 ATENCIÓN COMANDANTE: PEGA AQUÍ TU CLIENT ID 🔥
+        // ID de Cliente real de TeamTowers Huma
         const GOOGLE_CLIENT_ID = "778991708293-c4f7s4l4339ooldpun0eitfdb12gjfdn.apps.googleusercontent.com";
         
-        // Si no has puesto el Client ID real, no intentamos renderizar el botón para no generar errores visuales
         if (GOOGLE_CLIENT_ID.includes("PEGAR_AQUI")) {
             document.getElementById('googleButtonContainer').innerHTML = `<div style="color: #ff9100; font-size:0.8rem; font-family:monospace; border: 1px dashed #ff9100; padding: 10px; border-radius: 6px;">[Falta Google Client ID]</div>`;
             return;
@@ -146,7 +145,13 @@ export default class TeamView {
         window.handleCredentialResponse = (response) => {
             try {
                 // Decodificar el Token JWT (Base64)
-                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const payload = JSON.parse(jsonPayload);
                 
                 // Creamos el usuario en TeamTowers
                 const newUser = {
@@ -156,7 +161,7 @@ export default class TeamView {
                 };
                 
                 this.handleNewUser(newUser);
-                alert(`✅ Bienvenido al Ecosistema, ${payload.name}!`);
+                // alert(`✅ Bienvenido al Ecosistema, ${payload.name}!`); // Descomentar si quieres alerta
             } catch (error) {
                 console.error("Error decodificando el JWT de Google:", error);
             }
@@ -189,7 +194,7 @@ export default class TeamView {
             });
             this.executeViewScript(); // Recargar UI
         } catch (e) {
-            alert(e.message); // Por si el ID ya existe en el Kernel
+            console.warn("Aviso:", e.message); // Por si el ID ya existe en el Kernel
         }
     }
 
