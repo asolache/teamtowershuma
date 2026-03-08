@@ -1,5 +1,6 @@
 // v5/js/views/ProjectView.js
 import { store } from '../core/store.js';
+import { Sidebar } from '../components/Sidebar.js';
 
 export default class ProjectView {
     constructor() {
@@ -12,16 +13,6 @@ export default class ProjectView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: 'Segoe UI', sans-serif; }
                 
-                /* Sidebar Universal */
-                .sidebar { width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid rgba(255,255,255,0.05); padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 10px; z-index: 10; flex-shrink: 0; overflow-y: auto;}
-                .project-context-header { padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 1.5rem; }
-                .project-context-header h3 { font-size: 1rem; margin: 0 0 5px 0; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .project-context-header p { font-size: 0.7rem; color: #00b0ff; text-transform: uppercase; font-weight: bold; margin: 0;}
-                
-                .side-link { padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: #888; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
-                .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
-                .side-link.active { background: rgba(0, 176, 255, 0.1); color: #00b0ff; font-weight: bold; border-left: 3px solid #00b0ff; }
-
                 /* Workspace */
                 .workspace { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; }
                 .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
@@ -59,10 +50,6 @@ export default class ProjectView {
                 /* MOBILE RESPONSIVE */
                 @media (max-width: 768px) {
                     .app-layout { flex-direction: column; }
-                    .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); flex-direction: row; overflow-x: auto; flex-wrap: nowrap; }
-                    .sidebar > div { display: none; /* Oculta logo en movil nav */ }
-                    .project-context-header { display: none; }
-                    .side-link { white-space: nowrap; }
                     .workspace { padding: 1rem; }
                     .kanban-container { flex-direction: column; overflow-x: visible; }
                     .kanban-col { max-width: 100%; min-width: 100%; }
@@ -70,23 +57,7 @@ export default class ProjectView {
             </style>
 
             <div class="app-layout">
-                <aside class="sidebar">
-                    <div style="font-weight: bold; font-family: monospace; color: white; margin-bottom: 2rem; font-size: 1.2rem;">🗼 TeamTowers</div>
-                    
-                    <a href="/v5/" class="side-link" data-link>🏠 Inicio</a>
-                    <a href="/v5/network" class="side-link" data-link>🌐 Red de DAOs</a>
-                    <a href="/v5/profile" class="side-link" data-link>👤 Mi CV / Skills</a>
-                    
-                    <div class="project-context-header" style="margin-top: 1rem;">
-                        <h3 id="projNameSide">Cargando...</h3>
-                        <p id="projArchSide">--</p>
-                    </div>
-                    
-                    <a href="/v5/project" class="side-link active" data-link>📋 Kanban (Tracción)</a>
-                    <a href="/v5/map" class="side-link" data-link>🕸️ Mapa VNA</a>
-                    <a href="/v5/team" class="side-link" data-link>👥 Tripulación</a>
-                    <a href="/v5/ledger" class="side-link" data-link>⚖️ Ledger Equity</a>
-                </aside>
+                ${Sidebar.getHtml('/project')}
 
                 <main class="workspace">
                     <div class="view-header">
@@ -94,7 +65,7 @@ export default class ProjectView {
                             <h1>Tracción de Red</h1>
                             <p style="color: #888; font-size: 0.9rem; margin-top: 5px;">Convierte los entregables teóricos en Slices de Equity reales.</p>
                         </div>
-                        <a href="/v5/map" class="btn btn-outline" data-link style="border-color: #333; color: white;">+ Diseñar Entregable VNA</a>
+                        <a href="/v5/map" class="btn btn-outline" data-link style="border: 1px solid #333; padding: 10px 15px; border-radius: 8px; color: white; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;">+ Diseñar Entregable VNA</a>
                     </div>
 
                     <div class="kanban-container">
@@ -119,15 +90,15 @@ export default class ProjectView {
     }
 
     executeViewScript() {
+        // INICIALIZAR LISTENERS DEL SIDEBAR (Para el botón de Logout)
+        Sidebar.initListeners();
+
         const state = store.getState();
         let project = state.projects[state.projects.length - 1];
 
         if (!project) return;
         this.activeProjectId = project.id;
         
-        document.getElementById('projNameSide').innerText = project.nombre;
-        document.getElementById('projArchSide').innerText = `MODO: ${project.archetype.toUpperCase()}`;
-
         this.renderTasks(project);
     }
 
@@ -162,80 +133,4 @@ export default class ProjectView {
         if (tx.status === 'theoretical') {
             actionHtml = `<button class="btn-pull" data-hash="${tx.hash}">Hacer PULL</button>`;
         } 
-        else if (tx.status === 'pinged') {
-            actionHtml = `
-                <div style="color: #ff9100; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN PROCESO</div>
-                <a href="/v5/focus" class="btn-focus" data-link>▶ Iniciar Pomodoro</a>
-            `;
-        } 
-        else if (tx.status === 'reported') {
-            actionHtml = `
-                <div style="color: #00b0ff; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">🛡️ ESPERANDO AUDITORÍA</div>
-                <div style="font-size: 0.8rem; color: #888; background: #000; padding: 5px; border-radius: 4px;">Horas Reales: ${tx.realHours}h</div>
-                <button class="btn-approve" data-hash="${tx.hash}">Aprobar y Consolidar</button>
-            `;
-        }
-        else if (tx.status === 'consolidated') {
-            actionHtml = `
-                <div style="color: #00e676; font-size: 0.8rem; font-weight: bold; font-family: monospace;">
-                    +${Math.round(tx.valorCongelado)} Slices
-                </div>
-            `;
-        }
-
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="badge" style="color: ${color}; border-color: ${color}; font-size: 0.65rem;">${role.levelId}</span>
-                <span style="font-size: 0.6rem; color: #555; font-family: monospace;">#${tx.hash.substring(0,6)}</span>
-            </div>
-            <h3 class="task-title">${tx.entregable}</h3>
-            <div style="margin-bottom: 1rem;">${actionHtml}</div>
-            <div class="task-meta">
-                <span>⏱ ${tx.horas}h Est.</span>
-                <span style="color: ${tipoColor}; font-weight: bold; text-transform: uppercase;">${tx.tipo}</span>
-            </div>
-        `;
-
-        setTimeout(() => {
-            const pullBtn = card.querySelector('.btn-pull');
-            if (pullBtn) {
-                pullBtn.addEventListener('click', () => {
-                    const state = store.getState();
-                    const activeUser = state.session.activeUserId;
-                    
-                    // VALIDACIÓN DE EDGE CASES
-                    if (activeUser === 'ecosystem-admin') {
-                        alert("⚠️ Estás operando como Administrador Global. Para asumir una tarea, ve a 'Tripulación', identifícate con un usuario y asígnate un rol.");
-                        return;
-                    }
-                    const hasRole = project.asignaciones.find(a => a.userId === activeUser);
-                    if (!hasRole) {
-                        alert("⚠️ No tienes ninguna silla (Rol) asignada en este Castell. Ve a 'Tripulación' y asígnate un rol antes de trabajar.");
-                        return;
-                    }
-
-                    store.dispatch({
-                        type: 'PING_TRANSACTION',
-                        payload: { projectId: project.id, txHash: tx.hash, userId: activeUser }
-                    });
-                    this.executeViewScript();
-                });
-            }
-
-            const approveBtn = card.querySelector('.btn-approve');
-            if (approveBtn) {
-                approveBtn.addEventListener('click', () => {
-                    store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash } });
-                    this.executeViewScript();
-                });
-            }
-        }, 10);
-
-        return card;
-    }
-
-    getColorForLevel(levelId) {
-        const colors = { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' };
-        return colors[levelId] || '#ffffff';
-    }
-}
+        else if (tx.status === 'ping
