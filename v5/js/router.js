@@ -7,6 +7,7 @@ const routes = {
     '/tests': 'TestsView',
     '/map': 'ValueMapView',
     '/focus': 'FocusView'  // <--- Añadida la vista de Pomodoro / Deep Work
+    '/ledger': 'LedgerView'
 };
 
 class Router {
