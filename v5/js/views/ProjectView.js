@@ -96,6 +96,7 @@ export default class ProjectView {
                     <a href="/v5/map" class="side-link" data-link>🌐 Mapa VNA (Diseño)</a>
                     <a href="/v5/tests" class="side-link" data-link>🛠 Diagnóstico Kernel</a>
                     <a href="/v5/ledger" class="side-link" data-link>⚖️ Ledger (Equity)</a>
+                    <a href="/v5/team" class="side-link" data-link>👥 Tripulación & DAO</a>
                 </aside>
 
                 <main class="workspace">
