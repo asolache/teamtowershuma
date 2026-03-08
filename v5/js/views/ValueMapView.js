@@ -1,12 +1,12 @@
 // v5/js/views/ValueMapView.js
 import { store } from '../core/store.js';
-import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // 1. IMPORTAMOS LA ONTOLOGÍA GLOBAL
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 export default class ValueMapView {
     constructor() {
-        document.title = "Diseñador de Flujos VNA | TeamTowers";
+        document.title = "Diseñador VNA | TeamTowers";
         this.activeProjectId = null;
-        this.selectedRoleId = null;
+        this.selectedRoleId = null; 
         this.isDragging = false;
         this.draggedElement = null;
     }
@@ -20,7 +20,7 @@ export default class ValueMapView {
                 .sequence-panel {
                     width: 340px; background: rgba(12, 12, 16, 0.95); border-right: 1px solid rgba(255,255,255,0.05);
                     display: flex; flex-direction: column; z-index: 20; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-                    backdrop-filter: blur(20px);
+                    backdrop-filter: blur(20px); transition: box-shadow 0.3s ease;
                 }
                 .sequence-header { padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
                 .sequence-header h2 { font-size: 1.1rem; color: white; margin: 0 0 5px 0; letter-spacing: 0.5px; }
@@ -37,19 +37,15 @@ export default class ValueMapView {
                 .step-deliverable { color: #00b0ff; text-transform: uppercase; font-size: 0.75rem; }
 
                 .sequence-footer { padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3); }
-                .form-control { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem; }
+                .form-control { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem; transition: border-color 0.2s;}
                 .form-control:focus { border-color: #00b0ff; outline: none; }
                 .form-row { display: flex; gap: 10px; }
 
-                /* HELPERS EDUCATIVOS */
                 .edu-helper {
                     background: rgba(0, 176, 255, 0.1); border-left: 3px solid #00b0ff;
                     padding: 8px 10px; font-size: 0.7rem; color: #aaa; border-radius: 4px;
                     margin-bottom: 10px; display: none;
                 }
-                .edu-helper strong { color: white; }
-                .edu-helper .tg { color: #00e676; }
-                .edu-helper .ig { color: #e040fb; }
 
                 /* LIENZO PRINCIPAL */
                 .map-container { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
@@ -72,33 +68,38 @@ export default class ValueMapView {
                     color: white; transform: translate(-50%, -50%); user-select: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
                 }
                 .node:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
-                .node.selected { border-color: #00b0ff !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.5); z-index: 10; }
+                .node.selected { border-color: #00b0ff !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.6); z-index: 10; }
                 .node-name { font-size: 0.7rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 85%; font-weight: bold; line-height: 1.1; }
-                .node-value { font-size: 0.65rem; color: #00e676; pointer-events: none; font-family: monospace; margin-top: 3px; font-weight: bold; }
 
                 .ui-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;}
                 .interactive { pointer-events: auto; }
 
-                /* INSPECTOR Y LEYENDA */
-                .vna-legend { background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; margin-top: 15px; pointer-events: auto; backdrop-filter: blur(10px); }
-                .diagnosis-panel { position: absolute; bottom: 25px; left: 25px; z-index: 10; width: 340px; background: rgba(10, 10, 15, 0.95); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px); border-radius: 16px; padding: 1.5rem; box-shadow: 0 15px 50px rgba(0,0,0,0.8); }
-                .inspector-panel { width: 380px; background: #0c0c10; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.7); }
+                /* PANELES DERECHOS E INSPECTOR */
+                .action-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+                .vna-legend { background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; pointer-events: auto; backdrop-filter: blur(10px); }
+                
+                .inspector-panel { position: absolute; top: 0; right: 0; height: 100%; width: 380px; background: #0c0c10; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.7); }
                 .inspector-panel.open { transform: translateX(0); }
                 
+                /* MODAL NUEVO NODO */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+                .modal-content { background: #121216; border: 1px solid #333; padding: 2rem; border-radius: 12px; width: 350px; }
+                
                 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+                @keyframes pulseHighlight { 0% { box-shadow: 10px 0 30px rgba(0,0,0,0.5); } 50% { box-shadow: 0 0 40px rgba(0, 176, 255, 0.4); } 100% { box-shadow: 10px 0 30px rgba(0,0,0,0.5); } }
+                .pulse-panel { animation: pulseHighlight 0.8s ease-out; }
             </style>
 
             <div class="vna-layout">
                 
-                <aside class="sequence-panel">
+                <aside class="sequence-panel" id="seqPanel">
                     <div class="sequence-header interactive">
-                        <a href="/v5/project" class="btn btn-outline" data-link style="padding: 5px 10px; font-size: 0.7rem; margin-bottom: 15px; display: inline-block;">&larr; Ir al Kanban</a>
-                        <h2>Secuencia de Valor</h2>
-                        <p>Diseña el proceso paso a paso.</p>
+                        <a href="/v5/project" class="btn btn-outline" data-link style="padding: 5px 10px; font-size: 0.7rem; margin-bottom: 15px; display: inline-block;">&larr; Volver al Kanban</a>
+                        <h2>Secuencia VNA</h2>
+                        <p>Haz clic en dos Nodos para conectarlos.</p>
                     </div>
                     
-                    <div class="sequence-body" id="sequenceList">
-                        </div>
+                    <div class="sequence-body" id="sequenceList"></div>
 
                     <div class="sequence-footer interactive">
                         <div style="font-size: 0.75rem; color: #00b0ff; margin-bottom: 8px; font-weight: bold; text-transform: uppercase;">Añadir Entrega de Valor</div>
@@ -113,50 +114,37 @@ export default class ValueMapView {
                             <option value="">Cargando ontología...</option>
                         </select>
                         
-                        <div id="eduHelper" class="edu-helper">
-                            💡 <strong>Tip VNA:</strong><br>
-                            Entregable documentado/código = <span class="tg">TANGIBLE</span>.<br>
-                            Transferencia de conocimiento/cultura = <span class="ig">INTANGIBLE</span>.
-                        </div>
+                        <div id="eduHelper" class="edu-helper">💡 Entregable documentado = TANGIBLE. Transferencia de conocimiento = INTANGIBLE.</div>
                         
                         <div class="form-row">
                             <select id="selType" class="form-control">
-                                <option value="tangible">🟢 Continua (Tangible)</option>
-                                <option value="intangible">🟣 Punteada (Intangible)</option>
+                                <option value="tangible">🟢 Tangible</option>
+                                <option value="intangible">🟣 Intangible</option>
                             </select>
-                            <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;" title="Horas Estimadas">
+                            <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
                         </div>
 
                         <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
                         
-                        <button class="btn btn-primary" id="btnAddFlow" style="width: 100%; margin-top: 5px; font-size: 0.85rem;">
-                            ➕ Añadir a la Secuencia
-                        </button>
+                        <button class="btn btn-primary" id="btnAddFlow" style="width: 100%; margin-top: 5px;">➕ Añadir a Secuencia</button>
                     </div>
                 </aside>
 
                 <div class="map-container">
                     <div class="ui-overlay">
                         <div class="interactive">
-                            <div>
-                                <h1 id="mapTitle" style="font-size: 2.2rem; margin: 0; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Red de Valor</h1>
-                                <p style="color: #aaa; font-size: 0.85rem; margin-top: 5px;">ONTOLOGÍA: <span id="mapSector" class="badge" style="background: rgba(224, 64, 251, 0.2); color: #e040fb; border: 1px solid #e040fb;">--</span></p>
-                            </div>
+                            <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Red de Valor</h1>
                         </div>
                         
-                        <div class="interactive" style="display: flex; flex-direction: column; align-items: flex-end;">
-                            <button class="btn btn-primary" id="btnSimulateTx" style="box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); font-size: 0.8rem; padding: 8px 16px;">✨ Acción Rápida (Test)</button>
+                        <div class="action-panel interactive">
+                            <button class="btn btn-primary" id="btnOpenAddNode" style="box-shadow: 0 0 20px rgba(0, 230, 118, 0.3); background: #00e676; color: black; border: none; font-weight: bold;">
+                                ➕ Nuevo Nodo
+                            </button>
                             
                             <div class="vna-legend">
-                                <h4 style="margin: 0 0 10px 0; font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Metodología VNA</h4>
-                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: #ddd;">
-                                    <div style="width: 25px; height: 3px; background: #00e676;"></div>
-                                    <span>Valor Tangible (Activos)</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: #ddd;">
-                                    <div style="width: 25px; height: 3px; border-bottom: 3px dashed #e040fb;"></div>
-                                    <span>Valor Intangible (Flujos Cognitivos)</span>
-                                </div>
+                                <h4 style="margin: 0 0 10px 0; font-size: 0.7rem; color: #888;">LEYENDA</h4>
+                                <div style="display: flex; gap: 10px; margin-bottom: 8px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: #00e676; margin-top:6px;"></div> Valor Tangible</div>
+                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed #e040fb; margin-top:5px;"></div> Valor Intangible</div>
                             </div>
                         </div>
                     </div>
@@ -164,41 +152,50 @@ export default class ValueMapView {
                     <div class="map-canvas" id="mapCanvas">
                         <svg id="edges-svg"></svg>
                     </div>
-
-                    <div class="diagnosis-panel interactive">
-                        <h3 style="font-size: 0.85rem; color: #00b0ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                            <span>🧠</span> Diagnóstico IA
-                        </h3>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
-                            <span style="font-size: 0.8rem; color: #888;">Maturity Index</span>
-                            <span id="maturityScore" style="font-size: 1.4rem; font-weight: bold; font-family: monospace;">--%</span>
-                        </div>
-                        <div id="alertsContainer"></div>
-                    </div>
                 </div>
 
                 <aside class="inspector-panel interactive" id="inspectorPanel">
                     <div style="padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
-                        <h2 id="insName" style="font-size: 1.5rem; margin:0;">Nodo</h2>
-                        <button id="btnCloseInspector" style="background:none; border:none; color:#666; cursor:pointer; font-size: 2rem; transition: color 0.2s;">&times;</button>
+                        <h2 id="insName" style="font-size: 1.5rem; margin:0; color: white;">Nodo</h2>
+                        <button id="btnCloseInspector" style="background:none; border:none; color:#666; cursor:pointer; font-size: 2rem;">&times;</button>
                     </div>
-                    <div id="inspectorBody" style="padding: 2rem; display: none;">
-                        <span class="badge" id="insLevel" style="margin-bottom: 2rem; font-size: 0.8rem; padding: 6px 12px;">@rol</span>
-                        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.05);">
-                            <label style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Slices Generados</label>
-                            <div id="insEquity" style="font-size: 2.8rem; color: #00e676; font-weight: 800; font-family: monospace; margin-top: 5px;">0</div>
-                        </div>
-                        <div style="margin-bottom: 1.5rem;">
-                            <label style="font-size: 0.75rem; color: #aaa; text-transform: uppercase;">Valor Hora (FMV)</label>
+                    <div style="padding: 2rem;">
+                        <span class="badge" id="insLevel" style="margin-bottom: 2rem; font-size: 0.8rem;">@rol</span>
+                        <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                            <label style="font-size: 0.75rem; color: #aaa;">Valor Mercado (FMV €/h)</label>
                             <input type="number" id="inputFmv" class="form-control">
                         </div>
                         <div style="margin-bottom: 2rem;">
-                            <label style="font-size: 0.75rem; color: #aaa; text-transform: uppercase;">Factor Riesgo</label>
+                            <label style="font-size: 0.75rem; color: #aaa;">Factor de Riesgo Multiplicador</label>
                             <input type="number" step="0.1" id="inputMult" class="form-control">
                         </div>
-                        <button class="btn btn-primary" id="btnSaveRole" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0, 176, 255, 0.2);">✓ Actualizar Matemáticas</button>
+                        <button class="btn btn-primary" id="btnSaveRole" style="width: 100%;">✓ Actualizar Matemáticas</button>
                     </div>
                 </aside>
+            </div>
+
+            <div class="modal-overlay" id="addNodeModal">
+                <div class="modal-content">
+                    <h3 style="color: white; margin-top: 0;">Instanciar Nodo</h3>
+                    <p style="color: #888; font-size: 0.8rem; margin-bottom: 1.5rem;">Añade un nuevo rol a la estructura del Castell.</p>
+                    
+                    <label style="color:#aaa; font-size:0.8rem;">Nombre del Rol</label>
+                    <input type="text" id="inpNewNodeName" class="form-control" placeholder="Ej: Especialista SEO">
+                    
+                    <label style="color:#aaa; font-size:0.8rem; margin-top: 10px; display:block;">Nivel Estructural</label>
+                    <select id="selNewNodeLevel" class="form-control">
+                        <option value="@anxaneta">@anxaneta (Dirección / Estrategia)</option>
+                        <option value="@aixecador">@aixecador (Coordinación)</option>
+                        <option value="@dosos">@dosos (Auditoría / QA)</option>
+                        <option value="@baixos" selected>@baixos (Especialista Técnico)</option>
+                        <option value="@pinya">@pinya (Soporte / Base)</option>
+                    </select>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn btn-outline" id="btnCancelNode" style="border-color: #333;">Cancelar</button>
+                        <button class="btn btn-primary" id="btnConfirmNode" style="background: #00b0ff; border: none;">Añadir Nodo</button>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -207,23 +204,15 @@ export default class ValueMapView {
         let state = store.getState();
         let project = state.projects[state.projects.length - 1];
 
-        // 1. Fallback (Si no hay proyecto, se crea uno seguro y se asigna el sector "startup" de la ontología)
-        if (!project || !project.roles || project.roles.length === 0) {
-            console.warn("Inyectando Red VNA Demo...");
-            store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'admin' } });
-            store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'demo-vna', nombre: 'Proyecto Génesis', sector: 'startup', archetype: 'startup' } });
-            state = store.getState();
-            project = state.projects[state.projects.length - 1];
-        }
+        if (!project || !project.roles) return;
 
         this.activeProjectId = project.id;
         this.dom = {
             title: document.getElementById('mapTitle'),
-            sector: document.getElementById('mapSector'),
             canvas: document.getElementById('mapCanvas'),
             svg: document.getElementById('edges-svg'),
             seqList: document.getElementById('sequenceList'),
-            score: document.getElementById('maturityScore'),
+            seqPanel: document.getElementById('seqPanel'),
             selFrom: document.getElementById('selFrom'),
             selTo: document.getElementById('selTo'),
             selTemplate: document.getElementById('selTemplate'),
@@ -231,24 +220,19 @@ export default class ValueMapView {
             inpDesc: document.getElementById('inpDesc'),
             inpHoras: document.getElementById('inpHoras'),
             eduHelper: document.getElementById('eduHelper'),
-            inspector: document.getElementById('inspectorPanel'),
-            insBody: document.getElementById('inspectorBody')
+            inspector: document.getElementById('inspectorPanel')
         };
 
         this.dom.title.innerText = project.nombre;
-        this.dom.sector.innerText = project.sector ? project.sector.toUpperCase() : 'BASE';
 
         this.populateDropdowns(project.roles);
-        this.updateOntologyTemplates(); // Cargar catálogo de la Ontología REAL
+        this.updateOntologyTemplates(); 
         
         this.renderMap();
         this.renderSequence();
-        this.updateDiagnosis();
 
-        // 2. LISTENERS DEL DISEÑADOR
-        // Cada vez que cambiamos "Origen", cargamos los entregables de ese rol de la Ontología
+        // LISTENERS DROPDOWNS SECUENCIA
         this.dom.selFrom.addEventListener('change', () => this.updateOntologyTemplates());
-        
         this.dom.selTemplate.addEventListener('change', (e) => {
             const val = e.target.value;
             if (val === "manual") {
@@ -256,9 +240,8 @@ export default class ValueMapView {
                 this.dom.eduHelper.style.display = 'block'; 
                 this.dom.inpDesc.focus();
             } else if (val !== "") {
-                // Recuperar la plantilla exacta desde GLOBAL_ONTOLOGY
                 const template = this.getTemplatesForLevel(this.getRoleLevel(this.dom.selFrom.value))[parseInt(val)];
-                this.dom.inpDesc.value = template.name; // OJO: En ontology.js se llama "name", no "nombre"
+                this.dom.inpDesc.value = template.name;
                 this.dom.selType.value = template.tipo;
                 this.dom.inpHoras.value = template.estimatedHours;
                 this.dom.eduHelper.style.display = 'none';
@@ -268,33 +251,58 @@ export default class ValueMapView {
         document.getElementById('btnAddFlow').addEventListener('click', () => {
             const fromId = this.dom.selFrom.value;
             const toId = this.dom.selTo.value;
-            const tipo = this.dom.selType.value;
             const desc = this.dom.inpDesc.value.trim();
-            const horas = parseFloat(this.dom.inpHoras.value) || 1;
-
             if(fromId === toId) return alert("El valor debe fluir entre nodos distintos.");
             if(!desc) return alert("Escribe el nombre del entregable.");
 
-            const hash = '0x' + Math.random().toString(16).slice(2, 10);
-            store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: this.activeProjectId, tx: { hash, from: fromId, to: toId, horas, entregable: desc, tipo, status: 'theoretical' } } });
+            store.dispatch({ 
+                type: 'ADD_TRANSACTION', 
+                payload: { projectId: this.activeProjectId, tx: { hash: '0x'+Math.random().toString(16).slice(2,10), from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value, status: 'theoretical' } } 
+            });
 
-            // UX: El Destino se convierte en el Origen para el siguiente paso
             this.dom.selFrom.value = toId; 
             this.updateOntologyTemplates();
             this.dom.inpDesc.value = ''; 
-            
             this.renderSequence();
             this.drawEdges();
-            this.updateDiagnosis();
         });
 
-        // 3. LISTENERS INSPECTOR Y DRAG
+        // LÓGICA DEL NUEVO NODO
+        const modal = document.getElementById('addNodeModal');
+        document.getElementById('btnOpenAddNode').addEventListener('click', () => modal.style.display = 'flex');
+        document.getElementById('btnCancelNode').addEventListener('click', () => modal.style.display = 'none');
+        
+        document.getElementById('btnConfirmNode').addEventListener('click', () => {
+            const name = document.getElementById('inpNewNodeName').value.trim();
+            const levelId = document.getElementById('selNewNodeLevel').value;
+            if(!name) return;
+
+            // Determinamos multiplicador según el nivel
+            const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
+            
+            store.dispatch({
+                type: 'ADD_ROLE',
+                payload: {
+                    projectId: this.activeProjectId,
+                    role: { name, levelId, multiplier: multipliers[levelId], fmv: 50, isArchived: false }
+                }
+            });
+
+            modal.style.display = 'none';
+            document.getElementById('inpNewNodeName').value = '';
+            
+            // Recargamos UI
+            const pUpdate = store.getState().projects.find(x => x.id === this.activeProjectId);
+            this.populateDropdowns(pUpdate.roles);
+            this.renderMap();
+        });
+
+        // INSPECTOR LOGIC
         document.getElementById('btnCloseInspector').addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
             this.renderMap();
         });
-
         document.getElementById('btnSaveRole').addEventListener('click', () => {
             const fmv = parseFloat(document.getElementById('inputFmv').value);
             const mult = parseFloat(document.getElementById('inputMult').value);
@@ -303,7 +311,7 @@ export default class ValueMapView {
             this.renderMap();
         });
 
-        // Drag & Drop visual
+        // DRAG & DROP OVERLAY
         this.dom.canvas.addEventListener('mousedown', (e) => {
             const node = e.target.closest('.node');
             if (node) { this.isDragging = true; this.draggedElement = node; node.style.zIndex = 1000; }
@@ -323,7 +331,7 @@ export default class ValueMapView {
     }
 
     populateDropdowns(roles) {
-        const options = roles.map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
+        const options = roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
         this.dom.selFrom.innerHTML = options;
         this.dom.selTo.innerHTML = options;
         if(roles.length > 1) this.dom.selTo.selectedIndex = 1;
@@ -335,67 +343,45 @@ export default class ValueMapView {
         return r ? r.levelId : '@baixos';
     }
 
-    // 🔥 LA MAGIA: LEER DESDE GLOBAL_ONTOLOGY
     getTemplatesForLevel(levelId) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const sector = p.sector || 'startup'; // Si no hay sector, asume startup
-        
-        // Accedemos a la Base de Datos Importada
-        const sectorData = GLOBAL_ONTOLOGY[sector];
-        
-        // Si el sector y el rol existen, extraemos sus standard_deliverables
+        const sectorData = GLOBAL_ONTOLOGY[p.sector || 'startup_tech'];
         if (sectorData && sectorData[levelId] && sectorData[levelId].standard_deliverables) {
             return sectorData[levelId].standard_deliverables;
         }
-        
-        // Fallback genérico si la ontología está vacía o el rol no tiene entregables
-        return [
-            { name: "Documento Técnico", estimatedHours: 4, tipo: "tangible" },
-            { name: "Resolución de Dudas", estimatedHours: 2, tipo: "intangible" }
-        ];
+        return [ { name: "Documento Técnico", estimatedHours: 4, tipo: "tangible" } ];
     }
 
     updateOntologyTemplates() {
         const levelId = this.getRoleLevel(this.dom.selFrom.value);
         const templates = this.getTemplatesForLevel(levelId);
         
-        let html = `<option value="">-- Catálogo de la Ontología --</option>`;
-        templates.forEach((t, index) => {
-            const icon = t.tipo === 'tangible' ? '🟢' : '🟣';
-            // Mostramos el nombre, tipo y horas estimadas directamente en el menú
-            html += `<option value="${index}">${icon} ${t.name} (${t.estimatedHours}h)</option>`;
-        });
+        let html = `<option value="">-- Catálogo Ontológico --</option>`;
+        templates.forEach((t, i) => html += `<option value="${i}">${t.tipo === 'tangible' ? '🟢' : '🟣'} ${t.name} (${t.estimatedHours}h)</option>`);
         html += `<option value="manual">✍️ Crear Manualmente...</option>`;
         
         this.dom.selTemplate.innerHTML = html;
         this.dom.inpDesc.value = '';
-        this.dom.eduHelper.style.display = 'none';
     }
 
-    // --- RESTO DE FUNCIONES DE RENDERIZADO VISUAL ---
     renderSequence() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const txs = p?.transactions || [];
         this.dom.seqList.innerHTML = '';
+        if(txs.length === 0) return this.dom.seqList.innerHTML = `<p style="color:#666; font-size:0.8rem; text-align:center; margin-top:2rem;">Lienzo en blanco.</p>`;
 
-        if(txs.length === 0) {
-            this.dom.seqList.innerHTML = `<p style="color:#666; font-size:0.8rem; text-align:center; margin-top:2rem;">El lienzo está en blanco.</p>`;
-            return;
-        }
-
-        txs.forEach((tx, index) => {
+        txs.forEach((tx, i) => {
             const rFrom = p.roles.find(r => r.id === tx.from);
             const rTo = p.roles.find(r => r.id === tx.to);
             if(!rFrom || !rTo) return;
-
             const color = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
 
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
             stepEl.style.borderLeft = `3px solid ${color}`;
             stepEl.innerHTML = `
-                <div class="step-header"><span>Paso ${index + 1}</span><span style="font-size: 0.7rem;">${tx.horas}h Est.</span></div>
-                <div class="step-route"><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span><span style="color: #666;">&rarr;</span><span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span></div>
+                <div class="step-header"><span>Paso ${i + 1}</span><span style="font-size: 0.7rem;">${tx.horas}h Est.</span></div>
+                <div class="step-route"><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span> <span style="color:#666;">&rarr;</span> <span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span></div>
                 <div class="step-deliverable" style="color: ${color};">${tx.entregable}</div>
             `;
             this.dom.seqList.appendChild(stepEl);
@@ -407,7 +393,6 @@ export default class ValueMapView {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         if (!p) return;
 
-        const harvest = store.calculateHarvest(this.activeProjectId) || [];
         const positions = {};
         this.dom.canvas.querySelectorAll('.node').forEach(n => { positions[n.dataset.id] = { left: n.style.left, top: n.style.top }; n.remove(); });
 
@@ -415,17 +400,15 @@ export default class ValueMapView {
         const levelCounts = {};
 
         p.roles.forEach(rol => {
+            if (rol.isArchived) return;
+
             const level = rol.levelId || '@baixos';
             levelCounts[level] = (levelCounts[level] || 0) + 1;
             
-            const h = harvest.find(x => x.roleId === rol.id);
-            const val = h ? h.totalValue : 0;
-            const size = 80 + Math.min(val / 10, 60);
-
             const el = document.createElement('div');
             el.className = `node ${this.selectedRoleId === rol.id ? 'selected' : ''}`;
             el.dataset.id = rol.id;
-            el.style.width = `${size}px`; el.style.height = `${size}px`;
+            el.style.width = `80px`; el.style.height = `80px`;
             
             if (positions[rol.id]) {
                 el.style.left = positions[rol.id].left; el.style.top = positions[rol.id].top;
@@ -439,14 +422,35 @@ export default class ValueMapView {
             el.innerHTML = `
                 <div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div>
                 <div class="node-name">${rol.name}</div>
-                <div class="node-value">${val} ${p.archetype === 'startup' ? 'Slices' : '€'}</div>
             `;
 
-            el.addEventListener('click', () => {
+            // 🔥 MAGIA: CLICK-TO-CONNECT
+            el.addEventListener('click', (e) => {
                 if(this.isDragging) return;
+                
+                // Si ya hay un nodo seleccionado y haces clic en UNO DISTINTO
+                if (this.selectedRoleId && this.selectedRoleId !== rol.id) {
+                    this.dom.selFrom.value = this.selectedRoleId; // El viejo es el Origen
+                    this.dom.selTo.value = rol.id;                // El nuevo es el Destino
+                    this.updateOntologyTemplates();               // Actualizamos el desplegable
+                    
+                    // Efecto visual para avisar que el panel izquierdo está listo
+                    this.dom.seqPanel.classList.remove('pulse-panel');
+                    void this.dom.seqPanel.offsetWidth; // trigger reflow
+                    this.dom.seqPanel.classList.add('pulse-panel');
+                }
+
+                // Convertimos el clickado en el nuevo foco
                 this.selectedRoleId = rol.id;
                 this.renderMap();
-                this.openInspector(rol, val, p.archetype === 'startup' ? 'Slices' : '€', this.getColor(level));
+                
+                // Abrimos el inspector
+                this.dom.inspector.classList.add('open');
+                document.getElementById('insName').innerText = rol.name;
+                const b = document.getElementById('insLevel');
+                b.innerText = rol.levelId; b.style.color = this.getColor(level); b.style.borderColor = this.getColor(level);
+                document.getElementById('inputFmv').value = rol.fmv || 0;
+                document.getElementById('inputMult').value = rol.multiplier || 1.0;
             });
 
             rol._dom = el;
@@ -489,27 +493,10 @@ export default class ValueMapView {
                 txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
                 txt.setAttribute('text-anchor', 'middle');
                 txt.style.cssText = `fill:${tx.tipo==='tangible'?'#00e676':'#e040fb'};font-size:11px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px;`;
-                txt.textContent = `[${index + 1}] ${tx.entregable.toUpperCase()}`;
+                txt.textContent = `[${index + 1}]`;
                 this.dom.svg.appendChild(txt);
             }
         });
-    }
-
-    updateDiagnosis() {
-        const m = store.calculateMaturityIndex(this.activeProjectId);
-        this.dom.score.innerText = `${m.score}%`;
-        this.dom.score.style.color = m.score > 70 ? '#00e676' : (m.score > 40 ? '#ff9100' : '#ff5252');
-    }
-
-    openInspector(rol, val, mon, col) {
-        this.dom.inspector.classList.add('open');
-        this.dom.insBody.style.display = 'block';
-        document.getElementById('insName').innerText = rol.name || 'Nodo';
-        const b = document.getElementById('insLevel');
-        b.innerText = rol.levelId || '@baixos'; b.style.color = col; b.style.borderColor = col;
-        document.getElementById('insEquity').innerText = `${val} ${mon}`;
-        document.getElementById('inputFmv').value = rol.fmv || 0;
-        document.getElementById('inputMult').value = rol.multiplier || 1.0;
     }
 
     getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
