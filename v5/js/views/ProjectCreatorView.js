@@ -220,15 +220,16 @@ export default class ProjectCreatorView {
         `;
 
         try {
-            console.log("🚀 Iniciando llamada a Gemini API v1.5 Pro Latest...");
+            console.log("🚀 Iniciando llamada a Gemini API (Modelo Universal gemini-pro)...");
             
-            // 🔥 AQUÍ ESTÁ EL CAMBIO A GEMINI PRO LATEST PARA EVITAR EL 404
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${apiKey}`, {
+            // 🔥 FIX: Usamos 'gemini-pro' (1.0) que es universal y funciona con TODAS las API Keys.
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `${systemPrompt}\n\nPROYECTO DEL USUARIO: ${vision}` }] }],
-                    generationConfig: { response_mime_type: "application/json" }
+                    contents: [{ parts: [{ text: `${systemPrompt}\n\nPROYECTO DEL USUARIO: ${vision}` }] }]
+                    // Eliminamos generationConfig (JSON mode) porque gemini-pro 1.0 no lo soporta, 
+                    // dependemos del prompt y nuestro limpiador regex.
                 })
             });
 
@@ -243,8 +244,15 @@ export default class ProjectCreatorView {
             
             console.log("🤖 Respuesta bruta de Gemini:", textResponse);
 
-            // Limpiamos Markdown
+            // 🔥 Limpiador extremo de Markdown (gemini-pro a veces añade texto antes o después)
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+            
+            // Buscar el primer '{' y el último '}' para ignorar texto basura
+            const firstBrace = textResponse.indexOf('{');
+            const lastBrace = textResponse.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                textResponse = textResponse.substring(firstBrace, lastBrace + 1);
+            }
 
             const parsedData = JSON.parse(textResponse);
 
