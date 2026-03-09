@@ -33,7 +33,12 @@ export default class ValueMapView {
                 .flow-step.simulating { transform: scale(1.05); border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.3); }
                 .step-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-family: var(--font-mono); }
                 .step-route { display: flex; align-items: center; gap: 5px; font-weight: bold; color: var(--text-main); }
-                .step-actions { display: flex; gap: 4px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px;}
+                
+                /* Mini-botones de la Secuencia */
+                .step-actions { display: flex; gap: 6px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;}
+                .btn-step { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+                .btn-step:hover { background: rgba(255,255,255,0.15); color: white; border-color: var(--text-muted); }
+                .btn-step.del:hover { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
                 
                 .sequence-footer { padding: 1.5rem; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); transition: background 0.3s; }
                 .sequence-footer.edit-mode { background: rgba(0, 176, 255, 0.1); border-top: 1px solid var(--accent-blue); }
@@ -632,10 +637,10 @@ export default class ValueMapView {
             
             const actions = `
                 <div class="step-actions">
-                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" style="background:transparent; border:1px solid #333; cursor:pointer;">↑</button>` : ''}
-                    ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" style="background:transparent; border:1px solid #333; cursor:pointer;">↓</button>` : ''}
-                    <button class="btn-step btn-edit" data-idx="${i}" style="background:transparent; border:1px solid #333; cursor:pointer;">✎</button>
-                    <button class="btn-step del btn-del" data-idx="${i}" style="background:transparent; border:1px solid var(--accent-red); color:var(--accent-red); cursor:pointer;">🗑️</button>
+                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" title="Subir">↑</button>` : ''}
+                    ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" title="Bajar">↓</button>` : ''}
+                    <button class="btn-step btn-edit" data-idx="${i}" title="Editar">✎</button>
+                    <button class="btn-step del btn-del" data-idx="${i}" title="Eliminar">🗑️</button>
                 </div>
             `;
 
