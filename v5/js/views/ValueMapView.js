@@ -25,31 +25,35 @@ export default class ValueMapView {
                 <aside class="sequence-panel" id="seqPanel">
                     <div class="sequence-header interactive">
                         <h2>Secuencia VNA</h2>
-                        <p>Diseña el flujo de valor organizativo.</p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin:0;">Diseña el flujo de valor organizativo.</p>
                     </div>
                     <div class="sequence-body interactive" id="sequenceList"></div>
                     <div class="sequence-footer interactive" id="seqFooter">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <span id="formTitle" style="font-size:0.75rem; color:var(--accent-blue); font-weight:bold; text-transform:uppercase;">Añadir Transacción</span>
-                            <button class="btn-step" id="btnCancelEditFlow" style="display:none;">Cancelar Edición</button>
+                            <button class="btn btn-outline" style="padding: 2px 5px; font-size: 0.7rem; display:none;" id="btnCancelEditFlow">Cancelar Edición</button>
                         </div>
 
-                        <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
                             <select id="selFrom" class="form-control" title="Origen"></select>
                             <span style="color: var(--text-muted); align-self: center;">&rarr;</span>
                             <select id="selTo" class="form-control" title="Destino"></select>
                         </div>
-                        <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue); color: #fff;">
-                            <option value="">Cargando ontología...</option>
-                        </select>
-                        <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
+                                <option value="">Cargando ontología...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
                             <select id="selType" class="form-control">
                                 <option value="tangible">🟢 Tangible (Doc)</option>
                                 <option value="intangible">🟣 Intangible (Sync)</option>
                             </select>
                             <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
                         </div>
-                        <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
+                        </div>
                         <button class="btn btn-success" style="width: 100%; margin-top: 5px;" id="btnAddFlow">➕ Añadir a Secuencia</button>
                     </div>
                 </aside>
@@ -65,13 +69,13 @@ export default class ValueMapView {
                                 <button class="btn btn-primary" id="btnSimulate">▶ Simular Flujo</button>
                                 <button class="btn btn-outline" id="btnStopSim" style="display:none;">⏹ Detener</button>
                             </div>
-                            <button class="btn btn-outline" id="btnOpenAddNode">➕ Nuevo Nodo</button>
+                            <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" id="btnOpenAddNode">➕ Nuevo Nodo</button>
                             
-                            <div class="glass-panel" style="padding: 1rem; margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+                            <div class="glass-panel" style="padding: 1rem; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; width: 100%;">
                                 <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: var(--accent-green); margin-top:6px;"></div> Tangible</div>
                                 <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed var(--accent-purple); margin-top:5px;"></div> Intangible</div>
                             </div>
-                            <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
+                            <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo detectado.</div>
                         </div>
                     </div>
                     <div class="map-canvas" id="mapCanvas">
@@ -197,7 +201,6 @@ export default class ValueMapView {
             }
         });
 
-        // 🔥 BYPASS DIRECTO AL KERNEL PARA GUARDAR LA TRANSACCIÓN 🔥
         this.dom.btnAddFlow.addEventListener('click', () => {
             const fromId = this.dom.selFrom.value;
             const toId = this.dom.selTo.value;
@@ -206,24 +209,20 @@ export default class ValueMapView {
             if(fromId === toId) return alert("El valor debe fluir entre nodos distintos.");
             if(!desc) return alert("Escribe el nombre del entregable.");
 
-            // 1. Obtenemos una copia profunda (Deep Copy) del estado actual
             const currentState = JSON.parse(JSON.stringify(store.getState()));
             const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
             
-            // 2. Aseguramos que el array de transacciones existe
             if (!currentState.projects[pIndex].transactions) {
                 currentState.projects[pIndex].transactions = [];
             }
 
             if (this.editingTxIndex !== null) {
-                // MODO EDICIÓN
                 currentState.projects[pIndex].transactions[this.editingTxIndex] = {
                     ...currentState.projects[pIndex].transactions[this.editingTxIndex],
                     from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value
                 };
                 this.exitEditMode();
             } else {
-                // MODO CREACIÓN (Inyección forzada manual)
                 currentState.projects[pIndex].transactions.push({
                     hash: '0x' + Math.random().toString(16).slice(2, 10),
                     from: fromId,
@@ -236,10 +235,8 @@ export default class ValueMapView {
                 });
             }
 
-            // 3. Forzamos el guardado y el redibujado de la UI
             this.forceSaveState(currentState);
             
-            // 4. Limpiamos formulario
             this.dom.selFrom.value = toId; 
             this.updateOntologyTemplates();
             this.dom.inpDesc.value = ''; 
@@ -289,7 +286,6 @@ export default class ValueMapView {
             if(!name) return;
             const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
             
-            // Aquí sí usamos el reducer porque sabemos que funciona bien para Roles
             store.dispatch({ type: 'ADD_ROLE', payload: { projectId: this.activeProjectId, role: { name, levelId, multiplier: multipliers[levelId], fmv: 50, isArchived: false } } });
             modal.style.display = 'none';
             document.getElementById('inpNewNodeName').value = '';
@@ -380,6 +376,7 @@ export default class ValueMapView {
         this.dom.btnCancelEditFlow.style.display = 'block';
         this.dom.btnAddFlow.innerText = '✓ Actualizar Transacción';
         this.dom.btnAddFlow.style.background = '#00b0ff';
+        this.dom.btnAddFlow.style.color = 'white';
 
         this.dom.selFrom.value = tx.from;
         this.dom.selTo.value = tx.to;
@@ -392,25 +389,23 @@ export default class ValueMapView {
         this.editingTxIndex = null;
         this.dom.seqFooter.classList.remove('edit-mode');
         this.dom.formTitle.innerText = `Añadir Transacción`;
-        this.dom.formTitle.style.color = '#00b0ff';
+        this.dom.formTitle.style.color = 'var(--accent-blue)';
         this.dom.btnCancelEditFlow.style.display = 'none';
         this.dom.btnAddFlow.innerText = '➕ Añadir a Secuencia';
-        this.dom.btnAddFlow.style.background = '#00e676';
+        this.dom.btnAddFlow.style.background = 'var(--accent-green)';
+        this.dom.btnAddFlow.style.color = 'black';
         this.dom.inpDesc.value = '';
     }
 
-    // 🔥 LA FUNCIÓN CLAVE DE PERSISTENCIA Y REFRESCO 🔥
     forceSaveState(newState) {
-        // 1. Guardar en memoria inmutable y localstorage
         store.state = newState;
         localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
         
-        // 2. Refrescar TODO usando los datos recién guardados
         const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
         this.populateDropdowns(pUpdate.roles);
-        this.renderSequence(); // Dibuja la lista
-        this.renderMap();      // Dibuja los nodos
-        setTimeout(() => this.drawEdges(), 50); // Dibuja las flechas asegurando que el DOM existe
+        this.renderSequence(); 
+        this.renderMap();      
+        setTimeout(() => this.drawEdges(), 50); 
     }
 
     // --- SIMULACIÓN ---
@@ -524,7 +519,7 @@ export default class ValueMapView {
         const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
         txt.setAttribute('text-anchor', 'middle');
-        txt.style.cssText = `fill:${isSick ? '#ff5252' : (tx.tipo==='tangible'?'#00e676':'#e040fb')};font-size:14px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px; opacity: 0; transition: opacity 0.5s;`;
+        txt.style.cssText = `fill:${isSick ? 'var(--accent-red)' : (tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)')};font-size:14px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px; opacity: 0; transition: opacity 0.5s;`;
         txt.textContent = `[${index + 1}]`;
         
         setTimeout(() => txt.style.opacity = '1', 400); 
@@ -570,16 +565,15 @@ export default class ValueMapView {
         this.dom.seqList.innerHTML = '';
         
         if(txs.length === 0) {
-            this.dom.seqList.innerHTML = `<p style="color:#666; font-size:0.8rem; text-align:center; margin-top:2rem;">Lienzo en blanco.</p>`;
+            this.dom.seqList.innerHTML = `<p style="color:var(--text-muted); font-size:0.8rem; text-align:center; margin-top:2rem;">Lienzo en blanco.</p>`;
             return;
         }
 
         txs.forEach((tx, i) => {
-            // Protección contra nodos borrados
             const rFrom = p.roles.find(r => r.id === tx.from) || { levelId: '?', name: 'Nodo Borrado' };
             const rTo = p.roles.find(r => r.id === tx.to) || { levelId: '?', name: 'Nodo Borrado' };
             
-            const color = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+            const color = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
 
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
@@ -587,17 +581,17 @@ export default class ValueMapView {
             
             const actions = `
                 <div class="step-actions">
-                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}">↑</button>` : ''}
-                    ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}">↓</button>` : ''}
-                    <button class="btn-step btn-edit" data-idx="${i}">✎</button>
-                    <button class="btn-step del btn-del" data-idx="${i}">🗑️</button>
+                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" style="background:transparent; border:1px solid #333; cursor:pointer;">↑</button>` : ''}
+                    ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" style="background:transparent; border:1px solid #333; cursor:pointer;">↓</button>` : ''}
+                    <button class="btn-step btn-edit" data-idx="${i}" style="background:transparent; border:1px solid #333; cursor:pointer;">✎</button>
+                    <button class="btn-step del btn-del" data-idx="${i}" style="background:transparent; border:1px solid var(--accent-red); color:var(--accent-red); cursor:pointer;">🗑️</button>
                 </div>
             `;
 
             stepEl.innerHTML = `
                 <div class="step-header"><span>Paso ${i + 1}</span><span style="font-size: 0.7rem;">${tx.horas}h Est.</span></div>
-                <div class="step-route"><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span> <span style="color:#666;">&rarr;</span> <span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span></div>
-                <div class="step-deliverable" style="color: ${color};">${tx.entregable}</div>
+                <div class="step-route"><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span> <span style="color:var(--text-muted);">&rarr;</span> <span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span></div>
+                <div class="step-deliverable" style="color: ${color}; font-size: 0.75rem; text-transform: uppercase; margin-top: 5px;">${tx.entregable}</div>
                 ${actions}
             `;
             this.dom.seqList.appendChild(stepEl);
@@ -706,7 +700,7 @@ export default class ValueMapView {
                 const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
                 txt.setAttribute('text-anchor', 'middle');
-                txt.style.cssText = `fill:${tx.tipo==='tangible'?'#00e676':'#e040fb'};font-size:11px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px;`;
+                txt.style.cssText = `fill:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:11px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px;`;
                 txt.textContent = `[${index + 1}]`;
                 this.dom.svg.appendChild(txt);
             }
@@ -714,5 +708,5 @@ export default class ValueMapView {
     }
 
     getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
-    getColor(l) { return { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
+    getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 }
