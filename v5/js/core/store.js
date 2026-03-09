@@ -1,7 +1,7 @@
 // ==========================================================================
-// KERNEL v6.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v6.5 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Contabilidad Triple Entrada y Slicing Pie
-// INCLUYE: FASE 1.5 (VERSIONADO TEMPORAL E INMUTABILIDAD DE NODOS)
+// INCLUYE: FASE 1.5 (INMUTABILIDAD) y V6.5 (RBAC & IDENTIDAD FRACTAL)
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
@@ -17,14 +17,38 @@ const initialState = {
         sectores: {} 
     },
     globalUsers: [
-        { id: '@user1', name: 'Alice Node', walletOrSocial: '0x123...' },
-        { id: '@user2', name: 'Bob Builder', walletOrSocial: 'bob@email.com' }
+        {
+            id: 'usr_alvaro_001',
+            name: 'Alvaro',
+            globalRole: 'ecosystem-owner', // RBAC Global: Acceso total y métricas globales
+            walletOrSocial: 'founder@teamtowers.com',
+            profile: {
+                vision: "Fundador y Master Architect de TeamTowers SOS. Impulsando la Sociocracia y el alto rendimiento.",
+                structural_affinity: ["@anxaneta", "@aixecador"],
+                guardian_authority: ["creator", "magician"],
+                guardian_growth: ["ruler"],
+                lastUpdated: Date.now()
+            }
+        },
+        {
+            id: 'usr_test_002',
+            name: 'Laura Dev',
+            globalRole: 'network-user', // RBAC Global: Usuario estándar
+            walletOrSocial: '0xLaura...',
+            profile: {
+                vision: "Desarrolladora Web3 buscando DAOs con propósito.",
+                structural_affinity: ["@baixos"],
+                guardian_authority: ["everyman"],
+                guardian_growth: ["sage"],
+                lastUpdated: Date.now()
+            }
+        }
     ],
     macroFlows: [], 
     projects: [],
     session: {
-        activeUserId: 'ecosystem-admin',
-        role: 'admin' 
+        activeUserId: 'usr_alvaro_001',
+        role: 'ecosystem-owner' 
     }
 };
 
@@ -64,14 +88,19 @@ function reducer(state = initialState, action) {
             };
         }
 
-        // --- IDENTIDAD Y SEGURIDAD (RBAC) ---
+        // --- IDENTIDAD Y SEGURIDAD (RBAC V6.5) ---
         case 'ADD_USER': {
             const newId = action.payload.id || action.payload.userId;
             const existsGlobal = state.globalUsers.find(u => u.id === newId);
             if (existsGlobal) {
                 throw new Error("⛔ El identificador de usuario ya existe en el ecosistema.");
             }
-            const newUser = { id: newId, name: action.payload.name, walletOrSocial: action.payload.walletOrSocial };
+            const newUser = { 
+                id: newId, 
+                name: action.payload.name, 
+                walletOrSocial: action.payload.walletOrSocial,
+                globalRole: action.payload.globalRole || 'network-user'
+            };
             
             let newProjects = state.projects;
             if (action.payload.projectId) {
@@ -87,23 +116,25 @@ function reducer(state = initialState, action) {
         }
 
         case 'LOGIN_USER': {
-            const isAdmin = action.payload.userId === 'ecosystem-admin';
-            return { ...state, session: { activeUserId: action.payload.userId, role: isAdmin ? 'admin' : 'user' } };
+            // RBAC: Detectamos el rol global del usuario al hacer login
+            const user = state.globalUsers.find(u => u.id === action.payload.userId);
+            const userRole = user ? (user.globalRole || 'network-user') : 'guest';
+            return { ...state, session: { activeUserId: action.payload.userId, role: userRole } };
         }
             
         case 'LOGOUT_USER':
-            return { ...state, session: { activeUserId: 'ecosystem-admin', role: 'admin' } };
+            return { ...state, session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' } };
 
         // --- GESTIÓN DE PROYECTOS / REDES ---
         case 'ADD_PROJECT_RESTRICTED': {
-            if (state.session.role !== 'admin') {
-                throw new Error("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas.");
+            if (state.session.role !== 'ecosystem-owner') {
+                throw new Error("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas restringidas.");
             }
             return state; 
         }
 
         case 'ADD_PROJECT': {
-            if (state.session.role !== 'admin' && !action.payload.bypassSecurity && !action.payload.ownerId) {
+            if (state.session.role !== 'ecosystem-owner' && state.session.role !== 'admin' && !action.payload.bypassSecurity && !action.payload.ownerId) {
                 return state; 
             }
 
@@ -157,7 +188,7 @@ function reducer(state = initialState, action) {
                     ai_prompt: r.ai_prompt || '',
                     standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
                     isArchived: false,
-                    history: [] // <--- FASE 1.5: Inicializamos el historial del nodo
+                    history: [] 
                 };
             });
 
@@ -180,7 +211,7 @@ function reducer(state = initialState, action) {
                 sector: pSector,
                 tipo: action.payload.tipo || 'project', 
                 archetype: arquetipo, 
-                ownerId: ownerId,
+                ownerId: ownerId, // RBAC Local: Project Owner
                 prompt: action.payload.prompt || '',
                 config: { tokenomics: 'startup', archetype: arquetipo },
                 roles: baseRoles,
@@ -273,14 +304,12 @@ function reducer(state = initialState, action) {
                             roles: p.roles.map(r => {
                                 if (r.id === action.payload.roleId) {
                                     
-                                    // Detectamos si hay un cambio económico (FMV o Multiplier)
                                     const isEconomicChange = (action.payload.field === 'fmv' || action.payload.field === 'multiplier') ||
                                                              (action.payload.updates && (action.payload.updates.fmv !== undefined || action.payload.updates.multiplier !== undefined)) ||
                                                              (action.payload.fmv !== undefined || action.payload.multiplier !== undefined);
 
                                     let newHistory = r.history || [];
                                     
-                                    // Si cambia la economía, guardamos la versión antigua en el historial con fecha de caducidad HOY
                                     if (isEconomicChange) {
                                         newHistory = [...newHistory, {
                                             fmv: r.fmv,
@@ -312,7 +341,7 @@ function reducer(state = initialState, action) {
                 multiplier: action.payload.role.multiplier || 1.0,
                 fmv: action.payload.role.fmv || 50,
                 isArchived: false,
-                history: [], // <--- FASE 1.5: Nodo nuevo nace con historial vacío
+                history: [], 
                 ...action.payload.role
             };
             return {
@@ -437,17 +466,13 @@ function reducer(state = initialState, action) {
                         let txToApprove = p.transactions.find(tx => tx.hash === action.payload.txHash);
                         if (!txToApprove) return p;
 
-                        // FASE 1.5: OBTENER EL VALOR HISTÓRICO DEL ROL
-                        // Delegamos el cálculo de cuánto valía el rol a la nueva función de la Store
-                        // Usamos la fecha en la que se reportó (o pinged), no la de aprobación, porque el PO puede tardar meses en aprobar.
                         const workTimestamp = txToApprove.reportTimestamp || txToApprove.pingTimestamp || Date.now();
-                        const storeInstance = new Store(); // Instancia temporal solo para usar el helper sin inyectar dependencias cíclicas
+                        const storeInstance = new Store(); 
                         const roleEconomics = storeInstance.getRoleEconomicsAtTime(p, txToApprove.from, workTimestamp);
                         
                         const archMult = p.archetype === 'startup' ? 2.0 : (p.archetype === 'dao' ? 1.5 : 1.0);
                         const horas = txToApprove.realHours || txToApprove.horas || 0;
                         
-                        // Cálculo inmutable
                         const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archMult;
 
                         const prevLedger = p.ledger || [];
@@ -463,7 +488,7 @@ function reducer(state = initialState, action) {
                             description: `[PoW] ${txToApprove.entregable}`,
                             horas: horas, 
                             valorCongelado: valorGenerado, 
-                            timestamp: Date.now() // Fecha en la que entra en el Ledger (Sellado)
+                            timestamp: Date.now() 
                         };
 
                         return {
@@ -490,18 +515,35 @@ class Store {
         } else {
             this.state = initialState;
         }
+
+        // ============================================================
+        // SCRIPT DE AUTO-MIGRACIÓN (RBAC V6.5)
+        // Evita que la DB se corrompa al pasar de V4/V5 a V6.5
+        // ============================================================
         
-        if (!this.state.macroFlows) this.state.macroFlows = [];
-        if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
-        
+        // 1. Inyectar tu usuario si vienes de un state antiguo
+        if (!this.state.globalUsers.find(u => u.id === 'usr_alvaro_001')) {
+            this.state.globalUsers.unshift(initialState.globalUsers[0]);
+        }
+
+        // 2. Transicionar session antigua
+        if (this.state.session.activeUserId === 'ecosystem-admin') {
+            this.state.session.activeUserId = 'usr_alvaro_001';
+            this.state.session.role = 'ecosystem-owner';
+        }
+
+        // 3. Asignarte como dueño de los proyectos huérfanos
         if (this.state.projects) {
             this.state.projects = this.state.projects.map(p => ({
                 ...p, 
                 alerts: p.alerts || [],
-                ownerId: p.ownerId || 'ecosystem-admin',
+                ownerId: p.ownerId || 'usr_alvaro_001', // Asignación de Project Owner
                 archetype: p.archetype || 'startup'
             }));
         }
+
+        if (!this.state.macroFlows) this.state.macroFlows = [];
+        if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
 
         this.listeners = [];
     }
@@ -516,29 +558,20 @@ class Store {
     
     subscribe(listener) { this.listeners.push(listener); }
 
-    // 🔥 FASE 1.5: LA MÁQUINA DEL TIEMPO 🔥
-    // Devuelve los atributos económicos (FMV y Multiplicador) que tenía un rol en una fecha concreta
+    // FASE 1.5: LA MÁQUINA DEL TIEMPO
     getRoleEconomicsAtTime(project, roleId, targetTimestamp) {
         const role = project.roles.find(r => r.id === roleId);
         
-        // Si el rol ya no existe en el mapa (fue borrado físicamente en v4), devolvemos valores base por seguridad.
         if (!role) return { id: 'unknown', fmv: 50, multiplier: 1.0 };
-
-        // Si el rol no tiene historial (proyectos antiguos), devolvemos los valores actuales
         if (!role.history || role.history.length === 0) {
             return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
         }
 
-        // Viajamos por el historial buscando si en la fecha objetivo (targetTimestamp) existía una versión anterior
-        // El historial guarda { fmv, multiplier, validUntil }. 
-        // Buscamos la primera versión cuya fecha de caducidad sea MAYOR que la fecha de nuestro trabajo.
         for (let i = 0; i < role.history.length; i++) {
             if (targetTimestamp <= role.history[i].validUntil) {
                 return { id: role.id, fmv: role.history[i].fmv, multiplier: role.history[i].multiplier };
             }
         }
-
-        // Si la fecha del trabajo es más reciente que todo el historial, usamos el valor actual.
         return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
     }
 
