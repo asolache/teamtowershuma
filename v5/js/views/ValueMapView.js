@@ -19,6 +19,57 @@ export default class ValueMapView {
 
     async getHtml() {
         return `
+            <style>
+                /* LAYOUT ESPECÍFICO DEL MAPA VNA */
+                .vna-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
+                
+                /* PANEL SECUENCIAL (Izquierda) */
+                .sequence-panel { width: 340px; background: var(--glass-bg); border-right: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur); display: flex; flex-direction: column; z-index: 20; flex-shrink: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
+                .sequence-header { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); }
+                .sequence-header h2 { font-size: 1.1rem; color: var(--text-main); margin: 0 0 5px 0; letter-spacing: 0.5px; }
+                .sequence-body { flex: 1; overflow-y: auto; padding: 1rem; }
+                
+                .flow-step { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); padding: 10px; margin-bottom: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 5px; transition: all 0.3s; position: relative;}
+                .flow-step.simulating { transform: scale(1.05); border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.3); }
+                .step-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-family: var(--font-mono); }
+                .step-route { display: flex; align-items: center; gap: 5px; font-weight: bold; color: var(--text-main); }
+                .step-actions { display: flex; gap: 4px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px;}
+                
+                .sequence-footer { padding: 1.5rem; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); transition: background 0.3s; }
+                .sequence-footer.edit-mode { background: rgba(0, 176, 255, 0.1); border-top: 1px solid var(--accent-blue); }
+
+                /* LIENZO PRINCIPAL (Centro) */
+                .map-container { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+                .map-canvas { flex: 1; position: relative; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; }
+                #edges-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+                
+                .edge-line { fill: none; stroke-width: 2.5; opacity: 0.85; transition: stroke 0.3s; }
+                .edge-tangible { stroke: var(--accent-green); }
+                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 6, 6; animation: dashAnim 15s linear infinite; }
+                .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
+                
+                .node { position: absolute; z-index: 5; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: grab; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--glass-border); color: white; transform: translate(-50%, -50%); user-select: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+                .node:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
+                .node.selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.6); z-index: 10; }
+                .node.sick-node { border-color: var(--accent-red) !important; box-shadow: 0 0 40px rgba(255, 82, 82, 0.8); animation: pulseSick 1s infinite alternate; z-index: 15; }
+                .node-name { font-size: 0.7rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 85%; font-weight: bold; line-height: 1.1; }
+
+                .ui-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;}
+                .interactive { pointer-events: auto; }
+                .action-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+
+                /* INSPECTOR DE NODOS (Derecha) */
+                .inspector-panel { position: absolute; top: 0; right: 0; height: 100%; width: 380px; background: var(--bg-panel); border-left: 1px solid var(--glass-border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.7); overflow-y: auto;}
+                .inspector-panel.open { transform: translateX(0); }
+
+                @media (max-width: 768px) {
+                    .vna-layout { flex-direction: column; }
+                    .sequence-panel { width: 100%; max-height: 250px; border-right: none; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+                    .ui-overlay h1 { font-size: 1.2rem; }
+                    .inspector-panel { width: 100%; }
+                }
+            </style>
+
             <div class="vna-layout">
                 ${Sidebar.getHtml('/map')}
 
@@ -372,10 +423,10 @@ export default class ValueMapView {
         this.editingTxIndex = idx;
         this.dom.seqFooter.classList.add('edit-mode');
         this.dom.formTitle.innerText = `Editando Paso ${idx + 1}`;
-        this.dom.formTitle.style.color = '#ff9100';
+        this.dom.formTitle.style.color = 'var(--accent-orange)';
         this.dom.btnCancelEditFlow.style.display = 'block';
         this.dom.btnAddFlow.innerText = '✓ Actualizar Transacción';
-        this.dom.btnAddFlow.style.background = '#00b0ff';
+        this.dom.btnAddFlow.style.background = 'var(--accent-blue)';
         this.dom.btnAddFlow.style.color = 'white';
 
         this.dom.selFrom.value = tx.from;
