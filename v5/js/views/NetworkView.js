@@ -1,9 +1,11 @@
 // v5/js/views/NetworkView.js
 import { store } from '../core/store.js';
+import { Sidebar } from '../components/Sidebar.js';
 
 export default class NetworkView {
     constructor() {
         document.title = "Ecosistema DAO | TeamTowers";
+        this.allProjects = [];
     }
 
     async getHtml() {
@@ -11,23 +13,18 @@ export default class NetworkView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: 'Segoe UI', sans-serif; }
                 
-                /* Sidebar Global */
-                .sidebar {
-                    width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid rgba(255,255,255,0.05);
-                    padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 10px; z-index: 10;
-                }
-                .side-link {
-                    padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: #888; text-decoration: none;
-                    font-size: 0.85rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
-                }
-                .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
-                .side-link.active { background: rgba(0, 176, 255, 0.1); color: #00b0ff; font-weight: bold; border-left: 3px solid #00b0ff; }
-
                 /* Workspace Central */
                 .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; }
-                .view-header { margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-end;}
+                .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;}
                 .view-header h1 { font-size: 2.5rem; color: white; margin: 0; letter-spacing: -1px; }
                 .view-header p { color: #888; font-size: 1rem; margin-top: 5px; }
+
+                /* BARRA DE FILTROS */
+                .filter-bar { display: flex; gap: 15px; margin-bottom: 2rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; align-items: center;}
+                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+                .form-control:focus { border-color: #00b0ff; }
+                .filter-search { flex: 2; min-width: 200px; }
+                .filter-select { flex: 1; min-width: 150px; }
 
                 /* GRID DE PROYECTOS (ECOSISTEMA) */
                 .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
@@ -62,15 +59,7 @@ export default class NetworkView {
             </style>
 
             <div class="app-layout">
-                <aside class="sidebar">
-                    <div style="font-weight: bold; font-family: monospace; color: white; margin-bottom: 2rem; font-size: 1.2rem;">🗼 TeamTowers</div>
-                    
-                    <a href="/v5/" class="side-link" data-link>🏠 Inicio Central</a>
-                    <a href="/v5/network" class="side-link active" data-link>🌐 Hub de Redes (DAOs)</a>
-                    <a href="/v5/profile" class="side-link" data-link>👤 Mi Perfil / CV</a>
-                    <hr style="border-color: rgba(255,255,255,0.05); width: 100%; margin: 1rem 0;">
-                    <a href="/v5/create" class="side-link" data-link style="color: #00e676;">➕ Instanciar Nueva Red</a>
-                </aside>
+                ${Sidebar.getHtml('/network')}
 
                 <main class="workspace">
                     <div class="view-header">
@@ -78,6 +67,16 @@ export default class NetworkView {
                             <h1>Ecosistema de Redes</h1>
                             <p>Explora los Castells activos, analiza su madurez y solicita unirte a su cadena de valor.</p>
                         </div>
+                    </div>
+
+                    <div class="filter-bar" id="filterBar" style="display: none;">
+                        <input type="text" id="filterSearch" class="form-control filter-search" placeholder="🔍 Buscar red por nombre...">
+                        <select id="filterSector" class="form-control filter-select">
+                            <option value="all">🌐 Todos los Sectores</option>
+                        </select>
+                        <select id="filterArch" class="form-control filter-select">
+                            <option value="all">🏛️ Todos los Arquetipos</option>
+                        </select>
                     </div>
 
                     <div class="projects-grid" id="hubGrid">
@@ -88,25 +87,80 @@ export default class NetworkView {
     }
 
     executeViewScript() {
-        const state = store.getState();
-        const projects = state.projects || [];
-        const grid = document.getElementById('hubGrid');
+        Sidebar.initListeners();
 
-        if (projects.length === 0) {
-            grid.innerHTML = `
+        const state = store.getState();
+        this.allProjects = state.projects || [];
+        this.grid = document.getElementById('hubGrid');
+        const filterBar = document.getElementById('filterBar');
+
+        if (this.allProjects.length === 0) {
+            this.grid.innerHTML = `
                 <div class="empty-hub">
                     <h2 style="color: white; margin-bottom: 10px;">El Ecosistema está vacío</h2>
                     <p>Sé el primero en levantar un Castell. Instancia una red para empezar.</p>
-                    <a href="/v5/create" class="btn btn-primary" data-link style="display: inline-block; margin-top: 15px;">Crear Proyecto</a>
+                    <a href="/v5/create" class="btn-enter" data-link style="display: inline-block; margin-top: 15px; background: #00e676; color: black;">Crear Proyecto</a>
                 </div>
             `;
             return;
         }
 
-        grid.innerHTML = '';
+        // Si hay proyectos, mostramos la barra de filtros y la configuramos
+        filterBar.style.display = 'flex';
+        this.setupFilters();
 
-        // Renderizamos las tarjetas invertidas (las más nuevas primero)
-        [...projects].reverse().forEach(p => {
+        // Renderizamos por defecto todos los proyectos (invertidos, el más nuevo primero)
+        this.renderProjects([...this.allProjects].reverse());
+    }
+
+    setupFilters() {
+        const searchInput = document.getElementById('filterSearch');
+        const sectorSelect = document.getElementById('filterSector');
+        const archSelect = document.getElementById('filterArch');
+
+        // Autocompletar Sectores existentes
+        const uniqueSectors = [...new Set(this.allProjects.map(p => p.sector || 'General'))];
+        uniqueSectors.forEach(sec => {
+            sectorSelect.innerHTML += `<option value="${sec}">${sec.replace(/_/g, ' ').toUpperCase()}</option>`;
+        });
+
+        // Autocompletar Arquetipos existentes
+        const uniqueArchs = [...new Set(this.allProjects.map(p => p.archetype || 'startup'))];
+        uniqueArchs.forEach(arc => {
+            archSelect.innerHTML += `<option value="${arc}">${arc.toUpperCase()}</option>`;
+        });
+
+        // Motor de filtrado
+        const applyFilters = () => {
+            const term = searchInput.value.toLowerCase();
+            const selectedSector = sectorSelect.value;
+            const selectedArch = archSelect.value;
+
+            const filtered = this.allProjects.filter(p => {
+                const matchName = p.nombre.toLowerCase().includes(term);
+                const matchSector = selectedSector === 'all' || (p.sector || 'General') === selectedSector;
+                const matchArch = selectedArch === 'all' || (p.archetype || 'startup') === selectedArch;
+                return matchName && matchSector && matchArch;
+            });
+
+            this.renderProjects([...filtered].reverse());
+        };
+
+        // Listeners reactivos
+        searchInput.addEventListener('input', applyFilters);
+        sectorSelect.addEventListener('change', applyFilters);
+        archSelect.addEventListener('change', applyFilters);
+    }
+
+    renderProjects(projectsToRender) {
+        this.grid.innerHTML = '';
+
+        if (projectsToRender.length === 0) {
+            this.grid.innerHTML = `<div class="empty-hub" style="grid-column: 1 / -1;"><p>No se encontraron redes con esos filtros.</p></div>`;
+            return;
+        }
+
+        projectsToRender.forEach(p => {
             
             // 1. Calcular Datos del Proyecto
             const maturity = store.calculateMaturityIndex(p.id);
@@ -159,7 +213,7 @@ export default class NetworkView {
                 <button class="btn-enter btn-enter-action" data-id="${p.id}">Entrar al Castell &rarr;</button>
             `;
 
-            grid.appendChild(card);
+            this.grid.appendChild(card);
         });
 
         // Evento para "Entrar" a un proyecto específico
@@ -172,9 +226,6 @@ export default class NetworkView {
     }
 
     // 🔥 TRUCO DEL ALMENDRUCO (WORKAROUND SPA) 🔥
-    // Como las otras vistas leen `state.projects[state.projects.length - 1]`, 
-    // hacemos un duplicado del proyecto seleccionado y lo ponemos al final para hacerlo "Activo"
-    // sin romper la inmutabilidad ni reescribir todo el Kernel.
     setActiveProjectAndNavigate(projectId) {
         const state = store.getState();
         const pIndex = state.projects.findIndex(p => p.id === projectId);
