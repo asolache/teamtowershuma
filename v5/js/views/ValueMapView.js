@@ -53,10 +53,16 @@ export default class ValueMapView {
                 .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 6, 6; animation: dashAnim 15s linear infinite; }
                 .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 
-                .node { position: absolute; z-index: 5; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: grab; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--glass-border); color: white; transform: translate(-50%, -50%); user-select: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+                .node { position: absolute; z-index: 5; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: grab; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s, opacity 0.3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--glass-border); color: white; transform: translate(-50%, -50%); user-select: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
                 .node:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
                 .node.selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.6); z-index: 10; }
                 .node.sick-node { border-color: var(--accent-red) !important; box-shadow: 0 0 40px rgba(255, 82, 82, 0.8); animation: pulseSick 1s infinite alternate; z-index: 15; }
+                
+                /* GHOST NODES (FASE 1.5) */
+                .node.ghost-node { opacity: 0.3; border-style: dashed; filter: grayscale(100%); z-index: 1; }
+                .node.ghost-node:hover { opacity: 0.6; }
+                .node.ghost-node .node-name { text-decoration: line-through; color: #888; }
+
                 .node-name { font-size: 0.7rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 85%; font-weight: bold; line-height: 1.1; }
 
                 .ui-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;}
@@ -195,6 +201,27 @@ export default class ValueMapView {
                         </div>
                     </div>
                 </div>
+
+                <div class="modal-overlay" id="triageModal">
+                    <div class="modal-content" style="width: 450px;">
+                        <h3 style="color: var(--accent-orange); margin-top:0; margin-bottom: 1rem;">⚠️ Tareas Huérfanas Detectadas</h3>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                            Este nodo tiene <strong id="triageCount" style="color: white; font-size: 1.2rem;">0</strong> transacciones activas o pendientes en el Kanban. 
+                            Archivar el nodo requiere decidir el destino de estas tareas.
+                        </p>
+                        
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label>Reasignar tareas al Nodo Activo:</label>
+                            <select id="selTriageNode" class="form-control"></select>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <button class="btn btn-primary" id="btnTriageReassign">Migrar Tareas y Archivar Nodo</button>
+                            <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red);" id="btnTriageDelete">Destruir Tareas y Archivar Nodo</button>
+                            <button class="btn btn-outline" id="btnTriageCancel" style="margin-top: 10px;">Cancelar Acción</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -232,7 +259,9 @@ export default class ValueMapView {
             
             btnSimulate: document.getElementById('btnSimulate'),
             btnStopSim: document.getElementById('btnStopSim'),
-            sickAlert: document.getElementById('sickAlert')
+            sickAlert: document.getElementById('sickAlert'),
+
+            triageModal: document.getElementById('triageModal')
         };
 
         this.dom.title.innerText = project.nombre;
@@ -351,7 +380,7 @@ export default class ValueMapView {
             this.renderMap();
         });
 
-        // ------------------ INSPECTOR DE NODOS ------------------
+        // ------------------ INSPECTOR Y TRIAJE (FASE 1.5) ------------------
         document.getElementById('btnCloseInspector').addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
@@ -371,27 +400,99 @@ export default class ValueMapView {
             const rIndex = currentState.projects[pIndex].roles.findIndex(r => r.id === this.selectedRoleId);
             
             if (rIndex > -1) {
-                currentState.projects[pIndex].roles[rIndex].name = name;
-                currentState.projects[pIndex].roles[rIndex].levelId = level;
-                currentState.projects[pIndex].roles[rIndex].fmv = fmv;
-                currentState.projects[pIndex].roles[rIndex].multiplier = mult;
-                this.forceSaveState(currentState);
+                // El Kernel se encarga de crear el histórico automáticamente (Versionado)
+                store.dispatch({
+                    type: 'UPDATE_ROLE',
+                    payload: { 
+                        projectId: this.activeProjectId, roleId: this.selectedRoleId, 
+                        updates: { name: name, levelId: level, fmv: fmv, multiplier: mult } 
+                    }
+                });
+                
+                this.forceSaveState(store.getState()); // Sincronizamos vistas
             }
         });
 
         document.getElementById('btnDeleteRole').addEventListener('click', () => {
-            if(confirm('¿Archivar este nodo? Desaparecerá del mapa, pero las transacciones antiguas se mantendrán.')) {
-                const currentState = store.getState();
-                const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
-                const rIndex = currentState.projects[pIndex].roles.findIndex(r => r.id === this.selectedRoleId);
+            const state = store.getState();
+            const p = state.projects.find(x => x.id === this.activeProjectId);
+            const roleToArchive = p.roles.find(r => r.id === this.selectedRoleId);
+
+            if (!roleToArchive) return;
+
+            // Si ya está archivado, permitimos desarchivarlo
+            if (roleToArchive.isArchived) {
+                if(confirm('¿Desarchivar este nodo y devolverlo a la vida?')) {
+                    this.executeArchiveToggle(false);
+                }
+                return;
+            }
+
+            // BUSCAR TAREAS PENDIENTES (TRIAJE)
+            const pendingTxs = (p.transactions || []).filter(tx => 
+                (tx.from === this.selectedRoleId || tx.to === this.selectedRoleId) && 
+                (tx.status !== 'consolidated' && tx.status !== 'approved')
+            );
+
+            if (pendingTxs.length > 0) {
+                // Hay tareas colgadas. Abrir Triaje.
+                document.getElementById('triageCount').innerText = pendingTxs.length;
                 
-                if (rIndex > -1) {
-                    currentState.projects[pIndex].roles[rIndex].isArchived = true;
-                    this.selectedRoleId = null;
-                    this.dom.inspector.classList.remove('open');
-                    this.forceSaveState(currentState);
+                const activeNodes = p.roles.filter(r => !r.isArchived && r.id !== this.selectedRoleId);
+                const selectHtml = activeNodes.length > 0 
+                    ? activeNodes.map(r => `<option value="${r.id}">${r.name}</option>`).join('')
+                    : `<option value="">No hay otros nodos vivos</option>`;
+                
+                document.getElementById('selTriageNode').innerHTML = selectHtml;
+                this.dom.triageModal.style.display = 'flex';
+            } else {
+                // No hay tareas, archivar directo
+                if(confirm('¿Archivar este nodo? Pasará a ser un fantasma en el mapa para mantener la inmutabilidad histórica.')) {
+                    this.executeArchiveToggle(true);
                 }
             }
+        });
+
+        // Acciones del Modal de Triaje
+        document.getElementById('btnTriageCancel').addEventListener('click', () => {
+            this.dom.triageModal.style.display = 'none';
+        });
+
+        document.getElementById('btnTriageDelete').addEventListener('click', () => {
+            const currentState = JSON.parse(JSON.stringify(store.getState()));
+            const pIdx = currentState.projects.findIndex(x => x.id === this.activeProjectId);
+            
+            // Filtramos fuera las transacciones pendientes que tocaban este nodo
+            currentState.projects[pIdx].transactions = currentState.projects[pIdx].transactions.filter(tx => {
+                const hitsArchived = (tx.from === this.selectedRoleId || tx.to === this.selectedRoleId);
+                const isPending = (tx.status !== 'consolidated' && tx.status !== 'approved');
+                return !(hitsArchived && isPending); // Lo quitamos si cumple ambas
+            });
+
+            this.dom.triageModal.style.display = 'none';
+            this.forceSaveState(currentState);
+            this.executeArchiveToggle(true);
+        });
+
+        document.getElementById('btnTriageReassign').addEventListener('click', () => {
+            const targetNodeId = document.getElementById('selTriageNode').value;
+            if(!targetNodeId) return alert("Debes seleccionar un nodo de destino válido.");
+
+            const currentState = JSON.parse(JSON.stringify(store.getState()));
+            const pIdx = currentState.projects.findIndex(x => x.id === this.activeProjectId);
+            
+            // Reasignamos
+            currentState.projects[pIdx].transactions = currentState.projects[pIdx].transactions.map(tx => {
+                if (tx.status !== 'consolidated' && tx.status !== 'approved') {
+                    if (tx.from === this.selectedRoleId) tx.from = targetNodeId;
+                    if (tx.to === this.selectedRoleId) tx.to = targetNodeId;
+                }
+                return tx;
+            });
+
+            this.dom.triageModal.style.display = 'none';
+            this.forceSaveState(currentState);
+            this.executeArchiveToggle(true);
         });
 
         // ------------------ DRAG & CLICK LOGIC ------------------
@@ -415,12 +516,26 @@ export default class ValueMapView {
         });
         
         window.addEventListener('mouseup', () => { 
-            if (this.draggedElement) this.draggedElement.style.zIndex = 5;
+            if (this.draggedElement) {
+                // Restauramos el z-index pero respetamos si es ghost
+                this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
+            }
             this.isDragging = false; 
             this.draggedElement = null; 
         });
         
         window.addEventListener('resize', () => { if(!this.isSimulating) this.drawEdges(); });
+    }
+
+    executeArchiveToggle(archiveState) {
+        store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId } });
+        
+        if (archiveState) {
+            this.selectedRoleId = null;
+            this.dom.inspector.classList.remove('open');
+        }
+        
+        this.forceSaveState(store.getState());
     }
 
     // --- MÉTODOS DE EDICIÓN ---
@@ -584,10 +699,12 @@ export default class ValueMapView {
 
     // Funciones estándar
     populateDropdowns(roles) {
+        // En los dropdowns para crear nuevas transacciones, SÍ filtramos los archivados.
+        // No queremos enviar trabajo nuevo a un nodo muerto.
         const options = roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
         this.dom.selFrom.innerHTML = options;
         this.dom.selTo.innerHTML = options;
-        if(roles.length > 1 && this.dom.selTo.options.length > 1) this.dom.selTo.selectedIndex = 1;
+        if(roles.filter(r => !r.isArchived).length > 1 && this.dom.selTo.options.length > 1) this.dom.selTo.selectedIndex = 1;
     }
 
     getRoleLevel(roleId) {
@@ -666,12 +783,18 @@ export default class ValueMapView {
         const levelCounts = {};
 
         p.roles.forEach(rol => {
-            if (rol.isArchived) return;
+            // FASE 1.5: YA NO OCULTAMOS LOS ARCHIVADOS. 
+            // Simplemente los sumamos a la contabilidad visual
             const level = rol.levelId || '@baixos';
             levelCounts[level] = (levelCounts[level] || 0) + 1;
             
             const el = document.createElement('div');
-            el.className = `node ${this.selectedRoleId === rol.id ? 'selected' : ''}`;
+            
+            // FASE 1.5: Inyectamos la clase ghost-node
+            const isGhost = rol.isArchived ? 'ghost-node' : '';
+            const isSelected = this.selectedRoleId === rol.id ? 'selected' : '';
+            el.className = `node ${isSelected} ${isGhost}`;
+            
             el.dataset.id = rol.id;
             el.style.width = `80px`; el.style.height = `80px`;
             
@@ -689,10 +812,16 @@ export default class ValueMapView {
             el.addEventListener('click', (e) => {
                 if(this.hasMoved || this.isSimulating) return; 
                 
-                if (this.selectedRoleId && this.selectedRoleId !== rol.id) {
-                    this.dom.selFrom.value = this.selectedRoleId;
-                    this.dom.selTo.value = rol.id;
-                    this.updateOntologyTemplates();
+                // Si el nodo es fantasma, no dejamos que se envíen nuevas tareas a él
+                if (!rol.isArchived && this.selectedRoleId && this.selectedRoleId !== rol.id) {
+                    const targetSelect = document.getElementById('selTo');
+                    // Solo actualizamos si el nodo seleccionado actualmente no estaba archivado tampoco
+                    const currentlySelected = p.roles.find(r => r.id === this.selectedRoleId);
+                    if(currentlySelected && !currentlySelected.isArchived) {
+                        this.dom.selFrom.value = this.selectedRoleId;
+                        this.dom.selTo.value = rol.id;
+                        this.updateOntologyTemplates();
+                    }
                 }
 
                 this.selectedRoleId = rol.id;
@@ -712,6 +841,19 @@ export default class ValueMapView {
                 this.dom.insLevel.value = rol.levelId;
                 this.dom.inputFmv.value = rol.fmv || 0;
                 this.dom.inputMult.value = rol.multiplier || 1.0;
+                
+                // Deshabilitar edición si es fantasma (solo permitir desarchivar)
+                const isLocked = rol.isArchived;
+                this.dom.insName.disabled = isLocked;
+                this.dom.insLevel.disabled = isLocked;
+                this.dom.inputFmv.disabled = isLocked;
+                this.dom.inputMult.disabled = isLocked;
+                document.getElementById('btnSaveRole').style.display = isLocked ? 'none' : 'block';
+                
+                const btnDel = document.getElementById('btnDeleteRole');
+                btnDel.innerText = isLocked ? '♻️ Desarchivar Nodo (Revivir)' : '🗑️ Archivar Nodo';
+                btnDel.style.borderColor = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
+                btnDel.style.color = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
             });
 
             this.dom.canvas.appendChild(el);
@@ -744,6 +886,8 @@ export default class ValueMapView {
                 const x2 = rect2.left + rect2.width / 2 - canv.left;
                 const y2 = rect2.top + rect2.height / 2 - canv.top;
 
+                const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
                 line.setAttribute('marker-end', 'url(#arrow)');
@@ -751,12 +895,22 @@ export default class ValueMapView {
                 const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
                 line.setAttribute('class', `edge-line ${lineClass}`);
                 
+                // Si alguno de los dos nodos es fantasma, hacemos la flecha translúcida
+                if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
+                    line.style.opacity = '0.2';
+                }
+                
                 this.dom.svg.appendChild(line);
 
                 const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
                 txt.setAttribute('text-anchor', 'middle');
                 txt.style.cssText = `fill:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:11px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px;`;
+                
+                if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
+                    txt.style.opacity = '0.3';
+                }
+                
                 txt.textContent = `[${index + 1}]`;
                 this.dom.svg.appendChild(txt);
             }
