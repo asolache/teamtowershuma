@@ -19,8 +19,6 @@ export default class ValueMapView {
 
     async getHtml() {
         return `
-            
-
             <div class="vna-layout">
                 ${Sidebar.getHtml('/map')}
 
@@ -32,16 +30,16 @@ export default class ValueMapView {
                     <div class="sequence-body interactive" id="sequenceList"></div>
                     <div class="sequence-footer interactive" id="seqFooter">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span id="formTitle" style="font-size:0.75rem; color:#00b0ff; font-weight:bold; text-transform:uppercase;">Añadir Transacción</span>
+                            <span id="formTitle" style="font-size:0.75rem; color:var(--accent-blue); font-weight:bold; text-transform:uppercase;">Añadir Transacción</span>
                             <button class="btn-step" id="btnCancelEditFlow" style="display:none;">Cancelar Edición</button>
                         </div>
 
                         <div class="form-row">
                             <select id="selFrom" class="form-control" title="Origen"></select>
-                            <span style="color: #555; align-self: center;">&rarr;</span>
+                            <span style="color: var(--text-muted); align-self: center;">&rarr;</span>
                             <select id="selTo" class="form-control" title="Destino"></select>
                         </div>
-                        <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: #00b0ff; color: #fff;">
+                        <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue); color: #fff;">
                             <option value="">Cargando ontología...</option>
                         </select>
                         <div class="form-row">
@@ -52,7 +50,7 @@ export default class ValueMapView {
                             <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
                         </div>
                         <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
-                        <button class="btn" style="background: #00e676; color: black; width: 100%; margin-top: 5px;" id="btnAddFlow">➕ Añadir a Secuencia</button>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 5px;" id="btnAddFlow">➕ Añadir a Secuencia</button>
                     </div>
                 </aside>
 
@@ -60,19 +58,20 @@ export default class ValueMapView {
                     <div class="ui-overlay">
                         <div class="interactive">
                             <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Red de Valor</h1>
-                            <p style="color: #888; font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos para organizar. 1 clic: Conectar | Doble clic: Editar</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos para organizar. 1 clic: Conectar | Doble clic: Editar</p>
                         </div>
                         <div class="action-panel interactive">
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-play" id="btnSimulate">▶ Simular Flujo</button>
-                                <button class="btn btn-stop" id="btnStopSim">⏹ Detener</button>
+                                <button class="btn btn-primary" id="btnSimulate">▶ Simular Flujo</button>
+                                <button class="btn btn-outline" id="btnStopSim" style="display:none;">⏹ Detener</button>
                             </div>
-                            <button class="btn" style="background: #333; color: white;" id="btnOpenAddNode">➕ Nuevo Nodo</button>
-                            <div class="vna-legend">
-                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: #00e676; margin-top:6px;"></div> Tangible</div>
-                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed #e040fb; margin-top:5px;"></div> Intangible</div>
+                            <button class="btn btn-outline" id="btnOpenAddNode">➕ Nuevo Nodo</button>
+                            
+                            <div class="glass-panel" style="padding: 1rem; margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: var(--accent-green); margin-top:6px;"></div> Tangible</div>
+                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed var(--accent-purple); margin-top:5px;"></div> Intangible</div>
                             </div>
-                            <div id="sickAlert">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo detectado. Riesgo de colapso de comunicación.</div>
+                            <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
                         </div>
                     </div>
                     <div class="map-canvas" id="mapCanvas">
@@ -81,14 +80,13 @@ export default class ValueMapView {
                 </div>
 
                 <aside class="inspector-panel interactive" id="inspectorPanel">
-                    <div style="padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="padding: 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
                         <h2 id="insTitleLabel" style="font-size: 1.5rem; margin:0; color: white;">Editar Nodo</h2>
-                        <button id="btnCloseInspector" style="background:none; border:none; color:#666; cursor:pointer; font-size: 2rem;">&times;</button>
+                        <button id="btnCloseInspector" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 2rem;">&times;</button>
                     </div>
                     <div style="padding: 2rem; padding-top: 0;">
-                        
-                        <div class="form-group" style="margin-bottom: 1rem;">
-                            <label style="font-size: 0.75rem; color: #aaa;">Nivel Estructural</label>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label>Nivel Estructural</label>
                             <select id="insLevel" class="form-control" style="font-weight: bold;">
                                 <option value="@anxaneta">@anxaneta</option>
                                 <option value="@aixecador">@aixecador</option>
@@ -97,41 +95,44 @@ export default class ValueMapView {
                                 <option value="@pinya">@pinya</option>
                             </select>
                         </div>
-
-                        <div class="form-group" style="margin-bottom: 1.5rem;">
-                            <label style="font-size: 0.75rem; color: #aaa;">Nombre del Rol</label>
+                        <div class="form-group">
+                            <label>Nombre del Rol</label>
                             <input type="text" id="insName" class="form-control">
                         </div>
-
-                        <div style="margin-bottom: 1.5rem;">
-                            <label style="font-size: 0.75rem; color: #aaa;">Valor Mercado (FMV €/h)</label>
+                        <div class="form-group">
+                            <label>Valor Mercado (FMV €/h)</label>
                             <input type="number" id="inputFmv" class="form-control">
                         </div>
-                        <div style="margin-bottom: 2rem;">
-                            <label style="font-size: 0.75rem; color: #aaa;">Factor de Riesgo Multiplicador</label>
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label>Factor de Riesgo Multiplicador</label>
                             <input type="number" step="0.1" id="inputMult" class="form-control">
                         </div>
-
-                        <button class="btn" style="background: #00b0ff; color: white; width: 100%; margin-bottom: 1rem;" id="btnSaveRole">✓ Guardar Cambios</button>
-                        <button class="btn" style="background: transparent; border: 1px solid #ff5252; color: #ff5252; width: 100%;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" id="btnSaveRole">✓ Guardar Cambios</button>
+                        <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
                     </div>
                 </aside>
-            </div>
 
-            <div class="modal-overlay" id="addNodeModal">
-                <div class="modal-content">
-                    <h3 style="color: white; margin-top: 0;">Instanciar Nodo</h3>
-                    <input type="text" id="inpNewNodeName" class="form-control" placeholder="Ej: Especialista SEO">
-                    <select id="selNewNodeLevel" class="form-control" style="margin-top: 10px;">
-                        <option value="@anxaneta">@anxaneta</option>
-                        <option value="@aixecador">@aixecador</option>
-                        <option value="@dosos">@dosos</option>
-                        <option value="@baixos" selected>@baixos</option>
-                        <option value="@pinya">@pinya</option>
-                    </select>
-                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-                        <button class="btn" style="background: transparent; border: 1px solid #555; color: white;" id="btnCancelNode">Cancelar</button>
-                        <button class="btn" style="background: #00b0ff; color: white;" id="btnConfirmNode">Añadir Nodo</button>
+                <div class="modal-overlay" id="addNodeModal">
+                    <div class="modal-content">
+                        <h3 style="color: white; margin-bottom: 1.5rem;">Instanciar Nodo</h3>
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="inpNewNodeName" class="form-control" placeholder="Ej: Especialista SEO">
+                        </div>
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select id="selNewNodeLevel" class="form-control">
+                                <option value="@anxaneta">@anxaneta</option>
+                                <option value="@aixecador">@aixecador</option>
+                                <option value="@dosos">@dosos</option>
+                                <option value="@baixos" selected>@baixos</option>
+                                <option value="@pinya">@pinya</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                            <button class="btn btn-outline" id="btnCancelNode">Cancelar</button>
+                            <button class="btn btn-primary" id="btnConfirmNode">Añadir Nodo</button>
+                        </div>
                     </div>
                 </div>
             </div>
