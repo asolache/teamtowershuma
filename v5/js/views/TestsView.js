@@ -110,18 +110,17 @@ export default class TestsView {
                 assert(typeof store.calculateResilience === 'function', "Función de Resiliencia presente", "KERNEL");
                 store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
                 
-                // 3-6. CREACIÓN DE PROYECTOS Y ONTOLOGÍA
-                store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_1, nombre: 'Test Project', sector: 'marketing' } });
+               // 3-6. CREACIÓN DE PROYECTOS Y ONTOLOGÍA
+                store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_1, nombre: 'Test Project', sector: 'digital_media_growth' } });
                 const p = store.getState().projects.find(x => x.id === PID_1);
-                assert(p !== undefined && p.sector === 'marketing', "Proyecto creado con sector asignado", "CORE");
+                assert(p !== undefined && p.sector === 'digital_media_growth', "Proyecto creado con sector asignado", "CORE");
                 
-                // 🔥 PARCHE V6.2: Lectura Segura de la Ontología sin romper si no existe .roles
                 let expectedRolesCount = 5;
                 let expectedLeaderName = 'Growth Hacker / CMO';
-                if (GLOBAL_ONTOLOGY['marketing']) {
-                    expectedRolesCount = Object.keys(GLOBAL_ONTOLOGY['marketing']).length;
-                    if(GLOBAL_ONTOLOGY['marketing']['@anxaneta']) {
-                        expectedLeaderName = GLOBAL_ONTOLOGY['marketing']['@anxaneta'].name;
+                if (GLOBAL_ONTOLOGY['digital_media_growth']) {
+                    expectedRolesCount = Object.keys(GLOBAL_ONTOLOGY['digital_media_growth']).length;
+                    if(GLOBAL_ONTOLOGY['digital_media_growth']['@anxaneta']) {
+                        expectedLeaderName = GLOBAL_ONTOLOGY['digital_media_growth']['@anxaneta'].name;
                     }
                 }
                 
