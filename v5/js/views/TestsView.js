@@ -10,38 +10,42 @@ export default class TestsView {
     async getHtml() {
         return `
             <style>
-                .test-container { padding: 3rem; max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+                /* Estilos locales ultra-específicos para la terminal de tests */
+                .test-container { padding: 3rem; max-width: 900px; margin: 0 auto; }
                 .test-header { text-align: center; margin-bottom: 3rem; }
-                .test-header h1 { color: #00b0ff; font-family: monospace; font-size: 2.5rem; letter-spacing: -1px; }
+                .test-header h1 { color: var(--accent-blue); font-family: var(--font-mono); font-size: 2.5rem; letter-spacing: -1px; }
                 
                 .metrics-row { display: flex; gap: 1rem; margin-bottom: 2rem; }
-                .metric-box { flex: 1; background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); padding: 1.5rem; border-radius: 12px; text-align: center; }
-                .metric-box h3 { color: #00e676; font-size: 2.5rem; margin-bottom: 5px; font-family: monospace; font-weight: 800; }
-                .metric-box p { color: #888; font-size: 0.9rem; text-transform: uppercase; font-weight: bold; }
+                .metric-box { flex: 1; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 1.5rem; border-radius: var(--border-radius-md); text-align: center; }
+                .metric-box h3 { color: var(--accent-green); font-size: 2.5rem; margin-bottom: 5px; font-family: var(--font-mono); font-weight: 800; }
+                .metric-box p { color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; font-weight: bold; margin: 0;}
 
-                .log-terminal { background: #0c0c10; border: 1px solid #222; border-radius: 12px; padding: 1.5rem; font-family: monospace; height: 450px; overflow-y: auto; color: #a0a0a0; font-size: 0.9rem; line-height: 1.6; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+                .log-terminal { background: #0c0c10; border: 1px solid #222; border-radius: var(--border-radius-md); padding: 1.5rem; font-family: var(--font-mono); height: 450px; overflow-y: auto; color: #a0a0a0; font-size: 0.9rem; line-height: 1.6; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
                 
                 .test-row { margin-bottom: 8px; display: flex; align-items: flex-start; animation: fadeIn 0.3s ease-in; }
                 .test-icon { margin-right: 10px; font-size: 1.1rem; }
                 .test-msg { flex: 1; }
-                .test-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 12px; background: #222; border: 1px solid #444; color: #888; margin-left: 10px; white-space: nowrap; font-weight: bold; }
-                
-                @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+                .test-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 12px; background: #222; border: 1px solid #444; color: var(--text-muted); margin-left: 10px; white-space: nowrap; font-weight: bold; }
 
-                .run-btn { background: #00b0ff; color: white; width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: 8px; margin-top: 1.5rem; cursor: pointer; border: none; font-weight: bold; font-family: monospace; transition: all 0.2s;}
-                .run-btn:hover { background: #0091ea; transform: scale(0.99); }
-                .run-btn:disabled { background: #333; cursor: not-allowed; color: #777; transform: none;}
+                .run-btn { width: 100%; padding: 1.2rem; font-size: 1.1rem; margin-top: 1.5rem; font-family: var(--font-mono); border-radius: var(--border-radius-sm); }
+                .run-btn:disabled { background: #333; cursor: not-allowed; color: #777; transform: none; box-shadow: none;}
+
+                @media (max-width: 768px) {
+                    .test-container { padding: 1.5rem; }
+                    .metrics-row { flex-direction: column; }
+                    .log-terminal { height: 350px; }
+                }
             </style>
 
-            <header style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,15,0.8);">
-                <div style="font-weight: bold; font-family: monospace; color: #00b0ff; font-size: 1.2rem;">🗼 OS_KERNEL_DIAGNOSTICS</div>
-                <a href="/v5/" data-link class="btn btn-outline" style="font-size: 0.8rem; border-color: #444;">&larr; Volver al Sistema</a>
+            <header style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); backdrop-filter: var(--glass-blur);">
+                <div style="font-weight: bold; font-family: var(--font-mono); color: var(--accent-blue); font-size: 1.2rem;">🗼 OS_KERNEL_DIAGNOSTICS</div>
+                <a href="/v5/" data-link class="btn btn-outline" style="font-size: 0.8rem;">&larr; Volver al Sistema</a>
             </header>
 
             <div class="test-container">
                 <div class="test-header">
                     <h1>KERNEL v6.2 VALIDATION</h1>
-                    <p style="color: #888;">Ejecutando 46 validaciones: RBAC, Inmutabilidad, Slicing Pie y VNA</p>
+                    <p style="color: var(--text-muted);">Ejecutando 46 validaciones: RBAC, Inmutabilidad, Slicing Pie y VNA</p>
                 </div>
 
                 <div class="metrics-row">
@@ -49,18 +53,18 @@ export default class TestsView {
                         <h3 id="testScore">0/46</h3>
                         <p>Tests Superados</p>
                     </div>
-                    <div class="metric-box" style="background: rgba(0, 176, 255, 0.1); border-color: rgba(0, 176, 255, 0.3);">
-                        <h3 style="color: #00b0ff;">100%</h3>
+                    <div class="metric-box" style="background: rgba(0, 176, 255, 0.05); border-color: rgba(0, 176, 255, 0.2);">
+                        <h3 style="color: var(--accent-blue);">100%</h3>
                         <p>Cobertura de Seguridad</p>
                     </div>
                 </div>
 
                 <div class="log-terminal" id="terminalLog">
-                    <div style="color: #00b0ff; margin-bottom: 10px;">> Sistema listo para ejecución de pruebas.</div>
-                    <div style="color: #00b0ff; margin-bottom: 20px;">> Esperando orden del Comandante...</div>
+                    <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas.</div>
+                    <div style="color: var(--accent-blue); margin-bottom: 20px;">> Esperando orden del Comandante...</div>
                 </div>
 
-                <button class="run-btn" id="runTestsBtn">EJECUTAR SUITE DE PRUEBAS (TDD) ▶</button>
+                <button class="btn btn-primary run-btn" id="runTestsBtn">EJECUTAR SUITE DE PRUEBAS (TDD) ▶</button>
             </div>
         `;
     }
@@ -74,7 +78,7 @@ export default class TestsView {
 
         btn.addEventListener('click', () => {
             btn.disabled = true;
-            terminal.innerHTML = '<div style="color: #00b0ff; margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones...</div>';
+            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones...</div>';
             
             let passed = 0; 
             let total = 0;
@@ -84,11 +88,10 @@ export default class TestsView {
                 const isPass = !!condition;
                 if(isPass) passed++;
                 
-                const color = isPass ? '#00e676' : '#ff5252';
                 const icon = isPass ? '✅' : '❌';
                 
                 terminal.innerHTML += `
-                    <div class="test-row" style="color: ${isPass ? '#c9d1d9' : '#ff5252'};">
+                    <div class="test-row" style="color: ${isPass ? '#c9d1d9' : 'var(--accent-red)'};">
                         <span class="test-icon">${icon}</span>
                         <span class="test-msg">${message}</span>
                         <span class="test-badge">${tag}</span>
@@ -116,7 +119,6 @@ export default class TestsView {
                 let expectedRolesCount = 5;
                 let expectedLeaderName = 'Growth Hacker / CMO';
                 if (GLOBAL_ONTOLOGY['marketing']) {
-                    // Contamos las claves del objeto en lugar de un array
                     expectedRolesCount = Object.keys(GLOBAL_ONTOLOGY['marketing']).length;
                     if(GLOBAL_ONTOLOGY['marketing']['@anxaneta']) {
                         expectedLeaderName = GLOBAL_ONTOLOGY['marketing']['@anxaneta'].name;
@@ -220,7 +222,7 @@ export default class TestsView {
                 assert(store.getState().ontology.sectores[sectorDynId] !== undefined, "El EO puede crear nuevos Sectores dinámicamente", "DATABASE");
 
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_2, nombre: 'Deep Tech Lab', sector: sectorDynId } });
-                assert(store.getState().projects.find(x => x.id === PID_2).roles.find(r => r.levelId === '@anxaneta').name === 'Lead Scientist', "Un nuevo proyecto usa la ontología dinámica correctamente", "CORE");
+                assert(store.getState().projects.find(x => x.id === PID_2).roles.find(r => r.levelId === '@anxaneta').name === 'Lead Scientist', "Un nuevo proyecto usa la ontología dinámica", "CORE");
 
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_ECO, nombre: 'DAO Project', sector: 'general', tipo: 'ecosystem' } });
                 let pEco = store.getState().projects.find(x => x.id === PID_ECO);
@@ -320,20 +322,21 @@ export default class TestsView {
                 // --- RESULTADO FINAL ---
                 if(passed === total) {
                     terminal.innerHTML += `
-                        <div style="margin-top: 25px; padding: 20px; border: 1px solid #00e676; background: rgba(0, 230, 118, 0.1); border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease-in;">
-                            <h2 style="color: #00e676; margin: 0; font-size: 2rem;">🚀 KERNEL v6.2 VALIDADO AL 100%</h2>
+                        <div style="margin-top: 25px; padding: 20px; border: 1px solid var(--accent-green); background: rgba(0, 230, 118, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in;">
+                            <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem;">🚀 KERNEL v6.2 VALIDADO AL 100%</h2>
                             <p style="color: white; margin-top: 10px; font-size: 1.1rem;">Los ${total} vectores de prueba han sido superados sin fallos.</p>
                         </div>
                     `;
                     btn.innerText = "CERTIFICACIÓN COMPLETADA ✓";
-                    btn.style.background = "#00e676";
+                    btn.style.background = "var(--accent-green)";
+                    btn.style.color = "black";
                 }
 
             } catch (error) {
                 terminal.innerHTML += `
-                    <div style="margin-top: 25px; padding: 20px; border: 1px solid #ff5252; background: rgba(255, 82, 82, 0.1); border-radius: 8px; animation: fadeIn 0.5s ease-in;">
-                        <h2 style="color: #ff5252; margin: 0;">💥 ERROR FATAL (CRASH EN KERNEL)</h2>
-                        <p style="color: white; margin-top: 10px; font-family: monospace;">${error.message}</p>
+                    <div style="margin-top: 25px; padding: 20px; border: 1px solid var(--accent-red); background: rgba(255, 82, 82, 0.1); border-radius: var(--border-radius-md); animation: fadeIn 0.5s ease-in;">
+                        <h2 style="color: var(--accent-red); margin: 0;">💥 ERROR FATAL (CRASH EN KERNEL)</h2>
+                        <p style="color: white; margin-top: 10px; font-family: var(--font-mono);">${error.message}</p>
                         <div style="background: #000; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.8rem; overflow-x: auto; color: #ff8a80;">
                             ${error.stack}
                         </div>
