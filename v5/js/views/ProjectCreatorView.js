@@ -5,25 +5,25 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciador Universal | TeamTowers";
+        document.title = "Instanciador Agnóstico | TeamTowers";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
         
-        // Los 12 Arquetipos de Guardianes (Pantheon.work inspiration)
+        // Los 12 Arquetipos de Guardianes (Pantheon.work)
         this.guardians = [
             { id: 'creator', label: '🎨 Creador (Innovación)' },
-            { id: 'caregiver', label: '❤️ Cuidador (Empatía/Soporte)' },
+            { id: 'caregiver', label: '❤️ Cuidador (Soporte)' },
             { id: 'ruler', label: '👑 Gobernante (Estructura)' },
-            { id: 'jester', label: '🃏 Bufón (Disrupción/Cohesión)' },
+            { id: 'jester', label: '🃏 Bufón (Disrupción)' },
             { id: 'everyman', label: '🤝 Ciudadano (Realismo)' },
-            { id: 'lover', label: '🔥 Amante (Pasión/Compromiso)' },
-            { id: 'hero', label: '⚔️ Héroe (Ejecución/Valentía)' },
-            { id: 'outlaw', label: '🏴‍☠️ Rebelde (Cambio Radical)' },
+            { id: 'lover', label: '🔥 Amante (Pasión)' },
+            { id: 'hero', label: '⚔️ Héroe (Ejecución)' },
+            { id: 'outlaw', label: '🏴‍☠️ Rebelde (Cambio)' },
             { id: 'magician', label: '✨ Mago (Transformación)' },
-            { id: 'innocent', label: '🕊️ Inocente (Ética/Transparencia)' },
+            { id: 'innocent', label: '🕊️ Inocente (Ética)' },
             { id: 'explorer', label: '🧭 Explorador (Búsqueda)' },
-            { id: 'sage', label: '🦉 Sabio (Conocimiento/Verdad)' }
+            { id: 'sage', label: '🦉 Sabio (Verdad)' }
         ];
     }
 
@@ -155,20 +155,20 @@ export default class ProjectCreatorView {
                             <div class="actions-row">
                                 <button class="btn btn-outline" id="btnStartBlank">📄 Empezar en Blanco</button>
                                 <button class="btn btn-outline" id="btnLoadTemplate">🏗️ Cargar Plantilla Base</button>
-                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));">🧠 Diseñar con IA</button>
+                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue)); border:none;">🧠 Diseñar con IA</button>
                             </div>
                         </div>
 
                         <div id="aiLoading" class="ai-loading">
                             <span>🔌</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;">Analizando 12 Guardianes y Flujos de Valor.</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Analizando 12 Guardianes y Flujos de Valor.</div>
                         </div>
 
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 1.5rem;">
                                 <h1>Definición de Roles</h1>
-                                <p>Un rol es una actividad gestionada, no un puesto de trabajo. Selecciona el nivel estructural y su Habilidad Intangible (Guardián).</p>
+                                <p>Ajusta los Niveles y Guardianes de Pantheon generados por la IA.</p>
                             </div>
 
                             <div class="educational-legend">
@@ -185,12 +185,12 @@ export default class ProjectCreatorView {
 
                             <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem;">
                                 <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Kanban)</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha diseñado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles para la Fase 1.</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha diseñado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles iniciales.</div>
                             </div>
 
                             <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
                                 <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn btn-success" id="btnLaunch">🚀 Instanciar Mapa en el Kernel</button>
+                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Instanciar Mapa en el Kernel</button>
                             </div>
                         </div>
 
@@ -207,6 +207,7 @@ export default class ProjectCreatorView {
             step1: document.getElementById('step1'),
             loading: document.getElementById('aiLoading'),
             loadingMsg: document.getElementById('loadingMsg'),
+            loadingSubMsg: document.getElementById('loadingSubMsg'),
             step2: document.getElementById('step2'),
             dot1: document.getElementById('dot1'),
             dot2: document.getElementById('dot2'),
@@ -255,7 +256,7 @@ export default class ProjectCreatorView {
                         name: sectorData[level].name,
                         fmv: sectorData[level].fmv || 50,
                         multiplier: sectorData[level].multiplier || 1.0,
-                        guardian: this.guardians[idx % this.guardians.length].id // Asignamos guardianes genéricos de inicio
+                        guardian: this.guardians[idx % this.guardians.length].id
                     });
                 });
             }
@@ -320,7 +321,12 @@ export default class ProjectCreatorView {
 
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
-        this.dom.loadingMsg.innerText = `Analizando 12 Guardianes con ${provider.toUpperCase()}...`;
+        this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
+        
+        // Inicializamos el texto base
+        if(this.dom.loadingSubMsg) {
+            this.dom.loadingSubMsg.innerText = "Negociando handshake de modelos...";
+        }
 
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers. 
@@ -329,6 +335,7 @@ export default class ProjectCreatorView {
             Reglas de Roles:
             1. Define 5 Roles usando los niveles: @anxaneta (Dirección), @aixecador (Coordinador), @dosos (Auditor), @baixos (Técnico), @pinya (Operaciones).
             2. Asigna a cada rol un 'guardian' dominante basado en los 12 Arquetipos de Pantheon.work. Opciones válidas: "creator", "caregiver", "ruler", "jester", "everyman", "lover", "hero", "outlaw", "magician", "innocent", "explorer", "sage".
+            3. Calcula el FMV realista para el mercado actual.
             
             Reglas de Transacciones (Flujos de Valor):
             Define 3 a 5 transacciones iniciales. Es OBLIGATORIO incluir flujos 'tangibles' e 'intangibles'.
@@ -348,7 +355,39 @@ export default class ProjectCreatorView {
             let textResponse = "";
 
             if (provider === 'gemini') {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                // 🤝 PATRÓN HANDSHAKE: Averiguamos qué modelos permite esta API Key
+                let targetModel = 'gemini-1.5-flash'; // Fallback por defecto
+                try {
+                    const modRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                    if (modRes.ok) {
+                        const modData = await modRes.json();
+                        // Filtramos modelos que soporten generación de contenido y sean gemini
+                        const validModels = modData.models.filter(m => 
+                            m.supportedGenerationMethods.includes('generateContent') && 
+                            m.name.includes('gemini')
+                        );
+                        
+                        // Intentamos buscar 1.5 primero, luego pro genérico
+                        const bestModel = validModels.find(m => m.name.includes('1.5-flash')) 
+                                       || validModels.find(m => m.name.includes('1.5-pro')) 
+                                       || validModels.find(m => m.name.includes('gemini-pro'))
+                                       || validModels[0];
+
+                        if (bestModel) {
+                            targetModel = bestModel.name.replace('models/', '');
+                            console.log(`✅ Handshake Gemini Exitoso. Usando modelo: ${targetModel}`);
+                        }
+                    }
+                } catch(e) { 
+                    console.warn("⚠️ Error de red en Handshake. Ignorando y usando fallback..."); 
+                }
+
+                if(this.dom.loadingSubMsg) {
+                    this.dom.loadingSubMsg.innerText = `Generando Ontología con ${targetModel}...`;
+                }
+
+                // 🚀 LLAMADA DINÁMICA DE GENERACIÓN
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -356,11 +395,15 @@ export default class ProjectCreatorView {
                     })
                 });
 
-                if (!response.ok) throw new Error("Error en Gemini API. Verifica tu clave.");
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(`Error API (${response.status}): ${errData.error?.message || response.statusText}`);
+                }
                 const data = await response.json();
                 textResponse = data.candidates[0].content.parts[0].text;
             
             } else if (provider === 'openai') {
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Consultando OpenAI GPT-4o-mini...";
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -378,6 +421,7 @@ export default class ProjectCreatorView {
                 textResponse = data.choices[0].message.content;
             
             } else if (provider === 'custom') {
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Conectando con Endpoint Privado...";
                 const response = await fetch(customUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -388,6 +432,7 @@ export default class ProjectCreatorView {
                 textResponse = typeof data === 'string' ? data : JSON.stringify(data);
             }
 
+            // LIMPIEZA EXTREMA DEL JSON
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
             const firstBrace = textResponse.indexOf('{');
             const lastBrace = textResponse.lastIndexOf('}');
@@ -397,7 +442,7 @@ export default class ProjectCreatorView {
 
             const parsedData = JSON.parse(textResponse);
 
-            if (!parsedData.roles) throw new Error("El JSON devuelto no tiene la estructura de roles.");
+            if (!parsedData.roles) throw new Error("El JSON devuelto no tiene la estructura de roles requerida.");
 
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
@@ -440,7 +485,7 @@ export default class ProjectCreatorView {
             levels.forEach(l => { selectLevel += `<option value="${l.id}" ${role.levelId === l.id ? 'selected' : ''}>${l.label}</option>`; });
             selectLevel += `</select>`;
 
-            let selectGuardian = `<select class="inp-role-guardian" data-idx="${index}">`;
+            let selectGuardian = `<select class="inp-role-guardian" data-idx="${index}" title="Asignar Arquetipo Intangible">`;
             this.guardians.forEach(g => { selectGuardian += `<option value="${g.id}" ${role.guardian === g.id ? 'selected' : ''}>${g.label}</option>`; });
             selectGuardian += `</select>`;
 
@@ -491,13 +536,14 @@ export default class ProjectCreatorView {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
         
+        // RBAC: El despachador internamente ya leerá activeUserId y lo pondrá de ownerId
         store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
                 id: projectId,
                 nombre: this.dom.inpName.value.trim() || 'Proyecto sin título',
                 sector: this.dom.inpSector.value,
-                prompt: visionText, // Guardamos la visión As-Is / To-Be
+                prompt: visionText,
                 archetype: 'startup',
                 customRoles: this.draftRoles 
             } 
