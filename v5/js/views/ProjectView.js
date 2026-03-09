@@ -8,10 +8,8 @@ export default class ProjectView {
         this.activeProjectId = null;
     }
 
-    async getHtml() {
+   async getHtml() {
         return `
-            
-
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
 
@@ -19,24 +17,24 @@ export default class ProjectView {
                     <div class="view-header">
                         <div>
                             <h1>Tracción de Red</h1>
-                            <p style="color: #888; font-size: 0.9rem; margin-top: 5px;">Convierte los entregables teóricos en Slices de Equity reales.</p>
+                            <p>Convierte los entregables teóricos en Slices de Equity reales.</p>
                         </div>
-                        <a href="/v5/map" class="btn btn-outline" data-link style="border: 1px solid #333; padding: 10px 15px; border-radius: 8px; color: white; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;">+ Diseñar Entregable VNA</a>
+                        <a href="/v5/map" class="btn btn-outline" data-link>+ Diseñar Entregable VNA</a>
                     </div>
 
                     <div class="kanban-container">
                         <div class="kanban-col">
-                            <div class="col-title">📥 Mercado Teórico <span id="count-theo">0</span></div>
+                            <div class="col-title">📥 Mercado Teórico <span class="badge" id="count-theo">0</span></div>
                             <div id="theo-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
                         </div>
 
                         <div class="kanban-col" style="background: rgba(0, 176, 255, 0.03); border-color: rgba(0, 176, 255, 0.1);">
-                            <div class="col-title" style="color: #00b0ff;">🔥 Deep Work <span id="count-work">0</span></div>
+                            <div class="col-title" style="color: var(--accent-blue);">🔥 Deep Work <span class="badge" id="count-work">0</span></div>
                             <div id="work-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
                         </div>
 
                         <div class="kanban-col">
-                            <div class="col-title" style="color: #00e676;">⛓️ Ledger <span id="count-done">0</span></div>
+                            <div class="col-title" style="color: var(--accent-green);">⛓️ Ledger <span class="badge" id="count-done">0</span></div>
                             <div id="done-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
                         </div>
                     </div>
