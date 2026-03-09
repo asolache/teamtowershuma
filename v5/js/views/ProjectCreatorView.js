@@ -1,60 +1,89 @@
 // v5/js/views/ProjectCreatorView.js
 import { store } from '../core/store.js';
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 import { Sidebar } from '../components/Sidebar.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "IA Instanciador | TeamTowers";
+        document.title = "Instanciador Universal | TeamTowers";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
+        
+        // Los 12 Arquetipos de Guardianes (Pantheon.work inspiration)
+        this.guardians = [
+            { id: 'creator', label: '🎨 Creador (Innovación)' },
+            { id: 'caregiver', label: '❤️ Cuidador (Empatía/Soporte)' },
+            { id: 'ruler', label: '👑 Gobernante (Estructura)' },
+            { id: 'jester', label: '🃏 Bufón (Disrupción/Cohesión)' },
+            { id: 'everyman', label: '🤝 Ciudadano (Realismo)' },
+            { id: 'lover', label: '🔥 Amante (Pasión/Compromiso)' },
+            { id: 'hero', label: '⚔️ Héroe (Ejecución/Valentía)' },
+            { id: 'outlaw', label: '🏴‍☠️ Rebelde (Cambio Radical)' },
+            { id: 'magician', label: '✨ Mago (Transformación)' },
+            { id: 'innocent', label: '🕊️ Inocente (Ética/Transparencia)' },
+            { id: 'explorer', label: '🧭 Explorador (Búsqueda)' },
+            { id: 'sage', label: '🦉 Sabio (Conocimiento/Verdad)' }
+        ];
     }
 
     async getHtml() {
-        const savedKey = localStorage.getItem('tt_gemini_key') || '';
+        const savedKey = localStorage.getItem('tt_ai_key') || '';
+        const savedProvider = localStorage.getItem('tt_ai_provider') || 'gemini';
 
         return `
             <style>
                 .wizard-workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; }
-                .wizard-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); width: 100%; max-width: 800px; padding: 3rem; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
+                .wizard-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); width: 100%; max-width: 900px; padding: 3rem; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
                 .wizard-header { text-align: center; margin-bottom: 2rem; }
                 .wizard-header h1 { font-size: 2.5rem; color: white; margin: 0; letter-spacing: -1px; }
                 .wizard-header p { color: var(--text-muted); margin-top: 10px; }
                 
                 .step-indicator { display: flex; justify-content: center; gap: 10px; margin-bottom: 2rem; }
                 .dot { width: 12px; height: 12px; border-radius: 50%; background: #333; transition: all 0.3s; }
-                .dot.active { background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); transform: scale(1.2); }
+                .dot.active { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); transform: scale(1.2); }
 
-                /* VISION TEXTAREA */
                 .vision-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 15px; color: white; font-size: 1.1rem; width: 100%; min-height: 120px; font-family: inherit; resize: vertical; margin-bottom: 1rem;}
-                .vision-box:focus { border-color: var(--accent-purple); outline: none; box-shadow: 0 0 15px rgba(179, 136, 255, 0.2); }
+                .vision-box:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 15px rgba(0, 176, 255, 0.2); }
                 
-                /* AI LOADING */
+                .ai-config-panel { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px dashed #333; display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem;}
+                .ai-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 10px;}
+                
                 .ai-loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 0; animation: pulse 2s infinite; }
                 .ai-loading span { font-size: 3rem; margin-bottom: 1rem; }
-                .ai-loading p { color: var(--accent-purple); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px;}
+                .ai-loading p { color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px;}
 
-                .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-sm); padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-sm); padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
                 .legend-item { display: flex; align-items: flex-start; gap: 8px; }
-                .legend-item span { font-weight: bold; }
 
-                .role-draft-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
+                .role-draft-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; max-height: 450px; overflow-y: auto; padding-right: 10px;}
                 .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: var(--border-radius-sm); gap: 15px;}
                 
-                .role-inputs { display: flex; gap: 15px; flex: 1; align-items: center; }
-                .inp-role-level { background: #050505; border: 1px solid #333; border-radius: 6px; padding: 6px; font-size: 0.75rem; font-weight: bold; outline: none; cursor: pointer; transition: border-color 0.2s; }
-                .inp-role-level:focus { border-color: var(--accent-blue); }
+                .role-inputs { display: flex; gap: 10px; flex: 1; align-items: center; flex-wrap: wrap;}
+                .inp-role-level, .inp-role-guardian { background: #050505; border: 1px solid #333; border-radius: 6px; padding: 6px; font-size: 0.75rem; font-weight: bold; outline: none; cursor: pointer; transition: border-color 0.2s; color: white;}
+                .inp-role-level:focus, .inp-role-guardian:focus { border-color: var(--accent-blue); }
                 
-                .role-inputs input { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #333; padding: 5px; flex: 1; min-width: 150px;}
-                .role-inputs input:focus { border-bottom-color: var(--accent-blue); outline: none; }
-                .role-inputs .fmv-input { width: 70px; min-width: 70px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); }
+                .role-inputs input.inp-role-name { background: transparent; border: none; color: white; font-size: 0.9rem; border-bottom: 1px solid #333; padding: 5px; flex: 1; min-width: 150px;}
+                .role-inputs input.inp-role-name:focus { border-bottom-color: var(--accent-blue); outline: none; }
+                .role-inputs .fmv-input { width: 60px; min-width: 60px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); background: transparent; border: none; border-bottom: 1px solid #333;}
                 
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
                 .btn-del-role:hover { transform: scale(1.2); }
 
-                .actions { display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); }
+                .actions-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
 
                 @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+                @media (max-width: 768px) {
+                    .wizard-workspace { padding: 1rem; }
+                    .wizard-card { padding: 1.5rem; }
+                    .role-draft-item { flex-direction: column; align-items: stretch; }
+                    .role-inputs { flex-direction: column; align-items: stretch; }
+                    .btn-del-role { align-self: flex-end; }
+                    .educational-legend { grid-template-columns: 1fr; }
+                    .actions-row { flex-direction: column; }
+                    .actions-row .btn { width: 100%; }
+                }
             </style>
 
             <div class="app-layout">
@@ -69,65 +98,99 @@ export default class ProjectCreatorView {
 
                         <div id="step1">
                             <div class="wizard-header">
-                                <h1>Instanciar Red con IA</h1>
-                                <p>Describe tu proyecto. Gemini AI diseñará la ontología óptima y los flujos críticos (Tangibles e Intangibles).</p>
+                                <h1>Instanciador de Red</h1>
+                                <p>Mapea una organización existente (As-Is) o diseña una nueva (To-Be).</p>
                             </div>
                             
-                            <div class="form-group">
-                                <label>Nombre del Proyecto</label>
-                                <input type="text" id="inpName" class="form-control" placeholder="Ej: Cooperativa Solar DAO">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 1.5rem;">
+                                <div class="form-group" style="margin: 0;">
+                                    <label>Nombre del Castell (Proyecto)</label>
+                                    <input type="text" id="inpName" class="form-control" placeholder="Ej: Cooperativa Solar DAO">
+                                </div>
+                                <div class="form-group" style="margin: 0;">
+                                    <label>Macro-Área / Sector</label>
+                                    <select id="inpSector" class="form-control">
+                                        <option value="tech_saas_platform">💻 Software & SaaS</option>
+                                        <option value="web3_defi_protocol">⛓️ Web3 & Protocolo DeFi</option>
+                                        <option value="digital_media_growth">📢 Digital Media & Growth</option>
+                                        <option value="healthtech_ai">🏥 HealthTech & IA Clínica</option>
+                                        <option value="deeptech_hardware">🤖 DeepTech & Hardware</option>
+                                        <option value="ecommerce_d2c">📦 E-Commerce & D2C</option>
+                                        <option value="agile_consulting_b2b">👔 Agencia / Consultoría B2B</option>
+                                        <option value="edtech_community">🎓 EdTech & Academia</option>
+                                        <option value="impact_dao_ngo">🌍 Impacto Social / ONG</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
-                                <label>Visión Estratégica (Habla con la IA)</label>
-                                <textarea id="inpVision" class="vision-box" placeholder="Ej: Somos 3 personas. Queremos montar una plataforma educativa sobre ética IA para empresas. Necesitamos roles técnicos, legales y de comunidad. Vamos a pulmón sin inversión inicial..."></textarea>
+                                <label>Misión / Visión Estratégica</label>
+                                <textarea id="inpVision" class="vision-box" placeholder="Describe el propósito de la red, los objetivos fundacionales o los problemas del sistema actual que quieres resolver..."></textarea>
                             </div>
 
-                            <div class="form-group" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px dashed #333;">
-                                <label style="display: flex; justify-content: space-between;">
-                                    <span>🔑 Gemini API Key (Requerido)</span>
-                                    <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--accent-blue); text-transform: none; font-size: 0.7rem; text-decoration: underline;">Obtener Key</a>
-                                </label>
-                                <input type="password" id="inpApiKey" class="form-control" placeholder="AIzaSy..." value="${savedKey}">
-                            </div>
+                            <details style="margin-bottom: 2rem;">
+                                <summary style="color: var(--accent-purple); font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">✨ Desplegar Asistente IA (Opcional)</summary>
+                                <div class="ai-config-panel">
+                                    <div class="ai-grid">
+                                        <div>
+                                            <label style="font-size: 0.7rem; color:#888;">Proveedor IA</label>
+                                            <select id="inpAiProvider" class="form-control">
+                                                <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini (Recomendado)</option>
+                                                <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
+                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo (Custom Endpoint)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.7rem; color:#888;">API Key / Bearer Token</label>
+                                            <input type="password" id="inpApiKey" class="form-control" placeholder="sk-..." value="${savedKey}">
+                                        </div>
+                                    </div>
+                                    <div id="customEndpointBox" style="display: ${savedProvider === 'custom' ? 'block' : 'none'}; margin-top: 10px;">
+                                        <label style="font-size: 0.7rem; color:#888;">URL del Endpoint Custom</label>
+                                        <input type="text" id="inpCustomUrl" class="form-control" placeholder="https://mi-empresa.com/api/agent/architect">
+                                    </div>
+                                </div>
+                            </details>
 
-                            <div class="actions" style="justify-content: flex-end;">
-                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));">🧠 Generar Castell con IA</button>
+                            <div class="actions-row">
+                                <button class="btn btn-outline" id="btnStartBlank">📄 Empezar en Blanco</button>
+                                <button class="btn btn-outline" id="btnLoadTemplate">🏗️ Cargar Plantilla Base</button>
+                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));">🧠 Diseñar con IA</button>
                             </div>
                         </div>
 
                         <div id="aiLoading" class="ai-loading">
-                            <span>🧠</span>
-                            <p>El Orquestador IA está diseñando tu red...</p>
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;">Calculando Valor de Mercado y Transacciones Críticas.</div>
+                            <span>🔌</span>
+                            <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;">Analizando 12 Guardianes y Flujos de Valor.</div>
                         </div>
 
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 1.5rem;">
-                                <h1>Validar Ontología IA</h1>
-                                <p>Ajusta la propuesta de Gemini. Se han pre-cargado flujos de valor estratégicos.</p>
+                                <h1>Definición de Roles</h1>
+                                <p>Un rol es una actividad gestionada, no un puesto de trabajo. Selecciona el nivel estructural y su Habilidad Intangible (Guardián).</p>
                             </div>
 
                             <div class="educational-legend">
-                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Dirección y Visión (Riesgo x3)</div>
-                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Coordinación y PM (Riesgo x2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-purple);">👁️ @dosos:</span> Auditoría y QA (Riesgo x1.5)</div>
-                                <div class="legend-item"><span style="color:var(--accent-indigo);">⚙️ @baixos:</span> Especialista / Core (Riesgo x1.2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Operaciones / Base (Riesgo x1)</div>
+                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Dirección (x3)</div>
+                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Coordinación (x2)</div>
+                                <div class="legend-item"><span style="color:var(--accent-purple);">👁️ @dosos:</span> Auditoría/QA (x1.5)</div>
+                                <div class="legend-item"><span style="color:var(--accent-indigo);">⚙️ @baixos:</span> Especialista (x1.2)</div>
+                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Operaciones (x1)</div>
                             </div>
 
                             <div class="role-draft-list" id="draftRolesContainer"></div>
                             
-                            <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Añadir Nodo Manualmente</button>
+                            <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Instanciar Nuevo Rol</button>
 
-                            <div style="background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem;">
+                            <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem;">
                                 <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Kanban)</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">Gemini ha diseñado <strong id="txCount" style="color: white;">0</strong> entregables clave de gestión, ética y desarrollo para la Fase 1. Estarán en tu Mercado Teórico.</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha diseñado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles para la Fase 1.</div>
                             </div>
 
-                            <div class="actions">
+                            <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
                                 <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn btn-success" id="btnLaunch">🚀 Instanciar Red en el Kernel</button>
+                                <button class="btn btn-success" id="btnLaunch">🚀 Instanciar Mapa en el Kernel</button>
                             </div>
                         </div>
 
@@ -143,20 +206,63 @@ export default class ProjectCreatorView {
         this.dom = {
             step1: document.getElementById('step1'),
             loading: document.getElementById('aiLoading'),
+            loadingMsg: document.getElementById('loadingMsg'),
             step2: document.getElementById('step2'),
             dot1: document.getElementById('dot1'),
             dot2: document.getElementById('dot2'),
+            btnStartBlank: document.getElementById('btnStartBlank'),
+            btnLoadTemplate: document.getElementById('btnLoadTemplate'),
             btnGenerateAI: document.getElementById('btnGenerateAI'),
             btnBack: document.getElementById('btnBack'),
             btnLaunch: document.getElementById('btnLaunch'),
             btnAddCustom: document.getElementById('btnAddCustomRole'),
             container: document.getElementById('draftRolesContainer'),
             inpName: document.getElementById('inpName'),
+            inpSector: document.getElementById('inpSector'),
             inpVision: document.getElementById('inpVision'),
             inpApiKey: document.getElementById('inpApiKey'),
+            inpAiProvider: document.getElementById('inpAiProvider'),
+            inpCustomUrl: document.getElementById('inpCustomUrl'),
+            customEndpointBox: document.getElementById('customEndpointBox'),
+            aiTxFeedback: document.getElementById('aiTxFeedback'),
             txCount: document.getElementById('txCount')
         };
 
+        this.dom.inpAiProvider.addEventListener('change', (e) => {
+            this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+
+        // RUTA 1: LIENZO EN BLANCO
+        this.dom.btnStartBlank.addEventListener('click', () => {
+            if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
+            this.draftRoles = [];
+            this.draftTxs = [];
+            this.goToStep2();
+        });
+
+        // RUTA 2: CARGAR PLANTILLA
+        this.dom.btnLoadTemplate.addEventListener('click', () => {
+            if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
+            const sectorData = GLOBAL_ONTOLOGY[this.dom.inpSector.value];
+            this.draftRoles = [];
+            this.draftTxs = [];
+            
+            if (sectorData) {
+                Object.keys(sectorData).forEach((level, idx) => {
+                    this.draftRoles.push({
+                        id: 'draft_' + Math.random().toString(36).substr(2, 9),
+                        levelId: level,
+                        name: sectorData[level].name,
+                        fmv: sectorData[level].fmv || 50,
+                        multiplier: sectorData[level].multiplier || 1.0,
+                        guardian: this.guardians[idx % this.guardians.length].id // Asignamos guardianes genéricos de inicio
+                    });
+                });
+            }
+            this.goToStep2();
+        });
+
+        // RUTA 3: IA
         this.dom.btnGenerateAI.addEventListener('click', () => this.generateWithAI());
 
         this.dom.btnBack.addEventListener('click', () => {
@@ -170,9 +276,10 @@ export default class ProjectCreatorView {
             this.draftRoles.push({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: '@baixos',
-                name: 'Nodo Técnico',
+                name: 'Nuevo Rol',
                 fmv: 40,
-                multiplier: 1.2
+                multiplier: 1.2,
+                guardian: 'everyman'
             });
             this.renderDraftRoles();
         });
@@ -180,74 +287,108 @@ export default class ProjectCreatorView {
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
+    goToStep2() {
+        this.dom.step1.style.display = 'none';
+        this.dom.loading.style.display = 'none';
+        this.dom.step2.style.display = 'block';
+        this.dom.dot1.classList.remove('active');
+        this.dom.dot2.classList.add('active');
+        
+        if (this.draftTxs.length > 0) {
+            this.dom.aiTxFeedback.style.display = 'block';
+            this.dom.txCount.innerText = this.draftTxs.length;
+        } else {
+            this.dom.aiTxFeedback.style.display = 'none';
+        }
+
+        this.renderDraftRoles();
+    }
+
     async generateWithAI() {
         const name = this.dom.inpName.value.trim();
         const vision = this.dom.inpVision.value.trim();
+        const provider = this.dom.inpAiProvider.value;
         const apiKey = this.dom.inpApiKey.value.trim();
+        const customUrl = this.dom.inpCustomUrl.value.trim();
 
         if (!name) return alert("Debes darle un nombre a la red.");
-        if (!vision) return alert("Escribe tu visión estratégica para que la IA pueda diseñar.");
-        if (!apiKey) return alert("Falta la API Key de Gemini.");
+        if (!vision) return alert("Escribe tu visión estratégica para que el Agente la procese.");
+        if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor seleccionado.");
 
-        localStorage.setItem('tt_gemini_key', apiKey);
+        localStorage.setItem('tt_ai_key', apiKey);
+        localStorage.setItem('tt_ai_provider', provider);
 
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
+        this.dom.loadingMsg.innerText = `Analizando 12 Guardianes con ${provider.toUpperCase()}...`;
 
         const systemPrompt = `
-            Eres el 'Ecosystem Architect' de TeamTowers, un sistema operativo para organizaciones distribuidas basado en Value Network Analysis (VNA) y Slicing Pie.
-            Tu misión es analizar la visión del usuario y devolver UNICAMENTE un JSON válido con la estructura óptima del equipo y las primeras tareas críticas. NO devuelvas texto adicional ni formato markdown.
+            Eres el 'Ecosystem Architect' de TeamTowers. 
+            Tu misión es analizar la visión del usuario y devolver UNICAMENTE un JSON válido con los roles y las primeras tareas críticas. NO devuelvas texto adicional ni markdown.
             
-            Debes definir 5 Roles usando los niveles Castellers: @anxaneta (Dirección), @aixecador (Coordinador), @dosos (Auditor/QA), @baixos (Técnico Core), @pinya (Operaciones).
-            Calcula el FMV (Fair Market Value en €/hora) realista para el mercado actual.
+            Reglas de Roles:
+            1. Define 5 Roles usando los niveles: @anxaneta (Dirección), @aixecador (Coordinador), @dosos (Auditor), @baixos (Técnico), @pinya (Operaciones).
+            2. Asigna a cada rol un 'guardian' dominante basado en los 12 Arquetipos de Pantheon.work. Opciones válidas: "creator", "caregiver", "ruler", "jester", "everyman", "lover", "hero", "outlaw", "magician", "innocent", "explorer", "sage".
             
-            Define entre 3 y 5 transacciones iniciales críticas. Incluye transacciones 'tangibles' e 'intangibles'.
+            Reglas de Transacciones (Flujos de Valor):
+            Define 3 a 5 transacciones iniciales. Es OBLIGATORIO incluir flujos 'tangibles' e 'intangibles'.
             
-            FORMATO JSON ESTRICTO:
+            FORMATO JSON ESTRICTO ESPERADO:
             {
                 "roles": [
-                    { "levelId": "@anxaneta", "name": "Ej: Tech Lead", "fmv": 60, "multiplier": 3.0 },
-                    { "levelId": "@aixecador", "name": "...", "fmv": 50, "multiplier": 2.0 },
-                    { "levelId": "@dosos", "name": "...", "fmv": 45, "multiplier": 1.5 },
-                    { "levelId": "@baixos", "name": "...", "fmv": 40, "multiplier": 1.2 },
-                    { "levelId": "@pinya", "name": "...", "fmv": 30, "multiplier": 1.0 }
+                    { "levelId": "@anxaneta", "name": "Ej: Estratega de Producto", "fmv": 60, "multiplier": 3.0, "guardian": "magician" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@dosos", "tipo": "intangible", "entregable": "Alineación estratégica", "horas": 2 },
-                    { "fromLevel": "@baixos", "toLevel": "@aixecador", "tipo": "tangible", "entregable": "Despliegue del Core", "horas": 8 }
+                    { "fromLevel": "@anxaneta", "toLevel": "@dosos", "tipo": "intangible", "entregable": "Alineación estratégica", "horas": 2 }
                 ]
             }
         `;
 
         try {
-            console.log("🚀 Iniciando llamada a Gemini API (Modelo Universal gemini-pro)...");
-            
-            // 🔥 FIX: Usamos 'gemini-pro' (1.0) que es universal y funciona con TODAS las API Keys.
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `${systemPrompt}\n\nPROYECTO DEL USUARIO: ${vision}` }] }]
-                    // Eliminamos generationConfig (JSON mode) porque gemini-pro 1.0 no lo soporta, 
-                    // dependemos del prompt y nuestro limpiador regex.
-                })
-            });
+            let textResponse = "";
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("❌ Error de la API de Google:", errorData);
-                throw new Error(`Error API (${response.status}): ${errorData.error?.message || 'Revisa tu API Key'}`);
+            if (provider === 'gemini') {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\nPROYECTO: ${vision}` }] }]
+                    })
+                });
+
+                if (!response.ok) throw new Error("Error en Gemini API. Verifica tu clave.");
+                const data = await response.json();
+                textResponse = data.candidates[0].content.parts[0].text;
+            
+            } else if (provider === 'openai') {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({
+                        model: "gpt-4o-mini",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: vision }
+                        ],
+                        response_format: { type: "json_object" }
+                    })
+                });
+                if (!response.ok) throw new Error("Error en OpenAI API.");
+                const data = await response.json();
+                textResponse = data.choices[0].message.content;
+            
+            } else if (provider === 'custom') {
+                const response = await fetch(customUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ prompt: systemPrompt, vision: vision })
+                });
+                if (!response.ok) throw new Error("Error en el Endpoint Custom.");
+                const data = await response.json();
+                textResponse = typeof data === 'string' ? data : JSON.stringify(data);
             }
-            
-            const data = await response.json();
-            let textResponse = data.candidates[0].content.parts[0].text;
-            
-            console.log("🤖 Respuesta bruta de Gemini:", textResponse);
 
-            // 🔥 Limpiador extremo de Markdown (gemini-pro a veces añade texto antes o después)
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-            
-            // Buscar el primer '{' y el último '}' para ignorar texto basura
             const firstBrace = textResponse.indexOf('{');
             const lastBrace = textResponse.lastIndexOf('}');
             if (firstBrace !== -1 && lastBrace !== -1) {
@@ -256,46 +397,25 @@ export default class ProjectCreatorView {
 
             const parsedData = JSON.parse(textResponse);
 
-            if (!parsedData.roles || !parsedData.transactions) {
-                throw new Error("El JSON devuelto no tiene la estructura correcta.");
-            }
+            if (!parsedData.roles) throw new Error("El JSON devuelto no tiene la estructura de roles.");
 
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: r.levelId,
                 name: r.name,
                 fmv: r.fmv,
-                multiplier: r.multiplier
+                multiplier: r.multiplier,
+                guardian: r.guardian || 'everyman'
             }));
 
-            this.draftTxs = parsedData.transactions;
-
-            this.dom.loading.style.display = 'none';
-            this.dom.step2.style.display = 'block';
-            this.dom.dot1.classList.remove('active');
-            this.dom.dot2.classList.add('active');
-            this.dom.txCount.innerText = this.draftTxs.length;
-            
-            this.renderDraftRoles();
-            console.log("✅ Ontología generada con éxito.");
+            this.draftTxs = parsedData.transactions || [];
+            this.goToStep2();
 
         } catch (error) {
-            console.error("💥 Fallo en la Generación IA:", error);
-            alert(`Fallo IA: ${error.message}\n\nAplicando fallback básico.`);
-            
-            this.selectedSector = 'startup_tech';
-            this.draftTxs = [];
-            this.draftRoles = [
-                { id: 'd1', levelId: '@anxaneta', name: 'Visionario', fmv: 60, multiplier: 3.0 },
-                { id: 'd2', levelId: '@aixecador', name: 'Orquestador', fmv: 50, multiplier: 2.0 },
-                { id: 'd3', levelId: '@dosos', name: 'Auditor', fmv: 45, multiplier: 1.5 },
-                { id: 'd4', levelId: '@baixos', name: 'Técnico', fmv: 40, multiplier: 1.2 },
-                { id: 'd5', levelId: '@pinya', name: 'Soporte', fmv: 30, multiplier: 1.0 }
-            ];
-            
+            console.error("💥 Fallo IA:", error);
+            alert(`Fallo en la IA: ${error.message}\n\nPuedes continuar usando "Lienzo en Blanco" o "Cargar Plantilla".`);
             this.dom.loading.style.display = 'none';
-            this.dom.step2.style.display = 'block';
-            this.renderDraftRoles();
+            this.dom.step1.style.display = 'block';
         }
     }
 
@@ -305,10 +425,10 @@ export default class ProjectCreatorView {
         
         const levels = [
             { id: '@anxaneta', label: '@anxaneta (Dirección)' },
-            { id: '@aixecador', label: '@aixecador (Coordinación)' },
-            { id: '@dosos', label: '@dosos (Auditoría)' },
+            { id: '@aixecador', label: '@aixecador (Coordinador)' },
+            { id: '@dosos', label: '@dosos (Auditor)' },
             { id: '@baixos', label: '@baixos (Técnico)' },
-            { id: '@pinya', label: '@pinya (Base)' }
+            { id: '@pinya', label: '@pinya (Operaciones)' }
         ];
 
         this.draftRoles.forEach((role, index) => {
@@ -316,19 +436,22 @@ export default class ProjectCreatorView {
             const row = document.createElement('div');
             row.className = 'role-draft-item';
             
-            let selectHtml = `<select class="inp-role-level" data-idx="${index}" style="color: ${color}; border-color: ${color};">`;
-            levels.forEach(l => {
-                selectHtml += `<option value="${l.id}" ${role.levelId === l.id ? 'selected' : ''}>${l.label}</option>`;
-            });
-            selectHtml += `</select>`;
+            let selectLevel = `<select class="inp-role-level" data-idx="${index}" style="color: ${color}; border-color: ${color};">`;
+            levels.forEach(l => { selectLevel += `<option value="${l.id}" ${role.levelId === l.id ? 'selected' : ''}>${l.label}</option>`; });
+            selectLevel += `</select>`;
+
+            let selectGuardian = `<select class="inp-role-guardian" data-idx="${index}">`;
+            this.guardians.forEach(g => { selectGuardian += `<option value="${g.id}" ${role.guardian === g.id ? 'selected' : ''}>${g.label}</option>`; });
+            selectGuardian += `</select>`;
 
             row.innerHTML = `
                 <div class="role-inputs">
-                    ${selectHtml}
-                    <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Nombre del Rol">
+                    ${selectLevel}
+                    ${selectGuardian}
+                    <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Actividad del Rol">
                     <div style="display:flex; align-items:center; gap: 5px;">
                         <span style="color: var(--text-muted); font-size: 0.7rem;">FMV:</span>
-                        <input type="number" value="${role.fmv}" class="fmv-input inp-role-fmv" data-idx="${index}" title="Valor de Mercado €/h">
+                        <input type="number" value="${role.fmv}" class="fmv-input inp-role-fmv" data-idx="${index}" title="Valor Mercado €/h">
                         <span style="color: var(--text-muted); font-size: 0.7rem;">€/h</span>
                     </div>
                 </div>
@@ -347,6 +470,9 @@ export default class ProjectCreatorView {
                 this.renderDraftRoles();
             });
         });
+        this.dom.container.querySelectorAll('.inp-role-guardian').forEach(sel => {
+            sel.addEventListener('change', (e) => this.draftRoles[e.target.dataset.idx].guardian = e.target.value);
+        });
         this.dom.container.querySelectorAll('.inp-role-name').forEach(inp => {
             inp.addEventListener('input', (e) => this.draftRoles[e.target.dataset.idx].name = e.target.value);
         });
@@ -363,26 +489,25 @@ export default class ProjectCreatorView {
 
     finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
+        const visionText = this.dom.inpVision.value.trim();
         
-        // 1. Despachamos la creación del proyecto
         store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
                 id: projectId,
-                nombre: this.dom.inpName.value.trim(),
-                sector: 'ai_custom',
+                nombre: this.dom.inpName.value.trim() || 'Proyecto sin título',
+                sector: this.dom.inpSector.value,
+                prompt: visionText, // Guardamos la visión As-Is / To-Be
                 archetype: 'startup',
                 customRoles: this.draftRoles 
             } 
         });
 
-        // 2. Inyectamos las transacciones fundacionales que propuso Gemini
         const state = store.getState();
         const p = state.projects.find(x => x.id === projectId);
         
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             this.draftTxs.forEach(aiTx => {
-                // Buscamos los IDs reales de los roles generados
                 const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
                 const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
                 
