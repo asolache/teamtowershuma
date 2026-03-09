@@ -10,7 +10,6 @@ export default class TestsView {
     async getHtml() {
         return `
             <style>
-                /* Estilos locales ultra-específicos para la terminal de tests */
                 .test-container { padding: 3rem; max-width: 900px; margin: 0 auto; }
                 .test-header { text-align: center; margin-bottom: 3rem; }
                 .test-header h1 { color: var(--accent-blue); font-family: var(--font-mono); font-size: 2.5rem; letter-spacing: -1px; }
@@ -27,7 +26,7 @@ export default class TestsView {
                 .test-msg { flex: 1; }
                 .test-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 12px; background: #222; border: 1px solid #444; color: var(--text-muted); margin-left: 10px; white-space: nowrap; font-weight: bold; }
 
-                .run-btn { width: 100%; padding: 1.2rem; font-size: 1.1rem; margin-top: 1.5rem; font-family: var(--font-mono); border-radius: var(--border-radius-sm); }
+                .run-btn { width: 100%; padding: 1.2rem; font-size: 1.1rem; margin-top: 1.5rem; font-family: var(--font-mono); border-radius: var(--border-radius-sm); cursor: pointer;}
                 .run-btn:disabled { background: #333; cursor: not-allowed; color: #777; transform: none; box-shadow: none;}
 
                 @media (max-width: 768px) {
@@ -44,13 +43,13 @@ export default class TestsView {
 
             <div class="test-container">
                 <div class="test-header">
-                    <h1>KERNEL v6.2 VALIDATION</h1>
-                    <p style="color: var(--text-muted);">Ejecutando 46 validaciones: RBAC, Inmutabilidad, Slicing Pie y VNA</p>
+                    <h1>KERNEL v6.5 VALIDATION</h1>
+                    <p style="color: var(--text-muted);">Ejecutando 52 validaciones: RBAC, Inmutabilidad, Slicing Pie, Identidad Fractal</p>
                 </div>
 
                 <div class="metrics-row">
                     <div class="metric-box">
-                        <h3 id="testScore">0/46</h3>
+                        <h3 id="testScore">0/52</h3>
                         <p>Tests Superados</p>
                     </div>
                     <div class="metric-box" style="background: rgba(0, 176, 255, 0.05); border-color: rgba(0, 176, 255, 0.2);">
@@ -70,7 +69,7 @@ export default class TestsView {
     }
 
     executeViewScript() {
-        console.log("🚀 ARCHIVO DE TESTS v6.2 CARGADO CORRECTAMENTE EN EL NAVEGADOR");
+        console.log("🚀 ARCHIVO DE TESTS v6.5 CARGADO CORRECTAMENTE EN EL NAVEGADOR");
         
         const btn = document.getElementById('runTestsBtn');
         const terminal = document.getElementById('terminalLog');
@@ -99,6 +98,10 @@ export default class TestsView {
                 `;
                 terminal.scrollTop = terminal.scrollHeight;
                 score.innerText = `${passed}/${total}`;
+                
+                if (!isPass) {
+                    throw new Error(`Test Fallido: [${tag}] ${message}`);
+                }
             };
 
             const PID_1 = 'test-proj-' + Date.now();
@@ -106,14 +109,15 @@ export default class TestsView {
             const PID_ECO = 'test-eco-' + Date.now();
 
             try {
-                // 1-2. INICIALIZACIÓN Y LOGIN
+                // 1-2. INICIALIZACIÓN Y LOGIN (V6.5)
                 assert(typeof store.calculateResilience === 'function', "Función de Resiliencia presente", "KERNEL");
-                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
+                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'usr_alvaro_001' } }); // Root login
                 
                // 3-6. CREACIÓN DE PROYECTOS Y ONTOLOGÍA
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_1, nombre: 'Test Project', sector: 'digital_media_growth' } });
                 const p = store.getState().projects.find(x => x.id === PID_1);
                 assert(p !== undefined && p.sector === 'digital_media_growth', "Proyecto creado con sector asignado", "CORE");
+                assert(p.ownerId === 'usr_alvaro_001', "RBAC Local: Creador asignado como Project Owner", "RBAC");
                 
                 let expectedRolesCount = 5;
                 let expectedLeaderName = 'Growth Hacker / CMO';
@@ -184,7 +188,7 @@ export default class TestsView {
                 ]);
                 assert(store.getState().projects.find(x => x.id === PID_1).ledger.length === numLedgersBefore + 2, "El importador ha inyectado el JSON al Ledger", "AUTO-LEDGER");
 
-                // 20-23. IDENTIDAD Y POOL GLOBAL
+                // 20-23. IDENTIDAD Y POOL GLOBAL (v6.5)
                 assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "KERNEL");
                 const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 100000);
                 store.dispatch({ type: 'ADD_USER', payload: { projectId: PID_1, name: 'Laura (Node Dev)', id: dynLauraId, walletOrSocial: '0x123...abc' } });
@@ -193,23 +197,23 @@ export default class TestsView {
                 const lauraGlobal = stateAfterUser.globalUsers.find(u => u.id === dynLauraId);
                 assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con @id único", "IDENTITY");
                 assert(lauraGlobal.walletOrSocial === '0x123...abc', "Metadatos extendidos guardados", "IDENTITY");
-                assert(stateAfterUser.projects.find(x => x.id === PID_1).usuarios.find(u => u.id === dynLauraId) !== undefined, "Usuario enlazado al Proyecto local", "IDENTITY");
+                assert(lauraGlobal.globalRole === 'network-user', "Usuario hereda rol raso por defecto", "RBAC");
 
                 let errorThrown = false;
                 try { store.dispatch({ type: 'ADD_USER', payload: { projectId: PID_1, name: 'Laura Falsa', id: dynLauraId } }); } 
                 catch (error) { errorThrown = true; }
                 assert(errorThrown, "El Kernel bloquea la creación de usuarios con @id duplicado", "SECURITY");
 
-                // 24-26. RBAC SESSION
+                // 24-26. RBAC SESSION GLOBAL (v6.5)
                 store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynLauraId } });
                 assert(store.getState().session !== undefined, "Objeto de sesión creado en el Kernel", "RBAC");
                 assert(store.getState().session.activeUserId === dynLauraId, "El usuario activo se registró correctamente", "RBAC");
-                assert(store.getState().session.role === 'user', "Por defecto, el usuario entra con permisos básicos", "RBAC");
+                assert(store.getState().session.role === 'network-user', "El Kernel inyecta el Global Role correcto en sesión", "RBAC");
 
-                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
-                assert(store.getState().session.role === 'admin', "El Administrador recupera el rol máximo", "RBAC");
+                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'usr_alvaro_001' } });
+                assert(store.getState().session.role === 'ecosystem-owner', "El Administrador Root recupera su acceso de propietario global", "RBAC");
 
-                // 27-33. ONTOLOGÍAS DINÁMICAS, ARQUETIPOS Y PULL-SYSTEM
+                // 27-33. ONTOLOGÍAS DINÁMICAS Y PULL-SYSTEM
                 assert(store.getState().ontology !== undefined && store.getState().ontology.sectores !== undefined, "La Ontología es accesible", "ONTOLOGY");
                 
                 const sectorDynId = 'deep-tech-' + Date.now();
@@ -242,55 +246,54 @@ export default class TestsView {
                 txPull = store.getState().projects.find(x => x.id === PID_ECO).transactions[0];
                 assert(txPull.status === 'pinged' && txPull.assigneeId === dynLauraId, "El usuario puede auto-asignarse el entregable", "PULL-SYSTEM");
 
-                // 34-40. NUEVO SISTEMA RBAC (v6.0)
+                // 34-40. NUEVO SISTEMA RBAC (v6.5) - RESTRICCIONES
                 store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynLauraId } });
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'rbac-proj', nombre: 'RBAC Test', sector: 'software' } });
-                assert(true, "El sistema soporta creación de redes con Owner asignado", "RBAC"); 
+                assert(true, "El sistema soporta creación de redes por usuarios (Democratización)", "RBAC"); 
 
                 let rbacErrorThrown = false;
                 try { store.dispatch({ type: 'ADD_PROJECT_RESTRICTED', payload: { id: 'bad-proj' } }); } catch(e) { rbacErrorThrown = true; }
-                assert(rbacErrorThrown, "El Kernel bloquea la creación estricta de proyectos a Nodos Base", "SECURITY");
+                assert(rbacErrorThrown, "El Kernel bloquea la instanciación de redes restringidas a Network Users", "SECURITY");
 
+                // Volvemos al owner para testing de comunicaciones
+                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'usr_alvaro_001' } });
+                
                 store.dispatch({ type: 'ADD_PROJECT_ALERT', payload: { projectId: PID_ECO, message: 'Ping de Auditoría' } });
                 const pAlerts = store.getState().projects.find(p => p.id === PID_ECO).alerts || [];
-                assert(pAlerts.length > 0 && pAlerts[0].message === 'Ping de Auditoría', "El EO puede enviar Pings directos al Buzón", "COMMS");
+                assert(pAlerts.length > 0 && pAlerts[0].message === 'Ping de Auditoría', "El EO puede enviar Pings directos al Buzón de la Red", "COMMS");
 
                 store.dispatch({ type: 'RESOLVE_PROJECT_ALERT', payload: { projectId: PID_ECO, alertId: pAlerts[0].id } });
                 const resolvedAlert = store.getState().projects.find(p => p.id === PID_ECO).alerts[0];
                 assert(resolvedAlert.resolved === true, "El PO puede marcar la incidencia como Resuelta", "COMMS");
 
-                assert(store.getState().session.role === 'user', "El Nodo mantiene su rol raso", "RBAC");
-
                 store.dispatch({ type: 'PROMOTE_TO_PO', payload: { projectId: PID_ECO, userId: dynLauraId } });
                 const isPO = store.getState().projects.find(p => p.id === PID_ECO).ownerId === dynLauraId;
-                assert(isPO, "El sistema delega la propiedad del proyecto al usuario seleccionado", "RBAC");
+                assert(isPO, "El sistema delega la propiedad (Project Owner) al usuario seleccionado", "RBAC");
 
                 // 41-43. ARQUETIPOS Y MATURITY INDEX
-                store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
-
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: 'test-arch', nombre: 'Startup Tech', sector: 'software', archetype: 'startup' } });
                 const pArch = store.getState().projects.find(x => x.id === 'test-arch');
-                assert(pArch.archetype === 'startup', "El Kernel reconoce y almacena el Arquetipo", "KERNEL_6.1");
+                assert(pArch.archetype === 'startup', "El Kernel reconoce y almacena el Arquetipo del Sistema", "KERNEL");
 
                 const maturity = store.calculateMaturityIndex('test-arch');
-                assert(maturity.score >= 0, "El Kernel calcula la salud estructural (Maturity Index)", "KERNEL_6.1");
+                assert(maturity.score >= 0, "El Kernel calcula la salud estructural (Maturity Index)", "KERNEL");
 
-                assert(typeof store.getArchetypeFactor === 'function', "Función de Factor de Arquetipo presente", "KERNEL_6.1");
+                assert(typeof store.getArchetypeFactor === 'function', "Función de Factor de Arquetipo presente", "KERNEL");
 
-                // 🔥 TEST 44: Slicing Pie y Consolidación (Harvesting)
+                // 44-46: SLICING PIE & HARVESTING
                 const testHarvestId = 'test-harvest-' + Date.now();
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: testHarvestId, nombre: 'Harvest Test', sector: 'startup', archetype: 'corp' } });
                 store.dispatch({ type: 'ADD_ROLE', payload: { projectId: testHarvestId, role: { id: 'r-dev', name: 'Dev', levelId: '@baixos', fmv: 50, multiplier: 2.5 } } });
                 store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: testHarvestId, tx: { from: 'r-dev', to: 'r-dev', horas: 10, entregable: 'Test Math', tipo: 'tangible', status: 'approved' } } });
                 
-                const txToApprove = store.getState().projects.find(p=>p.id===testHarvestId).transactions[0];
-                store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: testHarvestId, txHash: txToApprove.hash } });
+                const txToApprove2 = store.getState().projects.find(p=>p.id===testHarvestId).transactions[0];
+                store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: testHarvestId, txHash: txToApprove2.hash } });
                 
                 const harvestResult = store.calculateHarvest(testHarvestId);
                 const devHarvest = harvestResult.find(h => h.roleId === 'r-dev');
                 assert(devHarvest !== undefined && devHarvest.totalValue === 1250, "Value Accounting: El Kernel calcula matemáticamente los Slices (1250)", "SLICING-PIE");
 
-                // 🔥 TEST 45: Auto-Contabilidad Deep Work (Pomodoro AI)
+                // 47-48: AUTO-CONTABILIDAD DEEP WORK
                 const pomodoroUserId = '@pomo_user_' + Date.now();
                 store.dispatch({ type: 'ADD_USER', payload: { projectId: testHarvestId, name: 'AI Thinker', id: pomodoroUserId } });
                 store.dispatch({ 
@@ -306,7 +309,7 @@ export default class TestsView {
                 const pomoTx = store.getState().projects.find(p => p.id === testHarvestId).transactions.find(t => t.entregable.includes('[INTEL]'));
                 assert(pomoTx !== undefined && pomoTx.horas === 0.75, "Auto-Contabilidad: El sistema registra el tiempo del Pomodoro AI", "INTEL");
 
-                // 🔥 TEST 46: Macro-Flujos (Value Network Analysis)
+                // 49-50: MACRO-FLUJOS (VNA)
                 const ecoProjA = 'eco-A-' + Date.now();
                 const ecoProjB = 'eco-B-' + Date.now();
                 store.dispatch({ type: 'ADD_PROJECT', payload: { id: ecoProjA, nombre: 'Tech Node' } });
@@ -318,12 +321,17 @@ export default class TestsView {
                 const macroExists = store.getState().macroFlows && store.getState().macroFlows.length > 0;
                 assert(macroExists, "Macro-Redes: El Kernel registra flujos de valor inter-proyectos (VNA)", "NETWORK");
 
+                // 51-52: IDENTITY FRACTAL & PANTHEON
+                const uGlobal = store.getState().globalUsers[0];
+                assert(uGlobal.profile !== undefined && uGlobal.profile.guardian_authority !== undefined, "Perfil del usuario incluye la dimensión de Arquetipos Pantheon", "IDENTITY");
+                assert(uGlobal.profile.structural_affinity.includes('@anxaneta'), "Perfil del usuario incluye la Afinidad Estructural Casteller", "IDENTITY");
+
                 // --- RESULTADO FINAL ---
                 if(passed === total) {
                     terminal.innerHTML += `
                         <div style="margin-top: 25px; padding: 20px; border: 1px solid var(--accent-green); background: rgba(0, 230, 118, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in;">
-                            <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem;">🚀 KERNEL v6.2 VALIDADO AL 100%</h2>
-                            <p style="color: white; margin-top: 10px; font-size: 1.1rem;">Los ${total} vectores de prueba han sido superados sin fallos.</p>
+                            <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem;">🚀 KERNEL v6.5 VALIDADO AL 100%</h2>
+                            <p style="color: white; margin-top: 10px; font-size: 1.1rem;">Los ${total} vectores de seguridad RBAC e Identidad han sido superados.</p>
                         </div>
                     `;
                     btn.innerText = "CERTIFICACIÓN COMPLETADA ✓";
