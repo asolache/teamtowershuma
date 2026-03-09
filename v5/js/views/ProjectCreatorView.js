@@ -219,9 +219,11 @@ export default class ProjectCreatorView {
             }
         `;
 
-        try {
+       try {
             console.log("🚀 Iniciando llamada a Gemini API...");
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            
+            // 🔥 FIX: Cambiamos al modelo Pro Latest que es más estable universalmente
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -241,7 +243,7 @@ export default class ProjectCreatorView {
             
             console.log("🤖 Respuesta bruta de Gemini:", textResponse);
 
-            // 🔥 FIX: Limpiamos las comillas Markdown (```json) que a veces la IA mete por error
+            // 🔥 FIX: Limpiamos cualquier rastro de Markdown que pueda romper el parseo
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
 
             const parsedData = JSON.parse(textResponse);
@@ -287,7 +289,6 @@ export default class ProjectCreatorView {
             this.dom.step2.style.display = 'block';
             this.renderDraftRoles();
         }
-    }
 
     renderDraftRoles() {
         this.dom.container.innerHTML = '';
