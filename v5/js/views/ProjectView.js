@@ -8,7 +8,7 @@ export default class ProjectView {
         this.activeProjectId = null;
     }
 
-   async getHtml() {
+    async getHtml() {
         return `
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
@@ -80,29 +80,29 @@ export default class ProjectView {
         const card = document.createElement('div');
         card.className = 'task-card';
         const color = this.getColorForLevel(role.levelId);
-        const tipoColor = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+        const tipoColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
 
         let actionHtml = '';
 
         if (tx.status === 'theoretical') {
-            actionHtml = `<button class="btn-pull" data-hash="${tx.hash}">Hacer PULL</button>`;
+            actionHtml = `<button class="btn btn-outline btn-pull" data-hash="${tx.hash}" style="width: 100%;">Hacer PULL</button>`;
         } 
         else if (tx.status === 'pinged') {
             actionHtml = `
-                <div style="color: #ff9100; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN PROCESO</div>
-                <a href="/v5/focus" class="btn-focus" data-link>▶ Iniciar Pomodoro</a>
+                <div style="color: var(--accent-orange); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN PROCESO</div>
+                <a href="/v5/focus" class="btn btn-focus" style="width: 100%;" data-link>▶ Iniciar Pomodoro</a>
             `;
         } 
         else if (tx.status === 'reported') {
             actionHtml = `
-                <div style="color: #00b0ff; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">🛡️ ESPERANDO AUDITORÍA</div>
-                <div style="font-size: 0.8rem; color: #888; background: #000; padding: 5px; border-radius: 4px;">Horas Reales: ${tx.realHours}h</div>
-                <button class="btn-approve" data-hash="${tx.hash}">Aprobar y Consolidar</button>
+                <div style="color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">🛡️ ESPERANDO AUDITORÍA</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; margin-bottom: 10px;">Horas Reales: <strong style="color: white;">${tx.realHours}h</strong></div>
+                <button class="btn btn-primary btn-approve" data-hash="${tx.hash}" style="width: 100%;">Aprobar y Consolidar</button>
             `;
         }
         else if (tx.status === 'consolidated') {
             actionHtml = `
-                <div style="color: #00e676; font-size: 0.8rem; font-weight: bold; font-family: monospace;">
+                <div style="color: var(--accent-green); font-size: 1rem; font-weight: bold; font-family: var(--font-mono); text-align: center; padding: 10px; background: rgba(0, 230, 118, 0.05); border-radius: 8px;">
                     +${Math.round(tx.valorCongelado)} Slices
                 </div>
             `;
@@ -111,7 +111,7 @@ export default class ProjectView {
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span class="badge" style="color: ${color}; border-color: ${color}; font-size: 0.65rem;">${role.levelId}</span>
-                <span style="font-size: 0.6rem; color: #555; font-family: monospace;">#${tx.hash.substring(0,6)}</span>
+                <span style="font-size: 0.6rem; color: var(--text-muted); font-family: var(--font-mono);">#${tx.hash.substring(0,6)}</span>
             </div>
             <h3 class="task-title">${tx.entregable}</h3>
             <div style="margin-bottom: 1rem;">${actionHtml}</div>
@@ -160,7 +160,7 @@ export default class ProjectView {
     }
 
     getColorForLevel(levelId) {
-        const colors = { '@anxaneta': '#ff5252', '@aixecador': '#ff4081', '@dosos': '#e040fb', '@baixos': '#7c4dff', '@pinya': '#536dfe' };
-        return colors[levelId] || '#ffffff';
+        const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
+        return colors[levelId] || 'var(--text-main)';
     }
 }
