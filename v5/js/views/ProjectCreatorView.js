@@ -219,10 +219,10 @@ export default class ProjectCreatorView {
             }
         `;
 
-       try {
-            console.log("🚀 Iniciando llamada a Gemini API...");
+        try {
+            console.log("🚀 Iniciando llamada a Gemini API v1.5 Pro Latest...");
             
-            // 🔥 FIX: Cambiamos al modelo Pro Latest que es más estable universalmente
+            // 🔥 AQUÍ ESTÁ EL CAMBIO A GEMINI PRO LATEST PARA EVITAR EL 404
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -243,13 +243,13 @@ export default class ProjectCreatorView {
             
             console.log("🤖 Respuesta bruta de Gemini:", textResponse);
 
-            // 🔥 FIX: Limpiamos cualquier rastro de Markdown que pueda romper el parseo
+            // Limpiamos Markdown
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
 
             const parsedData = JSON.parse(textResponse);
 
             if (!parsedData.roles || !parsedData.transactions) {
-                throw new Error("El JSON devuelto no tiene la estructura correcta (faltan roles o transacciones).");
+                throw new Error("El JSON devuelto no tiene la estructura correcta.");
             }
 
             this.draftRoles = parsedData.roles.map(r => ({
@@ -289,6 +289,7 @@ export default class ProjectCreatorView {
             this.dom.step2.style.display = 'block';
             this.renderDraftRoles();
         }
+    }
 
     renderDraftRoles() {
         this.dom.container.innerHTML = '';
@@ -355,7 +356,7 @@ export default class ProjectCreatorView {
     finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         
-        // 1. Despachamos la creación del proyecto (esto carga los roles)
+        // 1. Despachamos la creación del proyecto
         store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
