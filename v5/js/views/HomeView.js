@@ -1,10 +1,98 @@
 // v5/js/views/HomeView.js
+import { store } from '../core/store.js';
+import { Sidebar } from '../components/Sidebar.js';
+
 export default class HomeView {
     constructor() {
         document.title = "TeamTowers | El Sistema Operativo para Redes de Valor";
     }
 
     async getHtml() {
+        const state = store.getState();
+        const activeUserId = state.session.activeUserId;
+        const activeProject = state.projects[state.projects.length - 1];
+
+        // -------------------------------------------------------------------
+        // MODO 1: COMMAND CENTER (Si el usuario está logueado y tiene proyecto)
+        // -------------------------------------------------------------------
+        if (activeUserId !== 'ecosystem-admin' && activeProject) {
+            const user = state.globalUsers.find(u => u.id === activeUserId);
+            const userName = user ? user.name : "Comandante";
+            const initial = userName.charAt(0).toUpperCase();
+            
+            // Cálculos rápidos para el dashboard
+            const myTxs = activeProject.transactions.filter(tx => tx.userId === activeUserId);
+            const inProgress = myTxs.filter(tx => tx.status === 'pinged').length;
+            const done = myTxs.filter(tx => tx.status === 'consolidated').length;
+
+            return `
+                <style>
+                    .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: 'Segoe UI', sans-serif; }
+                    .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; }
+                    
+                    .welcome-banner { background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(224, 64, 251, 0.1)); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: 16px; padding: 3rem; display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;}
+                    .welcome-banner::before { content: ''; position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0, 176, 255, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none;}
+                    
+                    .wb-avatar { width: 80px; height: 80px; border-radius: 50%; background: #00b0ff; color: black; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; z-index: 1;}
+                    .wb-info { z-index: 1; }
+                    .wb-info h1 { margin: 0; font-size: 2.5rem; color: white; letter-spacing: -1px; }
+                    .wb-info p { margin: 5px 0 0 0; color: #aaa; font-size: 1.1rem; }
+
+                    .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;}
+                    .qa-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; transition: all 0.2s; text-decoration: none; color: white; display: flex; flex-direction: column; gap: 10px;}
+                    .qa-card:hover { transform: translateY(-5px); border-color: #00b0ff; background: rgba(0, 176, 255, 0.05);}
+                    .qa-icon { font-size: 2rem; }
+                    .qa-title { font-size: 1.2rem; font-weight: bold; margin: 0;}
+                    .qa-desc { color: #888; font-size: 0.85rem; margin: 0;}
+
+                    @media (max-width: 768px) {
+                        .app-layout { flex-direction: column; }
+                        .workspace { padding: 1rem; }
+                        .welcome-banner { flex-direction: column; text-align: center; padding: 2rem; }
+                    }
+                </style>
+
+                <div class="app-layout">
+                    ${Sidebar.getHtml('/')}
+                    
+                    <main class="workspace">
+                        <div class="welcome-banner">
+                            <div class="wb-avatar">${initial}</div>
+                            <div class="wb-info">
+                                <h1>Hola de nuevo, ${userName}</h1>
+                                <p>Conectado al Castell: <strong style="color: white;">${activeProject.nombre}</strong></p>
+                            </div>
+                        </div>
+
+                        <h2 style="color: white; margin-bottom: 1.5rem; font-size: 1.2rem;">Accesos Rápidos</h2>
+                        
+                        <div class="quick-actions">
+                            <a href="/v5/project" class="qa-card" data-link>
+                                <div class="qa-icon">📋</div>
+                                <div class="qa-title">Tracción (Kanban)</div>
+                                <div class="qa-desc">Tienes ${inProgress} tareas en Deep Work y ${done} completadas.</div>
+                            </a>
+                            
+                            <a href="/v5/map" class="qa-card" data-link>
+                                <div class="qa-icon">🕸️</div>
+                                <div class="qa-title">Diseñador VNA</div>
+                                <div class="qa-desc">Ajusta el flujo de valor y los nodos organizativos.</div>
+                            </a>
+                            
+                            <a href="/v5/focus" class="qa-card" data-link style="border-color: rgba(0, 230, 118, 0.3);">
+                                <div class="qa-icon">⏱️</div>
+                                <div class="qa-title">Entrar en Focus</div>
+                                <div class="qa-desc" style="color: #00e676;">Activa el Pomodoro y reporta horas.</div>
+                            </a>
+                        </div>
+                    </main>
+                </div>
+            `;
+        }
+
+        // -------------------------------------------------------------------
+        // MODO 2: LANDING PAGE DE MARKETING (Para usuarios nuevos o desconectados)
+        // -------------------------------------------------------------------
         return `
             <style>
                 .landing-header {
@@ -27,7 +115,6 @@ export default class HomeView {
                     font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
                 }
                 
-                /* Decoración de fondo */
                 .hero::before {
                     content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                     background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0);
@@ -69,8 +156,7 @@ export default class HomeView {
                     <nav class="nav-links">
                         <div class="hide-on-mobile" style="display: flex; gap: 2rem;">
                             <a href="/v5/network" data-link>🌐 Explorar DAOs</a>
-                            <a href="/v5/profile" data-link>👤 Mi CV (Skills)</a>
-                            <a href="/v5/project" data-link>📋 Tracción</a>
+                            <a href="/v5/team" data-link>🔑 Iniciar Sesión</a>
                         </div>
                         <a href="/v5/create" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;" data-link>Instanciar Red</a>
                     </nav>
@@ -109,6 +195,9 @@ export default class HomeView {
     }
 
     executeViewScript() {
-        console.log("🚀 Sistema TeamTowers V5 Iniciado Correctamente.");
+        if(Sidebar && Sidebar.initListeners) {
+            Sidebar.initListeners(); // Activar Logout si estamos en el modo Command Center
+        }
+        console.log("🚀 HomeView Iniciado.");
     }
 }
