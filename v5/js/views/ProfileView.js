@@ -1,5 +1,6 @@
 // v5/js/views/ProfileView.js
 import { store } from '../core/store.js';
+import { Sidebar } from '../components/Sidebar.js'; // INYECCIÓN DEL SIDEBAR
 
 export default class ProfileView {
     constructor() {
@@ -11,18 +12,15 @@ export default class ProfileView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: 'Segoe UI', sans-serif; }
                 
-                /* Sidebar */
-                .sidebar { width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid rgba(255,255,255,0.05); padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
-                .side-link { padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: #888; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
-                .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
-                .side-link.active { background: rgba(0, 176, 255, 0.1); color: #00b0ff; font-weight: bold; border-left: 3px solid #00b0ff; }
-
                 /* Workspace */
                 .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; }
                 
                 /* HEADER PERFIL */
-                .profile-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-                .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #00b0ff, #e040fb); display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3); }
+                .profile-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;}
+                .profile-header::before { content: ''; position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0, 176, 255, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none;}
+                
+                .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #00b0ff, #e040fb); display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3); z-index: 1;}
+                .profile-info { z-index: 1; }
                 .profile-info h1 { margin: 0; font-size: 2.5rem; color: white; letter-spacing: -1px; }
                 .profile-info p { margin: 5px 0 0 0; color: #888; font-family: monospace; font-size: 1rem; }
                 
@@ -47,22 +45,26 @@ export default class ProfileView {
                 .project-slices { text-align: right; }
                 .project-slices .amt { color: #00e676; font-size: 1.2rem; font-weight: bold; font-family: monospace; }
                 
-                /* SKILLS (SBTs) */
-                .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
+                /* SKILLS Y PROMPT */
+                .skills-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 2rem;}
                 .skill-badge { background: #1a1a24; border: 1px solid #333; color: #ccc; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
                 .skill-count { background: #00b0ff; color: #000; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; }
+
+                .pm-ikigai { background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 8px; padding: 15px;}
+                .pm-section-title { font-size: 0.8rem; color: #e040fb; text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between;}
+                .pm-prompt-text { font-family: monospace; font-size: 0.85rem; color: #ccc; line-height: 1.4; background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333;}
+
+                @media (max-width: 768px) {
+                    .app-layout { flex-direction: column; }
+                    .workspace { padding: 1rem; }
+                    .content-grid { grid-template-columns: 1fr; }
+                    .stats-grid { grid-template-columns: 1fr; }
+                    .profile-header { flex-direction: column; text-align: center; }
+                }
             </style>
 
             <div class="app-layout">
-                <aside class="sidebar">
-                    <div style="font-weight: bold; font-family: monospace; color: white; margin-bottom: 2rem; font-size: 1.2rem;">🗼 TeamTowers</div>
-                    
-                    <a href="/v5/" class="side-link" data-link>🏠 Inicio</a>
-                    <a href="/v5/profile" class="side-link active" data-link>👤 Mi Perfil (SBTs)</a>
-                    <a href="/v5/create" class="side-link" data-link>➕ Instanciar Red</a>
-                    <hr style="border-color: rgba(255,255,255,0.05); width: 100%; margin: 1rem 0;">
-                    <a href="/v5/project" class="side-link" data-link>📋 Proyecto Actual</a>
-                </aside>
+                ${Sidebar.getHtml('/profile')}
 
                 <main class="workspace">
                     <div class="profile-header">
@@ -96,10 +98,25 @@ export default class ProfileView {
                         </div>
 
                         <div class="panel">
-                            <h3 class="section-title">🏅 Skills Verificadas</h3>
+                            <h3 class="section-title">🏅 Skills Verificadas (SBTs)</h3>
                             <p style="color: #888; font-size: 0.8rem; margin-bottom: 1.5rem;">Habilidades certificadas inmutablemente a través del Ledger de entregables.</p>
                             <div class="skills-container" id="skillsList">
                                 </div>
+
+                            <div class="pm-ikigai">
+                                <div class="pm-section-title">
+                                    <span>🧠 AI System Prompt (Ikigai)</span>
+                                    <span style="color: #666; font-size: 0.6rem;">V2 PREVIEW</span>
+                                </div>
+                                <div class="pm-prompt-text">
+                                    <span style="color: #888;">/* Atributos Semánticos del Nodo */</span><br>
+                                    <span style="color: #00b0ff;">Mode:</span> "Explorador Activo"<br>
+                                    <span style="color: #00e676;">Motivación:</span> "Aprender y escalar"<br>
+                                    <span style="color: #e040fb;">Valores:</span> [Transparencia, Ejecución]<br>
+                                    <br>
+                                    <span style="color: #888;">// La IA orquestadora leerá este prompt para sugerirte automáticamente tareas del Kanban que hagan 'match' con tus habilidades y motivaciones.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -108,6 +125,8 @@ export default class ProfileView {
     }
 
     executeViewScript() {
+        Sidebar.initListeners(); // Activar Logout
+
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
 
@@ -180,7 +199,7 @@ export default class ProfileView {
         if (projectRowsHtml.length > 0) {
             pList.innerHTML = projectRowsHtml.join('');
         } else {
-            pList.innerHTML = `<p style="color: #666; font-style: italic;">Aún no tienes Slices consolidados en ninguna red.</p>`;
+            pList.innerHTML = `<p style="color: #666; font-style: italic; padding: 2rem; text-align: center; border: 1px dashed #333; border-radius: 8px;">Aún no tienes Slices consolidados en ninguna red.<br><br>Ve a la sección 'Explorar DAOs', únete a un Castell y haz Pull de tareas para empezar a generar valor.</p>`;
         }
 
         // 5. Pintar Skills (El CV Criptográfico)
@@ -194,7 +213,7 @@ export default class ProfileView {
                 </div>
             `).join('');
         } else {
-            sList.innerHTML = `<p style="color: #666; font-size: 0.8rem;">Completa entregables (Proof of Work) para ganar badges de reputación.</p>`;
+            sList.innerHTML = `<p style="color: #666; font-size: 0.8rem; margin-bottom: 0;">Completa entregables (Proof of Work) para ganar badges de reputación.</p>`;
         }
     }
 
