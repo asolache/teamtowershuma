@@ -268,30 +268,49 @@ export default class ValueMapView {
             }
         });
 
+        // 🔥 BYPASS DIRECTO AL KERNEL PARA GUARDAR LA TRANSACCIÓN 🔥
         this.dom.btnAddFlow.addEventListener('click', () => {
             const fromId = this.dom.selFrom.value;
             const toId = this.dom.selTo.value;
             const desc = this.dom.inpDesc.value.trim();
+            
             if(fromId === toId) return alert("El valor debe fluir entre nodos distintos.");
             if(!desc) return alert("Escribe el nombre del entregable.");
 
-            const currentState = store.getState();
+            // 1. Obtenemos una copia profunda (Deep Copy) del estado actual
+            const currentState = JSON.parse(JSON.stringify(store.getState()));
             const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
             
+            // 2. Aseguramos que el array de transacciones existe
+            if (!currentState.projects[pIndex].transactions) {
+                currentState.projects[pIndex].transactions = [];
+            }
+
             if (this.editingTxIndex !== null) {
+                // MODO EDICIÓN
                 currentState.projects[pIndex].transactions[this.editingTxIndex] = {
                     ...currentState.projects[pIndex].transactions[this.editingTxIndex],
                     from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value
                 };
                 this.exitEditMode();
             } else {
-                store.dispatch({ 
-                    type: 'ADD_TRANSACTION', 
-                    payload: { projectId: this.activeProjectId, tx: { hash: '0x'+Math.random().toString(16).slice(2,10), from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value, status: 'theoretical' } } 
+                // MODO CREACIÓN (Inyección forzada manual)
+                currentState.projects[pIndex].transactions.push({
+                    hash: '0x' + Math.random().toString(16).slice(2, 10),
+                    from: fromId,
+                    to: toId,
+                    horas: parseFloat(this.dom.inpHoras.value) || 1,
+                    entregable: desc,
+                    tipo: this.dom.selType.value,
+                    status: 'theoretical',
+                    timestamp: Date.now()
                 });
             }
 
+            // 3. Forzamos el guardado y el redibujado de la UI
             this.forceSaveState(currentState);
+            
+            // 4. Limpiamos formulario
             this.dom.selFrom.value = toId; 
             this.updateOntologyTemplates();
             this.dom.inpDesc.value = ''; 
@@ -340,6 +359,8 @@ export default class ValueMapView {
             const levelId = document.getElementById('selNewNodeLevel').value;
             if(!name) return;
             const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
+            
+            // Aquí sí usamos el reducer porque sabemos que funciona bien para Roles
             store.dispatch({ type: 'ADD_ROLE', payload: { projectId: this.activeProjectId, role: { name, levelId, multiplier: multipliers[levelId], fmv: 50, isArchived: false } } });
             modal.style.display = 'none';
             document.getElementById('inpNewNodeName').value = '';
@@ -353,7 +374,6 @@ export default class ValueMapView {
         document.getElementById('btnCloseInspector').addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
-            // Limpiar visualmente la selección sin repintar todo
             this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
         });
 
@@ -393,12 +413,12 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ DRAG & CLICK LOGIC (LA CORRECCIÓN MÁGICA) ------------------
+        // ------------------ DRAG & CLICK LOGIC ------------------
         this.dom.canvas.addEventListener('mousedown', (e) => {
             const node = e.target.closest('.node');
             if (node && !this.isSimulating) { 
                 this.isDragging = true; 
-                this.hasMoved = false; // Reset al pulsar
+                this.hasMoved = false; 
                 this.draggedElement = node; 
                 node.style.zIndex = 1000; 
             }
@@ -406,7 +426,7 @@ export default class ValueMapView {
         
         window.addEventListener('mousemove', (e) => {
             if (!this.isDragging || !this.draggedElement) return;
-            this.hasMoved = true; // El ratón se ha movido (Es un Arrastre)
+            this.hasMoved = true; 
             const rect = this.dom.canvas.getBoundingClientRect();
             this.draggedElement.style.left = `${((e.clientX - rect.left) / rect.width) * 100}%`;
             this.draggedElement.style.top = `${((e.clientY - rect.top) / rect.height) * 100}%`;
@@ -450,16 +470,19 @@ export default class ValueMapView {
         this.dom.inpDesc.value = '';
     }
 
+    // 🔥 LA FUNCIÓN CLAVE DE PERSISTENCIA Y REFRESCO 🔥
     forceSaveState(newState) {
+        // 1. Guardar en memoria inmutable y localstorage
         store.state = newState;
         localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
         
+        // 2. Refrescar TODO usando los datos recién guardados
         const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
         this.populateDropdowns(pUpdate.roles);
-        this.renderMap();
-        this.renderSequence();
+        this.renderSequence(); // Dibuja la lista
+        this.renderMap();      // Dibuja los nodos
+        setTimeout(() => this.drawEdges(), 50); // Dibuja las flechas asegurando que el DOM existe
     }
-
 
     // --- SIMULACIÓN ---
     startSimulation() {
@@ -616,12 +639,17 @@ export default class ValueMapView {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const txs = p?.transactions || [];
         this.dom.seqList.innerHTML = '';
-        if(txs.length === 0) return this.dom.seqList.innerHTML = `<p style="color:#666; font-size:0.8rem; text-align:center; margin-top:2rem;">Lienzo en blanco.</p>`;
+        
+        if(txs.length === 0) {
+            this.dom.seqList.innerHTML = `<p style="color:#666; font-size:0.8rem; text-align:center; margin-top:2rem;">Lienzo en blanco.</p>`;
+            return;
+        }
 
         txs.forEach((tx, i) => {
-            const rFrom = p.roles.find(r => r.id === tx.from);
-            const rTo = p.roles.find(r => r.id === tx.to);
-            if(!rFrom || !rTo) return;
+            // Protección contra nodos borrados
+            const rFrom = p.roles.find(r => r.id === tx.from) || { levelId: '?', name: 'Nodo Borrado' };
+            const rTo = p.roles.find(r => r.id === tx.to) || { levelId: '?', name: 'Nodo Borrado' };
+            
             const color = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
 
             const stepEl = document.createElement('div');
@@ -679,7 +707,6 @@ export default class ValueMapView {
             el.style.borderColor = this.getColor(level);
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name">${rol.name}</div>`;
 
-            // 🟢 SOLUCIÓN AL BUG: Toggle visual en lugar de repintar todo
             el.addEventListener('click', (e) => {
                 if(this.hasMoved || this.isSimulating) return; 
                 
@@ -690,13 +717,10 @@ export default class ValueMapView {
                 }
 
                 this.selectedRoleId = rol.id;
-                
-                // Actualizamos solo las clases CSS para no destruir el elemento
                 this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
                 el.classList.add('selected');
             });
 
-            // 🟢 AHORA SÍ FUNCIONA EL DOBLE CLIC
             el.addEventListener('dblclick', (e) => {
                 if(this.isSimulating) return;
                 
