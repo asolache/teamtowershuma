@@ -191,38 +191,36 @@ export default class ProjectCreatorView {
 
         localStorage.setItem('tt_gemini_key', apiKey);
 
-        // Ocultar paso 1, mostrar Loading
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
 
-        // 🧠 MASTER PROMPT PARA GEMINI (Arquitectura Organizacional + Buenas Prácticas)
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers, un sistema operativo para organizaciones distribuidas basado en Value Network Analysis (VNA) y Slicing Pie.
-            Tu misión es analizar la visión del usuario y devolver UNICAMENTE un JSON válido con la estructura óptima del equipo y las primeras tareas críticas.
+            Tu misión es analizar la visión del usuario y devolver UNICAMENTE un JSON válido con la estructura óptima del equipo y las primeras tareas críticas. NO devuelvas texto adicional ni formato markdown.
             
             Debes definir 5 Roles usando los niveles Castellers: @anxaneta (Dirección), @aixecador (Coordinador), @dosos (Auditor/QA), @baixos (Técnico Core), @pinya (Operaciones).
             Calcula el FMV (Fair Market Value en €/hora) realista para el mercado actual.
             
-            Además, debes definir entre 3 y 5 'transacciones' (tareas) iniciales críticas para la FASE 1.
-            ES OBLIGATORIO incluir una mezcla de transacciones 'tangibles' (código, finanzas, diseño) y 'intangibles' (gestión de personas, alineación cultural, mentoría, revisión ética de IAs).
+            Define entre 3 y 5 transacciones iniciales críticas. Incluye transacciones 'tangibles' e 'intangibles'.
             
-            FORMATO JSON ESTRICTO ESPERADO:
+            FORMATO JSON ESTRICTO:
             {
                 "roles": [
-                    { "levelId": "@anxaneta", "name": "Nombre del Rol (Ej: Tech Lead)", "fmv": 60, "multiplier": 3.0 },
+                    { "levelId": "@anxaneta", "name": "Ej: Tech Lead", "fmv": 60, "multiplier": 3.0 },
                     { "levelId": "@aixecador", "name": "...", "fmv": 50, "multiplier": 2.0 },
                     { "levelId": "@dosos", "name": "...", "fmv": 45, "multiplier": 1.5 },
                     { "levelId": "@baixos", "name": "...", "fmv": 40, "multiplier": 1.2 },
                     { "levelId": "@pinya", "name": "...", "fmv": 30, "multiplier": 1.0 }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@dosos", "tipo": "intangible", "entregable": "Sesión de alineación estratégica y cultura", "horas": 2 },
-                    { "fromLevel": "@baixos", "toLevel": "@aixecador", "tipo": "tangible", "entregable": "Despliegue del Repositorio Core", "horas": 8 }
+                    { "fromLevel": "@anxaneta", "toLevel": "@dosos", "tipo": "intangible", "entregable": "Alineación estratégica", "horas": 2 },
+                    { "fromLevel": "@baixos", "toLevel": "@aixecador", "tipo": "tangible", "entregable": "Despliegue del Core", "horas": 8 }
                 ]
             }
         `;
 
         try {
+            console.log("🚀 Iniciando llamada a Gemini API...");
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -232,13 +230,26 @@ export default class ProjectCreatorView {
                 })
             });
 
-            if (!response.ok) throw new Error("Fallo en la API de Google. Revisa tu API Key.");
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("❌ Error de la API de Google:", errorData);
+                throw new Error(`Error API (${response.status}): ${errorData.error?.message || 'Revisa tu API Key'}`);
+            }
             
             const data = await response.json();
-            const textResponse = data.candidates[0].content.parts[0].text;
+            let textResponse = data.candidates[0].content.parts[0].text;
+            
+            console.log("🤖 Respuesta bruta de Gemini:", textResponse);
+
+            // 🔥 FIX: Limpiamos las comillas Markdown (```json) que a veces la IA mete por error
+            textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+
             const parsedData = JSON.parse(textResponse);
 
-            // Preparamos los datos para la UI
+            if (!parsedData.roles || !parsedData.transactions) {
+                throw new Error("El JSON devuelto no tiene la estructura correcta (faltan roles o transacciones).");
+            }
+
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: r.levelId,
@@ -247,10 +258,8 @@ export default class ProjectCreatorView {
                 multiplier: r.multiplier
             }));
 
-            // Guardamos temporalmente las transacciones para inyectarlas al lanzar el proyecto
             this.draftTxs = parsedData.transactions;
 
-            // Pasar al Paso 2
             this.dom.loading.style.display = 'none';
             this.dom.step2.style.display = 'block';
             this.dom.dot1.classList.remove('active');
@@ -258,20 +267,20 @@ export default class ProjectCreatorView {
             this.dom.txCount.innerText = this.draftTxs.length;
             
             this.renderDraftRoles();
+            console.log("✅ Ontología generada con éxito.");
 
         } catch (error) {
-            console.error(error);
-            alert("Error comunicando con Gemini IA. Fallback a la plantilla básica.");
+            console.error("💥 Fallo en la Generación IA:", error);
+            alert(`Fallo IA: ${error.message}\n\nAplicando fallback básico.`);
             
-            // Fallback en caso de error
             this.selectedSector = 'startup_tech';
             this.draftTxs = [];
-            
-            // Usamos legacy mode
             this.draftRoles = [
                 { id: 'd1', levelId: '@anxaneta', name: 'Visionario', fmv: 60, multiplier: 3.0 },
                 { id: 'd2', levelId: '@aixecador', name: 'Orquestador', fmv: 50, multiplier: 2.0 },
-                { id: 'd3', levelId: '@dosos', name: 'Auditor', fmv: 45, multiplier: 1.5 }
+                { id: 'd3', levelId: '@dosos', name: 'Auditor', fmv: 45, multiplier: 1.5 },
+                { id: 'd4', levelId: '@baixos', name: 'Técnico', fmv: 40, multiplier: 1.2 },
+                { id: 'd5', levelId: '@pinya', name: 'Soporte', fmv: 30, multiplier: 1.0 }
             ];
             
             this.dom.loading.style.display = 'none';
