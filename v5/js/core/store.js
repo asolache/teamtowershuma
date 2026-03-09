@@ -1,6 +1,7 @@
 // ==========================================================================
-// KERNEL v6.1 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v6.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Contabilidad Triple Entrada y Slicing Pie
+// INCLUYE: FASE 1.5 (VERSIONADO TEMPORAL E INMUTABILIDAD DE NODOS)
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
@@ -13,7 +14,7 @@ const initialState = {
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.'
     },
     ontology: {
-        sectores: {} // La ontología dinámica se carga desde el archivo ontology.js
+        sectores: {} 
     },
     globalUsers: [
         { id: '@user1', name: 'Alice Node', walletOrSocial: '0x123...' },
@@ -23,7 +24,7 @@ const initialState = {
     projects: [],
     session: {
         activeUserId: 'ecosystem-admin',
-        role: 'admin' // RBAC: 'admin' o 'user'
+        role: 'admin' 
     }
 };
 
@@ -106,15 +107,11 @@ function reducer(state = initialState, action) {
                 return state; 
             }
 
-            // ==========================================
-            // 🔥 PARCHE: Inyección de la Ontología Evolucionada (v6.1)
-            // ==========================================
             const pSector = action.payload.sector || 'startup';
             let sectorDataObj = GLOBAL_ONTOLOGY[pSector];
             let sectorRolesArray = [];
 
             if (sectorDataObj) {
-                // Formato Nuevo (las claves son los niveles: @anxaneta, @dosos, etc.)
                 if (!sectorDataObj.roles) {
                     sectorRolesArray = Object.keys(sectorDataObj).map(levelId => {
                         const r = sectorDataObj[levelId];
@@ -127,13 +124,10 @@ function reducer(state = initialState, action) {
                             standard_deliverables: r.standard_deliverables || []
                         };
                     });
-                } 
-                // Formato Antiguo (si hubiera un array dentro de .roles)
-                else {
+                } else {
                     sectorRolesArray = sectorDataObj.roles;
                 }
             } else {
-                // Fallback a ontología en memoria (Legacy)
                 const legacySectorData = state.ontology.sectores[pSector] || {};
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
@@ -148,10 +142,8 @@ function reducer(state = initialState, action) {
                 });
             }
 
-            // Construir los roles base listos para el proyecto
             let baseRoles = sectorRolesArray.map(r => {
                 let finalName = r.name;
-                // Ajuste específico para que pasen los Tests Estáticos
                 if (r.levelId === '@anxaneta' && action.payload.sector === 'marketing') {
                     finalName = 'Growth Hacker / CMO';
                 }
@@ -164,21 +156,20 @@ function reducer(state = initialState, action) {
                     fmv: r.fmv || 50,
                     ai_prompt: r.ai_prompt || '',
                     standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
-                    isArchived: false
+                    isArchived: false,
+                    history: [] // <--- FASE 1.5: Inicializamos el historial del nodo
                 };
             });
 
-            // Si por algún motivo el sector no existía y quedó vacío, inyectamos la estructura mínima de supervivencia
             if (baseRoles.length === 0) {
                 baseRoles = [
-                    { id: 'r1', levelId: '@anxaneta', name: 'Visionario', multiplier: 3.0, fmv: 60, standard_deliverables: [] },
-                    { id: 'r2', levelId: '@aixecador', name: 'Orquestador', multiplier: 2.0, fmv: 50, standard_deliverables: [] },
-                    { id: 'r3', levelId: '@dosos', name: 'Auditor', multiplier: 1.5, fmv: 45, standard_deliverables: [] },
-                    { id: 'r4', levelId: '@baixos', name: 'Constructor', multiplier: 1.0, fmv: 40, standard_deliverables: [] },
-                    { id: 'r5', levelId: '@pinya', name: 'Soporte', multiplier: 1.0, fmv: 30, standard_deliverables: [] }
+                    { id: 'r1', levelId: '@anxaneta', name: 'Visionario', multiplier: 3.0, fmv: 60, standard_deliverables: [], history: [] },
+                    { id: 'r2', levelId: '@aixecador', name: 'Orquestador', multiplier: 2.0, fmv: 50, standard_deliverables: [], history: [] },
+                    { id: 'r3', levelId: '@dosos', name: 'Auditor', multiplier: 1.5, fmv: 45, standard_deliverables: [], history: [] },
+                    { id: 'r4', levelId: '@baixos', name: 'Constructor', multiplier: 1.0, fmv: 40, standard_deliverables: [], history: [] },
+                    { id: 'r5', levelId: '@pinya', name: 'Soporte', multiplier: 1.0, fmv: 30, standard_deliverables: [], history: [] }
                 ];
             }
-            // ==========================================
 
             const ownerId = action.payload.ownerId || state.session.activeUserId;
             const arquetipo = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || 'startup';
@@ -271,7 +262,7 @@ function reducer(state = initialState, action) {
                 })
             };
 
-        // --- GESTIÓN DE ROLES E INMUTABILIDAD ---
+        // --- GESTIÓN DE ROLES E INMUTABILIDAD (FASE 1.5) ---
         case 'UPDATE_ROLE':
             return {
                 ...state,
@@ -281,11 +272,28 @@ function reducer(state = initialState, action) {
                             ...p,
                             roles: p.roles.map(r => {
                                 if (r.id === action.payload.roleId) {
+                                    
+                                    // Detectamos si hay un cambio económico (FMV o Multiplier)
+                                    const isEconomicChange = (action.payload.field === 'fmv' || action.payload.field === 'multiplier') ||
+                                                             (action.payload.updates && (action.payload.updates.fmv !== undefined || action.payload.updates.multiplier !== undefined)) ||
+                                                             (action.payload.fmv !== undefined || action.payload.multiplier !== undefined);
+
+                                    let newHistory = r.history || [];
+                                    
+                                    // Si cambia la economía, guardamos la versión antigua en el historial con fecha de caducidad HOY
+                                    if (isEconomicChange) {
+                                        newHistory = [...newHistory, {
+                                            fmv: r.fmv,
+                                            multiplier: r.multiplier,
+                                            validUntil: Date.now()
+                                        }];
+                                    }
+
                                     if (action.payload.field) {
-                                        return { ...r, [action.payload.field]: action.payload.value };
+                                        return { ...r, [action.payload.field]: action.payload.value, history: newHistory };
                                     } else {
                                         const newName = action.payload.name || (action.payload.updates && action.payload.updates.name) || r.name;
-                                        return { ...r, ...(action.payload.updates || {}), name: newName, id: r.id };
+                                        return { ...r, ...(action.payload.updates || {}), name: newName, id: r.id, history: newHistory };
                                     }
                                 }
                                 return r;
@@ -304,6 +312,7 @@ function reducer(state = initialState, action) {
                 multiplier: action.payload.role.multiplier || 1.0,
                 fmv: action.payload.role.fmv || 50,
                 isArchived: false,
+                history: [], // <--- FASE 1.5: Nodo nuevo nace con historial vacío
                 ...action.payload.role
             };
             return {
@@ -388,7 +397,7 @@ function reducer(state = initialState, action) {
                         return {
                             ...p,
                             transactions: p.transactions.map(tx => {
-                                if (tx.hash === action.payload.txHash) return { ...tx, status: 'pinged', assigneeId: action.payload.userId };
+                                if (tx.hash === action.payload.txHash) return { ...tx, status: 'pinged', assigneeId: action.payload.userId, pingTimestamp: Date.now() };
                                 return tx;
                             })
                         };
@@ -408,7 +417,8 @@ function reducer(state = initialState, action) {
                                 if (tx.hash === action.payload.txHash) {
                                     return { 
                                         ...tx, status: 'reported', realHours: action.payload.realHours,
-                                        proofLink: action.payload.proofLink, reportComment: action.payload.comentario 
+                                        proofLink: action.payload.proofLink, reportComment: action.payload.comentario,
+                                        reportTimestamp: Date.now()
                                     };
                                 }
                                 return tx;
@@ -427,37 +437,38 @@ function reducer(state = initialState, action) {
                         let txToApprove = p.transactions.find(tx => tx.hash === action.payload.txHash);
                         if (!txToApprove) return p;
 
-                        const roleFrom = p.roles.find(r => r.id === txToApprove.from);
-                        const roleMultiplier = roleFrom ? (roleFrom.multiplier || 1) : 1;
+                        // FASE 1.5: OBTENER EL VALOR HISTÓRICO DEL ROL
+                        // Delegamos el cálculo de cuánto valía el rol a la nueva función de la Store
+                        // Usamos la fecha en la que se reportó (o pinged), no la de aprobación, porque el PO puede tardar meses en aprobar.
+                        const workTimestamp = txToApprove.reportTimestamp || txToApprove.pingTimestamp || Date.now();
+                        const storeInstance = new Store(); // Instancia temporal solo para usar el helper sin inyectar dependencias cíclicas
+                        const roleEconomics = storeInstance.getRoleEconomicsAtTime(p, txToApprove.from, workTimestamp);
                         
-                        // FÓRMULA SLICING PIE (Multiplicadores de Arquetipo)
                         const archMult = p.archetype === 'startup' ? 2.0 : (p.archetype === 'dao' ? 1.5 : 1.0);
-                        const fmv = roleFrom ? (roleFrom.fmv || 50) : 50;
                         const horas = txToApprove.realHours || txToApprove.horas || 0;
                         
-                        // Cálculo matemático del valor generado
-                        const valorGenerado = horas * fmv * roleMultiplier * archMult;
+                        // Cálculo inmutable
+                        const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archMult;
 
                         const prevLedger = p.ledger || [];
                         const lastHash = prevLedger.length > 0 ? prevLedger[prevLedger.length - 1].hash : '0x0000000000000000';
                         const newHash = txToApprove.hash;
 
-                        // Entrada inmutable al Ledger
                         const newLedgerEntry = {
                             hash: newHash,
                             prevHash: lastHash, 
-                            previousHash: lastHash, // Para compatibilidad
+                            previousHash: lastHash,
                             userId: txToApprove.assigneeId,
-                            roleId: roleFrom ? roleFrom.id : 'unknown',
+                            roleId: roleEconomics.id,
                             description: `[PoW] ${txToApprove.entregable}`,
                             horas: horas, 
                             valorCongelado: valorGenerado, 
-                            timestamp: Date.now()
+                            timestamp: Date.now() // Fecha en la que entra en el Ledger (Sellado)
                         };
 
                         return {
                             ...p,
-                            transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'consolidated', valorCongelado: valorGenerado } : tx),
+                            transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'consolidated', valorCongelado: valorGenerado, approveTimestamp: Date.now() } : tx),
                             ledger: [...prevLedger, newLedgerEntry]
                         };
                     }
@@ -504,6 +515,32 @@ class Store {
     }
     
     subscribe(listener) { this.listeners.push(listener); }
+
+    // 🔥 FASE 1.5: LA MÁQUINA DEL TIEMPO 🔥
+    // Devuelve los atributos económicos (FMV y Multiplicador) que tenía un rol en una fecha concreta
+    getRoleEconomicsAtTime(project, roleId, targetTimestamp) {
+        const role = project.roles.find(r => r.id === roleId);
+        
+        // Si el rol ya no existe en el mapa (fue borrado físicamente en v4), devolvemos valores base por seguridad.
+        if (!role) return { id: 'unknown', fmv: 50, multiplier: 1.0 };
+
+        // Si el rol no tiene historial (proyectos antiguos), devolvemos los valores actuales
+        if (!role.history || role.history.length === 0) {
+            return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
+        }
+
+        // Viajamos por el historial buscando si en la fecha objetivo (targetTimestamp) existía una versión anterior
+        // El historial guarda { fmv, multiplier, validUntil }. 
+        // Buscamos la primera versión cuya fecha de caducidad sea MAYOR que la fecha de nuestro trabajo.
+        for (let i = 0; i < role.history.length; i++) {
+            if (targetTimestamp <= role.history[i].validUntil) {
+                return { id: role.id, fmv: role.history[i].fmv, multiplier: role.history[i].multiplier };
+            }
+        }
+
+        // Si la fecha del trabajo es más reciente que todo el historial, usamos el valor actual.
+        return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
+    }
 
     getArchetypeFactor(archetype) {
         const factors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
