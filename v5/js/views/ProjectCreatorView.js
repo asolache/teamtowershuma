@@ -9,7 +9,8 @@ export default class ProjectCreatorView {
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
-        this.draftPresentation = ""; // Almacenará el Pitch (Manual o IA)
+        this.draftPresentation = ""; 
+        this.draftTags = []; 
         
         // Los 12 Arquetipos de Guardianes (Pantheon.work)
         this.guardians = [
@@ -36,6 +37,22 @@ export default class ProjectCreatorView {
         if (savedProvider === 'gemini') savedKey = localStorage.getItem('tt_key_gemini') || '';
 
         const hasKey = savedKey.length > 5;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const preselectedSector = urlParams.get('sector') || '';
+
+        const state = store.getState();
+        const customSectores = state.ontology?.sectores || {};
+        
+        let sectorOptions = `<optgroup label="🌟 Tus Plantillas Custom">`;
+        Object.keys(customSectores).forEach(k => {
+            sectorOptions += `<option value="custom_${k}" ${preselectedSector === k ? 'selected' : ''}>[Custom] ${k.toUpperCase()}</option>`;
+        });
+        sectorOptions += `</optgroup><optgroup label="📦 Plantillas Nativas">`;
+        Object.keys(GLOBAL_ONTOLOGY).forEach(k => {
+            sectorOptions += `<option value="native_${k}" ${preselectedSector === k ? 'selected' : ''}>[Nativa] ${k.toUpperCase().replace(/_/g, ' ')}</option>`;
+        });
+        sectorOptions += `</optgroup>`;
 
         return `
             <style>
@@ -76,11 +93,9 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
                 .btn-del-role:hover { transform: scale(1.2); }
 
-                /* MINI-MAP PREVIEW */
                 .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
                 .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
 
-                /* FEEDBACK INTERACTIVO Y PREVIEW DE TXs */
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px);}
                 
@@ -117,8 +132,8 @@ export default class ProjectCreatorView {
 
                         <div id="step1">
                             <div class="wizard-header">
-                                <h1>Instanciador de Red</h1>
-                                <p>Mapea una organización existente o diseña una nueva desde cero.</p>
+                                <h1>Instanciador de Red VNA</h1>
+                                <p>Diseña ecosistemas de valor inmutables.</p>
                             </div>
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 1.5rem;">
@@ -135,24 +150,16 @@ export default class ProjectCreatorView {
                                     </select>
                                 </div>
                                 <div class="form-group" style="margin: 0;">
-                                    <label>Macro-Área / Sector</label>
+                                    <label>Plantilla Base (ADN)</label>
                                     <select id="inpSector" class="form-control">
-                                        <option value="tech_saas_platform">💻 Software & SaaS</option>
-                                        <option value="web3_defi_protocol">⛓️ Web3 & Protocolo</option>
-                                        <option value="digital_media_growth">📢 Digital Media & Growth</option>
-                                        <option value="healthtech_ai">🏥 HealthTech & IA Clínica</option>
-                                        <option value="deeptech_hardware">🤖 DeepTech & Hardware</option>
-                                        <option value="ecommerce_d2c">📦 E-Commerce & D2C</option>
-                                        <option value="agile_consulting_b2b">👔 Agencia / Consultoría B2B</option>
-                                        <option value="edtech_community">🎓 EdTech & Academia</option>
-                                        <option value="impact_dao_ngo">🌍 Impacto Social / ONG</option>
+                                        ${sectorOptions}
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Visión Bruta / Input Cognitivo</label>
-                                <textarea id="inpVision" class="vision-box" placeholder="Describe brevemente la idea. El Orquestador IA generará la Propuesta de Valor, el Ikigai de la red y el Pitch final..."></textarea>
+                                <textarea id="inpVision" class="vision-box" placeholder="Describe brevemente la idea. El Orquestador IA aplicará el modelo de Verna Allee y Pantheon para crear el mapa..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
@@ -182,21 +189,21 @@ export default class ProjectCreatorView {
 
                             <div class="actions-row">
                                 <button class="btn btn-outline" id="btnStartBlank">📄 Empezar en Blanco</button>
-                                <button class="btn btn-outline" id="btnLoadTemplate">🏗️ Cargar Plantilla Base</button>
-                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue)); border:none;">🧠 Diseñar con IA</button>
+                                <button class="btn btn-outline" id="btnLoadTemplate">🏗️ Cargar Plantilla Seleccionada</button>
+                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue)); border:none;">🧠 Diseñar con IA (VNA)</button>
                             </div>
                         </div>
 
                         <div id="aiLoading" class="ai-loading">
                             <span>🔌</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Redactando Propuesta de Valor y Ecosistema...</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Mapeando Ecosistema VNA e Ikigai...</div>
                         </div>
 
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 1.5rem;">
                                 <h1>Validación de Arquitectura</h1>
-                                <p>Ajusta los roles o revisa el mapa visual antes de registrarlo.</p>
+                                <p>Ajusta los nodos funcionales o revisa el mapa visual antes de registrarlo.</p>
                             </div>
 
                             <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
@@ -212,20 +219,20 @@ export default class ProjectCreatorView {
                             <div id="txPreviewList" class="tx-preview-list"></div>
 
                             <div class="educational-legend">
-                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Dirección (x3)</div>
-                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Coordinación (x2)</div>
+                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Estrategia/Visión (x3)</div>
+                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Táctica/Conexión (x2)</div>
                                 <div class="legend-item"><span style="color:var(--accent-purple);">👁️ @dosos:</span> Auditoría/QA (x1.5)</div>
-                                <div class="legend-item"><span style="color:var(--accent-indigo);">⚙️ @baixos:</span> Especialista (x1.2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Operaciones (x1)</div>
+                                <div class="legend-item"><span style="color:var(--accent-indigo);">⚙️ @baixos:</span> Producción (x1.2)</div>
+                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Soporte Base (x1)</div>
                             </div>
 
                             <div class="role-draft-list" id="draftRolesContainer"></div>
                             
-                            <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Instanciar Nuevo Rol</button>
+                            <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Instanciar Nuevo Nodo Funcional</button>
 
                             <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
                                 <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Firmar y Registrar en el Sistema</button>
+                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Firmar y Registrar Ecosistema</button>
                             </div>
                         </div>
 
@@ -270,7 +277,6 @@ export default class ProjectCreatorView {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
         });
 
-        // Mostrar Preview de Entregables y Pitch
         this.dom.aiTxFeedback.addEventListener('click', () => {
             if (this.dom.txPreviewList.style.display === 'block') {
                 this.dom.txPreviewList.style.display = 'none';
@@ -283,49 +289,63 @@ export default class ProjectCreatorView {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
             this.draftRoles = [];
             this.draftTxs = [];
-            // Guardamos el texto bruto introducido por el usuario para el Dashboard
             this.draftPresentation = this.dom.inpVision.value.trim(); 
+            this.draftTags = [];
             this.goToStep2();
         });
 
         this.dom.btnLoadTemplate.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
-            const sectorData = GLOBAL_ONTOLOGY[this.dom.inpSector.value];
+            
+            const sectorVal = this.dom.inpSector.value; 
+            const state = store.getState();
+            let sectorData = null;
+
+            if (sectorVal.startsWith('custom_')) {
+                const key = sectorVal.replace('custom_', '');
+                sectorData = state.ontology?.sectores[key];
+            } else {
+                const key = sectorVal.replace('native_', '');
+                sectorData = GLOBAL_ONTOLOGY[key];
+            }
+
             this.draftRoles = [];
             this.draftTxs = [];
-            
-            // Guardamos el texto bruto, o un fallback genérico si está vacío
-            this.draftPresentation = this.dom.inpVision.value.trim() || `Ecosistema basado en plantilla estándar de ${this.dom.inpSector.options[this.dom.inpSector.selectedIndex].text}.`;
+            this.draftTags = [sectorVal.split('_')[1], this.dom.inpArchetype.value];
+            this.draftPresentation = this.dom.inpVision.value.trim() || `Ecosistema basado en plantilla: ${this.dom.inpSector.options[this.dom.inpSector.selectedIndex].text}.`;
             
             if (sectorData) {
-                Object.keys(sectorData).forEach((level, idx) => {
-                    if (level !== 'roles') { 
-                        this.draftRoles.push({
-                            id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                            levelId: level,
-                            name: sectorData[level].name,
-                            fmv: sectorData[level].fmv || 50,
-                            multiplier: sectorData[level].multiplier || 1.0,
-                            guardian: this.guardians[idx % this.guardians.length].id
-                        });
-                    }
-                });
+                const rolesObj = sectorData.roles || sectorData;
 
-                Object.keys(sectorData).forEach(level => {
-                    const roleNode = sectorData[level];
-                    if (roleNode && roleNode.standard_deliverables) {
-                        roleNode.standard_deliverables.forEach(deliv => {
-                            const toLevel = level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos');
+                Object.entries(rolesObj).forEach(([levelKey, data]) => {
+                    const level = data.levelId || levelKey; 
+                    
+                    this.draftRoles.push({
+                        id: 'draft_' + Math.random().toString(36).substr(2, 9),
+                        levelId: level,
+                        name: data.name || level,
+                        fmv: data.fmv || 50,
+                        multiplier: data.multiplier || 1.0,
+                        guardian: data.guardian || 'everyman'
+                    });
+
+                    if (data.standard_deliverables) {
+                        data.standard_deliverables.forEach(deliv => {
+                            let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos'));
+                            let tipo = deliv.tipo || 'tangible';
+
                             this.draftTxs.push({
                                 fromLevel: level,
                                 toLevel: toLevel,
-                                tipo: deliv.tipo || 'tangible',
+                                tipo: tipo,
                                 entregable: deliv.name,
                                 horas: deliv.estimatedHours || 2
                             });
                         });
                     }
                 });
+            } else {
+                alert("La plantilla seleccionada está vacía o no existe.");
             }
             this.goToStep2();
         });
@@ -344,7 +364,7 @@ export default class ProjectCreatorView {
             this.draftRoles.push({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: '@baixos',
-                name: 'Nuevo Rol',
+                name: 'Nueva Actividad',
                 fmv: 40,
                 multiplier: 1.2,
                 guardian: 'everyman'
@@ -362,15 +382,16 @@ export default class ProjectCreatorView {
         this.dom.dot1.classList.remove('active');
         this.dom.dot2.classList.add('active');
         
-        // Muestra el cuadro verde SI hay texto de presentación O transacciones
         if (this.draftTxs.length > 0 || this.draftPresentation.length > 0) {
             this.dom.aiTxFeedback.style.display = 'flex';
             this.dom.txCount.innerText = this.draftTxs.length;
             
+            const tagsHtml = this.draftTags.length > 0 ? `<div style="margin-bottom:10px;">${this.draftTags.map(t => `<span style="background:#333; padding:2px 8px; border-radius:12px; font-size:0.7rem; margin-right:5px;">#${t}</span>`).join('')}</div>` : '';
+
             const listHtml = this.draftTxs.map((tx, i) => `
                 <div class="tx-preview-item">
                     <span>
-                        <span style="color:var(--accent-purple); font-weight:bold; font-family:var(--font-mono);">[${i+1}]</span> 
+                        <span style="color:${tx.tipo==='intangible'?'var(--accent-purple)':'var(--accent-green)'}; font-weight:bold; font-family:var(--font-mono);">[${i+1}]</span> 
                         <span style="color:#888;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
                     </span>
                     <span style="color:white; font-weight:bold;">${tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></span>
@@ -378,8 +399,9 @@ export default class ProjectCreatorView {
             `).join('');
             
             this.dom.txPreviewList.innerHTML = `
+                ${tagsHtml}
                 <div style="color: white; font-size: 0.9rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                    <strong>📖 Pitch / Presentación:</strong><br>
+                    <strong>📖 Presentación Estratégica (Pitch):</strong><br>
                     <span style="color:#aaa; font-style:italic;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
                 </div>
                 ${listHtml}
@@ -398,7 +420,6 @@ export default class ProjectCreatorView {
         const vision = this.dom.inpVision.value.trim();
         const provider = this.dom.inpAiProvider.value;
         const apiKey = this.dom.inpApiKey.value.trim();
-        const customUrl = this.dom.inpCustomUrl.value.trim();
         const archetypeText = this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text;
 
         if (!name) return alert("Debes darle un nombre a la red.");
@@ -414,34 +435,49 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
-        // PROMPT ESTRATÉGICO V7.3 - INCLUYE REDACCIÓN DEL PITCH (IKIGAI)
+        // Motor de memoria contextual
+        const state = store.getState();
+        const customSectores = Object.keys(state.ontology?.sectores || {}).join(", ");
+        const contextMemoria = customSectores.length > 0 
+            ? `Tu ecosistema ya domina los patrones de: ${customSectores}. Inspírate en su densidad para diseñar esta nueva red.` 
+            : "";
+
+        // --- MASTER PROMPT VNA (Verna Allee + Pantheon Work + Pitch Inversores) ---
         const systemPrompt = `
-            Eres el 'Ecosystem Architect' de TeamTowers. 
-            Misión: Analizar la visión en bruto del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio.
+            Actúa como Master Ecosystem Architect, experto en Value Network Analysis (Verna Allee) y Pantheon Work.
+            Misión: Instanciar una DAO de valor para "${name}" (Arquetipo: "${archetypeText}").
+            ${contextMemoria}
+
+            BASE TEÓRICA CRÍTICA (VNA & PANTHEON):
+            1. ROLES = ACTIVIDADES: En la metodología de Verna Allee, los roles NO son puestos de trabajo (Job Titles) ni un organigrama jerárquico. Son "nodos de actividad" que generan entregables. Una persona puede ocupar múltiples roles.
+            2. TRANSACCIONES = ENTREGABLES: El valor fluye a través de entregables (siempre descritos como SUSTANTIVOS, no verbos). 
+               - TANGIBLES (MUST): Entregables contractuales, exigibles, productos, código, informes, dinero.
+               - INTANGIBLES (EXTRA): Conocimiento, mentoría, favores, validación, decisiones, influencia, soporte emocional. El pegamento de la red.
+            3. GUARDIANES (Pantheon Work): Asigna uno de los 12 arquetipos (creator, caregiver, ruler, jester, everyman, lover, hero, outlaw, magician, innocent, explorer, sage) a cada rol según la misión o "alma" de esa actividad.
+
+            ANÁLISIS ESTRATÉGICO:
+            Antes de listar los nodos, analiza el sector y modelo de negocio para que las transacciones reflejen el intercambio real de valor económico y social.
+
+            REGLAS DE DENSIDAD Y FLUJO:
+            1. INTERDEPENDENCIA: Cada rol DEBE tener al menos 1 transacción de entrada y 1 de salida. No hay nodos aislados. El valor debe circular.
+            2. COBERTURA HUMA: Crea roles distribuidos en: @anxaneta (Estrategia/Visión), @aixecador (Coordinación/Táctica), @dosos (Auditoría/QA/Control), @baixos (Ejecución/Producción), @pinya (Soporte/Base).
+            3. RED DENSA: Genera un mínimo de 10 a 12 transacciones. 
             
-            Contexto Estructural: 
-            El modelo de gobernanza es "${archetypeText}".
+            PRESENTACIÓN / PITCH (ENFOQUE STAKEHOLDERS E INVERSORES):
+            La "presentacion" debe estar redactada en 3 párrafos orientados a cautivar a stakeholders, usuarios e inversores:
+            - Párrafo 1: El Propósito fundacional y la oportunidad de mercado/problema que resuelve de forma única.
+            - Párrafo 2: El Modelo de Negocio, escalabilidad y cómo fluye el valor a través de la red VNA para asegurar la ejecución.
+            - Párrafo 3: El Ikigai (razón de ser) y la cultura de los Guardianes que garantizan el éxito a largo plazo.
             
-            Reglas de Redacción del Campo "presentacion":
-            Redacta un "Pitch" o carta de presentación institucional de la red (máximo 3 párrafos).
-            Debe explicar: 1. El Propósito / Propuesta de Valor. 2. El Qué, Cómo y Para Quién. 3. El Ikigai de la red (la razón de ser).
-            El tono debe ser épico, claro, y atractivo tanto para captar talento (colaboradores/mercenarios) como para stakeholders e inversores. Usa formato de texto plano (sin HTML, usa saltos de línea \\n).
-            
-            Reglas de Roles:
-            1. Genera TODOS los roles necesarios. Usa: "@anxaneta" (Dirección), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos), "@pinya" (Soporte).
-            2. Asigna un 'guardian' de Pantheon.work (ej: "creator", "caregiver", "ruler", "magician", "hero", "sage").
-            
-            Reglas de Transacciones (VNA):
-            1. 70% Tangibles (Entregables, código, reportes) y 30% Intangibles (Mentoría, soporte).
-            
-            FORMATO JSON ESPERADO:
+            ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido, sin formato markdown extra como \`\`\`json):
             {
-                "presentacion": "Pitch épico generado por ti...",
+                "presentacion": "Pitch institucional (3 párrafos) atractivo para stakeholders, usuarios e inversores...",
+                "tags": ["Sector", "ModeloNegocio", "Tag3"],
                 "roles": [
-                    { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" }
+                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "magician" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "entregable": "Doc Arquitectura", "horas": 5 }
+                    { "fromLevel": "@origen", "toLevel": "@destino", "tipo": "tangible|intangible", "entregable": "Sustantivo (Ej: Informe de métricas)", "horas": 4 }
                 ]
             }
         `;
@@ -451,67 +487,52 @@ export default class ProjectCreatorView {
 
             if (provider === 'gemini') {
                 const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Propuesta de Valor y Red con ${targetModel}...`;
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Diseñando topología VNA con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT EN BRUTO: ${vision}` }] }]
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\nVISIÓN EN BRUTO: ${vision}` }] }]
                     })
                 });
 
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(`Google Gemini Error: ${errData.error?.message || response.statusText}`);
-                }
+                if (!response.ok) throw new Error("Google Gemini Error");
                 const data = await response.json();
                 textResponse = data.candidates[0].content.parts[0].text;
             
             } else if (provider === 'openai') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Redactando Pitch Corporativo con GPT-4o-mini...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Mapeando ecosistema VNA con GPT-4o-mini...";
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({
                         model: "gpt-4o-mini",
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: vision }
-                        ],
+                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }],
                         response_format: { type: "json_object" }
                     })
                 });
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(`OpenAI Error: ${errData.error?.message || response.statusText}`);
-                }
+                if (!response.ok) throw new Error("OpenAI Error");
                 const data = await response.json();
                 textResponse = data.choices[0].message.content;
             
             } else if (provider === 'deepseek') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando arquitectura y Pitch con DeepSeek Coder...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Tejiendo transacciones e intangibles con DeepSeek Coder...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({
                         model: "deepseek-chat",
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: vision }
-                        ],
+                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }],
                         response_format: { type: "json_object" }
                     })
                 });
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(`DeepSeek Error: ${errData.error?.message || response.statusText}`);
-                }
+                if (!response.ok) throw new Error("DeepSeek Error");
                 const data = await response.json();
                 textResponse = data.choices[0].message.content;
-
             } else if (provider === 'custom') {
                 if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Llamando a Agente DAO Interno...";
+                const customUrl = this.dom.inpCustomUrl.value.trim();
                 const response = await fetch(customUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -525,23 +546,21 @@ export default class ProjectCreatorView {
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
             const firstBrace = textResponse.indexOf('{');
             const lastBrace = textResponse.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) {
-                textResponse = textResponse.substring(firstBrace, lastBrace + 1);
-            }
+            if (firstBrace !== -1 && lastBrace !== -1) textResponse = textResponse.substring(firstBrace, lastBrace + 1);
 
             const parsedData = JSON.parse(textResponse);
 
-            if (!parsedData.roles) throw new Error("La IA no devolvió la estructura de roles requerida.");
+            if (!parsedData.roles) throw new Error("La IA no devolvió roles funcionales.");
 
-            // GUARDAR LA PRESENTACIÓN GENERADA POR IA
             this.draftPresentation = parsedData.presentacion || vision;
+            this.draftTags = parsedData.tags || [];
 
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: r.levelId,
                 name: r.name,
-                fmv: r.fmv,
-                multiplier: r.multiplier,
+                fmv: r.fmv || 50,
+                multiplier: r.multiplier || 1.0,
                 guardian: r.guardian || 'everyman'
             }));
 
@@ -550,7 +569,7 @@ export default class ProjectCreatorView {
 
         } catch (error) {
             console.error("💥 Fallo Motor Cognitivo:", error);
-            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nRevisa tu API Key o usa la plantilla en blanco.`);
+            alert(`Fallo en el Motor Cognitivo.\nRevisa tu API Key o usa la plantilla en blanco.`);
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
         }
@@ -754,17 +773,11 @@ export default class ProjectCreatorView {
                 sector: this.dom.inpSector.value,
                 prompt: visionText, 
                 archetype: arch, 
-                customRoles: this.draftRoles 
+                customRoles: this.draftRoles,
+                tags: this.draftTags,
+                presentation: this.draftPresentation
             } 
         });
-
-        // FIX: Se guarda la presentación generada (o la manual)
-        if (this.draftPresentation) {
-            await store.dispatch({
-                type: 'UPDATE_PROJECT_INFO',
-                payload: { projectId: projectId, updates: { presentation: this.draftPresentation } }
-            });
-        }
 
         const state = store.getState();
         const p = state.projects.find(x => x.id === projectId);
@@ -784,7 +797,7 @@ export default class ProjectCreatorView {
                                 to: roleTo.id,     
                                 horas: aiTx.horas || 2,
                                 entregable: aiTx.entregable,
-                                tipo: aiTx.tipo,
+                                tipo: aiTx.tipo || 'tangible',
                                 status: 'theoretical'
                             }
                         }
@@ -793,6 +806,6 @@ export default class ProjectCreatorView {
             }
         }
 
-        window.location.href = '/v5/dashboard'; // Redirigir al nuevo Lobby, no al mapa directo
+        window.location.href = '/v5/dashboard';
     }
 }
