@@ -72,7 +72,7 @@ export default class ValueMapView {
                 .tx-badge:hover { transform: translate(-50%, -50%) scale(1.2); filter: brightness(1.2); z-index: 100;}
                 .tx-badge.ghost { opacity: 0.3; }
 
-                /* TOOLTIP FLOTANTE MEJORADO (POSITION FIXED PARA EVITAR OVERFLOWS RELATIVOS) */
+                /* TOOLTIP FLOTANTE MEJORADO */
                 .tx-tooltip { 
                     position: fixed; background: rgba(10, 10, 14, 0.98); border: 1px solid var(--accent-blue); 
                     color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 9999; 
@@ -162,7 +162,7 @@ export default class ValueMapView {
                     
                     <div class="map-canvas" id="mapCanvas">
                         <svg id="edges-svg"></svg>
-                        </div>
+                    </div>
                     
                     <div id="txTooltip" class="tx-tooltip"></div>
                 </div>
@@ -370,7 +370,7 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ TOOLTIPS DE ALTO RENDIMIENTO CON MATEMÁTICAS ANTI-OVERFLOW ------------------
+        // TOOLTIPS HTML HOVER
         this.dom.canvas.addEventListener('mouseover', (e) => {
             if (e.target.classList.contains('tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
@@ -385,7 +385,6 @@ export default class ValueMapView {
                 const typeColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
                 const typeText = tx.tipo === 'tangible' ? 'TANGIBLE' : 'INTANGIBLE';
                 
-                // Inyectamos el contenido primero
                 this.dom.tooltip.innerHTML = `
                     <div style="color: ${typeColor}; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
                         [Paso ${parseInt(idx) + 1}] ${typeText}
@@ -400,39 +399,25 @@ export default class ValueMapView {
                     </div>
                 `;
                 
-                // Hacemos visible la caja para poder medirla con getBoundingClientRect
                 this.dom.tooltip.classList.add('visible');
 
-                // CÁLCULO DINÁMICO DE POSICIÓN (Evitando que se salga de la pantalla)
                 const badgeRect = e.target.getBoundingClientRect();
                 const tooltipRect = this.dom.tooltip.getBoundingClientRect();
                 
-                // Por defecto, lo ponemos a la derecha del número
                 let leftPos = badgeRect.right + 15;
                 let topPos = badgeRect.top - 10;
 
-                // Comprobamos si choca con el borde derecho de la ventana
                 if (leftPos + tooltipRect.width > window.innerWidth - 20) {
-                    // Si choca, lo mandamos a la izquierda del número
                     leftPos = badgeRect.left - tooltipRect.width - 15;
-                    
-                    // Si también choca por la izquierda (pantallas muy estrechas), lo pegamos al margen izquierdo
-                    if (leftPos < 20) {
-                        leftPos = 20;
-                    }
+                    if (leftPos < 20) leftPos = 20;
                 }
 
-                // Comprobamos si choca por abajo
                 if (topPos + tooltipRect.height > window.innerHeight - 20) {
                     topPos = window.innerHeight - tooltipRect.height - 20;
                 }
                 
-                // Comprobamos si choca por arriba
-                if (topPos < 20) {
-                    topPos = 20;
-                }
+                if (topPos < 20) topPos = 20;
 
-                // Aplicamos las posiciones corregidas
                 this.dom.tooltip.style.left = `${leftPos}px`;
                 this.dom.tooltip.style.top = `${topPos}px`;
             }
@@ -628,7 +613,7 @@ export default class ValueMapView {
         setTimeout(() => this.drawEdges(), 50); 
     }
 
-    // --- SIMULACIÓN CORREGIDA ---
+    // --- SIMULACIÓN ANIMADA C/ CURVAS BEZIER ---
     startSimulation() {
         if (this.isSimulating) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -649,10 +634,29 @@ export default class ValueMapView {
         stepEls.forEach(el => el.classList.remove('simulating'));
         this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
 
+        // CÁLCULO DE AGRUPACIÓN PREVIA (Igual que en estático) para que las animaciones mantengan la curvatura correcta
+        const pairCounts = {};
+        txs.forEach((tx, i) => {
+            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
+            if (!pairCounts[key]) pairCounts[key] = [];
+            pairCounts[key].push({ tx, index: i });
+        });
+
+        // Mapear cada transacción con su índice múltiple
+        const txMultiIdxMap = new Map();
+        Object.keys(pairCounts).forEach(key => {
+            pairCounts[key].forEach((edge, multiIdx) => {
+                txMultiIdxMap.set(edge.index, multiIdx);
+            });
+        });
+
         let delayAccumulator = 0;
         const timePerStep = 2000;
 
         txs.forEach((tx, index) => {
+            const multiIdx = txMultiIdxMap.get(index) || 0;
+            const totalEdgesInPair = pairCounts[tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`].length;
+
             const timeoutId = setTimeout(() => {
                 stepEls.forEach(el => el.classList.remove('simulating'));
                 if(stepEls[index]) {
@@ -680,7 +684,7 @@ export default class ValueMapView {
                     }
                 }
 
-                this.drawSingleEdgeAnim(tx, index, isSickFlow);
+                this.drawSingleEdgeAnim(tx, index, isSickFlow, multiIdx, totalEdgesInPair);
 
                 if (index === txs.length - 1) {
                     setTimeout(() => this.stopSimulation(), timePerStep);
@@ -708,7 +712,7 @@ export default class ValueMapView {
         this.drawEdges(); 
     }
 
-    drawSingleEdgeAnim(tx, index, isSick) {
+    drawSingleEdgeAnim(tx, index, isSick, multiIdx, totalEdgesInPair) {
         const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
         const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
         if (!dom1 || !dom2) return;
@@ -732,15 +736,29 @@ export default class ValueMapView {
         const x2 = x2_center - (dx/dist) * trim;
         const y2 = y2_center - (dy/dist) * trim;
 
+        // CÁLCULO DE LA CURVA PARA LA ANIMACIÓN
+        const nx = -dy / dist; 
+        const ny = dx / dist;
+        let offset = 0;
+        if (totalEdgesInPair > 1) {
+            const step = 45; 
+            offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
+        }
+
+        const cx = (x1_center + x2_center) / 2 + nx * offset;
+        const cy = (y1_center + y2_center) / 2 + ny * offset;
+
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
+        path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         
         let markerId = isSick ? 'arrow-sick' : (tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible');
         path.setAttribute('marker-end', `url(#${markerId})`);
         
         const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
         
-        const realDist = dist - (trim * 2);
+        // Aumentamos un poco la distancia virtual para que la animación termine de pintar toda la curva
+        const realDist = dist + Math.abs(offset) * 2; 
+        
         path.style.cssText = `
             fill: none;
             stroke: ${strokeColor};
@@ -760,13 +778,17 @@ export default class ValueMapView {
         this.dom.svg.appendChild(path);
 
         setTimeout(() => {
+            const txX = 0.25 * x1_center + 0.5 * cx + 0.25 * x2_center;
+            const txY = 0.25 * y1_center + 0.5 * cy + 0.25 * y2_center;
+
             const badge = document.createElement('div');
             badge.className = 'tx-badge';
-            badge.style.left = `${(x1_center + x2_center)/2}px`;
-            badge.style.top = `${(y1_center + y2_center)/2}px`;
+            badge.style.left = `${txX}px`;
+            badge.style.top = `${txY}px`;
             badge.style.backgroundColor = strokeColor;
             badge.style.color = 'black';
             badge.innerText = `[${index + 1}]`;
+            
             this.dom.canvas.appendChild(badge);
         }, 800); 
     }
