@@ -28,8 +28,15 @@ export default class ProjectCreatorView {
     }
 
     async getHtml() {
-        const savedKey = localStorage.getItem('tt_ai_key') || '';
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+        // Buscamos la llave guardada en settings
+        let savedKey = '';
+        if (savedProvider === 'deepseek') savedKey = localStorage.getItem('tt_key_deepseek') || '';
+        if (savedProvider === 'openai') savedKey = localStorage.getItem('tt_key_openai') || '';
+        if (savedProvider === 'gemini') savedKey = localStorage.getItem('tt_key_gemini') || '';
+
+        // Si ya hay llave, el panel nace cerrado y limpio
+        const hasKey = savedKey.length > 5;
 
         return `
             <style>
@@ -70,7 +77,7 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
                 .btn-del-role:hover { transform: scale(1.2); }
 
-                /* MINI-MAP PREVIEW (NUEVO) */
+                /* MINI-MAP PREVIEW */
                 .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
                 .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
 
@@ -140,8 +147,8 @@ export default class ProjectCreatorView {
                                 <textarea id="inpVision" class="vision-box" placeholder="Describe el propósito de la red, los objetivos fundacionales o los problemas del sistema actual que quieres resolver..."></textarea>
                             </div>
 
-                            <details style="margin-bottom: 2rem;">
-                                <summary style="color: var(--accent-purple); font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">✨ Desplegar Asistente IA (Opcional)</summary>
+                            <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
+                                <summary style="color: var(--accent-purple); font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">✨ Configurar Llave IA Manualmente</summary>
                                 <div class="ai-config-panel">
                                     <div class="ai-grid">
                                         <div>
@@ -150,7 +157,7 @@ export default class ProjectCreatorView {
                                                 <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (API Abierta)</option>
                                                 <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
                                                 <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
-                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo (Endpoint Local)</option>
+                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo</option>
                                             </select>
                                         </div>
                                         <div>
@@ -186,7 +193,7 @@ export default class ProjectCreatorView {
 
                             <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
 
-                            <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem; justify-content: space-between; align-items: center;">
                                 <div>
                                     <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Value Network)</div>
                                     <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha estimado <strong id="txCount" style="color: white;">0</strong> entregables clave (ver Mapa ☝️).</div>
@@ -330,9 +337,12 @@ export default class ProjectCreatorView {
 
         if (!name) return alert("Debes darle un nombre a la red.");
         if (!vision) return alert("Escribe tu visión estratégica para que el Agente la procese.");
-        if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor seleccionado.");
+        if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor. Guárdala en Configuración o ponla aquí.");
 
-        localStorage.setItem('tt_ai_key', apiKey);
+        // Guardar para futura referencia (Sincroniza con Settings)
+        if (provider === 'deepseek') localStorage.setItem('tt_key_deepseek', apiKey);
+        if (provider === 'openai') localStorage.setItem('tt_key_openai', apiKey);
+        if (provider === 'gemini') localStorage.setItem('tt_key_gemini', apiKey);
         localStorage.setItem('tt_ai_provider', provider);
 
         this.dom.step1.style.display = 'none';
@@ -420,7 +430,7 @@ export default class ProjectCreatorView {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({
-                        model: "deepseek-chat", // Modelo de chat de DeepSeek
+                        model: "deepseek-chat",
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: vision }
@@ -472,7 +482,7 @@ export default class ProjectCreatorView {
 
         } catch (error) {
             console.error("💥 Fallo Motor Cognitivo:", error);
-            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nRevisa tu cuota o usa la plantilla en blanco.`);
+            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nRevisa tu API Key o usa la plantilla en blanco.`);
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
         }
@@ -545,7 +555,6 @@ export default class ProjectCreatorView {
             });
         });
 
-        // Renderizamos el minimapa cada vez que los roles se actualizan
         this.renderMiniMap();
     }
 
@@ -585,7 +594,6 @@ export default class ProjectCreatorView {
         });
 
         // 2. Dibujar las Líneas (Transacciones)
-        // Usamos un setTimeout muy breve para que el DOM pinte los nodos y podamos extraer sus coordenadas exactas (BoundingRect)
         setTimeout(() => {
             const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
             defs.innerHTML = `
@@ -596,7 +604,6 @@ export default class ProjectCreatorView {
 
             const pairCounts = {};
             this.draftTxs.forEach((tx, i) => {
-                // Encontrar el primer nodo que encaje con el nivel de la transacción
                 const fromIdx = this.draftRoles.findIndex(r => r.levelId === tx.fromLevel);
                 const toIdx = this.draftRoles.findIndex(r => r.levelId === tx.toLevel);
                 
@@ -630,7 +637,7 @@ export default class ProjectCreatorView {
 
                     let offset = 0;
                     if (edges.length > 1) {
-                        const step = 20; // Curvatura si hay varios flujos en la misma ruta
+                        const step = 20; 
                         offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
                     }
 
@@ -648,7 +655,6 @@ export default class ProjectCreatorView {
                     
                     svg.appendChild(path);
                     
-                    // Número de la transacción en la línea
                     const txtX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
                     const txtY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
                     const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -666,12 +672,17 @@ export default class ProjectCreatorView {
     getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
     getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 
-    finalizeProject() {
+    async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
         const arch = this.dom.inpArchetype.value; 
         
-        store.dispatch({ 
+        // Carga animada
+        this.dom.btnLaunch.disabled = true;
+        this.dom.btnLaunch.innerText = 'Firmando Bloque Génesis...';
+
+        // Ahora es asíncrono para permitir el cálculo SHA-256
+        await store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
                 id: projectId,
@@ -687,12 +698,13 @@ export default class ProjectCreatorView {
         const p = state.projects.find(x => x.id === projectId);
         
         if (p && this.draftTxs && this.draftTxs.length > 0) {
-            this.draftTxs.forEach(aiTx => {
+            // Convertimos el loop en asíncrono para asegurar la inyección limpia de las TXs
+            for (const aiTx of this.draftTxs) {
                 const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
                 const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
                 
                 if (roleFrom && roleTo) {
-                    store.dispatch({
+                    await store.dispatch({
                         type: 'ADD_TRANSACTION',
                         payload: {
                             projectId: projectId,
@@ -707,9 +719,10 @@ export default class ProjectCreatorView {
                         }
                     });
                 }
-            });
+            }
         }
 
+        // Redirige al Mapa de Valor una vez que TODO el bloque ha sido sellado
         window.location.href = '/v5/map';
     }
 }
