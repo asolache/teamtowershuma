@@ -89,8 +89,8 @@ export default class TeamView {
                             <p>Identidad fractal y asignación mediante Motor de Matching Semántico.</p>
                         </div>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-invite" id="btnManualAdd">+ Alta Manual</button>
-                            <div id="googleButtonContainer"></div>
+                            <button class="btn-invite" id="btnManualAdd">⚡ Invitar Nodo (Mock Auth)</button>
+                            <div id="googleButtonContainer" style="display:none;"></div>
                         </div>
                     </div>
 
@@ -172,17 +172,32 @@ export default class TeamView {
         this.renderUsers(project, state.globalUsers);
         this.renderRoles(project, state.globalUsers);
 
-        // LÓGICA DE ALTA MANUAL
+        // LÓGICA DE ALTA MOCK (Para bypassear el bloqueo de Google)
         document.getElementById('btnManualAdd').addEventListener('click', () => {
-            const name = prompt("Introduce el nombre del nuevo miembro:");
+            const name = prompt("SIMULADOR DE INVITE:\nIntroduce el nombre del nuevo miembro (Ej: Laura Dev):");
             if (name) {
                 const cleanName = name.toLowerCase().replace(/\s+/g, '');
+                
+                // Creamos un perfil simulado aleatorio para que el Motor de Matching tenga datos con los que jugar
+                const mockProfile = {
+                    vision: "Perfil autogenerado para pruebas de la Colla.",
+                    structural_affinity: ['@baixos', '@dosos'][Math.floor(Math.random()*2)],
+                    guardian_authority: ['creator', 'hero', 'sage'][Math.floor(Math.random()*3)],
+                    guardian_growth: ['magician', 'caregiver', 'ruler'][Math.floor(Math.random()*3)]
+                };
+
                 const newUser = {
                     id: `@${cleanName}_${Math.floor(Math.random()*1000)}`,
                     name: name,
-                    walletOrSocial: 'manual_entry',
-                    globalRole: 'network-user'
+                    walletOrSocial: 'mock_auth_system',
+                    globalRole: 'network-user',
+                    profile: {
+                        structural_affinity: [mockProfile.structural_affinity],
+                        guardian_authority: [mockProfile.guardian_authority],
+                        guardian_growth: [mockProfile.guardian_growth]
+                    }
                 };
+                
                 this.handleNewUser(newUser);
             }
         });
@@ -192,7 +207,10 @@ export default class TeamView {
             document.getElementById('userProfileModal').style.display = 'none';
         });
 
-        // GOOGLE AUTH
+        // NOTA: Se ha deshabilitado temporalmente la carga del script de Google
+        // para evitar los errores de "Feature Policy" y "CORS" en entornos locales.
+        // Cuando pases esto a producción HTTPS (ej: Firebase, Vercel, Netlify), descomenta esto:
+        /*
         if (!document.getElementById('gsi-script')) {
             const script = document.createElement('script');
             script.id = 'gsi-script';
@@ -203,49 +221,37 @@ export default class TeamView {
         } else {
             this.initGoogleAuth();
         }
+        */
     }
 
-    initGoogleAuth() {
-        const GOOGLE_CLIENT_ID = "778991708293-c4f7s4l4339ooldpun0eitfdb12gjfdn.apps.googleusercontent.com";
-        
-        if (GOOGLE_CLIENT_ID.includes("PEGAR_AQUI")) {
-            document.getElementById('googleButtonContainer').innerHTML = `<div style="color: #ff9100; font-size:0.8rem; font-family:monospace; border: 1px dashed #ff9100; padding: 10px; border-radius: 6px;">[Falta Google Client ID]</div>`;
-            return;
-        }
-
-        window.handleCredentialResponse = (response) => {
-            try {
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-
-                const payload = JSON.parse(jsonPayload);
-                const cleanName = payload.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
-                
-                const newUser = {
-                    id: `@${cleanName}`,
-                    name: payload.name,
-                    walletOrSocial: payload.email,
-                    globalRole: 'network-user'
-                };
-                this.handleNewUser(newUser);
-            } catch (error) {
-                console.error("Error decodificando el JWT de Google:", error);
-            }
-        };
-
-        google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: window.handleCredentialResponse });
-        google.accounts.id.renderButton(document.getElementById("googleButtonContainer"), { theme: "filled_black", size: "large", shape: "pill", text: "continue_with" });
-    }
+    // initGoogleAuth() { ... código Google comentado temporalmente para desarrollo ... }
 
     handleNewUser(userObj) {
         try {
+            // Añadir al store general
             store.dispatch({
                 type: 'ADD_USER',
-                payload: { projectId: this.activeProjectId, userId: userObj.id, id: userObj.id, name: userObj.name, walletOrSocial: userObj.walletOrSocial, globalRole: userObj.globalRole }
+                payload: { 
+                    projectId: this.activeProjectId, 
+                    userId: userObj.id, 
+                    id: userObj.id, 
+                    name: userObj.name, 
+                    walletOrSocial: userObj.walletOrSocial, 
+                    globalRole: userObj.globalRole 
+                }
             });
+
+            // Si le hemos creado un perfil mock (para pruebas de Matching), lo inyectamos al store global directamente
+            if (userObj.profile) {
+                const currentState = store.getState();
+                const uIdx = currentState.globalUsers.findIndex(u => u.id === userObj.id);
+                if(uIdx > -1) {
+                    currentState.globalUsers[uIdx].profile = userObj.profile;
+                    store.state = currentState;
+                    localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
+                }
+            }
+
             const state = store.getState();
             const project = state.projects[state.projects.length - 1];
             this.renderUsers(project, state.globalUsers);
@@ -360,13 +366,12 @@ export default class TeamView {
 
             if (!isAssigned) {
                 globalUsers.forEach(u => {
-                    // Solo analizamos usuarios que ya estén en el proyecto y tengan perfil
                     if (!projUsers.find(pu => pu.id === u.id) || !u.profile) return;
                     
                     let score = 0;
-                    if (u.profile.structural_affinity?.includes(rol.levelId)) score += 50; // 50% Match Estructural
-                    if (rol.guardian && u.profile.guardian_authority?.includes(rol.guardian)) score += 35; // 35% Match Autoridad
-                    if (rol.guardian && u.profile.guardian_growth?.includes(rol.guardian)) score += 15; // 15% Match Interés
+                    if (u.profile.structural_affinity?.includes(rol.levelId)) score += 50; 
+                    if (rol.guardian && u.profile.guardian_authority?.includes(rol.guardian)) score += 35; 
+                    if (rol.guardian && u.profile.guardian_growth?.includes(rol.guardian)) score += 15; 
                     
                     if (score > bestScore) {
                         bestScore = score;
@@ -402,7 +407,6 @@ export default class TeamView {
             const selectEl = slot.querySelector('.user-select');
             if (isAssigned) selectEl.value = assignment.userId;
 
-            // Escuchar asignación manual
             selectEl.addEventListener('change', (e) => {
                 const selectedUserId = e.target.value;
                 if (selectedUserId !== "") {
@@ -416,7 +420,6 @@ export default class TeamView {
                 this.renderRoles(updatedProject, updatedState.globalUsers);
             });
 
-            // Escuchar clic en la sugerencia del Agente
             const matchBadge = slot.querySelector('.ai-match-badge');
             if (matchBadge) {
                 matchBadge.addEventListener('click', (e) => {
