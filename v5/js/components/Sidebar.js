@@ -4,28 +4,32 @@ import { store } from '../core/store.js';
 export const Sidebar = {
     getHtml: (activePath = '') => {
         const state = store.getState();
-        // Obtenemos el último proyecto activo para el contexto
         const project = state.projects[state.projects.length - 1];
         
         const activeUserId = state.session.activeUserId;
-        let userDisplay = activeUserId === 'ecosystem-admin' ? 'Ecosystem Admin' : activeUserId;
+        const role = state.session.role;
+        let userDisplay = activeUserId || 'Invitado';
         
-        if (activeUserId !== 'ecosystem-admin') {
+        if (activeUserId) {
             const u = state.globalUsers.find(x => x.id === activeUserId);
             if (u) userDisplay = u.name;
         }
 
-        // 1. SECCIÓN GLOBAL (Siempre visible)
+        // CONTROL DE PERMISOS (Gobernanza del Ecosistema)
+        const canCreate = role === 'ecosystem-owner' || (state.config && state.config.allowUserCreation);
+        const createLink = canCreate ? `<a href="/v5/create" class="side-link ${activePath === '/create' ? 'active' : ''}" data-link>➕ Instanciar Red</a>` : '';
+
+        // 1. SECCIÓN GLOBAL
         const globalSection = `
             <div class="side-section">
                 <a href="/v5/" class="side-link ${activePath === '/' ? 'active' : ''}" data-link>🏠 Inicio Central</a>
                 <a href="/v5/network" class="side-link ${activePath === '/network' ? 'active' : ''}" data-link>🌐 Red de DAOs</a>
-                <a href="/v5/create" class="side-link ${activePath === '/create' ? 'active' : ''}" data-link>➕ Instanciar Red</a>
+                ${createLink}
                 <a href="/v5/profile" class="side-link ${activePath === '/profile' ? 'active' : ''}" data-link>👤 Mi CV / Arquetipo</a>
             </div>
         `;
 
-        // 2. SECCIÓN DE CONTEXTO (Solo si hay proyecto)
+        // 2. SECCIÓN DE CONTEXTO (Si hay proyecto activo)
         let projectSection = '';
         if (project) {
             projectSection = `
@@ -57,15 +61,13 @@ export const Sidebar = {
                 
                 .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 5px; }
                 .sidebar .user-status { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--border-radius-md); margin-top: 10px; border: 1px solid var(--glass-border);}
-                .sidebar .btn-logout { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.1rem; opacity: 0.7; transition: all 0.2s; display: flex; align-items: center;}
-                .sidebar .btn-logout:hover { opacity: 1; transform: scale(1.2); }
+                
+                .sidebar .btn-logout { background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 6px;}
+                .sidebar .btn-logout:hover { color: var(--accent-red); background: rgba(255, 82, 82, 0.1); }
 
                 @media (max-width: 768px) {
-                    .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--glass-border); }
-                    .sidebar .brand, .sidebar .project-context-header, .sidebar .sidebar-footer { display: none; }
-                    .sidebar .side-section { flex-direction: row; margin-bottom: 0; }
-                    .sidebar .side-link { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
-                    .sidebar .side-link.active { border-left: none; border-bottom: 3px solid var(--accent-blue); }
+                    .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; overflow-x: auto; flex-wrap: nowrap; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+                    .sidebar-footer { display: none; }
                 }
             </style>
 
@@ -85,7 +87,9 @@ export const Sidebar = {
                             <div style="width: 28px; height: 28px; background: var(--accent-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: black; font-weight: bold; font-size: 0.75rem; flex-shrink: 0;">${userDisplay.charAt(0).toUpperCase()}</div>
                             <div style="color: white; font-size: 0.8rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${userDisplay}">${userDisplay}</div>
                         </div>
-                        <button class="btn-logout" id="globalBtnLogout" title="Cerrar Sesión">⏻</button>
+                        <button class="btn-logout" id="globalBtnLogout" title="Desconectar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        </button>
                     </div>
                 </div>
             </aside>
@@ -96,9 +100,8 @@ export const Sidebar = {
         const btnLogout = document.getElementById('globalBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
-                if(confirm('¿Cerrar sesión y volver al modo Admin?')) {
-                    store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'ecosystem-admin' } });
-                    // Forzamos recarga para limpiar contextos
+                if(confirm('¿Desconectar el Exoesqueleto y volver al portal público?')) {
+                    store.dispatch({ type: 'LOGOUT_USER' });
                     window.location.href = '/v5/';
                 }
             });
