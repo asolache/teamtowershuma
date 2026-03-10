@@ -1,6 +1,6 @@
 // ==========================================================================
-// KERNEL v7.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
-// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie y Privacidad
+// KERNEL v7.4 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad y Capital
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
@@ -280,7 +280,7 @@ async function asyncReducer(state, action) {
             }
             return newState;
 
-        // V7.3: KERNEL SOLICITUD DE PULL (Usuario Raso pide hacer tarea)
+        // V7.3: KERNEL SOLICITUD DE PULL
         case 'REQUEST_TRANSACTION':
             const pReqTx = newState.projects.find(p => p.id === action.payload.projectId);
             if (pReqTx) {
@@ -293,7 +293,7 @@ async function asyncReducer(state, action) {
             }
             return newState;
 
-        // V7.3: PUSH Y APROBACIÓN DE PULL (El PO delega/aprueba)
+        // V7.3: PUSH Y APROBACIÓN DE PULL
         case 'PING_TRANSACTION':
             const pPing = newState.projects.find(p => p.id === action.payload.projectId);
             if (pPing) {
@@ -343,6 +343,38 @@ async function asyncReducer(state, action) {
                     });
                     txAppr.valorCongelado = valorGenerado;
                 }
+            }
+            return newState;
+
+        // V7.4: INYECCIONES DE CAPITAL (SLICING PIE)
+        case 'ADD_CAPITAL_INJECTION':
+            const pCap = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pCap) {
+                let multiplier = 2.0; 
+                if (action.payload.assetType === 'cash') multiplier = 4.0;
+                
+                const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                const archFactor = archFactors[pCap.archetype] || 1.0;
+                const valorGenerado = action.payload.amount * multiplier * archFactor;
+
+                if (!pCap.ledger) pCap.ledger = [];
+                const lastLedgerHash = pCap.ledger.length > 0 ? pCap.ledger[pCap.ledger.length - 1].hash : pCap.genesisHash;
+                
+                const blockData = `${lastLedgerHash}|${action.payload.userId}|CAPITAL_ASSET|0|${valorGenerado}|${Date.now()}`;
+                const realCryptoHash = await generateSHA256(blockData);
+
+                pCap.ledger.push({
+                    id: 'ledg_' + Math.random().toString(36).substr(2, 9),
+                    hash: realCryptoHash,
+                    prevHash: lastLedgerHash,
+                    previousHash: lastLedgerHash,
+                    userId: action.payload.userId,
+                    roleId: 'CAPITAL_ASSET',
+                    description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
+                    horas: 0,
+                    valorCongelado: valorGenerado,
+                    timestamp: Date.now()
+                });
             }
             return newState;
 
