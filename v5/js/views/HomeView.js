@@ -126,7 +126,7 @@ export default class HomeView {
                 }
                 .btn-boot:hover { transform: scale(1.05); background: var(--accent-blue); box-shadow: 0 0 50px rgba(0, 176, 255, 0.4); }
 
-                /* TERMINAL OVERLAY - MEJORADO PARA LEGIBILIDAD */
+                /* TERMINAL OVERLAY */
                 .terminal-overlay {
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                     background: rgba(5, 5, 7, 0.98); backdrop-filter: blur(20px); z-index: 1000; display: none;
@@ -150,7 +150,7 @@ export default class HomeView {
                     <span class="tagline">Soberanía Organizacional</span>
                     <h1 class="main-title">No uses software.<br>Construye tu <span>Exoesqueleto.</span></h1>
                     <p class="description">
-                        Bienvenido al SOS v7.0. El primer Kernel organizacional que fusiona <b>VNA</b>, <b>Slicing Pie</b> e <b>IA</b> 
+                        Bienvenido al SOS v7.2. El primer Kernel organizacional que fusiona <b>VNA</b>, <b>Slicing Pie</b> e <b>IA</b> 
                         para transformar el Deep Work en equidad inmutable.
                     </p>
                     
@@ -163,7 +163,7 @@ export default class HomeView {
                 <div class="terminal-overlay" id="bootTerminal">
                     <div style="font-size: 4rem; margin-bottom: 2rem; text-shadow: 0 0 20px rgba(0,176,255,0.5);">🗼</div>
                     <div class="boot-log" id="logContent"></div>
-                    <div style="margin-top: 3rem; font-size: 0.75rem; color: #555; text-shadow: none;">SOS_KERNEL_STABLE // BUILD 2026.03.10</div>
+                    <div style="margin-top: 3rem; font-size: 0.75rem; color: #555; text-shadow: none;">SOS_KERNEL_STABLE // BUILD 2026.03.11</div>
                 </div>
             </div>
         `;
@@ -174,7 +174,7 @@ export default class HomeView {
         const activeUserId = state.session.activeUserId;
         const container = document.getElementById('projectsContainer');
 
-        // Lógica Dashboard
+        // Lógica Dashboard (Home)
         if (container) {
             Sidebar.initListeners();
             const userProjects = state.projects.filter(p => 
@@ -182,13 +182,16 @@ export default class HomeView {
                 p.ownerId === activeUserId || 
                 (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
             );
+            
+            // FIX V7.2: Redirigir al Lobby/Dashboard (/dashboard) en lugar del Kanban (/project)
             container.innerHTML = userProjects.map(p => `
-                <div class="project-card" onclick="window.location.href='/v5/project'">
+                <div class="project-card" onclick="window.location.href='/v5/dashboard'">
                     <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
                         <h3 style="color:white; margin:0;">${p.nombre}</h3>
-                        <span style="font-size:0.7rem; color:var(--accent-blue); font-family:var(--font-mono);">${p.archetype || 'STARTUP'}</span>
+                        <span style="font-size:0.7rem; color:var(--accent-blue); font-family:var(--font-mono); border: 1px solid rgba(0,176,255,0.3); padding: 2px 6px; border-radius: 4px;">${p.archetype || 'STARTUP'}</span>
                     </div>
                     <div style="color:#666; font-size:0.8rem;">Owner: ${p.ownerId}</div>
+                    ${p.isPrivate ? '<div style="margin-top: 10px; font-size: 0.7rem; color: var(--accent-red); font-weight: bold;">🔒 RED PRIVADA</div>' : ''}
                 </div>
             `).join('');
         }
@@ -207,11 +210,11 @@ export default class HomeView {
                 
                 const lines = [
                     `> AUTHENTICATING ENTITY: [${requestedId}]`,
-                    "> INITIALIZING KERNEL V7.0...",
+                    "> INITIALIZING KERNEL V7.2...",
                     "> SYNCING VNA PROTOCOLS... <span style='color:var(--accent-blue)'>[OK]</span>",
                     "> LOADING SLICING PIE LEDGER... <span style='color:var(--accent-blue)'>[OK]</span>",
                     "> MOUNTING PERMAWEB REPOSITORY... <span style='color:var(--accent-blue)'>[OK]</span>",
-                    "> VERIFYING COLLA PERMISSIONS... <span style='color:var(--accent-blue)'>[OK]</span>",
+                    "> VERIFYING PRIVACY FIREWALLS... <span style='color:var(--accent-blue)'>[OK]</span>",
                     "> DEPLOYING COGNITIVE EXOSKELETON..."
                 ];
 
@@ -220,14 +223,13 @@ export default class HomeView {
                     if (i < lines.length) {
                         logContent.innerHTML += `<div style="margin-bottom: 5px;">${lines[i]}</div>`;
                         i++;
-                        setTimeout(printLine, 350); // Velocidad de lectura perfecta
+                        setTimeout(printLine, 350); 
                     } else {
                         logContent.innerHTML += `<div style="margin-top:20px; color:white; font-size: 1.2rem;">ACCESS GRANTED <span class="cursor"></span></div>`;
                         
-                        // ES VITAL USAR ASYNC/AWAIT ANTES DE RECARGAR
                         setTimeout(async () => {
                             await store.dispatch({ type: 'LOGIN_USER', payload: { userId: requestedId } });
-                            window.location.reload(); // Recarga limpia
+                            window.location.reload();
                         }, 800);
                     }
                 };
