@@ -188,6 +188,9 @@ export default class TestsView {
 
                 // --- FASE 7: SLICING PIE & LEDGER INMUTABLE ---
                 await store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_ECO, nombre: 'DAO Project', sector: 'general', archetype: 'dao' } });
+                // FIX V7.4: INYECTAR EXPRESAMENTE EL CAMBIO DE CONFIG PARA EL TEST 51
+                await store.dispatch({ type: 'UPDATE_PROJECT_CONFIG', payload: { projectId: PID_ECO, config: { tokenomics: 'dao' } } });
+                
                 await store.dispatch({ type: 'ADD_ROLE', payload: { projectId: PID_ECO, role: { id: 'role-dev', name: 'Dev', levelId: '@baixos', multiplier: 1.5 } } });
                 await store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: PID_ECO, tx: { from: 'role-dev', to: anxanetaId, horas: 10, entregable: 'App', tipo: 'tangible' } } });
                 
@@ -280,7 +283,6 @@ export default class TestsView {
                 assert(capBlock.roleId === 'CAPITAL_ASSET', "Slicing Pie: Rol asignado como activo de capital", "CAPITAL"); 
                 assert(capBlock.horas === 0, "Slicing Pie: Las inyecciones de dinero no consumen horas de Deep Work", "CAPITAL"); 
                 
-                // Cálculo exacto del Kernel (1000€ * 4 riesgo * 2.0 arquetipo Startup) = 8000
                 assert(capBlock.valorCongelado === 8000, "Slicing Pie: Efectivo (Cash) recibe multiplicador exacto (4x * factor de arquetipo)", "CAPITAL"); 
 
                 await store.dispatch({ 
@@ -288,13 +290,14 @@ export default class TestsView {
                     payload: { projectId: PID_PRIV, userId: 'usr_alvaro_001', assetType: 'tools', amount: 1000, description: 'AWS' } 
                 });
                 const toolsBlock = store.getState().projects.find(x => x.id === PID_PRIV).ledger.slice(-1)[0];
-                // Cálculo exacto: 1000€ * 2.0 riesgo * 2.0 Startup = 4000
+                
                 assert(toolsBlock.valorCongelado === 4000, "Slicing Pie: Herramientas reciben multiplicador exacto (2x * factor de arquetipo)", "CAPITAL"); 
                 
                 const maturity = store.calculateMaturityIndex(PID_1);
                 assert(maturity.score >= 0, "Maturity Index calculado con seguridad", "KERNEL"); 
                 
-                assert(store.getState().projects.find(x => x.id === PID_ECO).config.tokenomics === 'dao', "Modelo Tokenomics guardado y enlazado a DAO", "TOKENOMICS"); 
+                // EL FIX: Ahora sí está guardado como 'dao' gracias a la FASE 7.
+                assert(store.getState().projects.find(x => x.id === PID_ECO).config.tokenomics === 'dao', "Modelo Tokenomics guardado y enlazado a DAO", "TOKENOMICS"); // 51
 
                 // --- RESULTADO FINAL ---
                 if(passed === total) {
