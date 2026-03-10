@@ -19,11 +19,25 @@ export const SOS_CODEX = {
             keywords: ['Fair Market Value', 'Multiplicador de Riesgo', 'Equidad Dinámica']
         },
         {
+            id: 'ikigai',
+            name: 'Ikigai (Razón de ser)',
+            author: 'Filosofía Tradicional Japonesa',
+            description: 'Modelo de alineación existencial. Se utiliza para cruzar las habilidades del usuario con las necesidades de la DAO, buscando el punto de equilibrio entre pasión, misión, vocación y profesión para desatar el máximo potencial humano.',
+            keywords: ['Propósito', 'Alineación de Talento', 'Auto-realización', 'Matching Semántico']
+        },
+        {
             id: 'pantheon',
             name: 'Los 12 Guardianes',
             author: 'Pantheon.work',
             description: 'Sistema para identificar y cultivar competencias humanas. Separa la persona del cargo técnico, asegurando que la red tenga líderes en empatía (Cuidador), ejecución (Héroe), disrupción (Bufón) y sabiduría (Sabio).',
             keywords: ['Talento Orgánico', 'Inteligencia Colectiva', 'Autoridad Intangible']
+        },
+        {
+            id: 'pomodoro',
+            name: 'Técnica Pomodoro',
+            author: 'Francesco Cirillo',
+            description: 'Motor de ejecución para el Deep Work. Divide el tiempo en bloques de alta intensidad seguidos de descansos breves, eliminando el agotamiento cognitivo y garantizando que el reporte de horas en el Ledger sea preciso y honesto.',
+            keywords: ['Deep Work', 'Foco Atencional', 'Gestión de la Energía', 'Productividad Operativa']
         },
         {
             id: 'castells',
