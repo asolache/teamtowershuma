@@ -1,21 +1,13 @@
 // v5/js/views/SettingsView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
-
-// Intentamos importar la ontología base (si falla o no existe, usamos un objeto vacío)
-let GLOBAL_ONTOLOGY = {};
-try {
-    const ontologyModule = require('../data/ontology.js');
-    GLOBAL_ONTOLOGY = ontologyModule.GLOBAL_ONTOLOGY || {};
-} catch(e) {
-    console.warn("Cargando sin GLOBAL_ONTOLOGY externa.");
-}
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Importación nativa ES6 (Estricta y funcional)
 
 const HUMA_LEVELS = [
     { id: '@anxaneta', label: 'Cima / Estrategia', color: 'var(--accent-red)' },
     { id: '@aixecador', label: 'Coordinación / Táctica', color: '#ff4081' },
     { id: '@dosos', label: 'Auditoría / Control', color: 'var(--accent-purple)' },
-    { id: '@baixos', label: 'Especialistas / Ejec.', color: 'var(--accent-indigo)' },
+    { id: '@baixos', label: 'Especialistas / Ejecución', color: 'var(--accent-indigo)' },
     { id: '@pinya', label: 'Soporte / Base', color: 'var(--accent-blue)' }
 ];
 
@@ -86,9 +78,12 @@ export default class SettingsView {
                 .btn-danger:hover { background: rgba(255, 82, 82, 0.2); }
                 #fileInput { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
+                .premium-panel { background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(0, 176, 255, 0.1)); border: 1px solid rgba(224, 64, 251, 0.3); position: relative;}
+                .premium-badge { position: absolute; top: 15px; right: 15px; background: var(--accent-purple); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+
                 .ontology-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;}
                 .sector-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; border-left: 4px solid var(--accent-blue); display:flex; flex-direction:column;}
-                .sector-card.native { border-left-color: #555; background: rgba(0,0,0,0.5); border-color: #222;}
+                .sector-card.native { border-left-color: #555; background: rgba(0,0,0,0.3); border-color: #222;}
                 .sector-card h3 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 1.1rem; color: white; }
                 
                 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
@@ -210,13 +205,13 @@ export default class SettingsView {
                                 <button class="btn-save btn-edit-sector" data-sector="${key}" style="width:100%; margin-top:1.5rem; font-size:0.8rem; background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">⚙️ Editar</button>
                             </div>
                         `).join('')}
-                        ${Object.keys(customSectores).length === 0 ? '<p style="color:var(--text-muted); grid-column: 1/-1; padding:1rem; border: 1px dashed #333;">No has creado plantillas propias. Puedes exportar proyectos desde el Mapa VNA.</p>' : ''}
+                        ${Object.keys(customSectores).length === 0 ? '<p style="color:var(--text-muted); grid-column: 1/-1; padding:1rem; border: 1px dashed #333;">No has creado plantillas propias. (Pronto podrás exportarlas desde tus mapas).</p>' : ''}
                     </div>
 
-                    <h3 style="color: #666; margin-top: 2rem; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">📦 Plantillas Nativas (Kernel)</h3>
+                    <h3 style="color: #666; margin-top: 2rem; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">📦 Plantillas Nativas (Kernel Base)</h3>
                     <div class="ontology-grid">
                         ${Object.entries(nativeSectores).map(([key, data]) => {
-                            const rolesObj = data.roles || data; // Maneja diferentes estructuras
+                            const rolesObj = data.roles || data; 
                             const rolesHtml = Object.entries(rolesObj).map(([lvl, roleData]) => `
                                 <div style="font-size: 0.75rem; color: #666; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.02); padding: 3px 0;">
                                     <span style="font-family:monospace;">${lvl}</span><b style="color:#aaa;">${roleData.name || roleData}</b>
@@ -232,7 +227,7 @@ export default class SettingsView {
                                 <div style="font-size: 0.7rem; color: #444; margin-top: 15px; text-align: center; border-top: 1px solid #222; padding-top: 5px;">Solo Lectura</div>
                             </div>
                         `}).join('')}
-                        ${Object.keys(nativeSectores).length === 0 ? '<p style="color:#555; grid-column: 1/-1;">No se encontraron plantillas nativas.</p>' : ''}
+                        ${Object.keys(nativeSectores).length === 0 ? '<p style="color:#555; grid-column: 1/-1;">Error leyendo el archivo nativo de ontologías.</p>' : ''}
                     </div>
                 </div>
             `;
@@ -243,22 +238,38 @@ export default class SettingsView {
             return `
                 <div class="panel" style="border-left: 4px solid var(--accent-blue);">
                     <h2 style="color: var(--accent-blue);">Inyectar Nodo Local</h2>
-                    <p style="margin-top:0;">Da de alta usuarios en tu terminal para poder incluirlos en el Pacto de Socios y asignarles Capital/Slices en el Ledger, aunque aún no tengan cuenta online.</p>
+                    <p style="margin-top:0;">Da de alta usuarios para poder incluirlos en el Pacto de Socios y asignarles Capital/Slices en el Ledger. Añade su localización para futuros filtros de red.</p>
                     
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:8px;">
-                        <div class="form-group" style="margin:0;">
-                            <label>Alias Único (@id)</label>
-                            <input type="text" id="new-user-id" class="form-control" placeholder="Ej: @maria_dev">
+                    <div style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:8px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; margin-bottom: 15px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Alias Único (@id)</label>
+                                <input type="text" id="new-user-id" class="form-control" placeholder="Ej: @maria_dev">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Nombre Completo</label>
+                                <input type="text" id="new-user-name" class="form-control" placeholder="Ej: María López">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Contacto / Wallet</label>
+                                <input type="text" id="new-user-contact" class="form-control" placeholder="Email o Dirección 0x">
+                            </div>
                         </div>
-                        <div class="form-group" style="margin:0;">
-                            <label>Nombre Completo</label>
-                            <input type="text" id="new-user-name" class="form-control" placeholder="Ej: María López">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end; padding-top: 15px; border-top: 1px dashed #333;">
+                            <div class="form-group" style="margin:0;">
+                                <label>País</label>
+                                <input type="text" id="new-user-country" class="form-control" placeholder="Ej: España">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Ciudad</label>
+                                <input type="text" id="new-user-city" class="form-control" placeholder="Ej: Barcelona">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Código Postal</label>
+                                <input type="text" id="new-user-cp" class="form-control" placeholder="Ej: 08001">
+                            </div>
+                            <button id="btn-create-user" class="btn-save" style="height: 42px;">➕ Añadir Nodo</button>
                         </div>
-                        <div class="form-group" style="margin:0;">
-                            <label>Contacto / Wallet</label>
-                            <input type="text" id="new-user-contact" class="form-control" placeholder="Email o Dirección 0x">
-                        </div>
-                        <button id="btn-create-user" class="btn-save" style="height: 42px;">Añadir Nodo</button>
                     </div>
                 </div>
 
@@ -269,14 +280,18 @@ export default class SettingsView {
                             <th style="padding: 12px 10px;">Alias (@id)</th>
                             <th style="padding: 12px 10px;">Nombre Real</th>
                             <th style="padding: 12px 10px;">Jerarquía</th>
-                            <th style="padding: 12px 10px;">Info</th>
+                            <th style="padding: 12px 10px;">Localización</th>
+                            <th style="padding: 12px 10px;">Contacto</th>
                         </tr>
                         ${users.map(u => `
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                 <td style="padding: 12px 10px; font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
                                 <td style="padding: 12px 10px; color: white;">${u.name}</td>
                                 <td style="padding: 12px 10px; color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'};">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : 'Mercenario'}</td>
-                                <td style="padding: 12px 10px; color: #666; font-size:0.8rem;">${u.walletOrSocial || 'Local'}</td>
+                                <td style="padding: 12px 10px; color: #aaa; font-size:0.85rem;">
+                                    ${u.location?.city ? `📍 ${u.location.city}, ${u.location.country}` : '<span style="color:#555;">No definida</span>'}
+                                </td>
+                                <td style="padding: 12px 10px; color: #666; font-size:0.8rem;">${u.walletOrSocial || '---'}</td>
                             </tr>
                         `).join('')}
                     </table>
@@ -388,23 +403,31 @@ export default class SettingsView {
         if (this.tab === 'users') {
             const btnCreateUser = document.getElementById('btn-create-user');
             if (btnCreateUser) {
-                // FIX: Hacemos la función asyncrona para esperar al Store
                 btnCreateUser.addEventListener('click', async () => {
                     const idInput = document.getElementById('new-user-id');
                     const nameInput = document.getElementById('new-user-name');
                     const contactInput = document.getElementById('new-user-contact');
+                    const countryInput = document.getElementById('new-user-country');
+                    const cityInput = document.getElementById('new-user-city');
+                    const cpInput = document.getElementById('new-user-cp');
 
                     let id = idInput.value.trim();
                     const name = nameInput.value.trim();
                     const contact = contactInput.value.trim();
+                    const location = {
+                        country: countryInput.value.trim(),
+                        city: cityInput.value.trim(),
+                        cp: cpInput.value.trim()
+                    };
 
                     if (!id || !name) return alert("⚠️ Alias y Nombre son obligatorios.");
                     if (!id.startsWith('@')) id = '@' + id; 
 
-                    // AWAIT para que se guarde de verdad antes de repintar
-                    await store.dispatch({ type: 'ADD_USER', payload: { id, name, walletOrSocial: contact } });
-                    
-                    idInput.value = ''; nameInput.value = ''; contactInput.value = '';
+                    // Await de inserción al Store incluyendo localización
+                    await store.dispatch({ 
+                        type: 'ADD_USER', 
+                        payload: { id, name, walletOrSocial: contact, location } 
+                    });
                     
                     document.getElementById('settingsContent').innerHTML = this.renderTab(this.tab, store.getState());
                     this.bindContentEvents();
