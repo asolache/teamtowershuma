@@ -5,7 +5,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class ValueMapView {
     constructor() {
-        document.title = "Diseñador VNA | TeamTowers";
+        document.title = "Mapa de Valor | TeamTowers";
         this.activeProjectId = null;
         this.selectedRoleId = null; 
         this.editingTxIndex = null; 
@@ -20,7 +20,7 @@ export default class ValueMapView {
     async getHtml() {
         return `
             <style>
-                /* LAYOUT ESPECÍFICO DEL MAPA VNA */
+                /* LAYOUT ESPECÍFICO DEL MAPA DE VALOR */
                 .vna-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
                 
                 /* PANEL SECUENCIAL (Izquierda) */
@@ -32,13 +32,11 @@ export default class ValueMapView {
                 .flow-step { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); padding: 10px; margin-bottom: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 5px; transition: all 0.3s; position: relative;}
                 .flow-step.simulating { transform: scale(1.05); border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.3); }
                 .step-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-family: var(--font-mono); }
-                .step-route { display: flex; align-items: center; gap: 5px; font-weight: bold; color: var(--text-main); }
+                .step-route { display: flex; flex-direction: column; gap: 3px; font-weight: bold; color: var(--text-main); background: rgba(0,0,0,0.4); padding: 6px; border-radius: 4px; border: 1px dashed #333;}
                 
-                /* Animación de Feedback al mover un entregable */
                 .flash-highlight { animation: flashHighlight 0.6s ease-out forwards; }
                 @keyframes flashHighlight { 0% { background: rgba(0, 176, 255, 0.3); transform: scale(1.03); border-color: var(--accent-blue);} 100% { background: rgba(255,255,255,0.02); transform: scale(1); border-color: var(--glass-border);} }
 
-                /* Mini-botones de la Secuencia */
                 .step-actions { display: flex; gap: 6px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;}
                 .btn-step { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
                 .btn-step:hover { background: rgba(255,255,255,0.15); color: white; border-color: var(--text-muted); }
@@ -57,24 +55,37 @@ export default class ValueMapView {
                 .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 6, 6; animation: dashAnim 15s linear infinite; }
                 .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 
+                /* ANIMACIÓN DE SIMULACIÓN - MEJORADA */
+                .sim-line { stroke-width: 4; fill: none; opacity: 0.9; }
+
                 .node { position: absolute; z-index: 5; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: grab; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s, opacity 0.3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--glass-border); color: white; transform: translate(-50%, -50%); user-select: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
                 .node:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
                 .node.selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.6); z-index: 10; }
                 .node.sick-node { border-color: var(--accent-red) !important; box-shadow: 0 0 40px rgba(255, 82, 82, 0.8); animation: pulseSick 1s infinite alternate; z-index: 15; }
                 
-                /* GHOST NODES */
                 .node.ghost-node { opacity: 0.3; border-style: dashed; filter: grayscale(100%); z-index: 1; }
                 .node.ghost-node:hover { opacity: 0.6; }
                 .node.ghost-node .node-name { text-decoration: line-through; color: #888; }
 
-                /* NOMBRES DE ROLES TRUNCADOS */
-                .node-name { font-size: 0.7rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 90%; font-weight: bold; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; padding: 0 2px;}
+                /* NOMBRES DE ROLES MEJORADOS (Dos líneas centradas) */
+                .node-name { 
+                    font-size: 0.65rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; 
+                    width: 95%; font-weight: bold; line-height: 1.1; display: -webkit-box; 
+                    -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; 
+                    padding: 0 5px; word-wrap: break-word; text-align: center;
+                }
 
                 /* TOOLTIP DE TRANSACCIÓN */
                 .tx-number { pointer-events: auto; cursor: pointer; transition: transform 0.2s, fill 0.2s; }
                 .tx-number:hover { transform: scale(1.4); fill: white !important; }
                 
-                .tx-tooltip { position: absolute; background: rgba(15, 15, 20, 0.98); border: 1px solid var(--accent-blue); color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 2000; pointer-events: none; box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.2s, transform 0.2s; transform: translateY(10px); min-width: 250px; max-width: 300px; line-height: 1.4;}
+                .tx-tooltip { 
+                    position: absolute; background: rgba(10, 10, 14, 0.95); border: 1px solid var(--accent-blue); 
+                    color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 2000; 
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(8px); 
+                    opacity: 0; transition: opacity 0.2s, transform 0.2s; transform: translateY(10px); 
+                    min-width: 250px; max-width: 300px; line-height: 1.4; pointer-events: none;
+                }
                 .tx-tooltip.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
                 .ui-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;}
@@ -135,13 +146,13 @@ export default class ValueMapView {
                 <div class="map-container">
                     <div class="ui-overlay">
                         <div class="interactive">
-                            <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Red de Valor</h1>
+                            <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa de Valor</h1>
                             <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Clic en [1]: Info</p>
                         </div>
                         <div class="action-panel interactive">
                             <div style="display: flex; gap: 10px;">
                                 <button class="btn btn-primary" id="btnSimulate">▶ Simular Flujo</button>
-                                <button class="btn btn-outline" id="btnStopSim" style="display:none;">⏹ Detener</button>
+                                <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange);">⏹ Detener</button>
                             </div>
                             <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" id="btnOpenAddNode">➕ Nuevo Nodo</button>
                             
@@ -351,11 +362,11 @@ export default class ValueMapView {
 
             if (target.classList.contains('btn-move-up')) {
                 [txs[idx - 1], txs[idx]] = [txs[idx], txs[idx - 1]];
-                this.forceSaveState(currentState, idx - 1); // Pasamos el nuevo index para animarlo
+                this.forceSaveState(currentState, idx - 1);
             } 
             else if (target.classList.contains('btn-move-down')) {
                 [txs[idx], txs[idx + 1]] = [txs[idx + 1], txs[idx]];
-                this.forceSaveState(currentState, idx + 1); // Pasamos el nuevo index para animarlo
+                this.forceSaveState(currentState, idx + 1);
             } 
             else if (target.classList.contains('btn-del')) {
                 if(confirm('¿Eliminar transacción del flujo?')) {
@@ -369,44 +380,49 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ TOOLTIPS EN EL MAPA SVG ------------------
+        // ------------------ TOOLTIPS EN EL MAPA SVG (CORREGIDO) ------------------
         this.dom.svg.addEventListener('click', (e) => {
             if (e.target.classList.contains('tx-number')) {
                 const idx = e.target.getAttribute('data-idx');
                 const currentState = store.getState();
                 const p = currentState.projects.find(x => x.id === this.activeProjectId);
                 const tx = p.transactions[idx];
+                
+                if(!tx) return; // Si la simulación está corriendo puede haber desfases
+                
                 const rFrom = p.roles.find(r => r.id === tx.from);
                 const rTo = p.roles.find(r => r.id === tx.to);
                 
                 const typeColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+                const typeText = tx.tipo === 'tangible' ? 'TANGIBLE' : 'INTANGIBLE';
                 
+                // Formato limpio y robusto
                 this.dom.tooltip.innerHTML = `
                     <div style="color: ${typeColor}; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
-                        [Paso ${parseInt(idx) + 1}] ${tx.tipo.toUpperCase()}
+                        [Paso ${parseInt(idx) + 1}] ${typeText}
                     </div>
-                    <div style="margin-bottom: 4px;"><strong style="color:#888;">De:</strong> ${rFrom ? rFrom.name : 'Desconocido'}</div>
-                    <div style="margin-bottom: 8px;"><strong style="color:#888;">A:</strong> ${rTo ? rTo.name : 'Desconocido'}</div>
-                    <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; border: 1px solid #333;">
-                        <strong style="color:#aaa;">Entregable:</strong><br>
-                        <span style="color:white;">${tx.entregable}</span>
-                        <span style="color:var(--accent-blue); float:right; font-family: monospace;">⏱ ${tx.horas}h</span>
+                    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+                        <div style="font-size: 0.8rem;"><strong style="color:#888;">De:</strong> ${rFrom ? rFrom.name : '?'}</div>
+                        <div style="font-size: 0.8rem;"><strong style="color:#888;">Hacia:</strong> ${rTo ? rTo.name : '?'}</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border: 1px dashed #444;">
+                        <div style="color:white; font-weight:bold; margin-bottom:5px;">${tx.entregable}</div>
+                        <div style="color:var(--accent-blue); font-family: monospace;">⏱ Est: ${tx.horas}h</div>
                     </div>
                 `;
                 
-                // Posicionar tooltip cerca del cursor
                 this.dom.tooltip.style.left = `${e.clientX + 15}px`;
                 this.dom.tooltip.style.top = `${e.clientY + 15}px`;
                 this.dom.tooltip.classList.add('visible');
                 
-                // Ocultar automático
                 setTimeout(() => this.dom.tooltip.classList.remove('visible'), 5000);
+            } else {
+                this.dom.tooltip.classList.remove('visible'); // Ocultar si clickas en la línea pero no en el número
             }
         });
 
-        // Ocultar tooltip al hacer clic fuera
         document.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('tx-number')) {
+            if (!e.target.classList.contains('tx-number') && this.dom.tooltip.classList.contains('visible')) {
                 this.dom.tooltip.classList.remove('visible');
             }
         });
@@ -555,8 +571,14 @@ export default class ValueMapView {
             if (!this.isDragging || !this.draggedElement) return;
             this.hasMoved = true; 
             const rect = this.dom.canvas.getBoundingClientRect();
-            this.draggedElement.style.left = `${((e.clientX - rect.left) / rect.width) * 100}%`;
-            this.draggedElement.style.top = `${((e.clientY - rect.top) / rect.height) * 100}%`;
+            // Mantener dentro de los límites
+            let newX = ((e.clientX - rect.left) / rect.width) * 100;
+            let newY = ((e.clientY - rect.top) / rect.height) * 100;
+            newX = Math.max(5, Math.min(newX, 95));
+            newY = Math.max(5, Math.min(newY, 95));
+
+            this.draggedElement.style.left = `${newX}%`;
+            this.draggedElement.style.top = `${newY}%`;
             this.drawEdges();
         });
         
@@ -589,7 +611,7 @@ export default class ValueMapView {
         this.dom.btnCancelEditFlow.style.display = 'block';
         this.dom.btnAddFlow.innerText = '✓ Actualizar Transacción';
         this.dom.btnAddFlow.style.background = 'var(--accent-blue)';
-        this.dom.btnAddFlow.style.color = 'white';
+        this.dom.btnAddFlow.style.color = 'black';
 
         this.dom.selFrom.value = tx.from;
         this.dom.selTo.value = tx.to;
@@ -621,7 +643,7 @@ export default class ValueMapView {
         setTimeout(() => this.drawEdges(), 50); 
     }
 
-    // --- SIMULACIÓN ---
+    // --- SIMULACIÓN CORREGIDA ---
     startSimulation() {
         if (this.isSimulating) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -632,9 +654,10 @@ export default class ValueMapView {
         this.dom.btnSimulate.style.display = 'none';
         this.dom.btnStopSim.style.display = 'block';
         this.dom.sickAlert.style.display = 'none';
-        this.dom.svg.innerHTML = '';
         
-        this.injectSvgMarkers(); // Inyectamos las flechas direccionales
+        // Limpiar el mapa para la simulación
+        this.dom.svg.innerHTML = '';
+        this.injectSvgMarkers();
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
         stepEls.forEach(el => el.classList.remove('simulating'));
@@ -645,6 +668,7 @@ export default class ValueMapView {
 
         txs.forEach((tx, index) => {
             const timeoutId = setTimeout(() => {
+                // UI de la lista
                 stepEls.forEach(el => el.classList.remove('simulating'));
                 if(stepEls[index]) {
                     stepEls[index].classList.add('simulating');
@@ -670,7 +694,9 @@ export default class ValueMapView {
                         this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
                     }
                 }
-                this.drawSingleEdgeAnim(tx, index, p, isSickFlow);
+
+                // DIBUJAR LA LÍNEA ANIMADA
+                this.drawSingleEdgeAnim(tx, index, isSickFlow);
 
                 if (index === txs.length - 1) {
                     setTimeout(() => this.stopSimulation(), timePerStep);
@@ -695,10 +721,10 @@ export default class ValueMapView {
         stepEls.forEach(el => el.classList.remove('simulating'));
         this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
 
-        this.drawEdges();
+        this.drawEdges(); // Redibujar el mapa estático completo
     }
 
-    drawSingleEdgeAnim(tx, index, project, isSick) {
+    drawSingleEdgeAnim(tx, index, isSick) {
         const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
         const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
         if (!dom1 || !dom2) return;
@@ -716,25 +742,36 @@ export default class ValueMapView {
         const distance = Math.sqrt(dx*dx + dy*dy);
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        // Para simulación animamos en línea recta (es más fácil de calcular longitud)
-        path.setAttribute('d', `M ${x1} ${y1} Q ${(x1+x2)/2} ${(y1+y2)/2} ${x2} ${y2}`);
+        path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
         
         let markerId = isSick ? 'arrow-sick' : (tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible');
         path.setAttribute('marker-end', `url(#${markerId})`);
         
-        path.style.strokeDasharray = distance;
-        path.style.strokeDashoffset = distance;
-        path.style.animation = `drawLine 0.8s ease-out forwards`;
+        // CSS en línea para forzar la animación sin que choquen las clases
+        const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
+        path.style.cssText = `
+            fill: none;
+            stroke: ${strokeColor};
+            stroke-width: 4;
+            stroke-dasharray: ${distance};
+            stroke-dashoffset: ${distance};
+            animation: drawLine 1s ease-out forwards;
+        `;
         
-        const lineClass = isSick ? 'edge-sick' : (tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
-        path.setAttribute('class', `edge-line ${lineClass}`);
+        // Keyframe inyectado dinámicamente si no existe (Workaround para SVG animations)
+        if(!document.getElementById('svgAnimStyles')) {
+            const style = document.createElement('style');
+            style.id = 'svgAnimStyles';
+            style.innerHTML = `@keyframes drawLine { to { stroke-dashoffset: 0; } }`;
+            document.head.appendChild(style);
+        }
 
         this.dom.svg.appendChild(path);
 
         const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
         txt.setAttribute('text-anchor', 'middle');
-        txt.style.cssText = `fill:${isSick ? 'var(--accent-red)' : (tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)')};font-size:14px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px; opacity: 0; transition: opacity 0.5s;`;
+        txt.style.cssText = `fill:${strokeColor};font-size:14px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px; opacity: 0; transition: opacity 0.5s;`;
         txt.textContent = `[${index + 1}]`;
         
         setTimeout(() => txt.style.opacity = '1', 400); 
@@ -792,7 +829,7 @@ export default class ValueMapView {
 
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
-            if (i === highlightIndex) stepEl.classList.add('flash-highlight'); // Efecto Visual
+            if (i === highlightIndex) stepEl.classList.add('flash-highlight');
             stepEl.style.borderLeft = `3px solid ${color}`;
             
             const actions = `
@@ -804,16 +841,20 @@ export default class ValueMapView {
                 </div>
             `;
 
+            // AÑADIDO: Nombres de roles en la secuencia
             stepEl.innerHTML = `
                 <div class="step-header"><span>Paso ${i + 1}</span><span style="font-size: 0.7rem;">${tx.horas}h Est.</span></div>
-                <div class="step-route"><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span> <span style="color:var(--text-muted);">&rarr;</span> <span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span></div>
+                <div class="step-route">
+                    <div><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span> <span style="font-weight:normal; font-size:0.75rem; color:#888;">(${rFrom.name})</span></div>
+                    <div style="color:var(--text-muted); margin-left: 10px;">&darr;</div> 
+                    <div><span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span> <span style="font-weight:normal; font-size:0.75rem; color:#888;">(${rTo.name})</span></div>
+                </div>
                 <div class="step-deliverable" style="color: ${color}; font-size: 0.75rem; text-transform: uppercase; margin-top: 5px;">${tx.entregable}</div>
                 ${actions}
             `;
             this.dom.seqList.appendChild(stepEl);
         });
         
-        // Si hay highlight, asegurarse de que está a la vista
         if (highlightIndex !== -1 && this.dom.seqList.children[highlightIndex]) {
             this.dom.seqList.children[highlightIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
@@ -853,7 +894,7 @@ export default class ValueMapView {
             }
 
             el.style.borderColor = this.getColor(level);
-            // El texto ahora está truncado por CSS (.node-name)
+            // TEXTO MEJORADO
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name" title="${rol.name}">${rol.name}</div>`;
 
             el.addEventListener('click', (e) => {
@@ -906,12 +947,12 @@ export default class ValueMapView {
     }
 
     injectSvgMarkers() {
-        // RefX 42 desplaza la flecha justo hasta el borde exterior de la esfera del nodo (radio 40px)
         const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        // REFX 40 pone la flecha tocando exactamente el radio de la esfera de 80px (80/2 = 40)
         defs.innerHTML = `
-            <marker id="arrow-tangible" markerWidth="10" markerHeight="7" refX="42" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-green)"/></marker>
-            <marker id="arrow-intangible" markerWidth="10" markerHeight="7" refX="42" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-purple)"/></marker>
-            <marker id="arrow-sick" markerWidth="10" markerHeight="7" refX="42" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-red)"/></marker>
+            <marker id="arrow-tangible" markerWidth="10" markerHeight="7" refX="40" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-green)"/></marker>
+            <marker id="arrow-intangible" markerWidth="10" markerHeight="7" refX="40" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-purple)"/></marker>
+            <marker id="arrow-sick" markerWidth="10" markerHeight="7" refX="40" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-red)"/></marker>
         `;
         this.dom.svg.appendChild(defs);
     }
@@ -924,7 +965,6 @@ export default class ValueMapView {
 
         this.injectSvgMarkers();
 
-        // AGRUPACIÓN PARA EVITAR SOLAPAMIENTOS (Curvas Bézier)
         const pairCounts = {};
         txs.forEach((tx, i) => {
             const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
@@ -954,14 +994,12 @@ export default class ValueMapView {
                     const dy = y2 - y1;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     
-                    // Vector normal para crear la curva perpendicular
                     const nx = -dy / dist; 
                     const ny = dx / dist;
 
-                    // Si hay múltiples conexiones, espaciamos las curvas. (0, 30, -30, 60, -60...)
                     let offset = 0;
                     if (edges.length > 1) {
-                        const step = 45; // Distancia entre curvas
+                        const step = 45; 
                         offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
                     }
 
@@ -971,7 +1009,6 @@ export default class ValueMapView {
                     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
                     
-                    // Flecha direccional
                     let markerId = tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible';
                     path.setAttribute('marker-end', `url(#${markerId})`);
                     
@@ -984,7 +1021,6 @@ export default class ValueMapView {
                     
                     this.dom.svg.appendChild(path);
 
-                    // Posición matemática del texto en la curva Bézier (t = 0.5)
                     const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
                     const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
@@ -992,9 +1028,9 @@ export default class ValueMapView {
                     txt.setAttribute('x', txX); 
                     txt.setAttribute('y', txY - 8);
                     txt.setAttribute('text-anchor', 'middle');
-                    txt.setAttribute('data-idx', index); // Guardamos el index para el Tooltip interactivo
-                    txt.setAttribute('class', 'tx-number'); // Clase clickeable
-                    txt.style.cssText = `fill:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:12px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:6px; cursor: pointer;`;
+                    txt.setAttribute('data-idx', index); 
+                    txt.setAttribute('class', 'tx-number'); 
+                    txt.style.cssText = `fill:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:12px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:6px; cursor: pointer; pointer-events: auto;`;
                     
                     if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
                         txt.style.opacity = '0.3';
