@@ -8,6 +8,7 @@
 const routes = {
     '/': 'HomeView',
     '/create': 'ProjectCreatorView',
+    '/dashboard': 'ProjectDashboardView', // <-- NUEVA RUTA: LOBBY V7.2
     '/project': 'ProjectView',
     '/map': 'ValueMapView',
     '/team': 'TeamView',
@@ -18,7 +19,7 @@ const routes = {
     '/settings': 'SettingsView',
     '/focus': 'FocusView',
     '/profile': 'ProfileView',
-    '/help': 'HelpView' // <-- RUTA NUEVA AÑADIDA
+    '/help': 'HelpView'
 };
 
 class Router {
