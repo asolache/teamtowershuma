@@ -27,13 +27,17 @@ export default class ValueMapView {
                 .sequence-panel { width: 340px; background: var(--glass-bg); border-right: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur); display: flex; flex-direction: column; z-index: 20; flex-shrink: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
                 .sequence-header { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); }
                 .sequence-header h2 { font-size: 1.1rem; color: var(--text-main); margin: 0 0 5px 0; letter-spacing: 0.5px; }
-                .sequence-body { flex: 1; overflow-y: auto; padding: 1rem; }
+                .sequence-body { flex: 1; overflow-y: auto; padding: 1rem; scroll-behavior: smooth; }
                 
                 .flow-step { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); padding: 10px; margin-bottom: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 5px; transition: all 0.3s; position: relative;}
                 .flow-step.simulating { transform: scale(1.05); border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.3); }
                 .step-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-family: var(--font-mono); }
                 .step-route { display: flex; align-items: center; gap: 5px; font-weight: bold; color: var(--text-main); }
                 
+                /* Animación de Feedback al mover un entregable */
+                .flash-highlight { animation: flashHighlight 0.6s ease-out forwards; }
+                @keyframes flashHighlight { 0% { background: rgba(0, 176, 255, 0.3); transform: scale(1.03); border-color: var(--accent-blue);} 100% { background: rgba(255,255,255,0.02); transform: scale(1); border-color: var(--glass-border);} }
+
                 /* Mini-botones de la Secuencia */
                 .step-actions { display: flex; gap: 6px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;}
                 .btn-step { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -58,12 +62,20 @@ export default class ValueMapView {
                 .node.selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.6); z-index: 10; }
                 .node.sick-node { border-color: var(--accent-red) !important; box-shadow: 0 0 40px rgba(255, 82, 82, 0.8); animation: pulseSick 1s infinite alternate; z-index: 15; }
                 
-                /* GHOST NODES (FASE 1.5) */
+                /* GHOST NODES */
                 .node.ghost-node { opacity: 0.3; border-style: dashed; filter: grayscale(100%); z-index: 1; }
                 .node.ghost-node:hover { opacity: 0.6; }
                 .node.ghost-node .node-name { text-decoration: line-through; color: #888; }
 
-                .node-name { font-size: 0.7rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 85%; font-weight: bold; line-height: 1.1; }
+                /* NOMBRES DE ROLES TRUNCADOS */
+                .node-name { font-size: 0.7rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 90%; font-weight: bold; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; padding: 0 2px;}
+
+                /* TOOLTIP DE TRANSACCIÓN */
+                .tx-number { pointer-events: auto; cursor: pointer; transition: transform 0.2s, fill 0.2s; }
+                .tx-number:hover { transform: scale(1.4); fill: white !important; }
+                
+                .tx-tooltip { position: absolute; background: rgba(15, 15, 20, 0.98); border: 1px solid var(--accent-blue); color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 2000; pointer-events: none; box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.2s, transform 0.2s; transform: translateY(10px); min-width: 250px; max-width: 300px; line-height: 1.4;}
+                .tx-tooltip.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
                 .ui-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 1.5rem; z-index: 100; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;}
                 .interactive { pointer-events: auto; }
@@ -86,8 +98,8 @@ export default class ValueMapView {
 
                 <aside class="sequence-panel" id="seqPanel">
                     <div class="sequence-header interactive">
-                        <h2>Secuencia VNA</h2>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin:0;">Diseña el flujo de valor organizativo.</p>
+                        <h2>Flujos de Valor (Kanban)</h2>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin:0;">Diseña el circuito de entregables.</p>
                     </div>
                     <div class="sequence-body interactive" id="sequenceList"></div>
                     <div class="sequence-footer interactive" id="seqFooter">
@@ -108,8 +120,8 @@ export default class ValueMapView {
                         </div>
                         <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
                             <select id="selType" class="form-control">
-                                <option value="tangible">🟢 Tangible (Doc)</option>
-                                <option value="intangible">🟣 Intangible (Sync)</option>
+                                <option value="tangible">🟢 Tangible (Doc/Código)</option>
+                                <option value="intangible">🟣 Intangible (Sync/Cultura)</option>
                             </select>
                             <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
                         </div>
@@ -124,7 +136,7 @@ export default class ValueMapView {
                     <div class="ui-overlay">
                         <div class="interactive">
                             <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Red de Valor</h1>
-                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos para organizar. 1 clic: Conectar | Doble clic: Editar</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Clic en [1]: Info</p>
                         </div>
                         <div class="action-panel interactive">
                             <div style="display: flex; gap: 10px;">
@@ -140,9 +152,12 @@ export default class ValueMapView {
                             <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo detectado.</div>
                         </div>
                     </div>
+                    
                     <div class="map-canvas" id="mapCanvas">
                         <svg id="edges-svg"></svg>
                     </div>
+                    
+                    <div id="txTooltip" class="tx-tooltip"></div>
                 </div>
 
                 <aside class="inspector-panel interactive" id="inspectorPanel">
@@ -206,7 +221,7 @@ export default class ValueMapView {
                     <div class="modal-content" style="width: 450px;">
                         <h3 style="color: var(--accent-orange); margin-top:0; margin-bottom: 1rem;">⚠️ Tareas Huérfanas Detectadas</h3>
                         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
-                            Este nodo tiene <strong id="triageCount" style="color: white; font-size: 1.2rem;">0</strong> transacciones activas o pendientes en el Kanban. 
+                            Este nodo tiene <strong id="triageCount" style="color: white; font-size: 1.2rem;">0</strong> transacciones activas o pendientes. 
                             Archivar el nodo requiere decidir el destino de estas tareas.
                         </p>
                         
@@ -261,7 +276,8 @@ export default class ValueMapView {
             btnStopSim: document.getElementById('btnStopSim'),
             sickAlert: document.getElementById('sickAlert'),
 
-            triageModal: document.getElementById('triageModal')
+            triageModal: document.getElementById('triageModal'),
+            tooltip: document.getElementById('txTooltip')
         };
 
         this.dom.title.innerText = project.nombre;
@@ -310,17 +326,12 @@ export default class ValueMapView {
             } else {
                 currentState.projects[pIndex].transactions.push({
                     hash: '0x' + Math.random().toString(16).slice(2, 10),
-                    from: fromId,
-                    to: toId,
-                    horas: parseFloat(this.dom.inpHoras.value) || 1,
-                    entregable: desc,
-                    tipo: this.dom.selType.value,
-                    status: 'theoretical',
-                    timestamp: Date.now()
+                    from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value) || 1,
+                    entregable: desc, tipo: this.dom.selType.value, status: 'theoretical', timestamp: Date.now()
                 });
             }
 
-            this.forceSaveState(currentState);
+            this.forceSaveState(currentState, this.editingTxIndex !== null ? this.editingTxIndex : currentState.projects[pIndex].transactions.length - 1);
             
             this.dom.selFrom.value = toId; 
             this.updateOntologyTemplates();
@@ -340,11 +351,11 @@ export default class ValueMapView {
 
             if (target.classList.contains('btn-move-up')) {
                 [txs[idx - 1], txs[idx]] = [txs[idx], txs[idx - 1]];
-                this.forceSaveState(currentState);
+                this.forceSaveState(currentState, idx - 1); // Pasamos el nuevo index para animarlo
             } 
             else if (target.classList.contains('btn-move-down')) {
                 [txs[idx], txs[idx + 1]] = [txs[idx + 1], txs[idx]];
-                this.forceSaveState(currentState);
+                this.forceSaveState(currentState, idx + 1); // Pasamos el nuevo index para animarlo
             } 
             else if (target.classList.contains('btn-del')) {
                 if(confirm('¿Eliminar transacción del flujo?')) {
@@ -355,6 +366,48 @@ export default class ValueMapView {
             }
             else if (target.classList.contains('btn-edit')) {
                 this.enterEditMode(idx, txs[idx]);
+            }
+        });
+
+        // ------------------ TOOLTIPS EN EL MAPA SVG ------------------
+        this.dom.svg.addEventListener('click', (e) => {
+            if (e.target.classList.contains('tx-number')) {
+                const idx = e.target.getAttribute('data-idx');
+                const currentState = store.getState();
+                const p = currentState.projects.find(x => x.id === this.activeProjectId);
+                const tx = p.transactions[idx];
+                const rFrom = p.roles.find(r => r.id === tx.from);
+                const rTo = p.roles.find(r => r.id === tx.to);
+                
+                const typeColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+                
+                this.dom.tooltip.innerHTML = `
+                    <div style="color: ${typeColor}; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
+                        [Paso ${parseInt(idx) + 1}] ${tx.tipo.toUpperCase()}
+                    </div>
+                    <div style="margin-bottom: 4px;"><strong style="color:#888;">De:</strong> ${rFrom ? rFrom.name : 'Desconocido'}</div>
+                    <div style="margin-bottom: 8px;"><strong style="color:#888;">A:</strong> ${rTo ? rTo.name : 'Desconocido'}</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; border: 1px solid #333;">
+                        <strong style="color:#aaa;">Entregable:</strong><br>
+                        <span style="color:white;">${tx.entregable}</span>
+                        <span style="color:var(--accent-blue); float:right; font-family: monospace;">⏱ ${tx.horas}h</span>
+                    </div>
+                `;
+                
+                // Posicionar tooltip cerca del cursor
+                this.dom.tooltip.style.left = `${e.clientX + 15}px`;
+                this.dom.tooltip.style.top = `${e.clientY + 15}px`;
+                this.dom.tooltip.classList.add('visible');
+                
+                // Ocultar automático
+                setTimeout(() => this.dom.tooltip.classList.remove('visible'), 5000);
+            }
+        });
+
+        // Ocultar tooltip al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('tx-number')) {
+                this.dom.tooltip.classList.remove('visible');
             }
         });
 
@@ -380,7 +433,7 @@ export default class ValueMapView {
             this.renderMap();
         });
 
-        // ------------------ INSPECTOR Y TRIAJE (FASE 1.5) ------------------
+        // ------------------ INSPECTOR Y TRIAJE ------------------
         document.getElementById('btnCloseInspector').addEventListener('click', () => {
             this.dom.inspector.classList.remove('open');
             this.selectedRoleId = null;
@@ -400,7 +453,6 @@ export default class ValueMapView {
             const rIndex = currentState.projects[pIndex].roles.findIndex(r => r.id === this.selectedRoleId);
             
             if (rIndex > -1) {
-                // El Kernel se encarga de crear el histórico automáticamente (Versionado)
                 store.dispatch({
                     type: 'UPDATE_ROLE',
                     payload: { 
@@ -409,7 +461,7 @@ export default class ValueMapView {
                     }
                 });
                 
-                this.forceSaveState(store.getState()); // Sincronizamos vistas
+                this.forceSaveState(store.getState());
             }
         });
 
@@ -420,7 +472,6 @@ export default class ValueMapView {
 
             if (!roleToArchive) return;
 
-            // Si ya está archivado, permitimos desarchivarlo
             if (roleToArchive.isArchived) {
                 if(confirm('¿Desarchivar este nodo y devolverlo a la vida?')) {
                     this.executeArchiveToggle(false);
@@ -428,14 +479,12 @@ export default class ValueMapView {
                 return;
             }
 
-            // BUSCAR TAREAS PENDIENTES (TRIAJE)
             const pendingTxs = (p.transactions || []).filter(tx => 
                 (tx.from === this.selectedRoleId || tx.to === this.selectedRoleId) && 
                 (tx.status !== 'consolidated' && tx.status !== 'approved')
             );
 
             if (pendingTxs.length > 0) {
-                // Hay tareas colgadas. Abrir Triaje.
                 document.getElementById('triageCount').innerText = pendingTxs.length;
                 
                 const activeNodes = p.roles.filter(r => !r.isArchived && r.id !== this.selectedRoleId);
@@ -446,14 +495,12 @@ export default class ValueMapView {
                 document.getElementById('selTriageNode').innerHTML = selectHtml;
                 this.dom.triageModal.style.display = 'flex';
             } else {
-                // No hay tareas, archivar directo
                 if(confirm('¿Archivar este nodo? Pasará a ser un fantasma en el mapa para mantener la inmutabilidad histórica.')) {
                     this.executeArchiveToggle(true);
                 }
             }
         });
 
-        // Acciones del Modal de Triaje
         document.getElementById('btnTriageCancel').addEventListener('click', () => {
             this.dom.triageModal.style.display = 'none';
         });
@@ -462,11 +509,10 @@ export default class ValueMapView {
             const currentState = JSON.parse(JSON.stringify(store.getState()));
             const pIdx = currentState.projects.findIndex(x => x.id === this.activeProjectId);
             
-            // Filtramos fuera las transacciones pendientes que tocaban este nodo
             currentState.projects[pIdx].transactions = currentState.projects[pIdx].transactions.filter(tx => {
                 const hitsArchived = (tx.from === this.selectedRoleId || tx.to === this.selectedRoleId);
                 const isPending = (tx.status !== 'consolidated' && tx.status !== 'approved');
-                return !(hitsArchived && isPending); // Lo quitamos si cumple ambas
+                return !(hitsArchived && isPending);
             });
 
             this.dom.triageModal.style.display = 'none';
@@ -481,7 +527,6 @@ export default class ValueMapView {
             const currentState = JSON.parse(JSON.stringify(store.getState()));
             const pIdx = currentState.projects.findIndex(x => x.id === this.activeProjectId);
             
-            // Reasignamos
             currentState.projects[pIdx].transactions = currentState.projects[pIdx].transactions.map(tx => {
                 if (tx.status !== 'consolidated' && tx.status !== 'approved') {
                     if (tx.from === this.selectedRoleId) tx.from = targetNodeId;
@@ -495,7 +540,7 @@ export default class ValueMapView {
             this.executeArchiveToggle(true);
         });
 
-        // ------------------ DRAG & CLICK LOGIC ------------------
+        // ------------------ DRAG LOGIC ------------------
         this.dom.canvas.addEventListener('mousedown', (e) => {
             const node = e.target.closest('.node');
             if (node && !this.isSimulating) { 
@@ -517,7 +562,6 @@ export default class ValueMapView {
         
         window.addEventListener('mouseup', () => { 
             if (this.draggedElement) {
-                // Restauramos el z-index pero respetamos si es ghost
                 this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
             }
             this.isDragging = false; 
@@ -529,12 +573,10 @@ export default class ValueMapView {
 
     executeArchiveToggle(archiveState) {
         store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId } });
-        
         if (archiveState) {
             this.selectedRoleId = null;
             this.dom.inspector.classList.remove('open');
         }
-        
         this.forceSaveState(store.getState());
     }
 
@@ -568,13 +610,13 @@ export default class ValueMapView {
         this.dom.inpDesc.value = '';
     }
 
-    forceSaveState(newState) {
+    forceSaveState(newState, highlightIndex = -1) {
         store.state = newState;
         localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
         
         const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
         this.populateDropdowns(pUpdate.roles);
-        this.renderSequence(); 
+        this.renderSequence(highlightIndex); 
         this.renderMap();      
         setTimeout(() => this.drawEdges(), 50); 
     }
@@ -592,9 +634,7 @@ export default class ValueMapView {
         this.dom.sickAlert.style.display = 'none';
         this.dom.svg.innerHTML = '';
         
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `<marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="context-stroke"/></marker>`;
-        this.dom.svg.appendChild(defs);
+        this.injectSvgMarkers(); // Inyectamos las flechas direccionales
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
         stepEls.forEach(el => el.classList.remove('simulating'));
@@ -661,7 +701,6 @@ export default class ValueMapView {
     drawSingleEdgeAnim(tx, index, project, isSick) {
         const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
         const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
-        
         if (!dom1 || !dom2) return;
 
         const rect1 = dom1.getBoundingClientRect();
@@ -672,20 +711,25 @@ export default class ValueMapView {
         const x2 = rect2.left + rect2.width / 2 - canv.left;
         const y2 = rect2.top + rect2.height / 2 - canv.top;
 
-        const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const distance = Math.sqrt(dx*dx + dy*dy);
 
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-        line.setAttribute('marker-end', 'url(#arrow)');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        // Para simulación animamos en línea recta (es más fácil de calcular longitud)
+        path.setAttribute('d', `M ${x1} ${y1} Q ${(x1+x2)/2} ${(y1+y2)/2} ${x2} ${y2}`);
         
-        line.style.strokeDasharray = distance;
-        line.style.strokeDashoffset = distance;
-        line.style.animation = `drawLine 0.8s ease-out forwards`;
+        let markerId = isSick ? 'arrow-sick' : (tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible');
+        path.setAttribute('marker-end', `url(#${markerId})`);
+        
+        path.style.strokeDasharray = distance;
+        path.style.strokeDashoffset = distance;
+        path.style.animation = `drawLine 0.8s ease-out forwards`;
         
         const lineClass = isSick ? 'edge-sick' : (tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible');
-        line.setAttribute('class', `edge-line ${lineClass}`);
+        path.setAttribute('class', `edge-line ${lineClass}`);
 
-        this.dom.svg.appendChild(line);
+        this.dom.svg.appendChild(path);
 
         const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
@@ -699,8 +743,6 @@ export default class ValueMapView {
 
     // Funciones estándar
     populateDropdowns(roles) {
-        // En los dropdowns para crear nuevas transacciones, SÍ filtramos los archivados.
-        // No queremos enviar trabajo nuevo a un nodo muerto.
         const options = roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
         this.dom.selFrom.innerHTML = options;
         this.dom.selTo.innerHTML = options;
@@ -732,7 +774,7 @@ export default class ValueMapView {
         if(this.editingTxIndex === null) this.dom.inpDesc.value = '';
     }
 
-    renderSequence() {
+    renderSequence(highlightIndex = -1) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const txs = p?.transactions || [];
         this.dom.seqList.innerHTML = '';
@@ -750,6 +792,7 @@ export default class ValueMapView {
 
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
+            if (i === highlightIndex) stepEl.classList.add('flash-highlight'); // Efecto Visual
             stepEl.style.borderLeft = `3px solid ${color}`;
             
             const actions = `
@@ -769,7 +812,13 @@ export default class ValueMapView {
             `;
             this.dom.seqList.appendChild(stepEl);
         });
-        this.dom.seqList.scrollTop = this.dom.seqList.scrollHeight;
+        
+        // Si hay highlight, asegurarse de que está a la vista
+        if (highlightIndex !== -1 && this.dom.seqList.children[highlightIndex]) {
+            this.dom.seqList.children[highlightIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            this.dom.seqList.scrollTop = this.dom.seqList.scrollHeight;
+        }
     }
 
     renderMap() {
@@ -783,14 +832,11 @@ export default class ValueMapView {
         const levelCounts = {};
 
         p.roles.forEach(rol => {
-            // FASE 1.5: YA NO OCULTAMOS LOS ARCHIVADOS. 
-            // Simplemente los sumamos a la contabilidad visual
             const level = rol.levelId || '@baixos';
             levelCounts[level] = (levelCounts[level] || 0) + 1;
             
             const el = document.createElement('div');
             
-            // FASE 1.5: Inyectamos la clase ghost-node
             const isGhost = rol.isArchived ? 'ghost-node' : '';
             const isSelected = this.selectedRoleId === rol.id ? 'selected' : '';
             el.className = `node ${isSelected} ${isGhost}`;
@@ -807,15 +853,13 @@ export default class ValueMapView {
             }
 
             el.style.borderColor = this.getColor(level);
-            el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name">${rol.name}</div>`;
+            // El texto ahora está truncado por CSS (.node-name)
+            el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name" title="${rol.name}">${rol.name}</div>`;
 
             el.addEventListener('click', (e) => {
                 if(this.hasMoved || this.isSimulating) return; 
                 
-                // Si el nodo es fantasma, no dejamos que se envíen nuevas tareas a él
                 if (!rol.isArchived && this.selectedRoleId && this.selectedRoleId !== rol.id) {
-                    const targetSelect = document.getElementById('selTo');
-                    // Solo actualizamos si el nodo seleccionado actualmente no estaba archivado tampoco
                     const currentlySelected = p.roles.find(r => r.id === this.selectedRoleId);
                     if(currentlySelected && !currentlySelected.isArchived) {
                         this.dom.selFrom.value = this.selectedRoleId;
@@ -842,7 +886,6 @@ export default class ValueMapView {
                 this.dom.inputFmv.value = rol.fmv || 0;
                 this.dom.inputMult.value = rol.multiplier || 1.0;
                 
-                // Deshabilitar edición si es fantasma (solo permitir desarchivar)
                 const isLocked = rol.isArchived;
                 this.dom.insName.disabled = isLocked;
                 this.dom.insLevel.disabled = isLocked;
@@ -862,58 +905,105 @@ export default class ValueMapView {
         setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 50);
     }
 
+    injectSvgMarkers() {
+        // RefX 42 desplaza la flecha justo hasta el borde exterior de la esfera del nodo (radio 40px)
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        defs.innerHTML = `
+            <marker id="arrow-tangible" markerWidth="10" markerHeight="7" refX="42" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-green)"/></marker>
+            <marker id="arrow-intangible" markerWidth="10" markerHeight="7" refX="42" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-purple)"/></marker>
+            <marker id="arrow-sick" markerWidth="10" markerHeight="7" refX="42" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-red)"/></marker>
+        `;
+        this.dom.svg.appendChild(defs);
+    }
+
     drawEdges() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         this.dom.svg.innerHTML = '';
         const txs = p?.transactions || [];
         if (txs.length === 0) return;
 
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `<marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="context-stroke"/></marker>`;
-        this.dom.svg.appendChild(defs);
+        this.injectSvgMarkers();
 
-        txs.forEach((tx, index) => {
-            const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
-            const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
+        // AGRUPACIÓN PARA EVITAR SOLAPAMIENTOS (Curvas Bézier)
+        const pairCounts = {};
+        txs.forEach((tx, i) => {
+            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
+            if (!pairCounts[key]) pairCounts[key] = [];
+            pairCounts[key].push({ tx, index: i });
+        });
+
+        Object.keys(pairCounts).forEach(key => {
+            const edges = pairCounts[key];
             
-            if (dom1 && dom2 && tx.from !== tx.to) {
-                const rect1 = dom1.getBoundingClientRect();
-                const rect2 = dom2.getBoundingClientRect();
-                const canv = this.dom.canvas.getBoundingClientRect();
+            edges.forEach((edgeData, multiIdx) => {
+                const { tx, index } = edgeData;
+                const dom1 = this.dom.canvas.querySelector(`.node[data-id="${tx.from}"]`);
+                const dom2 = this.dom.canvas.querySelector(`.node[data-id="${tx.to}"]`);
                 
-                const x1 = rect1.left + rect1.width / 2 - canv.left;
-                const y1 = rect1.top + rect1.height / 2 - canv.top;
-                const x2 = rect2.left + rect2.width / 2 - canv.left;
-                const y2 = rect2.top + rect2.height / 2 - canv.top;
+                if (dom1 && dom2 && tx.from !== tx.to) {
+                    const rect1 = dom1.getBoundingClientRect();
+                    const rect2 = dom2.getBoundingClientRect();
+                    const canv = this.dom.canvas.getBoundingClientRect();
+                    
+                    const x1 = rect1.left + rect1.width / 2 - canv.left;
+                    const y1 = rect1.top + rect1.height / 2 - canv.top;
+                    const x2 = rect2.left + rect2.width / 2 - canv.left;
+                    const y2 = rect2.top + rect2.height / 2 - canv.top;
 
-                const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    const dx = x2 - x1;
+                    const dy = y2 - y1;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    // Vector normal para crear la curva perpendicular
+                    const nx = -dy / dist; 
+                    const ny = dx / dist;
 
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('marker-end', 'url(#arrow)');
-                
-                const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
-                line.setAttribute('class', `edge-line ${lineClass}`);
-                
-                // Si alguno de los dos nodos es fantasma, hacemos la flecha translúcida
-                if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
-                    line.style.opacity = '0.2';
+                    // Si hay múltiples conexiones, espaciamos las curvas. (0, 30, -30, 60, -60...)
+                    let offset = 0;
+                    if (edges.length > 1) {
+                        const step = 45; // Distancia entre curvas
+                        offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
+                    }
+
+                    const cx = (x1 + x2) / 2 + nx * offset;
+                    const cy = (y1 + y2) / 2 + ny * offset;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+                    
+                    // Flecha direccional
+                    let markerId = tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible';
+                    path.setAttribute('marker-end', `url(#${markerId})`);
+                    
+                    const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
+                    path.setAttribute('class', `edge-line ${lineClass}`);
+                    
+                    if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
+                        path.style.opacity = '0.2';
+                    }
+                    
+                    this.dom.svg.appendChild(path);
+
+                    // Posición matemática del texto en la curva Bézier (t = 0.5)
+                    const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+                    const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+
+                    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    txt.setAttribute('x', txX); 
+                    txt.setAttribute('y', txY - 8);
+                    txt.setAttribute('text-anchor', 'middle');
+                    txt.setAttribute('data-idx', index); // Guardamos el index para el Tooltip interactivo
+                    txt.setAttribute('class', 'tx-number'); // Clase clickeable
+                    txt.style.cssText = `fill:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:12px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:6px; cursor: pointer;`;
+                    
+                    if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
+                        txt.style.opacity = '0.3';
+                    }
+                    
+                    txt.textContent = `[${index + 1}]`;
+                    this.dom.svg.appendChild(txt);
                 }
-                
-                this.dom.svg.appendChild(line);
-
-                const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', (y1+y2)/2 - 8);
-                txt.setAttribute('text-anchor', 'middle');
-                txt.style.cssText = `fill:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:11px;font-weight:900;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:5px;`;
-                
-                if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
-                    txt.style.opacity = '0.3';
-                }
-                
-                txt.textContent = `[${index + 1}]`;
-                this.dom.svg.appendChild(txt);
-            }
+            });
         });
     }
 
