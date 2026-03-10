@@ -36,12 +36,19 @@ export default class ProjectView {
                 .task-title { color: white; font-size: 1.05rem; margin: 10px 0; line-height: 1.4;}
                 .task-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;}
                 
-                .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); transition: all 0.2s;}
+                .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); transition: all 0.2s; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
                 .btn-pull:hover { background: white; color: black; border-color: white;}
+                
+                .btn-push { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px;}
+                .btn-push:hover { background: rgba(224, 64, 251, 0.1); }
+
                 .btn-focus { background: rgba(0, 176, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 8px; border-radius: 6px; font-weight: bold; transition: all 0.2s;}
                 .btn-focus:hover { background: var(--accent-blue); color: black;}
-                .btn-approve { background: var(--accent-green); color: black; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.2s;}
+                
+                .btn-approve { background: var(--accent-green); color: black; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.2s; width: 100%;}
                 .btn-approve:hover { transform: scale(1.02); }
+
+                .status-requested { background: rgba(255, 82, 82, 0.1) !important; border-color: var(--accent-red) !important; }
 
                 @media (max-width: 1024px) {
                     .kanban-container { display: flex; flex-direction: column; gap: 2rem; overflow-y: auto; }
@@ -63,7 +70,7 @@ export default class ProjectView {
 
                     <div class="kanban-filters" id="kanbanFilters">
                         <button class="filter-btn active" data-filter="all">Todos los Flujos</button>
-                        <button class="filter-btn" data-filter="mine">Mis Tareas (Pull)</button>
+                        <button class="filter-btn" data-filter="mine">Mis Tareas</button>
                         <button class="filter-btn" data-filter="tangible">Solo Tangibles 🟢</button>
                         <button class="filter-btn" data-filter="intangible">Solo Intangibles 🟣</button>
                     </div>
@@ -98,6 +105,16 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
         
+        // El PO no necesita el filtro "Mis Tareas" por defecto, pero si es un usuario raso, forzamos la vista "mine" si no elige nada.
+        const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
+        if (!isPO && this.currentFilter === 'all') {
+            this.currentFilter = 'mine'; // Los mercenarios ven sus cosas primero para evitar ruido
+            setTimeout(() => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-filter="mine"]').classList.add('active');
+            }, 10);
+        }
+
         // Setup Filtros
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -118,6 +135,7 @@ export default class ProjectView {
         const txs = project.transactions || [];
         const state = store.getState();
         const activeUser = state.session.activeUserId;
+        const isPO = project.ownerId === activeUser || state.session.role === 'ecosystem-owner';
         
         let counts = { theo: 0, work: 0, done: 0 };
 
@@ -125,11 +143,20 @@ export default class ProjectView {
             // Aplicar Filtros
             if (this.currentFilter === 'tangible' && tx.tipo !== 'tangible') return;
             if (this.currentFilter === 'intangible' && tx.tipo !== 'intangible') return;
-            if (this.currentFilter === 'mine' && tx.assigneeId !== activeUser) return;
-
-            const card = this.createTaskCard(tx, project, state.session);
             
-            if (tx.status === 'theoretical') { 
+            // Si el filtro es "mine", el usuario solo ve las que tiene asignadas. (El Backlog teórico se sigue viendo si nadie lo tiene).
+            if (this.currentFilter === 'mine') {
+                if (tx.status !== 'theoretical' && tx.status !== 'requested' && tx.assigneeId !== activeUser) return;
+            }
+
+            // Ocultar ruido a usuarios base (Si no eres PO, no te importa ver las tareas consolidadas de otros)
+            if (!isPO && this.currentFilter === 'all') {
+                if ((tx.status === 'consolidated' || tx.status === 'reported') && tx.assigneeId !== activeUser) return;
+            }
+
+            const card = this.createTaskCard(tx, project, state.session, isPO);
+            
+            if (tx.status === 'theoretical' || tx.status === 'requested') { 
                 lists.theo.appendChild(card); counts.theo++; 
             } else if (tx.status === 'pinged' || tx.status === 'reported') { 
                 lists.work.appendChild(card); counts.work++; 
@@ -143,30 +170,53 @@ export default class ProjectView {
         document.getElementById('count-done').innerText = counts.done;
     }
 
-    createTaskCard(tx, project, session) {
-        const role = project.roles.find(r => r.id === tx.from) || { name: 'Nodo', levelId: '@baixos' };
+    createTaskCard(tx, project, session, isPO) {
+        const role = project.roles.find(r => r.id === tx.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
         const receiverRole = project.roles.find(r => r.id === tx.to) || { name: 'Destino', levelId: '?' };
         
         const card = document.createElement('div');
-        card.className = 'task-card';
+        card.className = `task-card ${tx.status === 'requested' ? 'status-requested' : ''}`;
         const color = this.getColorForLevel(role.levelId);
         const tipoColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
 
         let actionHtml = '';
 
         if (tx.status === 'theoretical') {
-            actionHtml = `<button class="btn btn-outline btn-pull" data-hash="${tx.hash}" style="width: 100%;">Hacer PULL (Asumir)</button>`;
+            if (isPO) {
+                actionHtml = `
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <button class="btn-pull" data-hash="${tx.hash}" title="Adjudicarme la tarea">📥 Hacer PULL (Asumírmela)</button>
+                        <button class="btn-push" data-hash="${tx.hash}" title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
+                    </div>
+                `;
+            } else {
+                actionHtml = `<button class="btn-pull" data-action="request" data-hash="${tx.hash}">✋ Solicitar Tarea (Request Pull)</button>`;
+            }
         } 
+        else if (tx.status === 'requested') {
+            const requester = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
+            const reqName = requester ? requester.name : tx.assigneeId;
+            
+            if (isPO) {
+                actionHtml = `
+                    <div style="color: var(--accent-red); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⚠️ SOLICITUD DE PULL PENDIENTE</div>
+                    <div style="font-size: 0.8rem; color: #ccc; margin-bottom: 10px;">El nodo <b>${reqName}</b> solicita realizar este entregable.</div>
+                    <button class="btn-approve" data-action="approve-pull" data-hash="${tx.hash}" data-userid="${tx.assigneeId}">✅ Aprobar Solicitud</button>
+                `;
+            } else {
+                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 6px;">✋ Solicitud enviada al Owner. Esperando aprobación...</div>`;
+            }
+        }
         else if (tx.status === 'pinged') {
             const isMine = tx.assigneeId === session.activeUserId;
             if (isMine) {
                 actionHtml = `
                     <div style="color: var(--accent-orange); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN TU ESCRITORIO</div>
-                    <a href="/v5/focus" class="btn btn-focus" style="width: 100%;" data-link>▶ Iniciar Focus / Reportar</a>
+                    <a href="/v5/focus" class="btn btn-focus" data-link>▶ Iniciar Focus / Reportar</a>
                 `;
             } else {
                 const worker = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
-                actionHtml = `<div style="color: #666; font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed #333; border-radius: 6px;">Tomada por: ${worker ? worker.name : tx.assigneeId}</div>`;
+                actionHtml = `<div style="color: #666; font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed #333; border-radius: 6px;">Asignada a: <span style="color:white;">${worker ? worker.name : tx.assigneeId}</span></div>`;
             }
         } 
         else if (tx.status === 'reported') {
@@ -176,7 +226,7 @@ export default class ProjectView {
                     Horas Reales: <strong style="color: white;">${tx.realHours}h</strong><br>
                     Evidencia: <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue);">${tx.proofLink ? 'Ver Trabajo' : 'Sin link'}</a>
                 </div>
-                <button class="btn btn-approve" data-hash="${tx.hash}" style="width: 100%;">Aprobar y Consolidar (Ledger)</button>
+                ${isPO ? `<button class="btn-approve" data-action="consolidate" data-hash="${tx.hash}">✅ Aprobar y Consolidar (Ledger)</button>` : `<div style="font-size:0.75rem; color:#888;">Pendiente de firma del PO.</div>`}
             `;
         }
         else if (tx.status === 'consolidated') {
@@ -204,48 +254,80 @@ export default class ProjectView {
             </div>
         `;
 
-        // LÓGICA DE BOTONES Y RBAC
+        // LÓGICA DE EVENTOS (Push, Pull, Approve)
         setTimeout(() => {
-            const pullBtn = card.querySelector('.btn-pull');
+            // 1. Pull Directo (Solo PO o usuarios si el sistema estuviera abierto)
+            const pullBtn = card.querySelector('.btn-pull:not([data-action="request"])');
             if (pullBtn) {
                 pullBtn.addEventListener('click', () => {
-                    if (session.role === 'ecosystem-owner') {
-                        return alert("👑 Eres el Ecosystem Owner. Puedes ver todo, pero para ejecutar tareas debes asignarte una silla en 'La Colla'.");
-                    }
-                    
-                    // RBAC: Verificar que el usuario tenga asignado el Rol de ORIGEN (From)
-                    const userAssignments = project.asignaciones.filter(a => a.userId === session.activeUserId);
-                    const canPull = userAssignments.find(a => a.roleId === tx.from);
-                    
-                    if (!canPull) {
-                        return alert(`⛔ Acceso Denegado:\nEsta tarea pertenece al nodo [${role.levelId} - ${role.name}].\n\nNo estás sentado en esa silla. Si debes hacer esta tarea, solicita la asignación en 'La Colla'.`);
-                    }
-
-                    store.dispatch({
-                        type: 'PING_TRANSACTION',
-                        payload: { projectId: project.id, txHash: tx.hash, userId: session.activeUserId }
-                    });
+                    store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash, userId: session.activeUserId } });
                     this.executeViewScript();
                 });
             }
 
+            // 2. Request Pull (Usuario Raso solicita)
+            const reqBtn = card.querySelector('.btn-pull[data-action="request"]');
+            if (reqBtn) {
+                reqBtn.addEventListener('click', () => {
+                    const currentState = store.getState();
+                    const pIdx = currentState.projects.findIndex(x => x.id === project.id);
+                    const txIdx = currentState.projects[pIdx].transactions.findIndex(t => t.hash === tx.hash);
+                    
+                    // Mutación directa permitida solo para este bypass visual temporal hasta que el PO firme
+                    currentState.projects[pIdx].transactions[txIdx].status = 'requested';
+                    currentState.projects[pIdx].transactions[txIdx].assigneeId = session.activeUserId;
+                    
+                    store.state = currentState;
+                    localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
+                    this.executeViewScript();
+                });
+            }
+
+            // 3. PUSH (Delegación del PO)
+            const pushBtn = card.querySelector('.btn-push');
+            if (pushBtn) {
+                pushBtn.addEventListener('click', () => {
+                    // Mostrar lista de usuarios del proyecto
+                    const usersInProject = project.usuarios || [];
+                    if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
+                    
+                    let userListStr = "IDs disponibles:\n";
+                    usersInProject.forEach(u => {
+                        const globalData = store.getState().globalUsers.find(gu => gu.id === u.id);
+                        userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
+                    });
+
+                    const targetUserId = prompt(`Introduce el ID del usuario al que quieres asignar esta tarea:\n\n${userListStr}`);
+                    
+                    if (targetUserId) {
+                        const exists = usersInProject.find(u => u.id === targetUserId);
+                        if (!exists && targetUserId !== project.ownerId) {
+                            return alert("Ese usuario no es miembro del proyecto. Invítalo primero desde el Dashboard o La Colla.");
+                        }
+
+                        // Forzar el PING para el usuario seleccionado
+                        store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash, userId: targetUserId } });
+                        this.executeViewScript();
+                    }
+                });
+            }
+
+            // 4. APROBACIONES (Pull Requests y Ledger Consolidations)
             const approveBtn = card.querySelector('.btn-approve');
             if (approveBtn) {
-                approveBtn.addEventListener('click', () => {
-                    // RBAC: Solo PO o Auditor (@dosos) puede aprobar
-                    const isPO = project.ownerId === session.activeUserId || session.role === 'ecosystem-owner';
+                approveBtn.addEventListener('click', (e) => {
+                    const action = e.target.getAttribute('data-action');
                     
-                    // Comprobar si el usuario activo tiene una silla de Auditor (@dosos) en este proyecto
-                    const myRoles = project.asignaciones.filter(a => a.userId === session.activeUserId).map(a => project.roles.find(r => r.id === a.roleId));
-                    const isAuditor = myRoles.some(r => r && r.levelId === '@dosos');
-
-                    if (!isPO && !isAuditor) {
-                        return alert("⛔ Auditoría Denegada:\nSolo el Project Owner o un nodo con nivel [@dosos] puede aprobar el trabajo y acuñar equidad en el Ledger.");
-                    }
-
-                    if(confirm('¿Aprobar Proof of Work? Esto generará Slices inmutables en el Ledger.')) {
-                        store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash } });
+                    if (action === 'approve-pull') {
+                        const targetUser = e.target.getAttribute('data-userid');
+                        store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash, userId: targetUser } });
                         this.executeViewScript();
+                    } 
+                    else if (action === 'consolidate') {
+                        if(confirm('¿Aprobar Proof of Work? Esto generará Slices inmutables en el Ledger.')) {
+                            store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash } });
+                            this.executeViewScript();
+                        }
                     }
                 });
             }
