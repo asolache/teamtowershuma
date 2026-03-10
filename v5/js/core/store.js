@@ -1,10 +1,19 @@
 // ==========================================================================
-// KERNEL v6.5 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v7.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Contabilidad Triple Entrada y Slicing Pie
-// INCLUYE: FASE 1.5 (INMUTABILIDAD) y V6.5 (RBAC & IDENTIDAD FRACTAL)
+// INCLUYE: FASE 1.5 (INMUTABILIDAD), V6.5 (RBAC) y V7.0 (SHA-256 HASHING)
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
+
+// --- UTILIDAD CRIPTOGRÁFICA (V7.0) ---
+// Genera un Hash SHA-256 real para la Contabilidad de Triple Entrada
+async function generateSHA256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 // 1. ESTADO INICIAL (Base de datos en memoria)
 const initialState = {
@@ -53,24 +62,26 @@ const initialState = {
 };
 
 // 2. REDUCER: La única función autorizada para mutar el estado
-function reducer(state = initialState, action) {
+async function asyncReducer(state, action) {
+    let newState = JSON.parse(JSON.stringify(state)); // Deep copy para evitar mutaciones directas no deseadas
+
     switch (action.type) {
         
         // --- SISTEMA Y CONFIGURACIÓN ---
         case 'IMPORT_STATE':
-            return { ...state, ...action.payload };
+            return { ...newState, ...action.payload };
 
         case 'UPDATE_GLOBAL_CONFIG':
-            return { ...state, config: { ...state.config, ...action.payload } };
+            return { ...newState, config: { ...newState.config, ...action.payload } };
 
         // --- ONTOLOGÍA DINÁMICA ---
         case 'ADD_ONTOLOGY_SECTOR':
             return {
-                ...state,
+                ...newState,
                 ontology: {
-                    ...state.ontology,
+                    ...newState.ontology,
                     sectores: {
-                        ...state.ontology.sectores,
+                        ...newState.ontology.sectores,
                         [action.payload.sectorId]: action.payload.rolesData
                     }
                 }
@@ -80,10 +91,10 @@ function reducer(state = initialState, action) {
             const sectorId = action.payload.id || action.payload.name || 'custom_sector';
             const sectorData = action.payload.data || action.payload.roles || action.payload;
             return {
-                ...state,
+                ...newState,
                 ontology: {
-                    ...state.ontology,
-                    sectores: { ...state.ontology.sectores, [sectorId]: sectorData }
+                    ...newState.ontology,
+                    sectores: { ...newState.ontology.sectores, [sectorId]: sectorData }
                 }
             };
         }
@@ -91,51 +102,52 @@ function reducer(state = initialState, action) {
         // --- IDENTIDAD Y SEGURIDAD (RBAC V6.5) ---
         case 'ADD_USER': {
             const newId = action.payload.id || action.payload.userId;
-            const existsGlobal = state.globalUsers.find(u => u.id === newId);
+            const existsGlobal = newState.globalUsers.find(u => u.id === newId);
             if (existsGlobal) {
-                throw new Error("⛔ El identificador de usuario ya existe en el ecosistema.");
+                console.warn("El identificador de usuario ya existe en el ecosistema.");
+                // No lanzamos throw para no romper el UI al invitar usuarios existentes al proyecto
+            } else {
+                const newUser = { 
+                    id: newId, 
+                    name: action.payload.name, 
+                    walletOrSocial: action.payload.walletOrSocial,
+                    globalRole: action.payload.globalRole || 'network-user'
+                };
+                newState.globalUsers.push(newUser);
             }
-            const newUser = { 
-                id: newId, 
-                name: action.payload.name, 
-                walletOrSocial: action.payload.walletOrSocial,
-                globalRole: action.payload.globalRole || 'network-user'
-            };
             
-            let newProjects = state.projects;
             if (action.payload.projectId) {
-                newProjects = state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const prev = p.usuarios || [];
-                        if (!prev.find(u => u.id === newId)) return { ...p, usuarios: [...prev, { id: newId }] };
-                    }
-                    return p;
-                });
+                const pUser = newState.projects.find(p => p.id === action.payload.projectId);
+                if (pUser) {
+                    const prev = pUser.usuarios || [];
+                    if (!prev.find(u => u.id === newId)) pUser.usuarios.push({ id: newId, joinedAt: Date.now() });
+                }
             }
-            return { ...state, globalUsers: [...state.globalUsers, newUser], projects: newProjects };
+            return newState;
         }
 
         case 'LOGIN_USER': {
             // RBAC: Detectamos el rol global del usuario al hacer login
-            const user = state.globalUsers.find(u => u.id === action.payload.userId);
+            const user = newState.globalUsers.find(u => u.id === action.payload.userId);
             const userRole = user ? (user.globalRole || 'network-user') : 'guest';
-            return { ...state, session: { activeUserId: action.payload.userId, role: userRole } };
+            return { ...newState, session: { activeUserId: action.payload.userId, role: userRole } };
         }
             
         case 'LOGOUT_USER':
-            return { ...state, session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' } };
+            return { ...newState, session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' } };
 
         // --- GESTIÓN DE PROYECTOS / REDES ---
         case 'ADD_PROJECT_RESTRICTED': {
-            if (state.session.role !== 'ecosystem-owner') {
-                throw new Error("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas restringidas.");
+            if (newState.session.role !== 'ecosystem-owner') {
+                console.warn("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas restringidas.");
+                return newState; 
             }
-            return state; 
+            return newState; 
         }
 
         case 'ADD_PROJECT': {
-            if (state.session.role !== 'ecosystem-owner' && state.session.role !== 'admin' && !action.payload.bypassSecurity && !action.payload.ownerId) {
-                return state; 
+            if (newState.session.role !== 'ecosystem-owner' && newState.session.role !== 'admin' && !action.payload.bypassSecurity && !action.payload.ownerId) {
+                return newState; 
             }
 
             const pSector = action.payload.sector || 'startup';
@@ -159,7 +171,7 @@ function reducer(state = initialState, action) {
                     sectorRolesArray = sectorDataObj.roles;
                 }
             } else {
-                const legacySectorData = state.ontology.sectores[pSector] || {};
+                const legacySectorData = newState.ontology.sectores[pSector] || {};
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
                     sectorRolesArray.push({
@@ -193,7 +205,7 @@ function reducer(state = initialState, action) {
             });
 
             if (baseRoles.length === 0) {
-                baseRoles = [
+                baseRoles = action.payload.customRoles || [
                     { id: 'r1', levelId: '@anxaneta', name: 'Visionario', multiplier: 3.0, fmv: 60, standard_deliverables: [], history: [] },
                     { id: 'r2', levelId: '@aixecador', name: 'Orquestador', multiplier: 2.0, fmv: 50, standard_deliverables: [], history: [] },
                     { id: 'r3', levelId: '@dosos', name: 'Auditor', multiplier: 1.5, fmv: 45, standard_deliverables: [], history: [] },
@@ -202,16 +214,20 @@ function reducer(state = initialState, action) {
                 ];
             }
 
-            const ownerId = action.payload.ownerId || state.session.activeUserId;
+            const ownerId = action.payload.ownerId || newState.session.activeUserId;
             const arquetipo = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || 'startup';
+            const projId = action.payload.id || ('proj-' + Date.now());
+
+            // [V7] Generación asíncrona del Bloque Génesis
+            const initHash = await generateSHA256(`GENESIS_${projId}_${Date.now()}`);
 
             const newProject = {
-                id: action.payload.id || ('proj-' + Date.now()),
+                id: projId,
                 nombre: action.payload.nombre || 'Nuevo Proyecto',
                 sector: pSector,
                 tipo: action.payload.tipo || 'project', 
                 archetype: arquetipo, 
-                ownerId: ownerId, // RBAC Local: Project Owner
+                ownerId: ownerId, 
                 prompt: action.payload.prompt || '',
                 config: { tokenomics: 'startup', archetype: arquetipo },
                 roles: baseRoles,
@@ -219,47 +235,36 @@ function reducer(state = initialState, action) {
                 asignaciones: [],
                 transactions: [],
                 ledger: [],
-                alerts: []
+                alerts: [],
+                genesisHash: initHash // Sello inmutable V7
             };
-            return { ...state, projects: [...state.projects, newProject] };
+            
+            newState.projects.push(newProject);
+            return newState;
         }
 
         // --- COMUNICACIÓN Y ALERTAS ---
         case 'ADD_PROJECT_ALERT': {
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const newAlert = { id: 'alert-' + Date.now(), message: action.payload.message, timestamp: Date.now(), resolved: false };
-                        return { ...p, alerts: [...(p.alerts || []), newAlert] };
-                    }
-                    return p;
-                })
-            };
+            const pAlert = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAlert) {
+                const newAlert = { id: 'alert-' + Date.now(), message: action.payload.message, timestamp: Date.now(), resolved: false };
+                pAlert.alerts = [...(pAlert.alerts || []), newAlert];
+            }
+            return newState;
         }
 
         case 'RESOLVE_PROJECT_ALERT': {
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, alerts: (p.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a) };
-                    }
-                    return p;
-                })
-            };
+            const pRes = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pRes) {
+                pRes.alerts = (pRes.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a);
+            }
+            return newState;
         }
 
         case 'PROMOTE_TO_PO': {
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, ownerId: action.payload.userId };
-                    }
-                    return p;
-                })
-            };
+            const pPO = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pPO) pPO.ownerId = action.payload.userId;
+            return newState;
         }
 
         // --- MACRO REDES (VNA) ---
@@ -271,235 +276,190 @@ function reducer(state = initialState, action) {
                 entregable: action.payload.entregable || 'Intercambio de Valor',
                 tipo: action.payload.tipo || 'tangible'
             };
-            return { ...state, macroFlows: [...(state.macroFlows || []), newFlow] };
+            newState.macroFlows = [...(newState.macroFlows || []), newFlow];
+            return newState;
         }
 
         case 'UPDATE_PROJECT_INFO':
-            return {
-                ...state,
-                projects: state.projects.map(p => p.id === action.payload.projectId ? { ...p, ...action.payload.updates } : p)
-            };
+            const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pInfo) Object.assign(pInfo, action.payload.updates);
+            return newState;
 
         case 'UPDATE_ARCHETYPE':
         case 'UPDATE_PROJECT_CONFIG':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const newArch = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || p.archetype;
-                        return { ...p, archetype: newArch, config: { ...p.config, ...(action.payload.config || {}), archetype: newArch } };
-                    }
-                    return p;
-                })
-            };
+            const pArch = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pArch) {
+                const newArch = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || pArch.archetype;
+                pArch.archetype = newArch;
+                pArch.config = { ...pArch.config, ...(action.payload.config || {}), archetype: newArch };
+            }
+            return newState;
 
         // --- GESTIÓN DE ROLES E INMUTABILIDAD (FASE 1.5) ---
         case 'UPDATE_ROLE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            roles: p.roles.map(r => {
-                                if (r.id === action.payload.roleId) {
-                                    
-                                    const isEconomicChange = (action.payload.field === 'fmv' || action.payload.field === 'multiplier') ||
-                                                             (action.payload.updates && (action.payload.updates.fmv !== undefined || action.payload.updates.multiplier !== undefined)) ||
-                                                             (action.payload.fmv !== undefined || action.payload.multiplier !== undefined);
+            const pUpdRol = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pUpdRol) {
+                const rIdx = pUpdRol.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) {
+                    const r = pUpdRol.roles[rIdx];
+                    const isEconomicChange = (action.payload.field === 'fmv' || action.payload.field === 'multiplier') ||
+                                             (action.payload.updates && (action.payload.updates.fmv !== undefined || action.payload.updates.multiplier !== undefined)) ||
+                                             (action.payload.fmv !== undefined || action.payload.multiplier !== undefined);
 
-                                    let newHistory = r.history || [];
-                                    
-                                    if (isEconomicChange) {
-                                        newHistory = [...newHistory, {
-                                            fmv: r.fmv,
-                                            multiplier: r.multiplier,
-                                            validUntil: Date.now()
-                                        }];
-                                    }
-
-                                    if (action.payload.field) {
-                                        return { ...r, [action.payload.field]: action.payload.value, history: newHistory };
-                                    } else {
-                                        const newName = action.payload.name || (action.payload.updates && action.payload.updates.name) || r.name;
-                                        return { ...r, ...(action.payload.updates || {}), name: newName, id: r.id, history: newHistory };
-                                    }
-                                }
-                                return r;
-                            })
-                        };
+                    let newHistory = r.history || [];
+                    
+                    if (isEconomicChange) {
+                        newHistory = [...newHistory, { fmv: r.fmv, multiplier: r.multiplier, validUntil: Date.now() }];
                     }
-                    return p;
-                })
-            };
+
+                    if (action.payload.field) {
+                        pUpdRol.roles[rIdx] = { ...r, [action.payload.field]: action.payload.value, history: newHistory };
+                    } else {
+                        const newName = action.payload.name || (action.payload.updates && action.payload.updates.name) || r.name;
+                        pUpdRol.roles[rIdx] = { ...r, ...(action.payload.updates || {}), name: newName, history: newHistory };
+                    }
+                }
+            }
+            return newState;
 
         case 'ADD_ROLE': {
-            const safeRole = {
-                id: action.payload.role.id || `role-${Date.now()}`,
-                name: action.payload.role.name || 'Nuevo Nodo',
-                levelId: action.payload.role.levelId || '@baixos',
-                multiplier: action.payload.role.multiplier || 1.0,
-                fmv: action.payload.role.fmv || 50,
-                isArchived: false,
-                history: [], 
-                ...action.payload.role
-            };
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, roles: [...p.roles, safeRole] };
-                    }
-                    return p;
-                })
-            };
+            const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAddRol) {
+                const safeRole = {
+                    id: action.payload.role.id || `role-${Date.now()}`,
+                    name: action.payload.role.name || 'Nuevo Nodo',
+                    levelId: action.payload.role.levelId || '@baixos',
+                    multiplier: action.payload.role.multiplier || 1.0,
+                    fmv: action.payload.role.fmv || 50,
+                    isArchived: false,
+                    history: [], 
+                    ...action.payload.role
+                };
+                pAddRol.roles.push(safeRole);
+            }
+            return newState;
         }
 
         case 'TOGGLE_ROLE_ARCHIVE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, roles: p.roles.map(r => r.id === action.payload.roleId ? { ...r, isArchived: !r.isArchived } : r) };
+            const pTogArc = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pTogArc) {
+                const rIdx = pTogArc.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) {
+                    pTogArc.roles[rIdx].isArchived = !pTogArc.roles[rIdx].isArchived;
+                    if (pTogArc.roles[rIdx].isArchived) {
+                        pTogArc.asignaciones = pTogArc.asignaciones.filter(a => a.roleId !== action.payload.roleId);
                     }
-                    return p;
-                })
-            };
+                }
+            }
+            return newState;
 
         case 'ASSIGN_USER_ROLE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const exists = p.asignaciones.find(a => a.roleId === action.payload.roleId);
-                        const prevUsers = p.usuarios || [];
-                        const userExists = prevUsers.find(u => u.id === action.payload.userId);
-                        
-                        let newAsignaciones = exists ? p.asignaciones.map(a => a.roleId === action.payload.roleId ? { ...a, userId: action.payload.userId } : a) : [...p.asignaciones, { userId: action.payload.userId, roleId: action.payload.roleId }];
-                        
-                        return { 
-                            ...p, 
-                            asignaciones: newAsignaciones,
-                            usuarios: userExists ? prevUsers : [...prevUsers, { id: action.payload.userId }] 
-                        };
-                    }
-                    return p;
-                })
-            };
+            const pAssUsr = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAssUsr) {
+                pAssUsr.asignaciones = pAssUsr.asignaciones.filter(a => a.roleId !== action.payload.roleId);
+                pAssUsr.asignaciones.push({ roleId: action.payload.roleId, userId: action.payload.userId, assignedAt: Date.now() });
+                
+                const prevUsers = pAssUsr.usuarios || [];
+                if (!prevUsers.find(u => u.id === action.payload.userId)) {
+                    pAssUsr.usuarios.push({ id: action.payload.userId });
+                }
+            }
+            return newState;
 
         // --- SISTEMA PULL Y TRIPLE ENTRADA ---
         case 'ADD_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        const prevTx = p.transactions && p.transactions.length > 0 ? p.transactions[p.transactions.length - 1] : null;
-                        const newTx = {
-                            hash: action.payload.tx?.hash || ('0x' + Math.random().toString(16).slice(2, 10)),
-                            prevHash: prevTx ? prevTx.hash : null,
-                            timestamp: Date.now(),
-                            status: action.payload.tx?.status || 'theoretical',
-                            ...action.payload.tx
-                        };
-                        return { ...p, transactions: [...(p.transactions || []), newTx] };
-                    }
-                    return p;
-                })
-            };
+            const pAddTx = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAddTx) {
+                const prevTx = pAddTx.transactions && pAddTx.transactions.length > 0 ? pAddTx.transactions[pAddTx.transactions.length - 1] : null;
+                const newTx = {
+                    hash: action.payload.tx?.hash || ('tx_' + Math.random().toString(36).substr(2, 9)),
+                    prevHash: prevTx ? prevTx.hash : null,
+                    timestamp: Date.now(),
+                    status: action.payload.tx?.status || 'theoretical',
+                    ...action.payload.tx
+                };
+                if (!pAddTx.transactions) pAddTx.transactions = [];
+                pAddTx.transactions.push(newTx);
+            }
+            return newState;
 
         case 'UPDATE_TRANSACTION_PHASE':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return { ...p, transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, fase: action.payload.fase } : tx) };
-                    }
-                    return p;
-                })
-            };
+            const pUpdPhs = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pUpdPhs) {
+                const txPhs = pUpdPhs.transactions.find(tx => tx.hash === action.payload.txHash);
+                if (txPhs) txPhs.fase = action.payload.fase;
+            }
+            return newState;
 
         case 'PING_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            transactions: p.transactions.map(tx => {
-                                if (tx.hash === action.payload.txHash) return { ...tx, status: 'pinged', assigneeId: action.payload.userId, pingTimestamp: Date.now() };
-                                return tx;
-                            })
-                        };
-                    }
-                    return p;
-                })
-            };
+            const pPing = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pPing) {
+                const txPing = pPing.transactions.find(tx => tx.hash === action.payload.txHash);
+                if (txPing && txPing.status === 'theoretical') {
+                    txPing.status = 'pinged';
+                    txPing.assigneeId = action.payload.userId; 
+                    txPing.pingTimestamp = Date.now();
+                }
+            }
+            return newState;
 
         case 'REPORT_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        return {
-                            ...p,
-                            transactions: p.transactions.map(tx => {
-                                if (tx.hash === action.payload.txHash) {
-                                    return { 
-                                        ...tx, status: 'reported', realHours: action.payload.realHours,
-                                        proofLink: action.payload.proofLink, reportComment: action.payload.comentario,
-                                        reportTimestamp: Date.now()
-                                    };
-                                }
-                                return tx;
-                            })
-                        };
-                    }
-                    return p;
-                })
-            };
+            const pRep = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pRep) {
+                const txRep = pRep.transactions.find(tx => tx.hash === action.payload.txHash);
+                if (txRep && txRep.status === 'pinged') {
+                    txRep.status = 'reported';
+                    txRep.realHours = action.payload.realHours;
+                    txRep.proofLink = action.payload.proofLink;
+                    txRep.reportComment = action.payload.comentario;
+                    txRep.reportTimestamp = Date.now();
+                }
+            }
+            return newState;
 
         case 'APPROVE_TRANSACTION':
-            return {
-                ...state,
-                projects: state.projects.map(p => {
-                    if (p.id === action.payload.projectId) {
-                        let txToApprove = p.transactions.find(tx => tx.hash === action.payload.txHash);
-                        if (!txToApprove) return p;
+            const pAppr = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAppr) {
+                const txAppr = pAppr.transactions.find(tx => tx.hash === action.payload.txHash);
+                if (txAppr && txAppr.status === 'reported') {
+                    txAppr.status = 'consolidated';
+                    txAppr.approveTimestamp = Date.now();
+                    txAppr.auditorId = newState.session.activeUserId;
 
-                        const workTimestamp = txToApprove.reportTimestamp || txToApprove.pingTimestamp || Date.now();
-                        const storeInstance = new Store(); 
-                        const roleEconomics = storeInstance.getRoleEconomicsAtTime(p, txToApprove.from, workTimestamp);
-                        
-                        const archMult = p.archetype === 'startup' ? 2.0 : (p.archetype === 'dao' ? 1.5 : 1.0);
-                        const horas = txToApprove.realHours || txToApprove.horas || 0;
-                        
-                        const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archMult;
+                    // Instanciar clase para llamar helper internal
+                    const tempStore = new Store();
+                    const workTimestamp = txAppr.reportTimestamp || txAppr.pingTimestamp || Date.now();
+                    const roleEconomics = tempStore.getRoleEconomicsAtTime(pAppr, txAppr.from, workTimestamp);
+                    
+                    const archFactor = tempStore.getArchetypeFactor(pAppr.archetype);
+                    const horas = txAppr.realHours || txAppr.horas || 0;
+                    
+                    const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archFactor;
 
-                        const prevLedger = p.ledger || [];
-                        const lastHash = prevLedger.length > 0 ? prevLedger[prevLedger.length - 1].hash : '0x0000000000000000';
-                        const newHash = txToApprove.hash;
+                    // [V7] GENERACIÓN DEL HASH CRIPTOGRÁFICO (TRIPLE ENTRADA)
+                    if (!pAppr.ledger) pAppr.ledger = [];
+                    const lastLedgerHash = pAppr.ledger.length > 0 ? pAppr.ledger[pAppr.ledger.length - 1].hash : pAppr.genesisHash;
+                    const blockData = `${lastLedgerHash}|${txAppr.assigneeId}|${roleEconomics.id}|${horas}|${valorGenerado}|${Date.now()}`;
+                    
+                    const realCryptoHash = await generateSHA256(blockData);
 
-                        const newLedgerEntry = {
-                            hash: newHash,
-                            prevHash: lastHash, 
-                            previousHash: lastHash,
-                            userId: txToApprove.assigneeId,
-                            roleId: roleEconomics.id,
-                            description: `[PoW] ${txToApprove.entregable}`,
-                            horas: horas, 
-                            valorCongelado: valorGenerado, 
-                            timestamp: Date.now() 
-                        };
+                    pAppr.ledger.push({
+                        id: 'ledg_' + Math.random().toString(36).substr(2, 9),
+                        hash: realCryptoHash,        // Sello inmutable
+                        prevHash: lastLedgerHash,    // Cadena (Enlace al anterior)
+                        previousHash: lastLedgerHash, // Compatibilidad hacia atrás
+                        userId: txAppr.assigneeId,
+                        roleId: roleEconomics.id,
+                        description: `[PoW] ${txAppr.entregable}`,
+                        horas: horas, 
+                        valorCongelado: valorGenerado, 
+                        timestamp: Date.now() 
+                    });
 
-                        return {
-                            ...p,
-                            transactions: p.transactions.map(tx => tx.hash === action.payload.txHash ? { ...tx, status: 'consolidated', valorCongelado: valorGenerado, approveTimestamp: Date.now() } : tx),
-                            ledger: [...prevLedger, newLedgerEntry]
-                        };
-                    }
-                    return p;
-                })
-            };
+                    txAppr.valorCongelado = valorGenerado;
+                }
+            }
+            return newState;
 
         default:
             return state;
@@ -517,8 +477,7 @@ class Store {
         }
 
         // ============================================================
-        // SCRIPT DE AUTO-MIGRACIÓN (RBAC V6.5)
-        // Evita que la DB se corrompa al pasar de V4/V5 a V6.5
+        // SCRIPT DE AUTO-MIGRACIÓN (RBAC V6.5 y V7.0)
         // ============================================================
         
         // 1. Inyectar tu usuario si vienes de un state antiguo
@@ -532,13 +491,14 @@ class Store {
             this.state.session.role = 'ecosystem-owner';
         }
 
-        // 3. Asignarte como dueño de los proyectos huérfanos
+        // 3. Asignarte como dueño de los proyectos huérfanos y asegurar génesis
         if (this.state.projects) {
             this.state.projects = this.state.projects.map(p => ({
                 ...p, 
                 alerts: p.alerts || [],
-                ownerId: p.ownerId || 'usr_alvaro_001', // Asignación de Project Owner
-                archetype: p.archetype || 'startup'
+                ownerId: p.ownerId || 'usr_alvaro_001',
+                archetype: p.archetype || 'startup',
+                genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id) // Migración para DB antigua
             }));
         }
 
@@ -550,8 +510,9 @@ class Store {
 
     getState() { return this.state; }
     
-    dispatch(action) {
-        this.state = reducer(this.state, action);
+    // Método dispatch modificado para ser async (por la criptografía)
+    async dispatch(action) {
+        this.state = await asyncReducer(this.state, action);
         localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
         this.listeners.forEach(l => l());
     }
@@ -646,11 +607,12 @@ class Store {
         return sysPrompt;
     }
 
-    importSessionJSON(arg1, arg2) {
+    // Adaptado a Async para compatibilidad V7
+    async importSessionJSON(arg1, arg2) {
         if (typeof arg1 === 'string' && !arg2) {
             try {
                 const parsed = JSON.parse(arg1);
-                this.dispatch({ type: 'IMPORT_STATE', payload: parsed });
+                await this.dispatch({ type: 'IMPORT_STATE', payload: parsed });
                 return true;
             } catch(e) { return false; }
         } else {
@@ -666,7 +628,7 @@ class Store {
                 valorCongelado: item.horas * 50 * 2,
                 timestamp: Date.now()
             }));
-            this.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { ledger: [...(p.ledger || []), ...entries] } } });
+            await this.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { ledger: [...(p.ledger || []), ...entries] } } });
             return true;
         }
     }
