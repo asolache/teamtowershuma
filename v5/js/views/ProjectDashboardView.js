@@ -285,4 +285,193 @@ export default class ProjectDashboardView {
         if (btnEditPitch) {
             btnEditPitch.addEventListener('click', () => {
                 const currentPitch = project.presentation || project.prompt || '';
-                const
+                const newPitch = prompt("Edita la Presentación del Proyecto:", currentPitch);
+                if (newPitch !== null) {
+                    store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: this.activeProjectId, updates: { presentation: newPitch } }
+                    });
+                    this.executeViewScript(); 
+                    document.querySelector('.workspace').innerHTML = 'Actualizando Ecosistema...';
+                    window.location.reload();
+                }
+            });
+        }
+
+        // -- INVITACIONES (EMAIL) --
+        document.querySelectorAll('.btn-invite').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const roleName = e.target.getAttribute('data-rolename');
+                const email = prompt(`Introduce el correo electrónico del candidato para la silla de [${roleName}]:`);
+                
+                if (email && email.includes('@')) {
+                    store.dispatch({
+                        type: 'LOG_INVITATION',
+                        payload: { projectId: this.activeProjectId, email: email }
+                    });
+
+                    const baseUrl = 'https://teamtowershuma.com/v5/';
+                    const subject = encodeURIComponent(`Invitación a unirse al Castell: ${project.nombre}`);
+                    const body = encodeURIComponent(
+                        `Hola,\n\nHas sido invitado por el Project Owner para ocupar la silla estratégica de "${roleName}" en la red "${project.nombre}".\n\n` +
+                        `Misión de la red:\n"${project.presentation || project.prompt || 'Construir valor de forma inmutable.'}"\n\n` +
+                        `Accede al portal del Exoesqueleto (TeamTowers SOS) para instanciar tu identidad fractal y comenzar a reportar tu Prueba de Trabajo (Slicing Pie).\n\n` +
+                        `Enlace de Acceso: ${baseUrl} \n\n` +
+                        `Força, Equilibri, Valor i Seny.\nTeamTowers Kernel v7.3`
+                    );
+                    
+                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                    
+                    setTimeout(() => window.location.reload(), 1000);
+                } else if(email) {
+                    alert("Por favor, introduce un correo electrónico válido.");
+                }
+            });
+        });
+
+        // -- GUARDAR COMO PLANTILLA (V7.8 Preview) --
+        const btnExportTemplate = document.getElementById('btnExportTemplate');
+        if (btnExportTemplate) {
+            btnExportTemplate.addEventListener('click', async () => {
+                const templateId = prompt("Escribe un ID único para guardar esta red como Plantilla Ontológica (ej: mi_agencia_v2):", project.sector + "_custom");
+                if (!templateId) return;
+
+                const rolesData = {};
+                project.roles.forEach(r => {
+                    const myTxs = project.transactions.filter(tx => tx.from === r.id);
+                    const standard_deliverables = myTxs.map(tx => {
+                        const targetRole = project.roles.find(tr => tr.id === tx.to);
+                        return { 
+                            to: targetRole ? targetRole.levelId : '?', 
+                            estimatedHours: tx.horas || 0, 
+                            tipo: tx.tipo || 'tangible',
+                            name: tx.entregable 
+                        };
+                    });
+
+                    // Solo guardamos un rol por levelId en la plantilla (simplificación)
+                    if (!rolesData[r.levelId]) {
+                        rolesData[r.levelId] = {
+                            name: r.name,
+                            guardian: r.guardian || '',
+                            multiplier: r.multiplier || 1.0,
+                            ai_prompt: `Plantilla exportada desde ${project.nombre}`,
+                            standard_deliverables
+                        };
+                    }
+                });
+
+                await store.dispatch({
+                    type: 'ADD_ONTOLOGY_SECTOR',
+                    payload: { sectorId: templateId.toLowerCase().replace(/\s+/g, '_'), rolesData }
+                });
+
+                alert("✅ Plantilla guardada. Podrás usarla en el Instanciador o editarla en Settings.");
+            });
+        }
+
+        // --- MÓDULO IA: DIAGNÓSTICO Y LEGAL (V7.7) ---
+        const modalIA = document.getElementById('aiModal');
+        const modalTitle = document.getElementById('aiModalTitle');
+        const modalBody = document.getElementById('aiModalBody');
+        const btnDownload = document.getElementById('btnDownloadPDF');
+        
+        document.getElementById('aiModalClose')?.addEventListener('click', () => { modalIA.style.display = 'none'; });
+
+        const callAIAgent = async (promptType) => {
+            const provider = localStorage.getItem('tt_ai_provider');
+            let apiKey = '';
+            if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
+            if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
+            if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
+
+            if (!provider || !apiKey) {
+                alert("⚠️ Falta la llave cognitiva. Ve a Settings > General e introduce tu API Key (DeepSeek/OpenAI/Gemini).");
+                return;
+            }
+
+            modalIA.style.display = 'flex';
+            btnDownload.style.display = 'none';
+            modalTitle.innerText = promptType === 'audit' ? 'Auditoría VNA en curso...' : 'Redactando Pacto de Socios...';
+            modalBody.innerHTML = `<div style="text-align:center; padding:3rem;"><div style="font-size:3rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); font-weight:bold; margin-top:1rem;">Analizando Ledger Inmutable de ${project.nombre}...</p></div>`;
+
+            // Extraemos los datos crudos para la IA
+            const harvest = store.calculateHarvest(project.id) || [];
+            const dataPayload = {
+                nombre: project.nombre,
+                arquetipo: project.archetype,
+                roles: project.roles.map(r => `${r.name} (${r.levelId})`),
+                transacciones_teoricas: project.transactions.length,
+                ledger_slices: harvest.map(h => `${h.user}: ${h.slices.toFixed(2)} Slices (${h.percent}%)`)
+            };
+
+            let systemPrompt = store.getState().config.globalPrompt || "Eres un analista de redes DAO.";
+            if (promptType === 'audit') {
+                systemPrompt += `\nMisión: Eres un Auditor Organizacional. Analiza el JSON del proyecto actual y devuelve un diagnóstico (Máx 4 párrafos). Detecta cuellos de botella en los roles y evalúa la resiliencia en base a los Slices. Formato texto plano legible.`;
+            } else {
+                systemPrompt += `\nMisión: Eres un Abogado Notarial Corporativo especializado en Slicing Pie y Modelos Dinámicos de Equidad. Basándote en el JSON del proyecto, redacta el borrador de un "Pacto de Socios" formal. Incluye cláusulas de Fundadores, la tabla de "Cap Table" actual (basada en el campo ledger_slices), y el objeto fundacional. Formato texto formal.`;
+            }
+
+            try {
+                let resultText = "";
+                
+                if (provider === 'deepseek') {
+                    const response = await fetch('https://api.deepseek.com/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({
+                            model: "deepseek-chat",
+                            messages: [
+                                { role: "system", content: systemPrompt },
+                                { role: "user", content: JSON.stringify(dataPayload) }
+                            ]
+                        })
+                    });
+                    if (!response.ok) throw new Error("Error en DeepSeek API.");
+                    const data = await response.json();
+                    resultText = data.choices[0].message.content;
+                } else if (provider === 'openai') {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({
+                            model: "gpt-4o-mini",
+                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }]
+                        })
+                    });
+                    if (!response.ok) throw new Error("Error en OpenAI API.");
+                    const data = await response.json();
+                    resultText = data.choices[0].message.content;
+                } else if (provider === 'gemini') {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nJSON: ${JSON.stringify(dataPayload)}` }] }] })
+                    });
+                    if (!response.ok) throw new Error("Error en Gemini API.");
+                    const data = await response.json();
+                    resultText = data.candidates[0].content.parts[0].text;
+                }
+
+                modalTitle.innerText = promptType === 'audit' ? 'Reporte de Auditoría VNA' : 'Borrador: Pacto de Socios';
+                modalBody.innerHTML = resultText.replace(/\n/g, '<br>');
+                
+                // Preparar Botón de Descarga
+                btnDownload.style.display = 'inline-block';
+                btnDownload.onclick = () => {
+                    const blob = new Blob([resultText], { type: "text/plain;charset=utf-8" });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = promptType === 'audit' ? `Auditoria_${project.nombre}.txt` : `PactoSocios_${project.nombre}.txt`;
+                    a.click();
+                };
+
+            } catch (err) {
+                modalBody.innerHTML = `<span style="color:var(--accent-red);">Error de Conexión:</span> ${err.message}<br><br>Asegúrate de tener saldo en la API o comprueba tu conexión.`;
+            }
+        };
+
+        document.getElementById('btnAIAuditor')?.addEventListener('click', () => callAIAgent('audit'));
+        document.getElementById('btnAILegal')?.addEventListener('click', () => callAIAgent('legal'));
+    }
+}
