@@ -93,8 +93,8 @@ export default class ProjectDashboardView {
                           </div>`;
         }
 
-        // MAQUETACIÓN DE LA PRESENTACIÓN (Pitch)
         const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red aún no ha sido redactado. La organización se encuentra en fase de formación primaria.';
+        const tagsHtml = (project.tags && project.tags.length > 0) ? project.tags.map(t => `<span class="badge" style="background:#222; border-color:#444; color:#ccc;">#${t}</span>`).join('') : '';
 
         return `
             <style>
@@ -104,7 +104,7 @@ export default class ProjectDashboardView {
                 .dash-hero { background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(15,15,20,0.9) 100%); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 3rem; position: relative; overflow: hidden; margin-bottom: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.5);}
                 .dash-hero::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
                 
-                .meta-badges { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+                .meta-badges { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap:wrap;}
                 .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-mono); border: 1px solid;}
                 .badge-sector { color: var(--accent-blue); border-color: rgba(0, 176, 255, 0.3); background: rgba(0, 176, 255, 0.1); }
                 .badge-priv { color: ${project.isPrivate ? 'var(--accent-red)' : 'var(--accent-green)'}; border-color: ${project.isPrivate ? 'rgba(255,82,82,0.3)' : 'rgba(0,230,118,0.3)'}; background: ${project.isPrivate ? 'rgba(255,82,82,0.1)' : 'rgba(0,230,118,0.1)'}; }
@@ -127,11 +127,29 @@ export default class ProjectDashboardView {
                 .kpi-val { font-size: 2.5rem; font-weight: 900; font-family: var(--font-mono); color: white; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255,255,255,0.1);}
                 .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
 
+                .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; align-items: start;}
+                
                 .recruitment-panel { background: rgba(0, 176, 255, 0.02); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-lg); padding: 2rem; }
                 .panel-title { color: white; font-size: 1.4rem; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 10px; }
 
-                .btn-invite:hover { background: rgba(0, 176, 255, 0.1); transform: scale(1.02); }
+                /* PANEL IA Y REPORTES (V7.7) */
+                .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem;}
+                .btn-report { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; text-align: left; cursor: pointer; transition: all 0.2s; display:flex; flex-direction:column; gap:5px;}
+                .btn-report:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-purple); transform: translateX(5px);}
+                .btn-report strong { font-size: 1.1rem; color: var(--accent-purple);}
+                .btn-report span { font-size: 0.8rem; color: #888; }
+                
+                /* IA MODAL (Diagnóstico/Notario) */
+                .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
+                .modal-ia-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow:hidden;}
+                .modal-ia-header { background: rgba(0,0,0,0.5); padding: 15px 25px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;}
+                .modal-ia-header h2 { margin:0; font-size:1.2rem; color:var(--accent-purple);}
+                .modal-ia-body { padding: 25px; overflow-y: auto; color: #ccc; font-size:0.95rem; line-height: 1.6; font-family:var(--font-main); white-space: pre-wrap;}
+                .modal-ia-footer { padding: 15px 25px; border-top: 1px solid #333; display: flex; justify-content: flex-end; gap:10px; background:rgba(0,0,0,0.3);}
 
+                @media (max-width: 1024px) {
+                    .panel-row { grid-template-columns: 1fr; }
+                }
                 @media (max-width: 768px) {
                     .workspace { padding: 1.5rem; }
                     .dash-title { font-size: 2rem; }
@@ -147,6 +165,7 @@ export default class ProjectDashboardView {
                             <span class="badge badge-sector">${project.sector.replace(/_/g, ' ')}</span>
                             <span class="badge badge-sector" style="color: var(--accent-orange); border-color: rgba(255,171,64,0.3); background: rgba(255,171,64,0.1);">${project.archetype}</span>
                             <span class="badge badge-priv">${project.isPrivate ? '🔒 Red Privada' : '🌍 Red Abierta'}</span>
+                            ${tagsHtml}
                         </div>
                         
                         <h1 class="dash-title">${project.nombre}</h1>
@@ -159,9 +178,10 @@ export default class ProjectDashboardView {
                             <button class="btn-toggle-text" id="btnTogglePitch">Ver más +</button>
                         </div>
                         
-                        <div style="display: flex; gap: 15px;">
+                        <div style="display: flex; gap: 15px; flex-wrap:wrap;">
                             <a href="/v5/project" data-link class="btn btn-primary" style="padding: 12px 25px;">📋 Entrar al Kanban</a>
                             <a href="/v5/map" data-link class="btn btn-outline" style="padding: 12px 25px;">🕸️ Ver Mapa de Valor</a>
+                            ${isPO ? `<button id="btnExportTemplate" class="btn btn-outline" style="border-color:#555; color:#aaa;">💾 Guardar como Plantilla</button>` : ''}
                         </div>
                     </div>
 
@@ -184,14 +204,50 @@ export default class ProjectDashboardView {
                         </div>
                     </div>
 
-                    <div class="recruitment-panel">
-                        <h2 class="panel-title">🎯 Tablón de Reclutamiento (Sillas Vacías)</h2>
-                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Estos roles han sido diseñados en el Mapa de Valor, pero no tienen a ningún miembro humano o IA asignado para ejecutarlos.</p>
-                        
-                        ${vacantesHtml}
-                        ${invLogHtml}
+                    <div class="panel-row">
+                        <div class="recruitment-panel">
+                            <h2 class="panel-title">🎯 Tablón de Reclutamiento</h2>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size:0.9rem;">Sillas diseñadas en el Mapa que requieren asignación humana/IA.</p>
+                            ${vacantesHtml}
+                            ${invLogHtml}
+                        </div>
+
+                        ${isPO ? `
+                        <div class="ai-reports-panel">
+                            <h2 class="panel-title" style="color:var(--accent-purple);">🤖 Orquestador IA & Legal</h2>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size:0.9rem;">Genera valor y documentos utilizando las llaves cognitivas guardadas en Settings.</p>
+                            
+                            <button class="btn-report" id="btnAIAuditor">
+                                <strong>🧠 Auditoría de Resiliencia VNA</strong>
+                                <span>La IA escanea el Mapa y el Kanban buscando cuellos de botella y da consejos de mejora.</span>
+                            </button>
+
+                            <button class="btn-report" id="btnAILegal">
+                                <strong>📄 Generar Pacto de Socios (Slicing Pie)</strong>
+                                <span>Redacta el contrato dinámico basado en la Cap Table actual inmutable. Listo para Notario.</span>
+                            </button>
+                        </div>
+                        ` : ''}
                     </div>
                 </main>
+            </div>
+
+            <div id="aiModal" class="modal-ia">
+                <div class="modal-ia-content">
+                    <div class="modal-ia-header">
+                        <h2 id="aiModalTitle">Procesando...</h2>
+                        <button class="btn btn-outline" id="aiModalClose" style="padding: 2px 8px; font-size:0.8rem; border-color:transparent;">✖</button>
+                    </div>
+                    <div class="modal-ia-body" id="aiModalBody">
+                        <div style="text-align:center; padding:3rem;">
+                            <div style="font-size:3rem; animation: pulse 2s infinite;">🧠</div>
+                            <p style="color:var(--accent-purple); font-weight:bold; margin-top:1rem;">Analizando Ledger y Red VNA...</p>
+                        </div>
+                    </div>
+                    <div class="modal-ia-footer">
+                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; background:var(--accent-blue); border:none; color:black;">⬇️ Descargar Informe (.txt)</button>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -202,7 +258,9 @@ export default class ProjectDashboardView {
         Sidebar.initListeners();
 
         if (!this.activeProjectId) return;
+        const project = store.getState().projects.find(p => p.id === this.activeProjectId);
 
+        // -- COLLAPSIBLE PITCH --
         const pitchContainer = document.getElementById('pitchTextContainer');
         const btnToggle = document.getElementById('btnTogglePitch');
         
@@ -222,58 +280,9 @@ export default class ProjectDashboardView {
             });
         }
 
+        // -- EDIT PITCH --
         const btnEditPitch = document.getElementById('btnEditPitch');
         if (btnEditPitch) {
             btnEditPitch.addEventListener('click', () => {
-                const state = store.getState();
-                const p = state.projects.find(x => x.id === this.activeProjectId);
-                const currentPitch = p.presentation || p.prompt || '';
-                
-                const newPitch = prompt("Edita la Presentación del Proyecto:", currentPitch);
-                if (newPitch !== null) {
-                    store.dispatch({
-                        type: 'UPDATE_PROJECT_INFO',
-                        payload: { projectId: this.activeProjectId, updates: { presentation: newPitch } }
-                    });
-                    this.executeViewScript(); 
-                    document.querySelector('.workspace').innerHTML = 'Actualizando Ecosistema...';
-                    window.location.reload();
-                }
-            });
-        }
-
-        document.querySelectorAll('.btn-invite').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const roleName = e.target.getAttribute('data-rolename');
-                const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                
-                const email = prompt(`Introduce el correo electrónico del candidato para la silla de [${roleName}]:`);
-                
-                if (email && email.includes('@')) {
-                    store.dispatch({
-                        type: 'LOG_INVITATION',
-                        payload: { projectId: this.activeProjectId, email: email }
-                    });
-
-                    const baseUrl = 'https://teamtowershuma.com/v5/';
-                    const subject = encodeURIComponent(`Invitación a unirse al Castell: ${p.nombre}`);
-                    const body = encodeURIComponent(
-                        `Hola,\n\nHas sido invitado por el Project Owner para ocupar la silla estratégica de "${roleName}" en la red "${p.nombre}".\n\n` +
-                        `Misión de la red:\n"${p.presentation || p.prompt || 'Construir valor de forma inmutable.'}"\n\n` +
-                        `Accede al portal del Exoesqueleto (TeamTowers SOS) para instanciar tu identidad fractal y comenzar a reportar tu Prueba de Trabajo (Slicing Pie).\n\n` +
-                        `Enlace de Acceso: ${baseUrl} \n\n` +
-                        `Força, Equilibri, Valor i Seny.\nTeamTowers Kernel v7.3`
-                    );
-                    
-                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-                    
-                    setTimeout(() => {
-                        window.location.reload(); 
-                    }, 1000);
-                } else if(email) {
-                    alert("Por favor, introduce un correo electrónico válido.");
-                }
-            });
-        });
-    }
-}
+                const currentPitch = project.presentation || project.prompt || '';
+                const
