@@ -238,8 +238,8 @@ export default class HomeView {
         }
     }
 
-    initGoogleAuth() {
-        // CLIENT ID OFICIAL DE PRODUCCIÓN
+   initGoogleAuth() {
+        // CORRECCIÓN: Eliminada la 'm' extra al final
         const GOOGLE_CLIENT_ID = "778991708293-c4f7s4l4339ooldpun0eitfdb12gjfdn.apps.googleusercontent.com";
 
         if (window.google && window.google.accounts) {
@@ -253,8 +253,9 @@ export default class HomeView {
                     { theme: "filled_black", size: "large", shape: "pill", width: 300 }
                 );
             } catch (e) {
-                console.warn("GSI Error: Si estás en localhost sin SSL, Google Auth puede fallar.", e);
-                document.getElementById("googleButtonContainer").innerHTML = `<span style="color:var(--accent-red); font-size:0.8rem;">GSI requiere dominio o HTTPS. Usa el Boot Manual.</span>`;
+                console.warn("GSI Error:", e);
+                document.getElementById("googleButtonContainer").innerHTML = 
+                    `<span style="color:var(--accent-red); font-size:0.8rem;">Error de Origen. Usa el Boot Manual.</span>`;
             }
         }
     }
