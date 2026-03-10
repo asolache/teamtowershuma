@@ -10,7 +10,6 @@ export default class ProjectCreatorView {
         this.draftRoles = [];
         this.draftTxs = [];
         
-        // Los 12 Arquetipos de Guardianes (Pantheon.work)
         this.guardians = [
             { id: 'creator', label: '🎨 Creador (Innovación)' },
             { id: 'caregiver', label: '❤️ Cuidador (Soporte)' },
@@ -135,8 +134,9 @@ export default class ProjectCreatorView {
                                         <div>
                                             <label style="font-size: 0.7rem; color:#888;">Proveedor IA</label>
                                             <select id="inpAiProvider" class="form-control">
-                                                <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini (Recomendado)</option>
                                                 <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
+                                                <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (Optimizado DAO)</option>
+                                                <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
                                                 <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo (Custom Endpoint)</option>
                                             </select>
                                         </div>
@@ -162,7 +162,7 @@ export default class ProjectCreatorView {
                         <div id="aiLoading" class="ai-loading">
                             <span>🔌</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Analizando 12 Guardianes y Flujos de Valor.</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Diseñando estructura elástica de la DAO.</div>
                         </div>
 
                         <div id="step2" style="display: none;">
@@ -185,7 +185,7 @@ export default class ProjectCreatorView {
 
                             <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem;">
                                 <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Kanban)</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha diseñado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles iniciales.</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha estimado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles necesarios.</div>
                             </div>
 
                             <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
@@ -233,7 +233,6 @@ export default class ProjectCreatorView {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
         });
 
-        // RUTA 1: LIENZO EN BLANCO
         this.dom.btnStartBlank.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
             this.draftRoles = [];
@@ -241,7 +240,6 @@ export default class ProjectCreatorView {
             this.goToStep2();
         });
 
-        // RUTA 2: CARGAR PLANTILLA
         this.dom.btnLoadTemplate.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
             const sectorData = GLOBAL_ONTOLOGY[this.dom.inpSector.value];
@@ -263,7 +261,6 @@ export default class ProjectCreatorView {
             this.goToStep2();
         });
 
-        // RUTA 3: IA
         this.dom.btnGenerateAI.addEventListener('click', () => this.generateWithAI());
 
         this.dom.btnBack.addEventListener('click', () => {
@@ -301,7 +298,6 @@ export default class ProjectCreatorView {
         } else {
             this.dom.aiTxFeedback.style.display = 'none';
         }
-
         this.renderDraftRoles();
     }
 
@@ -322,30 +318,30 @@ export default class ProjectCreatorView {
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
-        
-        if(this.dom.loadingSubMsg) {
-            this.dom.loadingSubMsg.innerText = "Iniciando análisis semántico...";
-        }
 
+        // PROMPT ESTRATÉGICO ELÁSTICO (Sin límites forzados)
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers. 
-            Tu misión es analizar la visión del usuario y devolver UNICAMENTE un JSON válido con los roles y las primeras tareas críticas. NO devuelvas texto adicional ni markdown.
+            Misión: Analizar la visión del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio. Solo el objeto JSON.
             
             Reglas de Roles:
-            1. Define 5 Roles usando los niveles: @anxaneta (Dirección), @aixecador (Coordinador), @dosos (Auditor), @baixos (Técnico), @pinya (Operaciones).
-            2. Asigna a cada rol un 'guardian' dominante basado en los 12 Arquetipos de Pantheon.work. Opciones válidas: "creator", "caregiver", "ruler", "jester", "everyman", "lover", "hero", "outlaw", "magician", "innocent", "explorer", "sage".
-            3. Calcula el FMV realista para el mercado actual.
+            1. Genera TODOS los roles necesarios para operar el proyecto. No te limites a 5 si el ecosistema requiere 8, 10 o 15 nodos para funcionar de forma descentralizada.
+            2. Usa estrictamente estos niveles estructurales: "@anxaneta" (Dirección/Estrategia), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos/Especialistas), "@pinya" (Soporte/Comunidad).
+            3. Asigna a cada rol un 'guardian' dominante basado en Pantheon.work. Opciones válidas: "creator", "caregiver", "ruler", "jester", "everyman", "lover", "hero", "outlaw", "magician", "innocent", "explorer", "sage".
+            4. Calcula el FMV (Fair Market Value en €/hora) realista.
             
-            Reglas de Transacciones (Flujos de Valor):
-            Define 3 a 5 transacciones iniciales. Es OBLIGATORIO incluir flujos 'tangibles' e 'intangibles'.
+            Reglas de Transacciones (Value Network):
+            1. Estima los flujos de valor clave entre estos roles. Genera tantas transacciones iniciales como consideres críticas para el arranque.
+            2. Deben existir flujos "tangibles" (código, informes, ventas) y flujos "intangibles" (mentoría, cohesión de equipo, auditoría).
             
-            FORMATO JSON ESTRICTO ESPERADO:
+            FORMATO JSON ESPERADO (Ejemplo Estructural):
             {
                 "roles": [
-                    { "levelId": "@anxaneta", "name": "Ej: Estratega de Producto", "fmv": 60, "multiplier": 3.0, "guardian": "magician" }
+                    { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" },
+                    { "levelId": "@baixos", "name": "Smart Contract Dev", "fmv": 60, "multiplier": 1.2, "guardian": "hero" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@dosos", "tipo": "intangible", "entregable": "Alineación estratégica", "horas": 2 }
+                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "entregable": "Arquitectura y Mentoría", "horas": 3 }
                 ]
             }
         `;
@@ -354,12 +350,8 @@ export default class ProjectCreatorView {
             let textResponse = "";
 
             if (provider === 'gemini') {
-                // FORZAMOS GEMINI 1.5 FLASH (El modelo más estable globalmente para la capa gratuita/pagada)
                 const targetModel = 'gemini-1.5-flash';
-                
-                if(this.dom.loadingSubMsg) {
-                    this.dom.loadingSubMsg.innerText = `Generando Ontología con ${targetModel}...`;
-                }
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Ontología Dinámica con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -397,21 +389,40 @@ export default class ProjectCreatorView {
                 const data = await response.json();
                 textResponse = data.choices[0].message.content;
             
+            } else if (provider === 'deepseek') {
+                // INTEGRACIÓN DEEPSEEK API
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando con DeepSeek Coder...";
+                const response = await fetch('https://api.deepseek.com/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: vision }
+                        ],
+                        response_format: { type: "json_object" }
+                    })
+                });
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(`DeepSeek Error: ${errData.error?.message || response.statusText}`);
+                }
+                const data = await response.json();
+                textResponse = data.choices[0].message.content;
+
             } else if (provider === 'custom') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Conectando con Endpoint Privado...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Llamando a Agente DAO Interno...";
                 const response = await fetch(customUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ prompt: systemPrompt, vision: vision })
                 });
-                if (!response.ok) {
-                    throw new Error("Error de conexión con el Endpoint Custom de tu empresa.");
-                }
+                if (!response.ok) throw new Error("Error de conexión con el Endpoint Custom.");
                 const data = await response.json();
                 textResponse = typeof data === 'string' ? data : JSON.stringify(data);
             }
 
-            // LIMPIEZA EXTREMA DEL JSON
             textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
             const firstBrace = textResponse.indexOf('{');
             const lastBrace = textResponse.lastIndexOf('}');
@@ -421,7 +432,7 @@ export default class ProjectCreatorView {
 
             const parsedData = JSON.parse(textResponse);
 
-            if (!parsedData.roles) throw new Error("La IA respondió correctamente, pero no devolvió la estructura de roles requerida. Intenta con un prompt más claro.");
+            if (!parsedData.roles) throw new Error("La IA no devolvió la estructura de roles requerida.");
 
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
@@ -437,9 +448,7 @@ export default class ProjectCreatorView {
 
         } catch (error) {
             console.error("💥 Fallo Motor Cognitivo:", error);
-            // El alert ahora mostrará EXACTAMENTE qué proveedor falló y por qué.
-            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nSi es un problema de cuota, espera unos minutos o revisa tu saldo en la plataforma correspondiente.`);
-            
+            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nRevisa tu cuota o usa la plantilla en blanco.`);
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
         }
@@ -517,12 +526,11 @@ export default class ProjectCreatorView {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
         
-        // RBAC: El despachador internamente ya leerá activeUserId y lo pondrá de ownerId
         store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
                 id: projectId,
-                nombre: this.dom.inpName.value.trim() || 'Proyecto sin título',
+                nombre: this.dom.inpName.value.trim() || 'Proyecto IA (Elástico)',
                 sector: this.dom.inpSector.value,
                 prompt: visionText,
                 archetype: 'startup',
