@@ -14,7 +14,6 @@ export default class ProjectDashboardView {
         const activeUserId = state.session.activeUserId;
         const globalRole = state.session.role;
 
-        // 1. Si no hay proyecto seleccionado
         if (!project) {
             return `
                 <div class="app-layout">
@@ -27,8 +26,6 @@ export default class ProjectDashboardView {
         }
 
         this.activeProjectId = project.id;
-
-        // 2. FIREWALL DE PRIVACIDAD (RBAC V7.2)
         const hasAccess = store.canUserViewProject(project.id, activeUserId, globalRole);
         
         if (!hasAccess) {
@@ -53,16 +50,12 @@ export default class ProjectDashboardView {
             `;
         }
 
-        // 3. RENDERIZADO DEL DASHBOARD (Acceso Concedido)
-        
-        // Cálculos de métricas
         const harvest = store.calculateHarvest(project.id) || [];
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
         const resilience = store.calculateResilience(project.id);
         const isPO = project.ownerId === activeUserId || globalRole === 'ecosystem-owner';
 
-        // Determinar "Sillas Vacías" (Reclutamiento)
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
@@ -86,7 +79,6 @@ export default class ProjectDashboardView {
             `).join('');
         }
 
-        // Log de Invitaciones (Solo visible para PO)
         let invLogHtml = '';
         if (isPO && project.invitations && project.invitations.length > 0) {
             const list = project.invitations.map(inv => `
@@ -100,6 +92,9 @@ export default class ProjectDashboardView {
                             ${list}
                           </div>`;
         }
+
+        // MAQUETACIÓN DE LA PRESENTACIÓN (Pitch)
+        const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red aún no ha sido redactado. La organización se encuentra en fase de formación primaria.';
 
         return `
             <style>
@@ -115,7 +110,17 @@ export default class ProjectDashboardView {
                 .badge-priv { color: ${project.isPrivate ? 'var(--accent-red)' : 'var(--accent-green)'}; border-color: ${project.isPrivate ? 'rgba(255,82,82,0.3)' : 'rgba(0,230,118,0.3)'}; background: ${project.isPrivate ? 'rgba(255,82,82,0.1)' : 'rgba(0,230,118,0.1)'}; }
                 
                 .dash-title { font-size: 3rem; color: white; margin: 0 0 1rem 0; letter-spacing: -1.5px; line-height: 1; }
-                .dash-prompt { color: #aaa; font-size: 1.1rem; max-width: 800px; line-height: 1.6; border-left: 3px solid var(--accent-purple); padding-left: 15px; margin-bottom: 2rem;}
+                
+                /* ESTILOS DE LA PRESENTACIÓN (Pitch) */
+                .presentation-box { position: relative; margin-bottom: 2rem; background: rgba(224, 64, 251, 0.03); border-left: 3px solid var(--accent-purple); padding: 1.5rem; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;}
+                .presentation-text { color: #ccc; font-size: 1.05rem; line-height: 1.7; transition: all 0.3s ease; }
+                .presentation-text.collapsed { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+                
+                .btn-toggle-text { background: none; border: none; color: var(--accent-purple); font-weight: bold; cursor: pointer; padding: 0; margin-top: 10px; font-size: 0.85rem; }
+                .btn-toggle-text:hover { text-decoration: underline; }
+                
+                .btn-edit-pitch { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 4px; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; transition: 0.2s;}
+                .btn-edit-pitch:hover { background: rgba(255,255,255,0.1); color: white; }
 
                 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
                 .kpi-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: var(--border-radius-md); text-align: center;}
@@ -143,8 +148,16 @@ export default class ProjectDashboardView {
                             <span class="badge badge-sector" style="color: var(--accent-orange); border-color: rgba(255,171,64,0.3); background: rgba(255,171,64,0.1);">${project.archetype}</span>
                             <span class="badge badge-priv">${project.isPrivate ? '🔒 Red Privada' : '🌍 Red Abierta'}</span>
                         </div>
+                        
                         <h1 class="dash-title">${project.nombre}</h1>
-                        <div class="dash-prompt">${project.prompt || '// Ecosistema sin visión fundacional definida.'}</div>
+                        
+                        <div class="presentation-box">
+                            ${isPO ? `<button class="btn-edit-pitch" id="btnEditPitch" title="Editar Presentación">✏️ Editar</button>` : ''}
+                            <div class="presentation-text collapsed" id="pitchTextContainer">
+                                ${pitchText.replace(/\n/g, '<br>')}
+                            </div>
+                            <button class="btn-toggle-text" id="btnTogglePitch">Ver más +</button>
+                        </div>
                         
                         <div style="display: flex; gap: 15px;">
                             <a href="/v5/project" data-link class="btn btn-primary" style="padding: 12px 25px;">📋 Entrar al Kanban</a>
@@ -190,7 +203,50 @@ export default class ProjectDashboardView {
 
         if (!this.activeProjectId) return;
 
-        // Lógica de Envío de Invitaciones
+        // 1. Lógica del "Ver Más" de la Presentación
+        const pitchContainer = document.getElementById('pitchTextContainer');
+        const btnToggle = document.getElementById('btnTogglePitch');
+        
+        if (pitchContainer && btnToggle) {
+            // Ocultar botón si el texto es muy corto
+            if (pitchContainer.scrollHeight <= pitchContainer.clientHeight + 10) {
+                btnToggle.style.display = 'none';
+            }
+
+            btnToggle.addEventListener('click', () => {
+                if (pitchContainer.classList.contains('collapsed')) {
+                    pitchContainer.classList.remove('collapsed');
+                    btnToggle.innerText = 'Ver menos -';
+                } else {
+                    pitchContainer.classList.add('collapsed');
+                    btnToggle.innerText = 'Ver más +';
+                }
+            });
+        }
+
+        // 2. Lógica de Edición del Pitch (Preparado para Fase 1.5)
+        const btnEditPitch = document.getElementById('btnEditPitch');
+        if (btnEditPitch) {
+            btnEditPitch.addEventListener('click', () => {
+                // De momento usamos un prompt simple, en el futuro puede ser un modal más rico
+                const state = store.getState();
+                const p = state.projects.find(x => x.id === this.activeProjectId);
+                const currentPitch = p.presentation || p.prompt || '';
+                
+                const newPitch = prompt("Edita la Presentación del Proyecto:", currentPitch);
+                if (newPitch !== null) {
+                    store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: this.activeProjectId, updates: { presentation: newPitch } }
+                    });
+                    this.executeViewScript(); // Re-render
+                    document.querySelector('.workspace').innerHTML = 'Actualizando Ecosistema...';
+                    window.location.reload();
+                }
+            });
+        }
+
+        // 3. Lógica de Envío de Invitaciones (Mailto)
         document.querySelectorAll('.btn-invite').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const roleName = e.target.getAttribute('data-rolename');
@@ -199,28 +255,28 @@ export default class ProjectDashboardView {
                 const email = prompt(`Introduce el correo electrónico del candidato para la silla de [${roleName}]:`);
                 
                 if (email && email.includes('@')) {
-                    // 1. Guardar en el Kernel el registro de envío (Auditoría V7.2)
+                    // Guardar en el Kernel
                     store.dispatch({
                         type: 'LOG_INVITATION',
                         payload: { projectId: this.activeProjectId, email: email }
                     });
 
-                    // 2. Generar enlace y abrir cliente de correo nativo (mailto:)
+                    // GENERAR URL OFICIAL DE PRODUCCIÓN
+                    const baseUrl = 'https://teamtowershuma.com/v5/';
+
                     const subject = encodeURIComponent(`Invitación a unirse al Castell: ${p.nombre}`);
                     const body = encodeURIComponent(
                         `Hola,\n\nHas sido invitado por el Project Owner para ocupar la silla estratégica de "${roleName}" en la red "${p.nombre}".\n\n` +
-                        `Misión de la red:\n"${p.prompt || 'Construir valor de forma inmutable.'}"\n\n` +
-                        `Accede al portal del Exoesqueleto (TeamTowers SOS) para firmar tu contrato criptográfico, instanciar tu identidad fractal y comenzar a reportar tu Prueba de Trabajo (Slicing Pie).\n\n` +
-                        `Enlace de Acceso: https://app.teamtowers.com/v5/ \n\n` +
+                        `Misión de la red:\n"${p.presentation || p.prompt || 'Construir valor de forma inmutable.'}"\n\n` +
+                        `Accede al portal del Exoesqueleto (TeamTowers SOS) para instanciar tu identidad fractal y comenzar a reportar tu Prueba de Trabajo (Slicing Pie).\n\n` +
+                        `Enlace de Acceso: ${baseUrl} \n\n` +
                         `Força, Equilibri, Valor i Seny.\nTeamTowers Kernel v7.2`
                     );
                     
                     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
                     
-                    // Recargar vista para ver el email en el log de abajo
+                    // Recargar vista para ver el email en el log
                     setTimeout(() => {
-                        this.executeViewScript(); // Re-bind
-                        document.querySelector('.workspace').innerHTML = 'Recargando log...';
                         window.location.reload(); 
                     }, 1000);
                 } else if(email) {
