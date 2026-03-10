@@ -1,7 +1,6 @@
 // ==========================================================================
-// KERNEL v7.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
-// Motor de Estado Global, RBAC, Contabilidad Triple Entrada y Slicing Pie
-// INCLUYE: FASE 1.5 (INMUTABILIDAD), V6.5 (RBAC) y V7.0 (SHA-256 HASHING)
+// KERNEL v7.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie y Privacidad
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
@@ -106,7 +105,6 @@ async function asyncReducer(state, action) {
             const existsGlobal = newState.globalUsers.find(u => u.id === newId);
             if (existsGlobal) {
                 console.warn("El identificador de usuario ya existe en el ecosistema.");
-                // No lanzamos throw para no romper el UI al invitar usuarios existentes al proyecto
             } else {
                 const newUser = { 
                     id: newId, 
@@ -235,16 +233,28 @@ async function asyncReducer(state, action) {
                 ownerId: ownerId, 
                 prompt: action.payload.prompt || '',
                 config: { tokenomics: 'startup', archetype: arquetipo },
+                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : false, // V7.2 Privacidad
                 roles: baseRoles,
                 usuarios: [{ id: ownerId }],
                 asignaciones: [],
                 transactions: [],
                 ledger: [],
                 alerts: [],
+                invitations: [], // V7.2 Registro de invitaciones
                 genesisHash: initHash // Sello inmutable V7
             };
             
             newState.projects.push(newProject);
+            return newState;
+        }
+
+        // --- SISTEMA DE INVITACIONES (V7.2) ---
+        case 'LOG_INVITATION': {
+            const pInv = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pInv) {
+                pInv.invitations = pInv.invitations || [];
+                pInv.invitations.push({ email: action.payload.email, sentAt: Date.now(), invitedBy: newState.session.activeUserId });
+            }
             return newState;
         }
 
@@ -484,13 +494,11 @@ class Store {
             this.state.globalUsers.unshift(initialState.globalUsers[0]);
         }
 
-        // Si era el viejo admin, lo transicionamos
         if (this.state.session.activeUserId === 'ecosystem-admin') {
             this.state.session.activeUserId = 'usr_alvaro_001';
             this.state.session.role = 'ecosystem-owner';
         }
 
-        // Aseguramos que existe el nodo config y la variable allowUserCreation
         if (!this.state.config) {
             this.state.config = initialState.config;
         } else if (this.state.config.allowUserCreation === undefined) {
@@ -503,7 +511,9 @@ class Store {
                 alerts: p.alerts || [],
                 ownerId: p.ownerId || 'usr_alvaro_001',
                 archetype: p.archetype || 'startup',
-                genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id)
+                genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id),
+                isPrivate: p.isPrivate !== undefined ? p.isPrivate : false,
+                invitations: p.invitations || []
             }));
         }
 
@@ -521,6 +531,18 @@ class Store {
     }
     
     subscribe(listener) { this.listeners.push(listener); }
+
+    // --- HELPER DE PRIVACIDAD V7.2 ---
+    canUserViewProject(projectId, userId, globalRole) {
+        if (globalRole === 'ecosystem-owner') return true; // El Master Architect lo ve todo
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return false;
+        if (!p.isPrivate) return true; // Si es público, todos lo ven
+        // Si es privado, solo los miembros de la colla o el PO lo ven
+        if (p.ownerId === userId) return true;
+        if (p.usuarios && p.usuarios.find(u => u.id === userId)) return true;
+        return false;
+    }
 
     getRoleEconomicsAtTime(project, roleId, targetTimestamp) {
         const role = project.roles.find(r => r.id === roleId);
