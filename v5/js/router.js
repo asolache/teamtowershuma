@@ -8,7 +8,7 @@
 const routes = {
     '/': 'HomeView',
     '/create': 'ProjectCreatorView',
-    '/dashboard': 'ProjectDashboardView', // <-- NUEVA RUTA: LOBBY V7.2
+    '/dashboard': 'DashboardView', // <-- NUEVA RUTA: LOBBY V7.2
     '/project': 'ProjectView',
     '/map': 'ValueMapView',
     '/team': 'TeamView',
