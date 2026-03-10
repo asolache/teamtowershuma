@@ -8,6 +8,33 @@ export default class SettingsView {
     }
 
     async getHtml() {
+        const state = store.getState();
+        const isEcosystemOwner = state.session.role === 'ecosystem-owner';
+        
+        // GOBERNANZA: Si es owner, mostramos el panel de control maestro
+        let governancePanel = '';
+        if (isEcosystemOwner) {
+            const allowCreation = state.config && state.config.allowUserCreation;
+            
+            governancePanel = `
+                <div class="panel" style="margin-bottom: 2rem; border-color: var(--accent-orange); background: rgba(255, 171, 64, 0.05);">
+                    <h2 style="color: var(--accent-orange);"><span style="font-size: 1.5rem;">👑</span> Master Control (Ecosystem Owner)</h2>
+                    <p style="color: #ccc;">Ajustes de Gobernanza Global V4. Decide cómo los usuarios interactúan con la matriz de la red.</p>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid #333;">
+                        <div>
+                            <div style="color: white; font-weight: bold; margin-bottom: 5px;">Creación Libre de Castells (Bottom-Up)</div>
+                            <div style="color: #888; font-size: 0.8rem;">Si está desactivado, solo los Admins podrán instanciar nuevas redes.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggleUserCreation" ${allowCreation ? 'checked' : ''}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            `;
+        }
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
@@ -37,7 +64,7 @@ export default class SettingsView {
                 /* Input File Oculto */
                 #fileInput { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-                /* Panel AI Keys (NUEVO) */
+                /* Panel AI Keys */
                 .form-group { margin-bottom: 1.5rem; }
                 .form-group label { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
                 .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.9rem; transition: border-color 0.2s;}
@@ -53,6 +80,14 @@ export default class SettingsView {
                 .feature-list li { color: #ccc; font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
                 .feature-list li::before { content: '✓'; color: var(--accent-green); font-weight: bold; }
                 .btn-upgrade { background: var(--accent-purple); color: white; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; border: none; cursor: not-allowed; opacity: 0.7; }
+
+                /* CSS Toggle Switch */
+                .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+                .switch input { opacity: 0; width: 0; height: 0; }
+                .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+                .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+                input:checked + .slider { background-color: var(--accent-orange); box-shadow: 0 0 10px rgba(255, 171, 64, 0.5);}
+                input:checked + .slider:before { transform: translateX(22px); }
 
                 @media (max-width: 1024px) {
                     .settings-grid { grid-template-columns: 1fr; }
@@ -75,6 +110,8 @@ export default class SettingsView {
                     <div class="settings-grid">
                         
                         <div>
+                            ${governancePanel}
+
                             <div class="panel" style="margin-bottom: 2rem;">
                                 <h2>💾 Soberanía Local (Free Tier)</h2>
                                 <p>Tus redes operan en modo "Local-First". Todos los datos y el Ledger residen cifrados en el almacenamiento de este navegador. Puedes exportarlos para llevarlos a otro dispositivo.</p>
@@ -152,6 +189,22 @@ export default class SettingsView {
     executeViewScript() {
         Sidebar.initListeners();
 
+        // --- GESTIÓN DE GOBERNANZA V4 ---
+        const toggleGov = document.getElementById('toggleUserCreation');
+        if (toggleGov) {
+            toggleGov.addEventListener('change', (e) => {
+                store.dispatch({
+                    type: 'UPDATE_GLOBAL_CONFIG',
+                    payload: { allowUserCreation: e.target.checked }
+                });
+                
+                // Forzar recarga del sidebar para mostrar/ocultar el botón "Instanciar Red"
+                const currentState = store.getState();
+                const btnStr = e.target.checked ? "Habilitado" : "Deshabilitado";
+                console.log(`Gobernanza: Creación Bottom-up ${btnStr}`);
+            });
+        }
+
         // --- GESTIÓN DE API KEYS ---
         const uiKeys = {
             provider: document.getElementById('inpDefaultProvider'),
@@ -175,7 +228,7 @@ export default class SettingsView {
             localStorage.setItem('tt_key_openai', uiKeys.openai.value.trim());
             localStorage.setItem('tt_key_gemini', uiKeys.gemini.value.trim());
             
-            // Para mantener compatibilidad con el código anterior del instanciador
+            // Compatibilidad
             if (uiKeys.provider.value === 'deepseek') localStorage.setItem('tt_ai_key', uiKeys.deepseek.value.trim());
             if (uiKeys.provider.value === 'openai') localStorage.setItem('tt_ai_key', uiKeys.openai.value.trim());
             if (uiKeys.provider.value === 'gemini') localStorage.setItem('tt_ai_key', uiKeys.gemini.value.trim());
@@ -184,10 +237,7 @@ export default class SettingsView {
             setTimeout(() => uiKeys.feedback.style.display = 'none', 3000);
         });
 
-
         // --- SOBERANÍA DE DATOS (BACKUPS) ---
-        
-        // EXPORTAR ESTADO A JSON
         document.getElementById('btnExport').addEventListener('click', () => {
             const state = store.getState();
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
@@ -200,7 +250,6 @@ export default class SettingsView {
             downloadAnchorNode.remove();
         });
 
-        // IMPORTAR ESTADO DESDE JSON
         document.getElementById('fileInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -209,8 +258,6 @@ export default class SettingsView {
             reader.onload = (event) => {
                 try {
                     const importedState = JSON.parse(event.target.result);
-                    
-                    // Validación ultra básica
                     if (importedState && importedState.projects && Array.isArray(importedState.projects)) {
                         if (confirm("⚠️ Importar sobreescribirá todos los datos actuales de este navegador. ¿Proceder?")) {
                             store.state = importedState;
@@ -228,11 +275,10 @@ export default class SettingsView {
             reader.readAsText(file);
         });
 
-        // BORRAR TODO (NUKE)
         document.getElementById('btnNuke').addEventListener('click', () => {
             if (confirm("🚨 PELIGRO: Esto borrará TODOS los proyectos y el Ledger de tu navegador. Esta acción es irreversible. ¿Estás seguro?")) {
                 localStorage.removeItem('tt_sos_state');
-                window.location.href = '/v5/'; // Redirigir al home forzando reinicio del kernel
+                window.location.href = '/v5/';
             }
         });
     }
