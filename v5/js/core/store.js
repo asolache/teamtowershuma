@@ -20,7 +20,8 @@ const initialState = {
     config: {
         theme: 'dark',
         ecosystemName: 'TeamTowers Network',
-        globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.'
+        globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
+        allowUserCreation: false // GOBERNANZA V4: Por defecto, los usuarios rasos no instancian ecosistemas.
     },
     ontology: {
         sectores: {} 
@@ -134,7 +135,8 @@ async function asyncReducer(state, action) {
         }
             
         case 'LOGOUT_USER':
-            return { ...newState, session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' } };
+            // EXPULSIÓN REAL: Limpiamos la sesión para forzar la Landing Page del Bootloader
+            return { ...newState, session: { activeUserId: null, role: 'guest' } };
 
         // --- GESTIÓN DE PROYECTOS / REDES ---
         case 'ADD_PROJECT_RESTRICTED': {
@@ -146,7 +148,10 @@ async function asyncReducer(state, action) {
         }
 
         case 'ADD_PROJECT': {
-            if (newState.session.role !== 'ecosystem-owner' && newState.session.role !== 'admin' && !action.payload.bypassSecurity && !action.payload.ownerId) {
+            // VERIFICACIÓN GOBERNANZA V4
+            const canCreate = newState.session.role === 'ecosystem-owner' || newState.config.allowUserCreation || action.payload.bypassSecurity;
+            if (!canCreate && !action.payload.ownerId) {
+                console.warn("⛔ Gobernanza: La creación de ecosistemas por usuarios está deshabilitada.");
                 return newState; 
             }
 
@@ -426,7 +431,6 @@ async function asyncReducer(state, action) {
                     txAppr.approveTimestamp = Date.now();
                     txAppr.auditorId = newState.session.activeUserId;
 
-                    // Instanciar clase para llamar helper internal
                     const tempStore = new Store();
                     const workTimestamp = txAppr.reportTimestamp || txAppr.pingTimestamp || Date.now();
                     const roleEconomics = tempStore.getRoleEconomicsAtTime(pAppr, txAppr.from, workTimestamp);
@@ -436,7 +440,6 @@ async function asyncReducer(state, action) {
                     
                     const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archFactor;
 
-                    // [V7] GENERACIÓN DEL HASH CRIPTOGRÁFICO (TRIPLE ENTRADA)
                     if (!pAppr.ledger) pAppr.ledger = [];
                     const lastLedgerHash = pAppr.ledger.length > 0 ? pAppr.ledger[pAppr.ledger.length - 1].hash : pAppr.genesisHash;
                     const blockData = `${lastLedgerHash}|${txAppr.assigneeId}|${roleEconomics.id}|${horas}|${valorGenerado}|${Date.now()}`;
@@ -446,8 +449,8 @@ async function asyncReducer(state, action) {
                     pAppr.ledger.push({
                         id: 'ledg_' + Math.random().toString(36).substr(2, 9),
                         hash: realCryptoHash,        // Sello inmutable
-                        prevHash: lastLedgerHash,    // Cadena (Enlace al anterior)
-                        previousHash: lastLedgerHash, // Compatibilidad hacia atrás
+                        prevHash: lastLedgerHash,    // Cadena
+                        previousHash: lastLedgerHash, 
                         userId: txAppr.assigneeId,
                         roleId: roleEconomics.id,
                         description: `[PoW] ${txAppr.entregable}`,
@@ -476,41 +479,41 @@ class Store {
             this.state = initialState;
         }
 
-        // ============================================================
-        // SCRIPT DE AUTO-MIGRACIÓN (RBAC V6.5 y V7.0)
-        // ============================================================
-        
-        // 1. Inyectar tu usuario si vienes de un state antiguo
+        // AUTO-MIGRACIÓN
         if (!this.state.globalUsers.find(u => u.id === 'usr_alvaro_001')) {
             this.state.globalUsers.unshift(initialState.globalUsers[0]);
         }
 
-        // 2. Transicionar session antigua
+        // Si era el viejo admin, lo transicionamos
         if (this.state.session.activeUserId === 'ecosystem-admin') {
             this.state.session.activeUserId = 'usr_alvaro_001';
             this.state.session.role = 'ecosystem-owner';
         }
 
-        // 3. Asignarte como dueño de los proyectos huérfanos y asegurar génesis
+        // Aseguramos que existe el nodo config y la variable allowUserCreation
+        if (!this.state.config) {
+            this.state.config = initialState.config;
+        } else if (this.state.config.allowUserCreation === undefined) {
+            this.state.config.allowUserCreation = false;
+        }
+
         if (this.state.projects) {
             this.state.projects = this.state.projects.map(p => ({
                 ...p, 
                 alerts: p.alerts || [],
                 ownerId: p.ownerId || 'usr_alvaro_001',
                 archetype: p.archetype || 'startup',
-                genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id) // Migración para DB antigua
+                genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id)
             }));
         }
 
         if (!this.state.macroFlows) this.state.macroFlows = [];
-        if (!this.state.config) this.state.config = { ecosystemName: 'TeamTowers Network', theme: 'dark', globalPrompt: '' };
 
         this.listeners = [];
     }
 
     getState() { return this.state; }
     
-    // Método dispatch modificado para ser async (por la criptografía)
     async dispatch(action) {
         this.state = await asyncReducer(this.state, action);
         localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
@@ -519,7 +522,6 @@ class Store {
     
     subscribe(listener) { this.listeners.push(listener); }
 
-    // FASE 1.5: LA MÁQUINA DEL TIEMPO
     getRoleEconomicsAtTime(project, roleId, targetTimestamp) {
         const role = project.roles.find(r => r.id === roleId);
         
@@ -607,7 +609,6 @@ class Store {
         return sysPrompt;
     }
 
-    // Adaptado a Async para compatibilidad V7
     async importSessionJSON(arg1, arg2) {
         if (typeof arg1 === 'string' && !arg2) {
             try {
