@@ -9,7 +9,7 @@ export default class ProjectCreatorView {
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
-        this.draftPresentation = ""; // NUEVO: Almacenará el Pitch de la IA
+        this.draftPresentation = ""; // Almacenará el Pitch (Manual o IA)
         
         // Los 12 Arquetipos de Guardianes (Pantheon.work)
         this.guardians = [
@@ -76,13 +76,15 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
                 .btn-del-role:hover { transform: scale(1.2); }
 
+                /* MINI-MAP PREVIEW */
                 .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
                 .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
 
+                /* FEEDBACK INTERACTIVO Y PREVIEW DE TXs */
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px);}
                 
-                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 8px; padding: 15px; max-height: 200px; overflow-y: auto;}
+                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto;}
                 .tx-preview-item { font-size: 0.8rem; color: #ccc; padding: 8px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
 
@@ -199,10 +201,10 @@ export default class ProjectCreatorView {
 
                             <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
 
-                            <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de los flujos de valor">
+                            <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de los flujos de valor y el Pitch">
                                 <div>
                                     <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Red de Valor y Pitch Generados</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha redactado la presentación y <strong id="txCount" style="color: white; font-size: 1.1rem; font-family: monospace;">0</strong> entregables.</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Se ha redactado la presentación y <strong id="txCount" style="color: white; font-size: 1.1rem; font-family: monospace;">0</strong> entregables clave (Clic para previsualizar).</div>
                                 </div>
                                 <div style="font-size: 1.5rem; opacity: 0.5;">&darr;</div>
                             </div>
@@ -268,6 +270,7 @@ export default class ProjectCreatorView {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
         });
 
+        // Mostrar Preview de Entregables y Pitch
         this.dom.aiTxFeedback.addEventListener('click', () => {
             if (this.dom.txPreviewList.style.display === 'block') {
                 this.dom.txPreviewList.style.display = 'none';
@@ -280,7 +283,8 @@ export default class ProjectCreatorView {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
             this.draftRoles = [];
             this.draftTxs = [];
-            this.draftPresentation = this.dom.inpVision.value.trim(); // Usar la visión en bruto si no hay IA
+            // Guardamos el texto bruto introducido por el usuario para el Dashboard
+            this.draftPresentation = this.dom.inpVision.value.trim(); 
             this.goToStep2();
         });
 
@@ -289,6 +293,8 @@ export default class ProjectCreatorView {
             const sectorData = GLOBAL_ONTOLOGY[this.dom.inpSector.value];
             this.draftRoles = [];
             this.draftTxs = [];
+            
+            // Guardamos el texto bruto, o un fallback genérico si está vacío
             this.draftPresentation = this.dom.inpVision.value.trim() || `Ecosistema basado en plantilla estándar de ${this.dom.inpSector.options[this.dom.inpSector.selectedIndex].text}.`;
             
             if (sectorData) {
@@ -331,7 +337,7 @@ export default class ProjectCreatorView {
             this.dom.step1.style.display = 'block';
             this.dom.dot2.classList.remove('active');
             this.dom.dot1.classList.add('active');
-            this.dom.txPreviewList.style.display = 'none';
+            this.dom.txPreviewList.style.display = 'none'; 
         });
 
         this.dom.btnAddCustom.addEventListener('click', () => {
@@ -356,7 +362,8 @@ export default class ProjectCreatorView {
         this.dom.dot1.classList.remove('active');
         this.dom.dot2.classList.add('active');
         
-        if (this.draftTxs.length > 0) {
+        // Muestra el cuadro verde SI hay texto de presentación O transacciones
+        if (this.draftTxs.length > 0 || this.draftPresentation.length > 0) {
             this.dom.aiTxFeedback.style.display = 'flex';
             this.dom.txCount.innerText = this.draftTxs.length;
             
@@ -372,7 +379,7 @@ export default class ProjectCreatorView {
             
             this.dom.txPreviewList.innerHTML = `
                 <div style="color: white; font-size: 0.9rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                    <strong>📖 Pitch Generado:</strong><br>
+                    <strong>📖 Pitch / Presentación:</strong><br>
                     <span style="color:#aaa; font-style:italic;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
                 </div>
                 ${listHtml}
@@ -418,376 +425,8 @@ export default class ProjectCreatorView {
             Reglas de Redacción del Campo "presentacion":
             Redacta un "Pitch" o carta de presentación institucional de la red (máximo 3 párrafos).
             Debe explicar: 1. El Propósito / Propuesta de Valor. 2. El Qué, Cómo y Para Quién. 3. El Ikigai de la red (la razón de ser).
-            El tono debe ser épico, claro, y atractivo tanto para captar talento (colaboradores/mercenarios) como para stakeholders e inversores. Usa formato de texto plano (sin HTML, usa saltos de línea \n).
+            El tono debe ser épico, claro, y atractivo tanto para captar talento (colaboradores/mercenarios) como para stakeholders e inversores. Usa formato de texto plano (sin HTML, usa saltos de línea \\n).
             
             Reglas de Roles:
             1. Genera TODOS los roles necesarios. Usa: "@anxaneta" (Dirección), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos), "@pinya" (Soporte).
-            2. Asigna un 'guardian' de Pantheon.work (ej: "creator", "caregiver", "ruler", "magician", "hero", "sage").
-            
-            Reglas de Transacciones (VNA):
-            1. 70% Tangibles (Entregables, código, reportes) y 30% Intangibles (Mentoría, soporte).
-            
-            FORMATO JSON ESPERADO:
-            {
-                "presentacion": "Pitch épico generado por ti...",
-                "roles": [
-                    { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" }
-                ],
-                "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "entregable": "Doc Arquitectura", "horas": 5 }
-                ]
-            }
-        `;
-
-        try {
-            let textResponse = "";
-
-            if (provider === 'gemini') {
-                const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Propuesta de Valor y Red con ${targetModel}...`;
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT EN BRUTO: ${vision}` }] }]
-                    })
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(`Google Gemini Error: ${errData.error?.message || response.statusText}`);
-                }
-                const data = await response.json();
-                textResponse = data.candidates[0].content.parts[0].text;
-            
-            } else if (provider === 'openai') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Redactando Pitch Corporativo con GPT-4o-mini...";
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model: "gpt-4o-mini",
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: vision }
-                        ],
-                        response_format: { type: "json_object" }
-                    })
-                });
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(`OpenAI Error: ${errData.error?.message || response.statusText}`);
-                }
-                const data = await response.json();
-                textResponse = data.choices[0].message.content;
-            
-            } else if (provider === 'deepseek') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando arquitectura y Pitch con DeepSeek Coder...";
-                const response = await fetch('https://api.deepseek.com/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model: "deepseek-chat",
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: vision }
-                        ],
-                        response_format: { type: "json_object" }
-                    })
-                });
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(`DeepSeek Error: ${errData.error?.message || response.statusText}`);
-                }
-                const data = await response.json();
-                textResponse = data.choices[0].message.content;
-
-            } else if (provider === 'custom') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Llamando a Agente DAO Interno...";
-                const response = await fetch(customUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ prompt: systemPrompt, vision: vision })
-                });
-                if (!response.ok) throw new Error("Error de conexión con el Endpoint Custom.");
-                const data = await response.json();
-                textResponse = typeof data === 'string' ? data : JSON.stringify(data);
-            }
-
-            textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const firstBrace = textResponse.indexOf('{');
-            const lastBrace = textResponse.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) {
-                textResponse = textResponse.substring(firstBrace, lastBrace + 1);
-            }
-
-            const parsedData = JSON.parse(textResponse);
-
-            if (!parsedData.roles) throw new Error("La IA no devolvió la estructura de roles requerida.");
-
-            // GUARDAR LA PRESENTACIÓN GENERADA POR IA
-            this.draftPresentation = parsedData.presentacion || vision;
-
-            this.draftRoles = parsedData.roles.map(r => ({
-                id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                levelId: r.levelId,
-                name: r.name,
-                fmv: r.fmv,
-                multiplier: r.multiplier,
-                guardian: r.guardian || 'everyman'
-            }));
-
-            this.draftTxs = parsedData.transactions || [];
-            this.goToStep2();
-
-        } catch (error) {
-            console.error("💥 Fallo Motor Cognitivo:", error);
-            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nRevisa tu API Key o usa la plantilla en blanco.`);
-            this.dom.loading.style.display = 'none';
-            this.dom.step1.style.display = 'block';
-        }
-    }
-
-    renderDraftRoles() {
-        this.dom.container.innerHTML = '';
-        const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
-        
-        const levels = [
-            { id: '@anxaneta', label: '@anxaneta (Dirección)' },
-            { id: '@aixecador', label: '@aixecador (Coordinador)' },
-            { id: '@dosos', label: '@dosos (Auditor)' },
-            { id: '@baixos', label: '@baixos (Técnico)' },
-            { id: '@pinya', label: '@pinya (Operaciones)' }
-        ];
-
-        this.draftRoles.forEach((role, index) => {
-            const color = colors[role.levelId] || '#fff';
-            const row = document.createElement('div');
-            row.className = 'role-draft-item';
-            
-            let selectLevel = `<select class="inp-role-level" data-idx="${index}" style="color: ${color}; border-color: ${color};">`;
-            levels.forEach(l => { selectLevel += `<option value="${l.id}" ${role.levelId === l.id ? 'selected' : ''}>${l.label}</option>`; });
-            selectLevel += `</select>`;
-
-            let selectGuardian = `<select class="inp-role-guardian" data-idx="${index}" title="Asignar Arquetipo Intangible">`;
-            this.guardians.forEach(g => { selectGuardian += `<option value="${g.id}" ${role.guardian === g.id ? 'selected' : ''}>${g.label}</option>`; });
-            selectGuardian += `</select>`;
-
-            row.innerHTML = `
-                <div class="role-inputs">
-                    ${selectLevel}
-                    ${selectGuardian}
-                    <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Actividad del Rol">
-                    <div style="display:flex; align-items:center; gap: 5px;">
-                        <span style="color: var(--text-muted); font-size: 0.7rem;">FMV:</span>
-                        <input type="number" value="${role.fmv}" class="fmv-input inp-role-fmv" data-idx="${index}" title="Valor Mercado €/h">
-                        <span style="color: var(--text-muted); font-size: 0.7rem;">€/h</span>
-                    </div>
-                </div>
-                <button class="btn-del-role" data-idx="${index}" title="Eliminar Rol">×</button>
-            `;
-            this.dom.container.appendChild(row);
-        });
-
-        this.dom.container.querySelectorAll('.inp-role-level').forEach(sel => {
-            sel.addEventListener('change', (e) => {
-                const idx = e.target.dataset.idx;
-                const newLevel = e.target.value;
-                this.draftRoles[idx].levelId = newLevel;
-                const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
-                this.draftRoles[idx].multiplier = multipliers[newLevel];
-                this.renderDraftRoles();
-            });
-        });
-        this.dom.container.querySelectorAll('.inp-role-guardian').forEach(sel => {
-            sel.addEventListener('change', (e) => this.draftRoles[e.target.dataset.idx].guardian = e.target.value);
-        });
-        this.dom.container.querySelectorAll('.inp-role-name').forEach(inp => {
-            inp.addEventListener('input', (e) => this.draftRoles[e.target.dataset.idx].name = e.target.value);
-        });
-        this.dom.container.querySelectorAll('.inp-role-fmv').forEach(inp => {
-            inp.addEventListener('input', (e) => this.draftRoles[e.target.dataset.idx].fmv = parseFloat(e.target.value) || 0);
-        });
-        this.dom.container.querySelectorAll('.btn-del-role').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.draftRoles.splice(e.target.dataset.idx, 1);
-                this.renderDraftRoles();
-            });
-        });
-
-        this.renderMiniMap();
-    }
-
-    renderMiniMap() {
-        const container = document.getElementById('miniMapContainer');
-        if (!container) return;
-
-        container.innerHTML = '<svg id="mini-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>';
-        const svg = document.getElementById('mini-svg');
-
-        if (this.draftRoles.length === 0) {
-            container.style.display = 'none';
-            return;
-        }
-        
-        container.style.display = 'block';
-
-        const layout = { '@anxaneta': {x: 50, y: 20}, '@aixecador': {x: 50, y: 40}, '@dosos': {x: 35, y: 60}, '@baixos': {x: 65, y: 60}, '@pinya': {x: 50, y: 80} };
-        const levelCounts = {};
-
-        this.draftRoles.forEach((rol, i) => {
-            const level = rol.levelId || '@baixos';
-            levelCounts[level] = (levelCounts[level] || 0) + 1;
-            
-            const pos = { ...(layout[level] || {x:50, y:50}) };
-            if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
-
-            const el = document.createElement('div');
-            el.className = 'mini-node';
-            el.dataset.idx = i;
-            el.style.left = `${pos.x}%`; el.style.top = `${pos.y}%`;
-            el.style.borderColor = this.getColor(level);
-            el.innerHTML = this.getIcon(level);
-            el.title = `${rol.name} (${this.guardians.find(g => g.id === rol.guardian)?.label || ''})`;
-            container.appendChild(el);
-        });
-
-        setTimeout(() => {
-            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            defs.innerHTML = `
-                <marker id="mini-arrow-tangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-green)"/></marker>
-                <marker id="mini-arrow-intangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-purple)"/></marker>
-            `;
-            svg.appendChild(defs);
-
-            const pairCounts = {};
-            this.draftTxs.forEach((tx, i) => {
-                const fromIdx = this.draftRoles.findIndex(r => r.levelId === tx.fromLevel);
-                const toIdx = this.draftRoles.findIndex(r => r.levelId === tx.toLevel);
-                
-                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
-                    const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
-                    if (!pairCounts[key]) pairCounts[key] = [];
-                    pairCounts[key].push({ tx, fromIdx, toIdx, i });
-                }
-            });
-
-            const canvRect = container.getBoundingClientRect();
-
-            Object.keys(pairCounts).forEach(key => {
-                const edges = pairCounts[key];
-                edges.forEach((edge, multiIdx) => {
-                    const dom1 = container.querySelector(`.mini-node[data-idx="${edge.fromIdx}"]`);
-                    const dom2 = container.querySelector(`.mini-node[data-idx="${edge.toIdx}"]`);
-                    if (!dom1 || !dom2) return;
-
-                    const r1 = dom1.getBoundingClientRect();
-                    const r2 = dom2.getBoundingClientRect();
-
-                    const x1 = r1.left + r1.width/2 - canvRect.left;
-                    const y1 = r1.top + r1.height/2 - canvRect.top;
-                    const x2 = r2.left + r2.width/2 - canvRect.left;
-                    const y2 = r2.top + r2.height/2 - canvRect.top;
-
-                    const dx = x2 - x1, dy = y2 - y1;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    const nx = -dy / dist, ny = dx / dist;
-
-                    let offset = 0;
-                    if (edges.length > 1) {
-                        const step = 20; 
-                        offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
-                    }
-
-                    const cx = (x1 + x2) / 2 + nx * offset;
-                    const cy = (y1 + y2) / 2 + ny * offset;
-
-                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-                    path.setAttribute('marker-end', edge.tx.tipo === 'tangible' ? 'url(#mini-arrow-tangible)' : 'url(#mini-arrow-intangible)');
-                    
-                    path.style.fill = 'none';
-                    path.style.stroke = edge.tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-                    path.style.strokeWidth = '2';
-                    if(edge.tx.tipo === 'intangible') path.style.strokeDasharray = '4,4';
-                    
-                    svg.appendChild(path);
-                    
-                    const txtX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-                    const txtY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
-                    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    txt.setAttribute('x', txtX); 
-                    txt.setAttribute('y', txtY - 4);
-                    txt.setAttribute('text-anchor', 'middle');
-                    txt.style.cssText = `fill:${edge.tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:10px;font-weight:bold;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:4px;`;
-                    txt.textContent = `[${edge.i + 1}]`;
-                    svg.appendChild(txt);
-                });
-            });
-        }, 150);
-    }
-
-    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
-    getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
-
-    async finalizeProject() {
-        const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
-        const visionText = this.dom.inpVision.value.trim();
-        const arch = this.dom.inpArchetype.value; 
-        
-        this.dom.btnLaunch.disabled = true;
-        this.dom.btnLaunch.innerText = 'Registrando en el Kernel...';
-
-        // 1. Crear el proyecto base
-        await store.dispatch({ 
-            type: 'ADD_PROJECT', 
-            payload: {
-                id: projectId,
-                nombre: this.dom.inpName.value.trim() || 'Nueva Red',
-                sector: this.dom.inpSector.value,
-                prompt: visionText, // Guardamos la idea original en bruto
-                archetype: arch, 
-                customRoles: this.draftRoles 
-            } 
-        });
-
-        // 2. Actualizar la Presentación generada por la IA
-        if (this.draftPresentation) {
-            await store.dispatch({
-                type: 'UPDATE_PROJECT_INFO',
-                payload: { projectId: projectId, updates: { presentation: this.draftPresentation } }
-            });
-        }
-
-        const state = store.getState();
-        const p = state.projects.find(x => x.id === projectId);
-        
-        // 3. Inyectar transacciones
-        if (p && this.draftTxs && this.draftTxs.length > 0) {
-            for (const aiTx of this.draftTxs) {
-                const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
-                const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
-                
-                if (roleFrom && roleTo) {
-                    await store.dispatch({
-                        type: 'ADD_TRANSACTION',
-                        payload: {
-                            projectId: projectId,
-                            tx: {
-                                from: roleFrom.id, 
-                                to: roleTo.id,     
-                                horas: aiTx.horas || 2,
-                                entregable: aiTx.entregable,
-                                tipo: aiTx.tipo,
-                                status: 'theoretical'
-                            }
-                        }
-                    });
-                }
-            }
-        }
-
-        window.location.href = '/v5/map';
-    }
-}
+            2. Asigna un 'guardian' de Pantheon.work (ej: "creator", "caregiver", "ruler", "
