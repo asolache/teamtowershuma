@@ -15,18 +15,19 @@ export default class LedgerView {
                 .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative;}
                 
                 .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
-                .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; }
+                .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 15px;}
                 .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
 
-                .btn-permaweb { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 8px 15px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;}
-                .btn-permaweb:hover { background: rgba(255, 171, 64, 0.1); box-shadow: 0 0 15px rgba(255, 171, 64, 0.2); transform: translateY(-2px);}
+                .permaweb-badge { background: rgba(255, 171, 64, 0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(255, 171, 64, 0.2);}
+
+                .btn-permaweb { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;}
+                .btn-permaweb:hover { background: rgba(255, 171, 64, 0.1); box-shadow: 0 0 20px rgba(255, 171, 64, 0.3); transform: translateY(-2px);}
 
                 /* PANEL SUPERIOR: EL PASTEL (PIE) Y LA CAP TABLE */
                 .equity-dashboard { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-bottom: 3rem;}
                 
                 .pie-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;}
                 
-                /* Dynamic CSS Pie Chart */
                 .pie-chart {
                     width: 200px; height: 200px; border-radius: 50%;
                     background: conic-gradient(#333 0 100%);
@@ -59,7 +60,7 @@ export default class LedgerView {
                 .cap-slices { font-size: 0.85rem; color: var(--text-muted); }
                 .cap-fmv { font-size: 0.7rem; color: #666; margin-top: 4px; }
 
-                /* BLOCKCHAIN LOG (TRIPLE ENTRY PREVIEW) */
+                /* BLOCKCHAIN LOG */
                 .ledger-container { background: #08080a; border: 1px solid #1a1a24; border-radius: var(--border-radius-lg); padding: 2rem; position: relative; overflow-x: auto;}
                 
                 .ledger-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;}
@@ -71,18 +72,28 @@ export default class LedgerView {
                 .slice-badge { color: var(--accent-green); font-weight: bold; font-family: var(--font-mono); font-size: 1rem; }
                 .empty-ledger { padding: 4rem; text-align: center; color: #666; font-style: italic;}
 
-                @keyframes spinIn { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
+                /* CHECKOUT MODAL (WEB3 / PAYMENTS) */
+                .checkout-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center;}
+                .checkout-card { background: #111; border: 1px solid var(--accent-orange); border-radius: 16px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(255, 171, 64, 0.2); animation: slideUp 0.4s ease-out;}
+                .checkout-price { font-size: 3.5rem; font-weight: 900; color: white; margin: 1rem 0; font-family: var(--font-mono);}
+                .checkout-features { text-align: left; margin: 2rem 0; padding-left: 20px; color: #aaa; line-height: 1.6;}
+                
+                .pay-btn { width: 100%; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.2s;}
+                .pay-btn:hover { transform: scale(1.02); }
+                .pay-gpay { background: white; color: #3c4043; }
+                .pay-card { background: #635bff; color: white; }
 
-                @media (max-width: 1024px) {
-                    .equity-dashboard { grid-template-columns: 1fr; }
-                    .pie-panel { padding: 3rem; }
-                }
+                .minting-loader { display: none; flex-direction: column; align-items: center; gap: 15px; margin-top: 2rem;}
+                .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 171, 64, 0.3); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite; }
+
+                @keyframes spin { to { transform: rotate(360deg); } }
+                @keyframes spinIn { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
+                @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+                @media (max-width: 1024px) { .equity-dashboard { grid-template-columns: 1fr; } .pie-panel { padding: 3rem; } }
                 @media (max-width: 768px) {
-                    .app-layout { flex-direction: column; }
-                    .workspace { padding: 1.5rem; }
-                    .cap-bar-container { display: none; }
-                    .cap-user { width: 50%; }
-                    .cap-stats { width: 50%; }
+                    .app-layout { flex-direction: column; } .workspace { padding: 1.5rem; }
+                    .cap-bar-container { display: none; } .cap-user { width: 50%; } .cap-stats { width: 50%; }
                 }
             </style>
 
@@ -92,11 +103,11 @@ export default class LedgerView {
                 <main class="workspace">
                     <div class="view-header">
                         <div>
-                            <h1>⚖️ Contabilidad de Triple Entrada</h1>
+                            <h1 id="ledgerTitle">⚖️ Contabilidad de Triple Entrada</h1>
                             <p>Slicing Pie dinámico. El registro inmutable del valor aportado por la Colla.</p>
                         </div>
-                        <button class="btn-permaweb" title="Sella este Ledger en Blockchain">
-                            <span style="font-size: 1.2rem;">🧊</span> Congelar en Permaweb (Beta)
+                        <button class="btn-permaweb" id="btnOpenPermaweb" title="Sella este Snapshot en Blockchain">
+                            <span style="font-size: 1.2rem;">🧊</span> Congelar Snapshot (Beta)
                         </button>
                     </div>
 
@@ -114,8 +125,7 @@ export default class LedgerView {
                                 Tabla de Capitalización (Cap Table)
                                 <span style="font-size: 0.75rem; color: #666; font-weight: normal;">Distribución Dinámica</span>
                             </div>
-                            <div id="capTableBody">
-                                </div>
+                            <div id="capTableBody"></div>
                         </div>
                     </div>
 
@@ -138,6 +148,37 @@ export default class LedgerView {
                             <tbody id="ledgerBody"></tbody>
                         </table>
                     </div>
+
+                    <div id="checkoutModal" class="checkout-modal">
+                        <div class="checkout-card">
+                            <h2 style="color: var(--accent-orange); margin-top: 0; font-size: 1.8rem;">Sello Notarial Web3</h2>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Acuña el Snapshot actual de tu Cap Table en la red descentralizada de Arweave. Garantía legal e inmutable para la Colla y los Inversores.</p>
+                            
+                            <div class="checkout-price">€4.99</div>
+                            <p style="color: #666; font-size: 0.75rem; margin-top:-10px;">Pago único por sellado (Sin suscripciones)</p>
+
+                            <ul class="checkout-features">
+                                <li>✅ Hash SHA-256 consolidado en Blockchain Pública.</li>
+                                <li>✅ Prueba matemática inalterable de propiedad (Equity).</li>
+                                <li>✅ Mantenimiento de Nodos TeamTowers.</li>
+                            </ul>
+
+                            <div id="paymentButtons">
+                                <button class="pay-btn pay-gpay" id="btnGooglePay">
+                                    <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.5455 7.63636V10.1818H20.8182C20.5455 11.5455 19.5455 13.3636 17.2727 13.3636C15.3636 13.3636 13.8182 11.8182 13.8182 9.81818C13.8182 7.81818 15.3636 6.27273 17.2727 6.27273C18.3636 6.27273 19.0909 6.72727 19.5455 7.18182L21.4545 5.27273C20.3636 4.18182 18.9091 3.54545 17.2727 3.54545C13.8182 3.54545 11 6.36364 11 9.81818C11 13.2727 13.8182 16.0909 17.2727 16.0909C20.9091 16.0909 23.3636 13.5455 23.3636 9.90909C23.3636 9.36364 23.2727 8.81818 23.1818 8.45455H14.5455V7.63636ZM27.0909 10V12.7273H29.6364V10H32.3636V7.45455H29.6364V4.72727H27.0909V7.45455H24.3636V10H27.0909Z" fill="#3C4043"/><path d="M4.63636 12.8182H7.36364V0.909091H4.63636V12.8182ZM1.81818 12.8182H4.54545V4.72727H1.81818V12.8182Z" fill="#3C4043"/></svg>
+                                    Pagar con Google Pay
+                                </button>
+                                <button class="pay-btn pay-card" id="btnStripePay">💳 Pagar con Tarjeta (Stripe)</button>
+                                <button class="btn btn-outline" style="width: 100%; border: none; margin-top: 10px; background:transparent; color:#888; cursor:pointer;" id="btnCloseModal">Cancelar</button>
+                            </div>
+
+                            <div id="mintingLoader" class="minting-loader">
+                                <div class="spinner"></div>
+                                <p style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0;">Transfiriendo a Permaweb...</p>
+                                <p style="color: #666; font-size: 0.75rem;">Consensuando bloques criptográficos.</p>
+                            </div>
+                        </div>
+                    </div>
                 </main>
             </div>
         `;
@@ -152,7 +193,91 @@ export default class LedgerView {
         if (!project) return;
         this.activeProjectId = project.id;
         
+        this.dom = {
+            title: document.getElementById('ledgerTitle'),
+            btnOpenPermaweb: document.getElementById('btnOpenPermaweb'),
+            checkoutModal: document.getElementById('checkoutModal'),
+            btnCloseModal: document.getElementById('btnCloseModal'),
+            paymentButtons: document.getElementById('paymentButtons'),
+            mintingLoader: document.getElementById('mintingLoader'),
+            btnGooglePay: document.getElementById('btnGooglePay'),
+            btnStripePay: document.getElementById('btnStripePay')
+        };
+
+        // Render inicial de datos
         this.renderLedgerData(project, state.globalUsers);
+
+        // Control Visual si el proyecto ya fue minteado alguna vez
+        if (project.permawebSnapshot) {
+            this.applyMintedStyle(project.permawebSnapshot);
+        }
+
+        // Eventos del Modal
+        this.dom.btnOpenPermaweb.addEventListener('click', () => {
+            const harvest = store.calculateHarvest(this.activeProjectId) || [];
+            if(harvest.length === 0) return alert("⚠️ No puedes congelar un Ledger vacío. La Colla debe reportar trabajo primero.");
+            this.dom.checkoutModal.style.display = 'flex';
+        });
+
+        this.dom.btnCloseModal.addEventListener('click', () => {
+            this.dom.checkoutModal.style.display = 'none';
+        });
+
+        const simulatePayment = () => this.executeMintingProcess();
+        this.dom.btnGooglePay.addEventListener('click', simulatePayment);
+        this.dom.btnStripePay.addEventListener('click', simulatePayment);
+    }
+
+    executeMintingProcess() {
+        this.dom.paymentButtons.style.display = 'none';
+        this.dom.mintingLoader.style.display = 'flex';
+
+        // Simulación de latencia de Blockchain (Bundlr/Arweave)
+        setTimeout(() => {
+            const mockArweaveTx = 'ar://' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            // Disparar acción al Store (Reutilizamos UPDATE_PROJECT_INFO)
+            store.dispatch({
+                type: 'UPDATE_PROJECT_INFO',
+                payload: {
+                    projectId: this.activeProjectId,
+                    updates: {
+                        permawebSnapshot: {
+                            txId: mockArweaveTx,
+                            timestamp: Date.now()
+                        }
+                    }
+                }
+            });
+
+            this.dom.checkoutModal.style.display = 'none';
+            this.dom.paymentButtons.style.display = 'block';
+            this.dom.mintingLoader.style.display = 'none';
+            
+            this.applyMintedStyle(store.getState().projects.find(p => p.id === this.activeProjectId).permawebSnapshot);
+            
+            alert(`✅ Snapshot Sellado Exitosamente.\n\nHash Público: ${mockArweaveTx}\nTu Cap Table ahora está protegida por la matemática.`);
+        }, 3000);
+    }
+
+    applyMintedStyle(snapshotData) {
+        // Transformar el título y añadir el badge
+        this.dom.title.innerHTML = `⚖️ Ledger <span class="permaweb-badge" title="Snapshot Inmutable">🧊 Sellado en Arweave</span>`;
+        
+        // Cambiar el botón para reflejar que se puede hacer un RE-SNAP (Actualización del ledger)
+        this.dom.btnOpenPermaweb.innerHTML = `<span style="font-size: 1.2rem;">🔄</span> Actualizar Snapshot`;
+        
+        // Añadir una nota visual debajo del título
+        const dateStr = new Date(snapshotData.timestamp).toLocaleDateString('es-ES');
+        if(!document.getElementById('snapMeta')) {
+            const meta = document.createElement('div');
+            meta.id = 'snapMeta';
+            meta.style.cssText = "font-size: 0.75rem; color: var(--accent-orange); font-family: var(--font-mono); margin-top: 10px;";
+            meta.innerText = `Último Backup Web3: ${dateStr} - TxID: ${snapshotData.txId.substring(0,12)}...`;
+            this.dom.title.parentElement.appendChild(meta);
+        } else {
+            document.getElementById('snapMeta').innerText = `Último Backup Web3: ${dateStr} - TxID: ${snapshotData.txId.substring(0,12)}...`;
+        }
     }
 
     renderLedgerData(project, globalUsers) {
@@ -162,7 +287,6 @@ export default class LedgerView {
         const totalSlicesEl = document.getElementById('totalSlicesVal');
         const tbody = document.getElementById('ledgerBody');
 
-        // Paleta de colores para usuarios
         const colors = ['#00b0ff', '#e040fb', '#00e676', '#ff9100', '#ff5252', '#ffd740'];
         
         let totalSlices = 0;
@@ -181,19 +305,16 @@ export default class LedgerView {
         let conicGradientParts = [];
         let currentDegree = 0;
 
-        // Ordenar por Slices (Mayor a Menor)
         harvest.sort((a, b) => b.slices - a.slices).forEach((userHarvest, index) => {
             const user = globalUsers.find(u => u.id === userHarvest.userId) || { name: userHarvest.userId };
             const percentageRaw = (userHarvest.slices / totalSlices) * 100;
             const percentageStr = percentageRaw.toFixed(2);
             const color = colors[index % colors.length];
 
-            // Construir parte del Pie Chart CSS
-            const nextDegree = currentDegree + (percentageRaw * 3.6); // 360 grados / 100
+            const nextDegree = currentDegree + (percentageRaw * 3.6);
             conicGradientParts.push(`${color} ${currentDegree}deg ${nextDegree}deg`);
             currentDegree = nextDegree;
 
-            // Calcular FMV promedio heurístico
             const userTxs = (project.ledger || []).filter(tx => tx.userId === userHarvest.userId);
             const totalHours = userTxs.reduce((sum, tx) => sum + (tx.horas || 0), 0);
             const avgFmv = totalHours > 0 ? (userHarvest.slices / totalHours).toFixed(1) : 0;
@@ -219,7 +340,6 @@ export default class LedgerView {
 
         capTableBody.innerHTML = capHtml;
         
-        // Animaciones diferidas para las barras y el pastel
         setTimeout(() => {
             pieChart.style.background = `conic-gradient(${conicGradientParts.join(', ')})`;
             document.querySelectorAll('.cap-bar-fill').forEach(bar => {
@@ -238,7 +358,6 @@ export default class LedgerView {
             const role = project.roles.find(r => r.id === entry.roleId);
             const roleName = role ? `<span style="color: var(--text-muted); font-size:0.8rem; font-family:var(--font-mono);">${role.levelId}</span> ${role.name}` : 'Nodo Base';
             
-            // Link a prueba si existe
             const proofLink = entry.proofLink ? ` <a href="${entry.proofLink}" target="_blank" style="color:var(--accent-blue); font-size:0.8rem; text-decoration:none;">[Ver]</a>` : '';
 
             const row = document.createElement('tr');
@@ -254,7 +373,6 @@ export default class LedgerView {
             tbody.appendChild(row);
         });
 
-        // Fila del Bloque Génesis al final
         const genesisRow = document.createElement('tr');
         genesisRow.innerHTML = `
             <td><span class="hash-badge" style="border-color:#555; color:#888;">${(project.genesisHash || 'GENESIS').substring(0,8)}...</span></td>
