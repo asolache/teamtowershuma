@@ -67,7 +67,7 @@ export default class ValueMapView {
 
                 .node-name { font-size: 0.65rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 95%; font-weight: bold; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding: 0 5px; word-wrap: break-word; text-align: center;}
 
-                /* BADGES HTML (Sustituyen a los Textos SVG) */
+                /* BADGES HTML */
                 .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid #111; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.2s, filter 0.2s; }
                 .tx-badge:hover { transform: translate(-50%, -50%) scale(1.2); filter: brightness(1.2); z-index: 100;}
                 .tx-badge.ghost { opacity: 0.3; }
@@ -139,21 +139,23 @@ export default class ValueMapView {
 
                 <div class="map-container">
                     <div class="ui-overlay">
-                        <div class="interactive">
-                            <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa de Valor</h1>
-                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Pasa el ratón sobre los flujos</p>
+                        <div class="interactive" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div>
+                                <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa de Valor</h1>
+                                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Pasa el ratón sobre los flujos</p>
+                            </div>
+                            <div class="glass-panel" style="padding: 1rem; display: flex; flex-direction: column; gap: 10px; width: max-content; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: var(--accent-green); margin-top:6px;"></div> Tangible</div>
+                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed var(--accent-purple); margin-top:5px;"></div> Intangible</div>
+                            </div>
                         </div>
+
                         <div class="action-panel interactive">
                             <div style="display: flex; gap: 10px;">
                                 <button class="btn btn-primary" id="btnSimulate">▶ Simular Flujo</button>
                                 <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange);">⏹ Detener</button>
                             </div>
                             <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" id="btnOpenAddNode">➕ Nuevo Nodo</button>
-                            
-                            <div class="glass-panel" style="padding: 1rem; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; width: 100%;">
-                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: var(--accent-green); margin-top:6px;"></div> Tangible</div>
-                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed var(--accent-purple); margin-top:5px;"></div> Intangible</div>
-                            </div>
                             <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
                         </div>
                     </div>
@@ -368,7 +370,7 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ TOOLTIPS DE ALTO RENDIMIENTO (HTML HOVER) ------------------
+        // ------------------ TOOLTIPS DE ALTO RENDIMIENTO (HTML HOVER CON ANTI-OVERFLOW) ------------------
         this.dom.canvas.addEventListener('mouseover', (e) => {
             if (e.target.classList.contains('tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
@@ -397,11 +399,22 @@ export default class ValueMapView {
                     </div>
                 `;
                 
-                // Centramos el tooltip cerca del badge
-                const rect = e.target.getBoundingClientRect();
-                this.dom.tooltip.style.left = `${rect.right + 10}px`;
-                this.dom.tooltip.style.top = `${rect.top - 10}px`;
                 this.dom.tooltip.classList.add('visible');
+
+                // CÁLCULO DINÁMICO DE POSICIÓN (Anti-Overflow)
+                const badgeRect = e.target.getBoundingClientRect();
+                const tooltipWidth = this.dom.tooltip.offsetWidth || 300;
+                
+                let leftPos = badgeRect.right + 15;
+                let topPos = badgeRect.top - 10;
+
+                // Si se sale por la derecha de la pantalla, lo dibujamos a la izquierda del badge
+                if (leftPos + tooltipWidth > window.innerWidth - 20) {
+                    leftPos = badgeRect.left - tooltipWidth - 15;
+                }
+
+                this.dom.tooltip.style.left = `${leftPos}px`;
+                this.dom.tooltip.style.top = `${topPos}px`;
             }
         });
 
@@ -607,7 +620,6 @@ export default class ValueMapView {
         this.dom.btnStopSim.style.display = 'block';
         this.dom.sickAlert.style.display = 'none';
         
-        // Limpiamos los paths y badges previos
         this.dom.svg.innerHTML = '';
         this.dom.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove());
         
@@ -685,7 +697,6 @@ export default class ValueMapView {
         const rect2 = dom2.getBoundingClientRect();
         const canv = this.dom.canvas.getBoundingClientRect();
         
-        // Centros
         const x1_center = rect1.left + rect1.width / 2 - canv.left;
         const y1_center = rect1.top + rect1.height / 2 - canv.top;
         const x2_center = rect2.left + rect2.width / 2 - canv.left;
@@ -695,7 +706,6 @@ export default class ValueMapView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
 
-        // MATEMÁTICAS: Recortamos el vector para que la línea empiece y muera justo en el borde del nodo (Radio = 40px)
         const trim = 42; 
         const x1 = x1_center + (dx/dist) * trim;
         const y1 = y1_center + (dy/dist) * trim;
@@ -705,13 +715,11 @@ export default class ValueMapView {
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
         
-        // El marker ahora tiene refX normal (porque el final de la línea está fuera del nodo)
         let markerId = isSick ? 'arrow-sick' : (tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible');
         path.setAttribute('marker-end', `url(#${markerId})`);
         
         const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
         
-        // Animación del trazo
         const realDist = dist - (trim * 2);
         path.style.cssText = `
             fill: none;
@@ -731,7 +739,6 @@ export default class ValueMapView {
 
         this.dom.svg.appendChild(path);
 
-        // Badge HTML en lugar de SVG para simulación
         setTimeout(() => {
             const badge = document.createElement('div');
             badge.className = 'tx-badge';
@@ -856,7 +863,6 @@ export default class ValueMapView {
             }
 
             el.style.borderColor = this.getColor(level);
-            // NOMBRE TRUNCADO MULTILINEA
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name" title="${rol.name}">${rol.name}</div>`;
 
             el.addEventListener('click', (e) => {
@@ -910,7 +916,6 @@ export default class ValueMapView {
 
     injectSvgMarkers() {
         const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        // Usamos refX=8 porque la línea matemáticamente ya muere en el borde exterior
         defs.innerHTML = `
             <marker id="arrow-tangible" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-green)"/></marker>
             <marker id="arrow-intangible" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-purple)"/></marker>
@@ -922,7 +927,7 @@ export default class ValueMapView {
     drawEdges() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         this.dom.svg.innerHTML = '';
-        this.dom.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove()); // Limpiar badges viejos
+        this.dom.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         
         const txs = p?.transactions || [];
         if (txs.length === 0) return;
@@ -958,7 +963,6 @@ export default class ValueMapView {
                     const dy = y2_center - y1_center;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     
-                    // Recorte matemático (Evita que la línea dibuje sobre el propio nodo)
                     const trim = 42; 
                     const x1 = x1_center + (dx/dist) * trim;
                     const y1 = y1_center + (dy/dist) * trim;
@@ -992,7 +996,6 @@ export default class ValueMapView {
                     
                     this.dom.svg.appendChild(path);
 
-                    // BADGE HTML (Reemplaza a SVG Text)
                     const txX = 0.25 * x1_center + 0.5 * cx + 0.25 * x2_center;
                     const txY = 0.25 * y1_center + 0.5 * cy + 0.25 * y2_center;
 
