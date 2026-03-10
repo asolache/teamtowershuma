@@ -105,24 +105,96 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
         
-        // El PO no necesita el filtro "Mis Tareas" por defecto, pero si es un usuario raso, forzamos la vista "mine" si no elige nada.
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         if (!isPO && this.currentFilter === 'all') {
-            this.currentFilter = 'mine'; // Los mercenarios ven sus cosas primero para evitar ruido
+            this.currentFilter = 'mine'; 
             setTimeout(() => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 document.querySelector('[data-filter="mine"]').classList.add('active');
             }, 10);
         }
 
-        // Setup Filtros
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                this.currentFilter = e.target.dataset.filter;
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+        // Setup Filtros (Delegación de Eventos)
+        const filtersContainer = document.getElementById('kanbanFilters');
+        if (filtersContainer) {
+            filtersContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    this.currentFilter = e.target.dataset.filter;
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                }
             });
+        }
+
+        // Usamos delegación de eventos a nivel global para los botones de las tarjetas
+        // Esto evita el problema de las condiciones de carrera (doble clic)
+        const workspace = document.querySelector('.kanban-container');
+        workspace.addEventListener('click', async (e) => {
+            const target = e.target;
+            const state = store.getState();
+            const project = state.projects.find(p => p.id === this.activeProjectId);
+            
+            if (!project) return;
+
+            // 1. APROBAR Y CONSOLIDAR (Aquí estaba el bug del doble clic)
+            if (target.classList.contains('btn-approve')) {
+                const action = target.dataset.action;
+                const txHash = target.dataset.hash;
+
+                if (action === 'approve-pull') {
+                    const targetUserId = target.dataset.userid;
+                    await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash, userId: targetUserId } });
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                } 
+                else if (action === 'consolidate') {
+                    if (confirm('¿Aprobar Proof of Work? Esto generará Slices inmutables en el Ledger.')) {
+                        await store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: project.id, txHash } });
+                        this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                    }
+                }
+                return;
+            }
+
+            // 2. HACER PULL
+            if (target.classList.contains('btn-pull')) {
+                const txHash = target.dataset.hash;
+                const action = target.dataset.action;
+                
+                if (action === 'request') {
+                    await store.dispatch({ type: 'REQUEST_TRANSACTION', payload: { projectId: project.id, txHash, userId: state.session.activeUserId } });
+                } else {
+                    await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash, userId: state.session.activeUserId } });
+                }
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                return;
+            }
+
+            // 3. HACER PUSH
+            if (target.classList.contains('btn-push')) {
+                const txHash = target.dataset.hash;
+                const usersInProject = project.usuarios || [];
+                
+                if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
+                
+                let userListStr = "IDs disponibles:\n";
+                usersInProject.forEach(u => {
+                    const globalData = state.globalUsers.find(gu => gu.id === u.id);
+                    userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
+                });
+
+                const targetUserId = prompt(`Introduce el ID del usuario al que quieres asignar esta tarea:\n\n${userListStr}`);
+                
+                if (targetUserId) {
+                    const exists = usersInProject.find(u => u.id === targetUserId);
+                    if (!exists && targetUserId !== project.ownerId) {
+                        return alert("Ese usuario no es miembro del proyecto. Invítalo primero.");
+                    }
+                    await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash, userId: targetUserId } });
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                }
+                return;
+            }
         });
 
         this.renderTasks(project);
@@ -144,18 +216,17 @@ export default class ProjectView {
             if (this.currentFilter === 'tangible' && tx.tipo !== 'tangible') return;
             if (this.currentFilter === 'intangible' && tx.tipo !== 'intangible') return;
             
-            // Si el filtro es "mine", el usuario solo ve las que tiene asignadas. (El Backlog teórico se sigue viendo si nadie lo tiene).
             if (this.currentFilter === 'mine') {
                 if (tx.status !== 'theoretical' && tx.status !== 'requested' && tx.assigneeId !== activeUser) return;
             }
 
-            // Ocultar ruido a usuarios base (Si no eres PO, no te importa ver las tareas consolidadas de otros)
             if (!isPO && this.currentFilter === 'all') {
                 if ((tx.status === 'consolidated' || tx.status === 'reported') && tx.assigneeId !== activeUser) return;
             }
 
             const card = this.createTaskCard(tx, project, state.session, isPO);
             
+            // Inyectar en columnas
             if (tx.status === 'theoretical' || tx.status === 'requested') { 
                 lists.theo.appendChild(card); counts.theo++; 
             } else if (tx.status === 'pinged' || tx.status === 'reported') { 
@@ -232,7 +303,7 @@ export default class ProjectView {
         else if (tx.status === 'consolidated') {
             actionHtml = `
                 <div style="color: var(--accent-green); font-size: 1rem; font-weight: bold; font-family: var(--font-mono); text-align: center; padding: 10px; background: rgba(0, 230, 118, 0.05); border-radius: 8px;">
-                    +${Math.round(tx.valorCongelado).toLocaleString()} Slices Acuñados
+                    +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices Acuñados
                 </div>
             `;
         }
@@ -253,79 +324,6 @@ export default class ProjectView {
                 <span style="color: ${tipoColor}; font-weight: bold; text-transform: uppercase;">${tx.tipo}</span>
             </div>
         `;
-
-        // LÓGICA DE EVENTOS (Push, Pull, Approve)
-        setTimeout(() => {
-            // 1. Pull Directo (Solo PO o usuarios si el sistema estuviera abierto)
-            const pullBtn = card.querySelector('.btn-pull:not([data-action="request"])');
-            if (pullBtn) {
-                pullBtn.addEventListener('click', () => {
-                    store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash, userId: session.activeUserId } });
-                    this.executeViewScript();
-                });
-            }
-
-          // 2. Request Pull (Usuario Raso solicita)
-            const reqBtn = card.querySelector('.btn-pull[data-action="request"]');
-            if (reqBtn) {
-                reqBtn.addEventListener('click', () => {
-                    store.dispatch({ 
-                        type: 'REQUEST_TRANSACTION', // Usa el Reducer Oficial
-                        payload: { projectId: project.id, txHash: tx.hash, userId: session.activeUserId } 
-                    });
-                    this.executeViewScript(); // Refresca UI
-                });
-            }
-
-            // 3. PUSH (Delegación del PO)
-            const pushBtn = card.querySelector('.btn-push');
-            if (pushBtn) {
-                pushBtn.addEventListener('click', () => {
-                    // Mostrar lista de usuarios del proyecto
-                    const usersInProject = project.usuarios || [];
-                    if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
-                    
-                    let userListStr = "IDs disponibles:\n";
-                    usersInProject.forEach(u => {
-                        const globalData = store.getState().globalUsers.find(gu => gu.id === u.id);
-                        userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
-                    });
-
-                    const targetUserId = prompt(`Introduce el ID del usuario al que quieres asignar esta tarea:\n\n${userListStr}`);
-                    
-                    if (targetUserId) {
-                        const exists = usersInProject.find(u => u.id === targetUserId);
-                        if (!exists && targetUserId !== project.ownerId) {
-                            return alert("Ese usuario no es miembro del proyecto. Invítalo primero desde el Dashboard o La Colla.");
-                        }
-
-                        // Forzar el PING para el usuario seleccionado
-                        store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash, userId: targetUserId } });
-                        this.executeViewScript();
-                    }
-                });
-            }
-
-            // 4. APROBACIONES (Pull Requests y Ledger Consolidations)
-            const approveBtn = card.querySelector('.btn-approve');
-            if (approveBtn) {
-                approveBtn.addEventListener('click', (e) => {
-                    const action = e.target.getAttribute('data-action');
-                    
-                    if (action === 'approve-pull') {
-                        const targetUser = e.target.getAttribute('data-userid');
-                        store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash, userId: targetUser } });
-                        this.executeViewScript();
-                    } 
-                    else if (action === 'consolidate') {
-                        if(confirm('¿Aprobar Proof of Work? Esto generará Slices inmutables en el Ledger.')) {
-                            store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: project.id, txHash: tx.hash } });
-                            this.executeViewScript();
-                        }
-                    }
-                });
-            }
-        }, 10);
 
         return card;
     }
