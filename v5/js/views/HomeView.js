@@ -240,7 +240,7 @@ export default class HomeView {
 
     initGoogleAuth() {
         // CLIENT ID OFICIAL DE PRODUCCIÓN
-        const GOOGLE_CLIENT_ID = "481488102601-r6p0p273vj4f7ed3f58eivofig1tpt2f.apps.googleusercontent.com";
+        const GOOGLE_CLIENT_ID = "778991708293-c4f7s4l4339ooldpun0eitfdb12gjfdn.apps.googleusercontent.comm";
 
         if (window.google && window.google.accounts) {
             try {
