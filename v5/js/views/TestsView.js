@@ -269,4 +269,62 @@ export default class TestsView {
                 const lastLedgerLength = pTestReq.ledger ? pTestReq.ledger.length : 0;
                 await store.dispatch({ 
                     type: 'ADD_CAPITAL_INJECTION', 
-                    payload: { projectId: PID_PRIV, userId:
+                    payload: { projectId: PID_PRIV, userId: 'usr_alvaro_001', assetType: 'cash', amount: 1000, description: 'Seed Money' } 
+                });
+                
+                pTestReq = store.getState().projects.find(x => x.id === PID_PRIV);
+                const newLedgerLength = pTestReq.ledger.length;
+                const capBlock = pTestReq.ledger[pTestReq.ledger.length - 1];
+
+                assert(newLedgerLength === lastLedgerLength + 1, "Slicing Pie: Inyección de Capital registra un nuevo bloque en el Ledger", "CAPITAL"); // 45
+                assert(capBlock.roleId === 'CAPITAL_ASSET', "Slicing Pie: Rol asignado como activo de capital", "CAPITAL"); // 46
+                assert(capBlock.horas === 0, "Slicing Pie: Las inyecciones de dinero no consumen horas de Deep Work", "CAPITAL"); // 47
+                assert(capBlock.valorCongelado >= 4000, "Slicing Pie: El dinero (Cash) recibe multiplicador de riesgo financiero 4x", "CAPITAL"); // 48
+
+                // Probar multiplicador 2x para tools/equipment
+                await store.dispatch({ 
+                    type: 'ADD_CAPITAL_INJECTION', 
+                    payload: { projectId: PID_PRIV, userId: 'usr_alvaro_001', assetType: 'tools', amount: 1000, description: 'AWS' } 
+                });
+                const toolsBlock = store.getState().projects.find(x => x.id === PID_PRIV).ledger.slice(-1)[0];
+                assert(toolsBlock.valorCongelado === 2000, "Slicing Pie: Las herramientas (Tools) reciben multiplicador 2x", "CAPITAL"); // 49
+                
+                const maturity = store.calculateMaturityIndex(PID_1);
+                assert(maturity.score >= 0, "Maturity Index calculado con seguridad", "KERNEL"); // 50
+                
+                assert(store.getState().projects.find(x => x.id === PID_ECO).config.tokenomics === 'dao', "Modelo Tokenomics guardado y enlazado a DAO", "TOKENOMICS"); // 51
+
+                // --- RESULTADO FINAL ---
+                if(passed === total) {
+                    const finalColor = 'var(--accent-green)';
+                    score.style.color = finalColor;
+                    terminal.innerHTML += `
+                        <div style="margin-top: 25px; padding: 20px; border: 1px solid ${finalColor}; background: rgba(0, 230, 118, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in;">
+                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v7.4 VALIDADO AL 100%</h2>
+                            <p style="color: white; margin-top: 10px; font-size: 1.1rem;">El Motor Core ha superado sus ${total} vectores de prueba.</p>
+                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos chequeados: RBAC, VNA, SHA-256, Slicing Pie, Capital, Privacy</p>
+                        </div>
+                    `;
+                    btn.innerText = "CERTIFICACIÓN V7.4 COMPLETADA ✓";
+                    btn.style.background = finalColor;
+                    btn.style.color = "black";
+                }
+
+            } catch (error) {
+                terminal.innerHTML += `
+                    <div style="margin-top: 25px; padding: 20px; border: 1px solid var(--accent-red); background: rgba(255, 82, 82, 0.1); border-radius: var(--border-radius-md); animation: fadeIn 0.5s ease-in;">
+                        <h2 style="color: var(--accent-red); margin: 0;">💥 ERROR FATAL (CRASH EN KERNEL)</h2>
+                        <p style="color: white; margin-top: 10px; font-family: var(--font-mono);">${error.message}</p>
+                        <div style="background: #000; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.8rem; overflow-x: auto; color: #ff8a80;">
+                            ${error.stack}
+                        </div>
+                    </div>
+                `;
+                console.error(error);
+                score.style.color = 'var(--accent-red)';
+            }
+            
+            terminal.scrollTop = terminal.scrollHeight;
+        });
+    }
+}
