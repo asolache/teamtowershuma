@@ -10,6 +10,7 @@ export default class ProjectCreatorView {
         this.draftRoles = [];
         this.draftTxs = [];
         
+        // Los 12 Arquetipos de Guardianes (Pantheon.work)
         this.guardians = [
             { id: 'creator', label: '🎨 Creador (Innovación)' },
             { id: 'caregiver', label: '❤️ Cuidador (Soporte)' },
@@ -28,7 +29,8 @@ export default class ProjectCreatorView {
 
     async getHtml() {
         const savedKey = localStorage.getItem('tt_ai_key') || '';
-        const savedProvider = localStorage.getItem('tt_ai_provider') || 'gemini';
+        // DEEPSEEK es ahora el valor por defecto
+        const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
 
         return `
             <style>
@@ -98,19 +100,27 @@ export default class ProjectCreatorView {
                         <div id="step1">
                             <div class="wizard-header">
                                 <h1>Instanciador de Red</h1>
-                                <p>Mapea una organización existente (As-Is) o diseña una nueva (To-Be).</p>
+                                <p>Mapea una organización existente o diseña una nueva desde cero.</p>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 1.5rem;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 1.5rem;">
                                 <div class="form-group" style="margin: 0;">
                                     <label>Nombre del Castell (Proyecto)</label>
-                                    <input type="text" id="inpName" class="form-control" placeholder="Ej: Cooperativa Solar DAO">
+                                    <input type="text" id="inpName" class="form-control" placeholder="Ej: Cooperativa Solar">
+                                </div>
+                                <div class="form-group" style="margin: 0;">
+                                    <label>Arquetipo de Gobernanza</label>
+                                    <select id="inpArchetype" class="form-control">
+                                        <option value="startup">🚀 Startup (Agilidad/Equidad)</option>
+                                        <option value="corp">🏢 Empresa (Jerarquía Clásica)</option>
+                                        <option value="dao">🤖 IA-DAO (Humanos + Agentes IA)</option>
+                                    </select>
                                 </div>
                                 <div class="form-group" style="margin: 0;">
                                     <label>Macro-Área / Sector</label>
                                     <select id="inpSector" class="form-control">
                                         <option value="tech_saas_platform">💻 Software & SaaS</option>
-                                        <option value="web3_defi_protocol">⛓️ Web3 & Protocolo DeFi</option>
+                                        <option value="web3_defi_protocol">⛓️ Web3 & Protocolo</option>
                                         <option value="digital_media_growth">📢 Digital Media & Growth</option>
                                         <option value="healthtech_ai">🏥 HealthTech & IA Clínica</option>
                                         <option value="deeptech_hardware">🤖 DeepTech & Hardware</option>
@@ -134,10 +144,10 @@ export default class ProjectCreatorView {
                                         <div>
                                             <label style="font-size: 0.7rem; color:#888;">Proveedor IA</label>
                                             <select id="inpAiProvider" class="form-control">
-                                                <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
-                                                <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (Optimizado DAO)</option>
+                                                <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (API Abierta)</option>
                                                 <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
-                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo (Custom Endpoint)</option>
+                                                <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
+                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo (Endpoint Local)</option>
                                             </select>
                                         </div>
                                         <div>
@@ -220,6 +230,7 @@ export default class ProjectCreatorView {
             container: document.getElementById('draftRolesContainer'),
             inpName: document.getElementById('inpName'),
             inpSector: document.getElementById('inpSector'),
+            inpArchetype: document.getElementById('inpArchetype'),
             inpVision: document.getElementById('inpVision'),
             inpApiKey: document.getElementById('inpApiKey'),
             inpAiProvider: document.getElementById('inpAiProvider'),
@@ -307,6 +318,7 @@ export default class ProjectCreatorView {
         const provider = this.dom.inpAiProvider.value;
         const apiKey = this.dom.inpApiKey.value.trim();
         const customUrl = this.dom.inpCustomUrl.value.trim();
+        const archetypeText = this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text;
 
         if (!name) return alert("Debes darle un nombre a la red.");
         if (!vision) return alert("Escribe tu visión estratégica para que el Agente la procese.");
@@ -319,29 +331,33 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
-        // PROMPT ESTRATÉGICO ELÁSTICO (Sin límites forzados)
+        // PROMPT ESTRATÉGICO ELÁSTICO E IA-DAO AWARE
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers. 
             Misión: Analizar la visión del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio. Solo el objeto JSON.
             
+            Contexto Estructural: 
+            El modelo de gobernanza seleccionado es "${archetypeText}".
+            Si el arquetipo es una "IA-DAO", considera instanciar Agentes Autónomos IA para roles técnicos, de auditoría o soporte continuo, operando en red junto a los humanos que mantendrán la visión estratégica. Si es Startup o Empresa Clásica, asume roles humanos por defecto.
+            
             Reglas de Roles:
-            1. Genera TODOS los roles necesarios para operar el proyecto. No te limites a 5 si el ecosistema requiere 8, 10 o 15 nodos para funcionar de forma descentralizada.
-            2. Usa estrictamente estos niveles estructurales: "@anxaneta" (Dirección/Estrategia), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos/Especialistas), "@pinya" (Soporte/Comunidad).
+            1. Genera TODOS los roles (humanos o agentes IA) necesarios para operar el proyecto. No te limites a 5 si requiere más nodos.
+            2. Usa estrictamente estos niveles estructurales: "@anxaneta" (Dirección/Estrategia), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Especialistas/Ejecutores/IAs), "@pinya" (Soporte/Comunidad).
             3. Asigna a cada rol un 'guardian' dominante basado en Pantheon.work. Opciones válidas: "creator", "caregiver", "ruler", "jester", "everyman", "lover", "hero", "outlaw", "magician", "innocent", "explorer", "sage".
-            4. Calcula el FMV (Fair Market Value en €/hora) realista.
+            4. Calcula el FMV (Fair Market Value en €/hora) realista. (Si es un Agente IA, el FMV será su coste computacional estimado, que suele ser menor al humano).
             
             Reglas de Transacciones (Value Network):
             1. Estima los flujos de valor clave entre estos roles. Genera tantas transacciones iniciales como consideres críticas para el arranque.
-            2. Deben existir flujos "tangibles" (código, informes, ventas) y flujos "intangibles" (mentoría, cohesión de equipo, auditoría).
+            2. Deben existir flujos "tangibles" (código, informes, ventas) y flujos "intangibles" (mentoría, cohesión de equipo, supervisión de IAs).
             
             FORMATO JSON ESPERADO (Ejemplo Estructural):
             {
                 "roles": [
                     { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" },
-                    { "levelId": "@baixos", "name": "Smart Contract Dev", "fmv": 60, "multiplier": 1.2, "guardian": "hero" }
+                    { "levelId": "@baixos", "name": "Agente IA Coder", "fmv": 15, "multiplier": 1.0, "guardian": "hero" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "entregable": "Arquitectura y Mentoría", "horas": 3 }
+                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "entregable": "Instrucciones del Prompt y Revisión", "horas": 2 }
                 ]
             }
         `;
@@ -390,13 +406,12 @@ export default class ProjectCreatorView {
                 textResponse = data.choices[0].message.content;
             
             } else if (provider === 'deepseek') {
-                // INTEGRACIÓN DEEPSEEK API
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando con DeepSeek Coder...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando arquitectura con DeepSeek Coder...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({
-                        model: "deepseek-chat",
+                        model: "deepseek-chat", // Modelo de chat de DeepSeek
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: vision }
@@ -525,15 +540,16 @@ export default class ProjectCreatorView {
     finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
+        const arch = this.dom.inpArchetype.value; // Recogemos el arquetipo elegido
         
         store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
                 id: projectId,
-                nombre: this.dom.inpName.value.trim() || 'Proyecto IA (Elástico)',
+                nombre: this.dom.inpName.value.trim() || 'Nueva Red',
                 sector: this.dom.inpSector.value,
                 prompt: visionText,
-                archetype: 'startup',
+                archetype: arch, // Guardado en el estado del proyecto
                 customRoles: this.draftRoles 
             } 
         });
