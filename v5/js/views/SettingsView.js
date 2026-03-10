@@ -513,4 +513,106 @@ export default class SettingsView {
                             
                             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;">
                                 <div style="display:flex; align-items:center; gap: 10px;">
-                                    <b style="color:white; font-family:monospace; font-size:1
+                                    <b style="color:white; font-family:monospace; font-size:1.2rem;">${lvl.id}</b>
+                                    <span style="background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:12px; font-size:0.7rem; color:#ccc;">${lvl.label}</span>
+                                </div>
+                                <div style="font-size:0.75rem; color:#888; font-style:italic;">${lvl.desc}</div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: 2fr 1.5fr 1fr; gap:15px; align-items:end; margin-bottom:15px;">
+                                <div>
+                                    <label style="font-size:0.7rem; color:#aaa; margin-bottom:5px; display:block;">Nombre del Rol (Puesto)</label>
+                                    <input type="text" id="name-${lvl.id}" class="form-control" placeholder="Ej: Director Creativo" value="${data?.name || ''}">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--accent-gold); margin-bottom:5px; display:block;">Arquetipo Guardián (Ikigai)</label>
+                                    <input type="text" id="guard-${lvl.id}" class="form-control" placeholder="${lvl.guardEj}" value="${data?.guardian || ''}">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:#aaa; margin-bottom:5px; display:block;">Multiplicador (Riesgo)</label>
+                                    <input type="number" step="0.1" id="mult-${lvl.id}" class="form-control" placeholder="Ej: 2.0" value="${data?.multiplier || 1.0}">
+                                </div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                <div>
+                                    <label style="font-size:0.7rem; color:#888; margin-bottom:5px; display:block;">🤖 System Prompt del Agente (IA)</label>
+                                    <textarea id="prompt-${lvl.id}" class="form-control" placeholder="Contexto: Eres el encargado de supervisar..." style="height:100px; font-size:0.8rem;">${data?.ai_prompt || ''}</textarea>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--accent-green); margin-bottom:5px; display:block;">🕸️ Flujos VNA (Una por línea)</label>
+                                    <p style="font-size: 0.65rem; color: #666; margin-top:0; margin-bottom:5px;">Formato: <code>@destino | Horas | Tipo | Nombre Tarea</code></p>
+                                    <textarea id="deliv-${lvl.id}" class="form-control" placeholder="@dosos | 10 | tangible | Definir Arquitectura\n@baixos | 5 | intangible | Revisar PRs" style="height:70px; font-size:0.8rem; color:var(--accent-green);">${delivs}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2rem; background:rgba(0,0,0,0.5); padding:1rem; border-radius:8px;">
+                <span style="font-size:0.8rem; color:var(--text-muted);">Los proyectos creados con esta plantilla inyectarán estos datos automáticamente.</span>
+                <button class="btn-save" id="btn-save-sector-action" style="background:var(--accent-green); color:black; font-size:1.1rem; padding:12px 30px;">💾 Inyectar a la Biblioteca</button>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+
+        document.getElementById('btn-save-sector-action').addEventListener('click', async () => {
+            let newId = document.getElementById('modal-sector-id').value.trim().toLowerCase().replace(/\s+/g, '_');
+            if(!newId) return alert("El identificador es obligatorio.");
+
+            const rolesData = {};
+            HUMA_LEVELS.forEach(lvl => {
+                const delivText = document.getElementById(`deliv-${lvl.id}`).value;
+                
+                // Parseador inteligente de VNA con validación de tipo
+                const standard_deliverables = delivText.split('\n')
+                    .filter(line => line.trim() !== '')
+                    .map(line => {
+                        const parts = line.split('|').map(p => p.trim());
+                        let to = '?';
+                        let estimatedHours = 0;
+                        let tipo = 'tangible';
+                        let name = 'Entregable';
+                        
+                        if (parts.length >= 4) {
+                            to = parts[0];
+                            estimatedHours = parseFloat(parts[1]) || 0;
+                            // Flexibilidad: si escriben 'i', 'int', 'intangible', lo capta.
+                            tipo = parts[2].toLowerCase().startsWith('i') ? 'intangible' : 'tangible';
+                            name = parts.slice(3).join('|') || name;
+                        } else if (parts.length === 3) {
+                            // Formato fallback anterior sin tipo: @to | horas | nombre
+                            to = parts[0];
+                            estimatedHours = parseFloat(parts[1]) || 0;
+                            name = parts.slice(2).join('|') || name;
+                        } else if (parts.length === 2) {
+                            estimatedHours = parseFloat(parts[0]) || 0;
+                            name = parts[1];
+                        } else {
+                            name = parts[0];
+                        }
+                        
+                        return { to, estimatedHours, tipo, name };
+                    });
+
+                rolesData[lvl.id] = {
+                    name: document.getElementById(`name-${lvl.id}`).value || lvl.label,
+                    guardian: document.getElementById(`guard-${lvl.id}`).value || '',
+                    multiplier: parseFloat(document.getElementById(`mult-${lvl.id}`).value) || 1.0,
+                    ai_prompt: document.getElementById(`prompt-${lvl.id}`).value.trim(),
+                    standard_deliverables
+                };
+            });
+
+            await store.dispatch({
+                type: 'ADD_ONTOLOGY_SECTOR',
+                payload: { sectorId: newId, rolesData }
+            });
+
+            modal.style.display = 'none';
+            document.getElementById('settingsContent').innerHTML = this.renderTab('ontology', store.getState());
+            this.bindContentEvents();
+        });
+    }
+}
