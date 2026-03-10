@@ -29,7 +29,6 @@ export default class ProjectCreatorView {
 
     async getHtml() {
         const savedKey = localStorage.getItem('tt_ai_key') || '';
-        // DEEPSEEK es ahora el valor por defecto
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
 
         return `
@@ -194,13 +193,13 @@ export default class ProjectCreatorView {
                             <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Instanciar Nuevo Rol</button>
 
                             <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem;">
-                                <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Kanban)</div>
+                                <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Value Network)</div>
                                 <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha estimado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles necesarios.</div>
                             </div>
 
                             <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
                                 <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Instanciar Mapa en el Kernel</button>
+                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Firmar e Instanciar en el Kernel</button>
                             </div>
                         </div>
 
@@ -331,33 +330,34 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
-        // PROMPT ESTRATÉGICO ELÁSTICO E IA-DAO AWARE
+        // PROMPT ESTRATÉGICO CALIBRADO PARA VNA (VERNA ALLEE)
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers. 
-            Misión: Analizar la visión del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio. Solo el objeto JSON.
+            Misión: Analizar la visión del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio.
             
             Contexto Estructural: 
-            El modelo de gobernanza seleccionado es "${archetypeText}".
-            Si el arquetipo es una "IA-DAO", considera instanciar Agentes Autónomos IA para roles técnicos, de auditoría o soporte continuo, operando en red junto a los humanos que mantendrán la visión estratégica. Si es Startup o Empresa Clásica, asume roles humanos por defecto.
+            El modelo de gobernanza es "${archetypeText}".
+            Si es una "IA-DAO", instancia Agentes Autónomos IA para roles técnicos o auditoría (@baixos, @dosos), operando junto a humanos (@anxaneta, @aixecador).
             
             Reglas de Roles:
-            1. Genera TODOS los roles (humanos o agentes IA) necesarios para operar el proyecto. No te limites a 5 si requiere más nodos.
-            2. Usa estrictamente estos niveles estructurales: "@anxaneta" (Dirección/Estrategia), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Especialistas/Ejecutores/IAs), "@pinya" (Soporte/Comunidad).
-            3. Asigna a cada rol un 'guardian' dominante basado en Pantheon.work. Opciones válidas: "creator", "caregiver", "ruler", "jester", "everyman", "lover", "hero", "outlaw", "magician", "innocent", "explorer", "sage".
-            4. Calcula el FMV (Fair Market Value en €/hora) realista. (Si es un Agente IA, el FMV será su coste computacional estimado, que suele ser menor al humano).
+            1. Genera TODOS los roles necesarios (sin límite de 5).
+            2. Usa estos niveles: "@anxaneta" (Dirección), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos/IAs), "@pinya" (Operaciones).
+            3. Asigna un 'guardian' de Pantheon.work (ej: "creator", "caregiver", "ruler", "magician", "hero", "sage", etc).
+            4. Calcula el FMV (€/hora). Agentes IA tienen FMV mucho más bajo.
             
-            Reglas de Transacciones (Value Network):
-            1. Estima los flujos de valor clave entre estos roles. Genera tantas transacciones iniciales como consideres críticas para el arranque.
-            2. Deben existir flujos "tangibles" (código, informes, ventas) y flujos "intangibles" (mentoría, cohesión de equipo, supervisión de IAs).
+            Reglas de Transacciones (Teoría de Verna Allee VNA):
+            1. Genera los flujos de valor iniciales. DEBES PRIORIZAR LOS FLUJOS TANGIBLES.
+            2. Ratio deseado: 70% Tangibles (Entregables contractuales, código, reportes, pagos) y 30% Intangibles (Soporte, mentoría, resolución de bloqueos).
+            3. No limites la cantidad, estima el circuito Kanban completo para arrancar este proyecto.
             
-            FORMATO JSON ESPERADO (Ejemplo Estructural):
+            FORMATO JSON ESPERADO:
             {
                 "roles": [
-                    { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" },
-                    { "levelId": "@baixos", "name": "Agente IA Coder", "fmv": 15, "multiplier": 1.0, "guardian": "hero" }
+                    { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "entregable": "Instrucciones del Prompt y Revisión", "horas": 2 }
+                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "entregable": "Documento de Arquitectura", "horas": 5 },
+                    { "fromLevel": "@dosos", "toLevel": "@anxaneta", "tipo": "intangible", "entregable": "Alineación y Riesgos", "horas": 1 }
                 ]
             }
         `;
@@ -367,7 +367,7 @@ export default class ProjectCreatorView {
 
             if (provider === 'gemini') {
                 const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Ontología Dinámica con ${targetModel}...`;
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Value Network con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST',
