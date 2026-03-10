@@ -83,13 +83,13 @@ export default class DashboardView {
                             ${r.levelId} | 🛡️ Req: ${r.guardian || 'Any'} | FMV: ${r.fmv}€/h
                         </div>
                     </div>
-                    ${isPO ? `<button class="btn btn-outline btn-invite" data-rolename="${r.name}" style="border-color: var(--accent-blue); color: var(--accent-blue);">+ Invitar Candidato</button>` : `<span style="color:var(--text-muted); font-size:0.8rem;">Se busca talento</span>`}
+                    <button class="btn btn-outline btn-invite" data-rolename="${r.name}" style="border-color: var(--accent-blue); color: var(--accent-blue);">+ Invitar</button>
                 </div>
             `).join('');
         }
 
         let invLogHtml = '';
-        if (isPO && project.invitations && project.invitations.length > 0) {
+        if (project.invitations && project.invitations.length > 0) {
             const list = project.invitations.map(inv => `
                 <div style="font-size: 0.8rem; color: #aaa; border-bottom: 1px dashed #333; padding: 5px 0; display:flex; justify-content:space-between;">
                     <span>✉️ ${inv.email}</span>
@@ -174,7 +174,7 @@ export default class DashboardView {
                         <h1 class="dash-title">${project.nombre}</h1>
                         
                         <div class="presentation-box">
-                            ${isPO ? `<button class="btn-edit-pitch" id="btnEditPitch" title="Editar Presentación">✏️ Editar</button>` : ''}
+                            <button class="btn-edit-pitch" id="btnEditPitch" title="Editar Presentación">✏️ Editar</button>
                             <div class="presentation-text collapsed" id="pitchTextContainer">
                                 ${pitchText.replace(/\n/g, '<br>')}
                             </div>
@@ -184,7 +184,7 @@ export default class DashboardView {
                         <div style="display: flex; gap: 15px; flex-wrap:wrap;">
                             <a href="/v5/project" data-link class="btn btn-primary" style="padding: 12px 25px; text-decoration:none; color:black; font-weight:bold;">📋 Entrar al Kanban</a>
                             <a href="/v5/map" data-link class="btn btn-outline" style="padding: 12px 25px; text-decoration:none;">🕸️ Ver Mapa de Valor</a>
-                            ${isPO ? `<button id="btnExportTemplate" class="btn btn-outline" style="border-color:#555; color:#aaa;">💾 Guardar como Plantilla</button>` : ''}
+                            <button id="btnExportTemplate" class="btn btn-outline" style="border-color:#555; color:#aaa;">💾 Guardar como Plantilla</button>
                         </div>
                     </div>
 
@@ -215,7 +215,6 @@ export default class DashboardView {
                             ${invLogHtml}
                         </div>
 
-                        ${isPO ? `
                         <div class="ai-reports-panel">
                             <h2 class="panel-title" style="color:var(--accent-purple);">🤖 Orquestador IA & Legal</h2>
                             <p style="color: var(--text-muted); margin-bottom: 1rem; font-size:0.9rem;">Genera valor y documentos utilizando las llaves cognitivas guardadas en Settings.</p>
@@ -230,7 +229,6 @@ export default class DashboardView {
                                 <span>Redacta el contrato dinámico basado en la Cap Table actual inmutable. Listo para Notario.</span>
                             </button>
                         </div>
-                        ` : ''}
                     </div>
                 </main>
             </div>
@@ -332,7 +330,7 @@ export default class DashboardView {
             });
         });
 
-        // -- GUARDAR COMO PLANTILLA (V7.8 Preview) --
+        // -- GUARDAR COMO PLANTILLA --
         const btnExportTemplate = document.getElementById('btnExportTemplate');
         if (btnExportTemplate) {
             btnExportTemplate.addEventListener('click', async () => {
@@ -372,7 +370,7 @@ export default class DashboardView {
             });
         }
 
-        // --- MÓDULO IA: DIAGNÓSTICO Y LEGAL (V7.7) ---
+        // --- MÓDULO IA: DIAGNÓSTICO Y LEGAL ---
         const modalIA = document.getElementById('aiModal');
         const modalTitle = document.getElementById('aiModalTitle');
         const modalBody = document.getElementById('aiModalBody');
