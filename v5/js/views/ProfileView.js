@@ -35,19 +35,27 @@ export default class ProfileView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 
-                .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; }
+                .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative;}
                 
                 /* HEADER PERFIL */
                 .profile-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: var(--border-radius-lg); border: 1px solid var(--glass-border); position: relative; overflow: hidden;}
+                .profile-header.minted { border-color: var(--accent-orange); box-shadow: 0 0 30px rgba(255, 171, 64, 0.1); background: linear-gradient(to right, rgba(255, 171, 64, 0.05), rgba(0,0,0,0));}
                 .profile-header::before { content: ''; position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0, 176, 255, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none;}
                 
                 .profile-basic-info { display: flex; align-items: center; gap: 2rem; z-index: 1;}
                 .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3);}
-                .profile-info h1 { margin: 0; font-size: 2.5rem; color: white; letter-spacing: -1px; }
+                .profile-header.minted .profile-avatar { background: linear-gradient(135deg, var(--accent-orange), #ffd740); box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4);}
+                
+                .profile-info h1 { margin: 0; font-size: 2.5rem; color: white; letter-spacing: -1px; display: flex; align-items: center; gap: 10px;}
                 .profile-info p { margin: 5px 0 0 0; color: var(--text-muted); font-family: var(--font-mono); font-size: 1rem; }
+                
+                .verified-badge { font-size: 1rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: flex; align-items: center; gap: 5px;}
                 
                 .btn-save-profile { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 1; transition: transform 0.2s, box-shadow 0.2s;}
                 .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); }
+                
+                .btn-mint { background: transparent; color: var(--accent-orange); border: 2px solid var(--accent-orange); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 1; transition: all 0.2s; display: flex; align-items: center; gap: 8px;}
+                .btn-mint:hover { background: rgba(255, 171, 64, 0.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 171, 64, 0.2); }
 
                 /* ESTADÍSTICAS GLOBALES */
                 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
@@ -89,32 +97,45 @@ export default class ProfileView {
 
                 .pm-ikigai { background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 8px; padding: 15px; margin-top: 2rem;}
                 .pm-section-title { font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between;}
-                .pm-prompt-text { font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444;}
+                .pm-prompt-text { font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444; word-break: break-all;}
 
-                @media (max-width: 1024px) {
-                    .content-grid { grid-template-columns: 1fr; }
-                }
-                @media (max-width: 768px) {
-                    .app-layout { flex-direction: column; }
-                    .workspace { padding: 1rem; }
-                    .stats-grid { grid-template-columns: 1fr; }
-                    .profile-header { flex-direction: column; text-align: center; }
-                }
+                /* CHECKOUT MODAL (WEB3 / PAYMENTS) */
+                .checkout-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center;}
+                .checkout-card { background: #111; border: 1px solid var(--accent-orange); border-radius: 16px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(255, 171, 64, 0.2); animation: slideUp 0.4s ease-out;}
+                .checkout-price { font-size: 3.5rem; font-weight: 900; color: white; margin: 1rem 0; font-family: var(--font-mono);}
+                .checkout-features { text-align: left; margin: 2rem 0; padding-left: 20px; color: #aaa; line-height: 1.6;}
+                
+                .pay-btn { width: 100%; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.2s;}
+                .pay-btn:hover { transform: scale(1.02); }
+                .pay-gpay { background: white; color: #3c4043; }
+                .pay-card { background: #635bff; color: white; }
+
+                .minting-loader { display: none; flex-direction: column; align-items: center; gap: 15px; margin-top: 2rem;}
+                .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 171, 64, 0.3); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite; }
+
+                @keyframes spin { to { transform: rotate(360deg); } }
+                @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+                @media (max-width: 1024px) { .content-grid { grid-template-columns: 1fr; } }
+                @media (max-width: 768px) { .app-layout { flex-direction: column; } .workspace { padding: 1rem; } .stats-grid { grid-template-columns: 1fr; } .profile-header { flex-direction: column; text-align: center; } .header-actions { flex-direction: column; width: 100%;} .btn-mint, .btn-save-profile { width: 100%; justify-content: center;} }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/profile')}
 
                 <main class="workspace">
-                    <div class="profile-header">
+                    <div class="profile-header" id="profileHeader">
                         <div class="profile-basic-info">
                             <div class="profile-avatar" id="profInitials">?</div>
                             <div class="profile-info">
-                                <h1 id="profName">Usuario Desconocido</h1>
+                                <h1 id="profName">Usuario Desconocido <span id="badgeMinted" class="verified-badge" style="display:none;">🕸️ Permaweb</span></h1>
                                 <p id="profId">@id</p>
                             </div>
                         </div>
-                        <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Identidad</button>
+                        <div class="header-actions" style="display: flex; gap: 15px; z-index: 1;">
+                            <button class="btn-mint" id="btnOpenMintModal">💎 Acuñar Identidad</button>
+                            <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Local</button>
+                        </div>
                     </div>
 
                     <div class="stats-grid">
@@ -203,6 +224,37 @@ export default class ProfileView {
                             </div>
                         </div>
                     </div>
+
+                    <div id="checkoutModal" class="checkout-modal">
+                        <div class="checkout-card">
+                            <h2 style="color: var(--accent-orange); margin-top: 0; font-size: 1.8rem;">Soberanía Permaweb</h2>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Sella tu Identidad Fractal y tu Reputación en la red descentralizada de Arweave. Tu CV será inmutable y te pertenecerá para siempre.</p>
+                            
+                            <div class="checkout-price">€1.99</div>
+                            <p style="color: #666; font-size: 0.75rem; margin-top:-10px;">Pago único por Minting (Sin suscripciones)</p>
+
+                            <ul class="checkout-features">
+                                <li>✅ Inyección del Prompt de Identidad en Arweave.</li>
+                                <li>✅ Desbloqueo del Ecosistema de Matching DAO.</li>
+                                <li>✅ Financia el coste de la IA (DeepSeek/OpenAI).</li>
+                            </ul>
+
+                            <div id="paymentButtons">
+                                <button class="pay-btn pay-gpay" id="btnGooglePay">
+                                    <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.5455 7.63636V10.1818H20.8182C20.5455 11.5455 19.5455 13.3636 17.2727 13.3636C15.3636 13.3636 13.8182 11.8182 13.8182 9.81818C13.8182 7.81818 15.3636 6.27273 17.2727 6.27273C18.3636 6.27273 19.0909 6.72727 19.5455 7.18182L21.4545 5.27273C20.3636 4.18182 18.9091 3.54545 17.2727 3.54545C13.8182 3.54545 11 6.36364 11 9.81818C11 13.2727 13.8182 16.0909 17.2727 16.0909C20.9091 16.0909 23.3636 13.5455 23.3636 9.90909C23.3636 9.36364 23.2727 8.81818 23.1818 8.45455H14.5455V7.63636ZM27.0909 10V12.7273H29.6364V10H32.3636V7.45455H29.6364V4.72727H27.0909V7.45455H24.3636V10H27.0909Z" fill="#3C4043"/><path d="M4.63636 12.8182H7.36364V0.909091H4.63636V12.8182ZM1.81818 12.8182H4.54545V4.72727H1.81818V12.8182Z" fill="#3C4043"/></svg>
+                                    Pagar con Google Pay
+                                </button>
+                                <button class="pay-btn pay-card" id="btnStripePay">💳 Pagar con Tarjeta (Stripe)</button>
+                                <button class="btn btn-outline" style="width: 100%; border: none; margin-top: 10px;" id="btnCloseModal">Cancelar</button>
+                            </div>
+
+                            <div id="mintingLoader" class="minting-loader">
+                                <div class="spinner"></div>
+                                <p style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0;">Sellando Hash en Permaweb...</p>
+                                <p style="color: #666; font-size: 0.75rem;">Por favor, no cierres esta ventana.</p>
+                            </div>
+                        </div>
+                    </div>
                 </main>
             </div>
         `;
@@ -217,7 +269,18 @@ export default class ProfileView {
             profInitials: document.getElementById('profInitials'),
             inpVision: document.getElementById('inpVision'),
             btnSave: document.getElementById('btnSaveProfile'),
-            aiSystemPrompt: document.getElementById('aiSystemPrompt')
+            btnMint: document.getElementById('btnOpenMintModal'),
+            aiSystemPrompt: document.getElementById('aiSystemPrompt'),
+            
+            // Web3 Elements
+            profileHeader: document.getElementById('profileHeader'),
+            badgeMinted: document.getElementById('badgeMinted'),
+            checkoutModal: document.getElementById('checkoutModal'),
+            btnCloseModal: document.getElementById('btnCloseModal'),
+            btnGooglePay: document.getElementById('btnGooglePay'),
+            btnStripePay: document.getElementById('btnStripePay'),
+            paymentButtons: document.getElementById('paymentButtons'),
+            mintingLoader: document.getElementById('mintingLoader')
         };
 
         const state = store.getState();
@@ -227,7 +290,7 @@ export default class ProfileView {
         const user = state.globalUsers.find(u => u.id === this.activeUserId);
         
         if (user) {
-            this.dom.profName.innerText = user.name;
+            this.dom.profName.innerHTML = `${user.name} <span id="badgeMinted" class="verified-badge" style="display:none;">🕸️ Permaweb</span>`;
             this.dom.profId.innerText = user.id;
             this.dom.profInitials.innerText = user.name.charAt(0).toUpperCase();
             
@@ -249,41 +312,72 @@ export default class ProfileView {
                     const cb = document.getElementById(`g_grow_${val}`);
                     if(cb) cb.checked = true;
                 });
+
+                // VERIFICAR ESTADO DE MINTEO
+                if (user.profile.permawebHash) {
+                    this.applyMintedStyle(user.profile.permawebHash);
+                }
             }
         } else {
             this.dom.profName.innerText = "Administrador del Sistema";
             this.dom.profId.innerText = this.activeUserId;
             this.dom.profInitials.innerText = "⚙️";
+            this.dom.btnMint.style.display = 'none';
         }
 
         // Generar el Prompt Inicial
         this.updateSystemPromptDisplay();
 
-        // 2. EVENTOS DE GUARDADO
-        this.dom.btnSave.addEventListener('click', () => this.saveIdentity());
+        // 2. EVENTOS
+        this.dom.btnSave.addEventListener('click', () => this.saveIdentity(false));
+        
+        // Pasarela de Pagos
+        this.dom.btnMint.addEventListener('click', () => {
+            this.saveIdentity(false); // Autoguardado local previo
+            this.dom.checkoutModal.style.display = 'flex';
+        });
+        
+        this.dom.btnCloseModal.addEventListener('click', () => {
+            this.dom.checkoutModal.style.display = 'none';
+        });
 
-        // 3. ANALIZAR PARTICIPACIÓN EN PROYECTOS (ESTADÍSTICAS Y SBTs)
+        const simulatePayment = () => this.executeMintingProcess();
+        this.dom.btnGooglePay.addEventListener('click', simulatePayment);
+        this.dom.btnStripePay.addEventListener('click', simulatePayment);
+
+        // 3. ANALIZAR PARTICIPACIÓN (ESTADÍSTICAS Y SBTs)
         this.calculateReputationAndStats(state);
     }
 
-    saveIdentity() {
+    applyMintedStyle(hash) {
+        this.dom.profileHeader.classList.add('minted');
+        this.dom.btnMint.style.display = 'none';
+        
+        const badge = document.getElementById('badgeMinted');
+        if(badge) badge.style.display = 'inline-flex';
+        
+        this.dom.profId.innerHTML = `${this.activeUserId} <span style="color:var(--accent-orange); margin-left:10px; font-size:0.7rem;">HASH: ${hash}</span>`;
+    }
+
+    saveIdentity(isMinting = false) {
         if (this.activeUserId === 'ecosystem-admin') {
             return alert("El usuario administrador del sistema no tiene perfil público.");
         }
 
-        // Recolectar datos
         const vision = this.dom.inpVision.value.trim();
-        
         const structural_affinity = Array.from(document.querySelectorAll('input[id^="lvl_"]:checked')).map(el => el.value);
         const guardian_authority = Array.from(document.querySelectorAll('input[id^="g_auth_"]:checked')).map(el => el.value);
         const guardian_growth = Array.from(document.querySelectorAll('input[id^="g_grow_"]:checked')).map(el => el.value);
 
-        // Modificamos directamente el estado (ya que no tenemos una acción explícita UPDATE_USER_PROFILE en el reducer base)
         const currentState = store.getState();
         const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
         
         if (userIndex > -1) {
+            // Preservar hash si ya existía
+            const existingHash = currentState.globalUsers[userIndex].profile?.permawebHash;
+            
             currentState.globalUsers[userIndex].profile = {
+                ...currentState.globalUsers[userIndex].profile,
                 vision,
                 structural_affinity,
                 guardian_authority,
@@ -291,25 +385,57 @@ export default class ProfileView {
                 lastUpdated: Date.now()
             };
 
-            // Forzamos el guardado en localStorage
             store.state = currentState;
             localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
 
-            this.updateSystemPromptDisplay();
+            this.updateSystemPromptDisplay(existingHash);
             
-            // Feedback visual
-            const originalText = this.dom.btnSave.innerText;
-            this.dom.btnSave.innerText = "✅ ¡Identidad Guardada!";
-            this.dom.btnSave.style.background = "var(--accent-green)";
-            
-            setTimeout(() => {
-                this.dom.btnSave.innerText = originalText;
-                this.dom.btnSave.style.background = "linear-gradient(45deg, var(--accent-blue), var(--accent-purple))";
-            }, 2000);
+            if (!isMinting) {
+                const originalText = this.dom.btnSave.innerText;
+                this.dom.btnSave.innerText = "✅ Guardado";
+                this.dom.btnSave.style.background = "var(--accent-green)";
+                setTimeout(() => {
+                    this.dom.btnSave.innerText = originalText;
+                    this.dom.btnSave.style.background = "linear-gradient(45deg, var(--accent-blue), var(--accent-purple))";
+                }, 2000);
+            }
         }
     }
 
-    updateSystemPromptDisplay() {
+    executeMintingProcess() {
+        // Ocultar botones, mostrar spinner
+        this.dom.paymentButtons.style.display = 'none';
+        this.dom.mintingLoader.style.display = 'flex';
+
+        // Simulación de latencia de red Arweave/Bundlr
+        setTimeout(() => {
+            const currentState = store.getState();
+            const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
+            
+            if (userIndex > -1) {
+                // Generar Hash Único de Transacción (Simulado Web3)
+                const mockHash = 'ar://' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                currentState.globalUsers[userIndex].profile.permawebHash = mockHash;
+                currentState.globalUsers[userIndex].profile.mintDate = Date.now();
+                
+                store.state = currentState;
+                localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
+
+                // Restablecer Modal y aplicar estilos
+                this.dom.checkoutModal.style.display = 'none';
+                this.dom.paymentButtons.style.display = 'block';
+                this.dom.mintingLoader.style.display = 'none';
+                
+                this.applyMintedStyle(mockHash);
+                this.updateSystemPromptDisplay(mockHash);
+                
+                alert("🎉 ¡Identidad Acuñada con Éxito en la Permaweb!\n\nTu perfil ahora es público en el ecosistema descentralizado y listo para ser reclutado por IA-DAOs.");
+            }
+        }, 3500); // 3.5 segundos de tensión dramática
+    }
+
+    updateSystemPromptDisplay(hash = null) {
         const structural_affinity = Array.from(document.querySelectorAll('input[id^="lvl_"]:checked')).map(el => el.value);
         const guardian_authority = Array.from(document.querySelectorAll('input[id^="g_auth_"]:checked')).map(el => el.value);
         const guardian_growth = Array.from(document.querySelectorAll('input[id^="g_grow_"]:checked')).map(el => el.value);
@@ -322,13 +448,16 @@ export default class ProfileView {
             return;
         }
 
+        const hashLine = hash ? `<span style="color: var(--accent-orange);">TxID (Arweave):</span> ${hash}<br>` : '';
+
         this.dom.aiSystemPrompt.innerHTML = `
             <span style="color: #888;">/* Target Semántico para Matching IA */</span><br>
+            ${hashLine}
             <span style="color: var(--accent-blue);">Niveles Óptimos:</span> [${structural_affinity.join(', ')}]<br>
             <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${authLabels.join(', ')}]<br>
             <span style="color: var(--accent-green);">Interés Evolutivo:</span> [${growthLabels.join(', ')}]<br>
             <br>
-            <span style="color: #888;">// Los Project Owners que busquen estos guardianes en la red verán tu perfil destacado por el orquestador.</span>
+            <span style="color: #888;">// Los orquestadores IA utilizarán este vector para asignarte roles afines en las DAOs.</span>
         `;
     }
 
@@ -374,12 +503,10 @@ export default class ProfileView {
             }
         });
 
-        // Pintar Stats
         document.getElementById('totSlices').innerText = Math.round(globalSlices).toLocaleString();
         document.getElementById('totHours').innerText = globalHours.toFixed(1) + 'h';
         document.getElementById('totProjects').innerText = activeProjectsCount;
 
-        // Pintar Proyectos
         const pList = document.getElementById('projectsList');
         if (projectRowsHtml.length > 0) {
             pList.innerHTML = projectRowsHtml.join('');
@@ -387,7 +514,6 @@ export default class ProfileView {
             pList.innerHTML = `<p style="color: var(--text-muted); font-style: italic; padding: 2rem; text-align: center; border: 1px dashed #333; border-radius: 8px;">Aún no tienes Slices consolidados.<br><br>Ve a 'Explorar DAOs', únete a un Castell y haz Pull de tareas para empezar a generar valor.</p>`;
         }
 
-        // Pintar Skills (SBTs)
         const sList = document.getElementById('skillsList');
         const sortedSkills = Object.entries(skillsMap).sort((a, b) => b[1] - a[1]);
         
