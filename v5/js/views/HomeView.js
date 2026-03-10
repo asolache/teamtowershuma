@@ -20,7 +20,7 @@ export default class HomeView {
         // -------------------------------------------------------------------
         // MODO 1: COMMAND CENTER (Dashboard Privado)
         // -------------------------------------------------------------------
-        if (activeUserId && activeUserId !== 'ecosystem-admin' && state.session.role !== 'guest' && userProjects.length > 0) {
+        if (activeUserId && activeUserId !== 'ecosystem-admin' && state.session.role !== 'guest') {
             const user = state.globalUsers.find(u => u.id === activeUserId);
             const userName = user ? user.name : activeUserId;
             
@@ -84,47 +84,45 @@ export default class HomeView {
                             <a href="/v5/team" data-link class="pillar-card val-seny"><h3>🧠 Seny</h3><p style="color:#666; font-size:0.8rem;">La Colla (IA)</p></a>
                         </div>
                         <h2 style="color:white; margin-bottom:1.5rem;">Mis Ecosistemas</h2>
-                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;" id="projectsContainer"></div>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;" id="projectsContainer">
+                            ${userProjects.map(p => `
+                                <div class="project-card" onclick="window.location.href='/v5/dashboard'">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                                        <h3 style="color:white; margin:0;">${p.nombre}</h3>
+                                        <span style="font-size:0.7rem; color:var(--accent-blue); font-family:var(--font-mono); border: 1px solid rgba(0,176,255,0.3); padding: 2px 6px; border-radius: 4px;">${p.archetype || 'STARTUP'}</span>
+                                    </div>
+                                    <div style="color:#666; font-size:0.8rem;">Owner: ${p.ownerId}</div>
+                                    ${p.isPrivate ? '<div style="margin-top: 10px; font-size: 0.7rem; color: var(--accent-red); font-weight: bold;">🔒 RED PRIVADA</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
                     </main>
                 </div>
             `;
         }
 
         // -------------------------------------------------------------------
-        // MODO 2: LANDING PAGE - EL PORTAL AL EXOESQUELETO (No Logueado)
+        // MODO 2: LANDING PAGE - LOGIN Y GOOGLE AUTH
         // -------------------------------------------------------------------
         return `
             <style>
-                .landing-canvas {
-                    height: 100vh; width: 100vw; background: #050507;
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    font-family: var(--font-main); position: relative; overflow: hidden;
-                }
-                .grid-bg {
-                    position: absolute; width: 200%; height: 200%;
-                    background-image: linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px), 
-                                      linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px);
-                    background-size: 50px 50px; transform: perspective(500px) rotateX(60deg);
-                    bottom: -50%; left: -50%; animation: gridMove 20s linear infinite; z-index: 0;
-                }
+                .landing-canvas { height: 100vh; width: 100vw; background: #050507; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-main); position: relative; overflow: hidden; }
+                .grid-bg { position: absolute; width: 200%; height: 200%; background-image: linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); bottom: -50%; left: -50%; animation: gridMove 20s linear infinite; z-index: 0; }
                 @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 1000px; } }
-                .content-box { z-index: 10; text-align: center; max-width: 900px; padding: 0 2rem; }
-                .tagline { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 1rem; display: block; animation: fadeIn 2s ease-out; }
-                .main-title { font-size: 4.5rem; color: white; line-height: 0.9; margin-bottom: 2rem; letter-spacing: -3px; font-weight: 800; animation: slideUp 1s ease-out; }
+                .content-box { z-index: 10; text-align: center; max-width: 900px; padding: 0 2rem; background: rgba(5, 5, 7, 0.8); backdrop-filter: blur(10px); padding: 3rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);}
+                .tagline { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 1rem; display: block; }
+                .main-title { font-size: 4.5rem; color: white; line-height: 0.9; margin-bottom: 2rem; letter-spacing: -3px; font-weight: 800; }
                 .main-title span { color: var(--accent-purple); text-shadow: 0 0 30px rgba(224, 64, 251, 0.3); }
                 .description { color: #888; font-size: 1.2rem; max-width: 650px; margin: 0 auto 2.5rem auto; line-height: 1.6; }
                 
-                .login-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 2rem;}
-                .login-input { background: rgba(0,0,0,0.8); border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 8px; font-family: var(--font-mono); font-size: 1rem; width: 250px; outline: none;}
-                .login-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);}
-
-                .btn-boot {
-                    background: white; color: black; border: none; padding: 15px 40px;
-                    border-radius: 8px; font-weight: 900; font-size: 1.1rem; cursor: pointer;
-                    font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 2px;
-                    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-                }
-                .btn-boot:hover { transform: scale(1.05); background: var(--accent-blue); box-shadow: 0 0 50px rgba(0, 176, 255, 0.4); }
+                .auth-container { display: flex; flex-direction: column; align-items: center; gap: 20px;}
+                #googleButtonContainer { min-height: 40px; margin-bottom: 10px;}
+                
+                .manual-boot { margin-top: 2rem; border-top: 1px dashed #333; padding-top: 2rem; width: 100%; max-width: 400px;}
+                .login-input { background: rgba(0,0,0,0.8); border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: var(--font-mono); width: 100%; outline: none; margin-bottom: 10px; text-align: center;}
+                .login-input:focus { border-color: var(--accent-blue); }
+                .btn-boot { background: transparent; color: #888; border: 1px solid #333; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s;}
+                .btn-boot:hover { color: white; border-color: var(--accent-blue); background: rgba(0,176,255,0.1); }
 
                 /* TERMINAL OVERLAY */
                 .terminal-overlay {
@@ -149,14 +147,17 @@ export default class HomeView {
                 <div class="content-box">
                     <span class="tagline">Soberanía Organizacional</span>
                     <h1 class="main-title">No uses software.<br>Construye tu <span>Exoesqueleto.</span></h1>
-                    <p class="description">
-                        Bienvenido al SOS v7.2. El primer Kernel organizacional que fusiona <b>VNA</b>, <b>Slicing Pie</b> e <b>IA</b> 
-                        para transformar el Deep Work en equidad inmutable.
-                    </p>
+                    <p class="description">Bienvenido al SOS v7.2. Identifícate para sincronizar tu Identidad Fractal y acceder al Castell.</p>
                     
-                    <div class="login-box">
-                        <input type="text" id="loginUserId" class="login-input" placeholder="ID de Usuario (Ej: Laura)">
-                        <button class="btn-boot" id="triggerBoot">BOOT SYSTEM &rarr;</button>
+                    <div class="auth-container">
+                        <div id="googleButtonContainer"></div>
+                        <div id="authStatus" style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; display: none;">Verificando credenciales...</div>
+                        
+                        <div class="manual-boot">
+                            <p style="font-size: 0.75rem; color: #666; margin-top: 0; text-transform: uppercase;">Boot Manual (Fallback / Testing)</p>
+                            <input type="text" id="loginUserId" class="login-input" placeholder="ID de Usuario (Ej: usr_alvaro_001)">
+                            <button class="btn-boot" id="triggerBoot">FORZAR ACCESO &rarr;</button>
+                        </div>
                     </div>
                 </div>
 
@@ -171,40 +172,39 @@ export default class HomeView {
 
     executeViewScript() {
         const state = store.getState();
-        const activeUserId = state.session.activeUserId;
-        const container = document.getElementById('projectsContainer');
-
-        // Lógica Dashboard (Home)
-        if (container) {
+        if (state.session.activeUserId && state.session.role !== 'guest') {
             Sidebar.initListeners();
-            const userProjects = state.projects.filter(p => 
-                state.session.role === 'ecosystem-owner' || 
-                p.ownerId === activeUserId || 
-                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
-            );
-            
-            // FIX V7.2: Redirigir al Lobby/Dashboard (/dashboard) en lugar del Kanban (/project)
-            container.innerHTML = userProjects.map(p => `
-                <div class="project-card" onclick="window.location.href='/v5/dashboard'">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-                        <h3 style="color:white; margin:0;">${p.nombre}</h3>
-                        <span style="font-size:0.7rem; color:var(--accent-blue); font-family:var(--font-mono); border: 1px solid rgba(0,176,255,0.3); padding: 2px 6px; border-radius: 4px;">${p.archetype || 'STARTUP'}</span>
-                    </div>
-                    <div style="color:#666; font-size:0.8rem;">Owner: ${p.ownerId}</div>
-                    ${p.isPrivate ? '<div style="margin-top: 10px; font-size: 0.7rem; color: var(--accent-red); font-weight: bold;">🔒 RED PRIVADA</div>' : ''}
-                </div>
-            `).join('');
+            return;
         }
 
-        // Lógica Landing & Boot Sequence
+        // --- GOOGLE SIGN-IN INJECTION ---
+        if (!document.getElementById('gsi-script')) {
+            const script = document.createElement('script');
+            script.id = 'gsi-script';
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            document.head.appendChild(script);
+            script.onload = () => this.initGoogleAuth();
+        } else {
+            this.initGoogleAuth();
+        }
+
+        // Fallback Bootloader Manual
         const btn = document.getElementById('triggerBoot');
         const terminal = document.getElementById('bootTerminal');
         const logContent = document.getElementById('logContent');
         const loginInput = document.getElementById('loginUserId');
 
         if (btn) {
-            btn.addEventListener('click', () => {
-                const requestedId = loginInput.value.trim() || 'usr_alvaro_001';
+            btn.addEventListener('click', async () => {
+                const requestedId = loginInput.value.trim();
+                if (!requestedId) return alert("Introduce tu ID");
+                
+                const exists = store.getState().globalUsers.find(u => u.id === requestedId);
+                if (!exists) {
+                    alert("ID no encontrado en el sistema. Registrate con Google o entra como usr_alvaro_001.");
+                    return;
+                }
                 
                 terminal.style.display = 'flex';
                 
@@ -235,6 +235,58 @@ export default class HomeView {
                 };
                 setTimeout(printLine, 400);
             });
+        }
+    }
+
+    initGoogleAuth() {
+        // CLIENT ID OFICIAL DE PRODUCCIÓN
+        const GOOGLE_CLIENT_ID = "481488102601-r6p0p273vj4f7ed3f58eivofig1tpt2f.apps.googleusercontent.com";
+
+        if (window.google && window.google.accounts) {
+            try {
+                window.google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: this.handleGoogleCredentialResponse.bind(this)
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById("googleButtonContainer"),
+                    { theme: "filled_black", size: "large", shape: "pill", width: 300 }
+                );
+            } catch (e) {
+                console.warn("GSI Error: Si estás en localhost sin SSL, Google Auth puede fallar.", e);
+                document.getElementById("googleButtonContainer").innerHTML = `<span style="color:var(--accent-red); font-size:0.8rem;">GSI requiere dominio o HTTPS. Usa el Boot Manual.</span>`;
+            }
+        }
+    }
+
+    async handleGoogleCredentialResponse(response) {
+        document.getElementById('authStatus').style.display = 'block';
+        document.getElementById('googleButtonContainer').style.display = 'none';
+
+        // Decodificar JWT (Base64)
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        const decodedToken = JSON.parse(jsonPayload);
+        const email = decodedToken.email;
+        const name = decodedToken.name;
+
+        const state = store.getState();
+        // Verificar si el usuario ya existe por email (walletOrSocial)
+        const existingUser = state.globalUsers.find(u => u.walletOrSocial === email);
+
+        if (existingUser) {
+            // Login normal
+            await store.dispatch({ type: 'LOGIN_USER', payload: { userId: existingUser.id } });
+            window.location.reload();
+        } else {
+            // Redirigir a Onboarding (Sala de Registro)
+            sessionStorage.setItem('tt_temp_onboarding_email', email);
+            sessionStorage.setItem('tt_temp_onboarding_name', name);
+            window.location.href = '/v5/onboarding';
         }
     }
 }
