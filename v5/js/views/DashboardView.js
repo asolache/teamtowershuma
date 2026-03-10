@@ -14,7 +14,6 @@ export default class DashboardView {
         const activeUserId = state.session.activeUserId;
         const globalRole = state.session.role;
 
-        // ESTADO VACÍO (Si no hay proyectos creados)
         if (!project) {
             return `
                 <style>
@@ -38,7 +37,6 @@ export default class DashboardView {
         this.activeProjectId = project.id;
         const hasAccess = store.canUserViewProject(project.id, activeUserId, globalRole);
         
-        // ESTADO BLOQUEADO (Si la red es privada y no eres miembro)
         if (!hasAccess) {
             return `
                 <style>
@@ -122,7 +120,6 @@ export default class DashboardView {
                 
                 .dash-title { font-size: 3.5rem; color: white; margin: 0 0 1.5rem 0; letter-spacing: -1.5px; line-height: 1.1; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
                 
-                /* ESTILOS DE LA PRESENTACIÓN (Pitch) */
                 .presentation-box { position: relative; margin-bottom: 2rem; background: rgba(224, 64, 251, 0.03); border-left: 3px solid var(--accent-purple); padding: 1.5rem; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;}
                 .presentation-text { color: #ccc; font-size: 1.05rem; line-height: 1.7; transition: all 0.3s ease; }
                 .presentation-text.collapsed { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -143,14 +140,14 @@ export default class DashboardView {
                 .recruitment-panel { background: rgba(0, 176, 255, 0.02); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-lg); padding: 2rem; }
                 .panel-title { color: white; font-size: 1.4rem; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 10px; }
 
-                /* PANEL IA Y REPORTES (V7.7) */
+                /* PANEL IA Y REPORTES */
                 .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem;}
                 .btn-report { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; text-align: left; cursor: pointer; transition: all 0.2s; display:flex; flex-direction:column; gap:5px;}
                 .btn-report:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-purple); transform: translateX(5px);}
                 .btn-report strong { font-size: 1.1rem; color: var(--accent-purple);}
                 .btn-report span { font-size: 0.8rem; color: #888; }
                 
-                /* IA MODAL (Diagnóstico/Notario) */
+                /* IA MODAL */
                 .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
                 .modal-ia-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow:hidden;}
                 .modal-ia-header { background: rgba(0,0,0,0.5); padding: 15px 25px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;}
@@ -158,13 +155,8 @@ export default class DashboardView {
                 .modal-ia-body { padding: 25px; overflow-y: auto; color: #ccc; font-size:0.95rem; line-height: 1.6; font-family:var(--font-main); white-space: pre-wrap;}
                 .modal-ia-footer { padding: 15px 25px; border-top: 1px solid #333; display: flex; justify-content: flex-end; gap:10px; background:rgba(0,0,0,0.3);}
 
-                @media (max-width: 1024px) {
-                    .panel-row { grid-template-columns: 1fr; }
-                }
-                @media (max-width: 768px) {
-                    .workspace { padding: 1.5rem; }
-                    .dash-title { font-size: 2rem; }
-                }
+                @media (max-width: 1024px) { .panel-row { grid-template-columns: 1fr; } }
+                @media (max-width: 768px) { .workspace { padding: 1.5rem; } .dash-title { font-size: 2rem; } }
             </style>
 
             <div class="app-layout">
