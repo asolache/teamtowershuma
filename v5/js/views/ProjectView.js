@@ -265,21 +265,15 @@ export default class ProjectView {
                 });
             }
 
-            // 2. Request Pull (Usuario Raso solicita)
+          // 2. Request Pull (Usuario Raso solicita)
             const reqBtn = card.querySelector('.btn-pull[data-action="request"]');
             if (reqBtn) {
                 reqBtn.addEventListener('click', () => {
-                    const currentState = store.getState();
-                    const pIdx = currentState.projects.findIndex(x => x.id === project.id);
-                    const txIdx = currentState.projects[pIdx].transactions.findIndex(t => t.hash === tx.hash);
-                    
-                    // Mutación directa permitida solo para este bypass visual temporal hasta que el PO firme
-                    currentState.projects[pIdx].transactions[txIdx].status = 'requested';
-                    currentState.projects[pIdx].transactions[txIdx].assigneeId = session.activeUserId;
-                    
-                    store.state = currentState;
-                    localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
-                    this.executeViewScript();
+                    store.dispatch({ 
+                        type: 'REQUEST_TRANSACTION', // Usa el Reducer Oficial
+                        payload: { projectId: project.id, txHash: tx.hash, userId: session.activeUserId } 
+                    });
+                    this.executeViewScript(); // Refresca UI
                 });
             }
 
