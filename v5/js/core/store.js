@@ -6,7 +6,6 @@
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 // --- UTILIDAD CRIPTOGRÁFICA (V7.0) ---
-// Genera un Hash SHA-256 real para la Contabilidad de Triple Entrada
 async function generateSHA256(message) {
     const msgBuffer = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -14,25 +13,23 @@ async function generateSHA256(message) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// 1. ESTADO INICIAL (Base de datos en memoria)
+// 1. ESTADO INICIAL
 const initialState = {
     config: {
         theme: 'dark',
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
-        allowUserCreation: false // GOBERNANZA V4: Por defecto, los usuarios rasos no instancian ecosistemas.
+        allowUserCreation: false 
     },
-    ontology: {
-        sectores: {} 
-    },
+    ontology: { sectores: {} },
     globalUsers: [
         {
             id: 'usr_alvaro_001',
             name: 'Alvaro',
-            globalRole: 'ecosystem-owner', // RBAC Global: Acceso total y métricas globales
+            globalRole: 'ecosystem-owner', 
             walletOrSocial: 'founder@teamtowers.com',
             profile: {
-                vision: "Fundador y Master Architect de TeamTowers SOS. Impulsando la Sociocracia y el alto rendimiento.",
+                vision: "Fundador y Master Architect de TeamTowers SOS.",
                 structural_affinity: ["@anxaneta", "@aixecador"],
                 guardian_authority: ["creator", "magician"],
                 guardian_growth: ["ruler"],
@@ -42,7 +39,7 @@ const initialState = {
         {
             id: 'usr_test_002',
             name: 'Laura Dev',
-            globalRole: 'network-user', // RBAC Global: Usuario estándar
+            globalRole: 'network-user', 
             walletOrSocial: '0xLaura...',
             profile: {
                 vision: "Desarrolladora Web3 buscando DAOs con propósito.",
@@ -55,66 +52,35 @@ const initialState = {
     ],
     macroFlows: [], 
     projects: [],
-    session: {
-        activeUserId: 'usr_alvaro_001',
-        role: 'ecosystem-owner' 
-    }
+    session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
 };
 
-// 2. REDUCER: La única función autorizada para mutar el estado
+// 2. REDUCER ASÍNCRONO
 async function asyncReducer(state, action) {
-    let newState = JSON.parse(JSON.stringify(state)); // Deep copy para evitar mutaciones directas no deseadas
+    let newState = JSON.parse(JSON.stringify(state)); 
 
     switch (action.type) {
         
         // --- SISTEMA Y CONFIGURACIÓN ---
-        case 'IMPORT_STATE':
-            return { ...newState, ...action.payload };
-
-        case 'UPDATE_GLOBAL_CONFIG':
-            return { ...newState, config: { ...newState.config, ...action.payload } };
+        case 'IMPORT_STATE': return { ...newState, ...action.payload };
+        case 'UPDATE_GLOBAL_CONFIG': return { ...newState, config: { ...newState.config, ...action.payload } };
 
         // --- ONTOLOGÍA DINÁMICA ---
         case 'ADD_ONTOLOGY_SECTOR':
-            return {
-                ...newState,
-                ontology: {
-                    ...newState.ontology,
-                    sectores: {
-                        ...newState.ontology.sectores,
-                        [action.payload.sectorId]: action.payload.rolesData
-                    }
-                }
-            };
-
+            return { ...newState, ontology: { ...newState.ontology, sectores: { ...newState.ontology.sectores, [action.payload.sectorId]: action.payload.rolesData } } };
         case 'ADD_SECTOR': {
             const sectorId = action.payload.id || action.payload.name || 'custom_sector';
             const sectorData = action.payload.data || action.payload.roles || action.payload;
-            return {
-                ...newState,
-                ontology: {
-                    ...newState.ontology,
-                    sectores: { ...newState.ontology.sectores, [sectorId]: sectorData }
-                }
-            };
+            return { ...newState, ontology: { ...newState.ontology, sectores: { ...newState.ontology.sectores, [sectorId]: sectorData } } };
         }
 
-        // --- IDENTIDAD Y SEGURIDAD (RBAC V6.5) ---
+        // --- IDENTIDAD Y SEGURIDAD ---
         case 'ADD_USER': {
             const newId = action.payload.id || action.payload.userId;
             const existsGlobal = newState.globalUsers.find(u => u.id === newId);
-            if (existsGlobal) {
-                console.warn("El identificador de usuario ya existe en el ecosistema.");
-            } else {
-                const newUser = { 
-                    id: newId, 
-                    name: action.payload.name, 
-                    walletOrSocial: action.payload.walletOrSocial,
-                    globalRole: action.payload.globalRole || 'network-user'
-                };
-                newState.globalUsers.push(newUser);
+            if (!existsGlobal) {
+                newState.globalUsers.push({ id: newId, name: action.payload.name, walletOrSocial: action.payload.walletOrSocial, globalRole: action.payload.globalRole || 'network-user' });
             }
-            
             if (action.payload.projectId) {
                 const pUser = newState.projects.find(p => p.id === action.payload.projectId);
                 if (pUser) {
@@ -124,34 +90,21 @@ async function asyncReducer(state, action) {
             }
             return newState;
         }
-
         case 'LOGIN_USER': {
-            // RBAC: Detectamos el rol global del usuario al hacer login
             const user = newState.globalUsers.find(u => u.id === action.payload.userId);
-            const userRole = user ? (user.globalRole || 'network-user') : 'guest';
-            return { ...newState, session: { activeUserId: action.payload.userId, role: userRole } };
+            return { ...newState, session: { activeUserId: action.payload.userId, role: user ? (user.globalRole || 'network-user') : 'guest' } };
         }
-            
-        case 'LOGOUT_USER':
-            // EXPULSIÓN REAL: Limpiamos la sesión para forzar la Landing Page del Bootloader
-            return { ...newState, session: { activeUserId: null, role: 'guest' } };
+        case 'LOGOUT_USER': return { ...newState, session: { activeUserId: null, role: 'guest' } };
 
         // --- GESTIÓN DE PROYECTOS / REDES ---
         case 'ADD_PROJECT_RESTRICTED': {
-            if (newState.session.role !== 'ecosystem-owner') {
-                console.warn("⛔ Acceso Denegado: Solo el Ecosystem Owner puede instanciar redes nuevas restringidas.");
-                return newState; 
-            }
+            if (newState.session.role !== 'ecosystem-owner') return newState; 
             return newState; 
         }
 
         case 'ADD_PROJECT': {
-            // VERIFICACIÓN GOBERNANZA V4
             const canCreate = newState.session.role === 'ecosystem-owner' || newState.config.allowUserCreation || action.payload.bypassSecurity;
-            if (!canCreate && !action.payload.ownerId) {
-                console.warn("⛔ Gobernanza: La creación de ecosistemas por usuarios está deshabilitada.");
-                return newState; 
-            }
+            if (!canCreate && !action.payload.ownerId) return newState; 
 
             const pSector = action.payload.sector || 'startup';
             let sectorDataObj = GLOBAL_ONTOLOGY[pSector];
@@ -161,14 +114,7 @@ async function asyncReducer(state, action) {
                 if (!sectorDataObj.roles) {
                     sectorRolesArray = Object.keys(sectorDataObj).map(levelId => {
                         const r = sectorDataObj[levelId];
-                        return {
-                            levelId: levelId,
-                            name: r.name || levelId,
-                            multiplier: r.multiplier || 1.0,
-                            fmv: r.fmv || 50,
-                            ai_prompt: r.ai_prompt || '',
-                            standard_deliverables: r.standard_deliverables || []
-                        };
+                        return { levelId, name: r.name || levelId, multiplier: r.multiplier || 1.0, fmv: r.fmv || 50, ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables || [] };
                     });
                 } else {
                     sectorRolesArray = sectorDataObj.roles;
@@ -177,35 +123,16 @@ async function asyncReducer(state, action) {
                 const legacySectorData = newState.ontology.sectores[pSector] || {};
                 Object.keys(legacySectorData).forEach(levelId => {
                     const r = legacySectorData[levelId];
-                    sectorRolesArray.push({
-                        levelId: levelId,
-                        name: r.name || levelId,
-                        multiplier: r.multiplier || 1.0,
-                        fmv: r.fmv || 50,
-                        ai_prompt: r.ai_prompt || '',
-                        standard_deliverables: r.standard_deliverables || []
-                    });
+                    sectorRolesArray.push({ levelId, name: r.name || levelId, multiplier: r.multiplier || 1.0, fmv: r.fmv || 50, ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables || [] });
                 });
             }
 
-            let baseRoles = sectorRolesArray.map(r => {
-                let finalName = r.name;
-                if (r.levelId === '@anxaneta' && action.payload.sector === 'marketing') {
-                    finalName = 'Growth Hacker / CMO';
-                }
-
-                return {
-                    id: `role-${r.levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                    levelId: r.levelId,
-                    name: finalName,
-                    multiplier: r.multiplier || 1.0,
-                    fmv: r.fmv || 50,
-                    ai_prompt: r.ai_prompt || '',
-                    standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
-                    isArchived: false,
-                    history: [] 
-                };
-            });
+            let baseRoles = sectorRolesArray.map(r => ({
+                id: `role-${r.levelId.replace('@','')}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                levelId: r.levelId, name: (r.levelId === '@anxaneta' && action.payload.sector === 'marketing') ? 'Growth Hacker / CMO' : r.name,
+                multiplier: r.multiplier || 1.0, fmv: r.fmv || 50, ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables ? JSON.parse(JSON.stringify(r.standard_deliverables)) : [],
+                isArchived: false, history: [] 
+            }));
 
             if (baseRoles.length === 0) {
                 baseRoles = action.payload.customRoles || [
@@ -221,34 +148,17 @@ async function asyncReducer(state, action) {
             const arquetipo = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || 'startup';
             const projId = action.payload.id || ('proj-' + Date.now());
 
-            // [V7] Generación asíncrona del Bloque Génesis
             const initHash = await generateSHA256(`GENESIS_${projId}_${Date.now()}`);
 
-            const newProject = {
-                id: projId,
-                nombre: action.payload.nombre || 'Nuevo Proyecto',
-                sector: pSector,
-                tipo: action.payload.tipo || 'project', 
-                archetype: arquetipo, 
-                ownerId: ownerId, 
-                prompt: action.payload.prompt || '',
-                config: { tokenomics: 'startup', archetype: arquetipo },
-                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : false, // V7.2 Privacidad
-                roles: baseRoles,
-                usuarios: [{ id: ownerId }],
-                asignaciones: [],
-                transactions: [],
-                ledger: [],
-                alerts: [],
-                invitations: [], // V7.2 Registro de invitaciones
-                genesisHash: initHash // Sello inmutable V7
-            };
-            
-            newState.projects.push(newProject);
+            newState.projects.push({
+                id: projId, nombre: action.payload.nombre || 'Nuevo Proyecto', sector: pSector, tipo: action.payload.tipo || 'project', 
+                archetype: arquetipo, ownerId: ownerId, prompt: action.payload.prompt || '', config: { tokenomics: 'startup', archetype: arquetipo },
+                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : false, 
+                roles: baseRoles, usuarios: [{ id: ownerId }], asignaciones: [], transactions: [], ledger: [], alerts: [], invitations: [], genesisHash: initHash 
+            });
             return newState;
         }
 
-        // --- SISTEMA DE INVITACIONES (V7.2) ---
         case 'LOG_INVITATION': {
             const pInv = newState.projects.find(p => p.id === action.payload.projectId);
             if (pInv) {
@@ -258,7 +168,6 @@ async function asyncReducer(state, action) {
             return newState;
         }
 
-        // --- COMUNICACIÓN Y ALERTAS ---
         case 'ADD_PROJECT_ALERT': {
             const pAlert = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAlert) {
@@ -270,9 +179,7 @@ async function asyncReducer(state, action) {
 
         case 'RESOLVE_PROJECT_ALERT': {
             const pRes = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pRes) {
-                pRes.alerts = (pRes.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a);
-            }
+            if (pRes) pRes.alerts = (pRes.alerts || []).map(a => a.id === action.payload.alertId ? { ...a, resolved: true } : a);
             return newState;
         }
 
@@ -282,16 +189,11 @@ async function asyncReducer(state, action) {
             return newState;
         }
 
-        // --- MACRO REDES (VNA) ---
         case 'ADD_MACRO_FLOW': {
-            const newFlow = {
-                id: 'mflow-' + Date.now(),
-                from: action.payload.fromProjectId,
-                to: action.payload.toProjectId,
-                entregable: action.payload.entregable || 'Intercambio de Valor',
-                tipo: action.payload.tipo || 'tangible'
-            };
-            newState.macroFlows = [...(newState.macroFlows || []), newFlow];
+            newState.macroFlows = [...(newState.macroFlows || []), {
+                id: 'mflow-' + Date.now(), from: action.payload.fromProjectId, to: action.payload.toProjectId,
+                entregable: action.payload.entregable || 'Intercambio de Valor', tipo: action.payload.tipo || 'tangible'
+            }];
             return newState;
         }
 
@@ -310,7 +212,6 @@ async function asyncReducer(state, action) {
             }
             return newState;
 
-        // --- GESTIÓN DE ROLES E INMUTABILIDAD (FASE 1.5) ---
         case 'UPDATE_ROLE':
             const pUpdRol = newState.projects.find(p => p.id === action.payload.projectId);
             if (pUpdRol) {
@@ -320,12 +221,8 @@ async function asyncReducer(state, action) {
                     const isEconomicChange = (action.payload.field === 'fmv' || action.payload.field === 'multiplier') ||
                                              (action.payload.updates && (action.payload.updates.fmv !== undefined || action.payload.updates.multiplier !== undefined)) ||
                                              (action.payload.fmv !== undefined || action.payload.multiplier !== undefined);
-
                     let newHistory = r.history || [];
-                    
-                    if (isEconomicChange) {
-                        newHistory = [...newHistory, { fmv: r.fmv, multiplier: r.multiplier, validUntil: Date.now() }];
-                    }
+                    if (isEconomicChange) newHistory = [...newHistory, { fmv: r.fmv, multiplier: r.multiplier, validUntil: Date.now() }];
 
                     if (action.payload.field) {
                         pUpdRol.roles[rIdx] = { ...r, [action.payload.field]: action.payload.value, history: newHistory };
@@ -340,17 +237,11 @@ async function asyncReducer(state, action) {
         case 'ADD_ROLE': {
             const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAddRol) {
-                const safeRole = {
-                    id: action.payload.role.id || `role-${Date.now()}`,
-                    name: action.payload.role.name || 'Nuevo Nodo',
-                    levelId: action.payload.role.levelId || '@baixos',
-                    multiplier: action.payload.role.multiplier || 1.0,
-                    fmv: action.payload.role.fmv || 50,
-                    isArchived: false,
-                    history: [], 
-                    ...action.payload.role
-                };
-                pAddRol.roles.push(safeRole);
+                pAddRol.roles.push({
+                    id: action.payload.role.id || `role-${Date.now()}`, name: action.payload.role.name || 'Nuevo Nodo',
+                    levelId: action.payload.role.levelId || '@baixos', multiplier: action.payload.role.multiplier || 1.0,
+                    fmv: action.payload.role.fmv || 50, isArchived: false, history: [], ...action.payload.role
+                });
             }
             return newState;
         }
@@ -361,9 +252,7 @@ async function asyncReducer(state, action) {
                 const rIdx = pTogArc.roles.findIndex(r => r.id === action.payload.roleId);
                 if (rIdx > -1) {
                     pTogArc.roles[rIdx].isArchived = !pTogArc.roles[rIdx].isArchived;
-                    if (pTogArc.roles[rIdx].isArchived) {
-                        pTogArc.asignaciones = pTogArc.asignaciones.filter(a => a.roleId !== action.payload.roleId);
-                    }
+                    if (pTogArc.roles[rIdx].isArchived) pTogArc.asignaciones = pTogArc.asignaciones.filter(a => a.roleId !== action.payload.roleId);
                 }
             }
             return newState;
@@ -373,44 +262,43 @@ async function asyncReducer(state, action) {
             if (pAssUsr) {
                 pAssUsr.asignaciones = pAssUsr.asignaciones.filter(a => a.roleId !== action.payload.roleId);
                 pAssUsr.asignaciones.push({ roleId: action.payload.roleId, userId: action.payload.userId, assignedAt: Date.now() });
-                
                 const prevUsers = pAssUsr.usuarios || [];
-                if (!prevUsers.find(u => u.id === action.payload.userId)) {
-                    pAssUsr.usuarios.push({ id: action.payload.userId });
-                }
+                if (!prevUsers.find(u => u.id === action.payload.userId)) pAssUsr.usuarios.push({ id: action.payload.userId });
             }
             return newState;
 
-        // --- SISTEMA PULL Y TRIPLE ENTRADA ---
+        // --- SISTEMA PULL, PUSH Y TRIPLE ENTRADA ---
         case 'ADD_TRANSACTION':
             const pAddTx = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAddTx) {
                 const prevTx = pAddTx.transactions && pAddTx.transactions.length > 0 ? pAddTx.transactions[pAddTx.transactions.length - 1] : null;
-                const newTx = {
-                    hash: action.payload.tx?.hash || ('tx_' + Math.random().toString(36).substr(2, 9)),
-                    prevHash: prevTx ? prevTx.hash : null,
-                    timestamp: Date.now(),
-                    status: action.payload.tx?.status || 'theoretical',
-                    ...action.payload.tx
-                };
                 if (!pAddTx.transactions) pAddTx.transactions = [];
-                pAddTx.transactions.push(newTx);
+                pAddTx.transactions.push({
+                    hash: action.payload.tx?.hash || ('tx_' + Math.random().toString(36).substr(2, 9)),
+                    prevHash: prevTx ? prevTx.hash : null, timestamp: Date.now(), status: action.payload.tx?.status || 'theoretical', ...action.payload.tx
+                });
             }
             return newState;
 
-        case 'UPDATE_TRANSACTION_PHASE':
-            const pUpdPhs = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pUpdPhs) {
-                const txPhs = pUpdPhs.transactions.find(tx => tx.hash === action.payload.txHash);
-                if (txPhs) txPhs.fase = action.payload.fase;
+        // V7.3: KERNEL SOLICITUD DE PULL (Usuario Raso pide hacer tarea)
+        case 'REQUEST_TRANSACTION':
+            const pReqTx = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pReqTx) {
+                const txReq = pReqTx.transactions.find(tx => tx.hash === action.payload.txHash);
+                if (txReq && txReq.status === 'theoretical') {
+                    txReq.status = 'requested';
+                    txReq.assigneeId = action.payload.userId; 
+                    txReq.requestTimestamp = Date.now();
+                }
             }
             return newState;
 
+        // V7.3: PUSH Y APROBACIÓN DE PULL (El PO delega/aprueba)
         case 'PING_TRANSACTION':
             const pPing = newState.projects.find(p => p.id === action.payload.projectId);
             if (pPing) {
                 const txPing = pPing.transactions.find(tx => tx.hash === action.payload.txHash);
-                if (txPing && txPing.status === 'theoretical') {
+                if (txPing && (txPing.status === 'theoretical' || txPing.status === 'requested')) {
                     txPing.status = 'pinged';
                     txPing.assigneeId = action.payload.userId; 
                     txPing.pingTimestamp = Date.now();
@@ -423,11 +311,8 @@ async function asyncReducer(state, action) {
             if (pRep) {
                 const txRep = pRep.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txRep && txRep.status === 'pinged') {
-                    txRep.status = 'reported';
-                    txRep.realHours = action.payload.realHours;
-                    txRep.proofLink = action.payload.proofLink;
-                    txRep.reportComment = action.payload.comentario;
-                    txRep.reportTimestamp = Date.now();
+                    txRep.status = 'reported'; txRep.realHours = action.payload.realHours;
+                    txRep.proofLink = action.payload.proofLink; txRep.reportComment = action.payload.comentario; txRep.reportTimestamp = Date.now();
                 }
             }
             return newState;
@@ -437,45 +322,31 @@ async function asyncReducer(state, action) {
             if (pAppr) {
                 const txAppr = pAppr.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txAppr && txAppr.status === 'reported') {
-                    txAppr.status = 'consolidated';
-                    txAppr.approveTimestamp = Date.now();
-                    txAppr.auditorId = newState.session.activeUserId;
+                    txAppr.status = 'consolidated'; txAppr.approveTimestamp = Date.now(); txAppr.auditorId = newState.session.activeUserId;
 
                     const tempStore = new Store();
                     const workTimestamp = txAppr.reportTimestamp || txAppr.pingTimestamp || Date.now();
                     const roleEconomics = tempStore.getRoleEconomicsAtTime(pAppr, txAppr.from, workTimestamp);
-                    
                     const archFactor = tempStore.getArchetypeFactor(pAppr.archetype);
                     const horas = txAppr.realHours || txAppr.horas || 0;
-                    
                     const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archFactor;
 
                     if (!pAppr.ledger) pAppr.ledger = [];
                     const lastLedgerHash = pAppr.ledger.length > 0 ? pAppr.ledger[pAppr.ledger.length - 1].hash : pAppr.genesisHash;
-                    const blockData = `${lastLedgerHash}|${txAppr.assigneeId}|${roleEconomics.id}|${horas}|${valorGenerado}|${Date.now()}`;
-                    
-                    const realCryptoHash = await generateSHA256(blockData);
+                    const realCryptoHash = await generateSHA256(`${lastLedgerHash}|${txAppr.assigneeId}|${roleEconomics.id}|${horas}|${valorGenerado}|${Date.now()}`);
 
                     pAppr.ledger.push({
                         id: 'ledg_' + Math.random().toString(36).substr(2, 9),
-                        hash: realCryptoHash,        // Sello inmutable
-                        prevHash: lastLedgerHash,    // Cadena
-                        previousHash: lastLedgerHash, 
-                        userId: txAppr.assigneeId,
-                        roleId: roleEconomics.id,
-                        description: `[PoW] ${txAppr.entregable}`,
-                        horas: horas, 
-                        valorCongelado: valorGenerado, 
-                        timestamp: Date.now() 
+                        hash: realCryptoHash, prevHash: lastLedgerHash, previousHash: lastLedgerHash, 
+                        userId: txAppr.assigneeId, roleId: roleEconomics.id, description: `[PoW] ${txAppr.entregable}`,
+                        horas: horas, valorCongelado: valorGenerado, timestamp: Date.now() 
                     });
-
                     txAppr.valorCongelado = valorGenerado;
                 }
             }
             return newState;
 
-        default:
-            return state;
+        default: return state;
     }
 } 
 
@@ -483,42 +354,19 @@ async function asyncReducer(state, action) {
 class Store {
     constructor() {
         const saved = localStorage.getItem('tt_sos_state');
-        if (saved) {
-            try { this.state = JSON.parse(saved); } catch(e) { this.state = initialState; }
-        } else {
-            this.state = initialState;
-        }
+        if (saved) { try { this.state = JSON.parse(saved); } catch(e) { this.state = initialState; } } else { this.state = initialState; }
 
-        // AUTO-MIGRACIÓN
-        if (!this.state.globalUsers.find(u => u.id === 'usr_alvaro_001')) {
-            this.state.globalUsers.unshift(initialState.globalUsers[0]);
-        }
-
-        if (this.state.session.activeUserId === 'ecosystem-admin') {
-            this.state.session.activeUserId = 'usr_alvaro_001';
-            this.state.session.role = 'ecosystem-owner';
-        }
-
-        if (!this.state.config) {
-            this.state.config = initialState.config;
-        } else if (this.state.config.allowUserCreation === undefined) {
-            this.state.config.allowUserCreation = false;
-        }
+        if (!this.state.globalUsers.find(u => u.id === 'usr_alvaro_001')) this.state.globalUsers.unshift(initialState.globalUsers[0]);
+        if (this.state.session.activeUserId === 'ecosystem-admin') { this.state.session.activeUserId = 'usr_alvaro_001'; this.state.session.role = 'ecosystem-owner'; }
+        if (!this.state.config) this.state.config = initialState.config; else if (this.state.config.allowUserCreation === undefined) this.state.config.allowUserCreation = false;
 
         if (this.state.projects) {
             this.state.projects = this.state.projects.map(p => ({
-                ...p, 
-                alerts: p.alerts || [],
-                ownerId: p.ownerId || 'usr_alvaro_001',
-                archetype: p.archetype || 'startup',
-                genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id),
-                isPrivate: p.isPrivate !== undefined ? p.isPrivate : false,
-                invitations: p.invitations || []
+                ...p, alerts: p.alerts || [], ownerId: p.ownerId || 'usr_alvaro_001', archetype: p.archetype || 'startup', genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id),
+                isPrivate: p.isPrivate !== undefined ? p.isPrivate : false, invitations: p.invitations || []
             }));
         }
-
         if (!this.state.macroFlows) this.state.macroFlows = [];
-
         this.listeners = [];
     }
 
@@ -532,13 +380,11 @@ class Store {
     
     subscribe(listener) { this.listeners.push(listener); }
 
-    // --- HELPER DE PRIVACIDAD V7.2 ---
     canUserViewProject(projectId, userId, globalRole) {
-        if (globalRole === 'ecosystem-owner') return true; // El Master Architect lo ve todo
+        if (globalRole === 'ecosystem-owner') return true; 
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return false;
-        if (!p.isPrivate) return true; // Si es público, todos lo ven
-        // Si es privado, solo los miembros de la colla o el PO lo ven
+        if (!p.isPrivate) return true; 
         if (p.ownerId === userId) return true;
         if (p.usuarios && p.usuarios.find(u => u.id === userId)) return true;
         return false;
@@ -546,24 +392,15 @@ class Store {
 
     getRoleEconomicsAtTime(project, roleId, targetTimestamp) {
         const role = project.roles.find(r => r.id === roleId);
-        
         if (!role) return { id: 'unknown', fmv: 50, multiplier: 1.0 };
-        if (!role.history || role.history.length === 0) {
-            return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
-        }
-
+        if (!role.history || role.history.length === 0) return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
         for (let i = 0; i < role.history.length; i++) {
-            if (targetTimestamp <= role.history[i].validUntil) {
-                return { id: role.id, fmv: role.history[i].fmv, multiplier: role.history[i].multiplier };
-            }
+            if (targetTimestamp <= role.history[i].validUntil) return { id: role.id, fmv: role.history[i].fmv, multiplier: role.history[i].multiplier };
         }
         return { id: role.id, fmv: role.fmv || 50, multiplier: role.multiplier || 1.0 };
     }
 
-    getArchetypeFactor(archetype) {
-        const factors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
-        return factors[archetype] || 1.0;
-    }
+    getArchetypeFactor(archetype) { return { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 }[archetype] || 1.0; }
 
     calculateMaturityIndex(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
@@ -578,83 +415,49 @@ class Store {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.transactions || p.transactions.length === 0) return 100;
         const atascos = p.transactions.filter(t => t.status === 'reported' || t.status === 'pinged').length;
-        const res = Math.max(0, 100 - (atascos * 5));
-        return Math.round(res);
+        return Math.round(Math.max(0, 100 - (atascos * 5)));
     }
 
     calculateHarvest(projectId, totalValuation = 0) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.ledger || p.ledger.length === 0) return [];
-
         let capTable = {};
         let totalSlices = 0;
-
         p.ledger.forEach(l => {
             const key = l.userId || l.roleId || 'unknown';
-            if (!capTable[key]) {
-                capTable[key] = { userId: l.userId, roleId: l.roleId, totalValue: 0 };
-            }
+            if (!capTable[key]) capTable[key] = { userId: l.userId, roleId: l.roleId, totalValue: 0 };
             capTable[key].totalValue += l.valorCongelado;
             totalSlices += l.valorCongelado;
         });
-
         if (totalSlices === 0) return [];
-
         return Object.keys(capTable).map(key => {
             const entry = capTable[key];
             const percentage = (entry.totalValue / totalSlices);
-            return {
-                userId: entry.userId,
-                roleId: entry.roleId,
-                totalValue: entry.totalValue, 
-                slices: entry.totalValue,
-                percentage: (percentage * 100).toFixed(2) + '%',
-                financialValue: (percentage * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
-            };
+            return { userId: entry.userId, roleId: entry.roleId, totalValue: entry.totalValue, slices: entry.totalValue, percentage: (percentage * 100).toFixed(2) + '%', financialValue: (percentage * totalValuation).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }) };
         }).sort((a, b) => b.totalValue - a.totalValue);
     }
 
     generateSystemPrompt(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return "";
-        let sysPrompt = `El prompt incluye secuenciación temporal. `;
-        sysPrompt += `El prompt incluye personalización de roles. `;
-        sysPrompt += `Contexto Global: ${this.state.config.globalPrompt}. Contexto Local: ${p.prompt}. `;
-        sysPrompt += `Roles: ${p.roles.map(r => r.name).join(', ')}. `;
-        
+        let sysPrompt = `El prompt incluye secuenciación temporal. El prompt incluye personalización de roles. Contexto Global: ${this.state.config.globalPrompt}. Contexto Local: ${p.prompt}. Roles: ${p.roles.map(r => r.name).join(', ')}. `;
         let activePhase = 1;
         if (p.transactions && p.transactions.length > 0) {
             const withPhase = p.transactions.filter(t => t.fase);
             if (withPhase.length > 0) activePhase = withPhase[withPhase.length - 1].fase;
         }
-        sysPrompt += `Fase actual: Fase ${activePhase}:`;
-        return sysPrompt;
+        return sysPrompt + `Fase actual: Fase ${activePhase}:`;
     }
 
     async importSessionJSON(arg1, arg2) {
         if (typeof arg1 === 'string' && !arg2) {
-            try {
-                const parsed = JSON.parse(arg1);
-                await this.dispatch({ type: 'IMPORT_STATE', payload: parsed });
-                return true;
-            } catch(e) { return false; }
+            try { const parsed = JSON.parse(arg1); await this.dispatch({ type: 'IMPORT_STATE', payload: parsed }); return true; } catch(e) { return false; }
         } else {
-            const projectId = arg1;
-            const jsonArray = arg2;
-            const p = this.state.projects.find(x => x.id === projectId);
-            if (!p) return;
-            const entries = jsonArray.map(item => ({
-                userId: item.userId,
-                roleId: item.roleId,
-                description: item.description,
-                horas: item.horas,
-                valorCongelado: item.horas * 50 * 2,
-                timestamp: Date.now()
-            }));
+            const projectId = arg1; const jsonArray = arg2; const p = this.state.projects.find(x => x.id === projectId); if (!p) return;
+            const entries = jsonArray.map(item => ({ userId: item.userId, roleId: item.roleId, description: item.description, horas: item.horas, valorCongelado: item.horas * 50 * 2, timestamp: Date.now() }));
             await this.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { ledger: [...(p.ledger || []), ...entries] } } });
             return true;
         }
     }
 } 
-
 export const store = new Store();
