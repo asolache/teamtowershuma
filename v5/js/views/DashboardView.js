@@ -4,7 +4,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class DashboardView {
     constructor() {
-        document.title = "Dashboard | TeamTowers SOS";
+        document.title = "Lobby del Proyecto | TeamTowers SOS";
         this.activeProjectId = null;
     }
 
@@ -16,17 +16,13 @@ export default class DashboardView {
 
         if (!project) {
             return `
-                <style>
-                    .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                    .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-                </style>
                 <div class="app-layout">
                     ${Sidebar.getHtml('/dashboard')}
-                    <main class="workspace">
+                    <main class="workspace" style="justify-content:center; align-items:center; display:flex;">
                         <div style="text-align:center; background: rgba(255,255,255,0.02); padding: 4rem; border-radius: 12px; border: 1px dashed #333;">
                             <div style="font-size: 4rem; margin-bottom: 1rem;">🕳️</div>
                             <h2 style="color:white; margin-top:0;">El Kernel está vacío</h2>
-                            <p style="color:var(--text-muted); margin-bottom: 2rem;">Aún no has instanciado ninguna red VNA en este navegador.</p>
+                            <p style="color:var(--text-muted); margin-bottom: 2rem;">Aún no has instanciado ninguna red VNA.</p>
                             <a href="/v5/create" data-link class="btn btn-primary" style="background: var(--accent-blue); color: black; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ Instanciar Nueva Red</a>
                         </div>
                     </main>
@@ -39,20 +35,13 @@ export default class DashboardView {
         
         if (!hasAccess) {
             return `
-                <style>
-                    .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                    .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-                    .locked-box { text-align: center; background: rgba(255, 82, 82, 0.05); border: 1px dashed var(--accent-red); padding: 4rem; border-radius: var(--border-radius-lg); max-width: 600px; animation: pulse 2s infinite alternate;}
-                    @keyframes pulse { from { box-shadow: 0 0 10px rgba(255,82,82,0.1); } to { box-shadow: 0 0 30px rgba(255,82,82,0.3); } }
-                </style>
                 <div class="app-layout">
                     ${Sidebar.getHtml('/dashboard')}
-                    <main class="workspace">
-                        <div class="locked-box">
+                    <main class="workspace" style="justify-content:center; align-items:center; display:flex;">
+                        <div style="text-align:center; background: rgba(255, 82, 82, 0.05); border: 1px dashed var(--accent-red); padding: 4rem; border-radius: 12px; max-width: 600px;">
                             <div style="font-size: 5rem; margin-bottom: 1rem;">🔒</div>
-                            <h1 style="color: var(--accent-red); margin-bottom: 10px;">ACCESO DENEGADO</h1>
-                            <p style="color: #ccc; line-height: 1.6;">Este Castell (<b>${project.nombre}</b>) está configurado en modo Privado (Stealth). No eres un nodo reconocido en su Colla ni el Project Owner.</p>
-                            <a href="/v5/" data-link class="btn btn-outline" style="margin-top: 2rem; display: inline-block;">Volver al Inicio</a>
+                            <h1 style="color: var(--accent-red);">ACCESO DENEGADO</h1>
+                            <p style="color: #ccc;">Este Castell es privado. No eres un nodo reconocido en su Colla.</p>
                         </div>
                     </main>
                 </div>
@@ -63,196 +52,159 @@ export default class DashboardView {
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
         const resilience = store.calculateResilience(project.id);
+        const isPO = project.ownerId === activeUserId || globalRole === 'ecosystem-owner';
 
+        // Sillas Vacías
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
 
-        let vacantesHtml = '';
-        if (sillasVacias.length === 0) {
-            vacantesHtml = `<div style="padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 8px; color: var(--accent-green); text-align: center; font-weight: bold;">✅ La Colla está al 100% de su capacidad. Ninguna silla vacía.</div>`;
-        } else {
-            vacantesHtml = sillasVacias.map(r => `
+        let vacantesHtml = sillasVacias.length === 0 
+            ? `<div style="padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 8px; color: var(--accent-green); text-align: center; font-weight: bold;">✅ La Colla está al 100%.</div>`
+            : sillasVacias.map(r => `
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
                     <div>
-                        <div style="color: white; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                        <div style="color: white; font-weight: bold; display: flex; align-items: center; gap: 8px;">
                             ${this.getIcon(r.levelId)} ${r.name}
                         </div>
-                        <div style="font-size: 0.8rem; color: #888; margin-top: 5px; font-family: var(--font-mono);">
-                            ${r.levelId} | 🛡️ Req: ${r.guardian || 'Any'} | FMV: ${r.fmv}€/h
-                        </div>
+                        <div style="font-size: 0.75rem; color: #666; font-family: var(--font-mono);">${r.levelId} | 🛡️ ${r.guardian || 'Any'}</div>
                     </div>
-                    <button class="btn btn-outline btn-invite" data-rolename="${r.name}" style="border-color: var(--accent-blue); color: var(--accent-blue);">+ Invitar Candidato</button>
+                    <button class="btn-invite" data-rolename="${r.name}" style="background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue); padding:4px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">+ Invitar</button>
                 </div>
             `).join('');
-        }
 
-        let invLogHtml = '';
-        if (project.invitations && project.invitations.length > 0) {
-            const list = project.invitations.map(inv => `
-                <div style="font-size: 0.8rem; color: #aaa; border-bottom: 1px dashed #333; padding: 5px 0; display:flex; justify-content:space-between;">
-                    <span>✉️ ${inv.email}</span>
-                    <span style="font-family: var(--font-mono);">${new Date(inv.sentAt).toLocaleDateString()}</span>
-                </div>
-            `).join('');
-            invLogHtml = `<div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
-                            <h4 style="color: #666; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px;">Registro de Correos Enviados</h4>
-                            ${list}
-                          </div>`;
-        }
-
-        const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red aún no ha sido redactado. La organización se encuentra en fase de formación primaria.';
-        const tagsHtml = (project.tags && project.tags.length > 0) ? project.tags.map(t => `<span class="badge" style="background:#222; border-color:#444; color:#ccc;">#${t}</span>`).join('') : '';
+        const pitchText = project.presentation || project.prompt || 'Visión en blanco...';
+        const tagsHtml = (project.tags && project.tags.length > 0) ? project.tags.map(t => `<span class="badge">#${t}</span>`).join('') : '';
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 2.5rem 4rem; overflow-y: auto; display: flex; flex-direction: column; }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: #050505; font-family: var(--font-main); }
+                .workspace { flex: 1; padding: 3rem 4rem; overflow-y: auto; display: flex; flex-direction: column; }
                 
-                .dash-hero { background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(15,15,20,0.9) 100%); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 3rem; position: relative; overflow: hidden; margin-bottom: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.5);}
-                .dash-hero::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
+                /* CABECERA DASHBOARD */
+                .dash-header { margin-bottom: 3rem; animation: fadeIn 0.5s ease-out; }
+                .project-tags { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap;}
+                .project-tags .badge { background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.2); color: var(--accent-blue); padding: 2px 10px; border-radius: 4px; font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase;}
                 
-                .meta-badges { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap:wrap;}
-                .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-mono); border: 1px solid;}
-                .badge-sector { color: var(--accent-blue); border-color: rgba(0, 176, 255, 0.3); background: rgba(0, 176, 255, 0.1); }
-                .badge-priv { color: ${project.isPrivate ? 'var(--accent-red)' : 'var(--accent-green)'}; border-color: ${project.isPrivate ? 'rgba(255,82,82,0.3)' : 'rgba(0,230,118,0.3)'}; background: ${project.isPrivate ? 'rgba(255,82,82,0.1)' : 'rgba(0,230,118,0.1)'}; }
-                
-                .dash-title { font-size: 3.5rem; color: white; margin: 0 0 1.5rem 0; letter-spacing: -1.5px; line-height: 1.1; text-shadow: 0 5px 15px rgba(0,0,0,0.8); display:flex; align-items:baseline; gap: 15px; flex-wrap: wrap;}
-                .dash-subtitle { font-size: 1.5rem; color: var(--text-muted); font-weight: normal; letter-spacing: 0; }
-                
-                .presentation-box { position: relative; margin-bottom: 2rem; background: rgba(224, 64, 251, 0.03); border-left: 3px solid var(--accent-purple); padding: 1.5rem; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;}
-                .presentation-text { color: #ccc; font-size: 1.05rem; line-height: 1.7; transition: all 0.3s ease; }
-                .presentation-text.collapsed { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-                
-                .btn-toggle-text { background: none; border: none; color: var(--accent-purple); font-weight: bold; cursor: pointer; padding: 0; margin-top: 10px; font-size: 0.85rem; }
-                .btn-toggle-text:hover { text-decoration: underline; }
-                
-                .btn-edit-pitch { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 4px; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; transition: 0.2s;}
-                .btn-edit-pitch:hover { background: rgba(255,255,255,0.1); color: white; }
+                .project-name-main { font-size: 3.5rem; color: white; margin: 0; letter-spacing: -2px; line-height: 1; font-weight: 800; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                .project-archetype-label { font-size: 1.2rem; color: var(--accent-orange); margin-top: 5px; font-weight: normal; opacity: 0.8; }
 
-                .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-                .kpi-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: var(--border-radius-md); text-align: center;}
-                .kpi-val { font-size: 2.5rem; font-weight: 900; font-family: var(--font-mono); color: white; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255,255,255,0.1);}
-                .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+                /* CAJA DE PRESENTACIÓN */
+                .presentation-box { margin-top: 2rem; background: linear-gradient(to right, rgba(224, 64, 251, 0.05), transparent); border-left: 4px solid var(--accent-purple); padding: 1.5rem 2rem; border-radius: 0 12px 12px 0; position: relative; max-width: 900px;}
+                .presentation-text { color: #ccc; font-size: 1.1rem; line-height: 1.7; font-style: italic; white-space: pre-wrap; }
+                .btn-edit-pitch { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.05); border: none; color: #666; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem;}
+                .btn-edit-pitch:hover { color: white; background: rgba(255,255,255,0.1); }
 
-                .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; align-items: start;}
-                
-                .recruitment-panel { background: rgba(0, 176, 255, 0.02); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-lg); padding: 2rem; }
-                .panel-title { color: white; font-size: 1.4rem; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 10px; }
+                /* BOTONES DE ACCIÓN */
+                .action-bar { display: flex; gap: 15px; margin-top: 2rem; }
+                .btn-main { padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+                .btn-primary { background: white; color: black; }
+                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+                .btn-outline { background: transparent; border: 1px solid #333; color: white; }
+                .btn-outline:hover { border-color: #666; background: rgba(255,255,255,0.05); }
 
-                /* PANEL IA Y REPORTES (V7.8) */
-                .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem;}
-                .btn-report { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; text-align: left; cursor: pointer; transition: all 0.2s; display:flex; flex-direction:column; gap:5px;}
-                .btn-report:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-purple); transform: translateX(5px);}
-                .btn-report strong { font-size: 1.1rem; color: var(--accent-purple);}
-                .btn-report span { font-size: 0.8rem; color: #888; }
-                
-                /* IA MODAL */
+                /* KPI GRID */
+                .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin: 3rem 0; }
+                .kpi-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; text-align: center; }
+                .kpi-val { font-size: 2rem; font-weight: 900; color: white; font-family: var(--font-mono); margin-bottom: 5px; display: block;}
+                .kpi-lbl { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+
+                /* CONTENEDORES SECUNDARIOS */
+                .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem;}
+                .panel-box { background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px; }
+                .panel-title { color: white; margin-top: 0; font-size: 1.3rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;}
+
+                .btn-report { width: 100%; text-align: left; background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 15px; border-radius: 8px; color: white; cursor: pointer; margin-bottom: 10px; transition: 0.2s;}
+                .btn-report:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(224, 64, 251, 0.05); }
+                .btn-report strong { display: block; color: var(--accent-purple); font-size: 1rem; margin-bottom: 4px;}
+                .btn-report span { font-size: 0.75rem; color: #666;}
+
+                /* MODAL IA */
                 .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
-                .modal-ia-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow:hidden;}
-                .modal-ia-header { background: rgba(0,0,0,0.5); padding: 15px 25px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;}
-                .modal-ia-header h2 { margin:0; font-size:1.2rem; color:var(--accent-purple);}
-                .modal-ia-body { padding: 25px; overflow-y: auto; color: #ccc; font-size:0.95rem; line-height: 1.6; font-family:var(--font-main); white-space: pre-wrap;}
-                .modal-ia-footer { padding: 15px 25px; border-top: 1px solid #333; display: flex; justify-content: flex-end; gap:10px; background:rgba(0,0,0,0.3);}
+                .modal-ia-content { background: #0a0a0a; width: 90%; max-width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; overflow:hidden;}
+                .modal-ia-body { padding: 25px; overflow-y: auto; color: #ccc; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; font-family: inherit;}
 
-                @media (max-width: 1024px) { .panel-row { grid-template-columns: 1fr; } }
-                @media (max-width: 768px) { .workspace { padding: 1.5rem; } .dash-title { font-size: 2rem; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @media (max-width: 1024px) { .panel-row { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr 1fr; } }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/dashboard')}
 
                 <main class="workspace">
-                    <div class="dash-hero">
-                        <div style="position:absolute; top: 15px; left: 15px; background: var(--accent-purple); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; letter-spacing: 1px;">V7.8</div>
-                        
-                        <div class="meta-badges" style="margin-top: 10px;">
-                            <span class="badge badge-sector">${project.sector.replace(/_/g, ' ')}</span>
-                            <span class="badge badge-sector" style="color: var(--accent-orange); border-color: rgba(255,171,64,0.3); background: rgba(255,171,64,0.1);">${project.archetype}</span>
-                            <span class="badge badge-priv">${project.isPrivate ? '🔒 Red Privada' : '🌍 Red Abierta'}</span>
+                    <header class="dash-header">
+                        <div class="project-tags">
+                            <span class="badge" style="color:var(--accent-blue); border-color:var(--accent-blue);">${project.sector.replace(/_/g, ' ')}</span>
                             ${tagsHtml}
                         </div>
-                        
-                        <h1 class="dash-title">
-                            ${project.nombre}
-                            <span class="dash-subtitle">| Dashboard Central</span>
-                        </h1>
-                        
-                        <div class="presentation-box">
-                            <button class="btn-edit-pitch" id="btnEditPitch" title="Editar Presentación">✏️ Editar</button>
-                            <div class="presentation-text collapsed" id="pitchTextContainer">
-                                ${pitchText.replace(/\n/g, '<br>')}
-                            </div>
-                            <button class="btn-toggle-text" id="btnTogglePitch">Ver más +</button>
-                        </div>
-                        
-                        <div style="display: flex; gap: 15px; flex-wrap:wrap;">
-                            <a href="/v5/project" data-link class="btn btn-primary" style="padding: 12px 25px; text-decoration:none; color:black; font-weight:bold;">📋 Entrar al Kanban</a>
-                            <a href="/v5/map" data-link class="btn btn-outline" style="padding: 12px 25px; text-decoration:none;">🕸️ Ver Mapa de Valor</a>
-                            <button id="btnExportTemplate" class="btn btn-outline" style="border-color:#555; color:#aaa;">💾 Guardar como Plantilla</button>
-                        </div>
-                    </div>
+                        <h1 class="project-name-main">${project.nombre}</h1>
+                        <div class="project-archetype-label">${project.archetype.toUpperCase()} Ecosistema</div>
 
-                    <div class="kpi-grid">
+                        <div class="presentation-box">
+                            ${isPO ? `<button class="btn-edit-pitch" id="btnEditPitch">✏️ EDITAR VISIÓN</button>` : ''}
+                            <div class="presentation-text" id="pitchDisplay">${pitchText}</div>
+                        </div>
+
+                        <div class="action-bar">
+                            <a href="/v5/project" data-link class="btn-main btn-primary">📋 ENTRAR AL KANBAN</a>
+                            <a href="/v5/map" data-link class="btn-main btn-outline">🕸️ MAPA DE VALOR</a>
+                            ${isPO ? `<button id="btnExportTemplate" class="btn-main btn-outline" style="border-style:dashed; color:#666;">💾 GUARDAR ADN</button>` : ''}
+                        </div>
+                    </header>
+
+                    <section class="kpi-grid">
                         <div class="kpi-card">
-                            <div class="kpi-val" style="color: var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</div>
-                            <div class="kpi-lbl">Slices (Equity) Mined</div>
+                            <span class="kpi-val" style="color: var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</span>
+                            <span class="kpi-lbl">Slices Mined</span>
                         </div>
                         <div class="kpi-card">
-                            <div class="kpi-val" style="color: var(--accent-blue);">${totalHours.toFixed(1)}h</div>
-                            <div class="kpi-lbl">Deep Work Auditado</div>
+                            <span class="kpi-val" style="color: var(--accent-blue);">${totalHours.toFixed(1)}h</span>
+                            <span class="kpi-lbl">Esfuerzo Auditado</span>
                         </div>
                         <div class="kpi-card">
-                            <div class="kpi-val" style="color: ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">${resilience}%</div>
-                            <div class="kpi-lbl">Salud de Flujos (Resiliencia)</div>
+                            <span class="kpi-val" style="color: ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">${resilience}%</span>
+                            <span class="kpi-lbl">Resiliencia VNA</span>
                         </div>
                         <div class="kpi-card">
-                            <div class="kpi-val">${project.usuarios ? project.usuarios.length : 1}</div>
-                            <div class="kpi-lbl">Nodos (La Colla)</div>
+                            <span class="kpi-val">${project.usuarios ? project.usuarios.length : 1}</span>
+                            <span class="kpi-lbl">Nodos Activos</span>
                         </div>
-                    </div>
+                    </section>
 
                     <div class="panel-row">
-                        <div class="recruitment-panel">
-                            <h2 class="panel-title">🎯 Tablón de Reclutamiento</h2>
-                            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size:0.9rem;">Sillas diseñadas en el Mapa que requieren asignación humana/IA.</p>
+                        <div class="panel-box">
+                            <h2 class="panel-title">🎯 Sillas Disponibles</h2>
+                            <p style="color:#555; font-size:0.85rem; margin-bottom:1.5rem;">Roles en la arquitectura esperando ser reclamados.</p>
                             ${vacantesHtml}
-                            ${invLogHtml}
                         </div>
 
-                        <div class="ai-reports-panel">
+                        <div class="panel-box" style="border-color: rgba(224, 64, 251, 0.2);">
                             <h2 class="panel-title" style="color:var(--accent-purple);">🤖 Orquestador IA & Legal</h2>
-                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size:0.9rem;">Genera valor y documentos utilizando las llaves cognitivas guardadas en Settings.</p>
+                            <p style="color:#555; font-size:0.85rem; margin-bottom:1.5rem;">Genera auditorías y documentos dinámicos.</p>
                             
                             <button class="btn-report" id="btnAIAuditor">
-                                <strong>🧠 Auditoría de Resiliencia VNA</strong>
-                                <span>La IA escanea el Mapa y el Kanban buscando cuellos de botella y da consejos de mejora.</span>
+                                <strong>🧠 Auditoría de Salud VNA</strong>
+                                <span>La IA analiza cuellos de botella y balance de poder.</span>
                             </button>
 
                             <button class="btn-report" id="btnAILegal">
-                                <strong>📄 Generar Pacto de Socios (Slicing Pie)</strong>
-                                <span>Redacta el contrato dinámico basado en la Cap Table actual inmutable. Listo para Notario.</span>
+                                <strong>📄 Generar Pacto de Socios</strong>
+                                <span>Borrador contractual basado en el Ledger actual.</span>
                             </button>
                         </div>
-
                     </div>
                 </main>
             </div>
 
             <div id="aiModal" class="modal-ia">
                 <div class="modal-ia-content">
-                    <div class="modal-ia-header">
-                        <h2 id="aiModalTitle">Procesando...</h2>
-                        <button class="btn btn-outline" id="aiModalClose" style="padding: 2px 8px; font-size:0.8rem; border-color:transparent;">✖</button>
+                    <div style="padding:15px 25px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                        <h2 id="aiModalTitle" style="margin:0; font-size:1.1rem; color:var(--accent-purple);">Procesando...</h2>
+                        <button id="aiModalClose" style="background:transparent; border:none; color:white; cursor:pointer; font-size:1.2rem;">✖</button>
                     </div>
-                    <div class="modal-ia-body" id="aiModalBody">
-                        <div style="text-align:center; padding:3rem;">
-                            <div style="font-size:3rem; animation: pulse 2s infinite;">🧠</div>
-                            <p style="color:var(--accent-purple); font-weight:bold; margin-top:1rem;">Analizando Ledger Inmutable de ${project.nombre}...</p>
-                        </div>
-                    </div>
-                    <div class="modal-ia-footer">
-                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; background:var(--accent-blue); border:none; color:black; font-weight:bold; padding:10px 20px;">⬇️ Descargar Informe (.txt)</button>
+                    <div class="modal-ia-body" id="aiModalBody"></div>
+                    <div style="padding:15px 25px; border-top:1px solid #333; display:flex; justify-content:flex-end; background:#000;">
+                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; padding:8px 15px; font-size:0.8rem;">Descargar .txt</button>
                     </div>
                 </div>
             </div>
@@ -263,221 +215,76 @@ export default class DashboardView {
 
     executeViewScript() {
         Sidebar.initListeners();
-
         if (!this.activeProjectId) return;
         const project = store.getState().projects.find(p => p.id === this.activeProjectId);
 
-        // -- COLLAPSIBLE PITCH --
-        const pitchContainer = document.getElementById('pitchTextContainer');
-        const btnToggle = document.getElementById('btnTogglePitch');
-        
-        if (pitchContainer && btnToggle) {
-            if (pitchContainer.scrollHeight <= pitchContainer.clientHeight + 10) {
-                btnToggle.style.display = 'none';
+        // -- EDITAR PITCH --
+        document.getElementById('btnEditPitch')?.addEventListener('click', () => {
+            const current = project.presentation || project.prompt || '';
+            const next = prompt("Edita la Visión / Pitch de la red:", current);
+            if (next !== null) {
+                store.dispatch({
+                    type: 'UPDATE_PROJECT_INFO',
+                    payload: { projectId: this.activeProjectId, updates: { presentation: next } }
+                });
+                window.location.reload();
             }
-
-            btnToggle.addEventListener('click', () => {
-                if (pitchContainer.classList.contains('collapsed')) {
-                    pitchContainer.classList.remove('collapsed');
-                    btnToggle.innerText = 'Ver menos -';
-                } else {
-                    pitchContainer.classList.add('collapsed');
-                    btnToggle.innerText = 'Ver más +';
-                }
-            });
-        }
-
-        // -- EDIT PITCH --
-        const btnEditPitch = document.getElementById('btnEditPitch');
-        if (btnEditPitch) {
-            btnEditPitch.addEventListener('click', () => {
-                const currentPitch = project.presentation || project.prompt || '';
-                const newPitch = prompt("Edita la Presentación del Proyecto:", currentPitch);
-                if (newPitch !== null) {
-                    store.dispatch({
-                        type: 'UPDATE_PROJECT_INFO',
-                        payload: { projectId: this.activeProjectId, updates: { presentation: newPitch } }
-                    });
-                    this.executeViewScript(); 
-                    document.querySelector('.workspace').innerHTML = 'Actualizando Ecosistema...';
-                    window.location.reload();
-                }
-            });
-        }
-
-        // -- INVITACIONES (EMAIL) --
-        document.querySelectorAll('.btn-invite').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const roleName = e.target.getAttribute('data-rolename');
-                const email = prompt(`Introduce el correo electrónico del candidato para la silla de [${roleName}]:`);
-                
-                if (email && email.includes('@')) {
-                    store.dispatch({
-                        type: 'LOG_INVITATION',
-                        payload: { projectId: this.activeProjectId, email: email }
-                    });
-
-                    const baseUrl = 'https://teamtowershuma.com/v5/';
-                    const subject = encodeURIComponent(`Invitación a unirse al Castell: ${project.nombre}`);
-                    const body = encodeURIComponent(
-                        `Hola,\n\nHas sido invitado por el Project Owner para ocupar la silla estratégica de "${roleName}" en la red "${project.nombre}".\n\n` +
-                        `Misión de la red:\n"${project.presentation || project.prompt || 'Construir valor de forma inmutable.'}"\n\n` +
-                        `Accede al portal del Exoesqueleto (TeamTowers SOS) para instanciar tu identidad fractal y comenzar a reportar tu Prueba de Trabajo (Slicing Pie).\n\n` +
-                        `Enlace de Acceso: ${baseUrl} \n\n` +
-                        `Força, Equilibri, Valor i Seny.\nTeamTowers Kernel v7.3`
-                    );
-                    
-                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-                    
-                    setTimeout(() => window.location.reload(), 1000);
-                } else if(email) {
-                    alert("Por favor, introduce un correo electrónico válido.");
-                }
-            });
         });
 
-        // -- GUARDAR COMO PLANTILLA --
-        const btnExportTemplate = document.getElementById('btnExportTemplate');
-        if (btnExportTemplate) {
-            btnExportTemplate.addEventListener('click', async () => {
-                const templateId = prompt("Escribe un ID único para guardar esta red como Plantilla Ontológica (ej: mi_agencia_v2):", project.sector + "_custom");
-                if (!templateId) return;
-
-                const rolesData = {};
-                project.roles.forEach(r => {
-                    const myTxs = project.transactions.filter(tx => tx.from === r.id);
-                    const standard_deliverables = myTxs.map(tx => {
-                        const targetRole = project.roles.find(tr => tr.id === tx.to);
-                        return { 
-                            to: targetRole ? targetRole.levelId : '?', 
-                            estimatedHours: tx.horas || 0, 
-                            tipo: tx.tipo || 'tangible',
-                            name: tx.entregable 
-                        };
-                    });
-
-                    if (!rolesData[r.levelId]) {
-                        rolesData[r.levelId] = {
-                            name: r.name,
-                            guardian: r.guardian || '',
-                            multiplier: r.multiplier || 1.0,
-                            ai_prompt: `Plantilla exportada desde ${project.nombre}`,
-                            standard_deliverables
-                        };
-                    }
-                });
-
-                await store.dispatch({
-                    type: 'ADD_ONTOLOGY_SECTOR',
-                    payload: { sectorId: templateId.toLowerCase().replace(/\s+/g, '_'), rolesData }
-                });
-
-                alert("✅ Plantilla guardada. Podrás usarla en el Instanciador o editarla en Settings.");
-            });
-        }
-
-        // --- MÓDULO IA: DIAGNÓSTICO Y LEGAL ---
-        const modalIA = document.getElementById('aiModal');
-        const modalTitle = document.getElementById('aiModalTitle');
-        const modalBody = document.getElementById('aiModalBody');
-        const btnDownload = document.getElementById('btnDownloadPDF');
-        
-        document.getElementById('aiModalClose')?.addEventListener('click', () => { modalIA.style.display = 'none'; });
-
-        const callAIAgent = async (promptType) => {
-            const provider = localStorage.getItem('tt_ai_provider');
-            let apiKey = '';
-            if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
-            if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
-            if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
-
-            if (!provider || !apiKey) {
-                alert("⚠️ Falta la llave cognitiva. Ve a Settings > General e introduce tu API Key (DeepSeek/OpenAI/Gemini).");
-                return;
-            }
-
-            modalIA.style.display = 'flex';
-            btnDownload.style.display = 'none';
-            modalTitle.innerText = promptType === 'audit' ? 'Auditoría VNA en curso...' : 'Redactando Pacto de Socios...';
-            modalBody.innerHTML = `<div style="text-align:center; padding:3rem;"><div style="font-size:3rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); font-weight:bold; margin-top:1rem;">Analizando Ledger Inmutable de ${project.nombre}...</p></div>`;
-
-            // Extraemos los datos crudos para la IA
-            const harvest = store.calculateHarvest(project.id) || [];
-            const dataPayload = {
-                nombre: project.nombre,
-                arquetipo: project.archetype,
-                roles: project.roles.map(r => `${r.name} (${r.levelId})`),
-                transacciones_teoricas: project.transactions.length,
-                ledger_slices: harvest.map(h => `${h.user}: ${h.slices.toFixed(2)} Slices (${h.percent}%)`)
-            };
-
-            let systemPrompt = store.getState().config.globalPrompt || "Eres un analista de redes DAO.";
-            if (promptType === 'audit') {
-                systemPrompt += `\nMisión: Eres un Auditor Organizacional. Analiza el JSON del proyecto actual y devuelve un diagnóstico (Máx 4 párrafos). Detecta cuellos de botella en los roles y evalúa la resiliencia en base a los Slices. Formato texto plano legible sin markdown excesivo.`;
-            } else {
-                systemPrompt += `\nMisión: Eres un Abogado Notarial Corporativo especializado en Slicing Pie y Modelos Dinámicos de Equidad. Basándote en el JSON del proyecto, redacta el borrador de un "Pacto de Socios" formal. Incluye cláusulas de Fundadores, la tabla de "Cap Table" actual (basada en el campo ledger_slices), y el objeto fundacional. Formato texto formal.`;
-            }
-
-            try {
-                let resultText = "";
-                
-                if (provider === 'deepseek') {
-                    const response = await fetch('https://api.deepseek.com/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({
-                            model: "deepseek-chat",
-                            messages: [
-                                { role: "system", content: systemPrompt },
-                                { role: "user", content: JSON.stringify(dataPayload) }
-                            ]
-                        })
-                    });
-                    if (!response.ok) throw new Error("Error en DeepSeek API.");
-                    const data = await response.json();
-                    resultText = data.choices[0].message.content;
-                } else if (provider === 'openai') {
-                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({
-                            model: "gpt-4o-mini",
-                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }]
-                        })
-                    });
-                    if (!response.ok) throw new Error("Error en OpenAI API.");
-                    const data = await response.json();
-                    resultText = data.choices[0].message.content;
-                } else if (provider === 'gemini') {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nJSON: ${JSON.stringify(dataPayload)}` }] }] })
-                    });
-                    if (!response.ok) throw new Error("Error en Gemini API.");
-                    const data = await response.json();
-                    resultText = data.candidates[0].content.parts[0].text;
+        // -- GUARDAR PLANTILLA --
+        document.getElementById('btnExportTemplate')?.addEventListener('click', async () => {
+            const id = prompt("ID de la plantilla (ej: mi_startup):", project.sector + "_v2");
+            if (!id) return;
+            const rolesData = {};
+            project.roles.forEach(r => {
+                if (!rolesData[r.levelId]) {
+                    rolesData[r.levelId] = { name: r.name, guardian: r.guardian || '', multiplier: r.multiplier || 1.0, ai_prompt: '', standard_deliverables: [] };
                 }
+            });
+            await store.dispatch({ type: 'ADD_ONTOLOGY_SECTOR', payload: { sectorId: id, rolesData } });
+            alert("✅ Guardada en Settings.");
+        });
 
-                modalTitle.innerText = promptType === 'audit' ? 'Reporte de Auditoría VNA' : 'Borrador: Pacto de Socios';
-                modalBody.innerHTML = resultText.replace(/\n/g, '<br>');
-                
-                // Preparar Botón de Descarga
-                btnDownload.style.display = 'inline-block';
+        // -- MÓDULO IA --
+        const modal = document.getElementById('aiModal');
+        const modalBody = document.getElementById('aiModalBody');
+        const modalTitle = document.getElementById('aiModalTitle');
+        const btnDownload = document.getElementById('btnDownloadPDF');
+        document.getElementById('aiModalClose').onclick = () => modal.style.display = 'none';
+
+        const runAI = async (type) => {
+            const provider = localStorage.getItem('tt_ai_provider');
+            const key = localStorage.getItem(`tt_key_${provider}`);
+            if (!key) return alert("Falta API Key en Settings.");
+
+            modal.style.display = 'flex';
+            modalBody.innerHTML = "Analizando red...";
+            btnDownload.style.display = 'none';
+
+            const sys = type === 'audit' ? "Auditor VNA" : "Notario Web3";
+            try {
+                const res = await fetch(`https://api.deepseek.com/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [{ role: "system", content: sys }, { role: "user", content: JSON.stringify(project) }]
+                    })
+                });
+                const data = await res.json();
+                const txt = data.choices[0].message.content;
+                modalTitle.innerText = type === 'audit' ? 'Reporte Auditoría' : 'Pacto de Socios';
+                modalBody.innerText = txt;
+                btnDownload.style.display = 'block';
                 btnDownload.onclick = () => {
-                    const blob = new Blob([resultText], { type: "text/plain;charset=utf-8" });
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(blob);
-                    a.download = promptType === 'audit' ? `Auditoria_${project.nombre.replace(/ /g,'_')}.txt` : `PactoSocios_${project.nombre.replace(/ /g,'_')}.txt`;
-                    a.click();
+                    const b = new Blob([txt], {type:"text/plain"});
+                    const u = URL.createObjectURL(b);
+                    const a = document.createElement('a'); a.href=u; a.download=`${type}.txt`; a.click();
                 };
-
-            } catch (err) {
-                modalBody.innerHTML = `<span style="color:var(--accent-red);">Error de Conexión:</span> ${err.message}<br><br>Asegúrate de tener la API Key correctamente configurada en Settings.`;
-            }
+            } catch (e) { modalBody.innerText = "Error de conexión."; }
         };
 
-        document.getElementById('btnAIAuditor')?.addEventListener('click', () => callAIAgent('audit'));
+        document.getElementById('btnAIAuditor')?.addEventListener('click', () => runAI('audit'));
         document.getElementById('btnAILegal')?.addEventListener('click', () => callAIAgent('legal'));
     }
 }
