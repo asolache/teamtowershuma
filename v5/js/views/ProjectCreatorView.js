@@ -56,7 +56,7 @@ export default class ProjectCreatorView {
                 .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-sm); padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
                 .legend-item { display: flex; align-items: flex-start; gap: 8px; }
 
-                .role-draft-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; max-height: 450px; overflow-y: auto; padding-right: 10px;}
+                .role-draft-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; max-height: 350px; overflow-y: auto; padding-right: 10px;}
                 .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: var(--border-radius-sm); gap: 15px;}
                 
                 .role-inputs { display: flex; gap: 10px; flex: 1; align-items: center; flex-wrap: wrap;}
@@ -69,6 +69,10 @@ export default class ProjectCreatorView {
                 
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
                 .btn-del-role:hover { transform: scale(1.2); }
+
+                /* MINI-MAP PREVIEW (NUEVO) */
+                .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
+                .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
 
                 .actions-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
 
@@ -176,8 +180,17 @@ export default class ProjectCreatorView {
 
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 1.5rem;">
-                                <h1>Definición de Roles</h1>
-                                <p>Ajusta los Niveles y Guardianes de Pantheon generados por la IA.</p>
+                                <h1>Validación de Arquitectura</h1>
+                                <p>Ajusta los roles o el mapa visual generado por la IA antes de firmarlo.</p>
+                            </div>
+
+                            <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
+
+                            <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Value Network)</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha estimado <strong id="txCount" style="color: white;">0</strong> entregables clave (ver Mapa ☝️).</div>
+                                </div>
                             </div>
 
                             <div class="educational-legend">
@@ -191,11 +204,6 @@ export default class ProjectCreatorView {
                             <div class="role-draft-list" id="draftRolesContainer"></div>
                             
                             <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Instanciar Nuevo Rol</button>
-
-                            <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem;">
-                                <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Value Network)</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha estimado <strong id="txCount" style="color: white;">0</strong> entregables tangibles e intangibles necesarios.</div>
-                            </div>
 
                             <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
                                 <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
@@ -303,11 +311,12 @@ export default class ProjectCreatorView {
         this.dom.dot2.classList.add('active');
         
         if (this.draftTxs.length > 0) {
-            this.dom.aiTxFeedback.style.display = 'block';
+            this.dom.aiTxFeedback.style.display = 'flex';
             this.dom.txCount.innerText = this.draftTxs.length;
         } else {
             this.dom.aiTxFeedback.style.display = 'none';
         }
+        
         this.renderDraftRoles();
     }
 
@@ -535,12 +544,132 @@ export default class ProjectCreatorView {
                 this.renderDraftRoles();
             });
         });
+
+        // Renderizamos el minimapa cada vez que los roles se actualizan
+        this.renderMiniMap();
     }
+
+    renderMiniMap() {
+        const container = document.getElementById('miniMapContainer');
+        if (!container) return;
+
+        container.innerHTML = '<svg id="mini-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>';
+        const svg = document.getElementById('mini-svg');
+
+        if (this.draftRoles.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+
+        const layout = { '@anxaneta': {x: 50, y: 20}, '@aixecador': {x: 50, y: 40}, '@dosos': {x: 35, y: 60}, '@baixos': {x: 65, y: 60}, '@pinya': {x: 50, y: 80} };
+        const levelCounts = {};
+
+        // 1. Dibujar los Nodos (Roles)
+        this.draftRoles.forEach((rol, i) => {
+            const level = rol.levelId || '@baixos';
+            levelCounts[level] = (levelCounts[level] || 0) + 1;
+            
+            const pos = { ...(layout[level] || {x:50, y:50}) };
+            if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
+
+            const el = document.createElement('div');
+            el.className = 'mini-node';
+            el.dataset.idx = i;
+            el.style.left = `${pos.x}%`; el.style.top = `${pos.y}%`;
+            el.style.borderColor = this.getColor(level);
+            el.innerHTML = this.getIcon(level);
+            el.title = `${rol.name} (${this.guardians.find(g => g.id === rol.guardian)?.label || ''})`;
+            container.appendChild(el);
+        });
+
+        // 2. Dibujar las Líneas (Transacciones)
+        // Usamos un setTimeout muy breve para que el DOM pinte los nodos y podamos extraer sus coordenadas exactas (BoundingRect)
+        setTimeout(() => {
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            defs.innerHTML = `
+                <marker id="mini-arrow-tangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-green)"/></marker>
+                <marker id="mini-arrow-intangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-purple)"/></marker>
+            `;
+            svg.appendChild(defs);
+
+            const pairCounts = {};
+            this.draftTxs.forEach((tx, i) => {
+                // Encontrar el primer nodo que encaje con el nivel de la transacción
+                const fromIdx = this.draftRoles.findIndex(r => r.levelId === tx.fromLevel);
+                const toIdx = this.draftRoles.findIndex(r => r.levelId === tx.toLevel);
+                
+                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+                    const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
+                    if (!pairCounts[key]) pairCounts[key] = [];
+                    pairCounts[key].push({ tx, fromIdx, toIdx, i });
+                }
+            });
+
+            const canvRect = container.getBoundingClientRect();
+
+            Object.keys(pairCounts).forEach(key => {
+                const edges = pairCounts[key];
+                edges.forEach((edge, multiIdx) => {
+                    const dom1 = container.querySelector(`.mini-node[data-idx="${edge.fromIdx}"]`);
+                    const dom2 = container.querySelector(`.mini-node[data-idx="${edge.toIdx}"]`);
+                    if (!dom1 || !dom2) return;
+
+                    const r1 = dom1.getBoundingClientRect();
+                    const r2 = dom2.getBoundingClientRect();
+
+                    const x1 = r1.left + r1.width/2 - canvRect.left;
+                    const y1 = r1.top + r1.height/2 - canvRect.top;
+                    const x2 = r2.left + r2.width/2 - canvRect.left;
+                    const y2 = r2.top + r2.height/2 - canvRect.top;
+
+                    const dx = x2 - x1, dy = y2 - y1;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const nx = -dy / dist, ny = dx / dist;
+
+                    let offset = 0;
+                    if (edges.length > 1) {
+                        const step = 20; // Curvatura si hay varios flujos en la misma ruta
+                        offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
+                    }
+
+                    const cx = (x1 + x2) / 2 + nx * offset;
+                    const cy = (y1 + y2) / 2 + ny * offset;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+                    path.setAttribute('marker-end', edge.tx.tipo === 'tangible' ? 'url(#mini-arrow-tangible)' : 'url(#mini-arrow-intangible)');
+                    
+                    path.style.fill = 'none';
+                    path.style.stroke = edge.tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+                    path.style.strokeWidth = '2';
+                    if(edge.tx.tipo === 'intangible') path.style.strokeDasharray = '4,4';
+                    
+                    svg.appendChild(path);
+                    
+                    // Número de la transacción en la línea
+                    const txtX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+                    const txtY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+                    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    txt.setAttribute('x', txtX); 
+                    txt.setAttribute('y', txtY - 4);
+                    txt.setAttribute('text-anchor', 'middle');
+                    txt.style.cssText = `fill:${edge.tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:10px;font-weight:bold;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:4px;`;
+                    txt.textContent = `[${edge.i + 1}]`;
+                    svg.appendChild(txt);
+                });
+            });
+        }, 150);
+    }
+
+    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
+    getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 
     finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
-        const arch = this.dom.inpArchetype.value; // Recogemos el arquetipo elegido
+        const arch = this.dom.inpArchetype.value; 
         
         store.dispatch({ 
             type: 'ADD_PROJECT', 
@@ -549,7 +678,7 @@ export default class ProjectCreatorView {
                 nombre: this.dom.inpName.value.trim() || 'Nueva Red',
                 sector: this.dom.inpSector.value,
                 prompt: visionText,
-                archetype: arch, // Guardado en el estado del proyecto
+                archetype: arch, 
                 customRoles: this.draftRoles 
             } 
         });
