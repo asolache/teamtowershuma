@@ -4,7 +4,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class TeamView {
     constructor() {
-        document.title = "Tripulación & DAO | TeamTowers";
+        document.title = "La Colla & DAO | TeamTowers";
         this.activeProjectId = null;
     }
 
@@ -85,7 +85,7 @@ export default class TeamView {
                 <main class="workspace">
                     <div class="view-header">
                         <div>
-                            <h1>👥 Gestión de Nodos (Talento)</h1>
+                            <h1>👥 La Colla (Talento & Nodos)</h1>
                             <p>Identidad fractal y asignación mediante Motor de Matching Semántico.</p>
                         </div>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
@@ -97,7 +97,7 @@ export default class TeamView {
                     <div class="team-grid">
                         <div class="panel">
                             <div class="panel-title">
-                                <span>Talent Pool (Red Activa)</span>
+                                <span>La Colla (Red Activa)</span>
                                 <span class="badge" id="userCount" style="background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 12px; font-size: 0.9rem;">0</span>
                             </div>
                             <div id="usersList"></div>
@@ -262,7 +262,7 @@ export default class TeamView {
         container.innerHTML = '';
 
         if (projUsers.length === 0) {
-            container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding: 2rem; border: 1px dashed var(--glass-border); border-radius: 8px;">No hay usuarios en este Castell. Invita a alguien.</p>`;
+            container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding: 2rem; border: 1px dashed var(--glass-border); border-radius: 8px;">La Colla está vacía. Invita a nuevos miembros para levantar el Castell.</p>`;
             return;
         }
 
