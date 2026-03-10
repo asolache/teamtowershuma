@@ -1,8 +1,8 @@
-// v5/js/views/ProjectDashboardView.js
+// v5/js/views/DashboardView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 
-export default class ProjectDashboardView {
+export default class DashboardView {
     constructor() {
         document.title = "Lobby del Proyecto | TeamTowers SOS";
         this.activeProjectId = null;
@@ -14,12 +14,22 @@ export default class ProjectDashboardView {
         const activeUserId = state.session.activeUserId;
         const globalRole = state.session.role;
 
+        // ESTADO VACÍO (Si no hay proyectos creados)
         if (!project) {
             return `
+                <style>
+                    .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                    .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+                </style>
                 <div class="app-layout">
                     ${Sidebar.getHtml('/dashboard')}
-                    <main class="workspace" style="justify-content:center; align-items:center;">
-                        <h2 style="color:var(--text-muted);">Ningún proyecto activo en el Kernel.</h2>
+                    <main class="workspace">
+                        <div style="text-align:center; background: rgba(255,255,255,0.02); padding: 4rem; border-radius: 12px; border: 1px dashed #333;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🕳️</div>
+                            <h2 style="color:white; margin-top:0;">El Kernel está vacío</h2>
+                            <p style="color:var(--text-muted); margin-bottom: 2rem;">Aún no has instanciado ninguna red VNA en este navegador.</p>
+                            <a href="/v5/create" data-link class="btn btn-primary" style="background: var(--accent-blue); color: black; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ Instanciar Nueva Red</a>
+                        </div>
                     </main>
                 </div>
             `;
@@ -28,6 +38,7 @@ export default class ProjectDashboardView {
         this.activeProjectId = project.id;
         const hasAccess = store.canUserViewProject(project.id, activeUserId, globalRole);
         
+        // ESTADO BLOQUEADO (Si la red es privada y no eres miembro)
         if (!hasAccess) {
             return `
                 <style>
@@ -179,8 +190,8 @@ export default class ProjectDashboardView {
                         </div>
                         
                         <div style="display: flex; gap: 15px; flex-wrap:wrap;">
-                            <a href="/v5/project" data-link class="btn btn-primary" style="padding: 12px 25px;">📋 Entrar al Kanban</a>
-                            <a href="/v5/map" data-link class="btn btn-outline" style="padding: 12px 25px;">🕸️ Ver Mapa de Valor</a>
+                            <a href="/v5/project" data-link class="btn btn-primary" style="padding: 12px 25px; text-decoration:none; color:black; font-weight:bold;">📋 Entrar al Kanban</a>
+                            <a href="/v5/map" data-link class="btn btn-outline" style="padding: 12px 25px; text-decoration:none;">🕸️ Ver Mapa de Valor</a>
                             ${isPO ? `<button id="btnExportTemplate" class="btn btn-outline" style="border-color:#555; color:#aaa;">💾 Guardar como Plantilla</button>` : ''}
                         </div>
                     </div>
@@ -241,11 +252,11 @@ export default class ProjectDashboardView {
                     <div class="modal-ia-body" id="aiModalBody">
                         <div style="text-align:center; padding:3rem;">
                             <div style="font-size:3rem; animation: pulse 2s infinite;">🧠</div>
-                            <p style="color:var(--accent-purple); font-weight:bold; margin-top:1rem;">Analizando Ledger y Red VNA...</p>
+                            <p style="color:var(--accent-purple); font-weight:bold; margin-top:1rem;">Analizando Ledger Inmutable de ${project.nombre}...</p>
                         </div>
                     </div>
                     <div class="modal-ia-footer">
-                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; background:var(--accent-blue); border:none; color:black;">⬇️ Descargar Informe (.txt)</button>
+                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; background:var(--accent-blue); border:none; color:black; font-weight:bold; padding:10px 20px;">⬇️ Descargar Informe (.txt)</button>
                     </div>
                 </div>
             </div>
@@ -349,7 +360,6 @@ export default class ProjectDashboardView {
                         };
                     });
 
-                    // Solo guardamos un rol por levelId en la plantilla (simplificación)
                     if (!rolesData[r.levelId]) {
                         rolesData[r.levelId] = {
                             name: r.name,
@@ -407,7 +417,7 @@ export default class ProjectDashboardView {
 
             let systemPrompt = store.getState().config.globalPrompt || "Eres un analista de redes DAO.";
             if (promptType === 'audit') {
-                systemPrompt += `\nMisión: Eres un Auditor Organizacional. Analiza el JSON del proyecto actual y devuelve un diagnóstico (Máx 4 párrafos). Detecta cuellos de botella en los roles y evalúa la resiliencia en base a los Slices. Formato texto plano legible.`;
+                systemPrompt += `\nMisión: Eres un Auditor Organizacional. Analiza el JSON del proyecto actual y devuelve un diagnóstico (Máx 4 párrafos). Detecta cuellos de botella en los roles y evalúa la resiliencia en base a los Slices. Formato texto plano legible sin markdown excesivo.`;
             } else {
                 systemPrompt += `\nMisión: Eres un Abogado Notarial Corporativo especializado en Slicing Pie y Modelos Dinámicos de Equidad. Basándote en el JSON del proyecto, redacta el borrador de un "Pacto de Socios" formal. Incluye cláusulas de Fundadores, la tabla de "Cap Table" actual (basada en el campo ledger_slices), y el objeto fundacional. Formato texto formal.`;
             }
@@ -462,12 +472,12 @@ export default class ProjectDashboardView {
                     const blob = new Blob([resultText], { type: "text/plain;charset=utf-8" });
                     const a = document.createElement('a');
                     a.href = URL.createObjectURL(blob);
-                    a.download = promptType === 'audit' ? `Auditoria_${project.nombre}.txt` : `PactoSocios_${project.nombre}.txt`;
+                    a.download = promptType === 'audit' ? `Auditoria_${project.nombre.replace(/ /g,'_')}.txt` : `PactoSocios_${project.nombre.replace(/ /g,'_')}.txt`;
                     a.click();
                 };
 
             } catch (err) {
-                modalBody.innerHTML = `<span style="color:var(--accent-red);">Error de Conexión:</span> ${err.message}<br><br>Asegúrate de tener saldo en la API o comprueba tu conexión.`;
+                modalBody.innerHTML = `<span style="color:var(--accent-red);">Error de Conexión:</span> ${err.message}<br><br>Asegúrate de tener la API Key correctamente configurada en Settings.`;
             }
         };
 
