@@ -9,6 +9,7 @@ export default class ProjectCreatorView {
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
+        this.draftPresentation = ""; // NUEVO: Almacenará el Pitch de la IA
         
         // Los 12 Arquetipos de Guardianes (Pantheon.work)
         this.guardians = [
@@ -29,13 +30,11 @@ export default class ProjectCreatorView {
 
     async getHtml() {
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-        // Buscamos la llave guardada en settings
         let savedKey = '';
         if (savedProvider === 'deepseek') savedKey = localStorage.getItem('tt_key_deepseek') || '';
         if (savedProvider === 'openai') savedKey = localStorage.getItem('tt_key_openai') || '';
         if (savedProvider === 'gemini') savedKey = localStorage.getItem('tt_key_gemini') || '';
 
-        // Si ya hay llave, el panel nace cerrado y limpio
         const hasKey = savedKey.length > 5;
 
         return `
@@ -77,11 +76,9 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
                 .btn-del-role:hover { transform: scale(1.2); }
 
-                /* MINI-MAP PREVIEW */
                 .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
                 .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
 
-                /* FEEDBACK INTERACTIVO Y PREVIEW DE TXs */
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px);}
                 
@@ -152,8 +149,8 @@ export default class ProjectCreatorView {
                             </div>
 
                             <div class="form-group">
-                                <label>Misión / Visión Estratégica</label>
-                                <textarea id="inpVision" class="vision-box" placeholder="Describe el propósito de la red, los objetivos fundacionales o los problemas del sistema actual que quieres resolver..."></textarea>
+                                <label>Visión Bruta / Input Cognitivo</label>
+                                <textarea id="inpVision" class="vision-box" placeholder="Describe brevemente la idea. El Orquestador IA generará la Propuesta de Valor, el Ikigai de la red y el Pitch final..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
@@ -191,7 +188,7 @@ export default class ProjectCreatorView {
                         <div id="aiLoading" class="ai-loading">
                             <span>🔌</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Diseñando estructura elástica de la DAO.</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Redactando Propuesta de Valor y Ecosistema...</div>
                         </div>
 
                         <div id="step2" style="display: none;">
@@ -204,8 +201,8 @@ export default class ProjectCreatorView {
 
                             <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de los flujos de valor">
                                 <div>
-                                    <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Red de Valor Pre-Cargada</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">El sistema ha estimado <strong id="txCount" style="color: white; font-size: 1.1rem; font-family: monospace;">0</strong> entregables clave (Clic para previsualizar).</div>
+                                    <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Red de Valor y Pitch Generados</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha redactado la presentación y <strong id="txCount" style="color: white; font-size: 1.1rem; font-family: monospace;">0</strong> entregables.</div>
                                 </div>
                                 <div style="font-size: 1.5rem; opacity: 0.5;">&darr;</div>
                             </div>
@@ -271,7 +268,6 @@ export default class ProjectCreatorView {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
         });
 
-        // Mostrar Preview de Entregables
         this.dom.aiTxFeedback.addEventListener('click', () => {
             if (this.dom.txPreviewList.style.display === 'block') {
                 this.dom.txPreviewList.style.display = 'none';
@@ -284,6 +280,7 @@ export default class ProjectCreatorView {
             if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
             this.draftRoles = [];
             this.draftTxs = [];
+            this.draftPresentation = this.dom.inpVision.value.trim(); // Usar la visión en bruto si no hay IA
             this.goToStep2();
         });
 
@@ -292,9 +289,9 @@ export default class ProjectCreatorView {
             const sectorData = GLOBAL_ONTOLOGY[this.dom.inpSector.value];
             this.draftRoles = [];
             this.draftTxs = [];
+            this.draftPresentation = this.dom.inpVision.value.trim() || `Ecosistema basado en plantilla estándar de ${this.dom.inpSector.options[this.dom.inpSector.selectedIndex].text}.`;
             
             if (sectorData) {
-                // 1. Cargar Roles de la plantilla
                 Object.keys(sectorData).forEach((level, idx) => {
                     if (level !== 'roles') { 
                         this.draftRoles.push({
@@ -308,7 +305,6 @@ export default class ProjectCreatorView {
                     }
                 });
 
-                // 2. Extraer y crear transacciones de los "standard_deliverables"
                 Object.keys(sectorData).forEach(level => {
                     const roleNode = sectorData[level];
                     if (roleNode && roleNode.standard_deliverables) {
@@ -335,7 +331,7 @@ export default class ProjectCreatorView {
             this.dom.step1.style.display = 'block';
             this.dom.dot2.classList.remove('active');
             this.dom.dot1.classList.add('active');
-            this.dom.txPreviewList.style.display = 'none'; // ocultar preview
+            this.dom.txPreviewList.style.display = 'none';
         });
 
         this.dom.btnAddCustom.addEventListener('click', () => {
@@ -364,7 +360,6 @@ export default class ProjectCreatorView {
             this.dom.aiTxFeedback.style.display = 'flex';
             this.dom.txCount.innerText = this.draftTxs.length;
             
-            // Construir la lista de preview de entregables
             const listHtml = this.draftTxs.map((tx, i) => `
                 <div class="tx-preview-item">
                     <span>
@@ -375,7 +370,14 @@ export default class ProjectCreatorView {
                 </div>
             `).join('');
             
-            this.dom.txPreviewList.innerHTML = listHtml + `<div style="text-align:center; margin-top:15px; font-size:0.75rem; color:var(--accent-orange); font-weight:bold;">Podrás editarlos en el Mapa de Valor una vez registrado el sistema.</div>`;
+            this.dom.txPreviewList.innerHTML = `
+                <div style="color: white; font-size: 0.9rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                    <strong>📖 Pitch Generado:</strong><br>
+                    <span style="color:#aaa; font-style:italic;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
+                </div>
+                ${listHtml}
+                <div style="text-align:center; margin-top:15px; font-size:0.75rem; color:var(--accent-orange); font-weight:bold;">Podrás editar la presentación en el Dashboard, y los flujos en el Mapa de Valor.</div>
+            `;
         } else {
             this.dom.aiTxFeedback.style.display = 'none';
             this.dom.txPreviewList.style.display = 'none';
@@ -393,7 +395,7 @@ export default class ProjectCreatorView {
         const archetypeText = this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text;
 
         if (!name) return alert("Debes darle un nombre a la red.");
-        if (!vision) return alert("Escribe tu visión estratégica para que el Agente la procese.");
+        if (!vision) return alert("Escribe tu visión en bruto para que el Agente la procese.");
         if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor. Guárdala en Configuración o ponla aquí.");
 
         if (provider === 'deepseek') localStorage.setItem('tt_key_deepseek', apiKey);
@@ -405,33 +407,34 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
+        // PROMPT ESTRATÉGICO V7.3 - INCLUYE REDACCIÓN DEL PITCH (IKIGAI)
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers. 
-            Misión: Analizar la visión del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio.
+            Misión: Analizar la visión en bruto del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio.
             
             Contexto Estructural: 
             El modelo de gobernanza es "${archetypeText}".
-            Si es una "IA-DAO", instancia Agentes Autónomos IA para roles técnicos o auditoría (@baixos, @dosos), operando junto a humanos (@anxaneta, @aixecador).
+            
+            Reglas de Redacción del Campo "presentacion":
+            Redacta un "Pitch" o carta de presentación institucional de la red (máximo 3 párrafos).
+            Debe explicar: 1. El Propósito / Propuesta de Valor. 2. El Qué, Cómo y Para Quién. 3. El Ikigai de la red (la razón de ser).
+            El tono debe ser épico, claro, y atractivo tanto para captar talento (colaboradores/mercenarios) como para stakeholders e inversores. Usa formato de texto plano (sin HTML, usa saltos de línea \n).
             
             Reglas de Roles:
-            1. Genera TODOS los roles necesarios (sin límite de 5).
-            2. Usa estos niveles: "@anxaneta" (Dirección), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos/IAs), "@pinya" (Operaciones).
-            3. Asigna un 'guardian' de Pantheon.work (ej: "creator", "caregiver", "ruler", "magician", "hero", "sage", etc).
-            4. Calcula el FMV (€/hora). Agentes IA tienen FMV mucho más bajo.
+            1. Genera TODOS los roles necesarios. Usa: "@anxaneta" (Dirección), "@aixecador" (Coordinación), "@dosos" (Auditoría/QA), "@baixos" (Técnicos), "@pinya" (Soporte).
+            2. Asigna un 'guardian' de Pantheon.work (ej: "creator", "caregiver", "ruler", "magician", "hero", "sage").
             
-            Reglas de Transacciones (Teoría de Verna Allee VNA):
-            1. Genera los flujos de valor iniciales. DEBES PRIORIZAR LOS FLUJOS TANGIBLES.
-            2. Ratio deseado: 70% Tangibles (Entregables contractuales, código, reportes, pagos) y 30% Intangibles (Soporte, mentoría, resolución de bloqueos).
-            3. No limites la cantidad, estima el circuito Kanban completo para arrancar este proyecto.
+            Reglas de Transacciones (VNA):
+            1. 70% Tangibles (Entregables, código, reportes) y 30% Intangibles (Mentoría, soporte).
             
             FORMATO JSON ESPERADO:
             {
+                "presentacion": "Pitch épico generado por ti...",
                 "roles": [
                     { "levelId": "@anxaneta", "name": "Estratega Protocolo", "fmv": 80, "multiplier": 3.0, "guardian": "magician" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "entregable": "Documento de Arquitectura", "horas": 5 },
-                    { "fromLevel": "@dosos", "toLevel": "@anxaneta", "tipo": "intangible", "entregable": "Alineación y Riesgos", "horas": 1 }
+                    { "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "entregable": "Doc Arquitectura", "horas": 5 }
                 ]
             }
         `;
@@ -441,13 +444,13 @@ export default class ProjectCreatorView {
 
             if (provider === 'gemini') {
                 const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Value Network con ${targetModel}...`;
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Generando Propuesta de Valor y Red con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\nPROYECTO: ${vision}` }] }]
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT EN BRUTO: ${vision}` }] }]
                     })
                 });
 
@@ -459,7 +462,7 @@ export default class ProjectCreatorView {
                 textResponse = data.candidates[0].content.parts[0].text;
             
             } else if (provider === 'openai') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Consultando OpenAI GPT-4o-mini...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Redactando Pitch Corporativo con GPT-4o-mini...";
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -480,7 +483,7 @@ export default class ProjectCreatorView {
                 textResponse = data.choices[0].message.content;
             
             } else if (provider === 'deepseek') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando arquitectura con DeepSeek Coder...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Optimizando arquitectura y Pitch con DeepSeek Coder...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -522,6 +525,9 @@ export default class ProjectCreatorView {
             const parsedData = JSON.parse(textResponse);
 
             if (!parsedData.roles) throw new Error("La IA no devolvió la estructura de roles requerida.");
+
+            // GUARDAR LA PRESENTACIÓN GENERADA POR IA
+            this.draftPresentation = parsedData.presentacion || vision;
 
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
@@ -630,7 +636,6 @@ export default class ProjectCreatorView {
         const layout = { '@anxaneta': {x: 50, y: 20}, '@aixecador': {x: 50, y: 40}, '@dosos': {x: 35, y: 60}, '@baixos': {x: 65, y: 60}, '@pinya': {x: 50, y: 80} };
         const levelCounts = {};
 
-        // 1. Dibujar los Nodos (Roles)
         this.draftRoles.forEach((rol, i) => {
             const level = rol.levelId || '@baixos';
             levelCounts[level] = (levelCounts[level] || 0) + 1;
@@ -648,7 +653,6 @@ export default class ProjectCreatorView {
             container.appendChild(el);
         });
 
-        // 2. Dibujar las Líneas (Transacciones)
         setTimeout(() => {
             const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
             defs.innerHTML = `
@@ -732,25 +736,34 @@ export default class ProjectCreatorView {
         const visionText = this.dom.inpVision.value.trim();
         const arch = this.dom.inpArchetype.value; 
         
-        // Carga animada y bloqueo del botón
         this.dom.btnLaunch.disabled = true;
         this.dom.btnLaunch.innerText = 'Registrando en el Kernel...';
 
+        // 1. Crear el proyecto base
         await store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
                 id: projectId,
                 nombre: this.dom.inpName.value.trim() || 'Nueva Red',
                 sector: this.dom.inpSector.value,
-                prompt: visionText,
+                prompt: visionText, // Guardamos la idea original en bruto
                 archetype: arch, 
                 customRoles: this.draftRoles 
             } 
         });
 
+        // 2. Actualizar la Presentación generada por la IA
+        if (this.draftPresentation) {
+            await store.dispatch({
+                type: 'UPDATE_PROJECT_INFO',
+                payload: { projectId: projectId, updates: { presentation: this.draftPresentation } }
+            });
+        }
+
         const state = store.getState();
         const p = state.projects.find(x => x.id === projectId);
         
+        // 3. Inyectar transacciones
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
                 const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
