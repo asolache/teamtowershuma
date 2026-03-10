@@ -4,7 +4,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class DashboardView {
     constructor() {
-        document.title = "Lobby del Proyecto | TeamTowers SOS";
+        document.title = "Dashboard | TeamTowers SOS";
         this.activeProjectId = null;
     }
 
@@ -63,7 +63,7 @@ export default class DashboardView {
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
         const resilience = store.calculateResilience(project.id);
-        
+
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
@@ -117,7 +117,8 @@ export default class DashboardView {
                 .badge-sector { color: var(--accent-blue); border-color: rgba(0, 176, 255, 0.3); background: rgba(0, 176, 255, 0.1); }
                 .badge-priv { color: ${project.isPrivate ? 'var(--accent-red)' : 'var(--accent-green)'}; border-color: ${project.isPrivate ? 'rgba(255,82,82,0.3)' : 'rgba(0,230,118,0.3)'}; background: ${project.isPrivate ? 'rgba(255,82,82,0.1)' : 'rgba(0,230,118,0.1)'}; }
                 
-                .dash-title { font-size: 3.5rem; color: white; margin: 0 0 1.5rem 0; letter-spacing: -1.5px; line-height: 1.1; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+                .dash-title { font-size: 3.5rem; color: white; margin: 0 0 1.5rem 0; letter-spacing: -1.5px; line-height: 1.1; text-shadow: 0 5px 15px rgba(0,0,0,0.8); display:flex; align-items:baseline; gap: 15px; flex-wrap: wrap;}
+                .dash-subtitle { font-size: 1.5rem; color: var(--text-muted); font-weight: normal; letter-spacing: 0; }
                 
                 .presentation-box { position: relative; margin-bottom: 2rem; background: rgba(224, 64, 251, 0.03); border-left: 3px solid var(--accent-purple); padding: 1.5rem; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;}
                 .presentation-text { color: #ccc; font-size: 1.05rem; line-height: 1.7; transition: all 0.3s ease; }
@@ -139,8 +140,8 @@ export default class DashboardView {
                 .recruitment-panel { background: rgba(0, 176, 255, 0.02); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-lg); padding: 2rem; }
                 .panel-title { color: white; font-size: 1.4rem; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 10px; }
 
-                /* PANEL IA Y REPORTES (AHORA VISIBLE PARA TODOS) */
-                .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem; animation: fadeIn 1s;}
+                /* PANEL IA Y REPORTES (V7.8) */
+                .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem;}
                 .btn-report { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; text-align: left; cursor: pointer; transition: all 0.2s; display:flex; flex-direction:column; gap:5px;}
                 .btn-report:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-purple); transform: translateX(5px);}
                 .btn-report strong { font-size: 1.1rem; color: var(--accent-purple);}
@@ -163,14 +164,19 @@ export default class DashboardView {
 
                 <main class="workspace">
                     <div class="dash-hero">
-                        <div class="meta-badges">
+                        <div style="position:absolute; top: 15px; left: 15px; background: var(--accent-purple); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; letter-spacing: 1px;">V7.8</div>
+                        
+                        <div class="meta-badges" style="margin-top: 10px;">
                             <span class="badge badge-sector">${project.sector.replace(/_/g, ' ')}</span>
                             <span class="badge badge-sector" style="color: var(--accent-orange); border-color: rgba(255,171,64,0.3); background: rgba(255,171,64,0.1);">${project.archetype}</span>
                             <span class="badge badge-priv">${project.isPrivate ? '🔒 Red Privada' : '🌍 Red Abierta'}</span>
                             ${tagsHtml}
                         </div>
                         
-                        <h1 class="dash-title">${project.nombre}</h1>
+                        <h1 class="dash-title">
+                            ${project.nombre}
+                            <span class="dash-subtitle">| Dashboard Central</span>
+                        </h1>
                         
                         <div class="presentation-box">
                             <button class="btn-edit-pitch" id="btnEditPitch" title="Editar Presentación">✏️ Editar</button>
