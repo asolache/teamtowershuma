@@ -36,7 +36,7 @@ export const Sidebar = {
                 <div class="side-section">
                     <a href="/v5/project" class="side-link ${activePath === '/project' ? 'active' : ''}" data-link>📋 Kanban Tracción</a>
                     <a href="/v5/map" class="side-link ${activePath === '/map' ? 'active' : ''}" data-link>🕸️ Mapa VNA</a>
-                    <a href="/v5/team" class="side-link ${activePath === '/team' ? 'active' : ''}" data-link>👥 Tripulación</a>
+                    <a href="/v5/team" class="side-link ${activePath === '/team' ? 'active' : ''}" data-link>👥 La Colla (Talento)</a>
                     <a href="/v5/ledger" class="side-link ${activePath === '/ledger' ? 'active' : ''}" data-link>⚖️ Ledger Equity</a>
                 </div>
             `;
