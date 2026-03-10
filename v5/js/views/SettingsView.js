@@ -25,10 +25,10 @@ export default class SettingsView {
                 <div class="app-layout">
                     ${Sidebar.getHtml('/settings')}
                     <main class="workspace" style="display:flex; justify-content:center; align-items:center;">
-                        <div style="text-align:center;">
+                        <div style="text-align:center; background: rgba(0,0,0,0.5); padding: 3rem; border-radius: 12px; border: 1px solid #333;">
                             <div style="font-size:4rem; margin-bottom:1rem;">🔒</div>
-                            <h2 style="color:white;">Acceso Restringido</h2>
-                            <p style="color:var(--text-muted);">Solo el Ecosystem Owner puede modificar la matriz de la red.</p>
+                            <h2 style="color:white; margin-top:0;">Acceso Restringido</h2>
+                            <p style="color:var(--text-muted); max-width: 400px; margin: 0 auto;">Solo el Ecosystem Owner puede modificar la matriz de la red.</p>
                         </div>
                     </main>
                 </div>
@@ -44,10 +44,10 @@ export default class SettingsView {
                 .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; }
                 .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
 
-                /* TABS */
-                .tabs-nav { display: flex; gap: 10px; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 5px;}
+                /* TABS - Fix para que se vean bien y hagan wrap */
+                .tabs-nav { display: flex; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;}
                 .tab-link { padding: 10px 20px; color: var(--text-muted); cursor: pointer; font-weight: bold; border-radius: 8px; border: 1px solid transparent; background: transparent; transition: 0.2s; white-space: nowrap;}
-                .tab-link:hover { background: rgba(255,255,255,0.05); }
+                .tab-link:hover { background: rgba(255,255,255,0.05); color: white;}
                 .tab-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-color: var(--accent-blue); }
 
                 /* PANELES */
@@ -108,7 +108,7 @@ export default class SettingsView {
                         <p>Soberanía de datos, ADN del Ecosistema y Configuración Global.</p>
                     </div>
 
-                    <nav class="tabs-nav">
+                    <nav class="tabs-nav" id="settingsTabs">
                         <button class="tab-link ${this.tab === 'general' ? 'active' : ''}" data-tab="general">🌍 General & IA</button>
                         <button class="tab-link ${this.tab === 'ontology' ? 'active' : ''}" data-tab="ontology">🧬 Ontologías (ADN)</button>
                         <button class="tab-link ${this.tab === 'users' ? 'active' : ''}" data-tab="users">👥 Usuarios & Nodos</button>
@@ -194,7 +194,7 @@ export default class SettingsView {
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
                         <div>
                             <h2>Biblioteca Ontológica</h2>
-                            <p style="margin:0;">Plantillas maestras para generar proyectos. Al instanciar una red, heredará estos roles y entregables (Pull System).</p>
+                            <p style="margin:0;">Plantillas maestras para generar proyectos.</p>
                         </div>
                         <button class="btn-save" id="btn-new-sector" style="background:var(--accent-green); color:black;">➕ Crear Plantilla</button>
                     </div>
@@ -297,27 +297,39 @@ export default class SettingsView {
 
     executeViewScript() {
         Sidebar.initListeners();
-        this.bindEvents();
-    }
 
-    bindEvents() {
-        const state = store.getState();
+        // 1. GESTIÓN DE NAVEGACIÓN DE PESTAÑAS
+        const tabsNav = document.getElementById('settingsTabs');
+        const contentContainer = document.getElementById('settingsContent');
+        
+        if (tabsNav) {
+            tabsNav.addEventListener('click', (e) => {
+                const btn = e.target.closest('.tab-link');
+                if (!btn) return;
 
-        // 1. TABS
-        document.querySelectorAll('.tab-link').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.tab = e.target.dataset.tab;
+                this.tab = btn.dataset.tab;
                 localStorage.setItem('tt_settings_tab', this.tab);
                 
                 document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
+                btn.classList.add('active');
                 
-                document.getElementById('settingsContent').innerHTML = this.renderTab(this.tab, store.getState());
-                this.bindEvents(); // Rebind events inside the new tab content
+                // Limpia el contenedor y recarga
+                contentContainer.innerHTML = '';
+                contentContainer.innerHTML = this.renderTab(this.tab, store.getState());
+                
+                // Vuelve a asociar eventos al nuevo contenido inyectado
+                this.bindContentEvents(); 
             });
-        });
+        }
 
-        // 2. TAB: GENERAL
+        // Ejecutar los eventos de la primera pestaña que cargue
+        this.bindContentEvents();
+    }
+
+    bindContentEvents() {
+        const state = store.getState();
+
+        // TAB: GENERAL
         if (this.tab === 'general') {
             const toggleGov = document.getElementById('toggleUserCreation');
             if (toggleGov) {
@@ -326,12 +338,21 @@ export default class SettingsView {
                 });
             }
 
-            document.getElementById('btn-save-general')?.addEventListener('click', () => {
-                const ecosystemName = document.getElementById('set-eco-name').value;
-                const globalPrompt = document.getElementById('set-eco-prompt').value;
-                store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { ecosystemName, globalPrompt } });
-                alert("✅ Configuración General Guardada");
-            });
+            const btnSaveGen = document.getElementById('btn-save-general');
+            if (btnSaveGen) {
+                btnSaveGen.addEventListener('click', () => {
+                    const ecosystemName = document.getElementById('set-eco-name').value;
+                    const globalPrompt = document.getElementById('set-eco-prompt').value;
+                    store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { ecosystemName, globalPrompt } });
+                    
+                    btnSaveGen.innerText = "✅ Guardado";
+                    btnSaveGen.style.background = "var(--accent-green)";
+                    setTimeout(() => {
+                        btnSaveGen.innerText = "Guardar Gobernanza";
+                        btnSaveGen.style.background = "var(--accent-blue)";
+                    }, 2000);
+                });
+            }
 
             // API Keys
             const uiKeys = {
@@ -361,70 +382,83 @@ export default class SettingsView {
             }
         }
 
-        // 3. TAB: ONTOLOGY
+        // TAB: ONTOLOGY
         if (this.tab === 'ontology') {
             document.querySelectorAll('.btn-edit-sector, #btn-new-sector').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const sectorKey = e.target.dataset.sector || '';
-                    this.openOntologyModal(sectorKey, state);
+                    const sectorKey = e.currentTarget.dataset.sector || '';
+                    this.openOntologyModal(sectorKey, store.getState());
                 });
             });
         }
 
-        // 4. TAB: USERS
+        // TAB: USERS
         if (this.tab === 'users') {
-            document.getElementById('btn-create-user')?.addEventListener('click', () => {
-                const id = document.getElementById('new-user-id').value.trim();
-                const name = document.getElementById('new-user-name').value.trim();
-                const contact = document.getElementById('new-user-contact').value.trim();
+            const btnCreateUser = document.getElementById('btn-create-user');
+            if (btnCreateUser) {
+                btnCreateUser.addEventListener('click', () => {
+                    const id = document.getElementById('new-user-id').value.trim();
+                    const name = document.getElementById('new-user-name').value.trim();
+                    const contact = document.getElementById('new-user-contact').value.trim();
 
-                if (!id || !name) return alert("⚠️ Alias (@id) y Nombre obligatorios.");
-                if (!id.startsWith('@')) return alert("⚠️ El identificador debe empezar por '@'");
+                    if (!id || !name) return alert("⚠️ Alias (@id) y Nombre obligatorios.");
+                    if (!id.startsWith('@')) return alert("⚠️ El identificador debe empezar por '@'");
 
-                store.dispatch({ type: 'ADD_USER', payload: { id, name, walletOrSocial: contact } });
-                
-                document.getElementById('settingsContent').innerHTML = this.renderTab(this.tab, store.getState());
-                this.bindEvents();
-            });
+                    store.dispatch({ type: 'ADD_USER', payload: { id, name, walletOrSocial: contact } });
+                    
+                    // Recargar la tabla de usuarios localmente
+                    document.getElementById('settingsContent').innerHTML = this.renderTab(this.tab, store.getState());
+                    this.bindContentEvents();
+                });
+            }
         }
 
-        // 5. TAB: DATA
+        // TAB: DATA
         if (this.tab === 'data') {
-            document.getElementById('btnExport')?.addEventListener('click', () => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(store.getState(), null, 2));
-                const a = document.createElement('a');
-                a.href = dataStr;
-                a.download = `TeamTowers_OS_Backup_${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            });
+            const btnExport = document.getElementById('btnExport');
+            if (btnExport) {
+                btnExport.addEventListener('click', () => {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(store.getState(), null, 2));
+                    const a = document.createElement('a');
+                    a.href = dataStr;
+                    a.download = `TeamTowers_OS_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                });
+            }
 
-            document.getElementById('fileInput')?.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const importedState = JSON.parse(event.target.result);
-                        if (importedState && importedState.projects) {
-                            if (confirm("⚠️ Importar sobreescribirá todos los datos actuales. ¿Proceder?")) {
-                                store.state = importedState;
-                                localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
-                                window.location.href = '/v5/';
-                            }
-                        } else { alert("❌ JSON inválido."); }
-                    } catch (err) { alert("❌ Error leyendo archivo."); }
-                };
-                reader.readAsText(file);
-            });
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const importedState = JSON.parse(event.target.result);
+                            if (importedState && importedState.projects) {
+                                if (confirm("⚠️ Importar sobreescribirá todos los datos actuales. ¿Proceder?")) {
+                                    store.state = importedState;
+                                    localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
+                                    window.location.href = '/v5/';
+                                }
+                            } else { alert("❌ JSON inválido."); }
+                        } catch (err) { alert("❌ Error leyendo archivo."); }
+                    };
+                    reader.readAsText(file);
+                });
+            }
 
-            document.getElementById('btnNuke')?.addEventListener('click', () => {
-                if (confirm("🚨 PELIGRO: Esto borrará TODOS los proyectos de tu navegador. Acción irreversible. ¿Seguro?")) {
-                    localStorage.removeItem('tt_sos_state');
-                    window.location.href = '/v5/';
-                }
-            });
+            const btnNuke = document.getElementById('btnNuke');
+            if (btnNuke) {
+                btnNuke.addEventListener('click', () => {
+                    if (confirm("🚨 PELIGRO: Esto borrará TODOS los proyectos de tu navegador. Acción irreversible. ¿Seguro?")) {
+                        localStorage.removeItem('tt_sos_state');
+                        window.location.href = '/v5/';
+                    }
+                });
+            }
         }
     }
 
@@ -507,8 +541,9 @@ export default class SettingsView {
             });
 
             modal.style.display = 'none';
+            // Refrescar Pestaña Activa
             document.getElementById('settingsContent').innerHTML = this.renderTab('ontology', store.getState());
-            this.bindEvents();
+            this.bindContentEvents();
         });
     }
 }
