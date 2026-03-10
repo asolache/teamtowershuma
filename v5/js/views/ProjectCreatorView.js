@@ -323,9 +323,8 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
         
-        // Inicializamos el texto base
         if(this.dom.loadingSubMsg) {
-            this.dom.loadingSubMsg.innerText = "Negociando handshake de modelos...";
+            this.dom.loadingSubMsg.innerText = "Iniciando análisis semántico...";
         }
 
         const systemPrompt = `
@@ -355,38 +354,13 @@ export default class ProjectCreatorView {
             let textResponse = "";
 
             if (provider === 'gemini') {
-                // 🤝 PATRÓN HANDSHAKE: Averiguamos qué modelos permite esta API Key
-                let targetModel = 'gemini-1.5-flash'; // Fallback por defecto
-                try {
-                    const modRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                    if (modRes.ok) {
-                        const modData = await modRes.json();
-                        // Filtramos modelos que soporten generación de contenido y sean gemini
-                        const validModels = modData.models.filter(m => 
-                            m.supportedGenerationMethods.includes('generateContent') && 
-                            m.name.includes('gemini')
-                        );
-                        
-                        // Intentamos buscar 1.5 primero, luego pro genérico
-                        const bestModel = validModels.find(m => m.name.includes('1.5-flash')) 
-                                       || validModels.find(m => m.name.includes('1.5-pro')) 
-                                       || validModels.find(m => m.name.includes('gemini-pro'))
-                                       || validModels[0];
-
-                        if (bestModel) {
-                            targetModel = bestModel.name.replace('models/', '');
-                            console.log(`✅ Handshake Gemini Exitoso. Usando modelo: ${targetModel}`);
-                        }
-                    }
-                } catch(e) { 
-                    console.warn("⚠️ Error de red en Handshake. Ignorando y usando fallback..."); 
-                }
-
+                // FORZAMOS GEMINI 1.5 FLASH (El modelo más estable globalmente para la capa gratuita/pagada)
+                const targetModel = 'gemini-1.5-flash';
+                
                 if(this.dom.loadingSubMsg) {
                     this.dom.loadingSubMsg.innerText = `Generando Ontología con ${targetModel}...`;
                 }
 
-                // 🚀 LLAMADA DINÁMICA DE GENERACIÓN
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -397,7 +371,7 @@ export default class ProjectCreatorView {
 
                 if (!response.ok) {
                     const errData = await response.json();
-                    throw new Error(`Error API (${response.status}): ${errData.error?.message || response.statusText}`);
+                    throw new Error(`Google Gemini Error: ${errData.error?.message || response.statusText}`);
                 }
                 const data = await response.json();
                 textResponse = data.candidates[0].content.parts[0].text;
@@ -416,7 +390,10 @@ export default class ProjectCreatorView {
                         response_format: { type: "json_object" }
                     })
                 });
-                if (!response.ok) throw new Error("Error en OpenAI API.");
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(`OpenAI Error: ${errData.error?.message || response.statusText}`);
+                }
                 const data = await response.json();
                 textResponse = data.choices[0].message.content;
             
@@ -427,7 +404,9 @@ export default class ProjectCreatorView {
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ prompt: systemPrompt, vision: vision })
                 });
-                if (!response.ok) throw new Error("Error en el Endpoint Custom.");
+                if (!response.ok) {
+                    throw new Error("Error de conexión con el Endpoint Custom de tu empresa.");
+                }
                 const data = await response.json();
                 textResponse = typeof data === 'string' ? data : JSON.stringify(data);
             }
@@ -442,7 +421,7 @@ export default class ProjectCreatorView {
 
             const parsedData = JSON.parse(textResponse);
 
-            if (!parsedData.roles) throw new Error("El JSON devuelto no tiene la estructura de roles requerida.");
+            if (!parsedData.roles) throw new Error("La IA respondió correctamente, pero no devolvió la estructura de roles requerida. Intenta con un prompt más claro.");
 
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
@@ -457,8 +436,10 @@ export default class ProjectCreatorView {
             this.goToStep2();
 
         } catch (error) {
-            console.error("💥 Fallo IA:", error);
-            alert(`Fallo en la IA: ${error.message}\n\nPuedes continuar usando "Lienzo en Blanco" o "Cargar Plantilla".`);
+            console.error("💥 Fallo Motor Cognitivo:", error);
+            // El alert ahora mostrará EXACTAMENTE qué proveedor falló y por qué.
+            alert(`Fallo en el Motor Cognitivo:\n\n${error.message}\n\nSi es un problema de cuota, espera unos minutos o revisa tu saldo en la plataforma correspondiente.`);
+            
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
         }
