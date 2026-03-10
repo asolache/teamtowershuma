@@ -1,14 +1,22 @@
 // v5/js/views/SettingsView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
-import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Importación nativa ES6 (Estricta y funcional)
+
+// Intentamos importar la ontología base
+let GLOBAL_ONTOLOGY = {};
+try {
+    const ontologyModule = require('../data/ontology.js');
+    GLOBAL_ONTOLOGY = ontologyModule.GLOBAL_ONTOLOGY || {};
+} catch(e) {
+    console.warn("Cargando sin GLOBAL_ONTOLOGY externa.");
+}
 
 const HUMA_LEVELS = [
-    { id: '@anxaneta', label: 'Cima / Estrategia', color: 'var(--accent-red)' },
-    { id: '@aixecador', label: 'Coordinación / Táctica', color: '#ff4081' },
-    { id: '@dosos', label: 'Auditoría / Control', color: 'var(--accent-purple)' },
-    { id: '@baixos', label: 'Especialistas / Ejecución', color: 'var(--accent-indigo)' },
-    { id: '@pinya', label: 'Soporte / Base', color: 'var(--accent-blue)' }
+    { id: '@anxaneta', label: 'Cima / Estrategia', color: 'var(--accent-red)', desc: 'Visión, Dirección, CEO. Fija el rumbo.', guardEj: 'Ej: El Soberano / Visionario' },
+    { id: '@aixecador', label: 'Coordinación / Táctica', color: '#ff4081', desc: 'Operaciones, Project Manager. Conecta puntos.', guardEj: 'Ej: El Mago / Explorador' },
+    { id: '@dosos', label: 'Auditoría / Control', color: 'var(--accent-purple)', desc: 'Finanzas, QA, Seguridad. Valida el valor.', guardEj: 'Ej: El Sabio / Juez' },
+    { id: '@baixos', label: 'Especialistas / Ejec.', color: 'var(--accent-indigo)', desc: 'Desarrolladores, Creadores. Construyen el producto.', guardEj: 'Ej: El Creador / Héroe' },
+    { id: '@pinya', label: 'Soporte / Base', color: 'var(--accent-blue)', desc: 'Comunidad, Legal, Infraestructura. Sostiene la red.', guardEj: 'Ej: El Cuidador / Protector' }
 ];
 
 export default class SettingsView {
@@ -81,13 +89,13 @@ export default class SettingsView {
                 .premium-panel { background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(0, 176, 255, 0.1)); border: 1px solid rgba(224, 64, 251, 0.3); position: relative;}
                 .premium-badge { position: absolute; top: 15px; right: 15px; background: var(--accent-purple); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
 
-                .ontology-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;}
+                .ontology-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;}
                 .sector-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; border-left: 4px solid var(--accent-blue); display:flex; flex-direction:column;}
-                .sector-card.native { border-left-color: #555; background: rgba(0,0,0,0.3); border-color: #222;}
+                .sector-card.native { border-left-color: #555; background: rgba(0,0,0,0.5); border-color: #222;}
                 .sector-card h3 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 1.1rem; color: white; }
                 
                 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-                .modal-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 12px; border: 1px solid var(--glass-border); padding: 2rem; border-top: 4px solid var(--accent-blue);}
+                .modal-content { background: var(--bg-dark); width: 95%; max-width: 1000px; max-height: 90vh; overflow-y: auto; border-radius: 12px; border: 1px solid var(--glass-border); padding: 2.5rem; border-top: 4px solid var(--accent-blue);}
 
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @media (max-width: 768px) { .app-layout { flex-direction: column; } .workspace { padding: 1.5rem; } }
@@ -184,7 +192,7 @@ export default class SettingsView {
                         <div>
                             <h2>Plantillas de Red (Ontologías)</h2>
                             <p style="margin:0; max-width:600px;">
-                                Estructuras predefinidas (Sector + Arquetipo) que las redes heredan al nacer.
+                                El ADN predefinido de tus redes. Incluye Roles, Arquetipos y Flujos VNA que las redes heredarán al nacer.
                             </p>
                         </div>
                         <button class="btn-save" id="btn-new-sector" style="background:var(--accent-green); color:black;">➕ Crear Plantilla Custom</button>
@@ -202,10 +210,10 @@ export default class SettingsView {
                                         </div>
                                     `).join('')}
                                 </div>
-                                <button class="btn-save btn-edit-sector" data-sector="${key}" style="width:100%; margin-top:1.5rem; font-size:0.8rem; background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">⚙️ Editar</button>
+                                <button class="btn-save btn-edit-sector" data-sector="${key}" style="width:100%; margin-top:1.5rem; font-size:0.8rem; background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">⚙️ Editar ADN</button>
                             </div>
                         `).join('')}
-                        ${Object.keys(customSectores).length === 0 ? '<p style="color:var(--text-muted); grid-column: 1/-1; padding:1rem; border: 1px dashed #333;">No has creado plantillas propias. (Pronto podrás exportarlas desde tus mapas).</p>' : ''}
+                        ${Object.keys(customSectores).length === 0 ? '<p style="color:var(--text-muted); grid-column: 1/-1; padding:1rem; border: 1px dashed #333;">No has creado plantillas propias. (Pronto podrás exportarlas desde tus mapas VNA).</p>' : ''}
                     </div>
 
                     <h3 style="color: #666; margin-top: 2rem; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">📦 Plantillas Nativas (Kernel Base)</h3>
@@ -238,7 +246,7 @@ export default class SettingsView {
             return `
                 <div class="panel" style="border-left: 4px solid var(--accent-blue);">
                     <h2 style="color: var(--accent-blue);">Inyectar Nodo Local</h2>
-                    <p style="margin-top:0;">Da de alta usuarios para poder incluirlos en el Pacto de Socios y asignarles Capital/Slices en el Ledger. Añade su localización para futuros filtros de red.</p>
+                    <p style="margin-top:0;">Da de alta usuarios en tu terminal para poder incluirlos en el Pacto de Socios y asignarles Capital/Slices en el Ledger. Añade su localización para los filtros de La Colla.</p>
                     
                     <div style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:8px;">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; margin-bottom: 15px;">
@@ -423,7 +431,6 @@ export default class SettingsView {
                     if (!id || !name) return alert("⚠️ Alias y Nombre son obligatorios.");
                     if (!id.startsWith('@')) id = '@' + id; 
 
-                    // Await de inserción al Store incluyendo localización
                     await store.dispatch({ 
                         type: 'ADD_USER', 
                         payload: { id, name, walletOrSocial: contact, location } 
@@ -480,14 +487,17 @@ export default class SettingsView {
         const content = document.getElementById('modalOntologyContent');
 
         content.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                <h2 style="color:white; margin:0;">🧬 ADN de Red: ${sectorKey || 'Nueva Plantilla'}</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <div>
+                    <h2 style="color:white; margin:0;">🧬 ADN de Red: Creador de Plantillas VNA</h2>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Configura los Roles, Arquetipos y Flujos predefinidos que heredarán los nuevos proyectos.</p>
+                </div>
                 <button class="btn-save" onclick="document.getElementById('modalOntology').style.display='none'" style="background:transparent; border:1px solid #555; color:#aaa; padding:5px 15px;">❌ Cerrar</button>
             </div>
             
-            <div class="form-group">
-                <label>Identificador Único de la Plantilla (ej: startup_biotech)</label>
-                <input type="text" id="modal-sector-id" class="form-control" value="${sectorKey}" ${sectorKey?'disabled':''} style="font-family:monospace; color:var(--accent-blue); font-size:1.1rem;">
+            <div class="form-group" style="background: rgba(0,0,0,0.3); padding:1rem; border-radius:8px;">
+                <label style="color: var(--accent-blue);">ID de la Plantilla (ej: agencia_marketing)</label>
+                <input type="text" id="modal-sector-id" class="form-control" value="${sectorKey}" ${sectorKey?'disabled':''} style="font-family:monospace; color:var(--accent-blue); font-size:1.1rem; max-width: 400px;">
             </div>
             
             <div style="display:flex; flex-direction:column; gap:1.5rem; margin-top:2rem;">
@@ -495,66 +505,12 @@ export default class SettingsView {
                     const data = sectorData ? sectorData[lvl.id] : {};
                     let delivs = '';
                     if (data && data.standard_deliverables) {
-                        delivs = data.standard_deliverables.map(d => `${d.estimatedHours} | ${d.name}`).join('\n');
+                        // FIX VNA: Ahora muestra el tipo (tangible/intangible)
+                        delivs = data.standard_deliverables.map(d => `${d.to || '?'} | ${d.estimatedHours} | ${d.tipo || 'tangible'} | ${d.name}`).join('\n');
                     }
                     return `
                         <div style="background:rgba(255,255,255,0.02); padding:1.5rem; border-radius:8px; border-left:4px solid ${lvl.color};">
-                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
-                                <b style="color:white; width:100px; font-family:monospace;">${lvl.id}</b>
-                                <div style="flex:2; min-width:200px;"><input type="text" id="name-${lvl.id}" class="form-control" placeholder="Nombre del Rol (Ej: Tech Lead)" value="${data?.name || ''}"></div>
-                                <div style="flex:1; min-width:100px;"><input type="number" step="0.1" id="mult-${lvl.id}" class="form-control" placeholder="Mult. (Ej: 2.0)" value="${data?.multiplier || 1.0}"></div>
-                            </div>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                <div style="flex:1; min-width:250px;">
-                                    <label style="font-size:0.7rem; color:#888; margin-bottom:5px; display:block;">🤖 Prompt Específico para IA</label>
-                                    <textarea id="prompt-${lvl.id}" class="form-control" placeholder="Eres el rol que..." style="height:80px; font-size:0.8rem;">${data?.ai_prompt || ''}</textarea>
-                                </div>
-                                <div style="flex:1; min-width:250px;">
-                                    <label style="font-size:0.7rem; color:var(--accent-green); margin-bottom:5px; display:block;">📦 Tareas Estándar (Horas | Nombre)</label>
-                                    <textarea id="deliv-${lvl.id}" class="form-control" placeholder="10 | Definir Arquitectura\n5 | Revisar PRs" style="height:80px; font-size:0.8rem; color:var(--accent-green);">${delivs}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-            <div style="display:flex; justify-content:flex-end; margin-top:2rem;">
-                <button class="btn-save" id="btn-save-sector-action" style="background:var(--accent-green); color:black; font-size:1.1rem; padding:15px 30px;">💾 Inyectar a la Biblioteca</button>
-            </div>
-        `;
-
-        modal.style.display = 'flex';
-
-        document.getElementById('btn-save-sector-action').addEventListener('click', async () => {
-            let newId = document.getElementById('modal-sector-id').value.trim().toLowerCase().replace(/\s+/g, '_');
-            if(!newId) return alert("El identificador es obligatorio.");
-
-            const rolesData = {};
-            HUMA_LEVELS.forEach(lvl => {
-                const delivText = document.getElementById(`deliv-${lvl.id}`).value;
-                const standard_deliverables = delivText.split('\n')
-                    .filter(line => line.trim() !== '')
-                    .map(line => {
-                        const parts = line.split('|');
-                        return { estimatedHours: parseFloat(parts[0]) || 0, name: parts.slice(1).join('|').trim() || 'Entregable' };
-                    });
-
-                rolesData[lvl.id] = {
-                    name: document.getElementById(`name-${lvl.id}`).value || lvl.label,
-                    multiplier: parseFloat(document.getElementById(`mult-${lvl.id}`).value) || 1.0,
-                    ai_prompt: document.getElementById(`prompt-${lvl.id}`).value.trim(),
-                    standard_deliverables
-                };
-            });
-
-            await store.dispatch({
-                type: 'ADD_ONTOLOGY_SECTOR',
-                payload: { sectorId: newId, rolesData }
-            });
-
-            modal.style.display = 'none';
-            document.getElementById('settingsContent').innerHTML = this.renderTab('ontology', store.getState());
-            this.bindContentEvents();
-        });
-    }
-}
+                            
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;">
+                                <div style="display:flex; align-items:center; gap: 10px;">
+                                    <b style="color:white; font-family:monospace; font-size:1
