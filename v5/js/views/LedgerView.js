@@ -20,8 +20,12 @@ export default class LedgerView {
 
                 .permaweb-badge { background: rgba(255, 171, 64, 0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(255, 171, 64, 0.2);}
 
+                .action-buttons { display: flex; gap: 10px; }
                 .btn-permaweb { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;}
                 .btn-permaweb:hover { background: rgba(255, 171, 64, 0.1); box-shadow: 0 0 20px rgba(255, 171, 64, 0.3); transform: translateY(-2px);}
+                
+                .btn-capital { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;}
+                .btn-capital:hover { background: var(--accent-green); color: black; box-shadow: 0 0 20px rgba(0, 230, 118, 0.3); transform: translateY(-2px);}
 
                 /* PANEL SUPERIOR: EL PASTEL (PIE) Y LA CAP TABLE */
                 .equity-dashboard { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-bottom: 3rem;}
@@ -72,21 +76,16 @@ export default class LedgerView {
                 .slice-badge { color: var(--accent-green); font-weight: bold; font-family: var(--font-mono); font-size: 1rem; }
                 .empty-ledger { padding: 4rem; text-align: center; color: #666; font-style: italic;}
 
-                /* CHECKOUT MODAL (WEB3 / PAYMENTS) */
-                .checkout-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center;}
-                .checkout-card { background: #111; border: 1px solid var(--accent-orange); border-radius: 16px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(255, 171, 64, 0.2); animation: slideUp 0.4s ease-out;}
-                .checkout-price { font-size: 3.5rem; font-weight: 900; color: white; margin: 1rem 0; font-family: var(--font-mono);}
-                .checkout-features { text-align: left; margin: 2rem 0; padding-left: 20px; color: #aaa; line-height: 1.6;}
+                /* MODALS GLOBALES */
+                .overlay-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center;}
+                .card-modal { background: #111; border: 1px solid #333; border-radius: 16px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); animation: slideUp 0.4s ease-out;}
                 
-                .pay-btn { width: 100%; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.2s;}
-                .pay-btn:hover { transform: scale(1.02); }
-                .pay-gpay { background: white; color: #3c4043; }
-                .pay-card { background: #635bff; color: white; }
+                /* Específico Capital */
+                .form-group { text-align: left; margin-bottom: 15px; }
+                .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;}
+                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-family: inherit; font-size: 1rem; outline: none;}
+                .form-control:focus { border-color: var(--accent-green); }
 
-                .minting-loader { display: none; flex-direction: column; align-items: center; gap: 15px; margin-top: 2rem;}
-                .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 171, 64, 0.3); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite; }
-
-                @keyframes spin { to { transform: rotate(360deg); } }
                 @keyframes spinIn { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
                 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -94,6 +93,7 @@ export default class LedgerView {
                 @media (max-width: 768px) {
                     .app-layout { flex-direction: column; } .workspace { padding: 1.5rem; }
                     .cap-bar-container { display: none; } .cap-user { width: 50%; } .cap-stats { width: 50%; }
+                    .action-buttons { flex-direction: column; width: 100%; }
                 }
             </style>
 
@@ -106,9 +106,14 @@ export default class LedgerView {
                             <h1 id="ledgerTitle">⚖️ Contabilidad de Triple Entrada</h1>
                             <p>Slicing Pie dinámico. El registro inmutable del valor aportado por la Colla.</p>
                         </div>
-                        <button class="btn-permaweb" id="btnOpenPermaweb" title="Sella este Snapshot en Blockchain">
-                            <span style="font-size: 1.2rem;">🧊</span> Congelar Snapshot (Beta)
-                        </button>
+                        <div class="action-buttons">
+                            <button class="btn-capital" id="btnOpenCapitalModal" title="Inyectar Dinero o Activos a la Red" style="display:none;">
+                                💶 Inyectar Capital
+                            </button>
+                            <button class="btn-permaweb" id="btnOpenPermaweb" title="Sella este Snapshot en Blockchain">
+                                <span style="font-size: 1.2rem;">🧊</span> Congelar Snapshot
+                            </button>
+                        </div>
                     </div>
 
                     <div class="equity-dashboard">
@@ -140,7 +145,7 @@ export default class LedgerView {
                                     <th>Fecha</th>
                                     <th>Nodo (Usuario)</th>
                                     <th>Silla / Rol</th>
-                                    <th>Proof of Work (Entregable)</th>
+                                    <th>Prueba de Valor</th>
                                     <th>Hrs</th>
                                     <th style="text-align: right;">Slices Generados</th>
                                 </tr>
@@ -149,31 +154,68 @@ export default class LedgerView {
                         </table>
                     </div>
 
-                    <div id="checkoutModal" class="checkout-modal">
-                        <div class="checkout-card">
+                    <div id="capitalModal" class="overlay-modal">
+                        <div class="card-modal" style="border-color: var(--accent-green);">
+                            <h2 style="color: var(--accent-green); margin-top: 0; font-size: 1.5rem;">Aportación de Capital</h2>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Inyecta dinero, equipamiento o patentes a la Cap Table. El modelo Slicing Pie aplicará el multiplicador de riesgo correspondiente.</p>
+                            
+                            <div class="form-group">
+                                <label>Inversor (Miembro de la red)</label>
+                                <select id="inpCapUser" class="form-control"></select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tipo de Activo Aportado</label>
+                                <select id="inpCapType" class="form-control">
+                                    <option value="cash">💶 Dinero en Efectivo (Mult. Riesgo x4)</option>
+                                    <option value="equipment">💻 Equipamiento Físico (Mult. Riesgo x2)</option>
+                                    <option value="tools">🛠️ Software / Suscripciones (Mult. Riesgo x2)</option>
+                                    <option value="ip">💡 Propiedad Intelectual / IP (Mult. Riesgo x2)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Valor Mercado Justo (FMV en €)</label>
+                                <input type="number" id="inpCapAmount" class="form-control" placeholder="Ej: 1500" min="1">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Concepto / Evidencia</label>
+                                <input type="text" id="inpCapDesc" class="form-control" placeholder="Ej: Factura Servidor AWS 2026">
+                            </div>
+
+                            <div style="display:flex; gap:10px; margin-top: 2rem;">
+                                <button class="btn btn-outline" style="width: 50%;" id="btnCancelCap">Cancelar</button>
+                                <button class="btn btn-approve" style="width: 50%; background: var(--accent-green); color: black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" id="btnConfirmCap">Sellar en Ledger</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="checkoutModal" class="overlay-modal">
+                        <div class="card-modal" style="border-color: var(--accent-orange);">
                             <h2 style="color: var(--accent-orange); margin-top: 0; font-size: 1.8rem;">Sello Notarial Web3</h2>
                             <p style="color: var(--text-muted); font-size: 0.9rem;">Acuña el Snapshot actual de tu Cap Table en la red descentralizada de Arweave. Garantía legal e inmutable para la Colla y los Inversores.</p>
                             
-                            <div class="checkout-price">€4.99</div>
+                            <div class="checkout-price" style="font-size: 3.5rem; font-weight: 900; color: white; margin: 1rem 0; font-family: var(--font-mono);">€4.99</div>
                             <p style="color: #666; font-size: 0.75rem; margin-top:-10px;">Pago único por sellado (Sin suscripciones)</p>
 
-                            <ul class="checkout-features">
+                            <ul style="text-align: left; margin: 2rem 0; padding-left: 20px; color: #aaa; line-height: 1.6;">
                                 <li>✅ Hash SHA-256 consolidado en Blockchain Pública.</li>
                                 <li>✅ Prueba matemática inalterable de propiedad (Equity).</li>
                                 <li>✅ Mantenimiento de Nodos TeamTowers.</li>
                             </ul>
 
                             <div id="paymentButtons">
-                                <button class="pay-btn pay-gpay" id="btnGooglePay">
+                                <button class="pay-btn pay-gpay" style="background: white; color: #3c4043; width: 100%; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.2s;" id="btnGooglePay">
                                     <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.5455 7.63636V10.1818H20.8182C20.5455 11.5455 19.5455 13.3636 17.2727 13.3636C15.3636 13.3636 13.8182 11.8182 13.8182 9.81818C13.8182 7.81818 15.3636 6.27273 17.2727 6.27273C18.3636 6.27273 19.0909 6.72727 19.5455 7.18182L21.4545 5.27273C20.3636 4.18182 18.9091 3.54545 17.2727 3.54545C13.8182 3.54545 11 6.36364 11 9.81818C11 13.2727 13.8182 16.0909 17.2727 16.0909C20.9091 16.0909 23.3636 13.5455 23.3636 9.90909C23.3636 9.36364 23.2727 8.81818 23.1818 8.45455H14.5455V7.63636ZM27.0909 10V12.7273H29.6364V10H32.3636V7.45455H29.6364V4.72727H27.0909V7.45455H24.3636V10H27.0909Z" fill="#3C4043"/><path d="M4.63636 12.8182H7.36364V0.909091H4.63636V12.8182ZM1.81818 12.8182H4.54545V4.72727H1.81818V12.8182Z" fill="#3C4043"/></svg>
                                     Pagar con Google Pay
                                 </button>
-                                <button class="pay-btn pay-card" id="btnStripePay">💳 Pagar con Tarjeta (Stripe)</button>
+                                <button class="pay-btn pay-card" style="background: #635bff; color: white; width: 100%; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: transform 0.2s;" id="btnStripePay">💳 Pagar con Tarjeta (Stripe)</button>
                                 <button class="btn btn-outline" style="width: 100%; border: none; margin-top: 10px; background:transparent; color:#888; cursor:pointer;" id="btnCloseModal">Cancelar</button>
                             </div>
 
-                            <div id="mintingLoader" class="minting-loader">
-                                <div class="spinner"></div>
+                            <div id="mintingLoader" style="display: none; flex-direction: column; align-items: center; gap: 15px; margin-top: 2rem;">
+                                <div style="width: 40px; height: 40px; border: 4px solid rgba(255, 171, 64, 0.3); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite;"></div>
                                 <p style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0;">Transfiriendo a Permaweb...</p>
                                 <p style="color: #666; font-size: 0.75rem;">Consensuando bloques criptográficos.</p>
                             </div>
@@ -201,21 +243,78 @@ export default class LedgerView {
             paymentButtons: document.getElementById('paymentButtons'),
             mintingLoader: document.getElementById('mintingLoader'),
             btnGooglePay: document.getElementById('btnGooglePay'),
-            btnStripePay: document.getElementById('btnStripePay')
+            btnStripePay: document.getElementById('btnStripePay'),
+            
+            // Capital Elements
+            btnOpenCapital: document.getElementById('btnOpenCapitalModal'),
+            capitalModal: document.getElementById('capitalModal'),
+            btnCancelCap: document.getElementById('btnCancelCap'),
+            btnConfirmCap: document.getElementById('btnConfirmCap'),
+            inpCapUser: document.getElementById('inpCapUser'),
+            inpCapType: document.getElementById('inpCapType'),
+            inpCapAmount: document.getElementById('inpCapAmount'),
+            inpCapDesc: document.getElementById('inpCapDesc')
         };
 
         // Render inicial de datos
         this.renderLedgerData(project, state.globalUsers);
 
-        // Control Visual si el proyecto ya fue minteado alguna vez
+        // Control Visual (Solo PO ve el botón de inyectar capital)
+        if (project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner') {
+            this.dom.btnOpenCapital.style.display = 'flex';
+        }
+
         if (project.permawebSnapshot) {
             this.applyMintedStyle(project.permawebSnapshot);
         }
 
-        // Eventos del Modal
+        // LÓGICA MODAL APORTACIÓN DE CAPITAL
+        this.dom.btnOpenCapital.addEventListener('click', () => {
+            // Llenar selector de usuarios del proyecto
+            const users = project.usuarios || [];
+            this.dom.inpCapUser.innerHTML = users.map(u => {
+                const gUser = state.globalUsers.find(gu => gu.id === u.id);
+                return `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+            }).join('');
+            
+            this.dom.capitalModal.style.display = 'flex';
+        });
+
+        this.dom.btnCancelCap.addEventListener('click', () => {
+            this.dom.capitalModal.style.display = 'none';
+        });
+
+        this.dom.btnConfirmCap.addEventListener('click', async () => {
+            const userId = this.dom.inpCapUser.value;
+            const assetType = this.dom.inpCapType.value;
+            const amount = parseFloat(this.dom.inpCapAmount.value);
+            const desc = this.dom.inpCapDesc.value.trim();
+
+            if (!amount || amount <= 0) return alert("Introduce un valor justo de mercado (FMV) mayor que 0.");
+            if (!desc) return alert("Describe el concepto de la aportación.");
+
+            this.dom.btnConfirmCap.disabled = true;
+            this.dom.btnConfirmCap.innerText = "Sellando...";
+
+            await store.dispatch({
+                type: 'ADD_CAPITAL_INJECTION',
+                payload: {
+                    projectId: this.activeProjectId,
+                    userId: userId,
+                    assetType: assetType,
+                    amount: amount,
+                    description: desc
+                }
+            });
+
+            this.dom.capitalModal.style.display = 'none';
+            this.executeViewScript(); // Recargar vista completa
+        });
+
+        // LÓGICA MODAL WEB3 PERMAWEB
         this.dom.btnOpenPermaweb.addEventListener('click', () => {
             const harvest = store.calculateHarvest(this.activeProjectId) || [];
-            if(harvest.length === 0) return alert("⚠️ No puedes congelar un Ledger vacío. La Colla debe reportar trabajo primero.");
+            if(harvest.length === 0) return alert("⚠️ No puedes congelar un Ledger vacío. La Colla debe reportar trabajo o aportar capital primero.");
             this.dom.checkoutModal.style.display = 'flex';
         });
 
@@ -236,7 +335,6 @@ export default class LedgerView {
         setTimeout(() => {
             const mockArweaveTx = 'ar://' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join('');
             
-            // Disparar acción al Store (Reutilizamos UPDATE_PROJECT_INFO)
             store.dispatch({
                 type: 'UPDATE_PROJECT_INFO',
                 payload: {
@@ -261,13 +359,9 @@ export default class LedgerView {
     }
 
     applyMintedStyle(snapshotData) {
-        // Transformar el título y añadir el badge
         this.dom.title.innerHTML = `⚖️ Ledger <span class="permaweb-badge" title="Snapshot Inmutable">🧊 Sellado en Arweave</span>`;
-        
-        // Cambiar el botón para reflejar que se puede hacer un RE-SNAP (Actualización del ledger)
         this.dom.btnOpenPermaweb.innerHTML = `<span style="font-size: 1.2rem;">🔄</span> Actualizar Snapshot`;
         
-        // Añadir una nota visual debajo del título
         const dateStr = new Date(snapshotData.timestamp).toLocaleDateString('es-ES');
         if(!document.getElementById('snapMeta')) {
             const meta = document.createElement('div');
@@ -295,7 +389,7 @@ export default class LedgerView {
         totalSlicesEl.innerText = Math.round(totalSlices).toLocaleString();
 
         if (totalSlices === 0 || !project.ledger || project.ledger.length === 0) {
-            capTableBody.innerHTML = `<div style="padding: 2rem; text-align: center; color: #666;">El Bloque Génesis aún no contiene equidad. Completa tareas en el Kanban.</div>`;
+            capTableBody.innerHTML = `<div style="padding: 2rem; text-align: center; color: #666;">El Bloque Génesis aún no contiene equidad. Completa tareas o inyecta capital.</div>`;
             tbody.innerHTML = `<tr><td colspan="7" class="empty-ledger">El Ledger está vacío. No hay registros criptográficos aún.</td></tr>`;
             return;
         }
@@ -315,9 +409,15 @@ export default class LedgerView {
             conicGradientParts.push(`${color} ${currentDegree}deg ${nextDegree}deg`);
             currentDegree = nextDegree;
 
+            // Filtramos las horas (evitando los aportes de capital que tienen horas=0)
             const userTxs = (project.ledger || []).filter(tx => tx.userId === userHarvest.userId);
             const totalHours = userTxs.reduce((sum, tx) => sum + (tx.horas || 0), 0);
-            const avgFmv = totalHours > 0 ? (userHarvest.slices / totalHours).toFixed(1) : 0;
+            
+            // Calculamos cuánto ha aportado en Slices vía Capital (los que tienen rol 'CAPITAL_ASSET')
+            const capitalSlices = userTxs.filter(tx => tx.roleId === 'CAPITAL_ASSET').reduce((sum, tx) => sum + tx.valorCongelado, 0);
+            const capitalHtml = capitalSlices > 0 ? ` | <span style="color:var(--accent-green);">Capital Inyectado</span>` : '';
+
+            const avgFmv = totalHours > 0 ? ((userHarvest.slices - capitalSlices) / totalHours).toFixed(1) : 0;
             const initial = user.name.charAt(0).toUpperCase();
 
             capHtml += `
@@ -332,7 +432,7 @@ export default class LedgerView {
                     <div class="cap-stats">
                         <div class="cap-percent" style="color: ${color};">${percentageStr}%</div>
                         <div class="cap-slices">${Math.round(userHarvest.slices).toLocaleString()} Slices</div>
-                        <div class="cap-fmv">Avg. Risk/FMV: ~€${avgFmv}/h</div>
+                        <div class="cap-fmv">Avg. Risk/FMV: ~€${avgFmv}/h${capitalHtml}</div>
                     </div>
                 </div>
             `;
@@ -355,8 +455,17 @@ export default class LedgerView {
             const date = new Date(entry.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
             const user = globalUsers.find(u => u.id === entry.userId) || { name: entry.userId };
             
-            const role = project.roles.find(r => r.id === entry.roleId);
-            const roleName = role ? `<span style="color: var(--text-muted); font-size:0.8rem; font-family:var(--font-mono);">${role.levelId}</span> ${role.name}` : 'Nodo Base';
+            let roleName = "";
+            let horasStr = "";
+            
+            if (entry.roleId === 'CAPITAL_ASSET') {
+                roleName = `<span style="color: var(--accent-green); font-weight:bold;">💼 Aportación de Capital</span>`;
+                horasStr = `<span style="color:#666;">--</span>`; // El capital no se mide en horas
+            } else {
+                const role = project.roles.find(r => r.id === entry.roleId);
+                roleName = role ? `<span style="color: var(--text-muted); font-size:0.8rem; font-family:var(--font-mono);">${role.levelId}</span> ${role.name}` : 'Nodo Base';
+                horasStr = `${entry.horas}h`;
+            }
             
             const proofLink = entry.proofLink ? ` <a href="${entry.proofLink}" target="_blank" style="color:var(--accent-blue); font-size:0.8rem; text-decoration:none;">[Ver]</a>` : '';
 
@@ -367,7 +476,7 @@ export default class LedgerView {
                 <td style="font-weight: bold; color: white;">${user.name}</td>
                 <td>${roleName}</td>
                 <td>${entry.description}${proofLink}</td>
-                <td style="font-family: var(--font-mono); color: #888;">${entry.horas}h</td>
+                <td style="font-family: var(--font-mono); color: #888;">${horasStr}</td>
                 <td style="text-align: right;"><span class="slice-badge">+${Math.round(entry.valorCongelado).toLocaleString()}</span></td>
             `;
             tbody.appendChild(row);
