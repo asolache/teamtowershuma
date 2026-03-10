@@ -72,13 +72,13 @@ export default class ValueMapView {
                 .tx-badge:hover { transform: translate(-50%, -50%) scale(1.2); filter: brightness(1.2); z-index: 100;}
                 .tx-badge.ghost { opacity: 0.3; }
 
-                /* TOOLTIP FLOTANTE MEJORADO */
+                /* TOOLTIP FLOTANTE MEJORADO (POSITION FIXED PARA EVITAR OVERFLOWS RELATIVOS) */
                 .tx-tooltip { 
-                    position: absolute; background: rgba(10, 10, 14, 0.98); border: 1px solid var(--accent-blue); 
-                    color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 2000; 
-                    box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(8px); 
+                    position: fixed; background: rgba(10, 10, 14, 0.98); border: 1px solid var(--accent-blue); 
+                    color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 9999; 
+                    box-shadow: 0 15px 50px rgba(0,0,0,0.9); backdrop-filter: blur(8px); 
                     opacity: 0; visibility: hidden; transition: opacity 0.2s; 
-                    min-width: 250px; max-width: 300px; line-height: 1.4; pointer-events: none;
+                    min-width: 250px; max-width: 320px; line-height: 1.4; pointer-events: none;
                 }
                 .tx-tooltip.visible { opacity: 1; visibility: visible; }
 
@@ -370,7 +370,7 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ TOOLTIPS DE ALTO RENDIMIENTO (HTML HOVER CON ANTI-OVERFLOW) ------------------
+        // ------------------ TOOLTIPS DE ALTO RENDIMIENTO CON MATEMÁTICAS ANTI-OVERFLOW ------------------
         this.dom.canvas.addEventListener('mouseover', (e) => {
             if (e.target.classList.contains('tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
@@ -385,6 +385,7 @@ export default class ValueMapView {
                 const typeColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
                 const typeText = tx.tipo === 'tangible' ? 'TANGIBLE' : 'INTANGIBLE';
                 
+                // Inyectamos el contenido primero
                 this.dom.tooltip.innerHTML = `
                     <div style="color: ${typeColor}; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
                         [Paso ${parseInt(idx) + 1}] ${typeText}
@@ -399,20 +400,39 @@ export default class ValueMapView {
                     </div>
                 `;
                 
+                // Hacemos visible la caja para poder medirla con getBoundingClientRect
                 this.dom.tooltip.classList.add('visible');
 
-                // CÁLCULO DINÁMICO DE POSICIÓN (Anti-Overflow)
+                // CÁLCULO DINÁMICO DE POSICIÓN (Evitando que se salga de la pantalla)
                 const badgeRect = e.target.getBoundingClientRect();
-                const tooltipWidth = this.dom.tooltip.offsetWidth || 300;
+                const tooltipRect = this.dom.tooltip.getBoundingClientRect();
                 
+                // Por defecto, lo ponemos a la derecha del número
                 let leftPos = badgeRect.right + 15;
                 let topPos = badgeRect.top - 10;
 
-                // Si se sale por la derecha de la pantalla, lo dibujamos a la izquierda del badge
-                if (leftPos + tooltipWidth > window.innerWidth - 20) {
-                    leftPos = badgeRect.left - tooltipWidth - 15;
+                // Comprobamos si choca con el borde derecho de la ventana
+                if (leftPos + tooltipRect.width > window.innerWidth - 20) {
+                    // Si choca, lo mandamos a la izquierda del número
+                    leftPos = badgeRect.left - tooltipRect.width - 15;
+                    
+                    // Si también choca por la izquierda (pantallas muy estrechas), lo pegamos al margen izquierdo
+                    if (leftPos < 20) {
+                        leftPos = 20;
+                    }
                 }
 
+                // Comprobamos si choca por abajo
+                if (topPos + tooltipRect.height > window.innerHeight - 20) {
+                    topPos = window.innerHeight - tooltipRect.height - 20;
+                }
+                
+                // Comprobamos si choca por arriba
+                if (topPos < 20) {
+                    topPos = 20;
+                }
+
+                // Aplicamos las posiciones corregidas
                 this.dom.tooltip.style.left = `${leftPos}px`;
                 this.dom.tooltip.style.top = `${topPos}px`;
             }
