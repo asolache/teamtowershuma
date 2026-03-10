@@ -5,7 +5,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciador Agnóstico | TeamTowers";
+        document.title = "Instanciador Agnóstico | TeamTowers SOS";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
@@ -81,6 +81,14 @@ export default class ProjectCreatorView {
                 .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
                 .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
 
+                /* FEEDBACK INTERACTIVO Y PREVIEW DE TXs */
+                .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
+                .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px);}
+                
+                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 8px; padding: 15px; max-height: 200px; overflow-y: auto;}
+                .tx-preview-item { font-size: 0.8rem; color: #ccc; padding: 8px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
+                .tx-preview-item:last-child { border-bottom: none; }
+
                 .actions-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
 
                 @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
@@ -94,6 +102,7 @@ export default class ProjectCreatorView {
                     .educational-legend { grid-template-columns: 1fr; }
                     .actions-row { flex-direction: column; }
                     .actions-row .btn { width: 100%; }
+                    .tx-preview-item { flex-direction: column; align-items: flex-start; gap: 4px; }
                 }
             </style>
 
@@ -188,17 +197,20 @@ export default class ProjectCreatorView {
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 1.5rem;">
                                 <h1>Validación de Arquitectura</h1>
-                                <p>Ajusta los roles o el mapa visual generado por la IA antes de firmarlo.</p>
+                                <p>Ajusta los roles o revisa el mapa visual antes de registrarlo.</p>
                             </div>
 
                             <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
 
-                            <div id="aiTxFeedback" style="display: none; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 2rem; justify-content: space-between; align-items: center;">
+                            <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de los flujos de valor">
                                 <div>
-                                    <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Flujos Pre-Cargados (Value Network)</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">La IA ha estimado <strong id="txCount" style="color: white;">0</strong> entregables clave (ver Mapa ☝️).</div>
+                                    <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Red de Valor Pre-Cargada</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">El sistema ha estimado <strong id="txCount" style="color: white; font-size: 1.1rem; font-family: monospace;">0</strong> entregables clave (Clic para previsualizar).</div>
                                 </div>
+                                <div style="font-size: 1.5rem; opacity: 0.5;">&darr;</div>
                             </div>
+                            
+                            <div id="txPreviewList" class="tx-preview-list"></div>
 
                             <div class="educational-legend">
                                 <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Dirección (x3)</div>
@@ -214,7 +226,7 @@ export default class ProjectCreatorView {
 
                             <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
                                 <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Firmar e Instanciar en el Kernel</button>
+                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Firmar y Registrar en el Sistema</button>
                             </div>
                         </div>
 
@@ -251,11 +263,21 @@ export default class ProjectCreatorView {
             inpCustomUrl: document.getElementById('inpCustomUrl'),
             customEndpointBox: document.getElementById('customEndpointBox'),
             aiTxFeedback: document.getElementById('aiTxFeedback'),
-            txCount: document.getElementById('txCount')
+            txCount: document.getElementById('txCount'),
+            txPreviewList: document.getElementById('txPreviewList')
         };
 
         this.dom.inpAiProvider.addEventListener('change', (e) => {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+
+        // Mostrar Preview de Entregables
+        this.dom.aiTxFeedback.addEventListener('click', () => {
+            if (this.dom.txPreviewList.style.display === 'block') {
+                this.dom.txPreviewList.style.display = 'none';
+            } else {
+                this.dom.txPreviewList.style.display = 'block';
+            }
         });
 
         this.dom.btnStartBlank.addEventListener('click', () => {
@@ -272,15 +294,35 @@ export default class ProjectCreatorView {
             this.draftTxs = [];
             
             if (sectorData) {
+                // 1. Cargar Roles de la plantilla
                 Object.keys(sectorData).forEach((level, idx) => {
-                    this.draftRoles.push({
-                        id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                        levelId: level,
-                        name: sectorData[level].name,
-                        fmv: sectorData[level].fmv || 50,
-                        multiplier: sectorData[level].multiplier || 1.0,
-                        guardian: this.guardians[idx % this.guardians.length].id
-                    });
+                    if (level !== 'roles') { 
+                        this.draftRoles.push({
+                            id: 'draft_' + Math.random().toString(36).substr(2, 9),
+                            levelId: level,
+                            name: sectorData[level].name,
+                            fmv: sectorData[level].fmv || 50,
+                            multiplier: sectorData[level].multiplier || 1.0,
+                            guardian: this.guardians[idx % this.guardians.length].id
+                        });
+                    }
+                });
+
+                // 2. Extraer y crear transacciones de los "standard_deliverables"
+                Object.keys(sectorData).forEach(level => {
+                    const roleNode = sectorData[level];
+                    if (roleNode && roleNode.standard_deliverables) {
+                        roleNode.standard_deliverables.forEach(deliv => {
+                            const toLevel = level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos');
+                            this.draftTxs.push({
+                                fromLevel: level,
+                                toLevel: toLevel,
+                                tipo: deliv.tipo || 'tangible',
+                                entregable: deliv.name,
+                                horas: deliv.estimatedHours || 2
+                            });
+                        });
+                    }
                 });
             }
             this.goToStep2();
@@ -293,6 +335,7 @@ export default class ProjectCreatorView {
             this.dom.step1.style.display = 'block';
             this.dom.dot2.classList.remove('active');
             this.dom.dot1.classList.add('active');
+            this.dom.txPreviewList.style.display = 'none'; // ocultar preview
         });
 
         this.dom.btnAddCustom.addEventListener('click', () => {
@@ -320,8 +363,22 @@ export default class ProjectCreatorView {
         if (this.draftTxs.length > 0) {
             this.dom.aiTxFeedback.style.display = 'flex';
             this.dom.txCount.innerText = this.draftTxs.length;
+            
+            // Construir la lista de preview de entregables
+            const listHtml = this.draftTxs.map((tx, i) => `
+                <div class="tx-preview-item">
+                    <span>
+                        <span style="color:var(--accent-purple); font-weight:bold; font-family:var(--font-mono);">[${i+1}]</span> 
+                        <span style="color:#888;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
+                    </span>
+                    <span style="color:white; font-weight:bold;">${tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></span>
+                </div>
+            `).join('');
+            
+            this.dom.txPreviewList.innerHTML = listHtml + `<div style="text-align:center; margin-top:15px; font-size:0.75rem; color:var(--accent-orange); font-weight:bold;">Podrás editarlos en el Mapa de Valor una vez registrado el sistema.</div>`;
         } else {
             this.dom.aiTxFeedback.style.display = 'none';
+            this.dom.txPreviewList.style.display = 'none';
         }
         
         this.renderDraftRoles();
@@ -339,7 +396,6 @@ export default class ProjectCreatorView {
         if (!vision) return alert("Escribe tu visión estratégica para que el Agente la procese.");
         if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor. Guárdala en Configuración o ponla aquí.");
 
-        // Guardar para futura referencia (Sincroniza con Settings)
         if (provider === 'deepseek') localStorage.setItem('tt_key_deepseek', apiKey);
         if (provider === 'openai') localStorage.setItem('tt_key_openai', apiKey);
         if (provider === 'gemini') localStorage.setItem('tt_key_gemini', apiKey);
@@ -349,7 +405,6 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
-        // PROMPT ESTRATÉGICO CALIBRADO PARA VNA (VERNA ALLEE)
         const systemPrompt = `
             Eres el 'Ecosystem Architect' de TeamTowers. 
             Misión: Analizar la visión del proyecto y devolver UNICAMENTE un JSON válido. CERO markdown, CERO texto introductorio.
@@ -677,11 +732,10 @@ export default class ProjectCreatorView {
         const visionText = this.dom.inpVision.value.trim();
         const arch = this.dom.inpArchetype.value; 
         
-        // Carga animada
+        // Carga animada y bloqueo del botón
         this.dom.btnLaunch.disabled = true;
-        this.dom.btnLaunch.innerText = 'Firmando Bloque Génesis...';
+        this.dom.btnLaunch.innerText = 'Registrando en el Kernel...';
 
-        // Ahora es asíncrono para permitir el cálculo SHA-256
         await store.dispatch({ 
             type: 'ADD_PROJECT', 
             payload: {
@@ -698,7 +752,6 @@ export default class ProjectCreatorView {
         const p = state.projects.find(x => x.id === projectId);
         
         if (p && this.draftTxs && this.draftTxs.length > 0) {
-            // Convertimos el loop en asíncrono para asegurar la inyección limpia de las TXs
             for (const aiTx of this.draftTxs) {
                 const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
                 const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
@@ -709,8 +762,8 @@ export default class ProjectCreatorView {
                         payload: {
                             projectId: projectId,
                             tx: {
-                                from: roleFrom.id,
-                                to: roleTo.id,
+                                from: roleFrom.id, 
+                                to: roleTo.id,     
                                 horas: aiTx.horas || 2,
                                 entregable: aiTx.entregable,
                                 tipo: aiTx.tipo,
@@ -722,7 +775,6 @@ export default class ProjectCreatorView {
             }
         }
 
-        // Redirige al Mapa de Valor una vez que TODO el bloque ha sido sellado
         window.location.href = '/v5/map';
     }
 }
