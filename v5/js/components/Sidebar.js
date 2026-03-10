@@ -55,7 +55,7 @@ export const Sidebar = {
                 .sidebar .project-context-header h3 { font-size: 0.9rem; margin: 0 0 5px 0; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
                 .sidebar .project-context-header p { font-size: 0.65rem; color: var(--accent-green); text-transform: uppercase; font-weight: bold; margin: 0; letter-spacing: 1px;}
                 
-                .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; }
+                .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 5px; }
                 .sidebar .user-status { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--border-radius-md); margin-top: 10px; border: 1px solid var(--glass-border);}
                 .sidebar .btn-logout { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.1rem; opacity: 0.7; transition: all 0.2s; display: flex; align-items: center;}
                 .sidebar .btn-logout:hover { opacity: 1; transform: scale(1.2); }
@@ -77,6 +77,7 @@ export const Sidebar = {
                 
                 <div class="sidebar-footer">
                     <a href="/v5/manifesto" class="side-link ${activePath === '/manifesto' ? 'active' : ''}" data-link style="color: var(--accent-purple); font-weight: bold;">📚 Códice SOS</a>
+                    <a href="/v5/help" class="side-link ${activePath === '/help' ? 'active' : ''}" data-link style="color: #ffd740; font-weight: bold;">❓ Manual de Uso</a>
                     <a href="/v5/settings" class="side-link ${activePath === '/settings' ? 'active' : ''}" data-link>⚙️ Configuración</a>
                     
                     <div class="user-status">
