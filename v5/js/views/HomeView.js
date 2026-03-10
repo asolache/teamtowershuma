@@ -11,7 +11,6 @@ export default class HomeView {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         
-        // Determinar qué proyectos mostrar (Todos si es root, o solo en los que está)
         const userProjects = state.projects.filter(p => 
             state.session.role === 'ecosystem-owner' || 
             p.ownerId === activeUserId || 
@@ -19,17 +18,13 @@ export default class HomeView {
         );
 
         // -------------------------------------------------------------------
-        // MODO 1: COMMAND CENTER (Dashboard Privado)
-        // Se activa si el usuario ha interactuado o tiene un proyecto activo
+        // MODO 1: COMMAND CENTER (Dashboard Privado si ya hay sesión)
         // -------------------------------------------------------------------
         if (activeUserId !== 'ecosystem-admin' && userProjects.length > 0) {
             const user = state.globalUsers.find(u => u.id === activeUserId);
             const userName = user ? user.name : "Comandante";
             const initial = userName.charAt(0).toUpperCase();
             
-            const activeProject = userProjects[userProjects.length - 1]; // Tomamos el más reciente como contexto principal
-            
-            // Cálculos globales
             let totalSlices = 0;
             let totalHours = 0;
             
@@ -37,7 +32,6 @@ export default class HomeView {
                 const harvest = store.calculateHarvest(p.id) || [];
                 const userHarvest = harvest.find(h => h.userId === activeUserId);
                 if (userHarvest) totalSlices += userHarvest.slices;
-                
                 const userLedger = (p.ledger || []).filter(tx => tx.userId === activeUserId);
                 totalHours += userLedger.reduce((sum, tx) => sum + (tx.horas || 0), 0);
             });
@@ -45,318 +39,179 @@ export default class HomeView {
             return `
                 <style>
                     .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                    .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative;}
-                    
-                    /* HERO SECTION PRIVADO */
-                    .hero-banner { background: linear-gradient(135deg, rgba(0, 176, 255, 0.05) 0%, rgba(224, 64, 251, 0.05) 100%); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 3rem; position: relative; overflow: hidden; margin-bottom: 2.5rem; display: flex; flex-direction: column; align-items: flex-start;}
-                    .hero-banner::after { content: ''; position: absolute; right: -100px; top: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0, 176, 255, 0.15) 0%, transparent 60%); border-radius: 50%; pointer-events: none;}
-                    
-                    .hero-title { font-size: 2.8rem; color: white; margin: 0 0 10px 0; letter-spacing: -1px; line-height: 1.1; z-index: 1;}
-                    .hero-subtitle { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; line-height: 1.5; margin-bottom: 2rem; z-index: 1;}
-                    
-                    .hero-actions { display: flex; gap: 15px; z-index: 1;}
-                    .btn-main { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;}
-                    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 176, 255, 0.3); color: white;}
-                    .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; text-decoration: none;}
-                    .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: #555;}
-
-                    /* STATS GLOBALES */
-                    .global-stats { display: flex; gap: 2rem; margin-bottom: 3rem; z-index: 1;}
-                    .g-stat { display: flex; flex-direction: column; }
-                    .g-stat-val { font-size: 2rem; font-weight: 900; font-family: var(--font-mono); color: white;}
-                    .g-stat-lbl { font-size: 0.8rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
-
-                    /* PILLARES SOS (INTEGRACIÓN) */
-                    .pillars-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem;}
-                    .pillar-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 1.5rem; transition: transform 0.2s; position: relative; overflow: hidden; text-decoration: none;}
-                    .pillar-card:hover { transform: translateY(-5px); border-color: #444;}
-                    .pillar-icon { font-size: 2rem; margin-bottom: 15px; display: inline-block;}
-                    .pillar-title { color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; font-family: var(--font-mono);}
-                    .pillar-desc { color: #888; font-size: 0.85rem; line-height: 1.4; margin:0;}
-                    
-                    /* DECORADORES DE VALORES CASTELLERS */
-                    .val-forca { border-top: 3px solid var(--accent-red); }
-                    .val-equilibri { border-top: 3px solid var(--accent-blue); }
-                    .val-valor { border-top: 3px solid var(--accent-green); }
-                    .val-seny { border-top: 3px solid var(--accent-purple); }
-
-                    /* COLLAS ACTIVAS */
-                    .section-title { color: white; font-size: 1.3rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
-                    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;}
-                    
-                    .project-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 1.5rem; display: flex; flex-direction: column; transition: all 0.2s; cursor: pointer; text-decoration: none;}
-                    .project-card:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-blue); }
-                    .pc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;}
-                    .pc-title { color: white; font-size: 1.2rem; font-weight: bold; margin: 0;}
-                    .pc-badge { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.2); padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono);}
-                    
-                    .pc-stats { display: flex; gap: 15px; margin-bottom: 1.5rem; border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: 1px dashed rgba(255,255,255,0.1); padding: 10px 0;}
-                    .pc-stat { display: flex; flex-direction: column; gap: 2px;}
-                    .pc-stat-val { color: white; font-weight: bold; font-family: var(--font-mono); font-size: 1.1rem;}
-                    .pc-stat-lbl { color: #666; font-size: 0.7rem; text-transform: uppercase;}
-
-                    .pc-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;}
-                    .pc-role { color: var(--accent-green); font-weight: bold;}
-                    .pc-enter { color: var(--text-muted); }
-                    .project-card:hover .pc-enter { color: var(--accent-blue); }
-
-                    @media (max-width: 1024px) { .pillars-grid { grid-template-columns: repeat(2, 1fr); } }
-                    @media (max-width: 768px) { 
-                        .app-layout { flex-direction: column; } 
-                        .workspace { padding: 1.5rem; } 
-                        .hero-title { font-size: 2rem; }
-                        .pillars-grid { grid-template-columns: 1fr; }
-                        .hero-actions { flex-direction: column; width: 100%;}
-                        .hero-actions a { text-align: center; }
-                        .global-stats { flex-direction: column; gap: 10px;}
-                    }
+                    .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; }
+                    .hero-banner { background: linear-gradient(135deg, rgba(0, 176, 255, 0.05) 0%, rgba(224, 64, 251, 0.05) 100%); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 3rem; position: relative; overflow: hidden; margin-bottom: 2.5rem; }
+                    .hero-title { font-size: 2.8rem; color: white; margin: 0; letter-spacing: -1px; }
+                    .hero-subtitle { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 1rem 0 2rem 0; }
+                    .global-stats { display: flex; gap: 2rem; margin-bottom: 2rem; }
+                    .g-stat-val { font-size: 2rem; font-weight: 900; font-family: var(--font-mono); color: white; display: block;}
+                    .g-stat-lbl { font-size: 0.8rem; color: var(--accent-blue); text-transform: uppercase; font-weight: bold;}
+                    .btn-main { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block;}
+                    .pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;}
+                    .pillar-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 1.5rem; text-decoration: none; border-top: 3px solid transparent;}
+                    .val-forca { border-top-color: var(--accent-red); }
+                    .val-equilibri { border-top-color: var(--accent-blue); }
+                    .val-valor { border-top-color: var(--accent-green); }
+                    .val-seny { border-top-color: var(--accent-purple); }
+                    .project-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 1.5rem; text-decoration: none; cursor: pointer; transition: 0.2s;}
+                    .project-card:hover { border-color: var(--accent-blue); background: rgba(255,255,255,0.05);}
                 </style>
-
                 <div class="app-layout">
                     ${Sidebar.getHtml('/')}
-                    
                     <main class="workspace">
                         <div class="hero-banner">
-                            <h1 class="hero-title">Hola de nuevo, ${userName}</h1>
-                            <p class="hero-subtitle">Estás operando en el entorno seguro de TeamTowers. Diseña estructuras descentralizadas y convierte el esfuerzo de tu Colla en equidad inmutable.</p>
-                            
+                            <h1 class="hero-title">Hola, ${userName}</h1>
+                            <p class="hero-subtitle">Tu Colla está activa. Sigue levantando el Castell.</p>
                             <div class="global-stats">
                                 <div class="g-stat">
-                                    <span class="g-stat-val">${Math.round(totalSlices).toLocaleString()}</span>
-                                    <span class="g-stat-lbl" style="color: var(--accent-green);">Slices Totales (Equity)</span>
+                                    <span class="g-stat-val" style="color: var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</span>
+                                    <span class="g-stat-lbl">Equity Slices</span>
                                 </div>
                                 <div class="g-stat">
                                     <span class="g-stat-val">${totalHours.toFixed(1)}h</span>
-                                    <span class="g-stat-lbl">Horas Consolidadas</span>
+                                    <span class="g-stat-lbl">Deep Work</span>
                                 </div>
                             </div>
-
-                            <div class="hero-actions">
-                                <a href="/v5/create" data-link class="btn-main">🏗️ Diseñar Organización</a>
-                                <a href="/v5/profile" data-link class="btn-secondary">💎 Mi Identidad Fractal</a>
-                            </div>
+                            <a href="/v5/create" data-link class="btn-main">🏗️ Diseñar Organización</a>
                         </div>
-
-                        <h2 class="section-title">Pilares SOS (Accesos Rápidos)</h2>
                         <div class="pillars-grid">
-                            <a href="/v5/project" data-link class="pillar-card val-forca">
-                                <div class="pillar-icon">📋</div>
-                                <div class="pillar-title">Força (Kanban)</div>
-                                <div class="pillar-desc">Tracción fluida. Entra aquí para ejecutar transacciones (Pull) y enviar Pruebas de Trabajo.</div>
-                            </a>
-                            <a href="/v5/map" data-link class="pillar-card val-equilibri">
-                                <div class="pillar-icon">🕸️</div>
-                                <div class="pillar-title">Equilibri (VNA)</div>
-                                <div class="pillar-desc">Diseño estructural. Todo esfuerzo debe nacer primero de un diseño estratégico.</div>
-                            </a>
-                            <a href="/v5/ledger" data-link class="pillar-card val-valor">
-                                <div class="pillar-icon">⚖️</div>
-                                <div class="pillar-title">Valor (Slicing Pie)</div>
-                                <div class="pillar-desc">Auditoría. Verifica cómo el esfuerzo de la Colla se traduce matemáticamente en Equity.</div>
-                            </a>
-                            <a href="/v5/team" data-link class="pillar-card val-seny">
-                                <div class="pillar-icon">🧠</div>
-                                <div class="pillar-title">Seny (IA & Colla)</div>
-                                <div class="pillar-desc">Soberanía de talento. Gestiona tu equipo y deja que el Orquestador cruce perfiles semánticos.</div>
-                            </a>
+                            <a href="/v5/project" data-link class="pillar-card val-forca"><h3>📋 Força</h3><p style="color:#666; font-size:0.8rem;">Tracción Kanban</p></a>
+                            <a href="/v5/map" data-link class="pillar-card val-equilibri"><h3>🕸️ Equilibri</h3><p style="color:#666; font-size:0.8rem;">Mapa VNA</p></a>
+                            <a href="/v5/ledger" data-link class="pillar-card val-valor"><h3>⚖️ Valor</h3><p style="color:#666; font-size:0.8rem;">Slicing Pie</p></a>
+                            <a href="/v5/team" data-link class="pillar-card val-seny"><h3>🧠 Seny</h3><p style="color:#666; font-size:0.8rem;">La Colla (IA)</p></a>
                         </div>
-
-                        <h2 class="section-title">
-                            <span>Mis Collas (Ecosistemas Activos)</span>
-                            <a href="/v5/network" data-link style="font-size: 0.85rem; color: var(--accent-blue); text-decoration: none; font-weight: normal;">Explorar Red Global &rarr;</a>
-                        </h2>
-                        
-                        <div class="projects-grid" id="projectsContainer">
-                            </div>
+                        <h2 style="color:white; margin-bottom:1.5rem;">Mis Ecosistemas</h2>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;" id="projectsContainer"></div>
                     </main>
                 </div>
             `;
         }
 
         // -------------------------------------------------------------------
-        // MODO 2: LANDING PAGE (Soberanía Organizacional)
+        // MODO 2: LANDING PAGE - EL PORTAL AL EXOESQUELETO (No Logueado)
         // -------------------------------------------------------------------
         return `
             <style>
-                .landing-header {
-                    display: flex; justify-content: space-between; align-items: center;
-                    padding: 1.5rem 5%; background: rgba(10,10,12,0.8);
-                    backdrop-filter: blur(20px); position: fixed; width: 100%; top: 0; left: 0; z-index: 100;
-                    border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'Segoe UI', sans-serif;
+                .landing-canvas {
+                    height: 100vh; width: 100vw; background: #050507;
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    font-family: var(--font-main); position: relative; overflow: hidden;
                 }
-                .logo { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; color: white; letter-spacing: -0.5px;}
-                .logo span { color: var(--accent-blue); }
-                
-                .nav-links { display: flex; gap: 2rem; align-items: center; }
-                .nav-links a { color: #888; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; cursor: pointer; }
-                .nav-links a:hover { color: white; }
-                
-                .hero {
-                    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
-                    align-items: center; text-align: center; padding: 120px 20px 60px 20px;
-                    background: radial-gradient(circle at center top, rgba(0, 176, 255, 0.1) 0%, #0a0a0c 50%);
-                    font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
+                .grid-bg {
+                    position: absolute; width: 200%; height: 200%;
+                    background-image: linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px), 
+                                      linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px);
+                    background-size: 50px 50px; transform: perspective(500px) rotateX(60deg);
+                    bottom: -50%; left: -50%; animation: gridMove 20s linear infinite; z-index: 0;
                 }
-                
-                .hero::before {
-                    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                    background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0);
-                    background-size: 40px 40px; pointer-events: none; z-index: 0;
+                @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 1000px; } }
+                .content-box { z-index: 10; text-align: center; max-width: 900px; padding: 0 2rem; }
+                .tagline { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 1rem; display: block; animation: fadeIn 2s ease-out; }
+                .main-title { font-size: 4.5rem; color: white; line-height: 0.9; margin-bottom: 2rem; letter-spacing: -3px; font-weight: 800; animation: slideUp 1s ease-out; }
+                .main-title span { color: var(--accent-purple); text-shadow: 0 0 30px rgba(224, 64, 251, 0.3); }
+                .description { color: #888; font-size: 1.2rem; max-width: 650px; margin: 0 auto 3.5rem auto; line-height: 1.6; }
+                .btn-boot {
+                    background: white; color: black; border: none; padding: 22px 50px;
+                    border-radius: 4px; font-weight: 900; font-size: 1.2rem; cursor: pointer;
+                    font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 2px;
+                    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 15px 30px rgba(0,0,0,0.5);
                 }
+                .btn-boot:hover { transform: scale(1.05); background: var(--accent-blue); box-shadow: 0 0 50px rgba(0, 176, 255, 0.4); }
 
-                .tagline {
-                    background: rgba(0, 230, 118, 0.1); color: var(--accent-green);
-                    padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
-                    border: 1px solid rgba(0, 230, 118, 0.3); margin-bottom: 1.5rem; z-index: 1; letter-spacing: 1px; text-transform: uppercase;
+                /* TERMINAL OVERLAY */
+                .terminal-overlay {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: #000; z-index: 1000; display: none;
+                    flex-direction: column; align-items: center; justify-content: center;
+                    font-family: var(--font-mono); color: var(--accent-blue);
                 }
-                .hero h1 { font-size: 4.5rem; line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; color: white; z-index: 1; letter-spacing: -2px;}
-                .hero h1 span { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-                .hero p { font-size: 1.2rem; color: #888; max-width: 600px; margin-bottom: 3rem; z-index: 1; line-height: 1.6;}
-                
-                .cta-group { display: flex; gap: 1rem; z-index: 1; }
-                .btn-primary { background: var(--accent-blue); color: black; border: none; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; font-size: 1.1rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 10px 25px rgba(0, 176, 255, 0.3);}
-                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0, 176, 255, 0.4); }
-                .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 1rem 2rem; border-radius: 8px; font-weight: bold; font-size: 1.1rem; text-decoration: none; transition: background 0.2s; }
-                .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-
-                .features { padding: 5rem 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; background: #0a0a0c; font-family: 'Segoe UI', sans-serif;}
-                .feature-card { padding: 2.5rem; transition: transform 0.3s; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; background: rgba(255,255,255,0.02); }
-                .feature-card:hover { transform: translateY(-10px); border-color: var(--accent-blue); background: rgba(255,255,255,0.03); }
-                .feature-icon { font-size: 3rem; margin-bottom: 1.5rem; display: inline-block; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);}
-                .feature-card h3 { color: white; font-size: 1.4rem; margin-top: 0; margin-bottom: 10px;}
-                .feature-card p { color: #888; line-height: 1.6; margin: 0; font-size: 0.95rem;}
-
-                @media (max-width: 768px) {
-                    .hero h1 { font-size: 3rem; }
-                    .nav-links .hide-on-mobile { display: none; }
-                    .cta-group { flex-direction: column; }
-                }
+                .boot-log { width: 450px; text-align: left; font-size: 0.85rem; line-height: 1.8; border-left: 2px solid #111; padding-left: 20px;}
+                .cursor { display: inline-block; width: 8px; height: 15px; background: var(--accent-blue); animation: blink 0.8s infinite; }
+                @keyframes blink { 50% { opacity: 0; } }
+                @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
             </style>
 
-            <div class="view-container">
-                <header class="landing-header">
-                    <div class="logo">🗼 <span>TeamTowers</span></div>
-                    <nav class="nav-links">
-                        <div class="hide-on-mobile" style="display: flex; gap: 2rem;">
-                            <a href="/v5/network" data-link>🌐 Explorar DAOs</a>
-                            <a href="/v5/team" data-link>🔑 Iniciar Sesión</a>
-                        </div>
-                        <a href="/v5/create" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;" data-link>Diseñar Organización</a>
-                    </nav>
-                </header>
+            <div class="landing-canvas">
+                <div class="grid-bg"></div>
+                <div class="content-box">
+                    <span class="tagline">Soberanía Organizacional</span>
+                    <h1 class="main-title">No uses software.<br>Construye tu <span>Exoesqueleto.</span></h1>
+                    <p class="description">
+                        Bienvenido al SOS v7.0. El primer Kernel organizacional que fusiona <b>VNA</b>, <b>Slicing Pie</b> e <b>IA</b> 
+                        para transformar el Deep Work en equidad inmutable.
+                    </p>
+                    <button class="btn-boot" id="triggerBoot">BOOT SYSTEM v7.0 &rarr;</button>
+                </div>
 
-                <section class="hero">
-                    <div class="tagline">Slicing Pie + VNA + Identidad Web3</div>
-                    <h1>No uses software.<br>Construye tu <span>Exoesqueleto Cognitivo.</span></h1>
-                    <p>El primer Sistema Operativo que conecta Ontologías de Diseño con Contabilidad de Triple Entrada. Convierte el Deep Work en Equidad Inmutable.</p>
-                    
-                    <div class="cta-group">
-                        <a href="/v5/create" class="btn-primary" data-link>Diseñar Organización</a>
-                        <a href="/v5/network" class="btn-secondary" data-link>Explorar el Ecosistema</a>
-                    </div>
-                </section>
-
-                <section class="features" id="filosofia">
-                    <div class="feature-card">
-                        <div class="feature-icon">🕸️</div>
-                        <h3>Value Network Analysis (VNA)</h3>
-                        <p>Diseña el "Castell" (la estructura de tu equipo) mapeando flujos de valor tangibles e intangibles antes de ejecutar una sola línea de código.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📋</div>
-                        <h3>Tracción (Kanban)</h3>
-                        <p>Un sistema de tracción puro. Haz "Pull" de las transacciones teóricas del diseño, ejecuta, y demuestra tu trabajo. Sin micro-management.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">⚖️</div>
-                        <h3>Slicing Pie en Tiempo Real</h3>
-                        <p>El fin de las discusiones por el capital. El Kernel traduce tu esfuerzo en Slices usando el valor justo de mercado y el riesgo asumido.</p>
-                    </div>
-                </section>
+                <div class="terminal-overlay" id="bootTerminal">
+                    <div style="font-size: 3rem; margin-bottom: 2rem;">🗼</div>
+                    <div class="boot-log" id="logContent"></div>
+                    <div style="margin-top: 2rem; font-size: 0.7rem; color: #222;">SOS_KERNEL_STABLE // BUILD 2026.03.10</div>
+                </div>
             </div>
         `;
     }
 
     executeViewScript() {
-        if(Sidebar && Sidebar.initListeners) {
-            Sidebar.initListeners(); 
-        }
-
-        // Si estamos en el modo Dashboard, inyectamos la lógica de renderizado de las Collas
+        const state = store.getState();
+        const activeUserId = state.session.activeUserId;
         const container = document.getElementById('projectsContainer');
+
+        // Lógica para el Dashboard si el container existe
         if (container) {
-            const state = store.getState();
-            const activeUserId = state.session.activeUserId;
-            
+            Sidebar.initListeners();
             const userProjects = state.projects.filter(p => 
                 state.session.role === 'ecosystem-owner' || 
                 p.ownerId === activeUserId || 
                 (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
             );
-
-            let html = '';
-            
-            userProjects.forEach(p => {
-                const isOwner = p.ownerId === activeUserId;
-                const nodeCount = p.roles ? p.roles.filter(r=>!r.isArchived).length : 0;
-                const txCount = p.transactions ? p.transactions.length : 0;
-                const membersCount = p.usuarios ? p.usuarios.length : 1;
-
-                let miSilla = 'Observador';
-                if (isOwner) miSilla = 'Project Owner';
-                else {
-                    const misAsignaciones = (p.asignaciones || []).filter(a => a.userId === activeUserId);
-                    if (misAsignaciones.length > 0) {
-                        const rolObj = p.roles.find(r => r.id === misAsignaciones[0].roleId);
-                        if (rolObj) miSilla = rolObj.name;
-                    }
-                }
-
-                html += `
-                    <div class="project-card" data-id="${p.id}">
-                        <div class="pc-header">
-                            <h3 class="pc-title">${p.nombre}</h3>
-                            <span class="pc-badge">${p.archetype || 'Startup'}</span>
-                        </div>
-                        
-                        <div class="pc-stats">
-                            <div class="pc-stat">
-                                <span class="pc-stat-val">${nodeCount}</span>
-                                <span class="pc-stat-lbl">Nodos</span>
-                            </div>
-                            <div class="pc-stat">
-                                <span class="pc-stat-val">${txCount}</span>
-                                <span class="pc-stat-lbl">Flujos</span>
-                            </div>
-                            <div class="pc-stat">
-                                <span class="pc-stat-val">${membersCount}</span>
-                                <span class="pc-stat-lbl">Colla</span>
-                            </div>
-                        </div>
-                        
-                        <div class="pc-footer">
-                            <div>Silla: <span class="pc-role">${miSilla}</span></div>
-                            <div class="pc-enter">Entrar al Ecosistema &rarr;</div>
-                        </div>
+            container.innerHTML = userProjects.map(p => `
+                <div class="project-card" onclick="window.location.href='/v5/project'">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                        <h3 style="color:white; margin:0;">${p.nombre}</h3>
+                        <span style="font-size:0.7rem; color:var(--accent-blue); font-family:var(--font-mono);">${p.archetype || 'STARTUP'}</span>
                     </div>
-                `;
-            });
+                    <div style="color:#666; font-size:0.8rem;">Owner: ${p.ownerId}</div>
+                </div>
+            `).join('');
+        }
 
-            container.innerHTML = html;
+        // Lógica para el Ritual de Arranque
+        const btn = document.getElementById('triggerBoot');
+        const terminal = document.getElementById('bootTerminal');
+        const logContent = document.getElementById('logContent');
 
-            container.querySelectorAll('.project-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const pId = card.dataset.id;
-                    const currentState = store.getState();
-                    const pIndex = currentState.projects.findIndex(x => x.id === pId);
-                    if (pIndex > -1) {
-                        const pData = currentState.projects.splice(pIndex, 1)[0];
-                        currentState.projects.push(pData);
-                        store.state = currentState;
-                        localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
+        if (btn) {
+            btn.addEventListener('click', () => {
+                terminal.style.display = 'flex';
+                const lines = [
+                    "> INITIALIZING KERNEL V7.0...",
+                    "> SYNCING VNA PROTOCOLS... [OK]",
+                    "> LOADING SLICING PIE LEDGER... [OK]",
+                    "> ESTABLISHING DEEPSEEK HANDSHAKE... [OK]",
+                    "> MOUNTING PERMAWEB REPOSITORY... [OK]",
+                    "> VERIFYING COLLA PERMISSIONS... [OK]",
+                    "> DEPLOYING COGNITIVE EXOSKELETON...",
+                    "> WELCOME, MASTER ARCHITECT."
+                ];
+
+                let i = 0;
+                const printLine = () => {
+                    if (i < lines.length) {
+                        logContent.innerHTML += `<div>${lines[i]}</div>`;
+                        i++;
+                        setTimeout(printLine, 450); // Tiempo para leer cada hito
+                    } else {
+                        logContent.innerHTML += `<div style="margin-top:10px; color:white;">ACCESS GRANTED <span class="cursor"></span></div>`;
+                        setTimeout(() => {
+                            // Autologin con el Master Architect para la demo
+                            store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'usr_alvaro_001' } });
+                            window.location.href = '/v5/';
+                        }, 1000);
                     }
-                    window.location.href = '/v5/project'; // Dirigir directo a la tracción (Kanban)
-                });
+                };
+                setTimeout(printLine, 500);
             });
         }
     }
