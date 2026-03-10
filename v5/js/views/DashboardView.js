@@ -63,8 +63,7 @@ export default class DashboardView {
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
         const resilience = store.calculateResilience(project.id);
-        const isPO = project.ownerId === activeUserId || globalRole === 'ecosystem-owner';
-
+        
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
@@ -83,7 +82,7 @@ export default class DashboardView {
                             ${r.levelId} | 🛡️ Req: ${r.guardian || 'Any'} | FMV: ${r.fmv}€/h
                         </div>
                     </div>
-                    <button class="btn btn-outline btn-invite" data-rolename="${r.name}" style="border-color: var(--accent-blue); color: var(--accent-blue);">+ Invitar</button>
+                    <button class="btn btn-outline btn-invite" data-rolename="${r.name}" style="border-color: var(--accent-blue); color: var(--accent-blue);">+ Invitar Candidato</button>
                 </div>
             `).join('');
         }
@@ -140,8 +139,8 @@ export default class DashboardView {
                 .recruitment-panel { background: rgba(0, 176, 255, 0.02); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-lg); padding: 2rem; }
                 .panel-title { color: white; font-size: 1.4rem; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 10px; }
 
-                /* PANEL IA Y REPORTES */
-                .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem;}
+                /* PANEL IA Y REPORTES (AHORA VISIBLE PARA TODOS) */
+                .ai-reports-panel { background: rgba(224, 64, 251, 0.02); border: 1px dashed rgba(224, 64, 251, 0.3); border-radius: var(--border-radius-lg); padding: 2rem; display:flex; flex-direction:column; gap: 1rem; animation: fadeIn 1s;}
                 .btn-report { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; text-align: left; cursor: pointer; transition: all 0.2s; display:flex; flex-direction:column; gap:5px;}
                 .btn-report:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-purple); transform: translateX(5px);}
                 .btn-report strong { font-size: 1.1rem; color: var(--accent-purple);}
@@ -229,6 +228,7 @@ export default class DashboardView {
                                 <span>Redacta el contrato dinámico basado en la Cap Table actual inmutable. Listo para Notario.</span>
                             </button>
                         </div>
+
                     </div>
                 </main>
             </div>
