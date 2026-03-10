@@ -17,7 +17,8 @@ const routes = {
     '/network': 'NetworkView',
     '/settings': 'SettingsView',
     '/focus': 'FocusView',
-    '/profile': 'ProfileView'
+    '/profile': 'ProfileView',
+    '/help': 'HelpView' // <-- RUTA NUEVA AÑADIDA
 };
 
 class Router {
