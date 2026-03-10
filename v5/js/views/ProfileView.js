@@ -4,7 +4,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class ProfileView {
     constructor() {
-        document.title = "Mi Perfil & Reputación | TeamTowers";
+        document.title = "Mi Perfil & Reputación | TeamTowers SOS";
         
         this.guardians = [
             { id: 'creator', label: '🎨 Creador (Innovación)' },
@@ -64,13 +64,13 @@ export default class ProfileView {
                 .stat-value { font-size: 2.5rem; color: var(--accent-green); font-weight: 800; font-family: var(--font-mono); margin-bottom: 5px; }
                 .stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-                /* SECCIONES: PROYECTOS Y SKILLS */
+                /* SECCIONES */
                 .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
                 
                 .section-title { color: white; font-size: 1.2rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
                 .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; }
                 
-                /* EDITOR DE IDENTIDAD (JOB BOARD 3.0) */
+                /* EDITOR DE IDENTIDAD */
                 .form-group { margin-bottom: 1.5rem; }
                 .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase;}
                 .vision-textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; min-height: 100px; resize: vertical; }
@@ -97,7 +97,7 @@ export default class ProfileView {
 
                 .pm-ikigai { background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 8px; padding: 15px; margin-top: 2rem;}
                 .pm-section-title { font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between;}
-                .pm-prompt-text { font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444; word-break: break-all;}
+                .pm-prompt-text { font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444; word-break: break-word;}
 
                 /* CHECKOUT MODAL (WEB3 / PAYMENTS) */
                 .checkout-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center;}
@@ -133,7 +133,7 @@ export default class ProfileView {
                             </div>
                         </div>
                         <div class="header-actions" style="display: flex; gap: 15px; z-index: 1;">
-                            <button class="btn-mint" id="btnOpenMintModal">💎 Acuñar Identidad</button>
+                            <button class="btn-mint" id="btnOpenMintModal">💎 Generar Ikigai & Sellar (IA)</button>
                             <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Local</button>
                         </div>
                     </div>
@@ -155,10 +155,10 @@ export default class ProfileView {
 
                     <div class="content-grid">
                         <div class="panel">
-                            <h3 class="section-title">🧬 Identidad Fractal (Job Board)</h3>
+                            <h3 class="section-title">🧬 Identidad Fractal (CV Libre)</h3>
                             
                             <div class="form-group">
-                                <label>1. Visión Semántica y Skills (CV Libre)</label>
+                                <label>1. Visión y Skills en Bruto</label>
                                 <textarea id="inpVision" class="vision-textarea" placeholder="Ej: Desarrollador Full-Stack apasionado por la gobernanza descentralizada. Busco DAOs donde aportar en código y diseño de incentivos..."></textarea>
                             </div>
 
@@ -214,11 +214,10 @@ export default class ProfileView {
 
                                 <div class="pm-ikigai">
                                     <div class="pm-section-title">
-                                        <span>🧠 AI System Prompt (Motor de Matching)</span>
-                                        <span style="color: rgba(255,255,255,0.3); font-size: 0.6rem;">AUTO-GENERADO</span>
+                                        <span>🧠 AI System Prompt (Huella Semántica)</span>
                                     </div>
                                     <div class="pm-prompt-text" id="aiSystemPrompt">
-                                        Rellena tu Identidad Fractal y guarda para generar tu huella semántica.
+                                        El orquestador de Matching generará aquí tu perfil único cuando decidas Acuñar tu Identidad.
                                     </div>
                                 </div>
                             </div>
@@ -228,15 +227,15 @@ export default class ProfileView {
                     <div id="checkoutModal" class="checkout-modal">
                         <div class="checkout-card">
                             <h2 style="color: var(--accent-orange); margin-top: 0; font-size: 1.8rem;">Soberanía Permaweb</h2>
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">Sella tu Identidad Fractal y tu Reputación en la red descentralizada de Arweave. Tu CV será inmutable y te pertenecerá para siempre.</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">La IA procesará tu visión y tus arquetipos para redactar tu Identidad Fractal y sellarla en Arweave.</p>
                             
                             <div class="checkout-price">€1.99</div>
-                            <p style="color: #666; font-size: 0.75rem; margin-top:-10px;">Pago único por Minting (Sin suscripciones)</p>
+                            <p style="color: #666; font-size: 0.75rem; margin-top:-10px;">Pago único por Minting + Invocación IA</p>
 
                             <ul class="checkout-features">
-                                <li>✅ Inyección del Prompt de Identidad en Arweave.</li>
-                                <li>✅ Desbloqueo del Ecosistema de Matching DAO.</li>
-                                <li>✅ Financia el coste de la IA (DeepSeek/OpenAI).</li>
+                                <li>✅ Redacción de Huella Semántica por Inteligencia Artificial.</li>
+                                <li>✅ Inyección del Hash en la red descentralizada Arweave.</li>
+                                <li>✅ Desbloqueo del Motor de Matching para ser reclutado en DAOs.</li>
                             </ul>
 
                             <div id="paymentButtons">
@@ -250,8 +249,8 @@ export default class ProfileView {
 
                             <div id="mintingLoader" class="minting-loader">
                                 <div class="spinner"></div>
-                                <p style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0;">Sellando Hash en Permaweb...</p>
-                                <p style="color: #666; font-size: 0.75rem;">Por favor, no cierres esta ventana.</p>
+                                <p id="loaderStatusMsg" style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0;">Invocando Orquestador IA...</p>
+                                <p style="color: #666; font-size: 0.75rem;">Generando Ikigai y Sellando Hash en Permaweb.</p>
                             </div>
                         </div>
                     </div>
@@ -272,7 +271,6 @@ export default class ProfileView {
             btnMint: document.getElementById('btnOpenMintModal'),
             aiSystemPrompt: document.getElementById('aiSystemPrompt'),
             
-            // Web3 Elements
             profileHeader: document.getElementById('profileHeader'),
             badgeMinted: document.getElementById('badgeMinted'),
             checkoutModal: document.getElementById('checkoutModal'),
@@ -280,13 +278,13 @@ export default class ProfileView {
             btnGooglePay: document.getElementById('btnGooglePay'),
             btnStripePay: document.getElementById('btnStripePay'),
             paymentButtons: document.getElementById('paymentButtons'),
-            mintingLoader: document.getElementById('mintingLoader')
+            mintingLoader: document.getElementById('mintingLoader'),
+            loaderStatusMsg: document.getElementById('loaderStatusMsg')
         };
 
         const state = store.getState();
         this.activeUserId = state.session.activeUserId;
 
-        // 1. CARGAR DATOS DEL USUARIO
         const user = state.globalUsers.find(u => u.id === this.activeUserId);
         
         if (user) {
@@ -294,7 +292,6 @@ export default class ProfileView {
             this.dom.profId.innerText = user.id;
             this.dom.profInitials.innerText = user.name.charAt(0).toUpperCase();
             
-            // Cargar Identidad guardada
             if (user.profile) {
                 this.dom.inpVision.value = user.profile.vision || '';
                 
@@ -313,9 +310,15 @@ export default class ProfileView {
                     if(cb) cb.checked = true;
                 });
 
-                // VERIFICAR ESTADO DE MINTEO
                 if (user.profile.permawebHash) {
                     this.applyMintedStyle(user.profile.permawebHash);
+                }
+                
+                // Si ya tiene el perfil redactado por IA (ikigaiSummary), lo mostramos
+                if(user.profile.ikigaiSummary) {
+                    this.updateSystemPromptDisplay(user.profile.permawebHash, user.profile.ikigaiSummary);
+                } else {
+                    this.updateSystemPromptDisplay(user.profile.permawebHash);
                 }
             }
         } else {
@@ -325,15 +328,11 @@ export default class ProfileView {
             this.dom.btnMint.style.display = 'none';
         }
 
-        // Generar el Prompt Inicial
-        this.updateSystemPromptDisplay();
-
-        // 2. EVENTOS
+        // EVENTOS
         this.dom.btnSave.addEventListener('click', () => this.saveIdentity(false));
         
-        // Pasarela de Pagos
         this.dom.btnMint.addEventListener('click', () => {
-            this.saveIdentity(false); // Autoguardado local previo
+            this.saveIdentity(false); 
             this.dom.checkoutModal.style.display = 'flex';
         });
         
@@ -345,7 +344,6 @@ export default class ProfileView {
         this.dom.btnGooglePay.addEventListener('click', simulatePayment);
         this.dom.btnStripePay.addEventListener('click', simulatePayment);
 
-        // 3. ANALIZAR PARTICIPACIÓN (ESTADÍSTICAS Y SBTs)
         this.calculateReputationAndStats(state);
     }
 
@@ -360,9 +358,7 @@ export default class ProfileView {
     }
 
     saveIdentity(isMinting = false) {
-        if (this.activeUserId === 'ecosystem-admin') {
-            return alert("El usuario administrador del sistema no tiene perfil público.");
-        }
+        if (this.activeUserId === 'ecosystem-admin') return;
 
         const vision = this.dom.inpVision.value.trim();
         const structural_affinity = Array.from(document.querySelectorAll('input[id^="lvl_"]:checked')).map(el => el.value);
@@ -373,22 +369,19 @@ export default class ProfileView {
         const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
         
         if (userIndex > -1) {
-            // Preservar hash si ya existía
             const existingHash = currentState.globalUsers[userIndex].profile?.permawebHash;
+            const existingIkigai = currentState.globalUsers[userIndex].profile?.ikigaiSummary;
             
             currentState.globalUsers[userIndex].profile = {
                 ...currentState.globalUsers[userIndex].profile,
-                vision,
-                structural_affinity,
-                guardian_authority,
-                guardian_growth,
+                vision, structural_affinity, guardian_authority, guardian_growth,
                 lastUpdated: Date.now()
             };
 
             store.state = currentState;
             localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
 
-            this.updateSystemPromptDisplay(existingHash);
+            if(!isMinting) this.updateSystemPromptDisplay(existingHash, existingIkigai);
             
             if (!isMinting) {
                 const originalText = this.dom.btnSave.innerText;
@@ -402,40 +395,97 @@ export default class ProfileView {
         }
     }
 
-    executeMintingProcess() {
-        // Ocultar botones, mostrar spinner
+    async executeMintingProcess() {
         this.dom.paymentButtons.style.display = 'none';
         this.dom.mintingLoader.style.display = 'flex';
+        
+        const currentState = store.getState();
+        const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
+        if (userIndex === -1) return;
 
-        // Simulación de latencia de red Arweave/Bundlr
-        setTimeout(() => {
-            const currentState = store.getState();
-            const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
-            
-            if (userIndex > -1) {
-                // Generar Hash Único de Transacción (Simulado Web3)
-                const mockHash = 'ar://' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join('');
-                
-                currentState.globalUsers[userIndex].profile.permawebHash = mockHash;
-                currentState.globalUsers[userIndex].profile.mintDate = Date.now();
-                
-                store.state = currentState;
-                localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
+        const profile = currentState.globalUsers[userIndex].profile;
+        
+        // 1. INVOCAR IA PARA GENERAR IKIGAI SEMÁNTICO
+        this.dom.loaderStatusMsg.innerText = "Generando Huella Semántica con IA...";
+        
+        const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+        let apiKey = '';
+        if (savedProvider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek') || '';
+        if (savedProvider === 'openai') apiKey = localStorage.getItem('tt_key_openai') || '';
+        if (savedProvider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini') || '';
 
-                // Restablecer Modal y aplicar estilos
-                this.dom.checkoutModal.style.display = 'none';
-                this.dom.paymentButtons.style.display = 'block';
-                this.dom.mintingLoader.style.display = 'none';
+        let ikigaiSummary = "";
+
+        if (apiKey) {
+            const systemPrompt = `
+                Eres el Motor de Matching de TeamTowers. 
+                Analiza el siguiente perfil y resume en 2 párrafos la 'Huella Semántica' (Ikigai) de este talento, explicando cómo puede aportar valor a una DAO descentralizada. Tono profesional pero vanguardista.
                 
-                this.applyMintedStyle(mockHash);
-                this.updateSystemPromptDisplay(mockHash);
-                
-                alert("🎉 ¡Identidad Acuñada con Éxito en la Permaweb!\n\nTu perfil ahora es público en el ecosistema descentralizado y listo para ser reclutado por IA-DAOs.");
+                Datos del talento:
+                Visión: "${profile.vision}"
+                Niveles Estructurales: ${profile.structural_affinity.join(', ')}
+                Arquetipos (Autoridad): ${profile.guardian_authority.join(', ')}
+                Arquetipos (Crecimiento): ${profile.guardian_growth.join(', ')}
+            `;
+
+            try {
+                if (savedProvider === 'openai') {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: systemPrompt }] })
+                    });
+                    const data = await response.json();
+                    ikigaiSummary = data.choices[0].message.content;
+                } else if (savedProvider === 'deepseek') {
+                    const response = await fetch('https://api.deepseek.com/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "user", content: systemPrompt }] })
+                    });
+                    const data = await response.json();
+                    ikigaiSummary = data.choices[0].message.content;
+                } else if (savedProvider === 'gemini') {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+                    });
+                    const data = await response.json();
+                    ikigaiSummary = data.candidates[0].content.parts[0].text;
+                }
+            } catch (e) {
+                console.warn("Error con IA, generando hash simple sin resumen.", e);
+                ikigaiSummary = "Perfil verificado. El agente cognitivo no pudo conectarse para generar el resumen narrativo.";
             }
-        }, 3500); // 3.5 segundos de tensión dramática
+        } else {
+            ikigaiSummary = "Perfil verificado en Permaweb. (Añade API Key en Settings para auto-generar resumen IA).";
+        }
+
+        this.dom.loaderStatusMsg.innerText = "Sellando Identidad en Arweave...";
+
+        setTimeout(() => {
+            const mockHash = 'ar://' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            currentState.globalUsers[userIndex].profile.permawebHash = mockHash;
+            currentState.globalUsers[userIndex].profile.ikigaiSummary = ikigaiSummary;
+            currentState.globalUsers[userIndex].profile.mintDate = Date.now();
+            
+            store.state = currentState;
+            localStorage.setItem('tt_sos_state', JSON.stringify(currentState));
+
+            this.dom.checkoutModal.style.display = 'none';
+            this.dom.paymentButtons.style.display = 'block';
+            this.dom.mintingLoader.style.display = 'none';
+            
+            this.applyMintedStyle(mockHash);
+            this.updateSystemPromptDisplay(mockHash, ikigaiSummary);
+            
+            alert("🎉 ¡Identidad Acuñada con Éxito en la Permaweb!");
+        }, 1500); 
     }
 
-    updateSystemPromptDisplay(hash = null) {
+    updateSystemPromptDisplay(hash = null, ikigaiSummary = null) {
         const structural_affinity = Array.from(document.querySelectorAll('input[id^="lvl_"]:checked')).map(el => el.value);
         const guardian_authority = Array.from(document.querySelectorAll('input[id^="g_auth_"]:checked')).map(el => el.value);
         const guardian_growth = Array.from(document.querySelectorAll('input[id^="g_grow_"]:checked')).map(el => el.value);
@@ -443,21 +493,20 @@ export default class ProfileView {
         const authLabels = guardian_authority.map(id => this.guardians.find(g => g.id === id)?.label.split(' ')[1] || id);
         const growthLabels = guardian_growth.map(id => this.guardians.find(g => g.id === id)?.label.split(' ')[1] || id);
 
-        if (structural_affinity.length === 0 && guardian_authority.length === 0) {
+        if (structural_affinity.length === 0 && guardian_authority.length === 0 && !ikigaiSummary) {
             this.dom.aiSystemPrompt.innerHTML = "Rellena tu Identidad Fractal y guarda para generar tu huella semántica.";
             return;
         }
 
-        const hashLine = hash ? `<span style="color: var(--accent-orange);">TxID (Arweave):</span> ${hash}<br>` : '';
+        const hashLine = hash ? `<span style="color: var(--accent-orange); font-weight:bold; margin-bottom: 10px; display:block;">TxID: ${hash}</span>` : '';
+        const summaryHtml = ikigaiSummary ? `<div style="color: white; margin-top:10px; border-top: 1px dashed #555; padding-top:10px;">${ikigaiSummary.replace(/\n/g, '<br>')}</div>` : '';
 
         this.dom.aiSystemPrompt.innerHTML = `
-            <span style="color: #888;">/* Target Semántico para Matching IA */</span><br>
             ${hashLine}
-            <span style="color: var(--accent-blue);">Niveles Óptimos:</span> [${structural_affinity.join(', ')}]<br>
-            <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${authLabels.join(', ')}]<br>
-            <span style="color: var(--accent-green);">Interés Evolutivo:</span> [${growthLabels.join(', ')}]<br>
-            <br>
-            <span style="color: #888;">// Los orquestadores IA utilizarán este vector para asignarte roles afines en las DAOs.</span>
+            <span style="color: var(--accent-blue);">Niveles:</span> [${structural_affinity.join(', ')}]<br>
+            <span style="color: var(--accent-purple);">Autoridad:</span> [${authLabels.join(', ')}]<br>
+            <span style="color: var(--accent-green);">Crecimiento:</span> [${growthLabels.join(', ')}]<br>
+            ${summaryHtml}
         `;
     }
 
