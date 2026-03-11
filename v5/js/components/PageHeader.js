@@ -28,13 +28,27 @@ export const PageHeader = {
             `;
         }
 
+        // LÓGICA DE ALERTA POMODORO (Global para móviles)
+        const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
+        const pomodoroAlertHtml = isPomodoroActive 
+            ? `<a href="/v5/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` 
+            : '';
+
         return `
             <style>
                 /* REUSABLE PAGE HEADER STYLES (DRY V8.3) */
-                .ph-mobile-top-bar { display: none; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box; }
-                .ph-mob-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
-                .ph-mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+                .ph-mobile-top-bar { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box; }
+                
+                /* BRAND LOGO MOBILE */
+                .ph-mob-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; height: 35px; }
+                .ph-mob-brand img { height: 100%; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; }
+
+                .ph-mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 130px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin: 0 10px;}
                 .ph-mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; flex-shrink:0;}
+
+                /* POMODORO ALERT ANIMATION */
+                .ph-pomodoro-alert { display: flex; align-items: center; justify-content: center; font-size: 1.2rem; text-decoration: none; margin-right: 10px; animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 5px var(--accent-red));}
+                @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
 
                 .ph-view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
                 .ph-view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
@@ -61,13 +75,19 @@ export const PageHeader = {
             </style>
 
             <header class="ph-mobile-top-bar">
-                <a href="/v5/" data-link class="ph-mob-brand">🗼</a>
-                <select class="ph-mob-project-select" id="phMobProjectSelect">
-                    ${userProjects.map(p => `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.nombre}</option>`).join('')}
-                </select>
-                <a href="/v5/profile" data-link class="ph-mob-user" title="Mi Perfil">
-                    ${user?.name.charAt(0).toUpperCase() || '?'}
+                <a href="/v5/" data-link class="ph-mob-brand">
+                    <img src="logoteamtowers.png" alt="TeamTowers">
                 </a>
+                
+                <div style="display:flex; align-items:center; flex:1; justify-content: flex-end;">
+                    ${pomodoroAlertHtml}
+                    <select class="ph-mob-project-select" id="phMobProjectSelect">
+                        ${userProjects.map(p => `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.nombre}</option>`).join('')}
+                    </select>
+                    <a href="/v5/profile" data-link class="ph-mob-user" title="Mi Perfil">
+                        ${user?.name.charAt(0).toUpperCase() || '?'}
+                    </a>
+                </div>
             </header>
 
             <div class="ph-view-header">
