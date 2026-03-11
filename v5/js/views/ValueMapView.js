@@ -22,9 +22,12 @@ export default class ValueMapView {
         this.simulationTimeouts = [];
         
         // Lógica Visual Flow Builder
-        this.isBuildingFlow = false;
         this.flowFromId = null;
         this.tempVector = null;
+
+        // Zoom Levels
+        this.zoomVis = 1;
+        this.zoomEdit = 1;
 
         this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
         this.resizeObserver = null;
@@ -66,15 +69,10 @@ export default class ValueMapView {
                 
                 .ph-tabs-container { flex-shrink: 0 !important; }
 
-                /* =========================================================
-                   TABS CONTENT
-                   ========================================================= */
                 .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.3s ease-out; min-height: 500px; position: relative; }
                 .tab-content.active { display: flex; }
                 
-                /* =========================================================
-                   CONTROLES TÁCTICOS Y TIPS
-                   ========================================================= */
+                /* CONTROLES TÁCTICOS Y TIPS */
                 .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 10px; flex-wrap: wrap;}
                 .sim-group { display: flex; gap: 10px; }
                 
@@ -85,15 +83,15 @@ export default class ValueMapView {
                 .legend-item { display: flex; align-items: center; gap: 5px;}
                 .legend-color { width: 15px; height: 3px; }
 
-                .vna-tip { background: rgba(0, 176, 255, 0.1); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 10px 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
-                .btn-magic-flow { background: var(--accent-blue); color: black; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-                .btn-magic-flow:hover { transform: scale(1.05); }
+                .vna-tip { background: rgba(0, 176, 255, 0.1); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 10px 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;}
 
-                /* =========================================================
-                   LIENZO PRINCIPAL (Mapa Visual)
-                   ========================================================= */
-                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; background-color: rgba(0,0,0,0.2);}
-                #edges-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+                /* LIENZO PRINCIPAL */
+                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background-color: rgba(0,0,0,0.2);}
+                
+                /* CAPA DE TRANSFORMACIÓN PARA ZOOM */
+                .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; transform-origin: center center; transition: transform 0.3s ease-out; }
+                
+                #edges-svg-visual, #edges-svg-edit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
                 
                 .edge-line { fill: none; stroke-width: 2.5; opacity: 0.85; transition: stroke 0.3s; }
                 .edge-tangible { stroke: var(--accent-green); }
@@ -108,9 +106,9 @@ export default class ValueMapView {
                 .node.ghost-node { opacity: 0.3; border-style: dashed; filter: grayscale(100%); z-index: 1; }
                 
                 /* CLASES INTERACTIVAS BUILDER */
-                .map-canvas.building-flow .node { cursor: crosshair !important; border-color: var(--accent-orange); }
-                .map-canvas.building-flow .node:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 20px rgba(255, 171, 64, 0.5); }
-                .node.flow-source { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.8); z-index: 20;}
+                #mapCanvasEdit .node { cursor: pointer; } /* En edit, clicamos para vincular */
+                #mapCanvasEdit .node:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 20px rgba(0, 176, 255, 0.3); }
+                .node.flow-source { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.8) !important; z-index: 20;}
 
                 .node-name { font-size: 0.65rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 95%; font-weight: bold; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding: 0 5px; word-wrap: break-word; text-align: center;}
 
@@ -120,6 +118,11 @@ export default class ValueMapView {
 
                 .tx-tooltip { position: fixed; background: rgba(10, 10, 14, 0.98); border: 1px solid var(--accent-blue); color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 9999; box-shadow: 0 15px 50px rgba(0,0,0,0.9); backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity 0.2s; min-width: 250px; max-width: 320px; line-height: 1.4; pointer-events: none;}
                 .tx-tooltip.visible { opacity: 1; visibility: visible; }
+
+                /* ZOOM CONTROLS */
+                .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; gap: 8px; z-index: 100;}
+                .btn-zoom { background: rgba(0,0,0,0.7); border: 1px solid #444; color: white; border-radius: 8px; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); transition: 0.2s;}
+                .btn-zoom:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
 
                 /* =========================================================
                    PESTAÑA 3: FLUJO OPERATIVO (LISTA KANBAN)
@@ -145,9 +148,7 @@ export default class ValueMapView {
                 .btn-step.edit { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-color: var(--accent-blue); }
                 .btn-step.edit:hover { background: var(--accent-blue); color: black; }
 
-                /* =========================================================
-                   MODALS Y FORMS
-                   ========================================================= */
+                /* MODALS Y FORMS */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
                 .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
                 
@@ -158,6 +159,7 @@ export default class ValueMapView {
 
                 @keyframes dashAnim { to { stroke-dashoffset: -100; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 40px rgba(255, 82, 82, 0.9); } }
 
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
@@ -167,12 +169,13 @@ export default class ValueMapView {
                     .sim-group { display: flex; flex-direction: row; width: 100%; gap: 10px;}
                     .sim-group .btn-sm { flex: 1; padding: 12px; font-size: 0.95rem;}
                     
-                    #btnOpenAddNode { padding: 12px; font-size: 0.95rem; }
+                    .vna-tip { flex-direction: column; align-items: stretch; text-align:center;}
+                    #btnOpenAddNode { padding: 12px; font-size: 0.95rem; width: 100%;}
 
                     .map-container { flex: 1; height: calc(100vh - 350px); min-height: 400px; border-radius: 12px;}
                     .node { width: 65px; height: 65px; font-size: 0.8rem; } 
-                    .map-canvas:not(.building-flow) .node { pointer-events: none; transform: translate(-50%, -50%) scale(0.8); }
-                    .tx-badge { pointer-events: none; font-size: 0.6rem; padding: 2px 5px;}
+                    .tx-badge { font-size: 0.6rem; padding: 2px 5px;}
+                    .zoom-controls { bottom: 10px; left: 10px;}
 
                     .flow-container { flex-direction: column; gap: 1rem; margin-top: 0;}
                     .sequence-panel { width: 100%; max-height: none; padding-right: 0;}
@@ -209,22 +212,30 @@ export default class ValueMapView {
                             <div class="map-canvas" id="mapCanvasVisual">
                                 <svg id="edges-svg-visual"></svg>
                             </div>
+                            <div class="zoom-controls">
+                                <button class="btn-zoom" id="btnZoomInVis">➕</button>
+                                <button class="btn-zoom" id="btnZoomOutVis">➖</button>
+                            </div>
                         </div>
                     </div>
 
                     <div id="view-edit" class="tab-content">
                         ${isPO ? `
                             <div class="vna-tip" id="editTip">
-                                <div>💡 <b>Modo Arquitecto:</b> Arrastra los nodos para organizar el mapa. Haz doble click en un nodo para configurarlo.</div>
-                                <div style="display:flex; gap:10px;">
-                                    <button class="btn-magic-flow" id="btnStartVisualFlow">✨ Crear Transacción Visual</button>
+                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz click en un nodo origen y luego en uno destino para crear flujo.</div>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <button class="btn btn-outline btn-sm" id="btnUndoTx" style="border-color:var(--accent-red); color:var(--accent-red);"><span style="font-size:1rem;">↩️</span> Deshacer Última</button>
                                     <button class="btn btn-outline btn-sm" id="btnOpenAddNode" style="border-style:dashed; color:white;">➕ Instanciar Rol</button>
                                 </div>
                             </div>
                             
                             <div class="map-container" style="border-color: var(--accent-blue);">
-                                <div class="map-canvas" id="mapCanvasEdit">
+                                <div class="map-canvas building-flow" id="mapCanvasEdit">
                                     <svg id="edges-svg-edit"></svg>
+                                </div>
+                                <div class="zoom-controls">
+                                    <button class="btn-zoom" id="btnZoomInEdit">➕</button>
+                                    <button class="btn-zoom" id="btnZoomOutEdit">➖</button>
                                 </div>
                             </div>
                         ` : `
@@ -390,8 +401,8 @@ export default class ValueMapView {
             inpHoras: document.getElementById('inpHoras'),
             btnAddFlow: document.getElementById('btnAddFlow'),
             formTitle: document.getElementById('formTitle'),
-            editTip: document.getElementById('editTip'),
-            btnStartVisualFlow: document.getElementById('btnStartVisualFlow'),
+            editTipText: document.getElementById('editTipText'),
+            btnUndoTx: document.getElementById('btnUndoTx'),
             
             // Modales e Inspector
             inspectorModal: document.getElementById('inspectorModal'),
@@ -418,14 +429,13 @@ export default class ValueMapView {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                tabContents.forEach(content => {
-                    content.classList.remove('active');
-                });
+                tabContents.forEach(content => content.classList.remove('active'));
                 
                 const targetId = `view-${btn.dataset.tab}`;
                 const targetContent = document.getElementById(targetId);
                 if (targetContent) {
                     targetContent.classList.add('active');
+                    // FIX REACTIVO: Redibujar SVG al cambiar a la vista visual
                     if(btn.dataset.tab === 'visual' || btn.dataset.tab === 'edit') {
                         setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 50);
                     }
@@ -433,9 +443,24 @@ export default class ValueMapView {
             });
         });
 
-        if (isPO) {
-            this.populateDropdowns(project.roles);
-        }
+        // ZOOM LOGIC
+        const setupZoom = (btnInId, btnOutId, canvasObj, propName) => {
+            const btnIn = document.getElementById(btnInId);
+            const btnOut = document.getElementById(btnOutId);
+            if(btnIn && btnOut && canvasObj) {
+                btnIn.addEventListener('click', () => {
+                    this[propName] = Math.min(2, this[propName] + 0.1);
+                    canvasObj.style.transform = `scale(${this[propName]})`;
+                });
+                btnOut.addEventListener('click', () => {
+                    this[propName] = Math.max(0.5, this[propName] - 0.1);
+                    canvasObj.style.transform = `scale(${this[propName]})`;
+                });
+            }
+        };
+        setupZoom('btnZoomInVis', 'btnZoomOutVis', this.dom.canvasVis, 'zoomVis');
+        setupZoom('btnZoomInEdit', 'btnZoomOutEdit', this.dom.canvasEdit, 'zoomEdit');
+
 
         setTimeout(() => {
             this.renderMap(this.dom.canvasVis, false);
@@ -456,54 +481,39 @@ export default class ValueMapView {
         // LÓGICA VISUAL FLOW BUILDER (LA MAGIA EN EL CANVAS)
         // ------------------------------------------------------------------
         if (isPO) {
-            this.dom.btnStartVisualFlow.addEventListener('click', () => {
-                this.isBuildingFlow = true;
-                this.flowFromId = null;
-                this.dom.canvasEdit.classList.add('building-flow');
-                this.dom.editTip.innerHTML = `<div>🎯 <b>Paso 1:</b> Selecciona el NODO DE ORIGEN (quién crea el valor).</div> <button class="btn btn-outline btn-sm" id="btnCancelVisualFlow">Cancelar</button>`;
-                
-                document.getElementById('btnCancelVisualFlow').addEventListener('click', () => this.cancelVisualFlow());
-            });
-
-            this.dom.canvasEdit.addEventListener('click', (e) => {
-                if (!this.isBuildingFlow) return;
-                
-                const nodeEl = e.target.closest('.node');
-                if (!nodeEl) return;
-                
-                const clickedId = nodeEl.dataset.id;
-
-                if (!this.flowFromId) {
-                    // Seleccionar Origen
-                    this.flowFromId = clickedId;
-                    nodeEl.classList.add('flow-source');
-                    this.dom.editTip.innerHTML = `<div>🎯 <b>Paso 2:</b> Ahora selecciona el NODO DE DESTINO (quién recibe el valor).</div> <button class="btn btn-outline btn-sm" id="btnCancelVisualFlow">Cancelar</button>`;
-                    document.getElementById('btnCancelVisualFlow').addEventListener('click', () => this.cancelVisualFlow());
+            // Deshacer Última Transacción
+            this.dom.btnUndoTx.addEventListener('click', () => {
+                const currentState = store.getState();
+                const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
+                if (currentState.projects[pIndex].transactions && currentState.projects[pIndex].transactions.length > 0) {
+                    currentState.projects[pIndex].transactions.pop();
+                    this.forceSaveState(currentState);
+                    this.cancelVisualFlow();
                 } else {
-                    // Seleccionar Destino y abrir Modal
-                    if (this.flowFromId === clickedId) return alert("Origen y destino deben ser distintos.");
-                    
-                    const toId = clickedId;
-                    this.cancelVisualFlow(); // Limpiar UI
-                    this.openTxBuilderModal(this.flowFromId, toId);
+                    alert("No hay transacciones para deshacer.");
                 }
             });
 
-            // Dibujar flecha temporal siguiendo al ratón
+            // Doble tap canvas background para limpiar estado
+            this.dom.canvasEdit.addEventListener('dblclick', (e) => {
+                if(!e.target.closest('.node')) this.cancelVisualFlow();
+            });
+
+            // Dibujar flecha temporal siguiendo al ratón (Solo en Desktop)
             this.dom.canvasEdit.addEventListener('mousemove', (e) => {
-                if (!this.isBuildingFlow || !this.flowFromId) return;
+                if (!this.flowFromId || window.innerWidth <= 768) return;
 
                 const originNode = this.dom.canvasEdit.querySelector(`.node[data-id="${this.flowFromId}"]`);
                 if (!originNode) return;
 
-                const rect1 = originNode.getBoundingClientRect();
-                const canv = this.dom.canvasEdit.getBoundingClientRect();
+                // MATH ANTI-ZOOM BUG (Usando offset properties relativas al canvas)
+                const x1 = originNode.offsetLeft + originNode.offsetWidth / 2;
+                const y1 = originNode.offsetTop + originNode.offsetHeight / 2;
                 
-                const x1 = rect1.left + rect1.width / 2 - canv.left;
-                const y1 = rect1.top + rect1.height / 2 - canv.top;
-                
-                const x2 = e.clientX - canv.left;
-                const y2 = e.clientY - canv.top;
+                const canvRect = this.dom.canvasEdit.getBoundingClientRect();
+                // Calcular la posición del ratón relativa al canvas, anulando el efecto del scale
+                const x2 = (e.clientX - canvRect.left) / this.zoomEdit;
+                const y2 = (e.clientY - canvRect.top) / this.zoomEdit;
 
                 if (!this.tempVector) {
                     this.tempVector = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -517,9 +527,10 @@ export default class ValueMapView {
                 this.tempVector.setAttribute('y2', y2);
             });
 
-            // Modal Logic
+            // Modal Builder Logic
             document.getElementById('btnCloseTxBuilder').addEventListener('click', () => {
                 this.dom.txBuilderModal.style.display = 'none';
+                this.cancelVisualFlow();
             });
 
             this.dom.selTemplate.addEventListener('change', (e) => {
@@ -562,6 +573,7 @@ export default class ValueMapView {
                 this.dom.txBuilderModal.style.display = 'none';
                 this.editingTxIndex = null;
                 this.forceSaveState(currentState, currentState.projects[pIndex].transactions.length - 1);
+                this.cancelVisualFlow();
             });
             
             // Editar Flow Operativo ListView
@@ -608,10 +620,7 @@ export default class ValueMapView {
                 this.dom.addNodeModal.style.display = 'none';
                 document.getElementById('inpNewNodeName').value = '';
                 
-                const pUpdate = store.getState().projects.find(x => x.id === this.activeProjectId);
-                this.populateDropdowns(pUpdate.roles);
-                this.renderMap(this.dom.canvasEdit, true);
-                this.renderMap(this.dom.canvasVis, false);
+                this.forceSaveState(store.getState());
             });
 
             // INSPECTOR DE NODOS
@@ -662,7 +671,7 @@ export default class ValueMapView {
             // DRAG LOGIC (SOLO EN CANVAS DE EDICIÓN)
             // ------------------------------------------------------------------
             this.dom.canvasEdit.addEventListener('mousedown', (e) => {
-                if (window.innerWidth <= 768 || this.isBuildingFlow) return; 
+                if (window.innerWidth <= 768) return; 
                 const node = e.target.closest('.node');
                 if (node) { 
                     this.isDragging = true; 
@@ -735,8 +744,10 @@ export default class ValueMapView {
                 
                 let leftPos = badgeRect.right + 15;
                 let topPos = badgeRect.top - 10;
+                
                 if (leftPos + tooltipRect.width > window.innerWidth - 20) leftPos = badgeRect.left - tooltipRect.width - 15;
                 if (topPos + tooltipRect.height > window.innerHeight - 20) topPos = window.innerHeight - tooltipRect.height - 20;
+                
                 this.dom.tooltip.style.left = `${Math.max(20, leftPos)}px`;
                 this.dom.tooltip.style.top = `${Math.max(20, topPos)}px`;
             }
@@ -760,33 +771,23 @@ export default class ValueMapView {
     // LÓGICA VISUAL FLOW BUILDER
     // ---------------------------------------------------------
     cancelVisualFlow() {
-        this.isBuildingFlow = false;
         this.flowFromId = null;
-        this.dom.canvasEdit.classList.remove('building-flow');
-        this.dom.canvasEdit.querySelectorAll('.node').forEach(n => n.classList.remove('flow-source'));
+        if(this.dom.canvasEdit) {
+            this.dom.canvasEdit.querySelectorAll('.node').forEach(n => n.classList.remove('flow-source'));
+        }
         if (this.tempVector) {
             this.tempVector.remove();
             this.tempVector = null;
         }
-        this.dom.editTip.innerHTML = `
-            <div>💡 <b>Modo Arquitecto:</b> Arrastra los nodos para organizar el mapa. Haz doble click en un nodo para configurarlo.</div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-magic-flow" id="btnStartVisualFlow">✨ Crear Transacción Visual</button>
-                <button class="btn btn-outline btn-sm" id="btnOpenAddNode" style="border-style:dashed; color:white;">➕ Instanciar Rol</button>
-            </div>
-        `;
-        // Re-bind 
-        document.getElementById('btnStartVisualFlow').addEventListener('click', () => {
-            this.isBuildingFlow = true;
-            this.flowFromId = null;
-            this.dom.canvasEdit.classList.add('building-flow');
-            this.dom.editTip.innerHTML = `<div>🎯 <b>Paso 1:</b> Selecciona el NODO DE ORIGEN (quién crea el valor).</div> <button class="btn btn-outline btn-sm" id="btnCancelVisualFlow">Cancelar</button>`;
-            document.getElementById('btnCancelVisualFlow').addEventListener('click', () => this.cancelVisualFlow());
-        });
-        document.getElementById('btnOpenAddNode').addEventListener('click', () => this.dom.addNodeModal.style.display = 'flex');
+        if(this.dom.editTipText) {
+            this.dom.editTipText.innerHTML = `💡 <b>Modo Arquitecto:</b> Haz click en un nodo origen y luego en uno destino para enlazar valor. Doble click para editar rol.`;
+        }
     }
 
     openTxBuilderModal(fromId, toId, existingTx = null) {
+        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        this.populateDropdowns(p.roles); // Forzamos refresh de los combos
+        
         this.dom.selFrom.value = fromId;
         this.dom.selTo.value = toId;
         
@@ -816,6 +817,8 @@ export default class ValueMapView {
         const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
         this.populateDropdowns(pUpdate.roles);
         this.renderSequence(highlightIndex); 
+        this.renderMap(this.dom.canvasEdit, true);
+        this.renderMap(this.dom.canvasVis, false);
         setTimeout(() => this.drawEdges(), 100); 
     }
 
@@ -912,14 +915,11 @@ export default class ValueMapView {
         const dom2 = this.dom.canvasVis.querySelector(`.node[data-id="${tx.to}"]`);
         if (!dom1 || !dom2) return;
 
-        const rect1 = dom1.getBoundingClientRect();
-        const rect2 = dom2.getBoundingClientRect();
-        const canv = this.dom.canvasVis.getBoundingClientRect();
-        
-        const x1_center = rect1.left + rect1.width / 2 - canv.left;
-        const y1_center = rect1.top + rect1.height / 2 - canv.top;
-        const x2_center = rect2.left + rect2.width / 2 - canv.left;
-        const y2_center = rect2.top + rect2.height / 2 - canv.top;
+        // MATH ANTI-ZOOM BUG (Para simulación y visual canvas)
+        const x1_center = dom1.offsetLeft + dom1.offsetWidth / 2;
+        const y1_center = dom1.offsetTop + dom1.offsetHeight / 2;
+        const x2_center = dom2.offsetLeft + dom2.offsetWidth / 2;
+        const y2_center = dom2.offsetTop + dom2.offsetHeight / 2;
 
         const dx = x2_center - x1_center;
         const dy = y2_center - y1_center;
@@ -987,6 +987,7 @@ export default class ValueMapView {
     }
 
     populateDropdowns(roles) {
+        if (!roles) return;
         const options = roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
         if(this.dom.selFrom) this.dom.selFrom.innerHTML = options;
         if(this.dom.selTo) {
@@ -1011,7 +1012,7 @@ export default class ValueMapView {
     }
 
     updateOntologyTemplates() {
-        if(!this.dom.selFrom) return;
+        if(!this.dom.selFrom || !this.dom.selFrom.value) return;
         const levelId = this.getRoleLevel(this.dom.selFrom.value);
         const templates = this.getTemplatesForLevel(levelId);
         let html = `<option value="">-- Catálogo Ontológico --</option>`;
@@ -1098,8 +1099,27 @@ export default class ValueMapView {
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name" title="${rol.name}">${rol.name}</div>`;
 
             if(isEditMode) {
+                // LOGICA CREADOR VISUAL V9.4
+                el.addEventListener('click', (e) => {
+                    if (this.hasMoved) return; 
+                    
+                    if (!this.flowFromId) {
+                        this.flowFromId = rol.id;
+                        this.dom.editTipText.innerHTML = `🎯 <b>Paso 2:</b> Haz click en el <b>NODO DESTINO</b> para trazar la línea.`;
+                        canvasElement.querySelectorAll('.node').forEach(n => n.classList.remove('flow-source'));
+                        el.classList.add('flow-source');
+                    } else {
+                        if (this.flowFromId === rol.id) {
+                            this.cancelVisualFlow(); // Abortar si clica en si mismo
+                        } else {
+                            this.openTxBuilderModal(this.flowFromId, rol.id);
+                            this.cancelVisualFlow(); 
+                        }
+                    }
+                });
+
                 el.addEventListener('dblclick', (e) => {
-                    if (window.innerWidth <= 768 || this.isBuildingFlow) return; 
+                    if (window.innerWidth <= 768) return; 
                     this.selectedRoleId = rol.id;
                     canvasElement.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
                     el.classList.add('selected');
@@ -1161,8 +1181,9 @@ export default class ValueMapView {
             const edges = pairCounts[key];
             edges.forEach((edgeData, multiIdx) => {
                 const { tx, index } = edgeData;
-                this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.svgVis, tx, index, edges, multiIdx, false);
-                if(this.dom.canvasEdit) this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.svgEdit, tx, index, edges, multiIdx, true);
+                // Redibujar condicional para evitar crashes al ocultar tabs
+                if (this.dom.canvasVis.offsetWidth > 0) this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.svgVis, tx, index, edges, multiIdx, false);
+                if (this.dom.canvasEdit && this.dom.canvasEdit.offsetWidth > 0) this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.svgEdit, tx, index, edges, multiIdx, true);
             });
         });
     }
@@ -1172,14 +1193,11 @@ export default class ValueMapView {
         const dom2 = canvas.querySelector(`.node[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
 
-        const rect1 = dom1.getBoundingClientRect();
-        const rect2 = dom2.getBoundingClientRect();
-        const canv = canvas.getBoundingClientRect();
-        
-        const x1_center = rect1.left + rect1.width / 2 - canv.left;
-        const y1_center = rect1.top + rect1.height / 2 - canv.top;
-        const x2_center = rect2.left + rect2.width / 2 - canv.left;
-        const y2_center = rect2.top + rect2.height / 2 - canv.top;
+        // MATH ANTI-ZOOM BUG (Usamos offset relativos para que la línea no se rompa al hacer CSS transform:scale)
+        const x1_center = dom1.offsetLeft + dom1.offsetWidth / 2;
+        const y1_center = dom1.offsetTop + dom1.offsetHeight / 2;
+        const x2_center = dom2.offsetLeft + dom2.offsetWidth / 2;
+        const y2_center = dom2.offsetTop + dom2.offsetHeight / 2;
 
         const dx = x2_center - x1_center;
         const dy = y2_center - y1_center;
@@ -1229,7 +1247,7 @@ export default class ValueMapView {
         badge.innerText = `[${index + 1}]`;
         badge.setAttribute('data-idx', index);
         
-        if(isEditMode) {
+        if(isEditCanvas) {
              badge.addEventListener('click', () => {
                  this.editingTxIndex = index;
                  this.openTxBuilderModal(tx.from, tx.to, tx);
