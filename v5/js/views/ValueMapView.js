@@ -2,6 +2,7 @@
 import { store } from '../core/store.js';
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 import { Sidebar } from '../components/Sidebar.js';
+import { BottomNav } from '../components/BottomNav.js'; // INYECCIÓN V8.0
 
 export default class ValueMapView {
     constructor() {
@@ -93,11 +94,23 @@ export default class ValueMapView {
                 .inspector-panel { position: absolute; top: 0; right: 0; height: 100%; width: 380px; background: var(--bg-panel); border-left: 1px solid var(--glass-border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.7); overflow-y: auto;}
                 .inspector-panel.open { transform: translateX(0); }
 
+                /* =========================================================
+                   RESPONSIVE MOBILE (FIELD APP PARADIGM)
+                   ========================================================= */
                 @media (max-width: 768px) {
                     .vna-layout { flex-direction: column; }
-                    .sequence-panel { width: 100%; max-height: 250px; border-right: none; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
-                    .ui-overlay h1 { font-size: 1.2rem; }
-                    .inspector-panel { width: 100%; }
+                    /* Esconder paneles de orquestador (Modo Field App) */
+                    .sequence-panel, .action-panel, .inspector-panel, .glass-panel { display: none !important; }
+                    
+                    /* Simplificar cabecera superpuesta */
+                    .ui-overlay { padding: 1rem; justify-content: center; text-align: center; background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%); pointer-events: none;}
+                    #mapTitle { font-size: 1.2rem !important; }
+                    .ui-overlay p { display: none; }
+
+                    /* El mapa se vuelve visual, bloqueamos edición táctil */
+                    .node { pointer-events: none; transform: translate(-50%, -50%) scale(0.8); }
+                    .tx-badge { pointer-events: none; font-size: 0.6rem; padding: 2px 5px;}
+                    .map-container { height: calc(100vh - 70px); } /* Espacio para el bottom nav */
                 }
             </style>
 
@@ -136,7 +149,7 @@ export default class ValueMapView {
                         <div class="form-group" style="margin-bottom: 10px;">
                             <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
                         </div>
-                        <button class="btn btn-success" style="width: 100%; margin-top: 5px;" id="btnAddFlow">➕ Añadir Transacción</button>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 5px; cursor:pointer;" id="btnAddFlow">➕ Añadir Transacción</button>
                     </div>
                 </aside>
 
@@ -155,10 +168,10 @@ export default class ValueMapView {
 
                         <div class="action-panel interactive">
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" id="btnSimulate">▶ Simular Flujo</button>
-                                <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange);">⏹ Detener</button>
+                                <button class="btn btn-primary" id="btnSimulate" style="cursor:pointer;">▶ Simular Flujo</button>
+                                <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange); cursor:pointer;">⏹ Detener</button>
                             </div>
-                            <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" id="btnOpenAddNode">➕ Nuevo Rol</button>
+                            <button class="btn btn-outline" style="margin-top: 10px; width: 100%; cursor:pointer;" id="btnOpenAddNode">➕ Nuevo Rol</button>
                             <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
                         </div>
                     </div>
@@ -198,8 +211,8 @@ export default class ValueMapView {
                             <label>Factor de Riesgo Multiplicador</label>
                             <input type="number" step="0.1" id="inputMult" class="form-control">
                         </div>
-                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" id="btnSaveRole">✓ Guardar Cambios</button>
-                        <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; cursor:pointer;" id="btnSaveRole">✓ Guardar Cambios</button>
+                        <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%; cursor:pointer;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
                     </div>
                 </aside>
 
@@ -221,8 +234,8 @@ export default class ValueMapView {
                             </select>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-                            <button class="btn btn-outline" id="btnCancelNode">Cancelar</button>
-                            <button class="btn btn-primary" id="btnConfirmNode">Añadir Rol</button>
+                            <button class="btn btn-outline" id="btnCancelNode" style="cursor:pointer;">Cancelar</button>
+                            <button class="btn btn-primary" id="btnConfirmNode" style="cursor:pointer;">Añadir Rol</button>
                         </div>
                     </div>
                 </div>
@@ -239,12 +252,14 @@ export default class ValueMapView {
                             <select id="selTriageNode" class="form-control"></select>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <button class="btn btn-primary" id="btnTriageReassign">Migrar Tareas y Archivar Nodo</button>
-                            <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red);" id="btnTriageDelete">Destruir Tareas y Archivar Nodo</button>
-                            <button class="btn btn-outline" id="btnTriageCancel" style="margin-top: 10px;">Cancelar Acción</button>
+                            <button class="btn btn-primary" id="btnTriageReassign" style="cursor:pointer;">Migrar Tareas y Archivar Nodo</button>
+                            <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); cursor:pointer;" id="btnTriageDelete">Destruir Tareas y Archivar Nodo</button>
+                            <button class="btn btn-outline" id="btnTriageCancel" style="margin-top: 10px; cursor:pointer;">Cancelar Acción</button>
                         </div>
                     </div>
                 </div>
+
+                ${BottomNav.getHtml('/map')}
             </div>
         `;
     }
@@ -295,7 +310,6 @@ export default class ValueMapView {
         this.renderMap();
         this.renderSequence();
 
-        // ResizeObserver para redibujar las líneas cuando el Sidebar colapsa/expande
         if (window.ResizeObserver) {
             this.resizeObserver = new ResizeObserver(() => {
                 if (!this.isSimulating) {
@@ -304,7 +318,6 @@ export default class ValueMapView {
             });
             this.resizeObserver.observe(this.dom.canvas);
         } else {
-            // Fallback para navegadores antiguos
             window.addEventListener('resize', () => { if(!this.isSimulating) this.drawEdges(); });
         }
 
@@ -445,7 +458,7 @@ export default class ValueMapView {
             }
         });
 
-        // ------------------ MAPA Y NODOS ------------------
+        // BOTONES DE SIMULACION
         this.dom.btnSimulate.addEventListener('click', () => this.startSimulation());
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
 
@@ -546,7 +559,7 @@ export default class ValueMapView {
             this.executeArchiveToggle(true);
         });
 
-        // ------------------ DRAG LOGIC ------------------
+        // ------------------ DRAG LOGIC (Bloqueado en móvil por CSS pointer-events: none) ------------------
         this.dom.canvas.addEventListener('mousedown', (e) => {
             const node = e.target.closest('.node');
             if (node && !this.isSimulating) { 
