@@ -36,12 +36,12 @@ export const PageHeader = {
 
         return `
             <style>
-                /* REUSABLE PAGE HEADER STYLES (DRY V8.3) */
+                /* REUSABLE PAGE HEADER STYLES */
                 .ph-mobile-top-bar { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box; }
                 
-                /* BRAND LOGO MOBILE */
-                .ph-mob-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; height: 35px; }
-                .ph-mob-brand img { height: 100%; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; }
+                /* BRAND LOGO MOBILE (MANDALA FIX) */
+                .ph-mob-brand { display: flex; align-items: center; justify-content: flex-start; text-decoration: none; height: 35px; min-width: 140px; }
+                .ph-mob-brand img { height: 100%; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; transform-origin: left center; }
 
                 .ph-mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 130px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin: 0 10px;}
                 .ph-mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; flex-shrink:0;}
@@ -55,7 +55,7 @@ export const PageHeader = {
                 .ph-view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
                 .ph-header-subtitle { color: var(--accent-blue); font-weight: 600; font-family: inherit;}
 
-                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; white-space: nowrap; scrollbar-width: none; flex-shrink: 0;}
                 .ph-tabs-container::-webkit-scrollbar { display: none; }
                 .ph-tab-btn { flex: 1; min-width: max-content; padding: 12px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
                 .ph-tab-btn:hover { color: white; background: rgba(255,255,255,0.03); }
@@ -76,7 +76,7 @@ export const PageHeader = {
 
             <header class="ph-mobile-top-bar">
                 <a href="/v5/" data-link class="ph-mob-brand">
-                    <img src="logoteamtowers.png" alt="TeamTowers">
+                    <img src="/v5/logoteamtowers.png" alt="TeamTowers">
                 </a>
                 
                 <div style="display:flex; align-items:center; flex:1; justify-content: flex-end;">
