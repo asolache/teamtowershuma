@@ -2,11 +2,11 @@
 import { store } from '../core/store.js';
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 import { Sidebar } from '../components/Sidebar.js';
-import { BottomNav } from '../components/BottomNav.js'; // INYECCIÓN V8.0
+import { BottomNav } from '../components/BottomNav.js';
 
 export default class ValueMapView {
     constructor() {
-        document.title = "Mapa de Valor | TeamTowers SOS";
+        document.title = "Mapa Flujo de Valor | TeamTowers SOS";
         this.activeProjectId = null;
         this.selectedRoleId = null; 
         this.editingTxIndex = null; 
@@ -17,7 +17,6 @@ export default class ValueMapView {
         this.simulationTimeouts = [];
         this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
         
-        // ResizeObserver para recalcular líneas si el Sidebar se colapsa
         this.resizeObserver = null;
     }
 
@@ -157,7 +156,7 @@ export default class ValueMapView {
                     <div class="ui-overlay">
                         <div class="interactive" style="display: flex; flex-direction: column; gap: 15px;">
                             <div>
-                                <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa de Valor</h1>
+                                <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa Flujo de Valor</h1>
                                 <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Pasa el ratón sobre los flujos</p>
                             </div>
                             <div class="glass-panel" style="padding: 1rem; display: flex; flex-direction: column; gap: 10px; width: max-content; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
@@ -268,7 +267,17 @@ export default class ValueMapView {
         Sidebar.initListeners();
 
         let state = store.getState();
-        let project = state.projects[state.projects.length - 1];
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
+        
+        if (!project) {
+            const userProjects = state.projects.filter(p => 
+                state.session.role === 'ecosystem-owner' || 
+                p.ownerId === state.session.activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === state.session.activeUserId))
+            );
+            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
+        }
 
         if (!project || !project.roles) return;
         this.activeProjectId = project.id;
@@ -303,12 +312,21 @@ export default class ValueMapView {
             tooltip: document.getElementById('txTooltip')
         };
 
-        this.dom.title.innerText = project.nombre;
+        this.dom.title.innerText = `Mapa Flujo de Valor (${project.nombre})`;
 
         this.populateDropdowns(project.roles);
         this.updateOntologyTemplates(); 
-        this.renderMap();
-        this.renderSequence();
+
+        // EL FIX VITAL: Usar Promesas/setTimeout anidados para garantizar el DOM Render
+        // antes de dibujar las conexiones de los nodos
+        setTimeout(() => {
+            this.renderMap();
+            this.renderSequence();
+            // Le damos tiempo al DOM a colocar los nodos en su sitio
+            setTimeout(() => {
+                if(!this.isSimulating) this.drawEdges();
+            }, 100);
+        }, 50);
 
         if (window.ResizeObserver) {
             this.resizeObserver = new ResizeObserver(() => {
@@ -637,7 +655,9 @@ export default class ValueMapView {
         this.populateDropdowns(pUpdate.roles);
         this.renderSequence(highlightIndex); 
         this.renderMap();      
-        setTimeout(() => this.drawEdges(), 50); 
+        
+        // Timeout robusto para el dibujado de líneas tras manipulación de DOM
+        setTimeout(() => this.drawEdges(), 100); 
     }
 
     // --- SIMULACIÓN ANIMADA C/ CURVAS BEZIER ---
@@ -974,8 +994,6 @@ export default class ValueMapView {
 
             this.dom.canvas.appendChild(el);
         });
-
-        setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 50);
     }
 
     injectSvgMarkers() {
