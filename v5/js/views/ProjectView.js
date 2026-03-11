@@ -2,7 +2,7 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN COMPONENTE UNIVERSAL
+import { PageHeader } from '../components/PageHeader.js';
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 export default class ProjectView {
@@ -38,8 +38,7 @@ export default class ProjectView {
             tagline: "Kanban de oportunidades, en curso y contabilizado.",
             actionHtml: `
                 <div style="display:flex; gap:10px; align-items:center;">
-                    <div class="${statusBtnClass}" title="Estado de Matching">${statusBtnText}</div>
-                    <a href="/v5/map" class="btn btn-outline" data-link style="padding: 8px 15px; border-radius: 8px; text-decoration:none; font-size:0.85rem;">⚙️ Mapa VNA</a>
+                    <button id="btnToggleAvailability" class="${statusBtnClass}" title="Alternar Estado de Matching">${statusBtnText}</button>
                 </div>
             `,
             tabs: [
@@ -52,18 +51,17 @@ export default class ProjectView {
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth; transition: box-shadow 0.5s ease-out;}
                 
                 /* MAGIA VISUAL: Destello si estás disponible */
-                .workspace.is-open-to-work { box-shadow: inset 0 0 100px rgba(0, 230, 118, 0.03); }
+                .workspace.is-open-to-work { box-shadow: inset 0 0 120px rgba(0, 230, 118, 0.05); }
 
-                /* ESTADOS DISPONIBILIDAD (Heredados del diseño del Perfil) */
-                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); display:flex; align-items:center;}
-                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); display:flex; align-items:center; box-shadow: 0 0 10px rgba(0,230,118,0.2);}
+                /* ESTADOS DISPONIBILIDAD */
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; font-family: var(--font-mono); cursor:pointer; transition: all 0.2s;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; font-family: var(--font-mono); cursor:pointer; transition: all 0.2s; box-shadow: 0 0 10px rgba(0,230,118,0.2);}
 
                 /* CONTROLES SECUNDARIOS (Filtros y Crear) */
                 .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;}
-                
                 .filters-container { display:flex; gap: 10px; width: 100%; justify-content: flex-end;}
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
@@ -72,15 +70,15 @@ export default class ProjectView {
                 .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
 
                 /* =========================================================
-                   GRID DE TARJETAS
+                   GRID DE TARJETAS (DESKTOP)
                    ========================================================= */
                 .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; align-items: start; padding-bottom: 2rem;}
                 
-                .task-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; display: flex; flex-direction: column; gap: 12px;}
+                .task-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; display: flex; flex-direction: column; gap: 12px; backdrop-filter: blur(10px);}
                 .task-card:hover { transform: translateY(-4px); border-color: #555; box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
                 
                 .task-header { display: flex; justify-content: space-between; align-items: center; }
-                .task-route { display: flex; gap: 8px; align-items: center; }
+                .task-route { display: flex; gap: 6px; align-items: center; flex-wrap: wrap;}
                 .route-badge { font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-family: var(--font-mono); font-weight: bold; border: 1px solid;}
                 .tx-hash { font-size: 0.65rem; color: #555; font-family: var(--font-mono); }
                 
@@ -116,33 +114,33 @@ export default class ProjectView {
                 .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
                 .form-control:focus { border-color: var(--accent-blue); }
 
-                /* FEEDBACK VNA MODAL */
-                #vnaFeedbackModal { z-index: 5000; background: rgba(5,5,7,0.95); backdrop-filter: blur(20px); flex-direction: column; text-align: center;}
-                .vna-mini-map { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 2rem; width: 100%; max-width: 400px;}
-                .vna-node { width: 70px; height: 70px; border-radius: 50%; border: 2px solid white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; background: rgba(255,255,255,0.05); position: relative;}
-                .vna-node span { position: absolute; bottom: -25px; font-size: 0.7rem; color: #aaa; white-space: nowrap; font-family: var(--font-mono);}
-                .vna-vector { flex: 1; height: 3px; background: var(--accent-green); position: relative; animation: flowPulse 0.8s infinite; }
-                .vna-vector::after { content: '▶'; position: absolute; right: -10px; top: -9px; color: var(--accent-green); font-size: 1.2rem;}
-                
-                @keyframes flowPulse {
-                    0% { opacity: 0.3; transform: scaleX(0.9); box-shadow: none; }
-                    50% { opacity: 1; transform: scaleX(1); box-shadow: 0 0 20px var(--accent-green); }
-                    100% { opacity: 0.3; transform: scaleX(0.9); box-shadow: none;}
-                }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
-                   RESPONSIVE (FIELD APP)
+                   RESPONSIVE MOBILE LUXURY APP (FIELD APP)
                    ========================================================= */
                 @media (max-width: 768px) {
                     .workspace { padding: 80px 1rem 90px 1rem; } 
                     
-                    .controls-row { flex-direction: column; align-items: stretch; gap: 15px;}
+                    .controls-row { flex-direction: column; align-items: stretch; gap: 15px; margin-bottom: 1rem;}
                     .filters-container { flex-direction: column; width: 100%;}
-                    .filter-dropdown { width: 100%; }
-                    .btn-create-task { width: 100%; }
+                    .filter-dropdown { width: 100%; padding: 12px;}
+                    .btn-create-task { width: 100%; padding: 12px;}
                     
-                    .task-grid { grid-template-columns: 1fr; gap: 1rem;}
+                    /* LUXURY LIST VIEW PARA MÓVIL */
+                    .task-grid { display: flex; flex-direction: column; gap: 12px;}
+                    .task-card { 
+                        padding: 1.2rem 1rem; 
+                        border-radius: 16px; /* Más redondeado, tipo Wallet */
+                        background: rgba(255, 255, 255, 0.03); 
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                    }
+                    .task-title { font-size: 1.1rem; line-height: 1.3; }
+                    .task-meta-row { background: transparent; padding: 0; margin-top: 5px; flex-wrap: wrap; gap: 5px;}
+                    
+                    /* Botones grandes y ergonómicos para el pulgar */
+                    .task-actions { padding-top: 15px; margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); }
+                    .btn-pull, .btn-push, .btn-focus, .btn-approve { padding: 14px; font-size: 0.95rem; border-radius: 10px;}
                 }
             </style>
 
@@ -224,18 +222,6 @@ export default class ProjectView {
                         </div>
                     </div>
                 </div>
-
-                <div class="modal-overlay" id="vnaFeedbackModal">
-                    <h2 style="color: white; font-size: 2.5rem; margin-bottom: 5px;">🗺️ Mapa VNA Actualizado</h2>
-                    <p style="color: var(--accent-green); font-family: var(--font-mono);">Nuevo vector de valor detectado e inyectado en la red estructural.</p>
-                    
-                    <div class="vna-mini-map">
-                        <div class="vna-node" id="fbNodeFrom" style="border-color: var(--accent-blue);">⚙️<span>Origen</span></div>
-                        <div class="vna-vector" id="fbVector"></div>
-                        <div class="vna-node" id="fbNodeTo" style="border-color: #888;">👁️<span>Destino</span></div>
-                    </div>
-                    <div style="margin-top: 40px; color: #888; font-size: 0.8rem;">Actualizando Kanban...</div>
-                </div>
                 
                 ${BottomNav.getHtml('/project')}
             </div>
@@ -244,7 +230,7 @@ export default class ProjectView {
 
     executeViewScript() {
         Sidebar.initListeners();
-        PageHeader.execute();
+        PageHeader.execute(); // Inicializa el selector móvil
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
@@ -266,6 +252,8 @@ export default class ProjectView {
         this.activeProjectId = project.id;
 
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
+        
+        // VISIBILIDAD DE BOTÓN CREAR
         if (!isPO) {
             this.currentFilter = 'all'; 
         } else {
@@ -278,11 +266,16 @@ export default class ProjectView {
             btn.addEventListener('click', () => {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                this.currentTab = btn.dataset.tab;
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                
+                const tabId = btn.dataset.tab;
+                if (tabId) {
+                    this.currentTab = tabId;
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                }
             });
         });
 
+        // FILTROS
         const filterDropdown = document.getElementById('filterDropdown');
         filterDropdown.value = this.currentFilter;
         filterDropdown.addEventListener('change', (e) => {
@@ -291,10 +284,41 @@ export default class ProjectView {
         });
 
         // -------------------------------------------------------------
+        // EVENTO DISPONIBILIDAD (EL FIX DEL BUG)
+        // -------------------------------------------------------------
+        const btnToggleAvailability = document.getElementById('btnToggleAvailability');
+        if (btnToggleAvailability) {
+            btnToggleAvailability.addEventListener('click', async () => {
+                const currentState = store.getState();
+                const userIndex = currentState.globalUsers.findIndex(u => u.id === activeUserId);
+                
+                if (userIndex > -1) {
+                    const currentStatus = currentState.globalUsers[userIndex].profile?.isOpenToWork || false;
+                    const newStatus = !currentStatus;
+                    
+                    await store.dispatch({
+                        type: 'UPDATE_USER_PROFILE',
+                        payload: { userId: activeUserId, profile: { isOpenToWork: newStatus } }
+                    });
+                    
+                    // Efectos visuales inmediatos
+                    btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
+                    btnToggleAvailability.innerText = newStatus ? '🟢 Disponible' : '🔴 Ocupado';
+                    
+                    const workspace = document.querySelector('.workspace');
+                    if (newStatus) {
+                        workspace.classList.add('is-open-to-work');
+                    } else {
+                        workspace.classList.remove('is-open-to-work');
+                    }
+                }
+            });
+        }
+
+        // -------------------------------------------------------------
         // LÓGICA DE CREACIÓN DE TAREAS Y MAPA VNA
         // -------------------------------------------------------------
         const createModal = document.getElementById('createTaskModal');
-        const fbModal = document.getElementById('vnaFeedbackModal');
         
         const selFrom = document.getElementById('newTaskFrom');
         const selTo = document.getElementById('newTaskTo');
@@ -385,7 +409,6 @@ export default class ProjectView {
             if(!finalName) return alert("Por favor, introduce el nombre del entregable.");
             if(from === to) return alert("Una tarea debe fluir entre dos roles diferentes para aportar valor.");
 
-            const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             const newHash = 'tx_' + Math.random().toString(36).substr(2, 9);
 
             await store.dispatch({
@@ -413,33 +436,8 @@ export default class ProjectView {
             }
 
             createModal.style.display = 'none';
-            
-            if (isManualNewFlow) {
-                const rFrom = activeProject.roles.find(r => r.id === from);
-                const rTo = activeProject.roles.find(r => r.id === to);
-                
-                document.getElementById('fbNodeFrom').innerHTML = `${this.getIcon(rFrom.levelId)}<span>${rFrom.name}</span>`;
-                document.getElementById('fbNodeFrom').style.borderColor = this.getColorForLevel(rFrom.levelId);
-                
-                document.getElementById('fbNodeTo').innerHTML = `${this.getIcon(rTo.levelId)}<span>${rTo.name}</span>`;
-                document.getElementById('fbNodeTo').style.borderColor = this.getColorForLevel(rTo.levelId);
-                
-                const vColor = type === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-                const vector = document.getElementById('fbVector');
-                vector.style.backgroundColor = vColor;
-                vector.style.boxShadow = `0 0 20px ${vColor}`;
-
-                fbModal.style.display = 'flex';
-                
-                setTimeout(() => {
-                    fbModal.style.display = 'none';
-                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                }, 2800);
-            } else {
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-            }
+            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
         });
-
 
         // -------------------------------------------------------------
         // KANBAN ACTIONS LOGIC
@@ -580,7 +578,7 @@ export default class ProjectView {
             statusTag = `<span style="color:#aaa; font-size:0.75rem; border:1px solid #555; padding:2px 8px; border-radius:12px;">LIBRE</span>`;
             if (isPO) {
                 actionHtml = `
-                    <button class="btn-pull" data-hash="${tx.hash}" title="Adjudicarme la tarea">📥 Hacer PULL (Asumírmela)</button>
+                    <button class="btn-pull" data-hash="${tx.hash}" title="Adjudicarme la tarea">📥 Hacer PULL</button>
                     <button class="btn-push" data-hash="${tx.hash}" title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
                 `;
             } else {
@@ -661,7 +659,6 @@ export default class ProjectView {
         `;
     }
 
-    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
     getColorForLevel(levelId) {
         const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
         return colors[levelId] || '#aaa';
