@@ -2,11 +2,11 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
+import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN COMPONENTE UNIVERSAL
 
 export default class ProfileView {
     constructor() {
-        document.title = "Mi Perfil & Reputación | TeamTowers SOS";
-        this.currentTab = 'perfil'; 
+        document.title = "Mi Perfil | TeamTowers SOS";
         
         this.guardians = [
             { id: 'creator', label: '🎨 Creador (Innovación)' },
@@ -36,77 +36,43 @@ export default class ProfileView {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         const user = state.globalUsers.find(u => u.id === activeUserId);
-        
-        const userProjects = state.projects.filter(p => 
-            state.session.role === 'ecosystem-owner' || 
-            p.ownerId === activeUserId || 
-            (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
-        );
-
-        let activeProjectId = localStorage.getItem('tt_active_project') || (userProjects.length > 0 ? userProjects[userProjects.length - 1].id : null);
 
         const isOpen = user?.profile?.isOpenToWork || false;
         const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
         const statusBtnText = isOpen ? '🟢 Disponible para Match' : '🔴 No Disponible';
 
+        // Configuración del Header Universal
+        const headerConfig = {
+            title: "Perfil",
+            subtitle: user?.name || 'Usuario',
+            tagline: "Tu Identidad Fractal y Reputación Web3.",
+            actionHtml: `<button id="btnToggleAvailability" class="${statusBtnClass}">${statusBtnText}</button>`,
+            tabs: [
+                { id: 'perfil', label: '🧬 Identidad', active: true },
+                { id: 'proyectos', label: '🌐 Redes Activas' },
+                { id: 'skills', label: '🏅 Skills' }
+            ]
+        };
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative; scroll-behavior: smooth;}
+                
+                /* FIX V8.3: Cambiamos a display:block para evitar el clipping (corte) del contenido en las pestañas */
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
                 
                 /* =========================================================
-                   MOBILE TOP BAR (DRY V8.0)
+                   TABS CONTENT (FIX CLIPPING)
                    ========================================================= */
-                .mobile-top-bar {
-                    display: none; justify-content: space-between; align-items: center; padding: 15px 20px;
-                    background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05);
-                    backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box;
-                }
-                .mob-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
-                .mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 150px; }
-                .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
+                .tab-content.active { display: block; }
 
-                /* =========================================================
-                   HEADER PERFIL
-                   ========================================================= */
-                .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
-                .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
-                .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
-
-                .verified-badge { font-size: 0.7rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;}
-                
+                /* BOTONES DE STATUS HEADER */
                 .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
                 .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
 
                 /* =========================================================
-                   TABS (Pestañas Segmented Control PREMIUM)
-                   ========================================================= */
-                .tabs-container { 
-                    display: flex; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 12px; 
-                    border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; 
-                    overflow-x: auto; white-space: nowrap; scrollbar-width: none;
-                }
-                .tabs-container::-webkit-scrollbar { display: none; }
-                
-                .tab-btn { 
-                    flex: 1; min-width: max-content; padding: 12px 20px; background: transparent; 
-                    border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.95rem; 
-                    font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; 
-                    align-items: center; justify-content: center; gap: 8px;
-                }
-                .tab-btn:hover { color: white; background: rgba(255,255,255,0.03); }
-                
-                /* Active States por color temático */
-                .tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 10px rgba(0,0,0,0.3); }
-                .tab-btn.active[data-tab="perfil"] { color: var(--accent-blue); }
-                .tab-btn.active[data-tab="proyectos"] { color: var(--accent-green); }
-                .tab-btn.active[data-tab="skills"] { color: var(--accent-purple); }
-
-                .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
-                .tab-content.active { display: block; }
-
-                /* =========================================================
-                   TAB 1: IDENTIDAD FRACTAL (PERFIL)
+                   TAB 1: IDENTIDAD FRACTAL
                    ========================================================= */
                 .form-group { margin-bottom: 1.5rem; }
                 .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase;}
@@ -122,6 +88,7 @@ export default class ProfileView {
                 .pm-ikigai { background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 8px; padding: 20px; margin-top: 2rem;}
                 .pm-section-title { font-size: 0.85rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
                 .pm-prompt-text { font-family: var(--font-mono); font-size: 0.9rem; color: #ccc; line-height: 1.6; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444; word-break: break-word;}
+                .verified-badge { font-size: 0.7rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;}
 
                 .btn-save-profile { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 100%; margin-top: 1rem;}
                 .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); }
@@ -174,17 +141,7 @@ export default class ProfileView {
                    ========================================================= */
                 @media (max-width: 768px) { 
                     .workspace { padding: 80px 1rem 90px 1rem; } 
-                    .mobile-top-bar { display: flex; }
-                    
-                    .view-header { flex-direction: column; align-items: flex-start; gap: 10px;}
-                    .view-header h1 { font-size: 1.6rem; }
-                    .header-actions { width: 100%; }
                     .btn-status-closed, .btn-status-open { width: 100%; justify-content: center; display: flex;}
-
-                    /* Asegura que los tabs ocupen todo el ancho en móvil */
-                    .tabs-container { width: 100%; }
-                    .tab-btn { flex: 1; text-align: center; padding: 10px 5px; font-size: 0.85rem;}
-                    
                     .stats-grid { grid-template-columns: 1fr; gap: 1rem;}
                     .pm-section-title { flex-direction: column; align-items: flex-start; gap: 10px; }
                     .btn-mint { width: 100%; justify-content: center; }
@@ -196,29 +153,8 @@ export default class ProfileView {
                 ${Sidebar.getHtml('/profile')}
 
                 <main class="workspace">
-                    <header class="mobile-top-bar">
-                        <a href="/v5/" data-link class="mob-brand">🗼</a>
-                        <select class="mob-project-select" id="mobProjectSelect">
-                            ${userProjects.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')}
-                        </select>
-                        <div class="mob-user">${user?.name.charAt(0).toUpperCase() || '?'}</div>
-                    </header>
-
-                    <div class="view-header">
-                        <div>
-                            <h1>Perfil <span style="color:var(--accent-blue); margin-left: 8px;">${user?.name || 'Usuario'}</span> <span style="font-size: 0.45em; color: #888; font-weight:normal; margin-left:5px; font-family:monospace;">(${user?.id || '@id'})</span></h1>
-                            <p>Tu Identidad Fractal y Reputación Web3</p>
-                        </div>
-                        <div class="header-actions">
-                            <button id="btnToggleAvailability" class="${statusBtnClass}">${statusBtnText}</button>
-                        </div>
-                    </div>
-
-                    <div class="tabs-container" id="tabsContainer">
-                        <button class="tab-btn active" data-tab="perfil">🧬 Identidad</button>
-                        <button class="tab-btn" data-tab="proyectos">🌐 Redes Activas</button>
-                        <button class="tab-btn" data-tab="skills">🏅 Skills</button>
-                    </div>
+                    
+                    ${PageHeader.getHtml(headerConfig)}
 
                     <div id="view-perfil" class="tab-content active">
                         <div class="form-group">
@@ -329,26 +265,11 @@ export default class ProfileView {
 
     executeViewScript() {
         Sidebar.initListeners();
+        PageHeader.execute();
 
         const state = store.getState();
         this.activeUserId = state.session.activeUserId;
         const user = state.globalUsers.find(u => u.id === this.activeUserId);
-
-        // Mobile Top Bar Logic
-        const userProjects = state.projects.filter(p => 
-            state.session.role === 'ecosystem-owner' || 
-            p.ownerId === this.activeUserId || 
-            (p.usuarios && p.usuarios.find(u => u.id === this.activeUserId))
-        );
-        let activeProjectId = localStorage.getItem('tt_active_project') || (userProjects.length > 0 ? userProjects[userProjects.length - 1].id : null);
-        const mobSelect = document.getElementById('mobProjectSelect');
-        if (mobSelect && activeProjectId) {
-            mobSelect.value = activeProjectId;
-            mobSelect.addEventListener('change', (e) => {
-                localStorage.setItem('tt_active_project', e.target.value);
-                window.location.reload(); 
-            });
-        }
 
         this.dom = {
             inpVision: document.getElementById('inpVision'),
@@ -393,52 +314,46 @@ export default class ProfileView {
             this.updateSystemPromptDisplay(user.profile.permawebHash, user.profile.ikigaiSummary);
         }
 
-        // TABS LOGIC (FIXED)
-        const tabBtns = document.querySelectorAll('.tab-btn');
+        // TABS LOGIC (FIXED FOR CLIPPING)
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Quitar clase active a todos los botones
                 tabBtns.forEach(b => b.classList.remove('active'));
-                // Añadir active al pulsado
                 btn.classList.add('active');
 
-                // Ocultar todos los contenidos
                 tabContents.forEach(content => {
                     content.classList.remove('active');
-                    content.style.display = 'none';
                 });
                 
-                // Mostrar el contenido objetivo
                 const targetId = `view-${btn.dataset.tab}`;
                 const targetContent = document.getElementById(targetId);
                 if (targetContent) {
-                    targetContent.style.display = 'block';
-                    // Forzar reflow para que corra la animación CSS
-                    void targetContent.offsetWidth; 
                     targetContent.classList.add('active');
                 }
             });
         });
 
         // STATUS TOGGLE (Open To Work)
-        this.dom.btnToggleAvailability.addEventListener('click', () => {
-            const currentState = store.getState();
-            const uIdx = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
-            if (uIdx > -1) {
-                const currentStatus = currentState.globalUsers[uIdx].profile.isOpenToWork || false;
-                const newStatus = !currentStatus;
-                
-                store.dispatch({
-                    type: 'UPDATE_USER_PROFILE',
-                    payload: { userId: this.activeUserId, profile: { isOpenToWork: newStatus } }
-                }).then(() => {
-                    this.dom.btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
-                    this.dom.btnToggleAvailability.innerText = newStatus ? '🟢 Disponible para Match' : '🔴 No Disponible';
-                });
-            }
-        });
+        if(this.dom.btnToggleAvailability) {
+            this.dom.btnToggleAvailability.addEventListener('click', () => {
+                const currentState = store.getState();
+                const uIdx = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
+                if (uIdx > -1) {
+                    const currentStatus = currentState.globalUsers[uIdx].profile.isOpenToWork || false;
+                    const newStatus = !currentStatus;
+                    
+                    store.dispatch({
+                        type: 'UPDATE_USER_PROFILE',
+                        payload: { userId: this.activeUserId, profile: { isOpenToWork: newStatus } }
+                    }).then(() => {
+                        this.dom.btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
+                        this.dom.btnToggleAvailability.innerText = newStatus ? '🟢 Disponible para Match' : '🔴 No Disponible';
+                    });
+                }
+            });
+        }
 
         // EVENTOS GUARDADO
         this.dom.btnSave.addEventListener('click', () => this.saveIdentity(false));
