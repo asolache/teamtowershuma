@@ -39,32 +39,27 @@ export default class ProfileView {
                 
                 /* HEADER PERFIL REFINADO (RESPONSIVE) */
                 .profile-header { 
-                    display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem; 
-                    background: rgba(255,255,255,0.02); padding: 2rem; border-radius: var(--border-radius-lg); 
-                    border: 1px solid var(--glass-border); position: relative; overflow: hidden;
+                    display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 1.5rem; 
+                    margin-bottom: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: var(--border-radius-lg); 
+                    border: 1px solid var(--glass-border); position: relative; overflow: hidden; flex-wrap: wrap;
                 }
                 .profile-header.minted { border-color: var(--accent-orange); box-shadow: 0 0 30px rgba(255, 171, 64, 0.1); background: linear-gradient(to right, rgba(255, 171, 64, 0.05), rgba(0,0,0,0));}
                 .profile-header::before { content: ''; position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0, 176, 255, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none;}
                 
-                .header-top-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; z-index: 1; flex-wrap: wrap; gap: 20px;}
-                
-                .profile-basic-info { display: flex; align-items: center; gap: 1.5rem; flex: 1; min-width: 300px; overflow: hidden;}
+                .profile-basic-info { display: flex; align-items: center; gap: 1.5rem; flex: 1; min-width: 250px; z-index: 1;}
                 .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3); flex-shrink: 0;}
                 .profile-header.minted .profile-avatar { background: linear-gradient(135deg, var(--accent-orange), #ffd740); box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4);}
                 
-                .profile-info { flex: 1; min-width: 0; } /* min-width 0 es vital para el truncamiento flex */
+                .profile-info { flex: 1; min-width: 0; } 
                 .profile-info h1 { margin: 0; font-size: 2.2rem; color: white; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
                 .name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block;}
                 .profile-info p { margin: 5px 0 0 0; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
                 
                 .verified-badge { font-size: 0.8rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: flex; align-items: center; gap: 5px; white-space: nowrap;}
                 
-                .header-actions { display: flex; gap: 10px; z-index: 1; flex-shrink: 0; flex-wrap: wrap;}
+                .header-actions { display: flex; z-index: 1; flex-shrink: 0;}
                 
-                .btn-save-profile { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap;}
-                .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); }
-                
-                .btn-mint { background: transparent; color: var(--accent-orange); border: 2px solid var(--accent-orange); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap;}
+                .btn-mint { background: transparent; color: var(--accent-orange); border: 2px solid var(--accent-orange); padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;}
                 .btn-mint:hover { background: rgba(255, 171, 64, 0.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 171, 64, 0.2); }
 
                 /* ESTADÍSTICAS GLOBALES */
@@ -78,7 +73,7 @@ export default class ProfileView {
                 .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
                 
                 .section-title { color: white; font-size: 1.2rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
-                .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; }
+                .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; display: flex; flex-direction: column;}
                 
                 /* EDITOR DE IDENTIDAD */
                 .form-group { margin-bottom: 1.5rem; }
@@ -86,14 +81,17 @@ export default class ProfileView {
                 .vision-textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; min-height: 100px; resize: vertical; box-sizing: border-box;}
                 .vision-textarea:focus { outline: none; border-color: var(--accent-blue); }
 
-                .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+                .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
                 .tag-checkbox { display: none; }
                 .tag-label { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 6px; color: #ccc; font-size: 0.8rem; cursor: pointer; text-align: center; transition: all 0.2s; user-select: none; display: block;}
                 .tag-checkbox:checked + .tag-label { background: rgba(0, 176, 255, 0.15); border-color: var(--accent-blue); color: white; font-weight: bold;}
                 .tag-checkbox:checked + .tag-label.guardian-auth { background: rgba(224, 64, 251, 0.15); border-color: var(--accent-purple); }
 
+                .btn-save-profile { width: 100%; background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: auto;}
+                .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); }
+
                 /* LISTA DE PROYECTOS */
-                .project-row { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; border-bottom: 1px solid var(--glass-border); }
+                .project-row { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 10px;}
                 .project-row:last-child { border-bottom: none; }
                 .project-name { color: white; font-weight: bold; font-size: 1.1rem; }
                 .project-role { color: var(--accent-blue); font-size: 0.8rem; font-family: var(--font-mono); background: rgba(0, 176, 255, 0.1); padding: 4px 8px; border-radius: 4px; margin-top: 5px; display: inline-block;}
@@ -110,7 +108,7 @@ export default class ProfileView {
                 .pm-prompt-text { font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444; word-break: break-word;}
 
                 /* CHECKOUT MODAL */
-                .checkout-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center;}
+                .checkout-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center;}
                 .checkout-card { background: #111; border: 1px solid var(--accent-orange); border-radius: 16px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(255, 171, 64, 0.2); animation: slideUp 0.4s ease-out; box-sizing: border-box;}
                 .checkout-price { font-size: 3.5rem; font-weight: 900; color: white; margin: 1rem 0; font-family: var(--font-mono);}
                 .checkout-features { text-align: left; margin: 2rem 0; padding-left: 20px; color: #aaa; line-height: 1.6; font-size: 0.9rem;}
@@ -126,13 +124,25 @@ export default class ProfileView {
                 @keyframes spin { to { transform: rotate(360deg); } }
                 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-                @media (max-width: 1024px) { .content-grid { grid-template-columns: 1fr; } }
-                @media (max-width: 600px) { 
-                    .workspace { padding: 1rem; } 
-                    .header-top-row { flex-direction: column; }
-                    .header-actions { width: 100%; display: grid; grid-template-columns: 1fr; gap: 10px;}
-                    .profile-info h1 { font-size: 1.8rem; }
-                    .checkout-card { padding: 2rem; width: 90%; }
+                /* MEDIA QUERIES (MOBILE FIRST ALIGNMENT) */
+                @media (max-width: 1024px) { 
+                    .content-grid { grid-template-columns: 1fr; } 
+                }
+                @media (max-width: 768px) { 
+                    .app-layout { flex-direction: column; } 
+                    .workspace { padding: 1.5rem 1rem; } 
+                    
+                    .profile-header { flex-direction: column; text-align: center; gap: 1.5rem; padding: 1.5rem; } 
+                    .profile-basic-info { flex-direction: column; gap: 1rem; width: 100%; align-items: center;}
+                    .profile-info h1 { justify-content: center; font-size: 1.8rem; }
+                    
+                    .header-actions { width: 100%; } 
+                    .btn-mint { width: 100%; justify-content: center;} 
+                    
+                    .stats-grid { grid-template-columns: 1fr; gap: 1rem;}
+                    .panel { padding: 1.5rem; }
+                    
+                    .checkout-card { padding: 2rem 1.5rem; width: 90%; }
                 }
             </style>
 
@@ -141,21 +151,18 @@ export default class ProfileView {
 
                 <main class="workspace">
                     <div class="profile-header" id="profileHeader">
-                        <div class="header-top-row">
-                            <div class="profile-basic-info">
-                                <div class="profile-avatar" id="profInitials">?</div>
-                                <div class="profile-info">
-                                    <h1>
-                                        <span class="name-text" id="profName" title="Usuario Desconocido">Usuario Desconocido</span> 
-                                        <span id="badgeMinted" class="verified-badge" style="display:none;">🕸️ Permaweb</span>
-                                    </h1>
-                                    <p id="profId">@id</p>
-                                </div>
+                        <div class="profile-basic-info">
+                            <div class="profile-avatar" id="profInitials">?</div>
+                            <div class="profile-info">
+                                <h1>
+                                    <span class="name-text" id="profName" title="Usuario Desconocido">Usuario Desconocido</span> 
+                                    <span id="badgeMinted" class="verified-badge" style="display:none;">🕸️ Permaweb</span>
+                                </h1>
+                                <p id="profId">@id</p>
                             </div>
-                            <div class="header-actions">
-                                <button class="btn-mint" id="btnOpenMintModal">💎 Generar Ikigai & Sellar (IA)</button>
-                                <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Local</button>
-                            </div>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn-mint" id="btnOpenMintModal">💎 Sellar en Permaweb</button>
                         </div>
                     </div>
 
@@ -220,6 +227,8 @@ export default class ProfileView {
                                     `).join('')}
                                 </div>
                             </div>
+
+                            <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Identidad en Local</button>
                         </div>
 
                         <div>
@@ -310,7 +319,7 @@ export default class ProfileView {
         
         if (user) {
             this.dom.profName.innerText = user.name;
-            this.dom.profName.title = user.name; // Truncate fallback
+            this.dom.profName.title = user.name; // Tooltip para nombres muy largos truncados
             this.dom.profId.innerText = user.id;
             this.dom.profInitials.innerText = user.name.charAt(0).toUpperCase();
             
@@ -336,7 +345,6 @@ export default class ProfileView {
                     this.applyMintedStyle(user.profile.permawebHash);
                 }
                 
-                // Si ya tiene el perfil redactado por IA (ikigaiSummary), lo mostramos
                 if(user.profile.ikigaiSummary) {
                     this.updateSystemPromptDisplay(user.profile.permawebHash, user.profile.ikigaiSummary);
                 } else {
@@ -376,7 +384,7 @@ export default class ProfileView {
         const badge = document.getElementById('badgeMinted');
         if(badge) badge.style.display = 'inline-flex';
         
-        this.dom.profId.innerHTML = `${this.activeUserId} <span style="color:var(--accent-orange); margin-left:10px; font-size:0.7rem;">HASH: ${hash}</span>`;
+        this.dom.profId.innerHTML = `${this.activeUserId} <br><span style="color:var(--accent-orange); font-size:0.7rem; font-family:monospace; margin-top:5px; display:block; word-break: break-all;">TXID: ${hash}</span>`;
     }
 
     saveIdentity(isMinting = false) {
@@ -394,7 +402,6 @@ export default class ProfileView {
             const existingHash = currentState.globalUsers[userIndex].profile?.permawebHash;
             const existingIkigai = currentState.globalUsers[userIndex].profile?.ikigaiSummary;
             
-            // Usamos la nueva acción oficial del V8.0 Store
             store.dispatch({
                 type: 'UPDATE_USER_PROFILE',
                 payload: {
@@ -406,7 +413,7 @@ export default class ProfileView {
                 
                 if (!isMinting) {
                     const originalText = this.dom.btnSave.innerText;
-                    this.dom.btnSave.innerText = "✅ Guardado";
+                    this.dom.btnSave.innerText = "✅ Identidad Guardada";
                     this.dom.btnSave.style.background = "var(--accent-green)";
                     setTimeout(() => {
                         this.dom.btnSave.innerText = originalText;
@@ -427,7 +434,6 @@ export default class ProfileView {
 
         const profile = currentState.globalUsers[userIndex].profile;
         
-        // 1. INVOCAR IA PARA GENERAR IKIGAI SEMÁNTICO
         this.dom.loaderStatusMsg.innerText = "Generando Huella Semántica con IA...";
         
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
@@ -489,7 +495,6 @@ export default class ProfileView {
         setTimeout(async () => {
             const mockHash = 'ar://' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join('');
             
-            // Usamos la nueva acción oficial del V8.0 Store
             await store.dispatch({
                 type: 'UPDATE_USER_PROFILE',
                 payload: {
@@ -522,7 +527,7 @@ export default class ProfileView {
             return;
         }
 
-        const hashLine = hash ? `<span style="color: var(--accent-orange); font-weight:bold; margin-bottom: 10px; display:block;">TxID: ${hash}</span>` : '';
+        const hashLine = hash ? `<span style="color: var(--accent-orange); font-weight:bold; margin-bottom: 10px; display:block; word-break: break-all;">TxID: ${hash}</span>` : '';
         const summaryHtml = ikigaiSummary ? `<div style="color: white; margin-top:10px; border-top: 1px dashed #555; padding-top:10px;">${ikigaiSummary.replace(/\n/g, '<br>')}</div>` : '';
 
         this.dom.aiSystemPrompt.innerHTML = `
