@@ -8,7 +8,7 @@
 const routes = {
     '/': 'HomeView',
     '/create': 'ProjectCreatorView',
-    '/dashboard': 'DashboardView', // <-- NUEVA RUTA: LOBBY V7.2
+    '/dashboard': 'DashboardView', // LOBBY V7.2
     '/project': 'ProjectView',
     '/map': 'ValueMapView',
     '/team': 'TeamView',
@@ -19,7 +19,8 @@ const routes = {
     '/settings': 'SettingsView',
     '/focus': 'FocusView',
     '/profile': 'ProfileView',
-    '/help': 'HelpView'
+    '/help': 'HelpView',
+    '/onboarding': 'OnboardingView' // <-- RUTA AÑADIDA PARA V8.0 IDENTIDAD FRACTAL
 };
 
 class Router {
