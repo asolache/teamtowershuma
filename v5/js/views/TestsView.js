@@ -65,7 +65,7 @@ export default class TestsView {
                         </div>
 
                         <div class="log-terminal" id="terminalLog">
-                            <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas asíncronas integrales V8.0.</div>
+                            <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas asíncronas integrales V8.1.</div>
                         </div>
 
                         <button class="run-btn" id="runTestsBtn">EJECUTAR SUITE DE PRUEBAS (TDD) ▶</button>
@@ -82,7 +82,7 @@ export default class TestsView {
 
         btn.addEventListener('click', async () => {
             btn.disabled = true;
-            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones V8.0...</div>';
+            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones V8.1...</div>';
             
             let passed = 0; 
             let total = 0;
@@ -196,7 +196,7 @@ export default class TestsView {
                 await store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId: PID_1, roleId: newRole.id } });
                 assert(store.getState().projects.find(proj => proj.id === PID_1).roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad asegurada vía Archivado", "STORE"); 
 
-                // --- FASE 5: VNA Y CADENA DE TRANSACCIONES ---
+                // --- FASE 5: VNA Y CADENA DE TRANSACCIONES (V8.1 EXTENDED) ---
                 const dososRole = pAfterCreate.roles.find(r => r.levelId === '@dosos');
                 await store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: PID_1, tx: { from: anxanetaId, to: dososRole.id, horas: 2, entregable: 'Plan Q1', tipo: 'tangible' } } });
                 const tx1 = store.getState().projects.find(x => x.id === PID_1).transactions[0];
@@ -205,6 +205,17 @@ export default class TestsView {
                 await store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: PID_1, tx: { from: dososRole.id, to: anxanetaId, horas: 1, entregable: 'Review', tipo: 'intangible' } } });
                 const tx2 = store.getState().projects.find(x => x.id === PID_1).transactions[1];
                 assert(tx2.prevHash === tx1.hash, "Chaining: Las transacciones enlazan su hash anterior", "VNA"); 
+
+                // TDD V8.1: Validando el Contexto de la Tarea desde el Kanban
+                await store.dispatch({ 
+                    type: 'ADD_TRANSACTION', 
+                    payload: { 
+                        projectId: PID_1, 
+                        tx: { from: anxanetaId, to: newRole.id, horas: 3, entregable: 'Context Task', tipo: 'tangible', descripcionContexto: 'Test Contexto 8.1' } 
+                    } 
+                });
+                const tx3 = store.getState().projects.find(x => x.id === PID_1).transactions[2];
+                assert(tx3.descripcionContexto === 'Test Contexto 8.1', "Arquitectura V8.1: Contexto de tarea guardado inmutablemente", "KANBAN"); 
 
                 const salud = store.calculateResilience(PID_1);
                 assert(salud >= 0 && salud <= 100, `Cálculo de Resiliencia Sistémica operativa (${salud}%)`, "RESILIENCE"); 
@@ -338,12 +349,12 @@ export default class TestsView {
                     score.style.color = finalColor;
                     terminal.innerHTML += `
                         <div style="margin-top: 25px; padding: 20px; border: 1px solid ${finalColor}; background: rgba(0, 230, 118, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in;">
-                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v8.0 VALIDADO AL 100%</h2>
+                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v8.1 VALIDADO AL 100%</h2>
                             <p style="color: white; margin-top: 10px; font-size: 1.1rem;">El Motor Core ha superado exactamente ${total} vectores de prueba.</p>
-                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos chequeados: RBAC, VNA, SHA-256, Slicing Pie, Capital, Privacy, Identity (Permaweb)</p>
+                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos chequeados: RBAC, VNA, SHA-256, Slicing Pie, Capital, Privacy, Identity (Permaweb), Kanban Context</p>
                         </div>
                     `;
-                    btn.innerText = "CERTIFICACIÓN V8.0 COMPLETADA ✓";
+                    btn.innerText = "CERTIFICACIÓN V8.1 COMPLETADA ✓";
                     btn.style.background = finalColor;
                     btn.style.color = "black";
                 }
