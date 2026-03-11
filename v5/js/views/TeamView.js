@@ -1,6 +1,8 @@
 // v5/js/views/TeamView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
+import { BottomNav } from '../components/BottomNav.js';
+import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN V8.0
 
 // Diccionario Geo-Local para el Ecosistema
 const GEO_DATA = {
@@ -16,56 +18,84 @@ const GEO_DATA = {
 
 export default class TeamView {
     constructor() {
-        document.title = "Equipo | TeamTowers SOS";
+        document.title = "La Colla | TeamTowers SOS";
         this.activeProjectId = null;
+        this.currentTab = 'nodos'; // nodos | asignaciones
     }
 
     async getHtml() {
-        // Generar opciones de países para los filtros
+        const state = store.getState();
+        const activeUserId = state.session.activeUserId;
+        
+        const userProjects = state.projects.filter(p => 
+            state.session.role === 'ecosystem-owner' || 
+            p.ownerId === activeUserId || 
+            (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+        );
+
+        let activeProjectId = localStorage.getItem('tt_active_project') || (userProjects.length > 0 ? userProjects[userProjects.length - 1].id : null);
+        let project = state.projects.find(p => p.id === activeProjectId);
+
+        // Opciones del Modal Geo
         let countryOptions = `<option value="">Todos los Países</option>`;
         Object.keys(GEO_DATA).forEach(c => {
             countryOptions += `<option value="${c}">${c}</option>`;
         });
 
+        const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
+
+        // Configuración Header Universal
+        const headerConfig = {
+            title: "La Colla",
+            subtitle: project ? project.nombre : '',
+            tagline: "Gestión de Talento y Asignación de Nodos.",
+            actionHtml: isPO ? `
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn-primary" id="btnOpenMarketplace">🔍 Explorar Ecosistema</button>
+                    <button class="btn-invite" id="btnManualAdd">➕ Nuevo Nodo</button>
+                </div>
+            ` : '',
+            tabs: [
+                { id: 'nodos', label: '👥 Nodos (Usuarios)', active: this.currentTab === 'nodos', badge: project ? (project.usuarios || []).length : '0' },
+                { id: 'asignaciones', label: '🪑 Asignación de Sillas', active: this.currentTab === 'asignaciones' }
+            ]
+        };
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative;}
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
                 
-                .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem;}
-                .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; }
-                .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
+                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
+                .tab-content.active { display: block; }
 
-                .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-                .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 1.5rem; }
-                .panel-title { color: white; font-size: 1.2rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
+                .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
                 
-                /* CARDS DEL PROYECTO */
-                .user-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 1rem; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; transition: all 0.2s; cursor: pointer; position: relative;}
-                .user-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 176, 255, 0.1); }
-                .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 1.2rem; border: 2px solid #333; flex-shrink: 0;}
+                /* CARDS DE USUARIO (NODOS) */
+                .user-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 15px; transition: all 0.2s; cursor: pointer; position: relative; backdrop-filter: blur(10px);}
+                .user-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 176, 255, 0.1); }
+                .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 1.5rem; border: 2px solid #333; flex-shrink: 0;}
                 .user-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-                .user-name { color: white; font-weight: bold; font-size: 1rem; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px;}
-                .user-id { color: #666; font-family: var(--font-mono); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .po-badge { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.3); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
+                .user-name { color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
+                .user-id { color: #888; font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+                .po-badge { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.3); font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; text-transform: uppercase;}
 
-                /* ASIGNACIÓN DE SILLAS */
-                .role-slot { background: rgba(0,0,0,0.3); border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
-                .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.02); }
-                .role-meta { display: flex; flex-direction: column; gap: 5px; flex: 1;}
+                /* ASIGNACIÓN DE SILLAS (ROLES) */
+                .role-slot { background: rgba(20, 20, 25, 0.6); border: 1px dashed rgba(255,255,255,0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
+                .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.05); }
+                .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1;}
                 
-                /* FORMULARIOS */
-                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 8px 12px; border-radius: 6px; font-family: inherit; font-size: 0.9rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
+                .ai-match-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 6px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); font-weight: bold;}
+                .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);}
+
+                /* FORMULARIOS Y BOTONES */
+                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
                 .form-control:focus { border-color: var(--accent-blue); }
                 .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
                 .form-group { margin-bottom: 15px; }
-                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+                .form-group label { display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; }
 
-                .ai-match-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono);}
-                .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(224, 64, 251, 0.2);}
-
-                /* BOTONES DE ACCIÓN */
-                .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; height: 40px; display: flex; align-items: center; justify-content: center;}
+                .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center;}
                 .btn-invite:hover { background: rgba(0, 176, 255, 0.1); }
                 .btn-primary { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;}
                 .btn-outline { background: transparent; border: 1px solid #333; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
@@ -86,15 +116,15 @@ export default class TeamView {
                 .pm-stat-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
                 .pm-footer { padding: 1.5rem 2rem; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
 
-                /* MODAL STANDARD (PARA AÑADIR USUARIO) */
+                /* MODAL STANDARD (AÑADIR USUARIO) */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2rem; border-radius: 12px; width: 500px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; }
+                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 16px; width: 500px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
 
-                /* SIDE-PANEL: MARKETPLACE DEL ECOSISTEMA */
-                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: #0a0a0f; border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000; box-shadow: -15px 0 40px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
+                /* MARKETPLACE SIDE PANEL */
+                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000; box-shadow: -15px 0 40px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
                 .marketplace-panel.open { transform: translateX(0); }
                 .mk-header { padding: 2rem; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
-                .mk-filters { padding: 1.5rem 2rem; background: #111; border-bottom: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;}
+                .mk-filters { padding: 1.5rem 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;}
                 .mk-list { flex: 1; overflow-y: auto; padding: 2rem;}
                 
                 .mk-card { background: rgba(255,255,255,0.03); border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
@@ -108,46 +138,51 @@ export default class TeamView {
                 .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); }
 
                 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-                @media (max-width: 1024px) { .team-grid { grid-template-columns: 1fr; } }
-                @media (max-width: 768px) { .app-layout { flex-direction: column; } .workspace { padding: 1rem; } .marketplace-panel { width: 100vw; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+                /* RESPONSIVE MOBILE */
+                @media (max-width: 768px) {
+                    .workspace { padding: 80px 1rem 90px 1rem; } 
+                    
+                    /* Role slots en móvil (apilar elementos) */
+                    .role-slot { flex-direction: column; align-items: stretch; padding: 1.2rem; }
+                    .role-slot > div:last-child { width: 100% !important; text-align: left !important; margin-top: 10px; }
+                    
+                    /* MK Panel ocupa todo */
+                    .marketplace-panel { width: 100vw; }
+                    .mk-filters { grid-template-columns: 1fr; }
+                    .mk-card { flex-direction: column; align-items: stretch; gap: 15px;}
+                    .btn-recruit { width: 100%; padding: 10px;}
+                    
+                    /* Form elements */
+                    .btn-primary, .btn-invite, .btn-outline { width: 100%; margin-bottom: 10px;}
+                    .ph-header-actions { display: flex; flex-direction: column; width: 100%;}
+                }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/team')}
 
                 <main class="workspace">
-                    <div class="view-header">
-                        <div>
-                            <h1 id="teamTitle">👥 Equipo</h1>
-                            <p>Gestión de Talento y Asignación de Roles en este Proyecto.</p>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-primary" id="btnOpenMarketplace">🔍 Explorar Red Global</button>
-                            <button class="btn-invite" id="btnManualAdd">➕ Añadir Usuario</button>
-                        </div>
-                    </div>
+                    ${PageHeader.getHtml(headerConfig)}
 
-                    <div class="team-grid">
-                        <div class="panel">
-                            <div class="panel-title">
-                                <span>Nodos en este Proyecto</span>
-                                <span class="badge" id="userCount" style="background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 12px; font-size: 0.9rem;">0</span>
+                    <div id="view-nodos" class="tab-content active">
+                        <div class="team-grid" id="usersList">
                             </div>
-                            <div id="usersList"></div>
-                        </div>
-
-                        <div class="panel">
-                            <div class="panel-title"><span>Asignación de Sillas (Roles)</span></div>
-                            <div id="rolesList"></div>
-                        </div>
                     </div>
+
+                    <div id="view-asignaciones" class="tab-content">
+                        <div id="rolesList" style="max-width: 800px; margin: 0 auto;">
+                            </div>
+                    </div>
+
                 </main>
 
                 <aside class="marketplace-panel" id="mkPanel">
                     <div class="mk-header">
                         <div>
-                            <h2 style="margin:0; color:white; font-size:1.5rem;">Talento Global</h2>
-                            <p style="margin:5px 0 0 0; color:#888; font-size:0.8rem;">Recluta nodos de todo tu Ecosistema</p>
+                            <h2 style="margin:0; color:white; font-size:1.5rem;">Ecosistema Global</h2>
+                            <p style="margin:5px 0 0 0; color:#888; font-size:0.8rem;">Recluta nodos para tu proyecto</p>
                         </div>
                         <button id="btnCloseMarketplace" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
                     </div>
@@ -164,22 +199,21 @@ export default class TeamView {
                             <input type="text" id="mkSearchCity" class="form-control" placeholder="Ciudad exacta o parcial...">
                         </div>
                         <div class="form-group" style="grid-column: span 2; margin:0;">
-                            <input type="text" id="mkSearchSkills" class="form-control" placeholder="Filtrar por Skills / Arquetipo (Ej: @anxaneta, creator)">
+                            <input type="text" id="mkSearchSkills" class="form-control" placeholder="Filtrar por Skills (Ej: @anxaneta, creator)">
                         </div>
                     </div>
-                    <div class="mk-list" id="mkList">
-                        </div>
+                    <div class="mk-list" id="mkList"></div>
                 </aside>
 
                 <div class="modal-overlay" id="addUserModal">
                     <div class="modal-content">
-                        <h3 style="color:white; margin-top:0;">➕ Instanciar Nuevo Usuario</h3>
-                        <div style="display:flex; gap:10px;">
-                            <div class="form-group" style="flex:1;">
+                        <h2 style="color:white; margin-top:0; margin-bottom:1.5rem;">➕ Instanciar Nodo Externo</h2>
+                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                            <div class="form-group" style="flex:1; min-width: 200px;">
                                 <label>Alias Único (@user)</label>
                                 <input type="text" id="addUAlias" class="form-control" placeholder="@alias_unico">
                             </div>
-                            <div class="form-group" style="flex:2;">
+                            <div class="form-group" style="flex:2; min-width: 250px;">
                                 <label>Nombre Completo</label>
                                 <input type="text" id="addUName" class="form-control" placeholder="Ej: Laura Pérez">
                             </div>
@@ -189,41 +223,41 @@ export default class TeamView {
                             <input type="email" id="addUEmail" class="form-control" placeholder="correo@dominio.com">
                         </div>
                         
-                        <div style="display:flex; gap:10px;">
-                            <div class="form-group" style="flex:1;">
+                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                            <div class="form-group" style="flex:1; min-width: 200px;">
                                 <label>Crypto Wallet (Web3)</label>
                                 <input type="text" id="addUWallet" class="form-control" placeholder="0x... o ar...">
                             </div>
-                            <div class="form-group" style="flex:1;">
+                            <div class="form-group" style="flex:1; min-width: 200px;">
                                 <label>Red Social (LinkedIn/X)</label>
                                 <input type="text" id="addUSocial" class="form-control" placeholder="linkedin.com/in/...">
                             </div>
                         </div>
 
-                        <div style="display:flex; gap:10px;">
-                            <div class="form-group" style="flex:1;">
+                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                            <div class="form-group" style="flex:1; min-width: 150px;">
                                 <label>País</label>
                                 <select id="addUCountry" class="form-control">
                                     <option value="">Seleccionar...</option>
                                     ${Object.keys(GEO_DATA).map(c => `<option value="${c}">${c}</option>`).join('')}
                                 </select>
                             </div>
-                            <div class="form-group" style="flex:1;">
+                            <div class="form-group" style="flex:1; min-width: 150px;">
                                 <label>Ciudad / Población</label>
                                 <select id="addUCity" class="form-control" disabled>
                                     <option value="">Primero elige país</option>
                                 </select>
                                 <input type="text" id="addUCityCustom" class="form-control" placeholder="Escribe tu ciudad..." style="display:none; margin-top:5px;">
                             </div>
-                            <div class="form-group" style="width:80px;">
+                            <div class="form-group" style="width:100px;">
                                 <label>C. Postal</label>
                                 <input type="text" id="addUZip" class="form-control" placeholder="08001">
                             </div>
                         </div>
                         
-                        <div style="display:flex; justify-content:space-between; margin-top:1.5rem; border-top: 1px solid #333; padding-top: 1.5rem;">
-                            <button class="btn-outline" id="btnCancelAddUser">Cancelar</button>
-                            <button class="btn-primary" id="btnConfirmAddUser">Registrar Usuario</button>
+                        <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top: 1rem; border-top: 1px dashed #333; gap:10px;">
+                            <button class="btn-outline" id="btnCancelAddUser" style="flex:1;">Cancelar</button>
+                            <button class="btn-primary" id="btnConfirmAddUser" style="flex:2;">Crear Perfil</button>
                         </div>
                     </div>
                 </div>
@@ -248,111 +282,140 @@ export default class TeamView {
                                 </div>
                                 <div class="pm-stat-box">
                                     <div class="pm-stat-val" id="pmHours" style="color: var(--accent-blue);">0h</div>
-                                    <div class="pm-stat-label">Horas Auditadas</div>
+                                    <div class="pm-stat-label">Horas Trabajadas</div>
                                 </div>
                             </div>
                             
-                            <div style="background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 1.5rem;">
-                                <div style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 10px;">🧠 Identidad y Geolocalización</div>
-                                <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.4; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border: 1px dashed #444;" id="pmSemanticProfile"></div>
+                            <div style="background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 1.5rem;">
+                                <div style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 15px;">🧠 Identidad y Localización</div>
+                                <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.6;" id="pmSemanticProfile"></div>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;" id="govContainer"></div>
                         </div>
                         <div class="pm-footer">
-                            <button class="btn-invite" id="btnCloseModal" style="border-color: #333; color: #ccc;">Cerrar Expediente</button>
-                            <div style="font-size: 0.8rem; color: var(--accent-green);">ID Verificado ✓</div>
+                            <button class="btn-outline" id="btnCloseProfileModal" style="border:none; color: #888;">Cerrar Expediente</button>
+                            <div style="font-size: 0.8rem; color: var(--accent-green); font-weight:bold;">ID Verificado ✓</div>
                         </div>
                     </div>
                 </div>
+
+                ${BottomNav.getHtml('/team')}
             </div>
         `;
     }
 
     executeViewScript() {
-        Sidebar.initListeners(); 
+        Sidebar.initListeners();
+        PageHeader.execute();
 
         const state = store.getState();
-        const activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
-        let project = state.projects.find(p => p.id === activeProjectId);
+        const activeUserId = state.session.activeUserId;
+        
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
+        
+        if (!project) {
+            const userProjects = state.projects.filter(p => 
+                state.session.role === 'ecosystem-owner' || 
+                p.ownerId === activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+            );
+            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
+        }
 
         if (!project) return;
         this.activeProjectId = project.id;
-        
-        // Actualizamos el título de forma dinámica
-        document.getElementById('teamTitle').innerText = `👥 Equipo (${project.nombre})`;
+
+        // TABS LOGIC
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                const targetId = `view-${btn.dataset.tab}`;
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) targetContent.classList.add('active');
+            });
+        });
 
         this.renderUsers(project, state.globalUsers);
         this.renderRoles(project, state.globalUsers);
 
-        // -- MÓDULO MARKETPLACE LATERAL CON FILTROS EXACTOS --
+        // -- MÓDULO MARKETPLACE LATERAL --
         const mkPanel = document.getElementById('mkPanel');
-        
-        document.getElementById('btnOpenMarketplace').addEventListener('click', () => {
-            mkPanel.classList.add('open');
-            this.renderMarketplace(store.getState().globalUsers, project.usuarios);
-        });
+        const btnOpenMK = document.getElementById('btnOpenMarketplace');
+        if (btnOpenMK) {
+            btnOpenMK.addEventListener('click', () => {
+                mkPanel.classList.add('open');
+                this.renderMarketplace(store.getState().globalUsers, project.usuarios);
+            });
+        }
         
         document.getElementById('btnCloseMarketplace').addEventListener('click', () => {
             mkPanel.classList.remove('open');
         });
 
-        // Bindeo de eventos para filtrar en tiempo real
         const filterMK = () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId).usuarios);
-        document.getElementById('mkSearchName').addEventListener('input', filterMK);
-        document.getElementById('mkSearchCountry').addEventListener('change', filterMK); // Change porque es un select
-        document.getElementById('mkSearchCity').addEventListener('input', filterMK);
-        document.getElementById('mkSearchSkills').addEventListener('input', filterMK);
+        document.getElementById('mkSearchName')?.addEventListener('input', filterMK);
+        document.getElementById('mkSearchCountry')?.addEventListener('change', filterMK); 
+        document.getElementById('mkSearchCity')?.addEventListener('input', filterMK);
+        document.getElementById('mkSearchSkills')?.addEventListener('input', filterMK);
 
-
-        // -- FORMULARIO DRY: ALTA DE USUARIOS (LOGICA DE DEPENDENCIAS) --
+        // -- FORMULARIO MANUAL (AÑADIR NODO) --
         const addUserModal = document.getElementById('addUserModal');
         const selCountry = document.getElementById('addUCountry');
         const selCity = document.getElementById('addUCity');
         const inpCityCustom = document.getElementById('addUCityCustom');
         
-        // Lógica de carga de ciudades dependientes
-        selCountry.addEventListener('change', (e) => {
-            const country = e.target.value;
-            selCity.innerHTML = '';
-            inpCityCustom.style.display = 'none';
-            inpCityCustom.value = '';
-
-            if (!country) {
-                selCity.disabled = true;
-                selCity.innerHTML = '<option value="">Primero elige país</option>';
-                return;
-            }
-
-            selCity.disabled = false;
-            selCity.innerHTML = '<option value="">Selecciona Ciudad...</option>';
-            
-            const cities = GEO_DATA[country] || ["Otra..."];
-            cities.forEach(city => {
-                selCity.innerHTML += `<option value="${city}">${city}</option>`;
-            });
-        });
-
-        // Lógica de ciudad manual ("Otra...")
-        selCity.addEventListener('change', (e) => {
-            if (e.target.value === 'Otra...') {
-                inpCityCustom.style.display = 'block';
-                inpCityCustom.focus();
-            } else {
+        if (selCountry) {
+            selCountry.addEventListener('change', (e) => {
+                const country = e.target.value;
+                selCity.innerHTML = '';
                 inpCityCustom.style.display = 'none';
                 inpCityCustom.value = '';
-            }
-        });
 
-        document.getElementById('btnManualAdd').addEventListener('click', () => {
-            addUserModal.style.display = 'flex';
-        });
+                if (!country) {
+                    selCity.disabled = true;
+                    selCity.innerHTML = '<option value="">Primero elige país</option>';
+                    return;
+                }
 
-        document.getElementById('btnCancelAddUser').addEventListener('click', () => {
-            addUserModal.style.display = 'none';
-        });
+                selCity.disabled = false;
+                selCity.innerHTML = '<option value="">Selecciona Ciudad...</option>';
+                
+                const cities = GEO_DATA[country] || ["Otra..."];
+                cities.forEach(city => {
+                    selCity.innerHTML += `<option value="${city}">${city}</option>`;
+                });
+            });
+        }
 
-        document.getElementById('btnConfirmAddUser').addEventListener('click', async () => {
+        if (selCity) {
+            selCity.addEventListener('change', (e) => {
+                if (e.target.value === 'Otra...') {
+                    inpCityCustom.style.display = 'block';
+                    inpCityCustom.focus();
+                } else {
+                    inpCityCustom.style.display = 'none';
+                    inpCityCustom.value = '';
+                }
+            });
+        }
+
+        const btnManualAdd = document.getElementById('btnManualAdd');
+        if(btnManualAdd) {
+            btnManualAdd.addEventListener('click', () => addUserModal.style.display = 'flex');
+        }
+
+        document.getElementById('btnCancelAddUser')?.addEventListener('click', () => addUserModal.style.display = 'none');
+
+        document.getElementById('btnConfirmAddUser')?.addEventListener('click', async () => {
             let alias = document.getElementById('addUAlias').value.trim();
             const name = document.getElementById('addUName').value.trim();
             const email = document.getElementById('addUEmail').value.trim();
@@ -360,7 +423,6 @@ export default class TeamView {
             const social = document.getElementById('addUSocial').value.trim();
             
             const country = selCountry.value;
-            // Si elige "Otra...", cogemos el valor del input de texto personalizado
             let city = selCity.value;
             if (city === 'Otra...') city = inpCityCustom.value.trim();
             
@@ -369,21 +431,13 @@ export default class TeamView {
             if (!alias || !name) return alert("El Alias y el Nombre completo son campos obligatorios.");
             if (!alias.startsWith('@')) alias = '@' + alias;
 
-            // Generamos unas skills aleatorias básicas para simular el ADN que rellenaría el usuario real
             const mockAffinities = ['@anxaneta', '@aixecador', '@dosos', '@baixos', '@pinya'];
             const mockGuardians = ['creator', 'caregiver', 'ruler', 'jester', 'everyman', 'lover', 'hero', 'outlaw', 'magician', 'innocent', 'explorer', 'sage'];
             
             const newUser = {
-                id: alias,
-                name: name,
-                email: email,
-                wallet: wallet,
-                social: social,
-                globalRole: 'network-user',
+                id: alias, name: name, email: email, wallet: wallet, social: social, globalRole: 'network-user',
                 profile: {
-                    country: country,
-                    city: city,
-                    zip: zip,
+                    country: country, city: city, zip: zip,
                     structural_affinity: [mockAffinities[Math.floor(Math.random()*mockAffinities.length)]],
                     guardian_authority: [mockGuardians[Math.floor(Math.random()*mockGuardians.length)]]
                 }
@@ -392,7 +446,6 @@ export default class TeamView {
             await this.handleNewUser(newUser);
             addUserModal.style.display = 'none';
             
-            // Limpiamos el formulario
             document.getElementById('addUAlias').value = '';
             document.getElementById('addUName').value = '';
             document.getElementById('addUEmail').value = '';
@@ -406,28 +459,24 @@ export default class TeamView {
             document.getElementById('addUZip').value = '';
         });
 
-        document.getElementById('btnCloseModal').addEventListener('click', () => {
+        document.getElementById('btnCloseProfileModal')?.addEventListener('click', () => {
             document.getElementById('userProfileModal').style.display = 'none';
         });
     }
 
-    // --- MARKETPLACE GLOBAL CON BÚSQUEDA AVANZADA ---
     renderMarketplace(globalUsers, projUsers) {
         const listContainer = document.getElementById('mkList');
         const sName = document.getElementById('mkSearchName').value.toLowerCase();
-        const sCountry = document.getElementById('mkSearchCountry').value; // Búsqueda exacta por select
+        const sCountry = document.getElementById('mkSearchCountry').value; 
         const sCity = document.getElementById('mkSearchCity').value.toLowerCase();
         const sSkills = document.getElementById('mkSearchSkills').value.toLowerCase();
 
         listContainer.innerHTML = '';
 
-        // Excluimos a los que ya están en el proyecto actual
         let candidates = globalUsers.filter(gu => !projUsers.find(pu => pu.id === gu.id));
 
-        // Filtramos
         candidates = candidates.filter(gu => {
             const p = gu.profile || {};
-            
             const nameMatch = gu.name.toLowerCase().includes(sName) || gu.id.toLowerCase().includes(sName);
             const countryMatch = sCountry === "" || p.country === sCountry;
             const cityMatch = sCity === "" || (p.city || '').toLowerCase().includes(sCity);
@@ -453,7 +502,6 @@ export default class TeamView {
         candidates.forEach(gu => {
             const geoText = gu.profile?.country ? `📍 ${gu.profile.city || 'Desconocida'}, ${gu.profile.country}` : '🌍 Remoto Global';
             
-            // Generar tags de skills para la UI del marketplace
             let skillsHtml = '';
             if (gu.profile) {
                 const arr = [...(gu.profile.structural_affinity || []), ...(gu.profile.guardian_authority || [])];
@@ -479,7 +527,8 @@ export default class TeamView {
                     type: 'ADD_USER',
                     payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, walletOrSocial: gu.walletOrSocial, globalRole: gu.globalRole }
                 });
-                this.executeViewScript();
+                // Recargar el header para actualizar el número del badge si usamos PageHeader
+                window.location.reload(); 
             });
 
             listContainer.appendChild(card);
@@ -509,14 +558,13 @@ export default class TeamView {
                     store.saveState(); 
                 }
             }
-            this.executeViewScript();
+            window.location.reload();
         } catch (e) { console.warn("Aviso:", e.message); }
     }
 
     renderUsers(project, globalUsers) {
         const container = document.getElementById('usersList');
         const projUsers = project.usuarios || [];
-        document.getElementById('userCount').innerText = projUsers.length;
         container.innerHTML = '';
 
         if (projUsers.length === 0) return;
@@ -579,10 +627,10 @@ export default class TeamView {
                     if (fullUser.social) contactInfo += `<br><span style="color:#888;">Social:</span> ${fullUser.social}`;
 
                     promptBox.innerHTML = `
-                        <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:8px;">${geo}</span>
-                        <span style="color: var(--accent-blue);">Estructura Óptima:</span> [${(fullUser.profile.structural_affinity||[]).join(', ')}]<br>
-                        <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${(fullUser.profile.guardian_authority||[]).join(', ')}]
-                        ${contactInfo}
+                        <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:12px; font-family:var(--font-main); font-size:1rem;">${geo}</span>
+                        <div style="margin-bottom:8px;"><span style="color: var(--accent-blue);">Estructura:</span> [${(fullUser.profile.structural_affinity||[]).join(', ')}]</div>
+                        <div style="margin-bottom:8px;"><span style="color: var(--accent-purple);">Autoridad:</span> [${(fullUser.profile.guardian_authority||[]).join(', ')}]</div>
+                        <div style="border-top:1px dashed #444; margin-top:12px; padding-top:8px;">${contactInfo}</div>
                     `;
                 } else {
                     promptBox.innerHTML = '<span style="color: #888;">// Sin Identidad Fractal ni contacto.</span>';
@@ -606,8 +654,7 @@ export default class TeamView {
                             btnPromo.addEventListener('click', async () => {
                                 if(confirm(`¿Estás seguro de ceder el control del Castell a ${fullUser.name}?`)) {
                                     await store.dispatch({ type: 'PROMOTE_TO_PO', payload: { projectId: this.activeProjectId, userId: fullUser.id } });
-                                    document.getElementById('userProfileModal').style.display = 'none';
-                                    this.executeViewScript(); 
+                                    window.location.reload(); 
                                 }
                             });
                         }
@@ -636,7 +683,10 @@ export default class TeamView {
         
         container.innerHTML = '';
 
-        if (roles.length === 0) return;
+        if (roles.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#666; padding:2rem; border:1px dashed #333; border-radius:12px;">No hay roles instanciados en este proyecto. Ve al mapa VNA para crear la estructura.</div>`;
+            return;
+        }
 
         let optionsHtml = `<option value="">-- Silla Vacía --</option>`;
         projUsers.forEach(u => {
@@ -668,18 +718,18 @@ export default class TeamView {
 
             let suggestionHtml = (!isAssigned && bestUser && bestScore > 0) ? `
                 <div class="ai-match-badge" data-roleid="${rol.id}" data-userid="${bestUser.id}">
-                    ✨ Sugerencia IA: <strong>${bestUser.name}</strong> (${bestScore}%)
+                    ✨ IA Match: <strong>${bestUser.name}</strong> (${bestScore}%)
                 </div>` : '';
 
             slot.innerHTML = `
                 <div class="role-meta">
-                    <div style="color: white; font-weight: bold; font-size: 0.95rem;">${rol.name}</div>
-                    <div style="color: ${color}; font-size: 0.75rem; font-family: var(--font-mono);">
-                        ${rol.levelId} | FMV: ${rol.fmv}€/h | 🛡️ ${rol.guardian || 'N/A'}
+                    <div style="color: white; font-weight: bold; font-size: 1.1rem; letter-spacing:-0.5px;">${rol.name}</div>
+                    <div style="color: ${color}; font-size: 0.75rem; font-family: var(--font-mono); font-weight:bold;">
+                        ${rol.levelId} | <span style="color:#aaa;">FMV: ${rol.fmv}€/h</span> | 🛡️ ${rol.guardian || 'N/A'}
                     </div>
                 </div>
-                <div style="width: 45%; text-align: right;">
-                    <select class="form-control user-select" data-roleid="${rol.id}">
+                <div style="width: 45%; text-align: right; min-width: 200px;">
+                    <select class="form-control user-select" data-roleid="${rol.id}" style="border-color:${isAssigned ? 'var(--accent-green)' : '#333'};">
                         ${optionsHtml}
                     </select>
                     ${suggestionHtml}
@@ -693,14 +743,14 @@ export default class TeamView {
                 if (e.target.value !== "") {
                     await store.dispatch({ type: 'ASSIGN_USER_ROLE', payload: { projectId: this.activeProjectId, roleId: rol.id, userId: e.target.value } });
                 }
-                this.executeViewScript();
+                this.renderRoles(store.getState().projects.find(p=>p.id===this.activeProjectId), store.getState().globalUsers);
             });
 
             const matchBadge = slot.querySelector('.ai-match-badge');
             if (matchBadge) {
                 matchBadge.addEventListener('click', async (e) => {
                     await store.dispatch({ type: 'ASSIGN_USER_ROLE', payload: { projectId: this.activeProjectId, roleId: e.currentTarget.dataset.roleid, userId: e.currentTarget.dataset.userid } });
-                    this.executeViewScript();
+                    this.renderRoles(store.getState().projects.find(p=>p.id===this.activeProjectId), store.getState().globalUsers);
                 });
             }
 
