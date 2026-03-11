@@ -58,12 +58,16 @@ export default class ProjectView {
                 .tab-badge { background: rgba(255,255,255,0.1); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-family: var(--font-mono); }
                 .tab-btn.active .tab-badge { background: rgba(0, 176, 255, 0.2); color: var(--accent-blue); }
 
-                .filters-container { padding-bottom: 5px; }
+                .filters-container { padding-bottom: 5px; display:flex; gap: 10px;}
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
 
+                /* BOTON CREAR TAREA */
+                .btn-create-task { background: linear-gradient(45deg, var(--accent-green), #00bfa5); color: black; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; align-items: center; gap: 5px;}
+                .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
+
                 /* =========================================================
-                   GRID DE TARJETAS (NUEVO LAYOUT)
+                   GRID DE TARJETAS
                    ========================================================= */
                 .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; align-items: start; padding-bottom: 2rem;}
                 
@@ -76,12 +80,12 @@ export default class ProjectView {
                 .tx-hash { font-size: 0.65rem; color: #555; font-family: var(--font-mono); }
                 
                 .task-title { color: white; font-size: 1.15rem; margin: 5px 0; line-height: 1.4; font-weight: 600;}
+                .task-desc-bubble { font-size: 0.8rem; color: #aaa; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border-left: 2px solid var(--accent-blue); margin-bottom: 5px; font-style: italic;}
                 
                 .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; }
                 
                 .task-actions { margin-top: auto; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px;}
                 
-                /* BOTONES ESPECÍFICOS */
                 .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: white; transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px;}
                 .btn-pull:hover { background: white; color: black; border-color: white;}
                 
@@ -97,6 +101,18 @@ export default class ProjectView {
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 12px; background: rgba(0,0,0,0.2);}
 
                 /* =========================================================
+                   MODAL CREAR TAREA
+                   ========================================================= */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
+                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
+                .form-group { margin-bottom: 15px; }
+                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
+                .form-control:focus { border-color: var(--accent-blue); }
+
+                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+                /* =========================================================
                    RESPONSIVE (FIELD APP)
                    ========================================================= */
                 @media (max-width: 768px) {
@@ -109,8 +125,9 @@ export default class ProjectView {
                     .controls-row { flex-direction: column; align-items: stretch; gap: 15px; border-bottom: none;}
                     .tabs-container { border-bottom: 1px solid var(--glass-border); width: 100%; justify-content: space-between;}
                     .tab-btn { font-size: 0.9rem; padding: 10px 0; flex: 1; justify-content: center;}
-                    .filters-container { align-self: flex-end; width: 100%;}
+                    .filters-container { flex-direction: column; width: 100%;}
                     .filter-dropdown { width: 100%; }
+                    .btn-create-task { justify-content: center; padding: 12px; }
                     
                     .task-grid { grid-template-columns: 1fr; gap: 1rem;}
                 }
@@ -133,9 +150,10 @@ export default class ProjectView {
                     <div class="view-header">
                         <div>
                             <h1 id="viewTitle">Tareas</h1>
-                            <p>Kanban  de oportunidades, tareas en curso y contabilizado.</p>
+                            <p>Kanban de oportunidades, tareas en curso y contabilizado.</p>
                         </div>
-                    
+                        <a href="/v5/map" class="btn btn-outline" data-link style="padding: 8px 15px; border-radius: 8px; text-decoration:none; font-size:0.9rem;">⚙️ Mapa VNA</a>
+                    </div>
 
                     <div class="controls-row">
                         <div class="tabs-container" id="tabsContainer">
@@ -157,12 +175,66 @@ export default class ProjectView {
                                 <option value="tangible">🟢 Solo Tangibles</option>
                                 <option value="intangible">🟣 Solo Intangibles</option>
                             </select>
+                            <button class="btn-create-task" id="btnOpenCreateTask">➕ Nueva Tarea</button>
                         </div>
                     </div>
 
-                    <div class="task-grid" id="taskGrid">
-                        </div>
+                    <div class="task-grid" id="taskGrid"></div>
                 </main>
+
+                <div class="modal-overlay" id="createTaskModal">
+                    <div class="modal-content">
+                        <h2 style="color:white; margin-top:0; margin-bottom: 5px;">Añadir Tarea (Flujo VNA)</h2>
+                        <p style="color:#888; font-size:0.8rem; margin-bottom:1.5rem;">Crea un entregable que fluirá entre dos nodos de la red.</p>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label>Origen (Quién lo hace)</label>
+                                <select id="newTaskFrom" class="form-control"></select>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>Destino (Quién lo recibe)</label>
+                                <select id="newTaskTo" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nombre del Entregable</label>
+                            <input type="text" id="newTaskName" class="form-control" placeholder="Ej: Diseño de Interfaz Mobile">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Contexto / Instrucciones (Opcional)</label>
+                            <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Añade detalles sobre lo que se espera de esta tarea..."></textarea>
+                        </div>
+
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label>Tipo de Valor</label>
+                                <select id="newTaskType" class="form-control">
+                                    <option value="tangible">🟢 Tangible (Código, Diseño...)</option>
+                                    <option value="intangible">🟣 Intangible (Auditoría, Plan...)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="width:100px;">
+                                <label>Horas Est.</label>
+                                <input type="number" id="newTaskHours" class="form-control" value="2" min="0.5" step="0.5">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 10px; border-top: 1px dashed #333; padding-top: 15px;">
+                            <label style="color:var(--accent-orange);">Asignar Directamente a (Opcional)</label>
+                            <select id="newTaskAssignee" class="form-control">
+                                <option value="">Dejar Libre en "Oportunidades"</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                            <button class="btn btn-outline" style="background:transparent; border:1px solid #555; color:white; padding:10px 20px; border-radius:8px;" id="btnCancelCreateTask">Cancelar</button>
+                            <button class="btn btn-primary" style="background:var(--accent-blue); color:black; font-weight:bold; border:none; padding:10px 20px; border-radius:8px;" id="btnConfirmCreateTask">Añadir al Kanban</button>
+                        </div>
+                    </div>
+                </div>
                 
                 ${BottomNav.getHtml('/project')}
             </div>
@@ -190,10 +262,9 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
         
-        // Actualizar título con el nombre del proyecto
         document.getElementById('viewTitle').innerText = `Tareas (${project.nombre})`;
 
-        // Mobile Top Bar Logic
+        // Mobile Top Bar
         const mobSelect = document.getElementById('mobProjectSelect');
         if (mobSelect) {
             mobSelect.value = this.activeProjectId;
@@ -203,13 +274,16 @@ export default class ProjectView {
             });
         }
 
-        // Lógica Inicial de Filtros
+        // Permisos y Filtros
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         if (!isPO) {
-            this.currentFilter = 'all'; // Un usuario normal querrá ver TODAS las oportunidades por defecto
+            this.currentFilter = 'all'; 
+        } else {
+            // Mostrar botón de crear tarea si es PO
+            document.getElementById('btnOpenCreateTask').style.display = 'flex';
         }
 
-        // Configuración de Eventos UI
+        // TABS LOGIC
         const tabsContainer = document.getElementById('tabsContainer');
         const filterDropdown = document.getElementById('filterDropdown');
 
@@ -229,7 +303,88 @@ export default class ProjectView {
             this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
         });
 
-        // Lógica Global de Interacciones (Botones de Tarjetas)
+        // -------------------------------------------------------------
+        // MODAL CREAR TAREA LOGIC
+        // -------------------------------------------------------------
+        const createModal = document.getElementById('createTaskModal');
+        
+        document.getElementById('btnOpenCreateTask').addEventListener('click', () => {
+            // Rellenar desplegables de Roles
+            const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const roleOpts = activeProject.roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
+            document.getElementById('newTaskFrom').innerHTML = roleOpts;
+            document.getElementById('newTaskTo').innerHTML = roleOpts;
+            if(activeProject.roles.length > 1) document.getElementById('newTaskTo').selectedIndex = 1;
+
+            // Rellenar desplegable de Asignación (Colla)
+            let userOpts = `<option value="">-- Dejar Libre en Mercado --</option>`;
+            (activeProject.usuarios || []).forEach(u => {
+                const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
+                userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+            });
+            document.getElementById('newTaskAssignee').innerHTML = userOpts;
+
+            createModal.style.display = 'flex';
+        });
+
+        document.getElementById('btnCancelCreateTask').addEventListener('click', () => {
+            createModal.style.display = 'none';
+        });
+
+        document.getElementById('btnConfirmCreateTask').addEventListener('click', async () => {
+            const from = document.getElementById('newTaskFrom').value;
+            const to = document.getElementById('newTaskTo').value;
+            const name = document.getElementById('newTaskName').value.trim();
+            const desc = document.getElementById('newTaskDesc').value.trim();
+            const type = document.getElementById('newTaskType').value;
+            const hours = parseFloat(document.getElementById('newTaskHours').value) || 1;
+            const assignee = document.getElementById('newTaskAssignee').value;
+
+            if(!name) return alert("Por favor, introduce el nombre del entregable.");
+            if(from === to) return alert("Una tarea debe fluir entre dos roles diferentes para aportar valor.");
+
+            const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const newHash = 'tx_' + Math.random().toString(36).substr(2, 9);
+
+            // 1. Añadimos la transacción pura (Esto la inyecta también en el Mapa VNA)
+            await store.dispatch({
+                type: 'ADD_TRANSACTION',
+                payload: {
+                    projectId: this.activeProjectId,
+                    tx: {
+                        hash: newHash,
+                        from: from,
+                        to: to,
+                        entregable: name,
+                        descripcionContexto: desc, // Campo nuevo para guardar la charla
+                        tipo: type,
+                        horas: hours,
+                        status: 'theoretical'
+                    }
+                }
+            });
+
+            // 2. Si el PO seleccionó a alguien, le hacemos el Push automáticamente
+            if (assignee !== "") {
+                await store.dispatch({
+                    type: 'PING_TRANSACTION',
+                    payload: { projectId: this.activeProjectId, txHash: newHash, userId: assignee }
+                });
+            }
+
+            createModal.style.display = 'none';
+            // Limpiar
+            document.getElementById('newTaskName').value = '';
+            document.getElementById('newTaskDesc').value = '';
+            
+            // Re-render
+            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+        });
+
+
+        // -------------------------------------------------------------
+        // KANBAN ACTIONS LOGIC
+        // -------------------------------------------------------------
         const taskGrid = document.getElementById('taskGrid');
         taskGrid.addEventListener('click', async (e) => {
             const target = e.target;
@@ -294,7 +449,6 @@ export default class ProjectView {
             }
         });
 
-        // Primer renderizado
         this.renderTasks(project);
     }
 
@@ -311,13 +465,12 @@ export default class ProjectView {
         let activeCardsHtml = [];
 
         txs.forEach(tx => {
-            // 1. Clasificación por Pestañas (Contadores globales para los badges)
+            // 1. Clasificación por Pestañas
             let tabCategory = '';
             if (tx.status === 'theoretical' || tx.status === 'requested') { tabCategory = 'oportunidades'; counts.op++; }
             else if (tx.status === 'pinged' || tx.status === 'reported') { tabCategory = 'en-curso'; counts.cur++; }
             else if (tx.status === 'consolidated' || tx.status === 'approved') { tabCategory = 'contabilizado'; counts.con++; }
 
-            // Si no pertenece a la pestaña activa, la saltamos del render (pero ya la contamos)
             if (tabCategory !== this.currentTab) return;
 
             // 2. Aplicación de Filtros del Dropdown
@@ -327,8 +480,6 @@ export default class ProjectView {
                 if (tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
             }
             if (!isPO && this.currentFilter === 'all') {
-                // Usuarios rasos solo ven tareas "En Curso" y "Contabilizado" si son suyas. 
-                // En Oportunidades, ven todo.
                 if (tabCategory !== 'oportunidades' && tx.assigneeId !== activeUser) return;
             }
 
@@ -340,7 +491,6 @@ export default class ProjectView {
         document.getElementById('count-cur').innerText = counts.cur;
         document.getElementById('count-con').innerText = counts.con;
 
-        // Inyectar HTML
         if (activeCardsHtml.length > 0) {
             grid.innerHTML = activeCardsHtml.join('');
         } else {
@@ -422,6 +572,9 @@ export default class ProjectView {
         }
 
         const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 15px rgba(255,82,82,0.1);' : '';
+        
+        // Inyectar la descripción de contexto si existe
+        const contextHtml = tx.descripcionContexto ? `<div class="task-desc-bubble">💬 "${tx.descripcionContexto}"</div>` : '';
 
         return `
             <div class="task-card" style="${borderStyle}">
@@ -435,6 +588,7 @@ export default class ProjectView {
                 </div>
                 
                 <h3 class="task-title">${tx.entregable}</h3>
+                ${contextHtml}
                 
                 <div class="task-meta-row">
                     <span style="font-weight:bold; color:white;">⏱ ${tx.horas}h <span style="color:#666; font-weight:normal;">Est.</span></span>
