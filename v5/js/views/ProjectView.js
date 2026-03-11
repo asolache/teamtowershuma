@@ -1,17 +1,17 @@
 // v5/js/views/ProjectView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
-import { BottomNav } from '../components/BottomNav.js'; // INYECCIÓN V8.0
+import { BottomNav } from '../components/BottomNav.js';
 
 export default class ProjectView {
     constructor() {
-        document.title = "Tracción (Kanban) | TeamTowers";
+        document.title = "Tareas | TeamTowers";
         this.activeProjectId = null;
         this.currentFilter = 'all'; // all, mine, tangible, intangible
+        this.currentTab = 'oportunidades'; // oportunidades, en-curso, contabilizado
     }
 
     async getHtml() {
-        // Preparar opciones de proyectos para el dropdown móvil
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         const userProjects = state.projects.filter(p => 
@@ -23,110 +23,96 @@ export default class ProjectView {
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 2rem 3rem; overflow-x: auto; display: flex; flex-direction: column; position: relative;}
+                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative; scroll-behavior: smooth;}
                 
                 /* =========================================================
-                   MOBILE TOP BAR (Solo visible en pantallas pequeñas)
+                   MOBILE TOP BAR
                    ========================================================= */
                 .mobile-top-bar {
-                    display: none;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 15px 20px;
-                    background: rgba(10, 10, 14, 0.95);
-                    border-bottom: 1px solid rgba(255,255,255,0.05);
-                    backdrop-filter: blur(10px);
-                    position: sticky;
-                    top: 0;
-                    z-index: 1000;
-                    margin: -2rem -3rem 1rem -3rem; /* Compensa el padding del workspace */
+                    display: none; justify-content: space-between; align-items: center; padding: 15px 20px;
+                    background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05);
+                    backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
+                    margin: -2rem -3rem 1.5rem -3rem; 
                 }
-                
                 .mob-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
-                
-                .mob-project-select {
-                    background: rgba(0,0,0,0.5);
-                    border: 1px solid var(--glass-border);
-                    color: var(--accent-blue);
-                    padding: 5px 10px;
-                    border-radius: 6px;
-                    font-family: var(--font-mono);
-                    font-size: 0.8rem;
-                    outline: none;
-                    max-width: 150px;
-                }
+                .mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 150px; }
+                .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
 
-                .mob-user {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 35px;
-                    height: 35px;
-                    background: var(--accent-purple);
-                    color: white;
-                    border-radius: 50%;
-                    font-weight: bold;
-                    text-decoration: none;
-                    font-size: 0.9rem;
-                }
-
-                .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
+                /* =========================================================
+                   CABECERA Y CONTROLES (TABS Y FILTROS)
+                   ========================================================= */
+                .view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
                 .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; }
                 .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
 
-                /* FILTROS */
-                .kanban-filters { display: flex; gap: 10px; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; overflow-x: auto; white-space: nowrap;}
-                .kanban-filters::-webkit-scrollbar { display: none; } /* Hide scrollbar for clean mobile UI */
+                .controls-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;}
                 
-                .filter-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;}
-                .filter-btn.active { background: rgba(0, 176, 255, 0.15); color: var(--accent-blue); border-color: var(--accent-blue); font-weight: bold;}
+                .tabs-container { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+                .tabs-container::-webkit-scrollbar { display: none; }
+                
+                .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1rem; font-weight: bold; padding: 10px 5px 15px 5px; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 8px;}
+                .tab-btn:hover { color: white; }
+                .tab-btn.active { color: var(--accent-blue); }
+                .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--accent-blue); border-radius: 3px 3px 0 0; }
+                
+                .tab-badge { background: rgba(255,255,255,0.1); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-family: var(--font-mono); }
+                .tab-btn.active .tab-badge { background: rgba(0, 176, 255, 0.2); color: var(--accent-blue); }
 
-                /* KANBAN LAYOUT */
-                .kanban-container { display: grid; grid-template-columns: repeat(3, minmax(300px, 1fr)); gap: 2rem; flex: 1; min-height: 0; align-items: start;}
-                .kanban-col { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); display: flex; flex-direction: column; max-height: calc(100vh - 200px); overflow: hidden;}
-                .col-title { padding: 1.2rem; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);}
-                .col-body { padding: 1rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-                
-                /* TASK CARDS */
-                .task-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); padding: 1.2rem; transition: transform 0.2s, border-color 0.2s; position: relative;}
-                .task-card:hover { transform: translateY(-3px); border-color: #555; }
-                .task-title { color: white; font-size: 1.05rem; margin: 10px 0; line-height: 1.4;}
-                .task-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;}
-                
-                .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); transition: all 0.2s; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
-                .btn-pull:hover { background: white; color: black; border-color: white;}
-                
-                .btn-push { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px;}
-                .btn-push:hover { background: rgba(224, 64, 251, 0.1); }
-
-                .btn-focus { background: rgba(0, 176, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 8px; border-radius: 6px; font-weight: bold; transition: all 0.2s;}
-                .btn-focus:hover { background: var(--accent-blue); color: black;}
-                
-                .btn-approve { background: var(--accent-green); color: black; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.2s; width: 100%;}
-                .btn-approve:hover { transform: scale(1.02); }
-
-                .status-requested { background: rgba(255, 82, 82, 0.1) !important; border-color: var(--accent-red) !important; }
+                .filters-container { padding-bottom: 5px; }
+                .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
+                .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
 
                 /* =========================================================
-                   RESPONSIVE FIELD APP (MOBILE)
+                   GRID DE TARJETAS (NUEVO LAYOUT)
                    ========================================================= */
-                @media (max-width: 1024px) {
-                    .kanban-container { display: flex; flex-direction: column; gap: 2rem; overflow-y: auto; }
-                    .kanban-col { max-height: none; }
-                }
+                .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; align-items: start; padding-bottom: 2rem;}
                 
+                .task-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; display: flex; flex-direction: column; gap: 12px;}
+                .task-card:hover { transform: translateY(-4px); border-color: #555; box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
+                
+                .task-header { display: flex; justify-content: space-between; align-items: center; }
+                .task-route { display: flex; gap: 8px; align-items: center; }
+                .route-badge { font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-family: var(--font-mono); font-weight: bold; border: 1px solid;}
+                .tx-hash { font-size: 0.65rem; color: #555; font-family: var(--font-mono); }
+                
+                .task-title { color: white; font-size: 1.15rem; margin: 5px 0; line-height: 1.4; font-weight: 600;}
+                
+                .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; }
+                
+                .task-actions { margin-top: auto; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px;}
+                
+                /* BOTONES ESPECÍFICOS */
+                .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: white; transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px;}
+                .btn-pull:hover { background: white; color: black; border-color: white;}
+                
+                .btn-push { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+                .btn-push:hover { background: rgba(224, 64, 251, 0.1); }
+
+                .btn-focus { background: linear-gradient(45deg, rgba(0, 176, 255, 0.1), rgba(0, 176, 255, 0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; transition: all 0.2s;}
+                .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
+                
+                .btn-approve { background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s; width: 100%;}
+                .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
+
+                .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 12px; background: rgba(0,0,0,0.2);}
+
+                /* =========================================================
+                   RESPONSIVE (FIELD APP)
+                   ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace { padding: 1.5rem 1rem; padding-bottom: 90px;} /* Espacio para BottomNav */
+                    .workspace { padding: 1.5rem 1rem; padding-bottom: 90px;} 
+                    .mobile-top-bar { display: flex; margin: -1.5rem -1rem 1.5rem -1rem; }
                     
-                    .mobile-top-bar { display: flex; margin: -1.5rem -1rem 1rem -1rem; }
-                    
-                    /* En móvil, simplificamos el View Header porque la barra superior ya da el contexto */
                     .view-header { flex-direction: column; align-items: flex-start; }
                     .view-header h1 { font-size: 1.8rem; }
                     
-                    .kanban-col { border: none; background: transparent; }
-                    .col-title { border-radius: 8px; border: 1px solid var(--glass-border); margin-bottom: 10px;}
-                    .col-body { padding: 0; }
+                    .controls-row { flex-direction: column; align-items: stretch; gap: 15px; border-bottom: none;}
+                    .tabs-container { border-bottom: 1px solid var(--glass-border); width: 100%; justify-content: space-between;}
+                    .tab-btn { font-size: 0.9rem; padding: 10px 0; flex: 1; justify-content: center;}
+                    .filters-container { align-self: flex-end; width: 100%;}
+                    .filter-dropdown { width: 100%; }
+                    
+                    .task-grid { grid-template-columns: 1fr; gap: 1rem;}
                 }
             </style>
 
@@ -136,11 +122,9 @@ export default class ProjectView {
                 <main class="workspace">
                     <header class="mobile-top-bar">
                         <a href="/v5/" data-link class="mob-brand">🗼</a>
-                        
                         <select class="mob-project-select" id="mobProjectSelect">
                             ${userProjects.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')}
                         </select>
-
                         <a href="/v5/profile" data-link class="mob-user" title="Mi Perfil">
                             ${state.globalUsers.find(u => u.id === activeUserId)?.name.charAt(0).toUpperCase() || '?'}
                         </a>
@@ -148,35 +132,37 @@ export default class ProjectView {
 
                     <div class="view-header">
                         <div>
-                            <h1>Tracción de Red</h1>
-                            <p>Convierte los entregables teóricos en Slices de Equity reales.</p>
+                            <h1 id="viewTitle">Tareas</h1>
+                            <p>Kanban de oportunidades, en curso y contabilizado.</p>
                         </div>
-                        <a href="/v5/map" class="btn btn-outline" data-link>⚙️ Ajustar VNA</a>
+                        <a href="/v5/map" class="btn btn-outline" data-link style="padding: 8px 15px; border-radius: 8px; text-decoration:none; font-size:0.9rem;">⚙️ Mapa VNA</a>
                     </div>
 
-                    <div class="kanban-filters" id="kanbanFilters">
-                        <button class="filter-btn active" data-filter="all">Todos los Flujos</button>
-                        <button class="filter-btn" data-filter="mine">Mis Tareas</button>
-                        <button class="filter-btn" data-filter="tangible">Solo Tangibles 🟢</button>
-                        <button class="filter-btn" data-filter="intangible">Solo Intangibles 🟣</button>
+                    <div class="controls-row">
+                        <div class="tabs-container" id="tabsContainer">
+                            <button class="tab-btn active" data-tab="oportunidades">
+                                Oportunidades <span class="tab-badge" id="count-op">0</span>
+                            </button>
+                            <button class="tab-btn" data-tab="en-curso">
+                                En Curso <span class="tab-badge" id="count-cur">0</span>
+                            </button>
+                            <button class="tab-btn" data-tab="contabilizado">
+                                Contabilizado <span class="tab-badge" id="count-con">0</span>
+                            </button>
+                        </div>
+                        
+                        <div class="filters-container">
+                            <select id="filterDropdown" class="filter-dropdown">
+                                <option value="all">Filtros: Todas las tareas</option>
+                                <option value="mine">👤 Solo mis tareas</option>
+                                <option value="tangible">🟢 Solo Tangibles</option>
+                                <option value="intangible">🟣 Solo Intangibles</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="kanban-container">
-                        <div class="kanban-col">
-                            <div class="col-title" style="color: white;">📥 Mercado Teórico <span class="badge" id="count-theo">0</span></div>
-                            <div class="col-body" id="theo-list"></div>
+                    <div class="task-grid" id="taskGrid">
                         </div>
-
-                        <div class="kanban-col" style="border-color: rgba(0, 176, 255, 0.3);">
-                            <div class="col-title" style="color: var(--accent-blue);">🔥 Deep Work & Tracción <span class="badge" id="count-work">0</span></div>
-                            <div class="col-body" id="work-list"></div>
-                        </div>
-
-                        <div class="kanban-col" style="border-color: rgba(0, 230, 118, 0.3);">
-                            <div class="col-title" style="color: var(--accent-green);">⛓️ Ledger Consolidado <span class="badge" id="count-done">0</span></div>
-                            <div class="col-body" id="done-list"></div>
-                        </div>
-                    </div>
                 </main>
                 
                 ${BottomNav.getHtml('/project')}
@@ -189,11 +175,9 @@ export default class ProjectView {
 
         const state = store.getState();
         
-        // --- GESTIÓN DE PROYECTO ACTIVO (DRY con Sidebar) ---
         let currentActiveId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === currentActiveId);
         
-        // Fallback: Si no hay activo o no se encuentra, coger el último del usuario
         if (!project) {
             const userProjects = state.projects.filter(p => 
                 state.session.role === 'ecosystem-owner' || 
@@ -207,47 +191,53 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
         
-        // --- MOBILE TOP BAR LOGIC ---
+        // Actualizar título con el nombre del proyecto
+        document.getElementById('viewTitle').innerText = `Tareas (${project.nombre})`;
+
+        // Mobile Top Bar Logic
         const mobSelect = document.getElementById('mobProjectSelect');
         if (mobSelect) {
             mobSelect.value = this.activeProjectId;
             mobSelect.addEventListener('change', (e) => {
                 localStorage.setItem('tt_active_project', e.target.value);
-                window.location.reload(); // Recargamos para aplicar el contexto a todas las vistas
+                window.location.reload(); 
             });
         }
 
+        // Lógica Inicial de Filtros
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
-        if (!isPO && this.currentFilter === 'all') {
-            this.currentFilter = 'mine'; 
-            setTimeout(() => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                const mineBtn = document.querySelector('[data-filter="mine"]');
-                if(mineBtn) mineBtn.classList.add('active');
-            }, 10);
+        if (!isPO) {
+            this.currentFilter = 'all'; // Un usuario normal querrá ver TODAS las oportunidades por defecto
         }
 
-        // Setup Filtros 
-        const filtersContainer = document.getElementById('kanbanFilters');
-        if (filtersContainer) {
-            filtersContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('filter-btn')) {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    this.currentFilter = e.target.dataset.filter;
-                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                }
-            });
-        }
+        // Configuración de Eventos UI
+        const tabsContainer = document.getElementById('tabsContainer');
+        const filterDropdown = document.getElementById('filterDropdown');
 
-        const workspace = document.querySelector('.kanban-container');
-        workspace.addEventListener('click', async (e) => {
+        tabsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tab-btn');
+            if (btn) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.currentTab = btn.dataset.tab;
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            }
+        });
+
+        filterDropdown.value = this.currentFilter;
+        filterDropdown.addEventListener('change', (e) => {
+            this.currentFilter = e.target.value;
+            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+        });
+
+        // Lógica Global de Interacciones (Botones de Tarjetas)
+        const taskGrid = document.getElementById('taskGrid');
+        taskGrid.addEventListener('click', async (e) => {
             const target = e.target;
             const currentState = store.getState();
             const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
             if (!currProject) return;
 
-            // 1. APROBAR Y CONSOLIDAR
             if (target.classList.contains('btn-approve')) {
                 const action = target.dataset.action;
                 const txHash = target.dataset.hash;
@@ -258,7 +248,7 @@ export default class ProjectView {
                     this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                 } 
                 else if (action === 'consolidate') {
-                    if (confirm('¿Aprobar Proof of Work? Esto generará Slices inmutables en el Ledger.')) {
+                    if (confirm('¿Aprobar Proof of Work y generar Slices inmutables?')) {
                         await store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: currProject.id, txHash } });
                         this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                     }
@@ -266,7 +256,6 @@ export default class ProjectView {
                 return;
             }
 
-            // 2. HACER PULL
             if (target.classList.contains('btn-pull')) {
                 const txHash = target.dataset.hash;
                 const action = target.dataset.action;
@@ -280,7 +269,6 @@ export default class ProjectView {
                 return;
             }
 
-            // 3. HACER PUSH
             if (target.classList.contains('btn-push')) {
                 const txHash = target.dataset.hash;
                 const usersInProject = currProject.usuarios || [];
@@ -293,7 +281,7 @@ export default class ProjectView {
                     userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
                 });
 
-                const targetUserId = prompt(`Introduce el ID del usuario al que quieres asignar esta tarea:\n\n${userListStr}`);
+                const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:\n\n${userListStr}`);
                 
                 if (targetUserId) {
                     const exists = usersInProject.find(u => u.id === targetUserId);
@@ -307,139 +295,162 @@ export default class ProjectView {
             }
         });
 
+        // Primer renderizado
         this.renderTasks(project);
     }
 
     renderTasks(project) {
-        const lists = { theo: document.getElementById('theo-list'), work: document.getElementById('work-list'), done: document.getElementById('done-list') };
-        Object.values(lists).forEach(l => l.innerHTML = '');
+        const grid = document.getElementById('taskGrid');
+        grid.innerHTML = '';
 
         const txs = project.transactions || [];
         const state = store.getState();
         const activeUser = state.session.activeUserId;
         const isPO = project.ownerId === activeUser || state.session.role === 'ecosystem-owner';
         
-        let counts = { theo: 0, work: 0, done: 0 };
+        let counts = { op: 0, cur: 0, con: 0 };
+        let activeCardsHtml = [];
 
         txs.forEach(tx => {
-            // Aplicar Filtros
+            // 1. Clasificación por Pestañas (Contadores globales para los badges)
+            let tabCategory = '';
+            if (tx.status === 'theoretical' || tx.status === 'requested') { tabCategory = 'oportunidades'; counts.op++; }
+            else if (tx.status === 'pinged' || tx.status === 'reported') { tabCategory = 'en-curso'; counts.cur++; }
+            else if (tx.status === 'consolidated' || tx.status === 'approved') { tabCategory = 'contabilizado'; counts.con++; }
+
+            // Si no pertenece a la pestaña activa, la saltamos del render (pero ya la contamos)
+            if (tabCategory !== this.currentTab) return;
+
+            // 2. Aplicación de Filtros del Dropdown
             if (this.currentFilter === 'tangible' && tx.tipo !== 'tangible') return;
             if (this.currentFilter === 'intangible' && tx.tipo !== 'intangible') return;
-            
             if (this.currentFilter === 'mine') {
-                if (tx.status !== 'theoretical' && tx.status !== 'requested' && tx.assigneeId !== activeUser) return;
+                if (tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
             }
-
             if (!isPO && this.currentFilter === 'all') {
-                if ((tx.status === 'consolidated' || tx.status === 'reported') && tx.assigneeId !== activeUser) return;
+                // Usuarios rasos solo ven tareas "En Curso" y "Contabilizado" si son suyas. 
+                // En Oportunidades, ven todo.
+                if (tabCategory !== 'oportunidades' && tx.assigneeId !== activeUser) return;
             }
 
-            const card = this.createTaskCard(tx, project, state.session, isPO);
-            
-            // Inyectar en columnas
-            if (tx.status === 'theoretical' || tx.status === 'requested') { 
-                lists.theo.appendChild(card); counts.theo++; 
-            } else if (tx.status === 'pinged' || tx.status === 'reported') { 
-                lists.work.appendChild(card); counts.work++; 
-            } else if (tx.status === 'consolidated' || tx.status === 'approved') { 
-                lists.done.appendChild(card); counts.done++; 
-            }
+            activeCardsHtml.push(this.createTaskCardHTML(tx, project, state.session, isPO));
         });
 
-        document.getElementById('count-theo').innerText = counts.theo;
-        document.getElementById('count-work').innerText = counts.work;
-        document.getElementById('count-done').innerText = counts.done;
+        // Actualizar Badges
+        document.getElementById('count-op').innerText = counts.op;
+        document.getElementById('count-cur').innerText = counts.cur;
+        document.getElementById('count-con').innerText = counts.con;
+
+        // Inyectar HTML
+        if (activeCardsHtml.length > 0) {
+            grid.innerHTML = activeCardsHtml.join('');
+        } else {
+            let emptyMsg = "No hay tareas en esta categoría.";
+            if (this.currentTab === 'oportunidades') emptyMsg = "No hay oportunidades libres en el mercado de la red.";
+            if (this.currentTab === 'en-curso') emptyMsg = "No hay ninguna tarea activa en proceso.";
+            if (this.currentTab === 'contabilizado') emptyMsg = "Aún no se han consolidado Slices en esta red.";
+            
+            grid.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
+        }
     }
 
-    createTaskCard(tx, project, session, isPO) {
+    createTaskCardHTML(tx, project, session, isPO) {
         const role = project.roles.find(r => r.id === tx.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
         const receiverRole = project.roles.find(r => r.id === tx.to) || { name: 'Destino', levelId: '?' };
         
-        const card = document.createElement('div');
-        card.className = `task-card ${tx.status === 'requested' ? 'status-requested' : ''}`;
         const color = this.getColorForLevel(role.levelId);
+        const receiverColor = this.getColorForLevel(receiverRole.levelId);
         const tipoColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+        const tipoEmoji = tx.tipo === 'tangible' ? '🟢' : '🟣';
 
         let actionHtml = '';
+        let statusTag = '';
 
         if (tx.status === 'theoretical') {
+            statusTag = `<span style="color:#aaa; font-size:0.75rem; border:1px solid #555; padding:2px 8px; border-radius:12px;">LIBRE</span>`;
             if (isPO) {
                 actionHtml = `
-                    <div style="display:flex; flex-direction:column; gap:5px;">
-                        <button class="btn-pull" data-hash="${tx.hash}" title="Adjudicarme la tarea">📥 Hacer PULL (Asumírmela)</button>
-                        <button class="btn-push" data-hash="${tx.hash}" title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
-                    </div>
+                    <button class="btn-pull" data-hash="${tx.hash}" title="Adjudicarme la tarea">📥 Hacer PULL (Asumírmela)</button>
+                    <button class="btn-push" data-hash="${tx.hash}" title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
                 `;
             } else {
-                actionHtml = `<button class="btn-pull" data-action="request" data-hash="${tx.hash}">✋ Solicitar Tarea (Request Pull)</button>`;
+                actionHtml = `<button class="btn-pull" data-action="request" data-hash="${tx.hash}">✋ Solicitar Tarea</button>`;
             }
         } 
         else if (tx.status === 'requested') {
+            statusTag = `<span style="color:var(--accent-red); font-size:0.75rem; border:1px solid var(--accent-red); padding:2px 8px; border-radius:12px;">SOLICITADO</span>`;
             const requester = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
             const reqName = requester ? requester.name : tx.assigneeId;
             
             if (isPO) {
                 actionHtml = `
-                    <div style="color: var(--accent-red); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⚠️ SOLICITUD DE PULL PENDIENTE</div>
-                    <div style="font-size: 0.8rem; color: #ccc; margin-bottom: 10px;">El nodo <b>${reqName}</b> solicita realizar este entregable.</div>
-                    <button class="btn-approve" data-action="approve-pull" data-hash="${tx.hash}" data-userid="${tx.assigneeId}">✅ Aprobar Solicitud</button>
+                    <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px;">
+                        <b>${reqName}</b> solicita ejecutar esto.
+                    </div>
+                    <button class="btn-approve" data-action="approve-pull" data-hash="${tx.hash}" data-userid="${tx.assigneeId}">✅ Aprobar Asignación</button>
                 `;
             } else {
-                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 6px;">✋ Solicitud enviada al Owner. Esperando aprobación...</div>`;
+                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.85rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando aprobación del PO...</div>`;
             }
         }
         else if (tx.status === 'pinged') {
+            statusTag = `<span style="color:var(--accent-orange); font-size:0.75rem; border:1px solid var(--accent-orange); padding:2px 8px; border-radius:12px;">EN CURSO</span>`;
             const isMine = tx.assigneeId === session.activeUserId;
             if (isMine) {
-                actionHtml = `
-                    <div style="color: var(--accent-orange); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">⏳ EN TU ESCRITORIO</div>
-                    <a href="/v5/focus" class="btn btn-focus" data-link>▶ Iniciar Focus / Reportar</a>
-                `;
+                actionHtml = `<a href="/v5/focus" class="btn-focus" data-link>▶ MODO FOCUS / REPORTAR</a>`;
             } else {
                 const worker = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
-                actionHtml = `<div style="color: #666; font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed #333; border-radius: 6px;">Asignada a: <span style="color:white;">${worker ? worker.name : tx.assigneeId}</span></div>`;
+                actionHtml = `<div style="color: #888; font-size: 0.85rem; text-align: center; padding: 10px; background:rgba(0,0,0,0.3); border-radius: 8px;">Ejecutando: <span style="color:white; font-weight:bold;">${worker ? worker.name : tx.assigneeId}</span></div>`;
             }
         } 
         else if (tx.status === 'reported') {
+            statusTag = `<span style="color:var(--accent-blue); font-size:0.75rem; border:1px solid var(--accent-blue); padding:2px 8px; border-radius:12px;">AUDITORÍA</span>`;
             actionHtml = `
-                <div style="color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; margin-bottom: 10px;">🛡️ ESPERANDO AUDITORÍA</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-                    Horas Reales: <strong style="color: white;">${tx.realHours}h</strong><br>
-                    Evidencia: <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue);">${tx.proofLink ? 'Ver Trabajo' : 'Sin link'}</a>
+                <div style="font-size: 0.85rem; color: #ccc; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; margin-bottom: 10px; display:flex; justify-content:space-between;">
+                    <span>Horas Reales: <strong style="color: white;">${tx.realHours}h</strong></span>
+                    <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink ? '🔗 Ver Proof' : 'No Link'}</a>
                 </div>
-                ${isPO ? `<button class="btn-approve" data-action="consolidate" data-hash="${tx.hash}">✅ Aprobar y Consolidar (Ledger)</button>` : `<div style="font-size:0.75rem; color:#888;">Pendiente de firma del PO.</div>`}
+                ${isPO ? `<button class="btn-approve" data-action="consolidate" data-hash="${tx.hash}">✅ Sellar en Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center;">Pendiente de firma del PO.</div>`}
             `;
         }
         else if (tx.status === 'consolidated') {
+            statusTag = `<span style="color:var(--accent-green); font-size:0.75rem; border:1px solid var(--accent-green); padding:2px 8px; border-radius:12px;">CONSOLIDADO</span>`;
             actionHtml = `
-                <div style="color: var(--accent-green); font-size: 1rem; font-weight: bold; font-family: var(--font-mono); text-align: center; padding: 10px; background: rgba(0, 230, 118, 0.05); border-radius: 8px;">
-                    +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices Acuñados
+                <div style="color: var(--accent-green); font-size: 1.1rem; font-weight: bold; font-family: var(--font-mono); text-align: center; padding: 12px; background: rgba(0, 230, 118, 0.05); border-radius: 8px; border: 1px dashed var(--accent-green);">
+                    +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices
                 </div>
             `;
         }
 
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; gap: 5px; align-items: center;">
-                    <span class="badge" style="color: ${color}; border-color: ${color}; font-size: 0.65rem;" title="De: ${role.name}">${role.levelId}</span>
-                    <span style="color: #666;">&rarr;</span>
-                    <span class="badge" style="color: #888; border-color: #444; font-size: 0.65rem;" title="Hacia: ${receiverRole.name}">${receiverRole.levelId}</span>
+        const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 15px rgba(255,82,82,0.1);' : '';
+
+        return `
+            <div class="task-card" style="${borderStyle}">
+                <div class="task-header">
+                    <div class="task-route">
+                        <span class="route-badge" style="color: ${color}; border-color: ${color};" title="${role.name}">${role.levelId}</span>
+                        <span style="color: #666;">&rarr;</span>
+                        <span class="route-badge" style="color: #888; border-color: #444;" title="${receiverRole.name}">${receiverRole.levelId}</span>
+                    </div>
+                    ${statusTag}
                 </div>
-                <span style="font-size: 0.6rem; color: var(--text-muted); font-family: var(--font-mono);">#${tx.hash.substring(0,6)}</span>
-            </div>
-            <h3 class="task-title">${tx.entregable}</h3>
-            <div style="margin-bottom: 1rem;">${actionHtml}</div>
-            <div class="task-meta">
-                <span>⏱ ${tx.horas}h Est.</span>
-                <span style="color: ${tipoColor}; font-weight: bold; text-transform: uppercase;">${tx.tipo}</span>
+                
+                <h3 class="task-title">${tx.entregable}</h3>
+                
+                <div class="task-meta-row">
+                    <span style="font-weight:bold; color:white;">⏱ ${tx.horas}h <span style="color:#666; font-weight:normal;">Est.</span></span>
+                    <span style="color: ${tipoColor}; font-weight: bold; font-size:0.7rem;">${tipoEmoji} ${tx.tipo.toUpperCase()}</span>
+                </div>
+
+                <div class="task-actions">
+                    ${actionHtml}
+                </div>
             </div>
         `;
-
-        return card;
     }
 
     getColorForLevel(levelId) {
         const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
-        return colors[levelId] || 'var(--text-main)';
+        return colors[levelId] || '#aaa';
     }
 }
