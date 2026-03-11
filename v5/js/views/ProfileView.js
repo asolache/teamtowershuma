@@ -32,50 +32,49 @@ export default class ProfileView {
 
     async getHtml() {
         return `
-            <style>
+           <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                
                 .workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative;}
                 
-                /* HEADER PERFIL REFINADO (RESPONSIVE) */
+                /* ==============================================================
+                   PATRÓN DRY INQUEBRANTABLE (FLEX WRAP & BREAK-WORD)
+                   ============================================================== */
                 .profile-header { 
-                    display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 1.5rem; 
-                    margin-bottom: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: var(--border-radius-lg); 
-                    border: 1px solid var(--glass-border); position: relative; overflow: hidden; flex-wrap: wrap;
+                    display: flex; flex-direction: row; justify-content: space-between; align-items: center; 
+                    gap: 2rem; margin-bottom: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; 
+                    border-radius: var(--border-radius-lg); border: 1px solid var(--glass-border); 
+                    position: relative; overflow: hidden;
                 }
                 .profile-header.minted { border-color: var(--accent-orange); box-shadow: 0 0 30px rgba(255, 171, 64, 0.1); background: linear-gradient(to right, rgba(255, 171, 64, 0.05), rgba(0,0,0,0));}
                 .profile-header::before { content: ''; position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0, 176, 255, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none;}
                 
-                .profile-basic-info { display: flex; align-items: center; gap: 1.5rem; flex: 1; min-width: 250px; z-index: 1;}
+                .profile-basic-info { display: flex; align-items: center; gap: 1.5rem; flex: 1; z-index: 1;}
                 .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3); flex-shrink: 0;}
                 .profile-header.minted .profile-avatar { background: linear-gradient(135deg, var(--accent-orange), #ffd740); box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4);}
                 
-                .profile-info { flex: 1; min-width: 0; } 
-                .profile-info h1 { margin: 0; font-size: 2.2rem; color: white; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
-                .name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block;}
-                .profile-info p { margin: 5px 0 0 0; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+                .profile-info { flex: 1; display: flex; flex-direction: column; gap: 5px; } 
+                .profile-info h1 { margin: 0; font-size: 2.2rem; color: white; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; line-height: 1.2;}
+                .name-text { word-break: break-word; /* FIX CLAVE: Permite que nombres largos salten de línea */ }
+                .profile-info p { margin: 0; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; word-break: break-all;}
                 
-                .verified-badge { font-size: 0.8rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: flex; align-items: center; gap: 5px; white-space: nowrap;}
+                .verified-badge { font-size: 0.75rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;}
                 
                 .header-actions { display: flex; z-index: 1; flex-shrink: 0;}
-                
-                .btn-mint { background: transparent; color: var(--accent-orange); border: 2px solid var(--accent-orange); padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;}
+                .btn-mint { background: transparent; color: var(--accent-orange); border: 2px solid var(--accent-orange); padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; line-height: 1.2;}
                 .btn-mint:hover { background: rgba(255, 171, 64, 0.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 171, 64, 0.2); }
 
-                /* ESTADÍSTICAS GLOBALES */
+                /* ESTADÍSTICAS Y GRIDS */
                 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
                 .stat-card { background: var(--bg-panel); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: var(--border-radius-md); text-align: center; transition: transform 0.2s; }
                 .stat-card:hover { transform: translateY(-5px); border-color: #555; }
                 .stat-value { font-size: 2.5rem; color: var(--accent-green); font-weight: 800; font-family: var(--font-mono); margin-bottom: 5px; }
                 .stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-                /* SECCIONES */
                 .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-                
                 .section-title { color: white; font-size: 1.2rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
                 .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; display: flex; flex-direction: column;}
                 
-                /* EDITOR DE IDENTIDAD */
+                /* FORMULARIO */
                 .form-group { margin-bottom: 1.5rem; }
                 .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase;}
                 .vision-textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; min-height: 100px; resize: vertical; box-sizing: border-box;}
@@ -90,7 +89,6 @@ export default class ProfileView {
                 .btn-save-profile { width: 100%; background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: auto;}
                 .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); }
 
-                /* LISTA DE PROYECTOS */
                 .project-row { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 10px;}
                 .project-row:last-child { border-bottom: none; }
                 .project-name { color: white; font-weight: bold; font-size: 1.1rem; }
@@ -98,7 +96,6 @@ export default class ProfileView {
                 .project-slices { text-align: right; }
                 .project-slices .amt { color: var(--accent-green); font-size: 1.2rem; font-weight: bold; font-family: var(--font-mono); }
                 
-                /* SKILLS Y PROMPT */
                 .skills-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 2rem;}
                 .skill-badge { background: #1a1a24; border: 1px solid #333; color: #ccc; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
                 .skill-count { background: var(--accent-blue); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; }
@@ -124,24 +121,25 @@ export default class ProfileView {
                 @keyframes spin { to { transform: rotate(360deg); } }
                 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-                /* MEDIA QUERIES (MOBILE FIRST ALIGNMENT) */
-                @media (max-width: 1024px) { 
-                    .content-grid { grid-template-columns: 1fr; } 
-                }
+                /* ==============================================================
+                   MEDIA QUERIES - ESCALADO A MOBILE (EL INICIO DE LA "APP")
+                   ============================================================== */
+                @media (max-width: 1024px) { .content-grid { grid-template-columns: 1fr; } }
                 @media (max-width: 768px) { 
                     .app-layout { flex-direction: column; } 
                     .workspace { padding: 1.5rem 1rem; } 
                     
-                    .profile-header { flex-direction: column; text-align: center; gap: 1.5rem; padding: 1.5rem; } 
-                    .profile-basic-info { flex-direction: column; gap: 1rem; width: 100%; align-items: center;}
-                    .profile-info h1 { justify-content: center; font-size: 1.8rem; }
+                    /* El header se convierte en una columna apilada */
+                    .profile-header { flex-direction: column; align-items: stretch; text-align: center; gap: 1.5rem; padding: 1.5rem; } 
+                    .profile-basic-info { flex-direction: column; align-items: center; }
+                    .profile-info h1 { justify-content: center; font-size: 1.8rem; flex-direction: column; gap: 5px;}
                     
-                    .header-actions { width: 100%; } 
-                    .btn-mint { width: 100%; justify-content: center;} 
+                    /* Los botones ocupan el ancho total */
+                    .header-actions { width: 100%; display: flex; flex-direction: column;} 
+                    .btn-mint { width: 100%; } 
                     
                     .stats-grid { grid-template-columns: 1fr; gap: 1rem;}
                     .panel { padding: 1.5rem; }
-                    
                     .checkout-card { padding: 2rem 1.5rem; width: 90%; }
                 }
             </style>
