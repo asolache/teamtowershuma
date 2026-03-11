@@ -15,6 +15,9 @@ export default class ValueMapView {
         this.isSimulating = false;
         this.simulationTimeouts = [];
         this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
+        
+        // ResizeObserver para recalcular líneas si el Sidebar se colapsa
+        this.resizeObserver = null;
     }
 
     async getHtml() {
@@ -133,7 +136,7 @@ export default class ValueMapView {
                         <div class="form-group" style="margin-bottom: 10px;">
                             <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
                         </div>
-                        <button class="btn btn-success" style="width: 100%; margin-top: 5px;" id="btnAddFlow">➕ Añadir a Secuencia</button>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 5px;" id="btnAddFlow">➕ Añadir Transacción</button>
                     </div>
                 </aside>
 
@@ -155,7 +158,7 @@ export default class ValueMapView {
                                 <button class="btn btn-primary" id="btnSimulate">▶ Simular Flujo</button>
                                 <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange);">⏹ Detener</button>
                             </div>
-                            <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" id="btnOpenAddNode">➕ Nuevo Nodo</button>
+                            <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" id="btnOpenAddNode">➕ Nuevo Rol</button>
                             <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
                         </div>
                     </div>
@@ -202,7 +205,7 @@ export default class ValueMapView {
 
                 <div class="modal-overlay" id="addNodeModal">
                     <div class="modal-content">
-                        <h3 style="color: white; margin-bottom: 1.5rem;">Instanciar Nodo</h3>
+                        <h3 style="color: white; margin-bottom: 1.5rem;">Instanciar Rol</h3>
                         <div class="form-group">
                             <label>Nombre</label>
                             <input type="text" id="inpNewNodeName" class="form-control" placeholder="Ej: Especialista SEO">
@@ -219,7 +222,7 @@ export default class ValueMapView {
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
                             <button class="btn btn-outline" id="btnCancelNode">Cancelar</button>
-                            <button class="btn btn-primary" id="btnConfirmNode">Añadir Nodo</button>
+                            <button class="btn btn-primary" id="btnConfirmNode">Añadir Rol</button>
                         </div>
                     </div>
                 </div>
@@ -291,6 +294,19 @@ export default class ValueMapView {
         this.updateOntologyTemplates(); 
         this.renderMap();
         this.renderSequence();
+
+        // ResizeObserver para redibujar las líneas cuando el Sidebar colapsa/expande
+        if (window.ResizeObserver) {
+            this.resizeObserver = new ResizeObserver(() => {
+                if (!this.isSimulating) {
+                    this.drawEdges();
+                }
+            });
+            this.resizeObserver.observe(this.dom.canvas);
+        } else {
+            // Fallback para navegadores antiguos
+            window.addEventListener('resize', () => { if(!this.isSimulating) this.drawEdges(); });
+        }
 
         // WIZARD DE FLUJOS
         this.dom.selFrom.addEventListener('change', () => this.updateOntologyTemplates());
@@ -562,8 +578,6 @@ export default class ValueMapView {
             this.isDragging = false; 
             this.draggedElement = null; 
         });
-        
-        window.addEventListener('resize', () => { if(!this.isSimulating) this.drawEdges(); });
     }
 
     executeArchiveToggle(archiveState) {
@@ -597,7 +611,7 @@ export default class ValueMapView {
         this.dom.formTitle.innerText = `Añadir Transacción`;
         this.dom.formTitle.style.color = 'var(--accent-blue)';
         this.dom.btnCancelEditFlow.style.display = 'none';
-        this.dom.btnAddFlow.innerText = '➕ Añadir a Secuencia';
+        this.dom.btnAddFlow.innerText = '➕ Añadir Transacción';
         this.dom.btnAddFlow.style.background = 'var(--accent-green)';
         this.dom.btnAddFlow.style.color = 'black';
         this.dom.inpDesc.value = '';
@@ -634,7 +648,6 @@ export default class ValueMapView {
         stepEls.forEach(el => el.classList.remove('simulating'));
         this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
 
-        // CÁLCULO DE AGRUPACIÓN PREVIA (Igual que en estático) para que las animaciones mantengan la curvatura correcta
         const pairCounts = {};
         txs.forEach((tx, i) => {
             const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
@@ -642,7 +655,6 @@ export default class ValueMapView {
             pairCounts[key].push({ tx, index: i });
         });
 
-        // Mapear cada transacción con su índice múltiple
         const txMultiIdxMap = new Map();
         Object.keys(pairCounts).forEach(key => {
             pairCounts[key].forEach((edge, multiIdx) => {
@@ -736,7 +748,6 @@ export default class ValueMapView {
         const x2 = x2_center - (dx/dist) * trim;
         const y2 = y2_center - (dy/dist) * trim;
 
-        // CÁLCULO DE LA CURVA PARA LA ANIMACIÓN
         const nx = -dy / dist; 
         const ny = dx / dist;
         let offset = 0;
@@ -756,7 +767,6 @@ export default class ValueMapView {
         
         const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
         
-        // Aumentamos un poco la distancia virtual para que la animación termine de pintar toda la curva
         const realDist = dist + Math.abs(offset) * 2; 
         
         path.style.cssText = `
@@ -793,7 +803,6 @@ export default class ValueMapView {
         }, 800); 
     }
 
-    // Funciones estándar
     populateDropdowns(roles) {
         const options = roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
         this.dom.selFrom.innerHTML = options;
