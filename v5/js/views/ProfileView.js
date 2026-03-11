@@ -6,7 +6,7 @@ import { BottomNav } from '../components/BottomNav.js';
 export default class ProfileView {
     constructor() {
         document.title = "Mi Perfil & Reputación | TeamTowers SOS";
-        this.currentTab = 'perfil'; // perfil, proyectos, skills
+        this.currentTab = 'perfil'; 
         
         this.guardians = [
             { id: 'creator', label: '🎨 Creador (Innovación)' },
@@ -67,9 +67,9 @@ export default class ProfileView {
                 .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
 
                 /* =========================================================
-                   HEADER PERFIL & TABS
+                   HEADER PERFIL
                    ========================================================= */
-                .view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
+                .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
                 .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
                 .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
 
@@ -78,12 +78,32 @@ export default class ProfileView {
                 .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
                 .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
 
-                .tabs-container { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--glass-border); margin-bottom: 2rem;}
+                /* =========================================================
+                   TABS (Pestañas Segmented Control PREMIUM)
+                   ========================================================= */
+                .tabs-container { 
+                    display: flex; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 12px; 
+                    border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; 
+                    overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+                }
                 .tabs-container::-webkit-scrollbar { display: none; }
-                .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1rem; font-weight: bold; padding: 10px 5px 15px 5px; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap;}
-                .tab-btn:hover { color: white; }
-                .tab-btn.active { color: var(--accent-blue); }
-                .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--accent-blue); border-radius: 3px 3px 0 0; }
+                
+                .tab-btn { 
+                    flex: 1; min-width: max-content; padding: 12px 20px; background: transparent; 
+                    border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.95rem; 
+                    font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; 
+                    align-items: center; justify-content: center; gap: 8px;
+                }
+                .tab-btn:hover { color: white; background: rgba(255,255,255,0.03); }
+                
+                /* Active States por color temático */
+                .tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 10px rgba(0,0,0,0.3); }
+                .tab-btn.active[data-tab="perfil"] { color: var(--accent-blue); }
+                .tab-btn.active[data-tab="proyectos"] { color: var(--accent-green); }
+                .tab-btn.active[data-tab="skills"] { color: var(--accent-purple); }
+
+                .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+                .tab-content.active { display: block; }
 
                 /* =========================================================
                    TAB 1: IDENTIDAD FRACTAL (PERFIL)
@@ -147,6 +167,8 @@ export default class ProfileView {
                 .pay-gpay { background: white; color: #3c4043; }
                 .pay-card { background: #635bff; color: white; }
 
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
                 /* =========================================================
                    RESPONSIVE MOBILE (FIELD APP)
                    ========================================================= */
@@ -155,10 +177,13 @@ export default class ProfileView {
                     .mobile-top-bar { display: flex; }
                     
                     .view-header { flex-direction: column; align-items: flex-start; gap: 10px;}
-                    .view-header h1 { font-size: 1.8rem; }
-                    
-                    .tabs-container { width: 100%; justify-content: space-between; }
-                    .tab-btn { flex: 1; text-align: center; padding: 10px 0; font-size: 0.9rem;}
+                    .view-header h1 { font-size: 1.6rem; }
+                    .header-actions { width: 100%; }
+                    .btn-status-closed, .btn-status-open { width: 100%; justify-content: center; display: flex;}
+
+                    /* Asegura que los tabs ocupen todo el ancho en móvil */
+                    .tabs-container { width: 100%; }
+                    .tab-btn { flex: 1; text-align: center; padding: 10px 5px; font-size: 0.85rem;}
                     
                     .stats-grid { grid-template-columns: 1fr; gap: 1rem;}
                     .pm-section-title { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -190,12 +215,12 @@ export default class ProfileView {
                     </div>
 
                     <div class="tabs-container" id="tabsContainer">
-                        <button class="tab-btn active" data-tab="perfil">Identidad (ADN)</button>
-                        <button class="tab-btn" data-tab="proyectos">Redes Activas</button>
-                        <button class="tab-btn" data-tab="skills">Skills (SBTs)</button>
+                        <button class="tab-btn active" data-tab="perfil">🧬 Identidad</button>
+                        <button class="tab-btn" data-tab="proyectos">🌐 Redes Activas</button>
+                        <button class="tab-btn" data-tab="skills">🏅 Skills</button>
                     </div>
 
-                    <div id="view-perfil" class="tab-content" style="display: block;">
+                    <div id="view-perfil" class="tab-content active">
                         <div class="form-group">
                             <label>1. Visión y Skills en Bruto</label>
                             <textarea id="inpVision" class="vision-textarea" placeholder="Ej: Desarrollador Full-Stack apasionado por la gobernanza descentralizada. Busco DAOs donde aportar en código y diseño de incentivos..."></textarea>
@@ -250,7 +275,7 @@ export default class ProfileView {
                         </div>
                     </div>
 
-                    <div id="view-proyectos" class="tab-content" style="display: none;">
+                    <div id="view-proyectos" class="tab-content">
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <div class="stat-value" id="totSlices">0</div>
@@ -270,7 +295,7 @@ export default class ProfileView {
                         <div id="projectsList"></div>
                     </div>
 
-                    <div id="view-skills" class="tab-content" style="display: none;">
+                    <div id="view-skills" class="tab-content">
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Las habilidades se infieren inmutablemente de las tareas <i>(Proof of Work)</i> que has completado y consolidado en el Ledger.</p>
                         <div class="skills-grid" id="skillsList"></div>
                     </div>
@@ -368,17 +393,33 @@ export default class ProfileView {
             this.updateSystemPromptDisplay(user.profile.permawebHash, user.profile.ikigaiSummary);
         }
 
-        // TABS LOGIC
-        document.getElementById('tabsContainer').addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-btn');
-            if (btn) {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // TABS LOGIC (FIXED)
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Quitar clase active a todos los botones
+                tabBtns.forEach(b => b.classList.remove('active'));
+                // Añadir active al pulsado
                 btn.classList.add('active');
-                const tabId = btn.dataset.tab;
-                document.getElementById('view-perfil').style.display = tabId === 'perfil' ? 'block' : 'none';
-                document.getElementById('view-proyectos').style.display = tabId === 'proyectos' ? 'block' : 'none';
-                document.getElementById('view-skills').style.display = tabId === 'skills' ? 'block' : 'none';
-            }
+
+                // Ocultar todos los contenidos
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+                
+                // Mostrar el contenido objetivo
+                const targetId = `view-${btn.dataset.tab}`;
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.style.display = 'block';
+                    // Forzar reflow para que corra la animación CSS
+                    void targetContent.offsetWidth; 
+                    targetContent.classList.add('active');
+                }
+            });
         });
 
         // STATUS TOGGLE (Open To Work)
@@ -546,7 +587,7 @@ export default class ProfileView {
             return;
         }
 
-        const hashLine = hash ? `<span style="color: var(--accent-orange); font-size:0.75rem; display:block; margin-bottom:10px; border-bottom:1px dashed #444; padding-bottom:5px;">TXID: ${hash}</span>` : '';
+        const hashLine = hash ? `<span style="color: var(--accent-orange); font-size:0.75rem; display:block; margin-bottom:10px; border-bottom:1px dashed #444; padding-bottom:5px; word-break: break-all;">TXID: ${hash}</span>` : '';
         const summaryHtml = ikigaiSummary ? `<div style="color: white; margin-top:10px; font-style:italic;">"${ikigaiSummary.replace(/\n/g, '<br>')}"</div>` : '';
 
         this.dom.aiSystemPrompt.innerHTML = `
@@ -564,7 +605,6 @@ export default class ProfileView {
         let activeProjectsCount = 0;
         const projectRowsHtml = [];
         
-        // Estructura de Skills: { 'SkillName': Map(ProjectId -> ProjectName) }
         const skillsMap = {};
 
         state.projects.forEach(p => {
@@ -598,7 +638,7 @@ export default class ProfileView {
                         </div>
                         <div class="project-slices">
                             <div class="amt">${Math.round(projectSlices).toLocaleString()} <span style="font-size:0.7rem; color:#888;">Slices</span></div>
-                            <a href="/v5/ledger" data-link style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;">Ver Ledger &rarr;</a>
+                            <a href="/v5/ledger" data-link style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;" onclick="localStorage.setItem('tt_active_project', '${p.id}')">Ver Ledger &rarr;</a>
                         </div>
                     </div>
                 `);
@@ -618,7 +658,6 @@ export default class ProfileView {
 
         const sList = document.getElementById('skillsList');
         
-        // Transformar el Map a un array para ordenarlo y renderizarlo
         const skillsArray = Object.keys(skillsMap).map(skillName => {
             return {
                 name: skillName,
