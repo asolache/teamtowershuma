@@ -52,9 +52,9 @@ export default class ValueMapView {
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
         const headerConfig = {
-            title: "Mapa",
+            title: "Mapa VNA",
             subtitle: project ? project.nombre : '',
-            tagline: "Flujo de Valor (VNA) y topología de la red.",
+            tagline: "Topología fractal y transferencias de valor.",
             tabs: [
                 { id: 'visual', label: '🕸️ Red Visual', active: true },
                 { id: 'edit', label: '✏️ Editar Mapa' },
@@ -89,7 +89,7 @@ export default class ValueMapView {
                 .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background-color: rgba(0,0,0,0.2);}
                 
                 /* CAPA DE TRANSFORMACIÓN PARA ZOOM */
-                .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; transform-origin: center center; transition: transform 0.3s ease-out; }
+                .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; transform-origin: top left; transition: transform 0.2s ease-out; }
                 
                 #edges-svg-visual, #edges-svg-edit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
                 
@@ -106,9 +106,9 @@ export default class ValueMapView {
                 .node.ghost-node { opacity: 0.3; border-style: dashed; filter: grayscale(100%); z-index: 1; }
                 
                 /* CLASES INTERACTIVAS BUILDER */
-                #mapCanvasEdit .node { cursor: pointer; } /* En edit, clicamos para vincular */
+                #mapCanvasEdit .node { cursor: pointer; } 
                 #mapCanvasEdit .node:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 20px rgba(0, 176, 255, 0.3); }
-                .node.flow-source { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.8) !important; z-index: 20;}
+                .node.flow-source { border-color: var(--accent-orange) !important; box-shadow: 0 0 30px rgba(255, 171, 64, 0.8) !important; z-index: 20;}
 
                 .node-name { font-size: 0.65rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 95%; font-weight: bold; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding: 0 5px; word-wrap: break-word; text-align: center;}
 
@@ -222,9 +222,9 @@ export default class ValueMapView {
                     <div id="view-edit" class="tab-content">
                         ${isPO ? `
                             <div class="vna-tip" id="editTip">
-                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz click en un nodo origen y luego en uno destino para crear flujo.</div>
+                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo y luego en otro para trazar una transacción. Doble clic para editar.</div>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                    <button class="btn btn-outline btn-sm" id="btnUndoTx" style="border-color:var(--accent-red); color:var(--accent-red);"><span style="font-size:1rem;">↩️</span> Deshacer Última</button>
+                                    <button class="btn btn-outline btn-sm" id="btnUndoTx" style="border-color:var(--accent-orange); color:var(--accent-orange);"><span style="font-size:1rem;">↩️</span> Deshacer Última</button>
                                     <button class="btn btn-outline btn-sm" id="btnOpenAddNode" style="border-style:dashed; color:white;">➕ Instanciar Rol</button>
                                 </div>
                             </div>
@@ -429,13 +429,14 @@ export default class ValueMapView {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                tabContents.forEach(content => content.classList.remove('active'));
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
                 
                 const targetId = `view-${btn.dataset.tab}`;
                 const targetContent = document.getElementById(targetId);
                 if (targetContent) {
                     targetContent.classList.add('active');
-                    // FIX REACTIVO: Redibujar SVG al cambiar a la vista visual
                     if(btn.dataset.tab === 'visual' || btn.dataset.tab === 'edit') {
                         setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 50);
                     }
@@ -460,7 +461,6 @@ export default class ValueMapView {
         };
         setupZoom('btnZoomInVis', 'btnZoomOutVis', this.dom.canvasVis, 'zoomVis');
         setupZoom('btnZoomInEdit', 'btnZoomOutEdit', this.dom.canvasEdit, 'zoomEdit');
-
 
         setTimeout(() => {
             this.renderMap(this.dom.canvasVis, false);
@@ -506,25 +506,38 @@ export default class ValueMapView {
                 const originNode = this.dom.canvasEdit.querySelector(`.node[data-id="${this.flowFromId}"]`);
                 if (!originNode) return;
 
-                // MATH ANTI-ZOOM BUG (Usando offset properties relativas al canvas)
-                const x1 = originNode.offsetLeft + originNode.offsetWidth / 2;
-                const y1 = originNode.offsetTop + originNode.offsetHeight / 2;
+                // MATH ANTI-ZOOM BUG (Usando la posición real del nodo)
+                const x1_center = originNode.offsetLeft;
+                const y1_center = originNode.offsetTop;
                 
                 const canvRect = this.dom.canvasEdit.getBoundingClientRect();
-                // Calcular la posición del ratón relativa al canvas, anulando el efecto del scale
-                const x2 = (e.clientX - canvRect.left) / this.zoomEdit;
-                const y2 = (e.clientY - canvRect.top) / this.zoomEdit;
+                const x2_center = (e.clientX - canvRect.left) / this.zoomEdit;
+                const y2_center = (e.clientY - canvRect.top) / this.zoomEdit;
+
+                // El Trim: Para que la línea naranja empiece en el borde del nodo
+                const dx = x2_center - x1_center;
+                const dy = y2_center - y1_center;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const trim = 42;
+                
+                let x1 = x1_center;
+                let y1 = y1_center;
+                if (dist > trim) {
+                    x1 = x1_center + (dx/dist) * trim;
+                    y1 = y1_center + (dy/dist) * trim;
+                }
 
                 if (!this.tempVector) {
                     this.tempVector = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                     this.tempVector.setAttribute('class', 'edge-temp');
+                    this.tempVector.setAttribute('marker-end', 'url(#arrow-tangible)');
                     this.dom.svgEdit.appendChild(this.tempVector);
                 }
 
                 this.tempVector.setAttribute('x1', x1);
                 this.tempVector.setAttribute('y1', y1);
-                this.tempVector.setAttribute('x2', x2);
-                this.tempVector.setAttribute('y2', y2);
+                this.tempVector.setAttribute('x2', x2_center);
+                this.tempVector.setAttribute('y2', y2_center);
             });
 
             // Modal Builder Logic
@@ -786,7 +799,7 @@ export default class ValueMapView {
 
     openTxBuilderModal(fromId, toId, existingTx = null) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        this.populateDropdowns(p.roles); // Forzamos refresh de los combos
+        this.populateDropdowns(p.roles); // Forzamos refresh
         
         this.dom.selFrom.value = fromId;
         this.dom.selTo.value = toId;
@@ -915,21 +928,28 @@ export default class ValueMapView {
         const dom2 = this.dom.canvasVis.querySelector(`.node[data-id="${tx.to}"]`);
         if (!dom1 || !dom2) return;
 
-        // MATH ANTI-ZOOM BUG (Para simulación y visual canvas)
-        const x1_center = dom1.offsetLeft + dom1.offsetWidth / 2;
-        const y1_center = dom1.offsetTop + dom1.offsetHeight / 2;
-        const x2_center = dom2.offsetLeft + dom2.offsetWidth / 2;
-        const y2_center = dom2.offsetTop + dom2.offsetHeight / 2;
+        // MATH ANTI-ZOOM BUG
+        const x1_center = dom1.offsetLeft;
+        const y1_center = dom1.offsetTop;
+        const x2_center = dom2.offsetLeft;
+        const y2_center = dom2.offsetTop;
 
         const dx = x2_center - x1_center;
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
 
         const trim = 42; 
-        const x1 = x1_center + (dx/dist) * trim;
-        const y1 = y1_center + (dy/dist) * trim;
-        const x2 = x2_center - (dx/dist) * trim;
-        const y2 = y2_center - (dy/dist) * trim;
+        let x1 = x1_center;
+        let y1 = y1_center;
+        let x2 = x2_center;
+        let y2 = y2_center;
+        
+        if (dist > trim) {
+            x1 = x1_center + (dx/dist) * trim;
+            y1 = y1_center + (dy/dist) * trim;
+            x2 = x2_center - (dx/dist) * trim;
+            y2 = y2_center - (dy/dist) * trim;
+        }
 
         const nx = -dy / dist; 
         const ny = dx / dist;
@@ -1193,21 +1213,28 @@ export default class ValueMapView {
         const dom2 = canvas.querySelector(`.node[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
 
-        // MATH ANTI-ZOOM BUG (Usamos offset relativos para que la línea no se rompa al hacer CSS transform:scale)
-        const x1_center = dom1.offsetLeft + dom1.offsetWidth / 2;
-        const y1_center = dom1.offsetTop + dom1.offsetHeight / 2;
-        const x2_center = dom2.offsetLeft + dom2.offsetWidth / 2;
-        const y2_center = dom2.offsetTop + dom2.offsetHeight / 2;
+        // MATH ANTI-ZOOM BUG: Usamos offsetLeft/Top que devuelve el centro visual de forma absoluta, ignorando el transform scale de la capa padre.
+        const x1_center = dom1.offsetLeft;
+        const y1_center = dom1.offsetTop;
+        const x2_center = dom2.offsetLeft;
+        const y2_center = dom2.offsetTop;
 
         const dx = x2_center - x1_center;
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
         const trim = 42; 
-        const x1 = x1_center + (dx/dist) * trim;
-        const y1 = y1_center + (dy/dist) * trim;
-        const x2 = x2_center - (dx/dist) * trim;
-        const y2 = y2_center - (dy/dist) * trim;
+        let x1 = x1_center;
+        let y1 = y1_center;
+        let x2 = x2_center;
+        let y2 = y2_center;
+
+        if (dist > trim) {
+            x1 = x1_center + (dx/dist) * trim;
+            y1 = y1_center + (dy/dist) * trim;
+            x2 = x2_center - (dx/dist) * trim;
+            y2 = y2_center - (dy/dist) * trim;
+        }
 
         const nx = -dy / dist; 
         const ny = dx / dist;
