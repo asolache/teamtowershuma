@@ -93,9 +93,9 @@ export const Sidebar = {
                 
                 .sidebar-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
                 
-                /* BRAND LOGO SIDEBAR */
-                .sidebar .brand { display: flex; align-items: center; height: 35px; transition: opacity 0.2s; text-decoration: none;}
-                .sidebar .brand img { height: 100%; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; }
+                /* BRAND LOGO SIDEBAR (MANDALA FIX) */
+                .sidebar .brand { display: flex; align-items: center; height: 40px; transition: opacity 0.2s; text-decoration: none; width: 100%;}
+                .sidebar .brand img { height: 100%; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; transform-origin: left center;}
                 
                 .btn-toggle-sidebar { background: transparent; border: 1px solid #333; color: white; border-radius: 6px; padding: 4px 8px; cursor: pointer; transition: 0.2s; font-size: 1rem; font-family: monospace;}
                 .btn-toggle-sidebar:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
@@ -156,7 +156,7 @@ export const Sidebar = {
             <aside class="sidebar ${collapsedClass}" id="mainSidebar">
                 <div class="sidebar-top-bar">
                     <a href="/v5/" class="brand" data-link>
-                        <img src="logoteamtowers.png" alt="TeamTowers">
+                        <img src="/v5/logoteamtowers.png" alt="TeamTowers">
                     </a>
                     <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Colapsar / Expandir Menú">
                         <span id="btnToggleIcon">${arrowIcon}</span>
@@ -185,8 +185,22 @@ export const Sidebar = {
         if (projectSwitcher) {
             projectSwitcher.addEventListener('change', (e) => {
                 const selectedProjectId = e.target.value;
-                localStorage.setItem('tt_active_project', selectedProjectId);
-                window.location.reload(); 
+                const state = store.getState();
+                const projectIndex = state.projects.findIndex(p => p.id === selectedProjectId);
+                
+                if (projectIndex !== -1 && projectIndex !== state.projects.length - 1) {
+                    const projectToMove = state.projects.splice(projectIndex, 1)[0];
+                    state.projects.push(projectToMove);
+                    
+                    store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: selectedProjectId, updates: { _lastSwitch: Date.now() } }
+                    });
+                }
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 150); 
             });
         }
 
