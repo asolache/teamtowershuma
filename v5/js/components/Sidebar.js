@@ -29,15 +29,13 @@ export const Sidebar = {
         const collapsedClass = isCollapsed ? 'collapsed' : '';
         const arrowIcon = isCollapsed ? '→' : '←';
 
-        // 1. SECCIÓN GLOBAL (Limpiada para la V9)
         const globalSection = `
             <div class="side-section">
                 <a href="/v5/" class="side-link ${currentPath === '/' ? 'active' : ''}" data-link title="Ecosistema (Red Global)"><span class="icon">🌐</span> <span class="text">Ecosistema</span></a>
-                <a href="/v5/profile" class="side-link ${currentPath === '/profile' ? 'active' : ''}" data-link title="Mi CV / Arquetipo"><span class="icon">👤</span> <span class="text">Mi Perfil (CV)</span></a>
+                <a href="/v5/profile" class="side-link ${currentPath === '/profile' ? 'active' : ''}" data-link title="Mi Perfil (CV)"><span class="icon">👤</span> <span class="text">Mi Perfil (CV)</span></a>
             </div>
         `;
 
-        // 2. SECCIÓN DE CONTEXTO (PROYECTO)
         let projectSection = '';
         if (state.projects.length > 0) {
             let optionsHtml = '';
@@ -50,7 +48,6 @@ export const Sidebar = {
             });
 
             if (optionsHtml !== '') {
-                // Icono animado del Pomodoro
                 const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx') ? 'active-pomodoro' : '';
 
                 projectSection = `
@@ -95,8 +92,10 @@ export const Sidebar = {
                 }
                 
                 .sidebar-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-                .sidebar .brand { font-weight: 900; font-family: var(--font-main); color: white; font-size: 1.3rem; letter-spacing: -1px; white-space: nowrap; transition: opacity 0.2s;}
-                .sidebar .brand span { color: var(--accent-blue); }
+                
+                /* BRAND LOGO SIDEBAR */
+                .sidebar .brand { display: flex; align-items: center; height: 35px; transition: opacity 0.2s; text-decoration: none;}
+                .sidebar .brand img { height: 100%; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; }
                 
                 .btn-toggle-sidebar { background: transparent; border: 1px solid #333; color: white; border-radius: 6px; padding: 4px 8px; cursor: pointer; transition: 0.2s; font-size: 1rem; font-family: monospace;}
                 .btn-toggle-sidebar:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
@@ -113,7 +112,6 @@ export const Sidebar = {
                 .sidebar .side-link:hover { background: rgba(255,255,255,0.05); color: white; transform: translateX(3px);}
                 .sidebar .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); }
                 
-                /* ANIMACIÓN TOMATE POMODORO */
                 .active-pomodoro { animation: pulseTomato 1.5s infinite alternate; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
 
@@ -149,7 +147,7 @@ export const Sidebar = {
                 .sidebar.collapsed .project-context-header .icon-only { display: block !important; cursor: pointer; }
                 .sidebar.collapsed .sidebar-footer .text { display: none; }
 
-                /* OCULTAR EN MÓVIL (El BottomNav hace su trabajo) */
+                /* OCULTAR EN MÓVIL */
                 @media (max-width: 768px) {
                     .sidebar { display: none !important; }
                 }
@@ -157,7 +155,9 @@ export const Sidebar = {
             
             <aside class="sidebar ${collapsedClass}" id="mainSidebar">
                 <div class="sidebar-top-bar">
-                    <a href="/v5/" class="brand" data-link>🗼 Team<span>Towers</span></a>
+                    <a href="/v5/" class="brand" data-link>
+                        <img src="logoteamtowers.png" alt="TeamTowers">
+                    </a>
                     <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Colapsar / Expandir Menú">
                         <span id="btnToggleIcon">${arrowIcon}</span>
                     </button>
@@ -213,7 +213,6 @@ export const Sidebar = {
             });
         }
 
-        // Listener global para animar el tomate si hay un pomodoro corriendo
         window.addEventListener('pomodoro_tick', () => {
             const icons = document.querySelectorAll('.sidebar .icon');
             icons.forEach(i => {
