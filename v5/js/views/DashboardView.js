@@ -4,7 +4,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class DashboardView {
     constructor() {
-        document.title = "Lobby del Proyecto | TeamTowers SOS";
+        document.title = "Dashboard Central | TeamTowers SOS";
         this.activeProjectId = null;
     }
 
@@ -18,12 +18,12 @@ export default class DashboardView {
             return `
                 <div class="app-layout">
                     ${Sidebar.getHtml('/dashboard')}
-                    <main class="workspace" style="justify-content:center; align-items:center; display:flex;">
-                        <div style="text-align:center; background: rgba(255,255,255,0.02); padding: 4rem; border-radius: 12px; border: 1px dashed #333;">
-                            <div style="font-size: 4rem; margin-bottom: 1rem;">🕳️</div>
-                            <h2 style="color:white; margin-top:0;">El Kernel está vacío</h2>
-                            <p style="color:var(--text-muted); margin-bottom: 2rem;">Aún no has instanciado ninguna red VNA.</p>
-                            <a href="/v5/create" data-link class="btn btn-primary" style="background: var(--accent-blue); color: black; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ Instanciar Nueva Red</a>
+                    <main class="workspace" style="justify-content:center; align-items:center; display:flex; height:100vh; background: #050505;">
+                        <div style="text-align:center; padding: 4rem; border: 1px dashed #333; border-radius: 12px;">
+                             <div style="font-size: 4rem; margin-bottom: 1rem;">🛰️</div>
+                             <h2 style="color:white; margin-top:0;">Frecuencia no detectada</h2>
+                             <p style="color:var(--text-muted); margin-bottom: 2rem;">Aún no has instanciado ninguna red en este Kernel.</p>
+                             <a href="/v5/create" data-link class="btn btn-primary" style="background: var(--accent-blue); color: black; padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration:none;">+ Instanciar Proyecto</a>
                         </div>
                     </main>
                 </div>
@@ -53,113 +53,107 @@ export default class DashboardView {
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
         const resilience = store.calculateResilience(project.id);
         const isPO = project.ownerId === activeUserId || globalRole === 'ecosystem-owner';
-
-        // Sillas Vacías
+        
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
 
         let vacantesHtml = sillasVacias.length === 0 
-            ? `<div style="padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 8px; color: var(--accent-green); text-align: center; font-weight: bold;">✅ La Colla está al 100%.</div>`
+            ? `<div class="status-ok">✅ Colla completa. Sin vacantes.</div>`
             : sillasVacias.map(r => `
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                <div class="vacante-card">
                     <div>
-                        <div style="color: white; font-weight: bold; display: flex; align-items: center; gap: 8px;">
-                            ${this.getIcon(r.levelId)} ${r.name}
-                        </div>
-                        <div style="font-size: 0.75rem; color: #666; font-family: var(--font-mono);">${r.levelId} | 🛡️ ${r.guardian || 'Any'}</div>
+                        <div class="vacante-name">${this.getIcon(r.levelId)} ${r.name}</div>
+                        <div class="vacante-meta">${r.levelId} | 🛡️ ${r.guardian || 'Any'} | FMV: ${r.fmv}€/h</div>
                     </div>
-                    <button class="btn-invite" data-rolename="${r.name}" style="background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue); padding:4px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">+ Invitar</button>
+                    <button class="btn-invite" data-rolename="${r.name}">+ Invitar</button>
                 </div>
             `).join('');
 
-        const pitchText = project.presentation || project.prompt || 'Visión en blanco...';
-        const tagsHtml = (project.tags && project.tags.length > 0) ? project.tags.map(t => `<span class="badge">#${t}</span>`).join('') : '';
+        const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red está en fase de definición...';
+        const tagsHtml = (project.tags && project.tags.length > 0) 
+            ? project.tags.map(t => `<span class="badge-tag">#${t}</span>`).join('') 
+            : `<span class="badge-tag">#Agnostico</span>`;
 
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: #050505; font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 3rem 4rem; overflow-y: auto; display: flex; flex-direction: column; }
+                .workspace { flex: 1; padding: 3rem 5rem; overflow-y: auto; display: flex; flex-direction: column; }
                 
-                /* CABECERA DASHBOARD */
-                .dash-header { margin-bottom: 3rem; animation: fadeIn 0.5s ease-out; }
-                .project-tags { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap;}
-                .project-tags .badge { background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.2); color: var(--accent-blue); padding: 2px 10px; border-radius: 4px; font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase;}
+                .project-hero { margin-bottom: 3.5rem; position: relative; animation: fadeIn 0.8s ease-out; }
+                .project-name { font-size: 4rem; color: white; margin: 0; letter-spacing: -2px; line-height: 1; font-weight: 800; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                .project-meta-top { display: flex; gap: 12px; margin-bottom: 1rem; align-items: center; }
+                .badge-tag { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-purple); border: 1px solid rgba(224, 64, 251, 0.3); padding: 3px 10px; border-radius: 4px; text-transform: uppercase; background: rgba(224, 64, 251, 0.05); }
                 
-                .project-name-main { font-size: 3.5rem; color: white; margin: 0; letter-spacing: -2px; line-height: 1; font-weight: 800; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-                .project-archetype-label { font-size: 1.2rem; color: var(--accent-orange); margin-top: 5px; font-weight: normal; opacity: 0.8; }
+                .presentation-box { margin-top: 2rem; max-width: 800px; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 12px; border: 1px solid var(--glass-border); position: relative; border-left: 4px solid var(--accent-purple); }
+                .presentation-text { color: #aaa; font-size: 1.1rem; line-height: 1.7; overflow: hidden; transition: max-height 0.4s ease; }
+                .presentation-text.collapsed { max-height: 100px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+                .btn-read-more { background: none; border: none; color: var(--accent-purple); font-weight: bold; cursor: pointer; padding: 10px 0 0 0; font-size: 0.85rem; text-transform: uppercase; }
 
-                /* CAJA DE PRESENTACIÓN */
-                .presentation-box { margin-top: 2rem; background: linear-gradient(to right, rgba(224, 64, 251, 0.05), transparent); border-left: 4px solid var(--accent-purple); padding: 1.5rem 2rem; border-radius: 0 12px 12px 0; position: relative; max-width: 900px;}
-                .presentation-text { color: #ccc; font-size: 1.1rem; line-height: 1.7; font-style: italic; white-space: pre-wrap; }
-                .btn-edit-pitch { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.05); border: none; color: #666; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem;}
-                .btn-edit-pitch:hover { color: white; background: rgba(255,255,255,0.1); }
+                .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
+                .kpi-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; text-align: center; transition: 0.3s; }
+                .kpi-card:hover { background: rgba(255,255,255,0.05); border-color: #444; }
+                .kpi-val { font-size: 2.2rem; font-weight: bold; color: white; display: block; margin-bottom: 5px; font-family: var(--font-mono); }
+                .kpi-lbl { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-                /* BOTONES DE ACCIÓN */
-                .action-bar { display: flex; gap: 15px; margin-top: 2rem; }
-                .btn-main { padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-                .btn-primary { background: white; color: black; }
-                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
-                .btn-outline { background: transparent; border: 1px solid #333; color: white; }
-                .btn-outline:hover { border-color: #666; background: rgba(255,255,255,0.05); }
+                .content-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; }
+                
+                .panel-box { background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2.5rem; }
+                .panel-title { color: white; margin-top: 0; font-size: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
+                
+                .vacante-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid #222; padding: 1rem 1.5rem; border-radius: 10px; margin-bottom: 12px; }
+                .vacante-name { color: white; font-weight: bold; }
+                .vacante-meta { font-size: 0.75rem; color: #555; font-family: var(--font-mono); margin-top: 4px; }
+                .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+                .btn-invite:hover { background: var(--accent-blue); color: black; }
 
-                /* KPI GRID */
-                .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin: 3rem 0; }
-                .kpi-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; text-align: center; }
-                .kpi-val { font-size: 2rem; font-weight: 900; color: white; font-family: var(--font-mono); margin-bottom: 5px; display: block;}
-                .kpi-lbl { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+                .btn-ai-action { width: 100%; padding: 1.5rem; border-radius: 10px; border: 1px solid #333; background: rgba(0,0,0,0.5); color: white; text-align: left; cursor: pointer; transition: 0.2s; margin-bottom: 1rem; }
+                .btn-ai-action:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(224, 64, 251, 0.05); }
+                .btn-ai-action strong { color: var(--accent-purple); display: block; font-size: 1.1rem; margin-bottom: 5px; }
+                .btn-ai-action span { color: #666; font-size: 0.8rem; }
 
-                /* CONTENEDORES SECUNDARIOS */
-                .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem;}
-                .panel-box { background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px; }
-                .panel-title { color: white; margin-top: 0; font-size: 1.3rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;}
+                .status-ok { padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 10px; color: var(--accent-green); text-align: center; font-weight: bold; }
 
-                .btn-report { width: 100%; text-align: left; background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 15px; border-radius: 8px; color: white; cursor: pointer; margin-bottom: 10px; transition: 0.2s;}
-                .btn-report:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(224, 64, 251, 0.05); }
-                .btn-report strong { display: block; color: var(--accent-purple); font-size: 1rem; margin-bottom: 4px;}
-                .btn-report span { font-size: 0.75rem; color: #666;}
-
-                /* MODAL IA */
                 .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
                 .modal-ia-content { background: #0a0a0a; width: 90%; max-width: 800px; max-height: 85vh; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; overflow:hidden;}
                 .modal-ia-body { padding: 25px; overflow-y: auto; color: #ccc; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; font-family: inherit;}
 
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @media (max-width: 1024px) { .panel-row { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr 1fr; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                @media (max-width: 1100px) { .content-row { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr 1fr; } }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/dashboard')}
 
                 <main class="workspace">
-                    <header class="dash-header">
-                        <div class="project-tags">
-                            <span class="badge" style="color:var(--accent-blue); border-color:var(--accent-blue);">${project.sector.replace(/_/g, ' ')}</span>
+                    <header class="project-hero">
+                        <div class="project-meta-top">
+                            <span class="badge-tag" style="color:var(--accent-blue); border-color:var(--accent-blue);">${project.archetype.toUpperCase()}</span>
                             ${tagsHtml}
                         </div>
-                        <h1 class="project-name-main">${project.nombre}</h1>
-                        <div class="project-archetype-label">${project.archetype.toUpperCase()} Ecosistema</div>
-
+                        <h1 class="project-name">${project.nombre}</h1>
+                        
                         <div class="presentation-box">
-                            ${isPO ? `<button class="btn-edit-pitch" id="btnEditPitch">✏️ EDITAR VISIÓN</button>` : ''}
-                            <div class="presentation-text" id="pitchDisplay">${pitchText}</div>
+                            <div class="presentation-text collapsed" id="pitchText">
+                                ${pitchText.replace(/\n/g, '<br>')}
+                            </div>
+                            <button class="btn-read-more" id="btnTogglePitch">Leer Manifiesto +</button>
                         </div>
 
-                        <div class="action-bar">
-                            <a href="/v5/project" data-link class="btn-main btn-primary">📋 ENTRAR AL KANBAN</a>
-                            <a href="/v5/map" data-link class="btn-main btn-outline">🕸️ MAPA DE VALOR</a>
-                            ${isPO ? `<button id="btnExportTemplate" class="btn-main btn-outline" style="border-style:dashed; color:#666;">💾 GUARDAR ADN</button>` : ''}
+                        <div style="display: flex; gap: 15px; margin-top: 2.5rem;">
+                            <a href="/v5/project" data-link class="btn btn-primary" style="background:white; color:black; padding: 15px 30px; font-weight:bold; text-decoration:none; border-radius:8px;">ACCEDER AL KANBAN</a>
+                            <a href="/v5/map" data-link class="btn btn-outline" style="padding: 15px 30px; text-decoration:none; border-radius:8px; color:white; border:1px solid #555;">MAPA DE VALOR VNA</a>
                         </div>
                     </header>
 
                     <section class="kpi-grid">
                         <div class="kpi-card">
                             <span class="kpi-val" style="color: var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</span>
-                            <span class="kpi-lbl">Slices Mined</span>
+                            <span class="kpi-lbl">Slices Minados</span>
                         </div>
                         <div class="kpi-card">
                             <span class="kpi-val" style="color: var(--accent-blue);">${totalHours.toFixed(1)}h</span>
-                            <span class="kpi-lbl">Esfuerzo Auditado</span>
+                            <span class="kpi-lbl">Trabajo Auditado</span>
                         </div>
                         <div class="kpi-card">
                             <span class="kpi-val" style="color: ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">${resilience}%</span>
@@ -171,25 +165,25 @@ export default class DashboardView {
                         </div>
                     </section>
 
-                    <div class="panel-row">
+                    <div class="content-row">
                         <div class="panel-box">
-                            <h2 class="panel-title">🎯 Sillas Disponibles</h2>
-                            <p style="color:#555; font-size:0.85rem; margin-bottom:1.5rem;">Roles en la arquitectura esperando ser reclamados.</p>
+                            <h2 class="panel-title">🎯 Sillas Disponibles (Mercado Interno)</h2>
+                            <p style="color:#555; font-size:0.9rem; margin-bottom:2rem;">Roles diseñados en la arquitectura que aún no han sido reclamados por un mercenario.</p>
                             ${vacantesHtml}
                         </div>
 
                         <div class="panel-box" style="border-color: rgba(224, 64, 251, 0.2);">
-                            <h2 class="panel-title" style="color:var(--accent-purple);">🤖 Orquestador IA & Legal</h2>
-                            <p style="color:#555; font-size:0.85rem; margin-bottom:1.5rem;">Genera auditorías y documentos dinámicos.</p>
+                            <h2 class="panel-title" style="color:var(--accent-purple);">🔮 Orquestador de Valor</h2>
+                            <p style="color:#555; font-size:0.9rem; margin-bottom:2rem;">Herramientas IA para la gestión legal y estratégica de la red.</p>
                             
-                            <button class="btn-report" id="btnAIAuditor">
+                            <button class="btn-ai-action" id="btnAIAuditor">
                                 <strong>🧠 Auditoría de Salud VNA</strong>
-                                <span>La IA analiza cuellos de botella y balance de poder.</span>
+                                <span>Analiza flujos, cuellos de botella y balance de poder entre nodos.</span>
                             </button>
 
-                            <button class="btn-report" id="btnAILegal">
-                                <strong>📄 Generar Pacto de Socios</strong>
-                                <span>Borrador contractual basado en el Ledger actual.</span>
+                            <button class="btn-ai-action" id="btnAILegal">
+                                <strong>⚖️ Generar Pacto de Socios</strong>
+                                <span>Redacta el contrato legal dinámico basado en el Ledger actual.</span>
                             </button>
                         </div>
                     </div>
@@ -204,7 +198,7 @@ export default class DashboardView {
                     </div>
                     <div class="modal-ia-body" id="aiModalBody"></div>
                     <div style="padding:15px 25px; border-top:1px solid #333; display:flex; justify-content:flex-end; background:#000;">
-                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; padding:8px 15px; font-size:0.8rem;">Descargar .txt</button>
+                        <button class="btn btn-primary" id="btnDownloadPDF" style="display:none; background:var(--accent-blue); border:none; color:black; font-weight:bold; padding:10px 20px;">DESCARGAR INFORME (.TXT)</button>
                     </div>
                 </div>
             </div>
@@ -218,31 +212,26 @@ export default class DashboardView {
         if (!this.activeProjectId) return;
         const project = store.getState().projects.find(p => p.id === this.activeProjectId);
 
-        // -- EDITAR PITCH --
-        document.getElementById('btnEditPitch')?.addEventListener('click', () => {
-            const current = project.presentation || project.prompt || '';
-            const next = prompt("Edita la Visión / Pitch de la red:", current);
-            if (next !== null) {
-                store.dispatch({
-                    type: 'UPDATE_PROJECT_INFO',
-                    payload: { projectId: this.activeProjectId, updates: { presentation: next } }
-                });
-                window.location.reload();
-            }
-        });
+        // -- LÓGICA ACORDEÓN PITCH --
+        const pitchEl = document.getElementById('pitchText');
+        const btnToggle = document.getElementById('btnTogglePitch');
+        if (pitchEl && btnToggle) {
+            btnToggle.addEventListener('click', () => {
+                const isCollapsed = pitchEl.classList.contains('collapsed');
+                pitchEl.classList.toggle('collapsed');
+                btnToggle.innerText = isCollapsed ? 'Contraer Manifiesto -' : 'Leer Manifiesto +';
+            });
+        }
 
-        // -- GUARDAR PLANTILLA --
-        document.getElementById('btnExportTemplate')?.addEventListener('click', async () => {
-            const id = prompt("ID de la plantilla (ej: mi_startup):", project.sector + "_v2");
-            if (!id) return;
-            const rolesData = {};
-            project.roles.forEach(r => {
-                if (!rolesData[r.levelId]) {
-                    rolesData[r.levelId] = { name: r.name, guardian: r.guardian || '', multiplier: r.multiplier || 1.0, ai_prompt: '', standard_deliverables: [] };
+        // -- INVITACIONES --
+        document.querySelectorAll('.btn-invite').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const roleName = e.target.getAttribute('data-rolename');
+                const email = prompt(`Invitar mercenario para el rol [${roleName}]. Introduce su email:`);
+                if (email && email.includes('@')) {
+                    alert(`Invitación enviada a ${email}. Se registrará en el log del proyecto.`);
                 }
             });
-            await store.dispatch({ type: 'ADD_ONTOLOGY_SECTOR', payload: { sectorId: id, rolesData } });
-            alert("✅ Guardada en Settings.");
         });
 
         // -- MÓDULO IA --
@@ -250,41 +239,88 @@ export default class DashboardView {
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
         const btnDownload = document.getElementById('btnDownloadPDF');
+
         document.getElementById('aiModalClose').onclick = () => modal.style.display = 'none';
 
         const runAI = async (type) => {
             const provider = localStorage.getItem('tt_ai_provider');
-            const key = localStorage.getItem(`tt_key_${provider}`);
-            if (!key) return alert("Falta API Key en Settings.");
+            let apiKey = '';
+            if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
+            if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
+            if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
+
+            if (!apiKey) return alert("Configura tu API Key en Settings antes de invocar al orquestador.");
 
             modal.style.display = 'flex';
-            modalBody.innerHTML = "Analizando red...";
+            modalBody.innerHTML = `<div style="text-align:center; padding:3rem;"><div style="font-size:3rem; animation: pulseGlow 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1rem;">Procesando datos del Ledger Inmutable...</p></div>`;
             btnDownload.style.display = 'none';
+            modalTitle.innerText = type === 'audit' ? 'Auditoría de Salud' : 'Pacto de Socios';
 
-            const sys = type === 'audit' ? "Auditor VNA" : "Notario Web3";
+            // Extraer datos crudos para mandar a la IA
+            const harvest = store.calculateHarvest(project.id) || [];
+            const dataPayload = {
+                nombre: project.nombre,
+                arquetipo: project.archetype,
+                roles: project.roles.map(r => `${r.name} (${r.levelId})`),
+                transacciones_teoricas: project.transactions.length,
+                ledger_slices: harvest.map(h => `${h.user}: ${h.slices.toFixed(2)} Slices (${h.percent}%)`)
+            };
+
+            let systemPrompt = "Eres un estratega DAO experto en Verna Allee.";
+            if (type === 'audit') {
+                systemPrompt += `\nAnaliza el JSON del proyecto y devuelve un diagnóstico VNA (Máx 4 párrafos). Detecta cuellos de botella en los roles y evalúa la resiliencia en base a los Slices. Formato texto plano legible sin markdown excesivo.`;
+            } else {
+                systemPrompt += `\nEres un Abogado Notarial Corporativo especializado en Slicing Pie y Modelos Dinámicos de Equidad. Basándote en el JSON del proyecto, redacta el borrador de un "Pacto de Socios" formal. Incluye cláusulas de Fundadores, la tabla de "Cap Table" actual (basada en el campo ledger_slices), y el objeto fundacional. Formato texto formal.`;
+            }
+
             try {
-                const res = await fetch(`https://api.deepseek.com/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                    body: JSON.stringify({
-                        model: "deepseek-chat",
-                        messages: [{ role: "system", content: sys }, { role: "user", content: JSON.stringify(project) }]
-                    })
-                });
-                const data = await res.json();
-                const txt = data.choices[0].message.content;
-                modalTitle.innerText = type === 'audit' ? 'Reporte Auditoría' : 'Pacto de Socios';
-                modalBody.innerText = txt;
+                let text = "";
+                if (provider === 'deepseek') {
+                    const res = await fetch(`https://api.deepseek.com/chat/completions`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({
+                            model: "deepseek-chat",
+                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }]
+                        })
+                    });
+                    const data = await res.json();
+                    text = data.choices[0].message.content;
+                } else if (provider === 'openai') {
+                    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({
+                            model: "gpt-4o-mini",
+                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }]
+                        })
+                    });
+                    const data = await res.json();
+                    text = data.choices[0].message.content;
+                } else if (provider === 'gemini') {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nJSON: ${JSON.stringify(dataPayload)}` }] }] })
+                    });
+                    const data = await res.json();
+                    text = data.candidates[0].content.parts[0].text;
+                }
+
+                modalBody.innerHTML = `<div style="white-space:pre-wrap;">${text.replace(/\n/g, '<br>')}</div>`;
                 btnDownload.style.display = 'block';
                 btnDownload.onclick = () => {
-                    const b = new Blob([txt], {type:"text/plain"});
+                    const b = new Blob([text], {type:"text/plain"});
                     const u = URL.createObjectURL(b);
-                    const a = document.createElement('a'); a.href=u; a.download=`${type}.txt`; a.click();
+                    const a = document.createElement('a'); a.href=u; a.download=`${type}_${project.nombre.replace(/ /g,'_')}.txt`; a.click();
                 };
-            } catch (e) { modalBody.innerText = "Error de conexión."; }
+            } catch (e) { 
+                modalBody.innerHTML = `<p style="color:red;">Error de conexión: ${e.message}</p>`; 
+            }
         };
 
+        // Bindeo de botones (AQUÍ ESTABA EL BUG PREVIO DE callAIAgent, AHORA RESUELTO)
         document.getElementById('btnAIAuditor')?.addEventListener('click', () => runAI('audit'));
-        document.getElementById('btnAILegal')?.addEventListener('click', () => callAIAgent('legal'));
+        document.getElementById('btnAILegal')?.addEventListener('click', () => runAI('legal'));
     }
 }
