@@ -65,7 +65,7 @@ export default class TestsView {
                         </div>
 
                         <div class="log-terminal" id="terminalLog">
-                            <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas asíncronas integrales.</div>
+                            <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas asíncronas integrales V8.0.</div>
                         </div>
 
                         <button class="run-btn" id="runTestsBtn">EJECUTAR SUITE DE PRUEBAS (TDD) ▶</button>
@@ -82,7 +82,7 @@ export default class TestsView {
 
         btn.addEventListener('click', async () => {
             btn.disabled = true;
-            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones V7.4...</div>';
+            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones V8.0...</div>';
             
             let passed = 0; 
             let total = 0;
@@ -133,6 +133,36 @@ export default class TestsView {
                 const uGlobal = store.getState().globalUsers[0];
                 assert(uGlobal.profile !== undefined && uGlobal.profile.guardian_authority !== undefined, "Perfil incluye Arquetipos Pantheon (Autoridad)", "IKIGAI"); 
 
+                // --- FASE 2.5: ONBOARDING & REGISTRO GLOBAL INDEPENDIENTE (V8.0) ---
+                const testGlobalUserId = '@new_global_' + Math.floor(Math.random() * 100000);
+                await store.dispatch({
+                    type: 'REGISTER_GLOBAL_USER',
+                    payload: {
+                        id: testGlobalUserId,
+                        name: 'Test Global User',
+                        email: 'global@test.com',
+                        wallet: '0xabc',
+                        profile: { country: 'TestLand', structural_affinity: ['@anxaneta'] }
+                    }
+                });
+
+                const globalCheck = store.getState().globalUsers.find(u => u.id === testGlobalUserId);
+                assert(globalCheck !== undefined, "Usuario creado exitosamente en namespace Global SIN Proyecto", "PERMAWEB");
+                assert(globalCheck.email === 'global@test.com' && globalCheck.profile.country === 'TestLand', "Atributos Geo-Web3 guardados correctamente", "PERMAWEB");
+
+                // Test de Inmutabilidad de Alias
+                await store.dispatch({
+                    type: 'REGISTER_GLOBAL_USER',
+                    payload: {
+                        id: testGlobalUserId, // Intentamos crear el mismo ID
+                        name: 'Impostor User',
+                        email: 'hacker@test.com'
+                    }
+                });
+                
+                const checkAgain = store.getState().globalUsers.find(u => u.id === testGlobalUserId);
+                assert(checkAgain.email === 'global@test.com', "Seguridad: El Kernel rechaza sobrescribir un Alias existente", "SECURITY");
+
                 // --- FASE 3: CREACIÓN DE ECOSISTEMAS Y GÉNESIS HASH ---
                 await store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_1, nombre: 'Test V7', sector: 'digital_media_growth' } });
                 const p = store.getState().projects.find(x => x.id === PID_1);
@@ -143,6 +173,11 @@ export default class TestsView {
                 let expectedRolesCount = 5;
                 if (GLOBAL_ONTOLOGY['digital_media_growth']) expectedRolesCount = Object.keys(GLOBAL_ONTOLOGY['digital_media_growth']).length;
                 assert(p.roles && p.roles.length === expectedRolesCount, `Ontología inyectada dinámicamente`, "ONTOLOGY"); 
+
+                // --- FASE 3.5: AÑADIR USUARIO GLOBAL A PROYECTO (Integración V8.0) ---
+                await store.dispatch({ type: 'ADD_USER', payload: { projectId: PID_1, userId: testGlobalUserId } });
+                const projCheck = store.getState().projects.find(x => x.id === PID_1).usuarios.find(u => u.id === testGlobalUserId);
+                assert(projCheck !== undefined, "Integración de usuario de Permaweb en Colla de proyecto exitosa", "COLLA");
 
                 // --- FASE 4: INMUTABILIDAD Y GESTIÓN DE ROLES ---
                 const anxanetaRole = p.roles.find(r => r.levelId === '@anxaneta');
@@ -188,7 +223,6 @@ export default class TestsView {
 
                 // --- FASE 7: SLICING PIE & LEDGER INMUTABLE ---
                 await store.dispatch({ type: 'ADD_PROJECT', payload: { id: PID_ECO, nombre: 'DAO Project', sector: 'general', archetype: 'dao' } });
-                // FIX V7.4: INYECTAR EXPRESAMENTE EL CAMBIO DE CONFIG PARA EL TEST 51
                 await store.dispatch({ type: 'UPDATE_PROJECT_CONFIG', payload: { projectId: PID_ECO, config: { tokenomics: 'dao' } } });
                 
                 await store.dispatch({ type: 'ADD_ROLE', payload: { projectId: PID_ECO, role: { id: 'role-dev', name: 'Dev', levelId: '@baixos', multiplier: 1.5 } } });
@@ -296,8 +330,7 @@ export default class TestsView {
                 const maturity = store.calculateMaturityIndex(PID_1);
                 assert(maturity.score >= 0, "Maturity Index calculado con seguridad", "KERNEL"); 
                 
-                // EL FIX: Ahora sí está guardado como 'dao' gracias a la FASE 7.
-                assert(store.getState().projects.find(x => x.id === PID_ECO).config.tokenomics === 'dao', "Modelo Tokenomics guardado y enlazado a DAO", "TOKENOMICS"); // 51
+                assert(store.getState().projects.find(x => x.id === PID_ECO).config.tokenomics === 'dao', "Modelo Tokenomics guardado y enlazado a DAO", "TOKENOMICS");
 
                 // --- RESULTADO FINAL ---
                 if(passed === total) {
@@ -305,12 +338,12 @@ export default class TestsView {
                     score.style.color = finalColor;
                     terminal.innerHTML += `
                         <div style="margin-top: 25px; padding: 20px; border: 1px solid ${finalColor}; background: rgba(0, 230, 118, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in;">
-                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v7.4 VALIDADO AL 100%</h2>
+                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v8.0 VALIDADO AL 100%</h2>
                             <p style="color: white; margin-top: 10px; font-size: 1.1rem;">El Motor Core ha superado exactamente ${total} vectores de prueba.</p>
-                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos chequeados: RBAC, VNA, SHA-256, Slicing Pie, Capital, Privacy</p>
+                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos chequeados: RBAC, VNA, SHA-256, Slicing Pie, Capital, Privacy, Identity (Permaweb)</p>
                         </div>
                     `;
-                    btn.innerText = "CERTIFICACIÓN V7.4 COMPLETADA ✓";
+                    btn.innerText = "CERTIFICACIÓN V8.0 COMPLETADA ✓";
                     btn.style.background = finalColor;
                     btn.style.color = "black";
                 }
