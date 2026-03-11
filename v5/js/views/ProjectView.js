@@ -133,10 +133,9 @@ export default class ProjectView {
                     <div class="view-header">
                         <div>
                             <h1 id="viewTitle">Tareas</h1>
-                            <p>Kanban de oportunidades, en curso y contabilizado.</p>
+                            <p>Kanban  de oportunidades, tareas en curso y contabilizado.</p>
                         </div>
-                        <a href="/v5/map" class="btn btn-outline" data-link style="padding: 8px 15px; border-radius: 8px; text-decoration:none; font-size:0.9rem;">⚙️ Mapa VNA</a>
-                    </div>
+                    
 
                     <div class="controls-row">
                         <div class="tabs-container" id="tabsContainer">
