@@ -177,8 +177,8 @@ export default class DashboardView {
                             <p style="color:#555; font-size:0.9rem; margin-bottom:2rem;">Herramientas IA para la gestión legal y estratégica de la red.</p>
                             
                             <button class="btn-ai-action" id="btnAIAuditor">
-                                <strong>🧠 Auditoría de Salud VNA</strong>
-                                <span>Analiza flujos, cuellos de botella y balance de poder entre nodos.</span>
+                                <strong>🧠 Auditoría de Salud VNA & Equity</strong>
+                                <span>Analiza flujos, cuellos de botella y balance PoW/Capital.</span>
                             </button>
 
                             <button class="btn-ai-action" id="btnAILegal">
@@ -236,7 +236,7 @@ export default class DashboardView {
             });
         });
 
-        // -- MÓDULO IA (CON PAYLOAD VNA Y LEDGER REAL MEJORADO) --
+        // -- MÓDULO IA (REPARACIÓN DE LECTURA DE CAPITAL Y VNA) --
         const modal = document.getElementById('aiModal');
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
@@ -256,15 +256,15 @@ export default class DashboardView {
             modal.style.display = 'flex';
             modalBody.innerHTML = `<div style="text-align:center; padding:3rem;"><div style="font-size:3rem; animation: pulseGlow 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1rem;">Leyendo el Ledger Inmutable para generar el informe...</p></div>`;
             btnDownload.style.display = 'none';
-            modalTitle.innerText = type === 'audit' ? 'Auditoría de Salud VNA' : 'Pacto de Socios (Slicing Pie)';
+            modalTitle.innerText = type === 'audit' ? 'Auditoría de Salud VNA & Equity' : 'Pacto de Socios (Slicing Pie)';
 
             // ---------------------------------------------------------
-            // EXTRACCIÓN PROFUNDA DE DATOS PARA LA IA (V8.2)
+            // EXTRACCIÓN PROFUNDA DE DATOS PARA LA IA (V8.3)
             // ---------------------------------------------------------
             const harvest = store.calculateHarvest(project.id) || [];
             const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
             
-            // 1. CAP TABLE CALCULADA (Para que no de 0%)
+            // 1. CAP TABLE CALCULADA
             let capTableDetails = ["El Ledger está vacío. Aún no se ha minado Equity (Slices)."];
             if (harvest.length > 0 && totalSlices > 0) {
                 capTableDetails = harvest.map(h => {
@@ -275,17 +275,20 @@ export default class DashboardView {
                 });
             }
 
-            // 2. LEDGER INMUTABLE REAL (Las aportaciones exactas de cada socio)
+            // 2. LEDGER INMUTABLE REAL (REPARACIÓN DE SESGO DE CAPITAL)
             const realLedger = (project.ledger || []).map(l => {
                 const u = state.globalUsers?.find(gu => gu.id === l.userId);
                 const userName = u ? u.name : (l.userId || 'Sistema');
                 
-                if (l.isCapital) {
-                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} aportó CAPITAL TANGIBLE (${l.descripcion || l.entregable}). Recompensa: +${l.valorCongelado} Slices.`;
+                // Detección blindada de inyección de Capital
+                const isCap = l.isCapital || l.roleId === 'capital' || String(l.entregable).includes('[Capital');
+                
+                if (isCap) {
+                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} inyectó CAPITAL FINANCIERO o IP ("${l.descripcion || l.entregable}"). Slices generados (con multiplicador de máximo riesgo): +${l.valorCongelado}.`;
                 } else {
                     const role = project.roles?.find(r => r.id === l.roleId);
-                    const roleName = role ? `${role.levelId} ${role.name}` : 'Rol Eliminado';
-                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} ejecutó TRABAJO como ${roleName}. Entregable: "${l.entregable}" (${l.horas}h). Recompensa: +${l.valorCongelado} Slices.`;
+                    const roleName = role ? `${role.levelId} ${role.name}` : 'Aportación General/Soporte'; // Evitamos el texto "Rol Eliminado"
+                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} ejecutó TRABAJO / PoW como ${roleName}. Entregable: "${l.entregable}" (${l.horas || 0}h). Slices generados: +${l.valorCongelado}.`;
                 }
             });
 
@@ -312,16 +315,24 @@ export default class DashboardView {
             let systemPrompt = state.config?.globalPrompt || "Eres un Master Architect de DAOs.";
             
             if (type === 'audit') {
-                systemPrompt += `\nMisión: Eres un Auditor VNA (Value Network Analysis). 
+                systemPrompt += `\nMisión: Eres un Auditor VNA (Value Network Analysis) y experto en economía dinámica (Slicing Pie).
+                
+                REGLAS CRÍTICAS DEL MODELO DE EQUIDAD:
+                1. El modelo Slicing Pie premia el RIESGO. Las inyecciones de CAPITAL (Cash, Propiedad Intelectual, Activos) asumen el máximo riesgo financiero y generan grandes volúmenes de Slices (normalmente con un multiplicador x4). Es un mérito legítimo y vital para la red, NUNCA lo consideres como "falta de mérito" o "desproporcionado".
+                2. El TRABAJO (PoW / Esfuerzo en horas) asume riesgo de tiempo (multiplicador x2).
+                
+                INSTRUCCIONES DE AUDITORÍA:
                 Revisa el 'registro_aportaciones_reales' y la 'cap_table_actual'. 
-                Detecta si alguien está aportando más de lo sano para la red o si hay dependencias excesivas de un solo socio. 
-                Si el Ledger está vacío, dilo claramente. Formato texto plano legible sin markdown excesivo.`;
+                - Identifica claramente la simbiosis: ¿Quiénes son los Nodos Inversores (aportan Capital) y quiénes los Nodos Operativos (aportan Esfuerzo)?
+                - Evalúa si hay un buen equilibrio operativo. Fíjate en los flujos VNA para ver si el trabajo está centralizado en una sola persona (cuello de botella de ejecución).
+                - Aporta soluciones respetando el mérito de quienes han financiado la red con capital y de quienes la han construido con trabajo.
+                Formato texto plano legible sin markdown excesivo.`;
             } else {
                 systemPrompt += `\nMisión: Eres un Abogado Notarial Web3 experto en Slicing Pie y contratos dinámicos.
                 Redacta un "Pacto de Socios" formal basado estrictamente en los datos recibidos.
                 1. Menciona la Visión Fundacional.
                 2. Usa la "cap_table_actual" para redactar la cláusula de PARTICIPACIÓN ACTUAL (Asegúrate de poner los % correctos y nombrar a los socios).
-                3. Usa el "registro_aportaciones_reales" para crear un Anexo final desglosando exactamente de dónde salen los Slices de cada socio (qué horas trabajaron o qué capital metieron).
+                3. Usa el "registro_aportaciones_reales" para crear un Anexo final desglosando exactamente de dónde salen los Slices de cada socio, diferenciando claramente las aportaciones de RIESGO DE CAPITAL (dinero/IP) y el RIESGO DE TRABAJO (PoW/horas).
                 El documento debe parecer redactado por una notaría. Formato texto formal legible.`;
             }
             // ---------------------------------------------------------
