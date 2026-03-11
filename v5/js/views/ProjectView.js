@@ -2,7 +2,8 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Necesario para los templates
+import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN COMPONENTE UNIVERSAL
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 export default class ProjectView {
     constructor() {
@@ -15,55 +16,59 @@ export default class ProjectView {
     async getHtml() {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
+        const user = state.globalUsers.find(u => u.id === activeUserId);
+        
         const userProjects = state.projects.filter(p => 
             state.session.role === 'ecosystem-owner' || 
             p.ownerId === activeUserId || 
             (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
         );
 
+        let activeProjectId = localStorage.getItem('tt_active_project') || (userProjects.length > 0 ? userProjects[userProjects.length - 1].id : null);
+        let project = state.projects.find(p => p.id === activeProjectId);
+
+        const isOpen = user?.profile?.isOpenToWork || false;
+        const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
+        const statusBtnText = isOpen ? '🟢 Disponible' : '🔴 Ocupado';
+
+        // Configuración del Header Universal
+        const headerConfig = {
+            title: "Tareas",
+            subtitle: project ? project.nombre : '',
+            tagline: "Kanban de oportunidades, en curso y contabilizado.",
+            actionHtml: `
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <div class="${statusBtnClass}" title="Estado de Matching">${statusBtnText}</div>
+                    <a href="/v5/map" class="btn btn-outline" data-link style="padding: 8px 15px; border-radius: 8px; text-decoration:none; font-size:0.85rem;">⚙️ Mapa VNA</a>
+                </div>
+            `,
+            tabs: [
+                { id: 'oportunidades', label: 'Oportunidades', active: this.currentTab === 'oportunidades', badge: '0' },
+                { id: 'en-curso', label: 'En Curso', active: this.currentTab === 'en-curso', badge: '0' },
+                { id: 'contabilizado', label: 'Contabilizado', active: this.currentTab === 'contabilizado', badge: '0' }
+            ]
+        };
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative; scroll-behavior: smooth;}
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
                 
-                /* =========================================================
-                   MOBILE TOP BAR
-                   ========================================================= */
-                .mobile-top-bar {
-                    display: none; justify-content: space-between; align-items: center; padding: 15px 20px;
-                    background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05);
-                    backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
-                    margin: -2rem -3rem 1.5rem -3rem; 
-                }
-                .mob-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
-                .mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 150px; }
-                .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+                /* MAGIA VISUAL: Destello si estás disponible */
+                .workspace.is-open-to-work { box-shadow: inset 0 0 100px rgba(0, 230, 118, 0.03); }
 
-                /* =========================================================
-                   CABECERA Y CONTROLES
-                   ========================================================= */
-                .view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
-                .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; }
-                .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
+                /* ESTADOS DISPONIBILIDAD (Heredados del diseño del Perfil) */
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); display:flex; align-items:center;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); display:flex; align-items:center; box-shadow: 0 0 10px rgba(0,230,118,0.2);}
 
-                .controls-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;}
+                /* CONTROLES SECUNDARIOS (Filtros y Crear) */
+                .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;}
                 
-                .tabs-container { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
-                .tabs-container::-webkit-scrollbar { display: none; }
-                
-                .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1rem; font-weight: bold; padding: 10px 5px 15px 5px; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 8px;}
-                .tab-btn:hover { color: white; }
-                .tab-btn.active { color: var(--accent-blue); }
-                .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--accent-blue); border-radius: 3px 3px 0 0; }
-                
-                .tab-badge { background: rgba(255,255,255,0.1); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-family: var(--font-mono); }
-                .tab-btn.active .tab-badge { background: rgba(0, 176, 255, 0.2); color: var(--accent-blue); }
-
-                .filters-container { padding-bottom: 5px; display:flex; gap: 10px;}
+                .filters-container { display:flex; gap: 10px; width: 100%; justify-content: flex-end;}
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
 
-                .btn-create-task { background: linear-gradient(45deg, var(--accent-green), #00bfa5); color: black; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; align-items: center; gap: 5px;}
+                .btn-create-task { background: linear-gradient(45deg, var(--accent-green), #00bfa5); color: black; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; align-items: center; justify-content:center; gap: 5px; white-space:nowrap;}
                 .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
 
                 /* =========================================================
@@ -86,12 +91,16 @@ export default class ProjectView {
                 
                 .task-actions { margin-top: auto; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px;}
                 
+                /* BOTONES ESPECÍFICOS */
                 .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: white; transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px;}
                 .btn-pull:hover { background: white; color: black; border-color: white;}
+                
                 .btn-push { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
                 .btn-push:hover { background: rgba(224, 64, 251, 0.1); }
+
                 .btn-focus { background: linear-gradient(45deg, rgba(0, 176, 255, 0.1), rgba(0, 176, 255, 0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; transition: all 0.2s;}
                 .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
+                
                 .btn-approve { background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s; width: 100%;}
                 .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
 
@@ -123,19 +132,16 @@ export default class ProjectView {
                 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
-                   RESPONSIVE
+                   RESPONSIVE (FIELD APP)
                    ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace { padding: 1.5rem 1rem; padding-bottom: 90px;} 
-                    .mobile-top-bar { display: flex; margin: -1.5rem -1rem 1.5rem -1rem; }
-                    .view-header { flex-direction: column; align-items: flex-start; }
-                    .view-header h1 { font-size: 1.8rem; }
-                    .controls-row { flex-direction: column; align-items: stretch; gap: 15px; border-bottom: none;}
-                    .tabs-container { border-bottom: 1px solid var(--glass-border); width: 100%; justify-content: space-between;}
-                    .tab-btn { font-size: 0.9rem; padding: 10px 0; flex: 1; justify-content: center;}
+                    .workspace { padding: 80px 1rem 90px 1rem; } 
+                    
+                    .controls-row { flex-direction: column; align-items: stretch; gap: 15px;}
                     .filters-container { flex-direction: column; width: 100%;}
                     .filter-dropdown { width: 100%; }
-                    .btn-create-task { justify-content: center; padding: 12px; }
+                    .btn-create-task { width: 100%; }
+                    
                     .task-grid { grid-template-columns: 1fr; gap: 1rem;}
                 }
             </style>
@@ -143,38 +149,11 @@ export default class ProjectView {
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
 
-                <main class="workspace">
-                    <header class="mobile-top-bar">
-                        <a href="/v5/" data-link class="mob-brand">🗼</a>
-                        <select class="mob-project-select" id="mobProjectSelect">
-                            ${userProjects.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')}
-                        </select>
-                        <a href="/v5/profile" data-link class="mob-user" title="Mi Perfil">
-                            ${state.globalUsers.find(u => u.id === activeUserId)?.name.charAt(0).toUpperCase() || '?'}
-                        </a>
-                    </header>
-
-                    <div class="view-header">
-                        <div>
-                            <h1 id="viewTitle">Tareas</h1>
-                            <p>Kanban de oportunidades, tareas en curso y contabilizado.</p>
-                        </div>
-                        <a href="/v5/map" class="btn btn-outline" data-link style="padding: 8px 15px; border-radius: 8px; text-decoration:none; font-size:0.9rem;">⚙️ Mapa VNA</a>
-                    </div>
+                <main class="workspace ${isOpen ? 'is-open-to-work' : ''}">
+                    
+                    ${PageHeader.getHtml(headerConfig)}
 
                     <div class="controls-row">
-                        <div class="tabs-container" id="tabsContainer">
-                            <button class="tab-btn active" data-tab="oportunidades">
-                                Oportunidades <span class="tab-badge" id="count-op">0</span>
-                            </button>
-                            <button class="tab-btn" data-tab="en-curso">
-                                En Curso <span class="tab-badge" id="count-cur">0</span>
-                            </button>
-                            <button class="tab-btn" data-tab="contabilizado">
-                                Contabilizado <span class="tab-badge" id="count-con">0</span>
-                            </button>
-                        </div>
-                        
                         <div class="filters-container">
                             <select id="filterDropdown" class="filter-dropdown">
                                 <option value="all">Filtros: Todas las tareas</option>
@@ -265,8 +244,10 @@ export default class ProjectView {
 
     executeViewScript() {
         Sidebar.initListeners();
+        PageHeader.execute();
 
         const state = store.getState();
+        const activeUserId = state.session.activeUserId;
         
         let currentActiveId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === currentActiveId);
@@ -274,8 +255,8 @@ export default class ProjectView {
         if (!project) {
             const userProjects = state.projects.filter(p => 
                 state.session.role === 'ecosystem-owner' || 
-                p.ownerId === state.session.activeUserId || 
-                (p.usuarios && p.usuarios.find(u => u.id === state.session.activeUserId))
+                p.ownerId === activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
             );
             project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
             if(project) localStorage.setItem('tt_active_project', project.id);
@@ -283,17 +264,6 @@ export default class ProjectView {
 
         if (!project) return;
         this.activeProjectId = project.id;
-        
-        document.getElementById('viewTitle').innerText = `Tareas (${project.nombre})`;
-
-        const mobSelect = document.getElementById('mobProjectSelect');
-        if (mobSelect) {
-            mobSelect.value = this.activeProjectId;
-            mobSelect.addEventListener('change', (e) => {
-                localStorage.setItem('tt_active_project', e.target.value);
-                window.location.reload(); 
-            });
-        }
 
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         if (!isPO) {
@@ -302,19 +272,18 @@ export default class ProjectView {
             document.getElementById('btnOpenCreateTask').style.display = 'flex';
         }
 
-        const tabsContainer = document.getElementById('tabsContainer');
-        const filterDropdown = document.getElementById('filterDropdown');
-
-        tabsContainer.addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-btn');
-            if (btn) {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // TABS LOGIC
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.currentTab = btn.dataset.tab;
                 this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-            }
+            });
         });
 
+        const filterDropdown = document.getElementById('filterDropdown');
         filterDropdown.value = this.currentFilter;
         filterDropdown.addEventListener('change', (e) => {
             this.currentFilter = e.target.value;
@@ -322,7 +291,7 @@ export default class ProjectView {
         });
 
         // -------------------------------------------------------------
-        // LOGICA DE CREACIÓN DE TAREAS Y MAPA VNA
+        // LÓGICA DE CREACIÓN DE TAREAS Y MAPA VNA
         // -------------------------------------------------------------
         const createModal = document.getElementById('createTaskModal');
         const fbModal = document.getElementById('vnaFeedbackModal');
@@ -334,7 +303,6 @@ export default class ProjectView {
         const selType = document.getElementById('newTaskType');
         const inpHours = document.getElementById('newTaskHours');
 
-        // Función para cargar templates basados en el rol origen
         const updateTemplatesDropdown = () => {
             const p = store.getState().projects.find(proj => proj.id === this.activeProjectId);
             const roleId = selFrom.value;
@@ -446,7 +414,6 @@ export default class ProjectView {
 
             createModal.style.display = 'none';
             
-            // Lógica de Feedback Visual VNA
             if (isManualNewFlow) {
                 const rFrom = activeProject.roles.find(r => r.id === from);
                 const rTo = activeProject.roles.find(r => r.id === to);
@@ -460,8 +427,6 @@ export default class ProjectView {
                 const vColor = type === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
                 const vector = document.getElementById('fbVector');
                 vector.style.backgroundColor = vColor;
-                
-                // Aplicamos pseudo-elemento de flecha cambiando la clase
                 vector.style.boxShadow = `0 0 20px ${vColor}`;
 
                 fbModal.style.display = 'flex';
@@ -477,7 +442,7 @@ export default class ProjectView {
 
 
         // -------------------------------------------------------------
-        // KANBAN ACTIONS LOGIC (Delegación)
+        // KANBAN ACTIONS LOGIC
         // -------------------------------------------------------------
         const taskGrid = document.getElementById('taskGrid');
         taskGrid.addEventListener('click', async (e) => {
@@ -578,9 +543,14 @@ export default class ProjectView {
             activeCardsHtml.push(this.createTaskCardHTML(tx, project, state.session, isPO));
         });
 
-        document.getElementById('count-op').innerText = counts.op;
-        document.getElementById('count-cur').innerText = counts.cur;
-        document.getElementById('count-con').innerText = counts.con;
+        // Actualizar Badges Nativos del Componente PageHeader
+        const badgeOp = document.getElementById('badge-oportunidades');
+        const badgeCur = document.getElementById('badge-en-curso');
+        const badgeCon = document.getElementById('badge-contabilizado');
+        
+        if(badgeOp) badgeOp.innerText = counts.op;
+        if(badgeCur) badgeCur.innerText = counts.cur;
+        if(badgeCon) badgeCon.innerText = counts.con;
 
         if (activeCardsHtml.length > 0) {
             grid.innerHTML = activeCardsHtml.join('');
