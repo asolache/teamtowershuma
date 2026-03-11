@@ -3,6 +3,7 @@ import { store } from '../core/store.js';
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
+import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN COMPONENTE UNIVERSAL V8.3
 
 export default class ValueMapView {
     constructor() {
@@ -21,11 +22,49 @@ export default class ValueMapView {
     }
 
     async getHtml() {
+        const state = store.getState();
+        const activeUserId = state.session.activeUserId;
+        
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
+        
+        if (!project) {
+            const userProjects = state.projects.filter(p => 
+                state.session.role === 'ecosystem-owner' || 
+                p.ownerId === activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+            );
+            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
+        }
+
+        // Configuración del Header Universal
+        const headerConfig = {
+            title: "Mapa",
+            subtitle: project ? project.nombre : '',
+            tagline: "Flujo de Valor (VNA) de la Organización",
+            tabs: [
+                { id: 'visual', label: '🕸️ Red Visual', active: true },
+                { id: 'flow', label: '📋 Flujo Operativo' }
+            ]
+        };
+
         return `
             <style>
-                .vna-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
+                .app-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
                 
-                /* PANEL SECUENCIAL */
+                /* FIX V8.3: En escritorio no usamos flex-col para el map-view, 
+                   mantenemos la maquetación original de 3 columnas (seq - map - inspector) */
+                .vna-workspace { flex: 1; display: flex; flex-direction: row; position: relative; overflow: hidden;}
+
+                /* =========================================================
+                   TABS CONTENT (FIX CLIPPING & MOBILE)
+                   ========================================================= */
+                .tab-content { flex: 1; display: none; position: relative; height: 100%;}
+                .tab-content.active { display: flex; } /* Usamos flex para que el mapa ocule todo el alto */
+                
+                /* =========================================================
+                   PANEL SECUENCIAL (Izquierda)
+                   ========================================================= */
                 .sequence-panel { width: 340px; background: var(--glass-bg); border-right: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur); display: flex; flex-direction: column; z-index: 20; flex-shrink: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
                 .sequence-header { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); }
                 .sequence-header h2 { font-size: 1.1rem; color: white; margin: 0 0 5px 0; }
@@ -47,7 +86,9 @@ export default class ValueMapView {
                 .sequence-footer { padding: 1.5rem; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); transition: background 0.3s; }
                 .sequence-footer.edit-mode { background: rgba(0, 176, 255, 0.1); border-top: 1px solid var(--accent-blue); }
 
-                /* LIENZO PRINCIPAL */
+                /* =========================================================
+                   LIENZO PRINCIPAL (Centro)
+                   ========================================================= */
                 .map-container { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
                 .map-canvas { flex: 1; position: relative; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; }
                 #edges-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
@@ -89,131 +130,184 @@ export default class ValueMapView {
                 .interactive { pointer-events: auto; }
                 .action-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 
-                /* INSPECTOR DE NODOS */
+                /* =========================================================
+                   INSPECTOR DE NODOS (Derecha)
+                   ========================================================= */
                 .inspector-panel { position: absolute; top: 0; right: 0; height: 100%; width: 380px; background: var(--bg-panel); border-left: 1px solid var(--glass-border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.7); overflow-y: auto;}
                 .inspector-panel.open { transform: translateX(0); }
+                
+                .form-group { margin-bottom: 15px; }
+                .form-control { width: 100%; background: #050505; border: 1px solid #333; color: white; padding: 8px 12px; border-radius: 6px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; box-sizing: border-box;}
+                .form-control:focus { border-color: var(--accent-blue); }
+
+                /* MODALS GLOBALES */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
+                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); box-sizing: border-box;}
+
+                /* =========================================================
+                   HEADER ESPECÍFICO PARA MAPA (Para ocultar el universal en Desktop)
+                   ========================================================= */
+                .desktop-header-wrapper { display: none; }
+                
+                @media (min-width: 769px) {
+                    /* En PC ocultamos el Header Universal porque ya tenemos el Sidebar y el título flotante */
+                    .ph-view-header, .ph-tabs-container { display: none !important; }
+                    .tab-content { display: flex !important; } /* Forzar mostrar ambos en PC */
+                    .desktop-header-wrapper { display: block; }
+                }
 
                 /* =========================================================
                    RESPONSIVE MOBILE (FIELD APP PARADIGM)
                    ========================================================= */
                 @media (max-width: 768px) {
-                    .vna-layout { flex-direction: column; }
-                    /* Esconder paneles de orquestador (Modo Field App) */
-                    .sequence-panel, .action-panel, .inspector-panel, .glass-panel { display: none !important; }
+                    .vna-workspace { flex-direction: column; padding-top: 140px; padding-bottom: 90px; }
                     
-                    /* Simplificar cabecera superpuesta */
-                    .ui-overlay { padding: 1rem; justify-content: center; text-align: center; background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%); pointer-events: none;}
-                    #mapTitle { font-size: 1.2rem !important; }
-                    .ui-overlay p { display: none; }
-
+                    /* Desktop Header Flotante se oculta */
+                    .ui-overlay { display: none; }
+                    
+                    /* Mostramos Header Universal y Tabs */
+                    .ph-view-header { padding: 0 1rem; }
+                    .ph-tabs-container { margin: 0 1rem 1rem 1rem; width: auto; }
+                    
+                    /* Pestaña 1: Visual */
+                    #view-visual { flex-direction: column; }
+                    .map-container { flex: 1; height: calc(100vh - 250px); border-radius: 12px; border: 1px solid var(--glass-border); margin: 0 1rem;}
+                    
                     /* El mapa se vuelve visual, bloqueamos edición táctil */
                     .node { pointer-events: none; transform: translate(-50%, -50%) scale(0.8); }
                     .tx-badge { pointer-events: none; font-size: 0.6rem; padding: 2px 5px;}
-                    .map-container { height: calc(100vh - 70px); } /* Espacio para el bottom nav */
+                    
+                    /* Botonera de simulación móvil (Flotante inferior) */
+                    .mobile-sim-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 100; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 30px; border: 1px solid #333;}
+                    .mobile-sim-controls button { background: var(--accent-blue); color: black; border: none; border-radius: 20px; padding: 8px 20px; font-weight: bold; cursor: pointer;}
+                    
+                    /* Pestaña 2: Flujo Operativo (Solo lectura en móvil) */
+                    #view-flow { padding: 0 1rem; overflow-y: auto;}
+                    .sequence-panel { width: 100%; box-shadow: none; border: none; background: transparent;}
+                    .sequence-header { display: none; } /* Ocultar porque ya lo dice la Tab */
+                    .sequence-footer { display: none; } /* No se puede editar en móvil */
+                    
+                    .inspector-panel { display: none !important; }
                 }
             </style>
 
-            <div class="vna-layout">
+            <div class="app-layout">
                 ${Sidebar.getHtml('/map')}
 
-                <aside class="sequence-panel" id="seqPanel">
-                    <div class="sequence-header interactive">
-                        <h2>Flujos de Valor (Kanban)</h2>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin:0;">Diseña el circuito de entregables.</p>
-                    </div>
-                    <div class="sequence-body interactive" id="sequenceList"></div>
-                    <div class="sequence-footer interactive" id="seqFooter">
-                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span id="formTitle" style="font-size:0.75rem; color:var(--accent-blue); font-weight:bold; text-transform:uppercase;">Añadir Transacción</span>
-                            <button class="btn btn-outline" style="padding: 2px 5px; font-size: 0.7rem; display:none;" id="btnCancelEditFlow">Cancelar Edición</button>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
-                            <select id="selFrom" class="form-control" title="Origen"></select>
-                            <span style="color: var(--text-muted); align-self: center;">&rarr;</span>
-                            <select id="selTo" class="form-control" title="Destino"></select>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
-                                <option value="">Cargando ontología...</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
-                            <select id="selType" class="form-control">
-                                <option value="tangible">🟢 Tangible</option>
-                                <option value="intangible">🟣 Intangible</option>
-                            </select>
-                            <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
-                        </div>
-                        <button class="btn btn-success" style="width: 100%; margin-top: 5px; cursor:pointer;" id="btnAddFlow">➕ Añadir Transacción</button>
-                    </div>
-                </aside>
-
-                <div class="map-container">
-                    <div class="ui-overlay">
-                        <div class="interactive" style="display: flex; flex-direction: column; gap: 15px;">
-                            <div>
-                                <h1 id="mapTitle" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa Flujo de Valor</h1>
-                                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Pasa el ratón sobre los flujos</p>
-                            </div>
-                            <div class="glass-panel" style="padding: 1rem; display: flex; flex-direction: column; gap: 10px; width: max-content; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
-                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: var(--accent-green); margin-top:6px;"></div> Tangible</div>
-                                <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed var(--accent-purple); margin-top:5px;"></div> Intangible</div>
-                            </div>
-                        </div>
-
-                        <div class="action-panel interactive">
-                            <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" id="btnSimulate" style="cursor:pointer;">▶ Simular Flujo</button>
-                                <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange); cursor:pointer;">⏹ Detener</button>
-                            </div>
-                            <button class="btn btn-outline" style="margin-top: 10px; width: 100%; cursor:pointer;" id="btnOpenAddNode">➕ Nuevo Rol</button>
-                            <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
-                        </div>
-                    </div>
+                <div class="vna-workspace">
                     
-                    <div class="map-canvas" id="mapCanvas">
-                        <svg id="edges-svg"></svg>
+                    ${PageHeader.getHtml(headerConfig)}
+
+                    <div id="view-visual" class="tab-content active">
+                        
+                        <div class="ui-overlay desktop-header-wrapper">
+                            <div class="interactive" style="display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <h1 id="mapTitleDesktop" style="font-size: 2rem; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Mapa Flujo de Valor</h1>
+                                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">Arrástralos. Doble clic: Editar | Pasa el ratón sobre los flujos</p>
+                                </div>
+                                <div class="glass-panel" style="padding: 1rem; display: flex; flex-direction: column; gap: 10px; width: max-content; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                                    <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; background: var(--accent-green); margin-top:6px;"></div> Tangible</div>
+                                    <div style="display: flex; gap: 10px; font-size: 0.75rem; color: #ddd;"><div style="width: 20px; height: 3px; border-bottom: 2px dashed var(--accent-purple); margin-top:5px;"></div> Intangible</div>
+                                </div>
+                            </div>
+
+                            <div class="action-panel interactive">
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="btn btn-primary" id="btnSimulate" style="cursor:pointer;">▶ Simular Flujo</button>
+                                    <button class="btn btn-outline" id="btnPauseSim" style="display:none; cursor:pointer;">⏸ Pausar</button>
+                                    <button class="btn btn-outline" id="btnStopSim" style="display:none; color: var(--accent-orange); border-color: var(--accent-orange); cursor:pointer;">⏹ Detener</button>
+                                </div>
+                                <button class="btn btn-outline" style="margin-top: 10px; width: 100%; cursor:pointer;" id="btnOpenAddNode">➕ Nuevo Rol</button>
+                                <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; max-width: 200px; text-align: right; margin-top: 10px;">⚠️ DIAGNÓSTICO:<br>Salto estructural excesivo.</div>
+                            </div>
+                        </div>
+
+                        <div class="map-container">
+                            <div class="map-canvas" id="mapCanvas">
+                                <svg id="edges-svg"></svg>
+                            </div>
+                            <div id="txTooltip" class="tx-tooltip"></div>
+                            
+                            <div class="mobile-sim-controls" id="mobSimControls" style="display: none;">
+                                <button id="mobBtnSimulate">▶ Simular</button>
+                                <button id="mobBtnPauseSim" style="display:none; background:#333; color:white;">⏸ Pausa</button>
+                                <button id="mobBtnStopSim" style="display:none; background:var(--accent-red); color:white;">⏹ Fin</button>
+                            </div>
+                        </div>
+
+                        <aside class="inspector-panel interactive" id="inspectorPanel">
+                            <div style="padding: 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                                <h2 id="insTitleLabel" style="font-size: 1.5rem; margin:0; color: white;">Editar Nodo</h2>
+                                <button id="btnCloseInspector" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 2rem;">&times;</button>
+                            </div>
+                            <div style="padding: 2rem; padding-top: 0;">
+                                <div class="form-group" style="margin-top: 1.5rem;">
+                                    <label>Nivel Estructural</label>
+                                    <select id="insLevel" class="form-control" style="font-weight: bold;">
+                                        <option value="@anxaneta">@anxaneta</option>
+                                        <option value="@aixecador">@aixecador</option>
+                                        <option value="@dosos">@dosos</option>
+                                        <option value="@baixos">@baixos</option>
+                                        <option value="@pinya">@pinya</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nombre del Rol</label>
+                                    <input type="text" id="insName" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Valor Mercado (FMV €/h)</label>
+                                    <input type="number" id="inputFmv" class="form-control">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 2rem;">
+                                    <label>Factor de Riesgo Multiplicador</label>
+                                    <input type="number" step="0.1" id="inputMult" class="form-control">
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; cursor:pointer;" id="btnSaveRole">✓ Guardar Cambios</button>
+                                <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%; cursor:pointer;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
+                            </div>
+                        </aside>
                     </div>
-                    
-                    <div id="txTooltip" class="tx-tooltip"></div>
+
+                    <div id="view-flow" class="tab-content">
+                        <aside class="sequence-panel" id="seqPanel">
+                            <div class="sequence-header interactive">
+                                <h2>Flujos de Valor (Kanban)</h2>
+                                <p style="color: var(--text-muted); font-size: 0.8rem; margin:0;">Diseña el circuito de entregables.</p>
+                            </div>
+                            <div class="sequence-body interactive" id="sequenceList"></div>
+                            <div class="sequence-footer interactive" id="seqFooter">
+                                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <span id="formTitle" style="font-size:0.75rem; color:var(--accent-blue); font-weight:bold; text-transform:uppercase;">Añadir Transacción</span>
+                                    <button class="btn btn-outline" style="padding: 2px 5px; font-size: 0.7rem; display:none;" id="btnCancelEditFlow">Cancelar Edición</button>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
+                                    <select id="selFrom" class="form-control" title="Origen"></select>
+                                    <span style="color: var(--text-muted); align-self: center;">&rarr;</span>
+                                    <select id="selTo" class="form-control" title="Destino"></select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
+                                        <option value="">Cargando ontología...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px; display: flex; gap: 10px;">
+                                    <select id="selType" class="form-control">
+                                        <option value="tangible">🟢 Tangible</option>
+                                        <option value="intangible">🟣 Intangible</option>
+                                    </select>
+                                    <input type="number" id="inpHoras" class="form-control" placeholder="Hrs" value="2" style="width: 70px;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
+                                </div>
+                                <button class="btn btn-success" style="width: 100%; margin-top: 5px; cursor:pointer;" id="btnAddFlow">➕ Añadir Transacción</button>
+                            </div>
+                        </aside>
+                    </div>
+
                 </div>
-
-                <aside class="inspector-panel interactive" id="inspectorPanel">
-                    <div style="padding: 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-                        <h2 id="insTitleLabel" style="font-size: 1.5rem; margin:0; color: white;">Editar Nodo</h2>
-                        <button id="btnCloseInspector" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 2rem;">&times;</button>
-                    </div>
-                    <div style="padding: 2rem; padding-top: 0;">
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Nivel Estructural</label>
-                            <select id="insLevel" class="form-control" style="font-weight: bold;">
-                                <option value="@anxaneta">@anxaneta</option>
-                                <option value="@aixecador">@aixecador</option>
-                                <option value="@dosos">@dosos</option>
-                                <option value="@baixos">@baixos</option>
-                                <option value="@pinya">@pinya</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre del Rol</label>
-                            <input type="text" id="insName" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>Valor Mercado (FMV €/h)</label>
-                            <input type="number" id="inputFmv" class="form-control">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 2rem;">
-                            <label>Factor de Riesgo Multiplicador</label>
-                            <input type="number" step="0.1" id="inputMult" class="form-control">
-                        </div>
-                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; cursor:pointer;" id="btnSaveRole">✓ Guardar Cambios</button>
-                        <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%; cursor:pointer;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
-                    </div>
-                </aside>
 
                 <div class="modal-overlay" id="addNodeModal">
                     <div class="modal-content">
@@ -233,8 +327,8 @@ export default class ValueMapView {
                             </select>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-                            <button class="btn btn-outline" id="btnCancelNode" style="cursor:pointer;">Cancelar</button>
-                            <button class="btn btn-primary" id="btnConfirmNode" style="cursor:pointer;">Añadir Rol</button>
+                            <button class="btn btn-outline" id="btnCancelNode" style="cursor:pointer; background:transparent; color:#888; border:1px solid #555; padding:8px 15px; border-radius:6px;">Cancelar</button>
+                            <button class="btn btn-primary" id="btnConfirmNode" style="cursor:pointer; background:var(--accent-blue); color:black; border:none; padding:8px 15px; border-radius:6px; font-weight:bold;">Añadir Rol</button>
                         </div>
                     </div>
                 </div>
@@ -242,18 +336,15 @@ export default class ValueMapView {
                 <div class="modal-overlay" id="triageModal">
                     <div class="modal-content" style="width: 450px;">
                         <h3 style="color: var(--accent-orange); margin-top:0; margin-bottom: 1rem;">⚠️ Tareas Huérfanas Detectadas</h3>
-                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
-                            Este nodo tiene <strong id="triageCount" style="color: white; font-size: 1.2rem;">0</strong> transacciones activas o pendientes. 
-                            Archivar el nodo requiere decidir el destino de estas tareas.
-                        </p>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Este nodo tiene <strong id="triageCount" style="color: white; font-size: 1.2rem;">0</strong> transacciones activas o pendientes. Archivar el nodo requiere decidir el destino de estas tareas.</p>
                         <div class="form-group" style="margin-bottom: 2rem;">
                             <label>Reasignar tareas al Nodo Activo:</label>
                             <select id="selTriageNode" class="form-control"></select>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <button class="btn btn-primary" id="btnTriageReassign" style="cursor:pointer;">Migrar Tareas y Archivar Nodo</button>
-                            <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); cursor:pointer;" id="btnTriageDelete">Destruir Tareas y Archivar Nodo</button>
-                            <button class="btn btn-outline" id="btnTriageCancel" style="margin-top: 10px; cursor:pointer;">Cancelar Acción</button>
+                            <button class="btn btn-primary" id="btnTriageReassign" style="cursor:pointer; padding:10px; border-radius:8px;">Migrar Tareas y Archivar Nodo</button>
+                            <button class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); cursor:pointer; padding:10px; border-radius:8px; background:transparent;" id="btnTriageDelete">Destruir Tareas y Archivar Nodo</button>
+                            <button class="btn btn-outline" id="btnTriageCancel" style="margin-top: 10px; cursor:pointer; padding:10px; border-radius:8px; background:transparent; border:1px solid #555; color:#aaa;">Cancelar Acción</button>
                         </div>
                     </div>
                 </div>
@@ -265,6 +356,7 @@ export default class ValueMapView {
 
     executeViewScript() {
         Sidebar.initListeners();
+        PageHeader.execute();
 
         let state = store.getState();
         let currentActiveId = localStorage.getItem('tt_active_project');
@@ -283,7 +375,7 @@ export default class ValueMapView {
         this.activeProjectId = project.id;
         
         this.dom = {
-            title: document.getElementById('mapTitle'),
+            titleDesktop: document.getElementById('mapTitleDesktop'),
             canvas: document.getElementById('mapCanvas'),
             svg: document.getElementById('edges-svg'),
             seqList: document.getElementById('sequenceList'),
@@ -305,24 +397,60 @@ export default class ValueMapView {
             inputMult: document.getElementById('inputMult'),
             
             btnSimulate: document.getElementById('btnSimulate'),
+            btnPauseSim: document.getElementById('btnPauseSim'),
             btnStopSim: document.getElementById('btnStopSim'),
+            mobBtnSimulate: document.getElementById('mobBtnSimulate'),
+            mobBtnPauseSim: document.getElementById('mobBtnPauseSim'),
+            mobBtnStopSim: document.getElementById('mobBtnStopSim'),
+            
             sickAlert: document.getElementById('sickAlert'),
-
             triageModal: document.getElementById('triageModal'),
             tooltip: document.getElementById('txTooltip')
         };
 
-        this.dom.title.innerText = `Mapa Flujo de Valor (${project.nombre})`;
+        if (this.dom.titleDesktop) this.dom.titleDesktop.innerText = `Mapa Flujo de Valor (${project.nombre})`;
+
+        // TABS LOGIC (FIXED FOR CLIPPING & DESKTOP OVERRIDE)
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(window.innerWidth > 768) return; // En PC las pestañas no hacen nada porque se muestra todo
+
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const targetId = `view-${btn.dataset.tab}`;
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // Configuración Responsive de la Simulación Móvil
+        if (window.innerWidth <= 768) {
+            document.getElementById('mobSimControls').style.display = 'flex';
+        }
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobSimControls').style.display = 'flex';
+            } else {
+                document.getElementById('mobSimControls').style.display = 'none';
+            }
+        });
 
         this.populateDropdowns(project.roles);
         this.updateOntologyTemplates(); 
 
-        // EL FIX VITAL: Usar Promesas/setTimeout anidados para garantizar el DOM Render
-        // antes de dibujar las conexiones de los nodos
         setTimeout(() => {
             this.renderMap();
             this.renderSequence();
-            // Le damos tiempo al DOM a colocar los nodos en su sitio
             setTimeout(() => {
                 if(!this.isSimulating) this.drawEdges();
             }, 100);
@@ -330,16 +458,12 @@ export default class ValueMapView {
 
         if (window.ResizeObserver) {
             this.resizeObserver = new ResizeObserver(() => {
-                if (!this.isSimulating) {
-                    this.drawEdges();
-                }
+                if (!this.isSimulating) this.drawEdges();
             });
             this.resizeObserver.observe(this.dom.canvas);
-        } else {
-            window.addEventListener('resize', () => { if(!this.isSimulating) this.drawEdges(); });
         }
 
-        // WIZARD DE FLUJOS
+        // WIZARD DE FLUJOS (Mantenido igual)
         this.dom.selFrom.addEventListener('change', () => this.updateOntologyTemplates());
         this.dom.selTemplate.addEventListener('change', (e) => {
             const val = e.target.value;
@@ -419,7 +543,7 @@ export default class ValueMapView {
 
         // TOOLTIPS HTML HOVER
         this.dom.canvas.addEventListener('mouseover', (e) => {
-            if (e.target.classList.contains('tx-badge')) {
+            if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
                 const currentState = store.getState();
                 const p = currentState.projects.find(x => x.id === this.activeProjectId);
@@ -447,38 +571,33 @@ export default class ValueMapView {
                 `;
                 
                 this.dom.tooltip.classList.add('visible');
-
                 const badgeRect = e.target.getBoundingClientRect();
                 const tooltipRect = this.dom.tooltip.getBoundingClientRect();
                 
                 let leftPos = badgeRect.right + 15;
                 let topPos = badgeRect.top - 10;
-
-                if (leftPos + tooltipRect.width > window.innerWidth - 20) {
-                    leftPos = badgeRect.left - tooltipRect.width - 15;
-                    if (leftPos < 20) leftPos = 20;
-                }
-
-                if (topPos + tooltipRect.height > window.innerHeight - 20) {
-                    topPos = window.innerHeight - tooltipRect.height - 20;
-                }
+                if (leftPos + tooltipRect.width > window.innerWidth - 20) leftPos = badgeRect.left - tooltipRect.width - 15;
+                if (topPos + tooltipRect.height > window.innerHeight - 20) topPos = window.innerHeight - tooltipRect.height - 20;
                 
-                if (topPos < 20) topPos = 20;
-
-                this.dom.tooltip.style.left = `${leftPos}px`;
-                this.dom.tooltip.style.top = `${topPos}px`;
+                this.dom.tooltip.style.left = `${Math.max(20, leftPos)}px`;
+                this.dom.tooltip.style.top = `${Math.max(20, topPos)}px`;
             }
         });
 
         this.dom.canvas.addEventListener('mouseout', (e) => {
-            if (e.target.classList.contains('tx-badge')) {
+            if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 this.dom.tooltip.classList.remove('visible');
             }
         });
 
-        // BOTONES DE SIMULACION
+        // BOTONES DE SIMULACION (DESKTOP Y MOBILE)
         this.dom.btnSimulate.addEventListener('click', () => this.startSimulation());
+        this.dom.btnPauseSim.addEventListener('click', () => this.pauseSimulation());
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
+        
+        this.dom.mobBtnSimulate.addEventListener('click', () => this.startSimulation());
+        this.dom.mobBtnPauseSim.addEventListener('click', () => this.pauseSimulation());
+        this.dom.mobBtnStopSim.addEventListener('click', () => this.stopSimulation());
 
         const modal = document.getElementById('addNodeModal');
         document.getElementById('btnOpenAddNode').addEventListener('click', () => modal.style.display = 'flex');
@@ -655,104 +774,128 @@ export default class ValueMapView {
         this.populateDropdowns(pUpdate.roles);
         this.renderSequence(highlightIndex); 
         this.renderMap();      
-        
-        // Timeout robusto para el dibujado de líneas tras manipulación de DOM
         setTimeout(() => this.drawEdges(), 100); 
     }
 
-    // --- SIMULACIÓN ANIMADA C/ CURVAS BEZIER ---
+    // --- SIMULACIÓN ANIMADA ---
     startSimulation() {
-        if (this.isSimulating) return;
+        if (this.isSimulating && !this.isPaused) return;
+        
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const txs = p?.transactions || [];
         if (txs.length === 0) return alert("Añade transacciones para simular el flujo.");
 
         this.isSimulating = true;
+        this.isPaused = false;
+        
+        // Desktop Controls
         this.dom.btnSimulate.style.display = 'none';
+        this.dom.btnPauseSim.style.display = 'block';
         this.dom.btnStopSim.style.display = 'block';
+        
+        // Mobile Controls
+        this.dom.mobBtnSimulate.style.display = 'none';
+        this.dom.mobBtnPauseSim.style.display = 'block';
+        this.dom.mobBtnStopSim.style.display = 'block';
+
         this.dom.sickAlert.style.display = 'none';
         
-        this.dom.svg.innerHTML = '';
-        this.dom.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove());
+        if(this.currentSimIndex === undefined) this.currentSimIndex = 0;
         
-        this.injectSvgMarkers();
+        if(this.currentSimIndex === 0) {
+            this.dom.svg.innerHTML = '';
+            this.dom.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove());
+            this.dom.canvas.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
+            this.injectSvgMarkers();
+        }
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
-        stepEls.forEach(el => el.classList.remove('simulating'));
-        this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
+        
+        const runNextStep = () => {
+            if(!this.isSimulating || this.isPaused) return;
+            if(this.currentSimIndex >= txs.length) {
+                this.stopSimulation();
+                return;
+            }
 
-        const pairCounts = {};
-        txs.forEach((tx, i) => {
-            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
-            if (!pairCounts[key]) pairCounts[key] = [];
-            pairCounts[key].push({ tx, index: i });
-        });
+            const index = this.currentSimIndex;
+            const tx = txs[index];
 
-        const txMultiIdxMap = new Map();
-        Object.keys(pairCounts).forEach(key => {
-            pairCounts[key].forEach((edge, multiIdx) => {
-                txMultiIdxMap.set(edge.index, multiIdx);
-            });
-        });
+            // Resaltar en lista
+            stepEls.forEach(el => el.classList.remove('simulating'));
+            if(stepEls[index]) {
+                stepEls[index].classList.add('simulating');
+                if(window.innerWidth > 768) stepEls[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
 
-        let delayAccumulator = 0;
-        const timePerStep = 2000;
+            const r1 = p.roles.find(r => r.id === tx.from);
+            const r2 = p.roles.find(r => r.id === tx.to);
+            let isSickFlow = false;
 
-        txs.forEach((tx, index) => {
-            const multiIdx = txMultiIdxMap.get(index) || 0;
-            const totalEdgesInPair = pairCounts[tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`].length;
-
-            const timeoutId = setTimeout(() => {
-                stepEls.forEach(el => el.classList.remove('simulating'));
-                if(stepEls[index]) {
-                    stepEls[index].classList.add('simulating');
-                    stepEls[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (r1 && r2) {
+                const level1 = this.levelHierarchy[r1.levelId];
+                const level2 = this.levelHierarchy[r2.levelId];
+                if (Math.abs(level1 - level2) > 1) {
+                    isSickFlow = true;
+                    this.dom.sickAlert.style.display = 'block';
+                    const dom1 = this.dom.canvas.querySelector(`.node[data-id="${r1.id}"]`);
+                    const dom2 = this.dom.canvas.querySelector(`.node[data-id="${r2.id}"]`);
+                    if(dom1) dom1.classList.add('sick-node');
+                    if(dom2) dom2.classList.add('sick-node');
+                } else {
+                    this.dom.sickAlert.style.display = 'none';
+                    this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
                 }
+            }
 
-                const r1 = p.roles.find(r => r.id === tx.from);
-                const r2 = p.roles.find(r => r.id === tx.to);
-                let isSickFlow = false;
-
-                if (r1 && r2) {
-                    const level1 = this.levelHierarchy[r1.levelId];
-                    const level2 = this.levelHierarchy[r2.levelId];
-                    if (Math.abs(level1 - level2) > 1) {
-                        isSickFlow = true;
-                        this.dom.sickAlert.style.display = 'block';
-                        const dom1 = this.dom.canvas.querySelector(`.node[data-id="${r1.id}"]`);
-                        const dom2 = this.dom.canvas.querySelector(`.node[data-id="${r2.id}"]`);
-                        if(dom1) dom1.classList.add('sick-node');
-                        if(dom2) dom2.classList.add('sick-node');
-                    } else {
-                        this.dom.sickAlert.style.display = 'none';
-                        this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
-                    }
-                }
-
-                this.drawSingleEdgeAnim(tx, index, isSickFlow, multiIdx, totalEdgesInPair);
-
-                if (index === txs.length - 1) {
-                    setTimeout(() => this.stopSimulation(), timePerStep);
-                }
-            }, delayAccumulator);
+            this.drawSingleEdgeAnim(tx, index, isSickFlow, 0, 1); // Simplificado para animación paso a paso
             
-            this.simulationTimeouts.push(timeoutId);
-            delayAccumulator += timePerStep;
-        });
+            this.currentSimIndex++;
+            this.simTimeoutId = setTimeout(runNextStep, 2500);
+        };
+
+        runNextStep();
+    }
+
+    pauseSimulation() {
+        this.isPaused = true;
+        clearTimeout(this.simTimeoutId);
+        
+        // Desktop Controls
+        this.dom.btnSimulate.style.display = 'block';
+        this.dom.btnSimulate.innerText = '▶ Reanudar';
+        this.dom.btnPauseSim.style.display = 'none';
+        
+        // Mobile Controls
+        this.dom.mobBtnSimulate.style.display = 'block';
+        this.dom.mobBtnSimulate.innerText = '▶ Reanudar';
+        this.dom.mobBtnPauseSim.style.display = 'none';
     }
 
     stopSimulation() {
         this.isSimulating = false;
-        this.dom.btnSimulate.style.display = 'block';
-        this.dom.btnStopSim.style.display = 'none';
-        this.dom.sickAlert.style.display = 'none';
+        this.isPaused = false;
+        this.currentSimIndex = 0;
+        clearTimeout(this.simTimeoutId);
         
-        this.simulationTimeouts.forEach(id => clearTimeout(id));
-        this.simulationTimeouts = [];
+        // Desktop Controls
+        this.dom.btnSimulate.style.display = 'block';
+        this.dom.btnSimulate.innerText = '▶ Simular Flujo';
+        this.dom.btnPauseSim.style.display = 'none';
+        this.dom.btnStopSim.style.display = 'none';
+
+        // Mobile Controls
+        this.dom.mobBtnSimulate.style.display = 'block';
+        this.dom.mobBtnSimulate.innerText = '▶ Simular';
+        this.dom.mobBtnPauseSim.style.display = 'none';
+        this.dom.mobBtnStopSim.style.display = 'none';
+
+        this.dom.sickAlert.style.display = 'none';
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
         stepEls.forEach(el => el.classList.remove('simulating'));
         this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('sick-node'));
+        this.dom.canvas.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
 
         this.drawEdges(); 
     }
@@ -781,14 +924,10 @@ export default class ValueMapView {
         const x2 = x2_center - (dx/dist) * trim;
         const y2 = y2_center - (dy/dist) * trim;
 
+        // Añadimos curva para que se vea claro en el centro
         const nx = -dy / dist; 
         const ny = dx / dist;
-        let offset = 0;
-        if (totalEdgesInPair > 1) {
-            const step = 45; 
-            offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
-        }
-
+        const offset = 40; 
         const cx = (x1_center + x2_center) / 2 + nx * offset;
         const cy = (y1_center + y2_center) / 2 + ny * offset;
 
@@ -799,7 +938,6 @@ export default class ValueMapView {
         path.setAttribute('marker-end', `url(#${markerId})`);
         
         const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
-        
         const realDist = dist + Math.abs(offset) * 2; 
         
         path.style.cssText = `
@@ -808,32 +946,48 @@ export default class ValueMapView {
             stroke-width: 4;
             stroke-dasharray: ${realDist};
             stroke-dashoffset: ${realDist};
-            animation: drawLine 1s ease-out forwards;
+            animation: drawLine 1.5s ease-out forwards;
         `;
         
         if(!document.getElementById('svgAnimStyles')) {
             const style = document.createElement('style');
             style.id = 'svgAnimStyles';
-            style.innerHTML = `@keyframes drawLine { to { stroke-dashoffset: 0; } }`;
+            style.innerHTML = `@keyframes drawLine { to { stroke-dashoffset: 0; } }
+                               @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); opacity:0;} 80% { transform: translate(-50%, -50%) scale(1.1); opacity:1;} 100% { transform: translate(-50%, -50%) scale(1); opacity:1;} }`;
             document.head.appendChild(style);
         }
 
         this.dom.svg.appendChild(path);
 
+        // Badge flotante tipo tarjeta (Lo que pediste)
         setTimeout(() => {
             const txX = 0.25 * x1_center + 0.5 * cx + 0.25 * x2_center;
             const txY = 0.25 * y1_center + 0.5 * cy + 0.25 * y2_center;
 
             const badge = document.createElement('div');
-            badge.className = 'tx-badge';
+            badge.className = 'sim-tx-badge';
+            badge.style.position = 'absolute';
             badge.style.left = `${txX}px`;
             badge.style.top = `${txY}px`;
-            badge.style.backgroundColor = strokeColor;
-            badge.style.color = 'black';
-            badge.innerText = `[${index + 1}]`;
+            badge.style.backgroundColor = 'rgba(10,10,14,0.9)';
+            badge.style.border = `1px solid ${strokeColor}`;
+            badge.style.color = 'white';
+            badge.style.padding = '8px 12px';
+            badge.style.borderRadius = '8px';
+            badge.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8)`;
+            badge.style.zIndex = '1000';
+            badge.style.textAlign = 'center';
+            badge.style.animation = 'popIn 0.4s ease-out forwards';
+            badge.style.pointerEvents = 'none';
+            badge.style.minWidth = '120px';
+
+            badge.innerHTML = `
+                <div style="color:${strokeColor}; font-weight:bold; font-size:0.7rem; margin-bottom:3px; text-transform:uppercase;">Paso ${index + 1}</div>
+                <div style="font-size:0.85rem; font-weight:bold; line-height:1.2;">${tx.entregable}</div>
+            `;
             
             this.dom.canvas.appendChild(badge);
-        }, 800); 
+        }, 1200); 
     }
 
     populateDropdowns(roles) {
@@ -951,6 +1105,7 @@ export default class ValueMapView {
 
             el.addEventListener('click', (e) => {
                 if(this.hasMoved || this.isSimulating) return; 
+                if (window.innerWidth <= 768) return; // Bloquear click en móvil
                 
                 if (!rol.isArchived && this.selectedRoleId && this.selectedRoleId !== rol.id) {
                     const currentlySelected = p.roles.find(r => r.id === this.selectedRoleId);
@@ -968,6 +1123,7 @@ export default class ValueMapView {
 
             el.addEventListener('dblclick', (e) => {
                 if(this.isSimulating) return;
+                if (window.innerWidth <= 768) return; // Bloquear dblclick en móvil
                 
                 this.selectedRoleId = rol.id;
                 this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
