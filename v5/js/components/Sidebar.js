@@ -5,9 +5,9 @@ export const Sidebar = {
     getHtml: (activePath = '') => {
         const state = store.getState();
         
-        // Obtenemos el ID del proyecto activo
-        const activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
-        const project = state.projects.find(p => p.id === activeProjectId);
+        // En la arquitectura actual, el proyecto "Activo" es siempre el último del array
+        const project = state.projects.length > 0 ? state.projects[state.projects.length - 1] : null;
+        const activeProjectId = project ? project.id : null;
         
         const activeUserId = state.session.activeUserId;
         const role = state.session.role;
@@ -34,7 +34,7 @@ export const Sidebar = {
             </div>
         `;
 
-        // 2. SECCIÓN DE CONTEXTO Y SWITCHER DE PROYECTOS
+        // 2. SECCIÓN DE CONTEXTO Y SWITCHER DE PROYECTOS (MAQUETACIÓN PREMIUM)
         let projectSection = '';
         if (state.projects.length > 0) {
             
@@ -50,9 +50,9 @@ export const Sidebar = {
             if (optionsHtml !== '') {
                 projectSection = `
                     <div class="project-context-header">
-                        <label class="text">PROYECTO ACTIVO</label>
+                        <label class="text">MIS PROYECTOS</label>
                         <div class="select-wrapper text">
-                            <select id="sidebarProjectSwitcher" title="Cambiar de Proyecto">
+                            <select id="sidebarProjectSwitcher" title="Saltar a otro Proyecto">
                                 ${optionsHtml}
                             </select>
                             <span class="select-arrow">▼</span>
@@ -107,7 +107,7 @@ export const Sidebar = {
                 .sidebar .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
                 .sidebar .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); font-weight: bold; border-left: 3px solid var(--accent-blue); }
                 
-                /* MAQUETACIÓN PREMIUM DEL SELECTOR DE PROYECTOS */
+                /* CAJA SELECTOR PROYECTOS PREMIUM */
                 .sidebar .project-context-header { 
                     padding: 1.2rem 1rem; 
                     background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.3) 100%); 
@@ -126,6 +126,7 @@ export const Sidebar = {
                     padding: 10px 30px 10px 12px; border-radius: 6px; outline: none; 
                     font-family: var(--font-main); font-size: 0.9rem; font-weight: bold; cursor: pointer; 
                     appearance: none; transition: border-color 0.2s, background 0.2s;
+                    text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
                 }
                 .sidebar .select-wrapper select:hover, .sidebar .select-wrapper select:focus { 
                     border-color: var(--accent-blue); background: rgba(0, 176, 255, 0.05);
@@ -214,30 +215,37 @@ export const Sidebar = {
     },
 
     initListeners: () => {
-        // Selector de Proyectos (Switch)
+        // --- MAGIA: REORDENACIÓN EN LOCALSTORAGE DIRECTA ---
         const projectSwitcher = document.getElementById('sidebarProjectSwitcher');
         if (projectSwitcher) {
             projectSwitcher.addEventListener('change', (e) => {
                 const selectedProjectId = e.target.value;
                 localStorage.setItem('tt_active_project', selectedProjectId);
                 
-                const state = store.getState();
-                const projectIndex = state.projects.findIndex(p => p.id === selectedProjectId);
-                
-                // Movemos el proyecto al final del array para que el Kernel lo trate como activo
-                if (projectIndex !== -1 && projectIndex !== state.projects.length - 1) {
-                    const projectToMove = state.projects.splice(projectIndex, 1)[0];
-                    state.projects.push(projectToMove);
-                    store.saveState();
+                // Hack de Arquitectura: Manipulamos LocalStorage directamente
+                // para que el Store arranque con el proyecto elegido como el "Activo" (al final del array)
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    try {
+                        const parsed = JSON.parse(localStorage.getItem(key));
+                        if (parsed && Array.isArray(parsed.projects)) {
+                            const pIdx = parsed.projects.findIndex(p => p.id === selectedProjectId);
+                            if (pIdx !== -1) {
+                                // Corta el proyecto y lo inserta al final
+                                const pToMove = parsed.projects.splice(pIdx, 1)[0];
+                                parsed.projects.push(pToMove);
+                                localStorage.setItem(key, JSON.stringify(parsed));
+                            }
+                            break; 
+                        }
+                    } catch (err) {}
                 }
                 
-                // REDIRECCIÓN INTELIGENTE:
-                // Si estoy en la Home, voy al Dashboard del Proyecto.
-                // Si estoy en Tareas, Mapa, Equipo o Contabilidad... simplemente recargo la pantalla actual.
-                if(window.location.pathname === '/v5/' || window.location.pathname === '/v5') {
+                // REDIRECCIÓN INTELIGENTE SIN SALIR DE LA PÁGINA
+                // Si estoy en la Home, voy al Dashboard. Si estoy en otra vista (Mapa, Tareas, etc.), solo recargo.
+                if(window.location.pathname.endsWith('/v5/') || window.location.pathname.endsWith('/v5')) {
                     window.location.href = '/v5/dashboard';
                 } else {
-                    // Refresca la vista en la que estás (ej: Kanban) cargando los datos del nuevo proyecto.
                     window.location.reload();
                 }
             });
