@@ -7,7 +7,7 @@ import { PageHeader } from '../components/PageHeader.js';
 export default class HomeView {
     constructor() {
         document.title = "Centro de Mando | TeamTowers SOS";
-        this.currentTab = 'identidad'; // identidad, proyectos, mapa, explorador
+        this.currentTab = 'proyectos'; // Por defecto abrimos en proyectos
     }
 
     async getHtml() {
@@ -23,15 +23,14 @@ export default class HomeView {
         }
 
         // -------------------------------------------------------------------
-        // MODO DASHBOARD DE ECOSISTEMA (Logueado) V9.0
+        // MODO DASHBOARD DE ECOSISTEMA (Logueado) V9.1
         // -------------------------------------------------------------------
-        const user = state.globalUsers.find(u => u.id === activeUserId);
         const archetypeColors = {
             'startup': { label: '🚀 STARTUP', color: 'var(--accent-green)' },
             'corp': { label: '🏢 HOLDING / CORP', color: 'var(--accent-blue)' },
             'corporate': { label: '🏢 HOLDING / CORP', color: 'var(--accent-blue)' },
             'dao': { label: '🤖 IA-DAO', color: 'var(--accent-purple)' },
-            'incubator': { label: '🏭 INCUBADORA MATRICIAL', color: 'var(--accent-orange)' },
+            'incubator': { label: '🏭 INCUBADORA', color: 'var(--accent-orange)' },
             'sos': { label: '🆘 S.O.S. COMUNITARIO', color: 'var(--accent-red)' },
             'custom': { label: '✨ RED CUSTOM', color: 'white' }
         };
@@ -44,10 +43,10 @@ export default class HomeView {
             subtitle: `<span style="font-size:0.6rem; padding:4px 8px; border-radius:12px; border:1px solid ${archData.color}; color:${archData.color}; vertical-align:middle; margin-left:10px;">${archData.label}</span>`,
             tagline: "Panel de control del Ecosistema (Macro-Red).",
             tabs: [
-                { id: 'identidad', label: '📜 Misión & Comando', active: this.currentTab === 'identidad' },
-                { id: 'proyectos', label: '🪐 Nodos (Proyectos)', active: this.currentTab === 'proyectos' },
-                { id: 'mapa', label: '🕸️ VNA Global', active: this.currentTab === 'mapa' },
-                { id: 'explorador', label: '🔎 Etherscan Local', active: this.currentTab === 'explorador' }
+                { id: 'proyectos', label: '🪐 Redes', active: this.currentTab === 'proyectos' },
+                { id: 'identidad', label: '📜 Misión', active: this.currentTab === 'identidad' },
+                { id: 'explorador', label: '🔎 Etherscan', active: this.currentTab === 'explorador' },
+                { id: 'mapa', label: '🕸️ VNA Macro', active: this.currentTab === 'mapa' }
             ]
         };
 
@@ -59,22 +58,56 @@ export default class HomeView {
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
                 .tab-content.active { display: block; }
 
-                /* PANELES */
+                /* PANELES Y STATS */
                 .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 2rem;}
                 .panel h2 { color: white; font-size: 1.2rem; margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;}
                 
-                /* STATS */
                 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
                 .stat-card { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: var(--border-radius-md); text-align: center; }
                 .stat-value { font-size: 2.5rem; color: var(--accent-green); font-weight: 800; font-family: var(--font-mono); margin-bottom: 5px; }
                 .stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-                /* GRID PROYECTOS */
-                .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-                .project-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; transition: transform 0.2s; cursor: pointer; text-decoration: none;}
-                .project-card:hover { transform: translateY(-3px); border-color: var(--accent-blue); }
-                .project-name { color: white; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; display:block;}
-                .project-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between;}
+                /* =========================================================
+                   FILTROS Y BUSCADOR (V9.1)
+                   ========================================================= */
+                .filter-bar { display: flex; gap: 15px; margin-bottom: 2rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: var(--border-radius-md); border: 1px solid var(--glass-border); flex-wrap: wrap; align-items: center;}
+                .filter-bar input, .filter-bar select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+                .filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent-blue); }
+                .filter-search { flex: 2; min-width: 200px; }
+                .filter-select { flex: 1; min-width: 150px; }
+
+                /* =========================================================
+                   GRID PROYECTOS (NODOS) - LUXURY CARDS
+                   ========================================================= */
+                .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+                
+                .project-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; overflow: hidden; backdrop-filter: blur(10px);}
+                .project-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); box-shadow: 0 10px 30px rgba(0, 176, 255, 0.1); background: rgba(255,255,255,0.03); }
+                
+                .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; margin-bottom: 1rem;}
+                .card-title { font-size: 1.3rem; color: white; margin: 0 0 5px 0; font-weight: 800; letter-spacing: -0.5px;}
+                
+                .card-arch { font-size: 0.65rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono);}
+                .arch-startup { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
+                .arch-dao { background: rgba(224, 64, 251, 0.1); color: var(--accent-purple); border: 1px solid rgba(224, 64, 251, 0.3); }
+                .arch-corp { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.3); }
+                .arch-incubator { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.3); }
+
+                /* TAGS */
+                .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; z-index: 1;}
+                .tag-pill { background: rgba(0,0,0,0.5); border: 1px solid #333; color: #aaa; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px;}
+
+                .card-metrics { display: flex; justify-content: space-between; margin-bottom: 1.5rem; z-index: 1; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;}
+                .metric { display: flex; flex-direction: column; align-items: center; }
+                .metric-val { font-size: 1.2rem; color: white; font-family: var(--font-mono); font-weight: bold; }
+                .metric-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+
+                .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; z-index: 1;}
+                .opp-link { color: var(--accent-orange); font-size: 0.85rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.2s;}
+                .opp-link:hover { filter: brightness(1.2); }
+                
+                .btn-enter { background: transparent; border: 1px solid #444; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; transition: all 0.2s; font-size: 0.85rem;}
+                .project-card:hover .btn-enter { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(0, 176, 255, 0.1); }
 
                 /* ETHERSCAN LOCAL */
                 .etherscan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;}
@@ -91,6 +124,8 @@ export default class HomeView {
                 @media (max-width: 768px) {
                     .workspace { padding: 80px 1rem 90px 1rem; } 
                     .stats-grid { grid-template-columns: 1fr 1fr; }
+                    .filter-bar { flex-direction: column; align-items: stretch; padding: 10px;}
+                    .filter-bar input, .filter-bar select { width: 100%; }
                     .etherscan-filters { width: 100%; display: flex; flex-direction: column; }
                     .etherscan-filters input, .etherscan-filters select { width: 100%; }
                 }
@@ -102,34 +137,34 @@ export default class HomeView {
                 <main class="workspace">
                     ${PageHeader.getHtml(headerConfig)}
 
-                    <div id="view-identidad" class="tab-content active">
+                    <div id="view-proyectos" class="tab-content active">
+                        <div class="filter-bar" id="filterBar" style="display: flex;">
+                            <input type="text" id="filterSearch" class="filter-search" placeholder="🔍 Buscar red por nombre...">
+                            <select id="filterSector" class="filter-select">
+                                <option value="all">🌐 Todos los Sectores</option>
+                            </select>
+                            <select id="filterArch" class="filter-select">
+                                <option value="all">🏛️ Todos los Arquetipos</option>
+                            </select>
+                        </div>
+
+                        <div class="projects-grid" id="ecosystemProjectsGrid">
+                            </div>
+                    </div>
+
+                    <div id="view-identidad" class="tab-content">
+                        <div class="panel">
+                            <h2>📊 Tablero de Comando Global</h2>
+                            <div class="stats-grid" id="globalStatsGrid">
+                                <div class="stat-card"><div class="stat-value">Cargando...</div></div>
+                            </div>
+                        </div>
+
                         <div class="panel">
                             <h2>📜 Misión y System Prompt Global</h2>
                             <p style="font-family: var(--font-mono); color: #ccc; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #444;">
                                 ${config.globalPrompt || "El Ecosistema aún no tiene un System Prompt definido. Ve a Configuración para establecer su propósito."}
                             </p>
-                        </div>
-
-                        <div class="panel">
-                            <h2>📊 Tablero de Comando Global</h2>
-                            <div class="stats-grid" id="globalStatsGrid">
-                                <div class="stat-card">
-                                    <div class="stat-value">Cargando...</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="view-proyectos" class="tab-content">
-                        <div class="projects-grid" id="ecosystemProjectsGrid">
-                            </div>
-                    </div>
-
-                    <div id="view-mapa" class="tab-content">
-                        <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; text-align:center;">
-                            <div style="font-size: 3rem; margin-bottom: 1rem;">🕸️</div>
-                            <h2 style="border:none;">Topología Macro-Red (En Construcción)</h2>
-                            <p style="max-width: 500px; margin:0 auto;">En la V9, este lienzo mostrará cómo las empresas/proyectos (nodos macro) se pasan valor entre ellos mediante el orquestador de <code>macroFlows</code> del Kernel.</p>
                         </div>
                     </div>
 
@@ -162,13 +197,21 @@ export default class HomeView {
                         </div>
                     </div>
 
+                    <div id="view-mapa" class="tab-content">
+                        <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; text-align:center;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🕸️</div>
+                            <h2 style="border:none;">Topología Macro-Red (En Construcción)</h2>
+                            <p style="max-width: 500px; margin:0 auto;">En la V9, este lienzo mostrará cómo las empresas/proyectos (nodos macro) se pasan valor entre ellos mediante el orquestador de <code>macroFlows</code> del Kernel.</p>
+                        </div>
+                    </div>
+
                 </main>
                 ${BottomNav.getHtml('/')}
             </div>
         `;
     }
 
-    // --- LANDING PAGE (NO LOGUEADO) ---
+    // --- LANDING PAGE MANTENIDA IGUAL ---
     getLandingHtml() {
         return `
             <style>
@@ -226,7 +269,7 @@ export default class HomeView {
             return;
         }
 
-        // --- SCRIPTS DEL DASHBOARD ECOSISTEMA (LOGUEADO) ---
+        // --- SCRIPTS DEL DASHBOARD ECOSISTEMA ---
         Sidebar.initListeners();
         PageHeader.execute();
 
@@ -246,13 +289,56 @@ export default class HomeView {
             });
         });
 
+        this.allProjects = state.projects || [];
+
+        // RENDERIZADOS INICIALES
         this.renderGlobalStats(state);
-        this.renderEcosystemProjects(state);
+        this.setupFilters();
+        this.renderEcosystemProjects(this.allProjects);
         this.renderEtherscan(state);
 
-        // Filtros Etherscan
+        // LISTENERS
         document.getElementById('scanSearch')?.addEventListener('input', () => this.renderEtherscan(store.getState()));
         document.getElementById('scanProjectFilter')?.addEventListener('change', () => this.renderEtherscan(store.getState()));
+    }
+
+    setupFilters() {
+        const searchInput = document.getElementById('filterSearch');
+        const sectorSelect = document.getElementById('filterSector');
+        const archSelect = document.getElementById('filterArch');
+
+        if (!searchInput || !sectorSelect || !archSelect) return;
+
+        // Autocompletar Sectores existentes
+        const uniqueSectors = [...new Set(this.allProjects.map(p => p.sector || 'General'))];
+        uniqueSectors.forEach(sec => {
+            sectorSelect.innerHTML += `<option value="${sec}">${sec.replace(/_/g, ' ').toUpperCase()}</option>`;
+        });
+
+        // Autocompletar Arquetipos existentes
+        const uniqueArchs = [...new Set(this.allProjects.map(p => p.archetype || 'startup'))];
+        uniqueArchs.forEach(arc => {
+            archSelect.innerHTML += `<option value="${arc}">${arc.toUpperCase()}</option>`;
+        });
+
+        const applyFilters = () => {
+            const term = searchInput.value.toLowerCase();
+            const selectedSector = sectorSelect.value;
+            const selectedArch = archSelect.value;
+
+            const filtered = this.allProjects.filter(p => {
+                const matchName = p.nombre.toLowerCase().includes(term);
+                const matchSector = selectedSector === 'all' || (p.sector || 'General') === selectedSector;
+                const matchArch = selectedArch === 'all' || (p.archetype || 'startup') === selectedArch;
+                return matchName && matchSector && matchArch;
+            });
+
+            this.renderEcosystemProjects([...filtered].reverse());
+        };
+
+        searchInput.addEventListener('input', applyFilters);
+        sectorSelect.addEventListener('change', applyFilters);
+        archSelect.addEventListener('change', applyFilters);
     }
 
     renderGlobalStats(state) {
@@ -286,28 +372,83 @@ export default class HomeView {
         `;
     }
 
-    renderEcosystemProjects(state) {
+    renderEcosystemProjects(projectsToRender) {
         const grid = document.getElementById('ecosystemProjectsGrid');
         if(!grid) return;
         
-        if (state.projects.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; padding:3rem; text-align:center; color:#888;">El Ecosistema está vacío. Crea tu primera red en la configuración.</div>`;
+        if (projectsToRender.length === 0) {
+            grid.innerHTML = `<div style="grid-column:1/-1; padding:3rem; text-align:center; color:#888;">No se encontraron redes con estos filtros.</div>`;
             return;
         }
 
-        grid.innerHTML = state.projects.map(p => {
+        grid.innerHTML = projectsToRender.map(p => {
             const usersCount = (p.usuarios || []).length;
             const ledgerCount = (p.ledger || []).length;
+            
+            // Calcular Oportunidades (Tareas Teóricas Libres)
+            const openTasks = (p.transactions || []).filter(tx => tx.status === 'theoretical').length;
+
+            // Calcular Tags (Si no hay, generar basados en el sector)
+            let tags = p.tags || [];
+            if (tags.length === 0) tags = ['VNA', (p.sector || 'Agnóstico').split('_')[0]];
+
+            // Estilos del Arquetipo
+            let archClass = 'arch-startup';
+            let privacyIcon = '🌐';
+            
+            if(p.archetype === 'dao') archClass = 'arch-dao';
+            if(p.archetype === 'corporate' || p.archetype === 'corp') {
+                archClass = 'arch-corp';
+                privacyIcon = '🔒';
+            }
+            if(p.archetype === 'incubator') archClass = 'arch-incubator';
+
             return `
-                <a href="/v5/project" class="project-card" onclick="localStorage.setItem('tt_active_project', '${p.id}')">
-                    <span class="project-name">${p.nombre}</span>
-                    <div class="project-meta">
-                        <span>👥 ${usersCount} Nodos</span>
-                        <span>🧱 ${ledgerCount} Bloques</span>
+                <div class="project-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">${p.nombre}</h3>
+                        </div>
+                        <div class="card-arch ${archClass}">${privacyIcon} ${p.archetype}</div>
                     </div>
-                </a>
+                    
+                    <div class="card-tags">
+                        ${tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}
+                    </div>
+
+                    <div class="card-metrics">
+                        <div class="metric">
+                            <span class="metric-val">${usersCount}</span>
+                            <span class="metric-label">Nodos</span>
+                        </div>
+                        <div class="metric" style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px;">
+                            <span class="metric-val">${ledgerCount}</span>
+                            <span class="metric-label">Bloques</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button class="btn-navigate opp-link" data-id="${p.id}" data-target="/project">
+                            🎯 ${openTasks} Ofertas activas
+                        </button>
+                        <button class="btn-navigate btn-enter" data-id="${p.id}" data-target="/project">
+                            Acceder &rarr;
+                        </button>
+                    </div>
+                </div>
             `;
         }).join('');
+
+        // Listener para botones de navegación dentro de las tarjetas
+        document.querySelectorAll('.btn-navigate').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.getAttribute('data-id');
+                const targetUrl = e.currentTarget.getAttribute('data-target');
+                
+                localStorage.setItem('tt_active_project', targetId);
+                window.location.href = `/v5${targetUrl}`;
+            });
+        });
     }
 
     renderEtherscan(state) {
@@ -326,16 +467,17 @@ export default class HomeView {
             }
         });
 
-        // Ordenar por fecha más reciente
         globalLedger.sort((a, b) => b.timestamp - a.timestamp);
 
-        // Filtrar por búsqueda (Añadido parche defensivo para los hash antiguos)
         if (searchQ) {
-            globalLedger = globalLedger.filter(l => 
-                (l.hash || '').toLowerCase().includes(searchQ) || 
-                (l.userId || '').toLowerCase().includes(searchQ) || 
-                (l.description || '').toLowerCase().includes(searchQ)
-            );
+            globalLedger = globalLedger.filter(l => {
+                const safeHash = l.hash || l.id || '';
+                const safeUserId = l.userId || '';
+                const safeDesc = l.description || '';
+                return safeHash.toLowerCase().includes(searchQ) || 
+                       safeUserId.toLowerCase().includes(searchQ) || 
+                       safeDesc.toLowerCase().includes(searchQ);
+            });
         }
 
         if (globalLedger.length === 0) {
@@ -347,11 +489,10 @@ export default class HomeView {
             const date = new Date(entry.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
             const user = state.globalUsers.find(u => u.id === entry.userId) || { name: entry.userId };
             
-            // Fix defensivo: si no hay hash (datos legacy V6), usa el id o un placeholder
             const rawHash = entry.hash || entry.id || 'LEGACY_BLOCK';
-            const hashShort = rawHash.substring(0,10);
+            const hashShort = rawHash.length > 10 ? rawHash.substring(0,10) : rawHash;
             
-            const slicesFmt = `+${Math.round(entry.valorCongelado).toLocaleString()}`;
+            const slicesFmt = `+${Math.round(entry.valorCongelado || 0).toLocaleString()}`;
             
             return `
                 <tr>
@@ -359,14 +500,13 @@ export default class HomeView {
                     <td style="color:var(--accent-blue);">${entry.projectName}</td>
                     <td style="color:#888;">${date}</td>
                     <td style="font-weight:bold; color:white;">${user.name}</td>
-                    <td style="color:#ccc;">${entry.description}</td>
+                    <td style="color:#ccc;">${entry.description || ''}</td>
                     <td style="text-align:right; font-weight:bold; color:var(--accent-green); font-family:var(--font-mono);">${slicesFmt}</td>
                 </tr>
             `;
         }).join('');
     }
 
-    // --- LANDING SCRIPTS ---
     initLandingScripts() {
         if (!document.getElementById('gsi-script')) {
             const script = document.createElement('script');
