@@ -2,9 +2,8 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN V8.0
+import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN UNIVERSAL
 
-// Diccionario Geo-Local para el Ecosistema
 const GEO_DATA = {
     "España": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Bilbao", "Alicante", "Palma", "Otra..."],
     "México": ["Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "Mérida", "Otra..."],
@@ -36,7 +35,6 @@ export default class TeamView {
         let activeProjectId = localStorage.getItem('tt_active_project') || (userProjects.length > 0 ? userProjects[userProjects.length - 1].id : null);
         let project = state.projects.find(p => p.id === activeProjectId);
 
-        // Opciones del Modal Geo
         let countryOptions = `<option value="">Todos los Países</option>`;
         Object.keys(GEO_DATA).forEach(c => {
             countryOptions += `<option value="${c}">${c}</option>`;
@@ -56,8 +54,8 @@ export default class TeamView {
                 </div>
             ` : '',
             tabs: [
-                { id: 'nodos', label: '👥 Nodos (Usuarios)', active: this.currentTab === 'nodos', badge: project ? (project.usuarios || []).length : '0' },
-                { id: 'asignaciones', label: '🪑 Asignación de Sillas', active: this.currentTab === 'asignaciones' }
+                { id: 'nodos', label: '👥 Nodos Activos', active: this.currentTab === 'nodos', badge: project ? (project.usuarios || []).length : '0' },
+                { id: 'asignaciones', label: '🪑 Sillas (Roles)', active: this.currentTab === 'asignaciones' }
             ]
         };
 
@@ -69,31 +67,32 @@ export default class TeamView {
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
                 .tab-content.active { display: block; }
 
+                /* GRID & CARDS (LUXURY COMPACT) */
                 .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
                 
-                /* CARDS DE USUARIO (NODOS) */
-                .user-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 15px; transition: all 0.2s; cursor: pointer; position: relative; backdrop-filter: blur(10px);}
+                .user-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.2rem; display: flex; align-items: center; gap: 15px; transition: all 0.2s; cursor: pointer; position: relative; backdrop-filter: blur(10px);}
                 .user-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 176, 255, 0.1); }
-                .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 1.5rem; border: 2px solid #333; flex-shrink: 0;}
+                .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 1.2rem; border: 2px solid #333; flex-shrink: 0;}
                 .user-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-                .user-name { color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
-                .user-id { color: #888; font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .po-badge { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.3); font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; text-transform: uppercase;}
+                .user-name { color: white; font-weight: bold; font-size: 1rem; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
+                .user-id { color: #888; font-family: var(--font-mono); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+                .po-badge { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.3); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
 
                 /* ASIGNACIÓN DE SILLAS (ROLES) */
-                .role-slot { background: rgba(20, 20, 25, 0.6); border: 1px dashed rgba(255,255,255,0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
+                .roles-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; max-width: 800px; margin: 0 auto;}
+                .role-slot { background: rgba(20, 20, 25, 0.6); border: 1px dashed rgba(255,255,255,0.2); border-radius: 16px; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
                 .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.05); }
-                .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1;}
+                .role-meta { display: flex; flex-direction: column; gap: 6px; flex: 1;}
                 
-                .ai-match-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 6px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); font-weight: bold;}
-                .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);}
+                .ai-match-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono);}
+                .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-1px); box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);}
 
                 /* FORMULARIOS Y BOTONES */
-                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
+                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
                 .form-control:focus { border-color: var(--accent-blue); }
                 .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
                 .form-group { margin-bottom: 15px; }
-                .form-group label { display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; }
+                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
 
                 .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center;}
                 .btn-invite:hover { background: rgba(0, 176, 255, 0.1); }
@@ -118,7 +117,7 @@ export default class TeamView {
 
                 /* MODAL STANDARD (AÑADIR USUARIO) */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 16px; width: 500px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
+                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2rem; border-radius: 16px; width: 500px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
 
                 /* MARKETPLACE SIDE PANEL */
                 .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000; box-shadow: -15px 0 40px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
@@ -156,7 +155,6 @@ export default class TeamView {
                     
                     /* Form elements */
                     .btn-primary, .btn-invite, .btn-outline { width: 100%; margin-bottom: 10px;}
-                    .ph-header-actions { display: flex; flex-direction: column; width: 100%;}
                 }
             </style>
 
@@ -172,7 +170,7 @@ export default class TeamView {
                     </div>
 
                     <div id="view-asignaciones" class="tab-content">
-                        <div id="rolesList" style="max-width: 800px; margin: 0 auto;">
+                        <div class="roles-grid" id="rolesList">
                             </div>
                     </div>
 
@@ -306,28 +304,17 @@ export default class TeamView {
     }
 
     executeViewScript() {
-        Sidebar.initListeners();
+        Sidebar.initListeners(); 
         PageHeader.execute();
 
         const state = store.getState();
-        const activeUserId = state.session.activeUserId;
-        
-        let currentActiveId = localStorage.getItem('tt_active_project');
-        let project = state.projects.find(p => p.id === currentActiveId);
-        
-        if (!project) {
-            const userProjects = state.projects.filter(p => 
-                state.session.role === 'ecosystem-owner' || 
-                p.ownerId === activeUserId || 
-                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
-            );
-            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
-        }
+        const activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
+        let project = state.projects.find(p => p.id === activeProjectId);
 
         if (!project) return;
         this.activeProjectId = project.id;
-
-        // TABS LOGIC
+        
+        // TABS LOGIC (FIXED FOR CLIPPING)
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -336,22 +323,27 @@ export default class TeamView {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                tabContents.forEach(content => content.classList.remove('active'));
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
                 
                 const targetId = `view-${btn.dataset.tab}`;
                 const targetContent = document.getElementById(targetId);
-                if (targetContent) targetContent.classList.add('active');
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
             });
         });
 
         this.renderUsers(project, state.globalUsers);
         this.renderRoles(project, state.globalUsers);
 
-        // -- MÓDULO MARKETPLACE LATERAL --
+        // -- MÓDULO MARKETPLACE LATERAL CON FILTROS EXACTOS --
         const mkPanel = document.getElementById('mkPanel');
-        const btnOpenMK = document.getElementById('btnOpenMarketplace');
-        if (btnOpenMK) {
-            btnOpenMK.addEventListener('click', () => {
+        
+        const btnOpenMarketplace = document.getElementById('btnOpenMarketplace');
+        if (btnOpenMarketplace) {
+            btnOpenMarketplace.addEventListener('click', () => {
                 mkPanel.classList.add('open');
                 this.renderMarketplace(store.getState().globalUsers, project.usuarios);
             });
@@ -362,18 +354,19 @@ export default class TeamView {
         });
 
         const filterMK = () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId).usuarios);
-        document.getElementById('mkSearchName')?.addEventListener('input', filterMK);
-        document.getElementById('mkSearchCountry')?.addEventListener('change', filterMK); 
-        document.getElementById('mkSearchCity')?.addEventListener('input', filterMK);
-        document.getElementById('mkSearchSkills')?.addEventListener('input', filterMK);
+        document.getElementById('mkSearchName').addEventListener('input', filterMK);
+        document.getElementById('mkSearchCountry').addEventListener('change', filterMK); 
+        document.getElementById('mkSearchCity').addEventListener('input', filterMK);
+        document.getElementById('mkSearchSkills').addEventListener('input', filterMK);
 
-        // -- FORMULARIO MANUAL (AÑADIR NODO) --
+
+        // -- FORMULARIO DRY: ALTA DE USUARIOS (LOGICA DE DEPENDENCIAS) --
         const addUserModal = document.getElementById('addUserModal');
         const selCountry = document.getElementById('addUCountry');
         const selCity = document.getElementById('addUCity');
         const inpCityCustom = document.getElementById('addUCityCustom');
         
-        if (selCountry) {
+        if (selCountry && selCity) {
             selCountry.addEventListener('change', (e) => {
                 const country = e.target.value;
                 selCity.innerHTML = '';
@@ -394,9 +387,7 @@ export default class TeamView {
                     selCity.innerHTML += `<option value="${city}">${city}</option>`;
                 });
             });
-        }
 
-        if (selCity) {
             selCity.addEventListener('change', (e) => {
                 if (e.target.value === 'Otra...') {
                     inpCityCustom.style.display = 'block';
@@ -409,7 +400,7 @@ export default class TeamView {
         }
 
         const btnManualAdd = document.getElementById('btnManualAdd');
-        if(btnManualAdd) {
+        if (btnManualAdd) {
             btnManualAdd.addEventListener('click', () => addUserModal.style.display = 'flex');
         }
 
@@ -527,8 +518,7 @@ export default class TeamView {
                     type: 'ADD_USER',
                     payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, walletOrSocial: gu.walletOrSocial, globalRole: gu.globalRole }
                 });
-                // Recargar el header para actualizar el número del badge si usamos PageHeader
-                window.location.reload(); 
+                window.location.reload(); // Recarga para actualizar las vistas y badges
             });
 
             listContainer.appendChild(card);
@@ -541,13 +531,8 @@ export default class TeamView {
                 type: 'ADD_USER',
                 payload: { 
                     projectId: this.activeProjectId, 
-                    userId: userObj.id, 
-                    id: userObj.id, 
-                    name: userObj.name, 
-                    email: userObj.email,
-                    wallet: userObj.wallet,
-                    social: userObj.social,
-                    globalRole: userObj.globalRole 
+                    userId: userObj.id, id: userObj.id, name: userObj.name, 
+                    email: userObj.email, wallet: userObj.wallet, social: userObj.social, globalRole: userObj.globalRole 
                 }
             });
             if (userObj.profile) {
@@ -627,10 +612,10 @@ export default class TeamView {
                     if (fullUser.social) contactInfo += `<br><span style="color:#888;">Social:</span> ${fullUser.social}`;
 
                     promptBox.innerHTML = `
-                        <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:12px; font-family:var(--font-main); font-size:1rem;">${geo}</span>
-                        <div style="margin-bottom:8px;"><span style="color: var(--accent-blue);">Estructura:</span> [${(fullUser.profile.structural_affinity||[]).join(', ')}]</div>
-                        <div style="margin-bottom:8px;"><span style="color: var(--accent-purple);">Autoridad:</span> [${(fullUser.profile.guardian_authority||[]).join(', ')}]</div>
-                        <div style="border-top:1px dashed #444; margin-top:12px; padding-top:8px;">${contactInfo}</div>
+                        <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:8px;">${geo}</span>
+                        <span style="color: var(--accent-blue);">Estructura Óptima:</span> [${(fullUser.profile.structural_affinity||[]).join(', ')}]<br>
+                        <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${(fullUser.profile.guardian_authority||[]).join(', ')}]
+                        ${contactInfo}
                     `;
                 } else {
                     promptBox.innerHTML = '<span style="color: #888;">// Sin Identidad Fractal ni contacto.</span>';
@@ -654,6 +639,7 @@ export default class TeamView {
                             btnPromo.addEventListener('click', async () => {
                                 if(confirm(`¿Estás seguro de ceder el control del Castell a ${fullUser.name}?`)) {
                                     await store.dispatch({ type: 'PROMOTE_TO_PO', payload: { projectId: this.activeProjectId, userId: fullUser.id } });
+                                    document.getElementById('userProfileModal').style.display = 'none';
                                     window.location.reload(); 
                                 }
                             });
@@ -743,14 +729,14 @@ export default class TeamView {
                 if (e.target.value !== "") {
                     await store.dispatch({ type: 'ASSIGN_USER_ROLE', payload: { projectId: this.activeProjectId, roleId: rol.id, userId: e.target.value } });
                 }
-                this.renderRoles(store.getState().projects.find(p=>p.id===this.activeProjectId), store.getState().globalUsers);
+                this.executeViewScript();
             });
 
             const matchBadge = slot.querySelector('.ai-match-badge');
             if (matchBadge) {
                 matchBadge.addEventListener('click', async (e) => {
                     await store.dispatch({ type: 'ASSIGN_USER_ROLE', payload: { projectId: this.activeProjectId, roleId: e.currentTarget.dataset.roleid, userId: e.currentTarget.dataset.userid } });
-                    this.renderRoles(store.getState().projects.find(p=>p.id===this.activeProjectId), store.getState().globalUsers);
+                    this.executeViewScript();
                 });
             }
 
