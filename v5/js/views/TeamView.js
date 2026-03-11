@@ -67,7 +67,7 @@ export default class TeamView {
 
                 /* MODAL STANDARD (PARA AÑADIR USUARIO) */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2rem; border-radius: 12px; width: 450px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; }
+                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2rem; border-radius: 12px; width: 500px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; }
 
                 /* SIDE-PANEL: MARKETPLACE DEL ECOSISTEMA */
                 .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: #0a0a0f; border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000; box-shadow: -15px 0 40px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
@@ -139,22 +139,32 @@ export default class TeamView {
                 <div class="modal-overlay" id="addUserModal">
                     <div class="modal-content">
                         <h3 style="color:white; margin-top:0;">➕ Instanciar Nuevo Usuario</h3>
-                        <div class="form-group">
-                            <label>Alias Único (@user)</label>
-                            <input type="text" id="addUAlias" class="form-control" placeholder="@alias_unico">
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label>Alias Único (@user)</label>
+                                <input type="text" id="addUAlias" class="form-control" placeholder="@alias_unico">
+                            </div>
+                            <div class="form-group" style="flex:2;">
+                                <label>Nombre Completo</label>
+                                <input type="text" id="addUName" class="form-control" placeholder="Ej: Laura Pérez">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Nombre Completo</label>
-                            <input type="text" id="addUName" class="form-control" placeholder="Ej: Laura Pérez">
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
+                            <label>Email (Para Invitación y OAuth)</label>
                             <input type="email" id="addUEmail" class="form-control" placeholder="correo@dominio.com">
                         </div>
-                        <div class="form-group">
-                            <label>Wallet / Red Social</label>
-                            <input type="text" id="addUWallet" class="form-control" placeholder="0x... o linkedin.com/in/...">
+                        
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label>Crypto Wallet (Web3)</label>
+                                <input type="text" id="addUWallet" class="form-control" placeholder="0x... o ar...">
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>Red Social (LinkedIn/X)</label>
+                                <input type="text" id="addUSocial" class="form-control" placeholder="linkedin.com/in/...">
+                            </div>
                         </div>
+
                         <div style="display:flex; gap:10px;">
                             <div class="form-group" style="flex:1;">
                                 <label>País</label>
@@ -164,13 +174,13 @@ export default class TeamView {
                                 <label>Ciudad</label>
                                 <input type="text" id="addUCity" class="form-control" placeholder="Ej: Barcelona">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Código Postal</label>
-                            <input type="text" id="addUZip" class="form-control" placeholder="Ej: 08001">
+                            <div class="form-group" style="width:80px;">
+                                <label>C. Postal</label>
+                                <input type="text" id="addUZip" class="form-control" placeholder="08001">
+                            </div>
                         </div>
                         
-                        <div style="display:flex; justify-content:space-between; margin-top:2rem;">
+                        <div style="display:flex; justify-content:space-between; margin-top:1.5rem; border-top: 1px solid #333; padding-top: 1.5rem;">
                             <button class="btn-outline" id="btnCancelAddUser">Cancelar</button>
                             <button class="btn-primary" id="btnConfirmAddUser">Registrar Usuario</button>
                         </div>
@@ -270,6 +280,7 @@ export default class TeamView {
             const name = document.getElementById('addUName').value.trim();
             const email = document.getElementById('addUEmail').value.trim();
             const wallet = document.getElementById('addUWallet').value.trim();
+            const social = document.getElementById('addUSocial').value.trim();
             const country = document.getElementById('addUCountry').value.trim();
             const city = document.getElementById('addUCity').value.trim();
             const zip = document.getElementById('addUZip').value.trim();
@@ -277,12 +288,12 @@ export default class TeamView {
             if (!alias || !name) return alert("El Alias y el Nombre completo son campos obligatorios.");
             if (!alias.startsWith('@')) alias = '@' + alias;
 
-            // Conservamos atributos semánticos base para el autocompletado de la IA
             const newUser = {
                 id: alias,
                 name: name,
                 email: email,
-                walletOrSocial: wallet,
+                wallet: wallet,
+                social: social,
                 globalRole: 'network-user',
                 profile: {
                     country: country,
@@ -301,6 +312,7 @@ export default class TeamView {
             document.getElementById('addUName').value = '';
             document.getElementById('addUEmail').value = '';
             document.getElementById('addUWallet').value = '';
+            document.getElementById('addUSocial').value = '';
             document.getElementById('addUCountry').value = '';
             document.getElementById('addUCity').value = '';
             document.getElementById('addUZip').value = '';
@@ -352,7 +364,7 @@ export default class TeamView {
             card.querySelector('.btn-recruit').addEventListener('click', async (e) => {
                 await store.dispatch({
                     type: 'ADD_USER',
-                    payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, walletOrSocial: gu.walletOrSocial, globalRole: gu.globalRole }
+                    payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, globalRole: gu.globalRole }
                 });
                 this.executeViewScript();
             });
@@ -365,7 +377,16 @@ export default class TeamView {
         try {
             await store.dispatch({
                 type: 'ADD_USER',
-                payload: { projectId: this.activeProjectId, userId: userObj.id, id: userObj.id, name: userObj.name, walletOrSocial: userObj.walletOrSocial, globalRole: userObj.globalRole, email: userObj.email }
+                payload: { 
+                    projectId: this.activeProjectId, 
+                    userId: userObj.id, 
+                    id: userObj.id, 
+                    name: userObj.name, 
+                    email: userObj.email,
+                    wallet: userObj.wallet,
+                    social: userObj.social,
+                    globalRole: userObj.globalRole 
+                }
             });
             if (userObj.profile) {
                 const currentState = store.getState();
@@ -439,13 +460,19 @@ export default class TeamView {
                 const promptBox = document.getElementById('pmSemanticProfile');
                 if (fullUser.profile) {
                     const geo = fullUser.profile.country ? `📍 ${fullUser.profile.city || ''}, ${fullUser.profile.country} ${fullUser.profile.zip || ''}` : '🌍 Ubicación no definida';
+                    
+                    let contactInfo = '';
+                    if (fullUser.wallet) contactInfo += `<br><span style="color:#888;">Wallet:</span> ${fullUser.wallet}`;
+                    if (fullUser.social) contactInfo += `<br><span style="color:#888;">Social:</span> ${fullUser.social}`;
+
                     promptBox.innerHTML = `
                         <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:8px;">${geo}</span>
                         <span style="color: var(--accent-blue);">Estructura Óptima:</span> [${(fullUser.profile.structural_affinity||[]).join(', ')}]<br>
                         <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${(fullUser.profile.guardian_authority||[]).join(', ')}]
+                        ${contactInfo}
                     `;
                 } else {
-                    promptBox.innerHTML = '<span style="color: #888;">// Sin Identidad Fractal.</span>';
+                    promptBox.innerHTML = '<span style="color: #888;">// Sin Identidad Fractal ni contacto.</span>';
                 }
 
                 const govContainer = document.getElementById('govContainer');
