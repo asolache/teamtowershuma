@@ -4,7 +4,12 @@ import { store } from '../core/store.js';
 export const Sidebar = {
     getHtml: (activePath = '') => {
         const state = store.getState();
-        const project = state.projects[state.projects.length - 1];
+        
+        // Obtenemos el ID del proyecto actualmente en foco (por defecto el último)
+        // En un futuro cercano, el state debería guardar 'activeProjectId'
+        // Por ahora, asumimos que el último es el activo, o usamos el ID de la URL si se implementa.
+        const activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
+        const project = state.projects.find(p => p.id === activeProjectId);
         
         const activeUserId = state.session.activeUserId;
         const role = state.session.role;
@@ -15,51 +20,66 @@ export const Sidebar = {
             if (u) userDisplay = u.name;
         }
 
-        // Recuperar preferencia de colapso del usuario
         const isCollapsed = localStorage.getItem('tt_sidebar_collapsed') === 'true';
         const collapsedClass = isCollapsed ? 'collapsed' : '';
 
-        // CONTROL DE PERMISOS
         const canCreate = role === 'ecosystem-owner' || (state.config && state.config.allowUserCreation);
         const createLink = canCreate ? `<a href="/v5/create" class="side-link ${activePath === '/create' ? 'active' : ''}" data-link title="Instanciar Red"><span class="icon">➕</span> <span class="text">Instanciar Red</span></a>` : '';
 
-        // 1. SECCIÓN GLOBAL
+        // 1. SECCIÓN GLOBAL (Textos actualizados)
         const globalSection = `
             <div class="side-section">
-                <a href="/v5/" class="side-link ${activePath === '/' ? 'active' : ''}" data-link title="Inicio Central"><span class="icon">🏠</span> <span class="text">Inicio Central</span></a>
+                <a href="/v5/" class="side-link ${activePath === '/' ? 'active' : ''}" data-link title="Mi Dashboard"><span class="icon">🏠</span> <span class="text">Mi Dashboard</span></a>
                 <a href="/v5/network" class="side-link ${activePath === '/network' ? 'active' : ''}" data-link title="Red de DAOs"><span class="icon">🌐</span> <span class="text">Red de DAOs</span></a>
                 ${createLink}
                 <a href="/v5/profile" class="side-link ${activePath === '/profile' ? 'active' : ''}" data-link title="Mi CV / Arquetipo"><span class="icon">👤</span> <span class="text">Mi CV / Arquetipo</span></a>
             </div>
         `;
 
-        // 2. SECCIÓN DE CONTEXTO (Si hay proyecto activo)
+        // 2. SECCIÓN DE CONTEXTO Y SWITCHER DE PROYECTOS
         let projectSection = '';
-        if (project) {
-            projectSection = `
-                <div class="project-context-header" title="${project.nombre}">
-                    <h3 class="text">${project.nombre}</h3>
-                    <p class="text">MODO: ${project.archetype ? project.archetype.toUpperCase() : 'STARTUP'}</p>
-                    <span class="icon-only" style="display:none; text-align:center; font-size:1.2rem; margin:10px 0;">🏰</span>
-                </div>
-                <div class="side-section">
-                    <a href="/v5/dashboard" class="side-link ${activePath === '/dashboard' ? 'active' : ''}" data-link title="Lobby del Proyecto" style="color: var(--accent-green);">
-                        <span class="icon">🏠</span> <span class="text">Lobby del Proyecto</span>
-                    </a>
-                    <a href="/v5/project" class="side-link ${activePath === '/project' ? 'active' : ''}" data-link title="Kanban Tracción">
-                        <span class="icon">📋</span> <span class="text">Kanban Tracción</span>
-                    </a>
-                    <a href="/v5/map" class="side-link ${activePath === '/map' ? 'active' : ''}" data-link title="Mapa de Valor">
-                        <span class="icon">🕸️</span> <span class="text">Mapa de Valor</span>
-                    </a>
-                    <a href="/v5/team" class="side-link ${activePath === '/team' ? 'active' : ''}" data-link title="La Colla (Talento)">
-                        <span class="icon">👥</span> <span class="text">La Colla (Talento)</span>
-                    </a>
-                    <a href="/v5/ledger" class="side-link ${activePath === '/ledger' ? 'active' : ''}" data-link title="Ledger Equity">
-                        <span class="icon">⚖️</span> <span class="text">Ledger Equity</span>
-                    </a>
-                </div>
-            `;
+        if (state.projects.length > 0) {
+            
+            // Construir las opciones del desplegable con todos los proyectos a los que el usuario tiene acceso
+            let optionsHtml = '';
+            state.projects.forEach(p => {
+                const hasAccess = store.canUserViewProject(p.id, activeUserId, role);
+                if (hasAccess || role === 'ecosystem-owner') {
+                    const isSelected = p.id === activeProjectId ? 'selected' : '';
+                    optionsHtml += `<option value="${p.id}" ${isSelected}>${p.nombre}</option>`;
+                }
+            });
+
+            // Si no hay opciones (proyectos ocultos para el usuario), no mostramos el selector
+            if (optionsHtml !== '') {
+                projectSection = `
+                    <div class="project-context-header">
+                        <label class="text" style="font-size:0.65rem; color:#888; text-transform:uppercase; font-weight:bold; margin-bottom:5px; display:block;">Mis Proyectos</label>
+                        <select id="sidebarProjectSwitcher" class="text" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; color:white; padding:8px; border-radius:6px; outline:none; font-family:var(--font-main); font-weight:bold; cursor:pointer;">
+                            ${optionsHtml}
+                        </select>
+                        <span class="icon-only" style="display:none; text-align:center; font-size:1.2rem; margin:10px 0;" title="${project ? project.nombre : 'Proyecto'}">🏰</span>
+                    </div>
+
+                    <div class="side-section" style="${!project ? 'display:none;' : ''}">
+                        <a href="/v5/dashboard" class="side-link ${activePath === '/dashboard' ? 'active' : ''}" data-link title="Dashboard de Proyecto" style="color: var(--accent-green);">
+                            <span class="icon">🚀</span> <span class="text">Dashboard de Proyecto</span>
+                        </a>
+                        <a href="/v5/project" class="side-link ${activePath === '/project' ? 'active' : ''}" data-link title="Kanban Tracción">
+                            <span class="icon">📋</span> <span class="text">Kanban Tracción</span>
+                        </a>
+                        <a href="/v5/map" class="side-link ${activePath === '/map' ? 'active' : ''}" data-link title="Mapa de Valor">
+                            <span class="icon">🕸️</span> <span class="text">Mapa de Valor</span>
+                        </a>
+                        <a href="/v5/team" class="side-link ${activePath === '/team' ? 'active' : ''}" data-link title="La Colla (Talento)">
+                            <span class="icon">👥</span> <span class="text">La Colla (Talento)</span>
+                        </a>
+                        <a href="/v5/ledger" class="side-link ${activePath === '/ledger' ? 'active' : ''}" data-link title="Ledger Equity">
+                            <span class="icon">⚖️</span> <span class="text">Ledger Equity</span>
+                        </a>
+                    </div>
+                `;
+            }
         }
 
         return `
@@ -89,8 +109,7 @@ export const Sidebar = {
                 .sidebar .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); font-weight: bold; border-left: 3px solid var(--accent-blue); }
                 
                 .sidebar .project-context-header { padding: 1rem; background: rgba(255,255,255,0.03); border-radius: var(--border-radius-md); border: 1px solid var(--glass-border); margin: 1rem 0; overflow: hidden;}
-                .sidebar .project-context-header h3 { font-size: 0.9rem; margin: 0 0 5px 0; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .sidebar .project-context-header p { font-size: 0.65rem; color: var(--accent-green); text-transform: uppercase; font-weight: bold; margin: 0; letter-spacing: 1px; white-space: nowrap;}
+                .sidebar .project-context-header select:focus { border-color: var(--accent-blue); }
                 
                 .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
                 .sidebar .user-status { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--border-radius-md); margin-top: 10px; border: 1px solid var(--glass-border);}
@@ -111,7 +130,8 @@ export const Sidebar = {
                 
                 .sidebar.collapsed .project-context-header { padding: 0; background: transparent; border: none; margin: 0.5rem 0; width: 100%; display: flex; justify-content: center;}
                 .sidebar.collapsed .project-context-header .text { display: none; }
-                .sidebar.collapsed .project-context-header .icon-only { display: block !important; }
+                .sidebar.collapsed .project-context-header select { display: none; }
+                .sidebar.collapsed .project-context-header .icon-only { display: block !important; cursor: pointer; }
                 
                 .sidebar.collapsed .sidebar-footer .text { display: none; }
                 .sidebar.collapsed .user-status { padding: 10px; justify-content: center; flex-direction: column; gap: 10px;}
@@ -122,11 +142,11 @@ export const Sidebar = {
                    ========================================= */
                 @media (max-width: 768px) {
                     .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; overflow-x: auto; flex-wrap: nowrap; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); transition: none; align-items: center; gap: 15px;}
-                    .sidebar-top-bar { display: none; } /* Ocultamos logo y hamburguesa en barra inferior/superior móvil */
+                    .sidebar-top-bar { display: none; } 
                     .sidebar .side-section { flex-direction: row; margin-bottom: 0; gap: 10px;}
-                    .sidebar .project-context-header { display: none; }
+                    .sidebar .project-context-header { min-width: 150px; margin: 0; padding: 0 10px; border:none; background:transparent;}
                     .sidebar-footer { display: none; }
-                    .sidebar .side-link .text { display: none; } /* Solo iconos en móvil */
+                    .sidebar .side-link .text { display: none; } 
                     .sidebar .side-link .icon { margin-right: 0; font-size: 1.3rem;}
                     .sidebar.collapsed { width: 100%; padding: 1rem; }
                 }
@@ -169,6 +189,31 @@ export const Sidebar = {
     },
 
     initListeners: () => {
+        // Selector de Proyectos (Switch)
+        const projectSwitcher = document.getElementById('sidebarProjectSwitcher');
+        if (projectSwitcher) {
+            projectSwitcher.addEventListener('change', (e) => {
+                const selectedProjectId = e.target.value;
+                // Guardamos el proyecto seleccionado en el almacenamiento local como foco actual
+                localStorage.setItem('tt_active_project', selectedProjectId);
+                // Movemos el proyecto seleccionado al final del array en el Store (el "activo" en la lógica actual de V5)
+                const state = store.getState();
+                const projectIndex = state.projects.findIndex(p => p.id === selectedProjectId);
+                if (projectIndex !== -1 && projectIndex !== state.projects.length - 1) {
+                    const projectToMove = state.projects.splice(projectIndex, 1)[0];
+                    state.projects.push(projectToMove);
+                    store.saveState();
+                }
+                
+                // Si está en el dashboard general, ir al dashboard del proyecto, sino recargar vista actual
+                if(window.location.pathname === '/v5/' || window.location.pathname === '/v5') {
+                    window.location.href = '/v5/dashboard';
+                } else {
+                    window.location.reload();
+                }
+            });
+        }
+
         const btnLogout = document.getElementById('globalBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
