@@ -5,7 +5,7 @@ export const Sidebar = {
     getHtml: (activePath = '') => {
         const state = store.getState();
         
-        // En la arquitectura actual, el proyecto "Activo" es siempre el último del array
+        // En TeamTowers, el proyecto "Activo" es siempre el último del array
         const project = state.projects.length > 0 ? state.projects[state.projects.length - 1] : null;
         const activeProjectId = project ? project.id : null;
         
@@ -34,7 +34,7 @@ export const Sidebar = {
             </div>
         `;
 
-        // 2. SECCIÓN DE CONTEXTO Y SWITCHER DE PROYECTOS (MAQUETACIÓN PREMIUM)
+        // 2. SECCIÓN DE CONTEXTO Y SWITCHER DE PROYECTOS
         let projectSection = '';
         if (state.projects.length > 0) {
             
@@ -107,26 +107,29 @@ export const Sidebar = {
                 .sidebar .side-link:hover { background: rgba(255,255,255,0.05); color: white; }
                 .sidebar .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); font-weight: bold; border-left: 3px solid var(--accent-blue); }
                 
-                /* CAJA SELECTOR PROYECTOS PREMIUM */
+                /* CAJA SELECTOR PROYECTOS PREMIUM (CORREGIDA MAQUETACIÓN) */
                 .sidebar .project-context-header { 
                     padding: 1.2rem 1rem; 
                     background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.3) 100%); 
                     border-radius: var(--border-radius-md); 
                     border: 1px solid rgba(255,255,255,0.08); 
                     margin: 1rem 0 1.5rem 0; 
-                    overflow: hidden;
                     box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
                 }
                 .sidebar .project-context-header label {
-                    font-size: 0.65rem; color: var(--accent-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1.5px; margin-bottom: 8px; display: block;
+                    font-size: 0.65rem; color: var(--accent-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1.5px; margin: 0; display: block;
                 }
-                .sidebar .select-wrapper { position: relative; }
+                .sidebar .select-wrapper { position: relative; width: 100%; }
                 .sidebar .select-wrapper select {
                     width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; 
                     padding: 10px 30px 10px 12px; border-radius: 6px; outline: none; 
                     font-family: var(--font-main); font-size: 0.9rem; font-weight: bold; cursor: pointer; 
                     appearance: none; transition: border-color 0.2s, background 0.2s;
                     text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+                    box-sizing: border-box; /* Evita desbordamiento horizontal y vertical */
                 }
                 .sidebar .select-wrapper select:hover, .sidebar .select-wrapper select:focus { 
                     border-color: var(--accent-blue); background: rgba(0, 176, 255, 0.05);
@@ -215,39 +218,33 @@ export const Sidebar = {
     },
 
     initListeners: () => {
-        // --- MAGIA: REORDENACIÓN EN LOCALSTORAGE DIRECTA ---
+        // Selector de Proyectos (Switch Fluido)
         const projectSwitcher = document.getElementById('sidebarProjectSwitcher');
         if (projectSwitcher) {
             projectSwitcher.addEventListener('change', (e) => {
                 const selectedProjectId = e.target.value;
-                localStorage.setItem('tt_active_project', selectedProjectId);
+                const state = store.getState();
+                const projectIndex = state.projects.findIndex(p => p.id === selectedProjectId);
                 
-                // Hack de Arquitectura: Manipulamos LocalStorage directamente
-                // para que el Store arranque con el proyecto elegido como el "Activo" (al final del array)
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    try {
-                        const parsed = JSON.parse(localStorage.getItem(key));
-                        if (parsed && Array.isArray(parsed.projects)) {
-                            const pIdx = parsed.projects.findIndex(p => p.id === selectedProjectId);
-                            if (pIdx !== -1) {
-                                // Corta el proyecto y lo inserta al final
-                                const pToMove = parsed.projects.splice(pIdx, 1)[0];
-                                parsed.projects.push(pToMove);
-                                localStorage.setItem(key, JSON.stringify(parsed));
-                            }
-                            break; 
-                        }
-                    } catch (err) {}
+                if (projectIndex !== -1 && projectIndex !== state.projects.length - 1) {
+                    // 1. Mutamos el array localmente para poner el proyecto elegido al final
+                    const projectToMove = state.projects.splice(projectIndex, 1)[0];
+                    state.projects.push(projectToMove);
+                    
+                    // 2. Disparamos una acción "fantasma" inofensiva al Kernel.
+                    // Esto obliga al Store a ejecutar su proceso nativo de guardar los datos en el disco local
+                    // con el array ya reordenado, garantizando que el cambio sea permanente.
+                    store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: selectedProjectId, updates: { _lastSwitch: Date.now() } }
+                    });
                 }
                 
-                // REDIRECCIÓN INTELIGENTE SIN SALIR DE LA PÁGINA
-                // Si estoy en la Home, voy al Dashboard. Si estoy en otra vista (Mapa, Tareas, etc.), solo recargo.
-                if(window.location.pathname.endsWith('/v5/') || window.location.pathname.endsWith('/v5')) {
-                    window.location.href = '/v5/dashboard';
-                } else {
+                // 3. Esperamos un instante a que el disco termine de guardar y refrescamos la pantalla.
+                // Como todas las vistas leen "el último proyecto", se repintarán con el nuevo al instante.
+                setTimeout(() => {
                     window.location.reload();
-                }
+                }, 150); 
             });
         }
 
