@@ -1,6 +1,6 @@
 // ==========================================================================
-// KERNEL v7.4 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
-// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad y Capital
+// KERNEL v8.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad, Capital e Identidad Fractal
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
@@ -28,6 +28,8 @@ const initialState = {
             name: 'Alvaro',
             globalRole: 'ecosystem-owner', 
             walletOrSocial: 'founder@teamtowers.com',
+            email: 'founder@teamtowers.com',
+            wallet: '0xMasterArchitect...',
             profile: {
                 vision: "Fundador y Master Architect de TeamTowers SOS.",
                 structural_affinity: ["@anxaneta", "@aixecador"],
@@ -41,6 +43,8 @@ const initialState = {
             name: 'Laura Dev',
             globalRole: 'network-user', 
             walletOrSocial: '0xLaura...',
+            email: 'laura@dao.com',
+            wallet: '0xLaura...',
             profile: {
                 vision: "Desarrolladora Web3 buscando DAOs con propósito.",
                 structural_affinity: ["@baixos"],
@@ -74,13 +78,57 @@ async function asyncReducer(state, action) {
             return { ...newState, ontology: { ...newState.ontology, sectores: { ...newState.ontology.sectores, [sectorId]: sectorData } } };
         }
 
-        // --- IDENTIDAD Y SEGURIDAD ---
+        // --- V8.0: IDENTIDAD FRACTAL (PERMAWEB BRIDGE) ---
+        case 'REGISTER_GLOBAL_USER': {
+            const newId = action.payload.id.toLowerCase();
+            // Regla de Seguridad: Solo crea si no existe previamente
+            const existsGlobal = newState.globalUsers.find(u => u.id === newId);
+            
+            if (!existsGlobal) {
+                newState.globalUsers.push({
+                    id: newId,
+                    name: action.payload.name,
+                    email: action.payload.email || '',
+                    wallet: action.payload.wallet || '',
+                    social: action.payload.social || '',
+                    walletOrSocial: action.payload.email || action.payload.wallet || '', // Legacy
+                    globalRole: action.payload.globalRole || 'network-user',
+                    profile: action.payload.profile || { lastUpdated: Date.now() }
+                });
+            }
+            return newState;
+        }
+
+        case 'UPDATE_USER_PROFILE': {
+            const uIdx = newState.globalUsers.findIndex(u => u.id === action.payload.userId);
+            if (uIdx > -1) {
+                newState.globalUsers[uIdx].profile = {
+                    ...newState.globalUsers[uIdx].profile,
+                    ...action.payload.profile,
+                    lastUpdated: Date.now()
+                };
+            }
+            return newState;
+        }
+
+        // --- IDENTIDAD Y SEGURIDAD (LEGACY / COLLA SCOPE) ---
         case 'ADD_USER': {
             const newId = action.payload.id || action.payload.userId;
             const existsGlobal = newState.globalUsers.find(u => u.id === newId);
+            
             if (!existsGlobal) {
-                newState.globalUsers.push({ id: newId, name: action.payload.name, walletOrSocial: action.payload.walletOrSocial, globalRole: action.payload.globalRole || 'network-user' });
+                newState.globalUsers.push({ 
+                    id: newId, 
+                    name: action.payload.name, 
+                    email: action.payload.email || '',
+                    wallet: action.payload.wallet || '',
+                    social: action.payload.social || '',
+                    walletOrSocial: action.payload.walletOrSocial || action.payload.email || '', 
+                    globalRole: action.payload.globalRole || 'network-user',
+                    profile: { lastUpdated: Date.now() }
+                });
             }
+            
             if (action.payload.projectId) {
                 const pUser = newState.projects.find(p => p.id === action.payload.projectId);
                 if (pUser) {
@@ -90,6 +138,7 @@ async function asyncReducer(state, action) {
             }
             return newState;
         }
+
         case 'LOGIN_USER': {
             const user = newState.globalUsers.find(u => u.id === action.payload.userId);
             return { ...newState, session: { activeUserId: action.payload.userId, role: user ? (user.globalRole || 'network-user') : 'guest' } };
@@ -280,7 +329,6 @@ async function asyncReducer(state, action) {
             }
             return newState;
 
-        // V7.3: KERNEL SOLICITUD DE PULL
         case 'REQUEST_TRANSACTION':
             const pReqTx = newState.projects.find(p => p.id === action.payload.projectId);
             if (pReqTx) {
@@ -293,7 +341,6 @@ async function asyncReducer(state, action) {
             }
             return newState;
 
-        // V7.3: PUSH Y APROBACIÓN DE PULL
         case 'PING_TRANSACTION':
             const pPing = newState.projects.find(p => p.id === action.payload.projectId);
             if (pPing) {
@@ -404,10 +451,15 @@ class Store {
 
     getState() { return this.state; }
     
-    async dispatch(action) {
-        this.state = await asyncReducer(this.state, action);
+    // V8.0: Método oficial para persistir el estado manual o forzosamente si es requerido
+    saveState() {
         localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
         this.listeners.forEach(l => l());
+    }
+
+    async dispatch(action) {
+        this.state = await asyncReducer(this.state, action);
+        this.saveState();
     }
     
     subscribe(listener) { this.listeners.push(listener); }
