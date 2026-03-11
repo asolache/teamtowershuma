@@ -2,6 +2,7 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
+import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN COMPONENTE UNIVERSAL V8.3
 
 export default class LedgerView {
     constructor() {
@@ -13,55 +14,71 @@ export default class LedgerView {
     async getHtml() {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
-        const userProjects = state.projects.filter(p => 
-            state.session.role === 'ecosystem-owner' || 
-            p.ownerId === activeUserId || 
-            (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
-        );
+        
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
+        
+        if (!project) {
+            const userProjects = state.projects.filter(p => 
+                state.session.role === 'ecosystem-owner' || 
+                p.ownerId === activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+            );
+            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
+        }
+
+        const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
+
+        // Configuración del Header Universal
+        let actionHtml = '';
+        if (isPO) {
+            actionHtml = `
+                <div class="action-buttons">
+                    <button class="btn-capital" id="btnOpenCapitalModal" title="Inyectar Dinero o Activos a la Red">
+                        💶 Inyectar Capital
+                    </button>
+                    <button class="btn-permaweb" id="btnOpenPermaweb" title="Sella este Snapshot en Blockchain">
+                        <span style="font-size: 1.2rem;" id="btnPermawebIcon">🧊</span> <span id="btnPermawebText">Congelar Snapshot</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        const headerConfig = {
+            title: "Ledger",
+            subtitle: project ? project.nombre : '',
+            tagline: "Contabilidad de Triple Entrada y Slicing Pie.",
+            actionHtml: actionHtml,
+            tabs: [
+                { id: 'project', label: 'Castell Actual', active: true },
+                { id: 'global', label: '🌐 Mi Billetera Global' }
+            ]
+        };
 
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative; scroll-behavior: smooth;}
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
                 
                 /* =========================================================
-                   MOBILE TOP BAR (FIXED & INQUEBRANTABLE)
+                   TABS CONTENT (FIX CLIPPING)
                    ========================================================= */
-                .mobile-top-bar {
-                    display: none; justify-content: space-between; align-items: center; padding: 15px 20px;
-                    background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05);
-                    backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box;
-                }
-                .mob-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
-                .mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 150px; }
-                .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
+                .tab-content.active { display: block; }
 
                 /* =========================================================
-                   TABS (PROYECTO vs GLOBAL)
+                   BOTONES Y BADGES
                    ========================================================= */
-                .tabs-container { display: flex; gap: 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 2rem; }
-                .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1rem; font-weight: bold; padding: 10px 5px 15px 5px; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 8px;}
-                .tab-btn:hover { color: white; }
-                .tab-btn.active { color: var(--accent-green); }
-                .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--accent-green); border-radius: 3px 3px 0 0; }
-
-                /* =========================================================
-                   HEADER PROYECTO & BOTONERA
-                   ========================================================= */
-                .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
-                .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
-                .view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
-
                 .permaweb-badge { background: rgba(255, 171, 64, 0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(255, 171, 64, 0.2);}
 
-                .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; display: none; /* Se activa por JS si es PO */ }
+                .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
                 .btn-permaweb { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1;}
                 .btn-permaweb:hover { background: rgba(255, 171, 64, 0.1); box-shadow: 0 0 20px rgba(255, 171, 64, 0.3); transform: translateY(-2px);}
                 
                 .btn-capital { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1;}
                 .btn-capital:hover { background: var(--accent-green); color: black; box-shadow: 0 0 20px rgba(0, 230, 118, 0.3); transform: translateY(-2px);}
 
-                .btn-exit { background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue)); color: white; padding: 10px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; display: flex; align-items: center; justify-content: center; gap: 8px;}
+                .btn-exit { background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue)); color: white; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 2rem;}
                 .btn-exit:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(179, 136, 255, 0.3); }
 
                 /* =========================================================
@@ -116,7 +133,7 @@ export default class LedgerView {
                 /* =========================================================
                    PORTFOLIO GLOBAL TAB
                    ========================================================= */
-                .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;}
+                .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;}
                 .portfolio-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; transition: transform 0.2s;}
                 .portfolio-card:hover { transform: translateY(-3px); border-color: #555; }
                 
@@ -133,6 +150,7 @@ export default class LedgerView {
 
                 @keyframes spinIn { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
                 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
                    RESPONSIVE MOBILE (FIELD APP)
@@ -143,16 +161,9 @@ export default class LedgerView {
                 }
                 
                 @media (max-width: 768px) {
-                    /* Padding superior para empujar el contenido debajo de la Top Bar Fixed */
-                    .workspace { padding: 80px 1rem 90px 1rem; }
-                    .mobile-top-bar { display: flex; }
+                    .workspace { padding: 80px 1rem 90px 1rem; } /* Compensa Mobile Top Bar y Bottom Nav */
+                    .action-buttons { flex-direction: column; width: 100%; margin-top: 15px;}
                     
-                    .view-header { flex-direction: column; align-items: stretch; }
-                    .view-header h1 { font-size: 1.8rem; }
-                    .action-buttons { flex-direction: column; width: 100%; }
-                    .tabs-container { width: 100%; justify-content: space-around; }
-                    
-                    /* Simplificar Cap Table a lista comprimida */
                     .cap-table-container { padding: 1.5rem 1rem; }
                     .cap-row { min-width: 0; flex-wrap: nowrap; align-items: center; padding: 0.8rem 0; border-bottom: 1px dashed #333;}
                     .cap-user { width: auto; flex: 1; font-size: 1rem; overflow: visible;}
@@ -162,7 +173,6 @@ export default class LedgerView {
                     .cap-stats { width: auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end;}
                     .cap-percent { font-size: 1.1rem; }
                     
-                    /* Transformar Tabla Ledger en Tarjetas */
                     .ledger-table { display: none; }
                     .mobile-ledger-list { display: flex; }
                     
@@ -174,37 +184,11 @@ export default class LedgerView {
                 ${Sidebar.getHtml('/ledger')}
 
                 <main class="workspace">
-                    <header class="mobile-top-bar">
-                        <a href="/v5/" data-link class="mob-brand">🗼</a>
-                        <select class="mob-project-select" id="mobProjectSelect">
-                            ${userProjects.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')}
-                        </select>
-                        <a href="/v5/profile" data-link class="mob-user" title="Mi Perfil">
-                            ${state.globalUsers.find(u => u.id === activeUserId)?.name.charAt(0).toUpperCase() || '?'}
-                        </a>
-                    </header>
+                    
+                    ${PageHeader.getHtml(headerConfig)}
 
-                    <div class="tabs-container">
-                        <button class="tab-btn active" id="tabBtnProject">Castell Actual</button>
-                        <button class="tab-btn" id="tabBtnGlobal">Mi Billetera Global</button>
-                    </div>
-
-                    <div id="viewProject">
-                        <div class="view-header">
-                            <div>
-                                <h1 id="ledgerTitle">⚖️ Contabilidad <span class="permaweb-badge" style="display:none;" id="permawebBadge" title="Snapshot Inmutable">🧊 Sellado</span></h1>
-                                <p>Slicing Pie dinámico. El registro inmutable del valor aportado por la Colla.</p>
-                                <div id="snapMeta" style="font-size: 0.75rem; color: var(--accent-orange); font-family: var(--font-mono); margin-top: 10px; display:none;"></div>
-                            </div>
-                            <div class="action-buttons" id="poActionButtons">
-                                <button class="btn-capital" id="btnOpenCapitalModal" title="Inyectar Dinero o Activos a la Red">
-                                    💶 Inyectar Capital
-                                </button>
-                                <button class="btn-permaweb" id="btnOpenPermaweb" title="Sella este Snapshot en Blockchain">
-                                    <span style="font-size: 1.2rem;" id="btnPermawebIcon">🧊</span> <span id="btnPermawebText">Congelar Snapshot</span>
-                                </button>
-                            </div>
-                        </div>
+                    <div id="view-project" class="tab-content active">
+                        <div id="snapMeta" style="font-size: 0.75rem; color: var(--accent-orange); font-family: var(--font-mono); margin-bottom: 15px; display:none; text-align: right;"></div>
 
                         <div class="equity-dashboard">
                             <div class="pie-panel">
@@ -247,14 +231,8 @@ export default class LedgerView {
                         </div>
                     </div>
 
-                    <div id="viewGlobal" style="display: none;">
-                        <div class="view-header">
-                            <div>
-                                <h1>🌐 Mi Patrimonio Digital</h1>
-                                <p>Tus aportaciones consolidadas en toda la red de TeamTowers.</p>
-                            </div>
-                            <button class="btn-exit" id="btnOpenExit">💸 Liquidación / Harvesting</button>
-                        </div>
+                    <div id="view-global" class="tab-content">
+                        <button class="btn-exit" id="btnOpenExit">💸 Simular Liquidación (Harvesting)</button>
                         <div class="portfolio-grid" id="portfolioGrid"></div>
                     </div>
 
@@ -361,6 +339,7 @@ export default class LedgerView {
 
     executeViewScript() {
         Sidebar.initListeners();
+        PageHeader.execute();
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
@@ -380,23 +359,11 @@ export default class LedgerView {
 
         if (!project) return;
         this.activeProjectId = project.id;
-        
-        // Mobile Top Bar
-        const mobSelect = document.getElementById('mobProjectSelect');
-        if (mobSelect) {
-            mobSelect.value = this.activeProjectId;
-            mobSelect.addEventListener('change', (e) => {
-                localStorage.setItem('tt_active_project', e.target.value);
-                window.location.reload(); 
-            });
-        }
 
         this.dom = {
-            title: document.getElementById('ledgerTitle'),
-            badge: document.getElementById('permawebBadge'),
             snapMeta: document.getElementById('snapMeta'),
-            poActionButtons: document.getElementById('poActionButtons'),
             
+            // Permaweb
             btnOpenPermaweb: document.getElementById('btnOpenPermaweb'),
             btnPermawebIcon: document.getElementById('btnPermawebIcon'),
             btnPermawebText: document.getElementById('btnPermawebText'),
@@ -415,12 +382,6 @@ export default class LedgerView {
             inpCapAmount: document.getElementById('inpCapAmount'),
             inpCapDesc: document.getElementById('inpCapDesc'),
 
-            // Tabs & Global Elements
-            tabBtnProject: document.getElementById('tabBtnProject'),
-            tabBtnGlobal: document.getElementById('tabBtnGlobal'),
-            viewProject: document.getElementById('viewProject'),
-            viewGlobal: document.getElementById('viewGlobal'),
-            
             // Exit Elements
             btnOpenExit: document.getElementById('btnOpenExit'),
             exitModal: document.getElementById('exitModal'),
@@ -430,26 +391,31 @@ export default class LedgerView {
             selExitRoute: document.getElementById('selExitRoute')
         };
 
-        // RBAC: Mostrar botones de acciones solo a PO / EO
-        const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
-        if (isPO) {
-            this.dom.poActionButtons.style.display = 'flex';
-        }
+        // TABS LOGIC (FIXED FOR CLIPPING)
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-        // TABS LOGIC
-        this.dom.tabBtnProject.addEventListener('click', () => {
-            this.dom.tabBtnGlobal.classList.remove('active');
-            this.dom.tabBtnProject.classList.add('active');
-            this.dom.viewGlobal.style.display = 'none';
-            this.dom.viewProject.style.display = 'block';
-        });
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
 
-        this.dom.tabBtnGlobal.addEventListener('click', () => {
-            this.dom.tabBtnProject.classList.remove('active');
-            this.dom.tabBtnGlobal.classList.add('active');
-            this.dom.viewProject.style.display = 'none';
-            this.dom.viewGlobal.style.display = 'block';
-            this.renderGlobalPortfolio(state, activeUserId);
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const targetId = `view-${btn.dataset.tab}`;
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    if(btn.dataset.tab === 'global') {
+                        this.renderGlobalPortfolio(state, activeUserId);
+                    } else {
+                        // Re-render pie chart when switching back to project tab to ensure correct dimensions
+                        setTimeout(() => this.renderLedgerData(project, state.globalUsers), 50);
+                    }
+                }
+            });
         });
 
         // Render inicial de datos Proyecto
@@ -460,47 +426,53 @@ export default class LedgerView {
         }
 
         // LÓGICA MODAL APORTACIÓN DE CAPITAL
-        this.dom.btnOpenCapital.addEventListener('click', () => {
-            const users = project.usuarios || [];
-            this.dom.inpCapUser.innerHTML = users.map(u => {
-                const gUser = state.globalUsers.find(gu => gu.id === u.id);
-                return `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
-            }).join('');
-            
-            this.dom.capitalModal.style.display = 'flex';
-        });
-
-        this.dom.btnCancelCap.addEventListener('click', () => this.dom.capitalModal.style.display = 'none');
-
-        this.dom.btnConfirmCap.addEventListener('click', async () => {
-            const userId = this.dom.inpCapUser.value;
-            const assetType = this.dom.inpCapType.value;
-            const amount = parseFloat(this.dom.inpCapAmount.value);
-            const desc = this.dom.inpCapDesc.value.trim();
-
-            if (!amount || amount <= 0) return alert("Introduce un valor justo de mercado (FMV) mayor que 0.");
-            if (!desc) return alert("Describe el concepto de la aportación.");
-
-            this.dom.btnConfirmCap.disabled = true;
-            this.dom.btnConfirmCap.innerText = "Sellando...";
-
-            await store.dispatch({
-                type: 'ADD_CAPITAL_INJECTION',
-                payload: { projectId: this.activeProjectId, userId: userId, assetType: assetType, amount: amount, description: desc }
+        if (this.dom.btnOpenCapital) {
+            this.dom.btnOpenCapital.addEventListener('click', () => {
+                const users = project.usuarios || [];
+                this.dom.inpCapUser.innerHTML = users.map(u => {
+                    const gUser = state.globalUsers.find(gu => gu.id === u.id);
+                    return `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+                }).join('');
+                
+                this.dom.capitalModal.style.display = 'flex';
             });
+        }
 
-            this.dom.capitalModal.style.display = 'none';
-            this.executeViewScript(); 
-        });
+        if(this.dom.btnCancelCap) this.dom.btnCancelCap.addEventListener('click', () => this.dom.capitalModal.style.display = 'none');
+
+        if(this.dom.btnConfirmCap) {
+            this.dom.btnConfirmCap.addEventListener('click', async () => {
+                const userId = this.dom.inpCapUser.value;
+                const assetType = this.dom.inpCapType.value;
+                const amount = parseFloat(this.dom.inpCapAmount.value);
+                const desc = this.dom.inpCapDesc.value.trim();
+
+                if (!amount || amount <= 0) return alert("Introduce un valor justo de mercado (FMV) mayor que 0.");
+                if (!desc) return alert("Describe el concepto de la aportación.");
+
+                this.dom.btnConfirmCap.disabled = true;
+                this.dom.btnConfirmCap.innerText = "Sellando...";
+
+                await store.dispatch({
+                    type: 'ADD_CAPITAL_INJECTION',
+                    payload: { projectId: this.activeProjectId, userId: userId, assetType: assetType, amount: amount, description: desc }
+                });
+
+                this.dom.capitalModal.style.display = 'none';
+                window.location.reload(); 
+            });
+        }
 
         // LÓGICA MODAL WEB3 PERMAWEB
-        this.dom.btnOpenPermaweb.addEventListener('click', () => {
-            const harvest = store.calculateHarvest(this.activeProjectId) || [];
-            if(harvest.length === 0) return alert("⚠️ No puedes congelar un Ledger vacío.");
-            this.dom.checkoutModal.style.display = 'flex';
-        });
+        if (this.dom.btnOpenPermaweb) {
+            this.dom.btnOpenPermaweb.addEventListener('click', () => {
+                const harvest = store.calculateHarvest(this.activeProjectId) || [];
+                if(harvest.length === 0) return alert("⚠️ No puedes congelar un Ledger vacío.");
+                this.dom.checkoutModal.style.display = 'flex';
+            });
+        }
 
-        this.dom.btnCloseModal.addEventListener('click', () => this.dom.checkoutModal.style.display = 'none');
+        if(this.dom.btnCloseModal) this.dom.btnCloseModal.addEventListener('click', () => this.dom.checkoutModal.style.display = 'none');
 
         const simulatePayment = () => {
             this.dom.paymentButtons.style.display = 'none';
@@ -526,35 +498,40 @@ export default class LedgerView {
             }, 3000);
         };
         
-        document.getElementById('btnGooglePay').addEventListener('click', simulatePayment);
-        document.getElementById('btnStripePay').addEventListener('click', simulatePayment);
+        const btnGpay = document.getElementById('btnGooglePay');
+        const btnStripe = document.getElementById('btnStripePay');
+        if(btnGpay) btnGpay.addEventListener('click', simulatePayment);
+        if(btnStripe) btnStripe.addEventListener('click', simulatePayment);
 
         // LÓGICA MODAL EXIT (TOKENOMICS)
-        this.dom.btnOpenExit.addEventListener('click', () => {
-            // Llenar selector solo con proyectos donde el usuario tiene slices
-            let opts = '';
-            state.projects.forEach(p => {
-                const harvest = store.calculateHarvest(p.id) || [];
-                const userH = harvest.find(h => h.userId === activeUserId);
-                if (userH && userH.slices > 0) {
-                    opts += `<option value="${p.id}" data-arch="${p.archetype}">${p.nombre} (${Math.round(userH.slices)} Slices)</option>`;
-                }
+        if (this.dom.btnOpenExit) {
+            this.dom.btnOpenExit.addEventListener('click', () => {
+                let opts = '';
+                state.projects.forEach(p => {
+                    const harvest = store.calculateHarvest(p.id) || [];
+                    const userH = harvest.find(h => h.userId === activeUserId);
+                    if (userH && userH.slices > 0) {
+                        opts += `<option value="${p.id}" data-arch="${p.archetype}">${p.nombre} (${Math.round(userH.slices)} Slices)</option>`;
+                    }
+                });
+
+                if(!opts) return alert("Aún no tienes patrimonio (Slices) en ninguna red para liquidar.");
+                
+                this.dom.selExitProject.innerHTML = opts;
+                this.updateExitRoutes(); 
+                
+                this.dom.exitModal.style.display = 'flex';
             });
+        }
 
-            if(!opts) return alert("Aún no tienes patrimonio (Slices) en ninguna red para liquidar.");
-            
-            this.dom.selExitProject.innerHTML = opts;
-            this.updateExitRoutes(); // Actualizar el segundo select basado en el primero
-            
-            this.dom.exitModal.style.display = 'flex';
-        });
-
-        this.dom.selExitProject.addEventListener('change', () => this.updateExitRoutes());
-        this.dom.btnCancelExit.addEventListener('click', () => this.dom.exitModal.style.display = 'none');
-        this.dom.btnConfirmExit.addEventListener('click', () => {
-            alert("⚙️ Función en Desarrollo. Próximamente se integrará con contratos inteligentes reales para ejecutar la liquidación según el marco legal del arquetipo.");
-            this.dom.exitModal.style.display = 'none';
-        });
+        if(this.dom.selExitProject) this.dom.selExitProject.addEventListener('change', () => this.updateExitRoutes());
+        if(this.dom.btnCancelExit) this.dom.btnCancelExit.addEventListener('click', () => this.dom.exitModal.style.display = 'none');
+        if(this.dom.btnConfirmExit) {
+            this.dom.btnConfirmExit.addEventListener('click', () => {
+                alert("⚙️ Función en Desarrollo. Próximamente se integrará con contratos inteligentes reales para ejecutar la liquidación según el marco legal del arquetipo.");
+                this.dom.exitModal.style.display = 'none';
+            });
+        }
     }
 
     updateExitRoutes() {
@@ -586,7 +563,6 @@ export default class LedgerView {
     renderGlobalPortfolio(state, userId) {
         const grid = document.getElementById('portfolioGrid');
         let html = '';
-
         let totalGlobalSlices = 0;
 
         state.projects.forEach(p => {
@@ -615,7 +591,6 @@ export default class LedgerView {
         if (html === '') {
             grid.innerHTML = `<div style="grid-column: 1/-1; padding: 3rem; text-align:center; color:#666; border: 1px dashed #333; border-radius:12px;">No tienes participación en ningún ecosistema actualmente.</div>`;
         } else {
-            // Inyectar tarjeta resumen total al principio
             const summaryHtml = `
                 <div class="portfolio-card" style="background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(224, 64, 251, 0.1)); border-color: var(--accent-blue);">
                     <div style="color:var(--accent-blue); font-size:0.8rem; text-transform:uppercase; font-weight:bold; letter-spacing:1px; margin-bottom:10px;">Patrimonio Consolidado</div>
@@ -626,16 +601,6 @@ export default class LedgerView {
             `;
             grid.innerHTML = summaryHtml + html;
         }
-    }
-
-    applyMintedStyle(snapshotData) {
-        this.dom.badge.style.display = 'inline-flex';
-        this.dom.btnPermawebIcon.innerText = '🔄';
-        this.dom.btnPermawebText.innerText = 'Actualizar Snapshot';
-        
-        const dateStr = new Date(snapshotData.timestamp).toLocaleDateString('es-ES');
-        this.dom.snapMeta.style.display = 'block';
-        this.dom.snapMeta.innerText = `Último Backup Web3: ${dateStr} - TxID: ${snapshotData.txId.substring(0,12)}...`;
     }
 
     renderLedgerData(project, globalUsers) {
@@ -661,7 +626,6 @@ export default class LedgerView {
             return;
         }
 
-        // 1. GENERAR CAP TABLE (BARRAS) & PIE CHART GRADIENT
         let capHtml = '';
         let conicGradientParts = [];
         let currentDegree = 0;
@@ -685,7 +649,6 @@ export default class LedgerView {
             const avgFmv = totalHours > 0 ? ((userHarvest.slices - capitalSlices) / totalHours).toFixed(1) : 0;
             const initial = user.name.charAt(0).toUpperCase();
 
-            // NUEVO LAYOUT MÓVIL EN LA CAP TABLE
             capHtml += `
                 <div class="cap-row">
                     <div class="cap-user">
@@ -710,13 +673,12 @@ export default class LedgerView {
         capTableBody.innerHTML = capHtml;
         
         setTimeout(() => {
-            pieChart.style.background = `conic-gradient(${conicGradientParts.join(', ')})`;
+            if(pieChart) pieChart.style.background = `conic-gradient(${conicGradientParts.join(', ')})`;
             document.querySelectorAll('.cap-bar-fill').forEach(bar => {
                 bar.style.width = bar.getAttribute('data-target-width');
             });
         }, 100);
 
-        // 2. GENERAR REGISTRO INMUTABLE (TABLA PC + LISTA MOBILE)
         tbody.innerHTML = '';
         mobileList.innerHTML = '';
         
@@ -743,7 +705,6 @@ export default class LedgerView {
             const slicesFmt = `+${Math.round(entry.valorCongelado).toLocaleString()}`;
             const hashShort = entry.hash.substring(0,8);
 
-            // RENDER TABLA (PC)
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><span class="hash-badge" title="${entry.hash}">${hashShort}...</span></td>
@@ -756,7 +717,6 @@ export default class LedgerView {
             `;
             tbody.appendChild(row);
 
-            // RENDER TARJETA (MÓVIL)
             const mobCard = document.createElement('div');
             mobCard.className = 'mob-ledger-card';
             mobCard.innerHTML = `
@@ -776,7 +736,6 @@ export default class LedgerView {
             mobileList.appendChild(mobCard);
         });
 
-        // GENESIS BLOCK
         const genesisHash = (project.genesisHash || 'GENESIS').substring(0,8);
         
         const genesisRow = document.createElement('tr');
