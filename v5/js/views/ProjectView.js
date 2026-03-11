@@ -2,6 +2,7 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js'; // Necesario para los templates
 
 export default class ProjectView {
     constructor() {
@@ -39,7 +40,7 @@ export default class ProjectView {
                 .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
 
                 /* =========================================================
-                   CABECERA Y CONTROLES (TABS Y FILTROS)
+                   CABECERA Y CONTROLES
                    ========================================================= */
                 .view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
                 .view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; }
@@ -62,7 +63,6 @@ export default class ProjectView {
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
 
-                /* BOTON CREAR TAREA */
                 .btn-create-task { background: linear-gradient(45deg, var(--accent-green), #00bfa5); color: black; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; align-items: center; gap: 5px;}
                 .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
 
@@ -88,20 +88,17 @@ export default class ProjectView {
                 
                 .btn-pull { background: transparent; border: 1px solid var(--text-muted); color: white; transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px;}
                 .btn-pull:hover { background: white; color: black; border-color: white;}
-                
                 .btn-push { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
                 .btn-push:hover { background: rgba(224, 64, 251, 0.1); }
-
                 .btn-focus { background: linear-gradient(45deg, rgba(0, 176, 255, 0.1), rgba(0, 176, 255, 0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; transition: all 0.2s;}
                 .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
-                
                 .btn-approve { background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s; width: 100%;}
                 .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
 
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 12px; background: rgba(0,0,0,0.2);}
 
                 /* =========================================================
-                   MODAL CREAR TAREA
+                   MODALS (CREAR TAREA Y FEEDBACK VNA)
                    ========================================================= */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
                 .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
@@ -110,25 +107,35 @@ export default class ProjectView {
                 .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
                 .form-control:focus { border-color: var(--accent-blue); }
 
+                /* FEEDBACK VNA MODAL */
+                #vnaFeedbackModal { z-index: 5000; background: rgba(5,5,7,0.95); backdrop-filter: blur(20px); flex-direction: column; text-align: center;}
+                .vna-mini-map { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 2rem; width: 100%; max-width: 400px;}
+                .vna-node { width: 70px; height: 70px; border-radius: 50%; border: 2px solid white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; background: rgba(255,255,255,0.05); position: relative;}
+                .vna-node span { position: absolute; bottom: -25px; font-size: 0.7rem; color: #aaa; white-space: nowrap; font-family: var(--font-mono);}
+                .vna-vector { flex: 1; height: 3px; background: var(--accent-green); position: relative; animation: flowPulse 0.8s infinite; }
+                .vna-vector::after { content: '▶'; position: absolute; right: -10px; top: -9px; color: var(--accent-green); font-size: 1.2rem;}
+                
+                @keyframes flowPulse {
+                    0% { opacity: 0.3; transform: scaleX(0.9); box-shadow: none; }
+                    50% { opacity: 1; transform: scaleX(1); box-shadow: 0 0 20px var(--accent-green); }
+                    100% { opacity: 0.3; transform: scaleX(0.9); box-shadow: none;}
+                }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
-                   RESPONSIVE (FIELD APP)
+                   RESPONSIVE
                    ========================================================= */
                 @media (max-width: 768px) {
                     .workspace { padding: 1.5rem 1rem; padding-bottom: 90px;} 
                     .mobile-top-bar { display: flex; margin: -1.5rem -1rem 1.5rem -1rem; }
-                    
                     .view-header { flex-direction: column; align-items: flex-start; }
                     .view-header h1 { font-size: 1.8rem; }
-                    
                     .controls-row { flex-direction: column; align-items: stretch; gap: 15px; border-bottom: none;}
                     .tabs-container { border-bottom: 1px solid var(--glass-border); width: 100%; justify-content: space-between;}
                     .tab-btn { font-size: 0.9rem; padding: 10px 0; flex: 1; justify-content: center;}
                     .filters-container { flex-direction: column; width: 100%;}
                     .filter-dropdown { width: 100%; }
                     .btn-create-task { justify-content: center; padding: 12px; }
-                    
                     .task-grid { grid-template-columns: 1fr; gap: 1rem;}
                 }
             </style>
@@ -184,8 +191,8 @@ export default class ProjectView {
 
                 <div class="modal-overlay" id="createTaskModal">
                     <div class="modal-content">
-                        <h2 style="color:white; margin-top:0; margin-bottom: 5px;">Añadir Tarea (Flujo VNA)</h2>
-                        <p style="color:#888; font-size:0.8rem; margin-bottom:1.5rem;">Crea un entregable que fluirá entre dos nodos de la red.</p>
+                        <h2 style="color:white; margin-top:0; margin-bottom: 5px;">Añadir Tarea</h2>
+                        <p style="color:#888; font-size:0.8rem; margin-bottom:1.5rem;">Crea un entregable para la red.</p>
                         
                         <div style="display:flex; gap:10px;">
                             <div class="form-group" style="flex:1;">
@@ -199,13 +206,16 @@ export default class ProjectView {
                         </div>
 
                         <div class="form-group">
-                            <label>Nombre del Entregable</label>
-                            <input type="text" id="newTaskName" class="form-control" placeholder="Ej: Diseño de Interfaz Mobile">
+                            <label>Entregable</label>
+                            <select id="newTaskTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
+                                <option value="">Selecciona Origen primero...</option>
+                            </select>
+                            <input type="text" id="newTaskName" class="form-control" placeholder="Nombre del nuevo entregable..." style="display:none; margin-top:10px;">
                         </div>
 
                         <div class="form-group">
                             <label>Contexto / Instrucciones (Opcional)</label>
-                            <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Añade detalles sobre lo que se espera de esta tarea..."></textarea>
+                            <textarea id="newTaskDesc" class="form-control" rows="2" placeholder="Detalles de lo que se espera de esta tarea..."></textarea>
                         </div>
 
                         <div style="display:flex; gap:10px;">
@@ -229,11 +239,23 @@ export default class ProjectView {
                             </select>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-                            <button class="btn btn-outline" style="background:transparent; border:1px solid #555; color:white; padding:10px 20px; border-radius:8px;" id="btnCancelCreateTask">Cancelar</button>
-                            <button class="btn btn-primary" style="background:var(--accent-blue); color:black; font-weight:bold; border:none; padding:10px 20px; border-radius:8px;" id="btnConfirmCreateTask">Añadir al Kanban</button>
+                        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                            <button class="btn btn-outline" style="background:transparent; border:1px solid #555; color:white; padding:10px 20px; border-radius:8px; cursor:pointer;" id="btnCancelCreateTask">Cancelar</button>
+                            <button class="btn btn-primary" style="background:var(--accent-blue); color:black; font-weight:bold; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;" id="btnConfirmCreateTask">Añadir Tarea</button>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal-overlay" id="vnaFeedbackModal">
+                    <h2 style="color: white; font-size: 2.5rem; margin-bottom: 5px;">🗺️ Mapa VNA Actualizado</h2>
+                    <p style="color: var(--accent-green); font-family: var(--font-mono);">Nuevo vector de valor detectado e inyectado en la red estructural.</p>
+                    
+                    <div class="vna-mini-map">
+                        <div class="vna-node" id="fbNodeFrom" style="border-color: var(--accent-blue);">⚙️<span>Origen</span></div>
+                        <div class="vna-vector" id="fbVector"></div>
+                        <div class="vna-node" id="fbNodeTo" style="border-color: #888;">👁️<span>Destino</span></div>
+                    </div>
+                    <div style="margin-top: 40px; color: #888; font-size: 0.8rem;">Actualizando Kanban...</div>
                 </div>
                 
                 ${BottomNav.getHtml('/project')}
@@ -264,7 +286,6 @@ export default class ProjectView {
         
         document.getElementById('viewTitle').innerText = `Tareas (${project.nombre})`;
 
-        // Mobile Top Bar
         const mobSelect = document.getElementById('mobProjectSelect');
         if (mobSelect) {
             mobSelect.value = this.activeProjectId;
@@ -274,16 +295,13 @@ export default class ProjectView {
             });
         }
 
-        // Permisos y Filtros
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         if (!isPO) {
             this.currentFilter = 'all'; 
         } else {
-            // Mostrar botón de crear tarea si es PO
             document.getElementById('btnOpenCreateTask').style.display = 'flex';
         }
 
-        // TABS LOGIC
         const tabsContainer = document.getElementById('tabsContainer');
         const filterDropdown = document.getElementById('filterDropdown');
 
@@ -304,19 +322,48 @@ export default class ProjectView {
         });
 
         // -------------------------------------------------------------
-        // MODAL CREAR TAREA LOGIC
+        // LOGICA DE CREACIÓN DE TAREAS Y MAPA VNA
         // -------------------------------------------------------------
         const createModal = document.getElementById('createTaskModal');
+        const fbModal = document.getElementById('vnaFeedbackModal');
         
+        const selFrom = document.getElementById('newTaskFrom');
+        const selTo = document.getElementById('newTaskTo');
+        const selTemplate = document.getElementById('newTaskTemplate');
+        const inpName = document.getElementById('newTaskName');
+        const selType = document.getElementById('newTaskType');
+        const inpHours = document.getElementById('newTaskHours');
+
+        // Función para cargar templates basados en el rol origen
+        const updateTemplatesDropdown = () => {
+            const p = store.getState().projects.find(proj => proj.id === this.activeProjectId);
+            const roleId = selFrom.value;
+            const r = p.roles.find(rol => rol.id === roleId);
+            const levelId = r ? r.levelId : '@baixos';
+            
+            const sectorData = GLOBAL_ONTOLOGY[p.sector || 'startup_tech'];
+            let templates = [];
+            if (sectorData && sectorData[levelId] && sectorData[levelId].standard_deliverables) {
+                templates = sectorData[levelId].standard_deliverables;
+            }
+
+            let html = `<option value="">-- Selecciona Entregable --</option>`;
+            templates.forEach((t, i) => {
+                html += `<option value="${i}" data-type="${t.tipo}" data-hrs="${t.estimatedHours}">${t.tipo === 'tangible' ? '🟢' : '🟣'} ${t.name}</option>`;
+            });
+            html += `<option value="manual" style="font-weight:bold; color:var(--accent-orange);">✍️ Crear Nuevo (Mutar Mapa VNA)...</option>`;
+            
+            selTemplate.innerHTML = html;
+            inpName.style.display = 'none';
+        };
+
         document.getElementById('btnOpenCreateTask').addEventListener('click', () => {
-            // Rellenar desplegables de Roles
             const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             const roleOpts = activeProject.roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
-            document.getElementById('newTaskFrom').innerHTML = roleOpts;
-            document.getElementById('newTaskTo').innerHTML = roleOpts;
-            if(activeProject.roles.length > 1) document.getElementById('newTaskTo').selectedIndex = 1;
+            selFrom.innerHTML = roleOpts;
+            selTo.innerHTML = roleOpts;
+            if(activeProject.roles.length > 1) selTo.selectedIndex = 1;
 
-            // Rellenar desplegable de Asignación (Colla)
             let userOpts = `<option value="">-- Dejar Libre en Mercado --</option>`;
             (activeProject.usuarios || []).forEach(u => {
                 const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
@@ -324,29 +371,55 @@ export default class ProjectView {
             });
             document.getElementById('newTaskAssignee').innerHTML = userOpts;
 
+            updateTemplatesDropdown();
             createModal.style.display = 'flex';
         });
 
-        document.getElementById('btnCancelCreateTask').addEventListener('click', () => {
-            createModal.style.display = 'none';
+        selFrom.addEventListener('change', updateTemplatesDropdown);
+        
+        selTemplate.addEventListener('change', (e) => {
+            if (e.target.value === 'manual') {
+                inpName.style.display = 'block';
+                inpName.value = '';
+                inpName.focus();
+            } else if (e.target.value !== "") {
+                inpName.style.display = 'none';
+                const selectedOpt = e.target.options[e.target.selectedIndex];
+                selType.value = selectedOpt.getAttribute('data-type');
+                inpHours.value = selectedOpt.getAttribute('data-hrs');
+            } else {
+                inpName.style.display = 'none';
+            }
         });
 
-        document.getElementById('btnConfirmCreateTask').addEventListener('click', async () => {
-            const from = document.getElementById('newTaskFrom').value;
-            const to = document.getElementById('newTaskTo').value;
-            const name = document.getElementById('newTaskName').value.trim();
-            const desc = document.getElementById('newTaskDesc').value.trim();
-            const type = document.getElementById('newTaskType').value;
-            const hours = parseFloat(document.getElementById('newTaskHours').value) || 1;
-            const assignee = document.getElementById('newTaskAssignee').value;
+        document.getElementById('btnCancelCreateTask').addEventListener('click', () => createModal.style.display = 'none');
 
-            if(!name) return alert("Por favor, introduce el nombre del entregable.");
+        document.getElementById('btnConfirmCreateTask').addEventListener('click', async () => {
+            const from = selFrom.value;
+            const to = selTo.value;
+            const desc = document.getElementById('newTaskDesc').value.trim();
+            const assignee = document.getElementById('newTaskAssignee').value;
+            
+            let finalName = "";
+            let type = selType.value;
+            let hours = parseFloat(inpHours.value) || 1;
+            
+            const isManualNewFlow = selTemplate.value === 'manual';
+
+            if (isManualNewFlow) {
+                finalName = inpName.value.trim();
+            } else {
+                const selectedOpt = selTemplate.options[selTemplate.selectedIndex];
+                if (!selectedOpt || selectedOpt.value === "") return alert("Selecciona un entregable o crea uno nuevo.");
+                finalName = selectedOpt.innerText.replace('🟢 ', '').replace('🟣 ', '');
+            }
+
+            if(!finalName) return alert("Por favor, introduce el nombre del entregable.");
             if(from === to) return alert("Una tarea debe fluir entre dos roles diferentes para aportar valor.");
 
             const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             const newHash = 'tx_' + Math.random().toString(36).substr(2, 9);
 
-            // 1. Añadimos la transacción pura (Esto la inyecta también en el Mapa VNA)
             await store.dispatch({
                 type: 'ADD_TRANSACTION',
                 payload: {
@@ -355,8 +428,8 @@ export default class ProjectView {
                         hash: newHash,
                         from: from,
                         to: to,
-                        entregable: name,
-                        descripcionContexto: desc, // Campo nuevo para guardar la charla
+                        entregable: finalName,
+                        descripcionContexto: desc,
                         tipo: type,
                         horas: hours,
                         status: 'theoretical'
@@ -364,7 +437,6 @@ export default class ProjectView {
                 }
             });
 
-            // 2. Si el PO seleccionó a alguien, le hacemos el Push automáticamente
             if (assignee !== "") {
                 await store.dispatch({
                     type: 'PING_TRANSACTION',
@@ -373,17 +445,39 @@ export default class ProjectView {
             }
 
             createModal.style.display = 'none';
-            // Limpiar
-            document.getElementById('newTaskName').value = '';
-            document.getElementById('newTaskDesc').value = '';
             
-            // Re-render
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            // Lógica de Feedback Visual VNA
+            if (isManualNewFlow) {
+                const rFrom = activeProject.roles.find(r => r.id === from);
+                const rTo = activeProject.roles.find(r => r.id === to);
+                
+                document.getElementById('fbNodeFrom').innerHTML = `${this.getIcon(rFrom.levelId)}<span>${rFrom.name}</span>`;
+                document.getElementById('fbNodeFrom').style.borderColor = this.getColorForLevel(rFrom.levelId);
+                
+                document.getElementById('fbNodeTo').innerHTML = `${this.getIcon(rTo.levelId)}<span>${rTo.name}</span>`;
+                document.getElementById('fbNodeTo').style.borderColor = this.getColorForLevel(rTo.levelId);
+                
+                const vColor = type === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+                const vector = document.getElementById('fbVector');
+                vector.style.backgroundColor = vColor;
+                
+                // Aplicamos pseudo-elemento de flecha cambiando la clase
+                vector.style.boxShadow = `0 0 20px ${vColor}`;
+
+                fbModal.style.display = 'flex';
+                
+                setTimeout(() => {
+                    fbModal.style.display = 'none';
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                }, 2800);
+            } else {
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            }
         });
 
 
         // -------------------------------------------------------------
-        // KANBAN ACTIONS LOGIC
+        // KANBAN ACTIONS LOGIC (Delegación)
         // -------------------------------------------------------------
         const taskGrid = document.getElementById('taskGrid');
         taskGrid.addEventListener('click', async (e) => {
@@ -465,7 +559,6 @@ export default class ProjectView {
         let activeCardsHtml = [];
 
         txs.forEach(tx => {
-            // 1. Clasificación por Pestañas
             let tabCategory = '';
             if (tx.status === 'theoretical' || tx.status === 'requested') { tabCategory = 'oportunidades'; counts.op++; }
             else if (tx.status === 'pinged' || tx.status === 'reported') { tabCategory = 'en-curso'; counts.cur++; }
@@ -473,7 +566,6 @@ export default class ProjectView {
 
             if (tabCategory !== this.currentTab) return;
 
-            // 2. Aplicación de Filtros del Dropdown
             if (this.currentFilter === 'tangible' && tx.tipo !== 'tangible') return;
             if (this.currentFilter === 'intangible' && tx.tipo !== 'intangible') return;
             if (this.currentFilter === 'mine') {
@@ -486,7 +578,6 @@ export default class ProjectView {
             activeCardsHtml.push(this.createTaskCardHTML(tx, project, state.session, isPO));
         });
 
-        // Actualizar Badges
         document.getElementById('count-op').innerText = counts.op;
         document.getElementById('count-cur').innerText = counts.cur;
         document.getElementById('count-con').innerText = counts.con;
@@ -572,8 +663,6 @@ export default class ProjectView {
         }
 
         const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 15px rgba(255,82,82,0.1);' : '';
-        
-        // Inyectar la descripción de contexto si existe
         const contextHtml = tx.descripcionContexto ? `<div class="task-desc-bubble">💬 "${tx.descripcionContexto}"</div>` : '';
 
         return `
@@ -602,6 +691,7 @@ export default class ProjectView {
         `;
     }
 
+    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
     getColorForLevel(levelId) {
         const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
         return colors[levelId] || '#aaa';
