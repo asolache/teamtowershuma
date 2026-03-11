@@ -16,7 +16,7 @@ export default class HomeView {
         const config = state.config;
 
         // -------------------------------------------------------------------
-        // MODO LANDING PAGE (No logueado) - Se mantiene igual para Onboarding
+        // MODO LANDING PAGE (No logueado)
         // -------------------------------------------------------------------
         if (!activeUserId || activeUserId === 'ecosystem-admin' || state.session.role === 'guest') {
             return this.getLandingHtml();
@@ -36,8 +36,6 @@ export default class HomeView {
             'custom': { label: '✨ RED CUSTOM', color: 'white' }
         };
 
-        // Asumimos que el primer proyecto creado (o uno específico) marca el arquetipo, 
-        // o lo sacamos de la config global si lo tienes ahí guardado.
         const globalArchetype = config.archetype || (state.projects[0] ? state.projects[0].archetype : 'startup');
         const archData = archetypeColors[globalArchetype] || archetypeColors['startup'];
 
@@ -331,12 +329,12 @@ export default class HomeView {
         // Ordenar por fecha más reciente
         globalLedger.sort((a, b) => b.timestamp - a.timestamp);
 
-        // Filtrar por búsqueda
+        // Filtrar por búsqueda (Añadido parche defensivo para los hash antiguos)
         if (searchQ) {
             globalLedger = globalLedger.filter(l => 
-                l.hash.toLowerCase().includes(searchQ) || 
-                l.userId.toLowerCase().includes(searchQ) || 
-                l.description.toLowerCase().includes(searchQ)
+                (l.hash || '').toLowerCase().includes(searchQ) || 
+                (l.userId || '').toLowerCase().includes(searchQ) || 
+                (l.description || '').toLowerCase().includes(searchQ)
             );
         }
 
@@ -348,12 +346,16 @@ export default class HomeView {
         tbody.innerHTML = globalLedger.slice(0, 100).map(entry => {
             const date = new Date(entry.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
             const user = state.globalUsers.find(u => u.id === entry.userId) || { name: entry.userId };
-            const hashShort = entry.hash.substring(0,10);
+            
+            // Fix defensivo: si no hay hash (datos legacy V6), usa el id o un placeholder
+            const rawHash = entry.hash || entry.id || 'LEGACY_BLOCK';
+            const hashShort = rawHash.substring(0,10);
+            
             const slicesFmt = `+${Math.round(entry.valorCongelado).toLocaleString()}`;
             
             return `
                 <tr>
-                    <td><span class="hash-badge" title="${entry.hash}">${hashShort}...</span></td>
+                    <td><span class="hash-badge" title="${rawHash}">${hashShort}...</span></td>
                     <td style="color:var(--accent-blue);">${entry.projectName}</td>
                     <td style="color:#888;">${date}</td>
                     <td style="font-weight:bold; color:white;">${user.name}</td>
