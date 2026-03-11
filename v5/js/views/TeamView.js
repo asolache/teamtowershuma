@@ -2,6 +2,18 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 
+// Diccionario Geo-Local para el Ecosistema
+const GEO_DATA = {
+    "España": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Bilbao", "Alicante", "Palma", "Otra..."],
+    "México": ["Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "Mérida", "Otra..."],
+    "Argentina": ["Buenos Aires", "Córdoba", "Rosario", "Mendoza", "Tucumán", "La Plata", "Otra..."],
+    "Colombia": ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Otra..."],
+    "Chile": ["Santiago", "Valparaíso", "Concepción", "La Serena", "Antofagasta", "Otra..."],
+    "Perú": ["Lima", "Arequipa", "Trujillo", "Chiclayo", "Piura", "Otra..."],
+    "Estados Unidos": ["Miami", "New York", "San Francisco", "Los Angeles", "Austin", "Otra..."],
+    "Otro País...": ["Otra..."]
+};
+
 export default class TeamView {
     constructor() {
         document.title = "Equipo | TeamTowers SOS";
@@ -9,6 +21,12 @@ export default class TeamView {
     }
 
     async getHtml() {
+        // Generar opciones de países para los filtros
+        let countryOptions = `<option value="">Todos los Países</option>`;
+        Object.keys(GEO_DATA).forEach(c => {
+            countryOptions += `<option value="${c}">${c}</option>`;
+        });
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
@@ -35,8 +53,11 @@ export default class TeamView {
                 .role-slot { background: rgba(0,0,0,0.3); border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
                 .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.02); }
                 .role-meta { display: flex; flex-direction: column; gap: 5px; flex: 1;}
+                
+                /* FORMULARIOS */
                 .form-control { background: #050505; border: 1px solid #333; color: white; padding: 8px 12px; border-radius: 6px; font-family: inherit; font-size: 0.9rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
                 .form-control:focus { border-color: var(--accent-blue); }
+                .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
                 .form-group { margin-bottom: 15px; }
                 .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
 
@@ -80,6 +101,9 @@ export default class TeamView {
                 .mk-card-info { display: flex; flex-direction: column; gap: 5px;}
                 .mk-card-name { color: white; font-weight: bold; font-size: 1.1rem; display:flex; align-items:center; gap:8px;}
                 .mk-card-geo { font-size: 0.75rem; color: var(--accent-orange); font-family: var(--font-mono); text-transform: uppercase;}
+                .mk-card-skills { font-size: 0.7rem; color: #888; display:flex; gap:5px; flex-wrap:wrap; margin-top:4px;}
+                .mk-card-skills span { background:#222; padding:2px 6px; border-radius:4px; border:1px solid #333;}
+                
                 .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;}
                 .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); }
 
@@ -128,9 +152,20 @@ export default class TeamView {
                         <button id="btnCloseMarketplace" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
                     </div>
                     <div class="mk-filters">
-                        <input type="text" id="mkSearchName" class="form-control" placeholder="Buscar nombre..." style="grid-column: span 2;">
-                        <input type="text" id="mkSearchCountry" class="form-control" placeholder="País...">
-                        <input type="text" id="mkSearchCity" class="form-control" placeholder="Ciudad...">
+                        <div class="form-group" style="grid-column: span 2; margin:0;">
+                            <input type="text" id="mkSearchName" class="form-control" placeholder="Buscar por nombre o @alias...">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <select id="mkSearchCountry" class="form-control">
+                                ${countryOptions}
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <input type="text" id="mkSearchCity" class="form-control" placeholder="Ciudad exacta o parcial...">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2; margin:0;">
+                            <input type="text" id="mkSearchSkills" class="form-control" placeholder="Filtrar por Skills / Arquetipo (Ej: @anxaneta, creator)">
+                        </div>
                     </div>
                     <div class="mk-list" id="mkList">
                         </div>
@@ -168,11 +203,17 @@ export default class TeamView {
                         <div style="display:flex; gap:10px;">
                             <div class="form-group" style="flex:1;">
                                 <label>País</label>
-                                <input type="text" id="addUCountry" class="form-control" placeholder="Ej: España">
+                                <select id="addUCountry" class="form-control">
+                                    <option value="">Seleccionar...</option>
+                                    ${Object.keys(GEO_DATA).map(c => `<option value="${c}">${c}</option>`).join('')}
+                                </select>
                             </div>
                             <div class="form-group" style="flex:1;">
-                                <label>Ciudad</label>
-                                <input type="text" id="addUCity" class="form-control" placeholder="Ej: Barcelona">
+                                <label>Ciudad / Población</label>
+                                <select id="addUCity" class="form-control" disabled>
+                                    <option value="">Primero elige país</option>
+                                </select>
+                                <input type="text" id="addUCityCustom" class="form-control" placeholder="Escribe tu ciudad..." style="display:none; margin-top:5px;">
                             </div>
                             <div class="form-group" style="width:80px;">
                                 <label>C. Postal</label>
@@ -232,7 +273,6 @@ export default class TeamView {
         Sidebar.initListeners(); 
 
         const state = store.getState();
-        
         const activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
         let project = state.projects.find(p => p.id === activeProjectId);
 
@@ -245,9 +285,8 @@ export default class TeamView {
         this.renderUsers(project, state.globalUsers);
         this.renderRoles(project, state.globalUsers);
 
-        // -- MÓDULO MARKETPLACE LATERAL --
+        // -- MÓDULO MARKETPLACE LATERAL CON FILTROS EXACTOS --
         const mkPanel = document.getElementById('mkPanel');
-        const mkList = document.getElementById('mkList');
         
         document.getElementById('btnOpenMarketplace').addEventListener('click', () => {
             mkPanel.classList.add('open');
@@ -258,15 +297,53 @@ export default class TeamView {
             mkPanel.classList.remove('open');
         });
 
+        // Bindeo de eventos para filtrar en tiempo real
         const filterMK = () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId).usuarios);
         document.getElementById('mkSearchName').addEventListener('input', filterMK);
-        document.getElementById('mkSearchCountry').addEventListener('input', filterMK);
+        document.getElementById('mkSearchCountry').addEventListener('change', filterMK); // Change porque es un select
         document.getElementById('mkSearchCity').addEventListener('input', filterMK);
+        document.getElementById('mkSearchSkills').addEventListener('input', filterMK);
 
 
-        // -- FORMULARIO DRY: ALTA DE USUARIOS --
+        // -- FORMULARIO DRY: ALTA DE USUARIOS (LOGICA DE DEPENDENCIAS) --
         const addUserModal = document.getElementById('addUserModal');
+        const selCountry = document.getElementById('addUCountry');
+        const selCity = document.getElementById('addUCity');
+        const inpCityCustom = document.getElementById('addUCityCustom');
         
+        // Lógica de carga de ciudades dependientes
+        selCountry.addEventListener('change', (e) => {
+            const country = e.target.value;
+            selCity.innerHTML = '';
+            inpCityCustom.style.display = 'none';
+            inpCityCustom.value = '';
+
+            if (!country) {
+                selCity.disabled = true;
+                selCity.innerHTML = '<option value="">Primero elige país</option>';
+                return;
+            }
+
+            selCity.disabled = false;
+            selCity.innerHTML = '<option value="">Selecciona Ciudad...</option>';
+            
+            const cities = GEO_DATA[country] || ["Otra..."];
+            cities.forEach(city => {
+                selCity.innerHTML += `<option value="${city}">${city}</option>`;
+            });
+        });
+
+        // Lógica de ciudad manual ("Otra...")
+        selCity.addEventListener('change', (e) => {
+            if (e.target.value === 'Otra...') {
+                inpCityCustom.style.display = 'block';
+                inpCityCustom.focus();
+            } else {
+                inpCityCustom.style.display = 'none';
+                inpCityCustom.value = '';
+            }
+        });
+
         document.getElementById('btnManualAdd').addEventListener('click', () => {
             addUserModal.style.display = 'flex';
         });
@@ -281,13 +358,21 @@ export default class TeamView {
             const email = document.getElementById('addUEmail').value.trim();
             const wallet = document.getElementById('addUWallet').value.trim();
             const social = document.getElementById('addUSocial').value.trim();
-            const country = document.getElementById('addUCountry').value.trim();
-            const city = document.getElementById('addUCity').value.trim();
+            
+            const country = selCountry.value;
+            // Si elige "Otra...", cogemos el valor del input de texto personalizado
+            let city = selCity.value;
+            if (city === 'Otra...') city = inpCityCustom.value.trim();
+            
             const zip = document.getElementById('addUZip').value.trim();
 
             if (!alias || !name) return alert("El Alias y el Nombre completo son campos obligatorios.");
             if (!alias.startsWith('@')) alias = '@' + alias;
 
+            // Generamos unas skills aleatorias básicas para simular el ADN que rellenaría el usuario real
+            const mockAffinities = ['@anxaneta', '@aixecador', '@dosos', '@baixos', '@pinya'];
+            const mockGuardians = ['creator', 'caregiver', 'ruler', 'jester', 'everyman', 'lover', 'hero', 'outlaw', 'magician', 'innocent', 'explorer', 'sage'];
+            
             const newUser = {
                 id: alias,
                 name: name,
@@ -299,22 +384,25 @@ export default class TeamView {
                     country: country,
                     city: city,
                     zip: zip,
-                    structural_affinity: ['@baixos', '@dosos', '@aixecador'][Math.floor(Math.random()*3)],
-                    guardian_authority: ['creator', 'hero', 'sage', 'magician'][Math.floor(Math.random()*4)]
+                    structural_affinity: [mockAffinities[Math.floor(Math.random()*mockAffinities.length)]],
+                    guardian_authority: [mockGuardians[Math.floor(Math.random()*mockGuardians.length)]]
                 }
             };
 
             await this.handleNewUser(newUser);
             addUserModal.style.display = 'none';
             
-            // Limpiamos el formulario para el siguiente uso
+            // Limpiamos el formulario
             document.getElementById('addUAlias').value = '';
             document.getElementById('addUName').value = '';
             document.getElementById('addUEmail').value = '';
             document.getElementById('addUWallet').value = '';
             document.getElementById('addUSocial').value = '';
-            document.getElementById('addUCountry').value = '';
-            document.getElementById('addUCity').value = '';
+            selCountry.value = '';
+            selCity.innerHTML = '<option value="">Primero elige país</option>';
+            selCity.disabled = true;
+            inpCityCustom.style.display = 'none';
+            inpCityCustom.value = '';
             document.getElementById('addUZip').value = '';
         });
 
@@ -323,40 +411,65 @@ export default class TeamView {
         });
     }
 
-    // --- MARKETPLACE GLOBAL ---
+    // --- MARKETPLACE GLOBAL CON BÚSQUEDA AVANZADA ---
     renderMarketplace(globalUsers, projUsers) {
         const listContainer = document.getElementById('mkList');
         const sName = document.getElementById('mkSearchName').value.toLowerCase();
-        const sCountry = document.getElementById('mkSearchCountry').value.toLowerCase();
+        const sCountry = document.getElementById('mkSearchCountry').value; // Búsqueda exacta por select
         const sCity = document.getElementById('mkSearchCity').value.toLowerCase();
+        const sSkills = document.getElementById('mkSearchSkills').value.toLowerCase();
 
         listContainer.innerHTML = '';
 
+        // Excluimos a los que ya están en el proyecto actual
         let candidates = globalUsers.filter(gu => !projUsers.find(pu => pu.id === gu.id));
 
+        // Filtramos
         candidates = candidates.filter(gu => {
-            const nameMatch = gu.name.toLowerCase().includes(sName);
-            const countryMatch = (gu.profile?.country || '').toLowerCase().includes(sCountry);
-            const cityMatch = (gu.profile?.city || '').toLowerCase().includes(sCity);
-            return nameMatch && countryMatch && cityMatch;
+            const p = gu.profile || {};
+            
+            const nameMatch = gu.name.toLowerCase().includes(sName) || gu.id.toLowerCase().includes(sName);
+            const countryMatch = sCountry === "" || p.country === sCountry;
+            const cityMatch = sCity === "" || (p.city || '').toLowerCase().includes(sCity);
+            
+            let skillsMatch = true;
+            if (sSkills !== "") {
+                const allSkills = [
+                    ...(p.structural_affinity || []),
+                    ...(p.guardian_authority || []),
+                    ...(p.guardian_growth || [])
+                ].join(' ').toLowerCase();
+                skillsMatch = allSkills.includes(sSkills);
+            }
+
+            return nameMatch && countryMatch && cityMatch && skillsMatch;
         });
 
         if (candidates.length === 0) {
-            listContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#666;">No hay candidatos disponibles en el Ecosistema Global que coincidan con la búsqueda.</div>`;
+            listContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#666;">No se encontró talento que coincida con estos parámetros.</div>`;
             return;
         }
 
         candidates.forEach(gu => {
-            const geoText = gu.profile?.country ? `📍 ${gu.profile.city || ''}, ${gu.profile.country}` : '🌍 Remoto Global';
+            const geoText = gu.profile?.country ? `📍 ${gu.profile.city || 'Desconocida'}, ${gu.profile.country}` : '🌍 Remoto Global';
+            
+            // Generar tags de skills para la UI del marketplace
+            let skillsHtml = '';
+            if (gu.profile) {
+                const arr = [...(gu.profile.structural_affinity || []), ...(gu.profile.guardian_authority || [])];
+                skillsHtml = arr.slice(0, 3).map(s => `<span>${s}</span>`).join('');
+            }
+
             const card = document.createElement('div');
             card.className = 'mk-card';
             card.innerHTML = `
                 <div class="mk-card-info">
                     <div class="mk-card-name">
-                        <div style="width:24px; height:24px; background:#333; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:0.7rem;">${gu.name.charAt(0)}</div>
-                        ${gu.name}
+                        <div style="width:24px; height:24px; background:#333; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:0.7rem;">${gu.name.charAt(0).toUpperCase()}</div>
+                        ${gu.name} <span style="font-size:0.7rem; color:#666; font-family:monospace;">${gu.id}</span>
                     </div>
                     <div class="mk-card-geo">${geoText}</div>
+                    ${skillsHtml ? `<div class="mk-card-skills">${skillsHtml}</div>` : ''}
                 </div>
                 <button class="btn-recruit" data-id="${gu.id}" data-name="${gu.name}">+ Reclutar</button>
             `;
@@ -364,7 +477,7 @@ export default class TeamView {
             card.querySelector('.btn-recruit').addEventListener('click', async (e) => {
                 await store.dispatch({
                     type: 'ADD_USER',
-                    payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, globalRole: gu.globalRole }
+                    payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, walletOrSocial: gu.walletOrSocial, globalRole: gu.globalRole }
                 });
                 this.executeViewScript();
             });
