@@ -183,7 +183,7 @@ export default class DashboardView {
 
                             <button class="btn-ai-action" id="btnAILegal">
                                 <strong>⚖️ Generar Pacto de Socios</strong>
-                                <span>Redacta el contrato legal dinámico basado en el Ledger actual.</span>
+                                <span>Redacta el contrato legal dinámico desglosando el Ledger.</span>
                             </button>
                         </div>
                     </div>
@@ -236,7 +236,7 @@ export default class DashboardView {
             });
         });
 
-        // -- MÓDULO IA (CON PAYLOAD VNA MEJORADO) --
+        // -- MÓDULO IA (CON PAYLOAD VNA Y LEDGER REAL MEJORADO) --
         const modal = document.getElementById('aiModal');
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
@@ -254,57 +254,75 @@ export default class DashboardView {
             if (!apiKey) return alert("Configura tu API Key en Settings antes de invocar al orquestador.");
 
             modal.style.display = 'flex';
-            modalBody.innerHTML = `<div style="text-align:center; padding:3rem;"><div style="font-size:3rem; animation: pulseGlow 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1rem;">Procesando datos del Ledger Inmutable y Red de Valor...</p></div>`;
+            modalBody.innerHTML = `<div style="text-align:center; padding:3rem;"><div style="font-size:3rem; animation: pulseGlow 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1rem;">Leyendo el Ledger Inmutable para generar el informe...</p></div>`;
             btnDownload.style.display = 'none';
-            modalTitle.innerText = type === 'audit' ? 'Auditoría de Salud VNA' : 'Pacto de Socios';
+            modalTitle.innerText = type === 'audit' ? 'Auditoría de Salud VNA' : 'Pacto de Socios (Slicing Pie)';
 
             // ---------------------------------------------------------
-            // EXTRACCIÓN DE DATOS PARA LA IA (NUEVO PAYLOAD V8.1)
+            // EXTRACCIÓN PROFUNDA DE DATOS PARA LA IA (V8.2)
             // ---------------------------------------------------------
             const harvest = store.calculateHarvest(project.id) || [];
+            const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
             
-            // 1. Blindar los Slices (Evitar el error 'undefined')
-            let ledgerDetails = ["El Ledger está virgen. Aún no se ha minado Equity (Slices)."];
-            if (harvest.length > 0) {
-                ledgerDetails = harvest.map(h => {
+            // 1. CAP TABLE CALCULADA (Para que no de 0%)
+            let capTableDetails = ["El Ledger está vacío. Aún no se ha minado Equity (Slices)."];
+            if (harvest.length > 0 && totalSlices > 0) {
+                capTableDetails = harvest.map(h => {
                     const u = state.globalUsers?.find(gu => gu.id === (h.user || h.userId));
                     const userName = u ? u.name : (h.user || h.userId || 'Desconocido');
-                    return `- ${userName}: ${Number(h.slices || 0).toFixed(2)} Slices (${Number(h.percent || 0).toFixed(1)}%)`;
+                    const percent = ((h.slices / totalSlices) * 100).toFixed(2);
+                    return `- Socio: ${userName} | Participación: ${percent}% | Capital: ${Number(h.slices).toFixed(2)} Slices`;
                 });
             }
 
-            // 2. Reconstruir el Mapa de Valor (Verna Allee) para la IA
+            // 2. LEDGER INMUTABLE REAL (Las aportaciones exactas de cada socio)
+            const realLedger = (project.ledger || []).map(l => {
+                const u = state.globalUsers?.find(gu => gu.id === l.userId);
+                const userName = u ? u.name : (l.userId || 'Sistema');
+                
+                if (l.isCapital) {
+                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} aportó CAPITAL TANGIBLE (${l.descripcion || l.entregable}). Recompensa: +${l.valorCongelado} Slices.`;
+                } else {
+                    const role = project.roles?.find(r => r.id === l.roleId);
+                    const roleName = role ? `${role.levelId} ${role.name}` : 'Rol Eliminado';
+                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} ejecutó TRABAJO como ${roleName}. Entregable: "${l.entregable}" (${l.horas}h). Recompensa: +${l.valorCongelado} Slices.`;
+                }
+            });
+
+            // 3. FLUJOS VNA TEÓRICOS
             const vnaFlows = (project.transactions || []).map(tx => {
                 const roleFrom = project.roles.find(r => r.id === tx.from);
                 const roleTo = project.roles.find(r => r.id === tx.to);
                 const nameFrom = roleFrom ? `${roleFrom.name} (${roleFrom.levelId})` : 'Nodo Externo';
                 const nameTo = roleTo ? `${roleTo.name} (${roleTo.levelId})` : 'Nodo Externo';
-                
-                return `[${(tx.tipo || 'tangible').toUpperCase()}] ${nameFrom} ---> ${tx.entregable} (${tx.horas}h) ---> ${nameTo} | Estado: ${tx.status}`;
+                return `[${(tx.tipo || 'tangible').toUpperCase()}] ${nameFrom} ---> ${tx.entregable} (${tx.horas}h) ---> ${nameTo}`;
             });
 
+            // CONSTRUCCIÓN DEL PAYLOAD FINAL
             const dataPayload = {
                 nombre_ecosistema: project.nombre,
                 arquetipo_gobernanza: project.archetype,
-                nodos_activos_roles: project.roles.map(r => `- ${r.levelId}: ${r.name} (Guardián: ${r.guardian || 'N/A'})`),
-                flujos_de_valor_vna: vnaFlows.length > 0 ? vnaFlows : ["No hay flujos mapeados aún."],
-                capitalizacion_ledger_slices: ledgerDetails,
-                vision_fundacional: project.presentation || project.prompt || "Sin definir"
+                vision_fundacional: project.presentation || project.prompt || "Sin definir",
+                nodos_activos_roles: project.roles.map(r => `- ${r.levelId}: ${r.name} (Guardián: ${r.guardian || 'N/A'} | Multiplicador: ${r.multiplier}x)`),
+                flujos_vna_diseñados: vnaFlows.length > 0 ? vnaFlows : ["Sin flujos."],
+                cap_table_actual: capTableDetails,
+                registro_aportaciones_reales: realLedger.length > 0 ? realLedger : ["No hay transacciones registradas en el ledger todavía."]
             };
 
             let systemPrompt = state.config?.globalPrompt || "Eres un Master Architect de DAOs.";
             
             if (type === 'audit') {
                 systemPrompt += `\nMisión: Eres un Auditor VNA (Value Network Analysis). 
-                Analiza el JSON del proyecto. Tienes el mapa exacto de flujos ("flujos_de_valor_vna"). 
-                1. Detecta cuellos de botella reales en los flujos (ej: si un nodo recibe muchas tareas y no delega).
-                2. Evalúa si hay equilibrio entre flujos TANGIBLES e INTANGIBLES.
-                3. Analiza la Resiliencia basada en cómo está distribuido el capital ("capitalizacion_ledger_slices").
-                Si el Ledger está vacío o no hay flujos, dilo claramente y no inventes datos. Sé duro, clínico y aporta soluciones reales al diseño. Formato texto legible sin markdown excesivo.`;
+                Revisa el 'registro_aportaciones_reales' y la 'cap_table_actual'. 
+                Detecta si alguien está aportando más de lo sano para la red o si hay dependencias excesivas de un solo socio. 
+                Si el Ledger está vacío, dilo claramente. Formato texto plano legible sin markdown excesivo.`;
             } else {
-                systemPrompt += `\nMisión: Eres un Abogado Notarial Web3 experto en el modelo Slicing Pie. 
-                Redacta un "Pacto de Socios" formal basado estrictamente en los datos del JSON. 
-                Menciona la Visión Fundacional, los Nodos de Actividad (roles), y usa la matriz de "capitalizacion_ledger_slices" para detallar el Cap Table (cuadro de capitalización) actual exacto. Formato de contrato legal.`;
+                systemPrompt += `\nMisión: Eres un Abogado Notarial Web3 experto en Slicing Pie y contratos dinámicos.
+                Redacta un "Pacto de Socios" formal basado estrictamente en los datos recibidos.
+                1. Menciona la Visión Fundacional.
+                2. Usa la "cap_table_actual" para redactar la cláusula de PARTICIPACIÓN ACTUAL (Asegúrate de poner los % correctos y nombrar a los socios).
+                3. Usa el "registro_aportaciones_reales" para crear un Anexo final desglosando exactamente de dónde salen los Slices de cada socio (qué horas trabajaron o qué capital metieron).
+                El documento debe parecer redactado por una notaría. Formato texto formal legible.`;
             }
             // ---------------------------------------------------------
 
