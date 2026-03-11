@@ -39,7 +39,6 @@ export default class ValueMapView {
 
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
-        // Configuración del Header Universal
         const headerConfig = {
             title: "Mapa",
             subtitle: project ? project.nombre : '',
@@ -55,6 +54,9 @@ export default class ValueMapView {
                 .app-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
                 .workspace { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth;}
                 
+                /* FIX PESTAÑAS MOBILE: Forzar que no se aplasten */
+                .ph-tabs-container { flex-shrink: 0 !important; }
+
                 /* =========================================================
                    TABS CONTENT (UNIFICADO PC/MOBILE)
                    ========================================================= */
@@ -64,15 +66,16 @@ export default class ValueMapView {
                 /* =========================================================
                    CONTROLES TÁCTICOS
                    ========================================================= */
-                .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 10px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--glass-border);}
+                .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 10px; flex-wrap: wrap;}
                 .sim-group { display: flex; gap: 10px; }
                 
-                .btn-sm { padding: 6px 15px; font-size: 0.85rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; gap: 5px;}
-                .btn-sm:hover { transform: translateY(-2px); }
+                .btn-sm { padding: 8px 15px; font-size: 0.85rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;}
+                .btn-sm:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
                 
-                .legend-box { display: flex; gap: 15px; font-size: 0.75rem; color: #aaa; align-items: center;}
+                /* LEYENDA (TIPS) - Ahora vive pegada al mapa */
+                .legend-box { display: flex; gap: 15px; font-size: 0.75rem; color: #aaa; align-items: center; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 10px; width: max-content;}
                 .legend-item { display: flex; align-items: center; gap: 5px;}
-                .legend-color { width: 12px; height: 3px; }
+                .legend-color { width: 15px; height: 3px; }
 
                 /* =========================================================
                    LIENZO PRINCIPAL (Mapa Visual)
@@ -80,47 +83,58 @@ export default class ValueMapView {
                 .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; background-color: rgba(0,0,0,0.2);}
                 #edges-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
                 
-                /* VECTORES Y LÍNEAS */
                 .edge-line { fill: none; stroke-width: 2.5; opacity: 0.85; transition: stroke 0.3s; }
                 .edge-tangible { stroke: var(--accent-green); }
                 .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 6, 6; animation: dashAnim 15s linear infinite; }
                 .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 
-                /* NODOS CASTELLERS */
                 .node { position: absolute; z-index: 5; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: grab; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s, opacity 0.3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--glass-border); color: white; transform: translate(-50%, -50%); user-select: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 80px; height: 80px;}
                 .node:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
                 .node.selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 35px rgba(0, 176, 255, 0.6); z-index: 10; }
                 .node.sick-node { border-color: var(--accent-red) !important; box-shadow: 0 0 40px rgba(255, 82, 82, 0.8); animation: pulseSick 1s infinite alternate; z-index: 15; }
-                
                 .node.ghost-node { opacity: 0.3; border-style: dashed; filter: grayscale(100%); z-index: 1; }
-                .node.ghost-node:hover { opacity: 0.6; }
-                .node.ghost-node .node-name { text-decoration: line-through; color: #888; }
-
+                
                 .node-name { font-size: 0.65rem; margin-top: 5px; pointer-events: none; text-transform: uppercase; width: 95%; font-weight: bold; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding: 0 5px; word-wrap: break-word; text-align: center;}
 
-                /* BADGES HTML */
                 .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid #111; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.2s, filter 0.2s; }
                 .tx-badge:hover { transform: translate(-50%, -50%) scale(1.2); filter: brightness(1.2); z-index: 100;}
                 .tx-badge.ghost { opacity: 0.3; }
 
-                /* TOOLTIP FLOTANTE MEJORADO */
                 .tx-tooltip { position: fixed; background: rgba(10, 10, 14, 0.98); border: 1px solid var(--accent-blue); color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 9999; box-shadow: 0 15px 50px rgba(0,0,0,0.9); backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity 0.2s; min-width: 250px; max-width: 320px; line-height: 1.4; pointer-events: none;}
                 .tx-tooltip.visible { opacity: 1; visibility: visible; }
 
                 /* =========================================================
-                   PESTAÑA 2: FLUJO OPERATIVO
+                   PESTAÑA 2: FLUJO OPERATIVO (NUEVO DISEÑO TARJETAS)
                    ========================================================= */
-                .flow-container { display: flex; gap: 2rem; flex: 1; align-items: flex-start;}
+                .flow-container { display: flex; gap: 2rem; flex: 1; align-items: flex-start; margin-top: 10px;}
                 
-                .sequence-panel { flex: 2; display: flex; flex-direction: column; gap: 10px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 10px;}
-                .flow-step { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s;}
+                .sequence-panel { flex: 2; display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 10px;}
+                
+                /* Diseño Compacto de Tarjeta */
+                .flow-step { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
                 .flow-step.simulating { transform: scale(1.02); border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.3); }
                 
-                .step-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-family: var(--font-mono); }
-                .step-route { display: flex; flex-direction: column; gap: 5px; font-weight: bold; color: white; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border: 1px dashed #333;}
-                .step-actions { display: flex; gap: 6px; margin-top: 5px; justify-content: flex-end; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;}
+                .step-info { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+                .step-meta { font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
                 
+                .step-route-compact { font-size: 0.9rem; display: flex; align-items: center; flex-wrap: wrap; line-height: 1.2;}
+                .route-level { color: #888; font-family: var(--font-mono); font-size: 0.75rem; margin-right: 4px; }
+                .route-name { font-weight: bold; color: white; }
+                .route-arrow { color: #555; margin: 0 8px; }
+                
+                .step-deliv-name { font-size: 1rem; font-weight: bold; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+                .step-desc-context { font-size: 0.8rem; color: #aaa; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-style: italic; border-left: 2px solid #555;}
+                
+                .step-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+                .btn-step { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+                .btn-step:hover { background: rgba(255,255,255,0.15); color: white; border-color: var(--text-muted); }
+                .btn-step.del:hover { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
+                .btn-step.edit { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-color: var(--accent-blue); }
+                .btn-step.edit:hover { background: var(--accent-blue); color: black; }
+
                 .sequence-form { flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2rem; position: sticky; top: 0;}
+                .sequence-form.edit-mode { background: rgba(0, 176, 255, 0.05); border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(0, 176, 255, 0.1); }
+
                 .form-group { margin-bottom: 15px; }
                 .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
                 .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
@@ -135,22 +149,35 @@ export default class ValueMapView {
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
-                   RESPONSIVE MOBILE (FIELD APP)
+                   RESPONSIVE MOBILE
                    ========================================================= */
                 @media (max-width: 768px) {
                     .workspace { padding: 80px 1rem 90px 1rem; } 
                     
-                    .vna-controls { flex-direction: column; align-items: stretch; }
-                    .sim-group { justify-content: space-between; }
-                    .btn-sm { padding: 10px; justify-content: center; flex: 1;}
-                    .legend-box { justify-content: center; margin-top: 5px;}
+                    /* Control Tactics Mobile */
+                    .vna-controls { flex-direction: column; align-items: stretch; gap: 10px; background: transparent; border: none; padding: 0;}
+                    .sim-group { display: flex; flex-direction: row; width: 100%; gap: 10px;}
+                    .sim-group .btn-sm { flex: 1; padding: 12px; font-size: 0.95rem;}
+                    
+                    #btnOpenAddNode { padding: 12px; font-size: 0.95rem; }
 
+                    /* Pestaña 1: Visual */
+                    #view-visual { flex-direction: column; }
+                    .legend-box { align-self: flex-start; }
+                    .map-container { flex: 1; height: calc(100vh - 350px); min-height: 400px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 1rem;}
+                    
                     .node { width: 65px; height: 65px; font-size: 0.8rem; pointer-events: none; } /* Bloquear drag en móvil */
                     .tx-badge { pointer-events: none; font-size: 0.6rem; padding: 2px 5px;}
 
-                    .flow-container { flex-direction: column; }
+                    /* Pestaña 2: Flujo Operativo */
+                    .flow-container { flex-direction: column; gap: 1rem; margin-top: 0;}
                     .sequence-panel { width: 100%; max-height: none; padding-right: 0;}
-                    .sequence-form { width: 100%; }
+                    .sequence-form { width: 100%; padding: 1.5rem; }
+                    
+                    /* Cards Móvil: Botones Abajo en vez de a la derecha */
+                    .flow-step { flex-direction: column; align-items: stretch; gap: 12px;}
+                    .step-actions { flex-direction: row; justify-content: space-between; border-top: 1px dashed #333; padding-top: 10px; margin-top: 5px;}
+                    .step-actions .btn-step { flex: 1; }
                 }
             </style>
 
@@ -164,19 +191,19 @@ export default class ValueMapView {
                     <div class="vna-controls">
                         <div class="sim-group">
                             <button class="btn btn-primary btn-sm" id="btnSimulate">▶ Simular Flujo</button>
-                            <button class="btn btn-outline btn-sm" id="btnPauseSim" style="display:none;">⏸ Pausar</button>
+                            <button class="btn btn-outline btn-sm" id="btnPauseSim" style="display:none; background:#333; color:white;">⏸ Pausar</button>
                             <button class="btn btn-outline btn-sm" id="btnStopSim" style="display:none; border-color:var(--accent-red); color:var(--accent-red);">⏹ Detener</button>
                         </div>
-                        <div class="legend-box">
-                            <div class="legend-item"><div class="legend-color" style="background:var(--accent-green);"></div> Tangible</div>
-                            <div class="legend-item"><div class="legend-color" style="border-bottom:2px dashed var(--accent-purple);"></div> Intangible</div>
-                        </div>
-                        ${isPO ? `<button class="btn btn-outline btn-sm" id="btnOpenAddNode">➕ Instanciar Rol</button>` : ''}
+                        ${isPO ? `<button class="btn btn-outline btn-sm" id="btnOpenAddNode" style="border-style:dashed;">➕ Instanciar Rol</button>` : ''}
                     </div>
 
                     <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; text-align: center; margin-bottom: 1rem;">⚠️ DIAGNÓSTICO: Salto estructural excesivo detectado.</div>
 
                     <div id="view-visual" class="tab-content active">
+                        <div class="legend-box">
+                            <div class="legend-item"><div class="legend-color" style="background:var(--accent-green);"></div> Tangible</div>
+                            <div class="legend-item"><div class="legend-color" style="border-bottom:2px dashed var(--accent-purple);"></div> Intangible</div>
+                        </div>
                         <div class="map-container">
                             <div class="map-canvas" id="mapCanvas">
                                 <svg id="edges-svg"></svg>
@@ -193,8 +220,8 @@ export default class ValueMapView {
                             ${isPO ? `
                             <div class="sequence-form" id="seqFooter">
                                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                                    <h3 id="formTitle" style="margin:0; font-size:1rem; color:var(--accent-blue);">Añadir Transacción</h3>
-                                    <button class="btn btn-outline btn-sm" style="display:none;" id="btnCancelEditFlow">Cancelar Edición</button>
+                                    <h3 id="formTitle" style="margin:0; font-size:1.1rem; color:var(--accent-blue);">Añadir Transacción</h3>
+                                    <button class="btn btn-outline btn-sm" style="display:none;" id="btnCancelEditFlow">✕ Cancelar</button>
                                 </div>
                                 <div class="form-group" style="display: flex; gap: 10px;">
                                     <div style="flex:1;">
@@ -226,8 +253,12 @@ export default class ValueMapView {
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Nombre Personalizado</label>
-                                    <input type="text" id="inpDesc" class="form-control" placeholder="Nombre del Entregable">
+                                    <label>Nombre del Entregable</label>
+                                    <input type="text" id="inpDesc" class="form-control" placeholder="Ej: Auditoría de Seguridad">
+                                </div>
+                                <div class="form-group">
+                                    <label>Contexto / Instrucciones (Opcional)</label>
+                                    <textarea id="inpContext" class="form-control" rows="2" placeholder="Instrucciones específicas para quien ejecute la tarea..."></textarea>
                                 </div>
                                 <button class="btn btn-success" style="width: 100%; margin-top: 10px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;" id="btnAddFlow">➕ Añadir al Flujo</button>
                             </div>
@@ -360,6 +391,7 @@ export default class ValueMapView {
             selTemplate: document.getElementById('selTemplate'),
             selType: document.getElementById('selType'),
             inpDesc: document.getElementById('inpDesc'),
+            inpContext: document.getElementById('inpContext'), // NUEVO
             inpHoras: document.getElementById('inpHoras'),
             btnAddFlow: document.getElementById('btnAddFlow'),
             btnCancelEditFlow: document.getElementById('btnCancelEditFlow'),
@@ -431,7 +463,6 @@ export default class ValueMapView {
         // EVENTOS DE EDICIÓN (SOLO SI ES PROJECT OWNER)
         // ------------------------------------------------------------------
         if (isPO) {
-            // WIZARD DE FLUJOS
             this.dom.selFrom.addEventListener('change', () => this.updateOntologyTemplates());
             this.dom.selTemplate.addEventListener('change', (e) => {
                 const val = e.target.value;
@@ -450,6 +481,7 @@ export default class ValueMapView {
                 const fromId = this.dom.selFrom.value;
                 const toId = this.dom.selTo.value;
                 const desc = this.dom.inpDesc.value.trim();
+                const context = this.dom.inpContext.value.trim();
                 
                 if(fromId === toId) return alert("El valor debe fluir entre nodos distintos.");
                 if(!desc) return alert("Escribe el nombre del entregable.");
@@ -461,14 +493,14 @@ export default class ValueMapView {
                 if (this.editingTxIndex !== null) {
                     currentState.projects[pIndex].transactions[this.editingTxIndex] = {
                         ...currentState.projects[pIndex].transactions[this.editingTxIndex],
-                        from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value
+                        from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value, descripcionContexto: context
                     };
                     this.exitEditMode();
                 } else {
                     currentState.projects[pIndex].transactions.push({
                         hash: '0x' + Math.random().toString(16).slice(2, 10),
                         from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value) || 1,
-                        entregable: desc, tipo: this.dom.selType.value, status: 'theoretical', timestamp: Date.now()
+                        entregable: desc, tipo: this.dom.selType.value, status: 'theoretical', timestamp: Date.now(), descripcionContexto: context
                     });
                 }
 
@@ -476,12 +508,14 @@ export default class ValueMapView {
                 this.dom.selFrom.value = toId; 
                 this.updateOntologyTemplates();
                 this.dom.inpDesc.value = ''; 
+                this.dom.inpContext.value = '';
             });
 
             this.dom.btnCancelEditFlow.addEventListener('click', () => this.exitEditMode());
 
             this.dom.seqList.addEventListener('click', (e) => {
-                const target = e.target;
+                const target = e.target.closest('.btn-step');
+                if (!target) return;
                 const idx = parseInt(target.getAttribute('data-idx'));
                 if (isNaN(idx)) return;
 
@@ -506,13 +540,13 @@ export default class ValueMapView {
                 }
                 else if (target.classList.contains('btn-edit')) {
                     this.enterEditMode(idx, txs[idx]);
-                    // Si estamos en movil, saltar a la pestaña operativa
-                    if(window.innerWidth <= 768) document.querySelector('[data-tab="flow"]').click();
                 }
             });
 
             // MODAL ADD NODE
-            document.getElementById('btnOpenAddNode').addEventListener('click', () => this.dom.addNodeModal.style.display = 'flex');
+            if(document.getElementById('btnOpenAddNode')) {
+                document.getElementById('btnOpenAddNode').addEventListener('click', () => this.dom.addNodeModal.style.display = 'flex');
+            }
             document.getElementById('btnCancelNode').addEventListener('click', () => this.dom.addNodeModal.style.display = 'none');
             document.getElementById('btnConfirmNode').addEventListener('click', () => {
                 const name = document.getElementById('inpNewNodeName').value.trim();
@@ -714,7 +748,6 @@ export default class ValueMapView {
         }
     }
 
-    // ... Funciones de estado y render (Se mantienen intactas de tu código anterior) ...
     executeArchiveToggle(archiveState) {
         store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId } });
         if (archiveState) {
@@ -730,14 +763,20 @@ export default class ValueMapView {
         this.dom.formTitle.innerText = `Editando Paso ${idx + 1}`;
         this.dom.formTitle.style.color = 'var(--accent-orange)';
         this.dom.btnCancelEditFlow.style.display = 'block';
-        this.dom.btnAddFlow.innerText = '✓ Actualizar Transacción';
+        
+        this.dom.btnAddFlow.innerText = '💾 Guardar Cambios';
         this.dom.btnAddFlow.style.background = 'var(--accent-blue)';
         this.dom.btnAddFlow.style.color = 'black';
+        
         this.dom.selFrom.value = tx.from;
         this.dom.selTo.value = tx.to;
         this.dom.selType.value = tx.tipo;
         this.dom.inpHoras.value = tx.horas;
         this.dom.inpDesc.value = tx.entregable;
+        this.dom.inpContext.value = tx.descripcionContexto || '';
+
+        // Auto-Scroll hacia el formulario
+        this.dom.seqFooter.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     exitEditMode() {
@@ -746,10 +785,13 @@ export default class ValueMapView {
         this.dom.formTitle.innerText = `Añadir Transacción`;
         this.dom.formTitle.style.color = 'var(--accent-blue)';
         this.dom.btnCancelEditFlow.style.display = 'none';
-        this.dom.btnAddFlow.innerText = '➕ Añadir Transacción';
+        
+        this.dom.btnAddFlow.innerText = '➕ Añadir al Flujo';
         this.dom.btnAddFlow.style.background = 'var(--accent-green)';
         this.dom.btnAddFlow.style.color = 'black';
+        
         this.dom.inpDesc.value = '';
+        this.dom.inpContext.value = '';
     }
 
     forceSaveState(newState, highlightIndex = -1) {
@@ -982,7 +1024,10 @@ export default class ValueMapView {
         templates.forEach((t, i) => html += `<option value="${i}">${t.tipo === 'tangible' ? '🟢' : '🟣'} ${t.name} (${t.estimatedHours}h)</option>`);
         html += `<option value="manual">✍️ Crear Manualmente...</option>`;
         this.dom.selTemplate.innerHTML = html;
-        if(this.editingTxIndex === null) this.dom.inpDesc.value = '';
+        if(this.editingTxIndex === null) {
+            this.dom.inpDesc.value = '';
+            if(this.dom.inpContext) this.dom.inpContext.value = '';
+        }
     }
 
     renderSequence(highlightIndex = -1) {
@@ -994,6 +1039,8 @@ export default class ValueMapView {
             this.dom.seqList.innerHTML = `<p style="color:var(--text-muted); font-size:0.8rem; text-align:center; margin-top:2rem;">Lienzo en blanco.</p>`;
             return;
         }
+
+        const isPO = p.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
 
         txs.forEach((tx, i) => {
             const rFrom = p.roles.find(r => r.id === tx.from) || { levelId: '?', name: 'Nodo Borrado' };
@@ -1009,21 +1056,24 @@ export default class ValueMapView {
                 <div class="step-actions">
                     ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" title="Subir">↑</button>` : ''}
                     ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" title="Bajar">↓</button>` : ''}
-                    <button class="btn-step btn-edit" data-idx="${i}" title="Editar">✎</button>
+                    <button class="btn-step edit btn-edit" data-idx="${i}" title="Editar">✎</button>
                     <button class="btn-step del btn-del" data-idx="${i}" title="Eliminar">🗑️</button>
                 </div>
             `;
 
-            const isPO = p.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
-
             stepEl.innerHTML = `
-                <div class="step-header"><span>Paso ${i + 1}</span><span style="font-size: 0.7rem;">${tx.horas}h Est.</span></div>
-                <div class="step-route">
-                    <div><span style="color: ${this.getColor(rFrom.levelId)}">${rFrom.levelId}</span> <span style="font-weight:normal; font-size:0.75rem; color:#888;">(${rFrom.name})</span></div>
-                    <div style="color:var(--text-muted); margin-left: 10px;">&darr;</div> 
-                    <div><span style="color: ${this.getColor(rTo.levelId)}">${rTo.levelId}</span> <span style="font-weight:normal; font-size:0.75rem; color:#888;">(${rTo.name})</span></div>
+                <div class="step-info">
+                    <div class="step-meta" style="color: ${color};">
+                        <span style="font-weight:bold;">[${i + 1}]</span> ⏱ ${tx.horas}h Est.
+                    </div>
+                    <div class="step-route-compact">
+                        <span class="route-level">${rFrom.levelId}</span> <span class="route-name">${rFrom.name}</span>
+                        <span class="route-arrow">&rarr;</span>
+                        <span class="route-level">${rTo.levelId}</span> <span class="route-name">${rTo.name}</span>
+                    </div>
+                    <div class="step-deliv-name" style="color: ${color};">${tx.entregable}</div>
+                    ${tx.descripcionContexto ? `<div class="step-desc-context">💬 ${tx.descripcionContexto}</div>` : ''}
                 </div>
-                <div class="step-deliverable" style="color: ${color}; font-size: 0.75rem; text-transform: uppercase; margin-top: 5px;">${tx.entregable}</div>
                 ${isPO ? actions : ''}
             `;
             this.dom.seqList.appendChild(stepEl);
@@ -1067,12 +1117,29 @@ export default class ValueMapView {
             el.style.borderColor = this.getColor(level);
             el.innerHTML = `<div style="font-size:1.5rem; margin-bottom:2px;">${this.getIcon(level)}</div><div class="node-name" title="${rol.name}">${rol.name}</div>`;
 
-            // Doble click ahora abre el modal flotante, no el panel derecho lateral
+            el.addEventListener('click', (e) => {
+                if(this.hasMoved || this.isSimulating) return; 
+                if (window.innerWidth <= 768) return; // Bloquear click en móvil
+                
+                if (!rol.isArchived && this.selectedRoleId && this.selectedRoleId !== rol.id) {
+                    const currentlySelected = p.roles.find(r => r.id === this.selectedRoleId);
+                    if(currentlySelected && !currentlySelected.isArchived) {
+                        this.dom.selFrom.value = this.selectedRoleId;
+                        this.dom.selTo.value = rol.id;
+                        this.updateOntologyTemplates();
+                    }
+                }
+
+                this.selectedRoleId = rol.id;
+                this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+                el.classList.add('selected');
+            });
+
             el.addEventListener('dblclick', (e) => {
                 if(this.isSimulating) return;
-                if (window.innerWidth <= 768) return; // Bloquear dblclick en móvil
+                if (window.innerWidth <= 768) return; 
                 const isPO = p.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
-                if (!isPO) return; // Solo PO edita
+                if (!isPO) return; 
                 
                 this.selectedRoleId = rol.id;
                 this.dom.canvas.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
