@@ -284,4 +284,408 @@ export default class HomeView {
                 .main-title { font-size: 4rem; color: white; line-height: 1; margin-bottom: 1.5rem; letter-spacing: -2px; font-weight: 800; }
                 .main-title span { color: transparent; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; background-clip: text; }
                 .description { color: #aaa; font-size: 1.1rem; max-width: 600px; margin: 0 auto 3rem auto; line-height: 1.6; }
-                .auth-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-
+                .auth-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 350px; margin: 0 auto;}
+                .btn-web3 { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;}
+                .btn-web3:hover { background: rgba(255,255,255,0.1); border-color: white; transform: translateY(-2px);}
+                #googleButtonContainer { width: 100%; display: flex; justify-content: center;}
+                .features-row { display: flex; justify-content: center; gap: 30px; margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;}
+                .feat { font-size: 0.8rem; color: #666; display: flex; align-items: center; gap: 8px;}
+                .feat strong { color: var(--accent-green); }
+                .terminal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 7, 0.98); backdrop-filter: blur(20px); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-mono); color: var(--accent-green); }
+                .boot-log { width: 500px; text-align: left; font-size: 1rem; line-height: 2; border-left: 3px solid var(--accent-blue); padding-left: 25px; text-shadow: 0 0 8px rgba(0, 230, 118, 0.5); font-weight: bold; }
+                .cursor { display: inline-block; width: 10px; height: 18px; background: var(--accent-green); animation: blink 0.8s infinite; margin-left: 5px; vertical-align: middle;}
+                @keyframes blink { 50% { opacity: 0; } }
+            </style>
+            <div class="landing-canvas">
+                <div class="grid-bg"></div>
+                <div class="content-box">
+                    <span class="tagline">Local-First DAO OS</span>
+                    <h1 class="main-title">No uses software.<br>Construye <span>Soberanía.</span></h1>
+                    <p class="description">El primer Exoesqueleto Organizacional que fusiona Modelos Dinámicos de Equidad (Slicing Pie), Agentes IA y Bases de Datos Locales para equipos radicales.</p>
+                    <div class="auth-container">
+                        <button class="btn-web3" id="btnConnectWallet">🦊 Conectar Wallet (Web3)</button>
+                        <div style="color:#555; font-size:0.8rem; margin: 5px 0;">— o utiliza el puente Web2 —</div>
+                        <div id="googleButtonContainer"></div>
+                        <div id="authStatus" style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; display: none;">Sincronizando Identidad Fractal...</div>
+                    </div>
+                    <div class="features-row">
+                        <div class="feat"><strong>✓</strong> Datos en Localhost</div>
+                        <div class="feat"><strong>✓</strong> Contratos Inmutables</div>
+                        <div class="feat"><strong>✓</strong> Orquestador Cognitivo IA</div>
+                    </div>
+                </div>
+                <div class="terminal-overlay" id="bootTerminal">
+                    <div style="font-size: 4rem; margin-bottom: 2rem; text-shadow: 0 0 20px rgba(0,176,255,0.5);">🗼</div>
+                    <div class="boot-log" id="logContent"></div>
+                    <div style="margin-top: 3rem; font-size: 0.75rem; color: #555; text-shadow: none;">SOS_KERNEL_STABLE // BUILD 2026.03.11</div>
+                </div>
+            </div>
+        `;
+    }
+
+    executeViewScript() {
+        const state = store.getState();
+        if (!state.session.activeUserId || state.session.activeUserId === 'ecosystem-admin' || state.session.role === 'guest') {
+            this.initLandingScripts();
+            return;
+        }
+
+        Sidebar.initListeners();
+        PageHeader.execute();
+
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                const targetId = `view-${btn.dataset.tab}`;
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) targetContent.classList.add('active');
+            });
+        });
+
+        this.allProjects = state.projects || [];
+
+        this.renderGlobalStats(state);
+        
+        if(this.allProjects.length > 0) {
+            const fb = document.getElementById('filterBar');
+            if(fb) fb.style.display = 'flex';
+            this.setupFilters();
+        }
+        
+        this.renderEcosystemProjects([...this.allProjects].reverse());
+        this.renderEtherscan(state);
+
+        document.getElementById('scanSearch')?.addEventListener('input', () => this.renderEtherscan(store.getState()));
+        document.getElementById('scanProjectFilter')?.addEventListener('change', () => this.renderEtherscan(store.getState()));
+
+        // BOTÓN DE CREAR RED (V10 DRY LOGIC)
+        const btnCreateNet = document.getElementById('btnCreateNewNet');
+        if (btnCreateNet) {
+            btnCreateNet.addEventListener('click', () => {
+                // Redirige directamente al Instanciador Oficial (ProjectCreatorView)
+                window.location.href = '/v5/create';
+            });
+        }
+    }
+
+    setupFilters() {
+        const searchInput = document.getElementById('filterSearch');
+        const sectorSelect = document.getElementById('filterSector');
+        const archSelect = document.getElementById('filterArch');
+
+        if (!searchInput || !sectorSelect || !archSelect) return;
+
+        const uniqueSectors = [...new Set(this.allProjects.map(p => p.sector || 'General'))];
+        uniqueSectors.forEach(sec => {
+            sectorSelect.innerHTML += `<option value="${sec}">${sec.replace(/_/g, ' ').toUpperCase()}</option>`;
+        });
+
+        const uniqueArchs = [...new Set(this.allProjects.map(p => p.archetype || 'startup'))];
+        uniqueArchs.forEach(arc => {
+            archSelect.innerHTML += `<option value="${arc}">${arc.toUpperCase()}</option>`;
+        });
+
+        const applyFilters = () => {
+            const term = searchInput.value.toLowerCase();
+            const selectedSector = sectorSelect.value;
+            const selectedArch = archSelect.value;
+
+            const filtered = this.allProjects.filter(p => {
+                const matchName = p.nombre.toLowerCase().includes(term);
+                const matchSector = selectedSector === 'all' || (p.sector || 'General') === selectedSector;
+                const matchArch = selectedArch === 'all' || (p.archetype || 'startup') === selectedArch;
+                return matchName && matchSector && matchArch;
+            });
+
+            this.renderEcosystemProjects([...filtered].reverse());
+        };
+
+        searchInput.addEventListener('input', applyFilters);
+        sectorSelect.addEventListener('change', applyFilters);
+        archSelect.addEventListener('change', applyFilters);
+    }
+
+    renderGlobalStats(state) {
+        let totalProjects = state.projects.length;
+        let totalGlobalSlices = 0;
+        let totalGlobalUsers = new Set();
+        let totalTxs = 0;
+
+        state.projects.forEach(p => {
+            (p.ledger || []).forEach(l => {
+                totalGlobalSlices += l.valorCongelado || 0;
+                totalTxs++;
+            });
+            (p.usuarios || []).forEach(u => totalGlobalUsers.add(u.id));
+        });
+
+        document.getElementById('globalStatsGrid').innerHTML = `
+            <div class="stat-card" style="border-bottom: 3px solid var(--accent-blue);">
+                <div class="stat-value" style="color: var(--accent-blue);">${totalProjects}</div>
+                <div class="stat-label">Nodos Activos (Redes)</div>
+            </div>
+            <div class="stat-card" style="border-bottom: 3px solid var(--accent-green);">
+                <div class="stat-value" style="color: var(--accent-green);">${Math.round(totalGlobalSlices).toLocaleString()}</div>
+                <div class="stat-label">Slices Emitidos (Equity)</div>
+            </div>
+            <div class="stat-card" style="border-bottom: 3px solid var(--accent-purple);">
+                <div class="stat-label" style="margin-bottom:8px;">Comunidad Web3</div>
+                <div style="font-size: 1.8rem; color: white; font-weight:900; font-family:var(--font-mono);">${totalGlobalUsers.size} <span style="font-size:1rem; color:#888;">Wallets</span></div>
+                <div style="font-size: 0.85rem; color: var(--accent-purple); margin-top:8px; font-weight:bold;">${totalTxs} Bloques Validados</div>
+            </div>
+        `;
+    }
+
+    renderEcosystemProjects(projectsToRender) {
+        const grid = document.getElementById('ecosystemProjectsGrid');
+        if(!grid) return;
+        
+        if (projectsToRender.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1; padding:4rem; text-align:center; color:#888; border:1px dashed #333; border-radius:16px; background:rgba(0,0,0,0.3);">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🌌</div>
+                    <h3 style="color:white;">El universo está vacío</h3>
+                    <p>No se encontraron redes con estos filtros. Crea tu primera DAO.</p>
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = projectsToRender.map(p => {
+            const usersCount = (p.usuarios || []).length;
+            const ledgerCount = (p.ledger || []).length;
+            
+            // V10 LOGIC: Ofertas teóricas (Transactions legacy + Work Orders nuevas)
+            const openTxs = (p.transactions || []).filter(tx => tx.status === 'theoretical').length;
+            const openWos = (p.work_orders || []).filter(wo => wo.status === 'theoretical').length;
+            const openTasks = openTxs + openWos;
+
+            let tags = p.tags || [];
+            if (tags.length === 0) tags = ['VNA', (p.sector || 'Agnóstico').split('_')[0]];
+
+            let archClass = 'arch-startup';
+            let privacyIcon = '🌐';
+            
+            if(p.archetype === 'dao') archClass = 'arch-dao';
+            if(p.archetype === 'corporate' || p.archetype === 'corp') {
+                archClass = 'arch-corp';
+                privacyIcon = '🔒';
+            }
+            if(p.archetype === 'incubator') archClass = 'arch-incubator';
+
+            const oppClass = openTasks > 0 ? 'has-offers' : '';
+
+            return `
+                <div class="project-card btn-navigate" data-id="${p.id}" data-target="/project">
+                    <div class="card-header">
+                        <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
+                            <h3 class="card-title">${p.nombre}</h3>
+                            <div class="card-tags">
+                                ${tags.slice(0,3).map(t => `<span class="tag-pill">#${t}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="card-arch ${archClass}" style="flex-shrink:0;">${privacyIcon} ${p.archetype}</div>
+                    </div>
+
+                    <div class="card-metrics desktop-only">
+                        <div class="metric">
+                            <span class="metric-val">${usersCount}</span>
+                            <span class="metric-label">Nodos Huma</span>
+                        </div>
+                        <div class="metric" style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 20px;">
+                            <span class="metric-val">${ledgerCount}</span>
+                            <span class="metric-label">Bloques</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="opp-pill ${oppClass}">
+                            🎯 ${openTasks} Tareas Libres
+                        </div>
+                        <div class="mob-meta-stats mobile-only">
+                            👥 ${usersCount} Nodos | 🧱 ${ledgerCount} Bloques
+                        </div>
+                        <div class="btn-enter desktop-only">
+                            ENTRAR &rarr;
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.querySelectorAll('.btn-navigate').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.getAttribute('data-id');
+                const targetUrl = e.currentTarget.getAttribute('data-target');
+                localStorage.setItem('tt_active_project', targetId);
+                window.location.href = `/v5${targetUrl}`;
+            });
+        });
+    }
+
+    renderEtherscan(state) {
+        const tbody = document.getElementById('scanTableBody');
+        if(!tbody) return;
+
+        const searchQ = document.getElementById('scanSearch')?.value.toLowerCase() || '';
+        const projFilt = document.getElementById('scanProjectFilter')?.value || 'all';
+
+        let globalLedger = [];
+        state.projects.forEach(p => {
+            if(projFilt === 'all' || projFilt === p.id) {
+                (p.ledger || []).forEach(l => {
+                    globalLedger.push({ ...l, projectName: p.nombre });
+                });
+            }
+        });
+
+        globalLedger.sort((a, b) => b.timestamp - a.timestamp);
+
+        if (searchQ) {
+            globalLedger = globalLedger.filter(l => {
+                const safeHash = l.hash || l.id || '';
+                const safeUserId = l.userId || '';
+                const safeDesc = l.description || '';
+                return safeHash.toLowerCase().includes(searchQ) || 
+                       safeUserId.toLowerCase().includes(searchQ) || 
+                       safeDesc.toLowerCase().includes(searchQ);
+            });
+        }
+
+        if (globalLedger.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 3rem; color:#666; font-size:1rem;">La red está inactiva. No hay bloques minados.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = globalLedger.slice(0, 100).map(entry => {
+            const date = new Date(entry.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
+            const user = state.globalUsers.find(u => u.id === entry.userId) || { name: entry.userId };
+            
+            const rawHash = entry.hash || entry.id || 'LEGACY_BLOCK';
+            const hashShort = rawHash.length > 10 ? rawHash.substring(0,10) : rawHash;
+            
+            const slicesFmt = `+${Math.round(entry.valorCongelado || 0).toLocaleString()}`;
+            
+            return `
+                <tr>
+                    <td><span class="hash-badge" title="${rawHash}">${hashShort}...</span></td>
+                    <td style="color:var(--accent-blue); font-weight:bold;">${entry.projectName}</td>
+                    <td style="color:#888;">${date}</td>
+                    <td style="font-weight:bold; color:white;">${user.name}</td>
+                    <td style="color:#ccc;">${entry.description || ''}</td>
+                    <td style="text-align:right; font-weight:900; color:var(--accent-green); font-family:var(--font-mono); font-size:1rem;">${slicesFmt}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // --- LANDING SCRIPTS ---
+    initLandingScripts() {
+        if (!document.getElementById('gsi-script')) {
+            const script = document.createElement('script');
+            script.id = 'gsi-script';
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            document.head.appendChild(script);
+            script.onload = () => this.initGoogleAuth();
+        } else {
+            this.initGoogleAuth();
+        }
+
+        const btnWallet = document.getElementById('btnConnectWallet');
+        if (btnWallet) {
+            btnWallet.addEventListener('click', () => {
+                const address = prompt("Fase Beta: Simulador de Conexión Ethers.js\nIntroduce una Wallet Address (Ej: 0x123...):", "0xabc123...");
+                if (address) {
+                    this.processLoginOrOnboarding({ wallet: address, name: "Crypto User" });
+                }
+            });
+        }
+    }
+
+    initGoogleAuth() {
+        const GOOGLE_CLIENT_ID = "778991708293-c4f7s4l4339ooldpun0eitfdb12gjfdn.apps.googleusercontent.com";
+        if (window.google && window.google.accounts) {
+            try {
+                window.google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: this.handleGoogleCredentialResponse.bind(this)
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById("googleButtonContainer"),
+                    { theme: "outline", size: "large", shape: "rectangular", width: 350 }
+                );
+            } catch (e) {
+                console.warn("GSI Error:", e);
+                document.getElementById("googleButtonContainer").innerHTML = 
+                    `<button class="btn-web3" onclick="alert('Google Auth requiere HTTPS / Dominio válido.')">⚠️ Forzar Login Dummy</button>`;
+            }
+        }
+    }
+
+    async handleGoogleCredentialResponse(response) {
+        document.getElementById('authStatus').style.display = 'block';
+        document.getElementById('googleButtonContainer').style.display = 'none';
+        document.getElementById('btnConnectWallet').style.display = 'none';
+
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        const decodedToken = JSON.parse(jsonPayload);
+        this.processLoginOrOnboarding({ email: decodedToken.email, name: decodedToken.name });
+    }
+
+    async processLoginOrOnboarding(credentials) {
+        const state = store.getState();
+        
+        const existingUser = state.globalUsers.find(u => 
+            (credentials.email && u.email === credentials.email) || 
+            (credentials.wallet && u.wallet === credentials.wallet) ||
+            (credentials.email && u.walletOrSocial === credentials.email)
+        );
+
+        if (existingUser) {
+            const terminal = document.getElementById('bootTerminal');
+            const logContent = document.getElementById('logContent');
+            if (terminal) terminal.style.display = 'flex';
+            
+            const lines = [
+                `> AUTHENTICATING ENTITY: [${existingUser.id}]`,
+                "> SYNCING VNA PROTOCOLS... <span style='color:var(--accent-blue)'>[OK]</span>",
+                "> LOADING SLICING PIE LEDGER... <span style='color:var(--accent-blue)'>[OK]</span>",
+                "> DEPLOYING COGNITIVE EXOSKELETON..."
+            ];
+
+            let i = 0;
+            const printLine = () => {
+                if (i < lines.length) {
+                    if (logContent) logContent.innerHTML += `<div style="margin-bottom: 5px;">${lines[i]}</div>`;
+                    i++;
+                    setTimeout(printLine, 300); 
+                } else {
+                    if (logContent) logContent.innerHTML += `<div style="margin-top:20px; color:white; font-size: 1.2rem;">ACCESS GRANTED <span class="cursor"></span></div>`;
+                    setTimeout(async () => {
+                        await store.dispatch({ type: 'LOGIN_USER', payload: { userId: existingUser.id } });
+                        window.location.reload();
+                    }, 600);
+                }
+            };
+            setTimeout(printLine, 200);
+
+        } else {
+            sessionStorage.setItem('tt_temp_onboarding_email', credentials.email || '');
+            sessionStorage.setItem('tt_temp_onboarding_wallet', credentials.wallet || '');
+            sessionStorage.setItem('tt_temp_onboarding_name', credentials.name || '');
+            setTimeout(() => window.location.href = '/v5/onboarding', 1000);
+        }
+    }
+}
