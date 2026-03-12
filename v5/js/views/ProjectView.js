@@ -71,8 +71,6 @@ export default class ProjectView {
                 /* =========================================================
                    LAYOUT ESPECÍFICO DE KANBAN (TRELLO STYLE EN PC)
                    ========================================================= */
-                .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
-                
                 .workspace-kanban { 
                     display: flex; flex-direction: column; flex: 1; 
                     padding: 2rem 3rem 0 3rem; /* Sin padding bottom en PC para que las columnas toquen el fondo */
@@ -81,9 +79,6 @@ export default class ProjectView {
                 }
                 
                 .workspace-kanban.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.05); }
-
-                /* FIX PESTAÑAS: PC Normal, Móvil Scroll */
-                .ph-tabs-container { flex-wrap: wrap !important; overflow-x: visible !important; justify-content: flex-start !important; margin-bottom: 1.5rem !important;}
 
                 /* CONTENEDOR MAESTRO KANBAN */
                 .kanban-container { 
@@ -158,15 +153,19 @@ export default class ProjectView {
                     background: rgba(0,0,0,0.3);
                 }
 
+                /* CÓDIGO SCROLLBAR OSCURO DELUXE */
                 .col-body {
                     flex: 1; overflow-y: auto; padding: 15px; 
                     display: flex; flex-direction: column; gap: 15px;
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);
                 }
 
-                /* Scrollbar estético para las columnas de PC */
-                .col-body::-webkit-scrollbar { width: 6px; }
-                .col-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-                .col-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+                /* Scrollbar estético Chrome/Safari/Edge */
+                .col-body::-webkit-scrollbar { width: 8px; }
+                .col-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+                .col-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+                .col-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
                 
                 /* Si no estamos en 'all', forzamos una columna grande */
                 .kanban-board.single-col-mode { grid-template-columns: 1fr; }
@@ -213,34 +212,20 @@ export default class ProjectView {
 
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 16px; background: rgba(0,0,0,0.3);}
 
-                /* MODAL WORK ORDER */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; overflow-y:auto;}
-                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 3rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; max-height: 90vh; overflow-y:auto; margin: 2rem auto; border-top: 4px solid var(--accent-blue);}
-                .form-group { margin-bottom: 20px; width:100%; }
-                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing:1px; }
-                .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
-                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2);}
-
-                @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
-                /* =========================================================
-                   RESPONSIVE MOBILE (BOTTOM SAFE FIX & TABS FIX)
-                   ========================================================= */
                 @media (max-width: 1024px) {
+                    /* En pantallas medianas (iPad) ocultamos la tercera columna si estamos en ALL */
                     .kanban-board { grid-template-columns: 1fr 1fr; }
                     .kanban-board > .kanban-col:nth-child(3) { display: none; }
                 }
 
                 @media (max-width: 768px) {
+                    .ph-tab-btn[data-tab="all"] { display: none !important; } /* Ocultar Tablero Completo en móvil */
+
                     .workspace-kanban { 
                         padding: 90px 1rem 120px 1rem !important; /* 120px BOTTOM SAFE */
                         overflow-y: auto !important; /* En móvil SÍ hacemos scroll de la página entera */
                         height: auto; min-height: 100vh;
                     } 
-                    
-                    /* Pestañas Deslizables en Móvil */
-                    .ph-tabs-container { flex-wrap: nowrap !important; overflow-x: auto !important; }
-                    .ph-tab-btn[data-tab="all"] { display: none !important; } /* Ocultar Tablero Completo en móvil */
 
                     .kanban-container { height: auto; display: block;}
                     
@@ -263,8 +248,6 @@ export default class ProjectView {
 
                     .task-actions { flex-direction: column; padding-top: 15px; margin-top: 10px; gap: 10px; }
                     .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; margin: 0; padding: 14px; font-size: 1rem;}
-                    
-                    .modal-content { padding: 2rem 1.5rem; width: 95%;}
                 }
             </style>
 
@@ -293,7 +276,7 @@ export default class ProjectView {
                 </main>
 
                 <div class="modal-overlay" id="createTaskModal">
-                    <div class="modal-content">
+                    <div class="modal-content" style="border-top-color:var(--accent-blue);">
                         <h2 style="color:white; margin-top:0; margin-bottom: 5px; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">Abrir el Grifo</h2>
                         <p style="color:#aaa; font-size:0.95rem; margin-bottom:2.5rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes diseñadas en el Mapa VNA.</p>
                         
