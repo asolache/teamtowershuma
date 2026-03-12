@@ -197,7 +197,7 @@ export default class ValueMapView {
                     .node-circle { width: 70px; height: 70px; border-width: 2px;} 
                     .node-level-badge { width: 30px; height: 30px; font-size: 1rem; top: -8px; left: 8px;}
                     .node-fmv { font-size: 0.85rem;}
-                    .node-title { font-size: 0.75rem;}
+                    .node-title { font-size: 0.75rem; background: rgba(0,0,0,0.7);}
                     
                     .tx-badge { font-size: 0.7rem; padding: 4px 8px;}
                     .zoom-controls { bottom: 15px; left: 15px;}
@@ -235,7 +235,14 @@ export default class ValueMapView {
 
                         <div class="map-container">
                             <div class="map-canvas" id="mapCanvasVisual">
-                                <svg id="edges-svg-visual"></svg>
+                                <svg id="edges-svg-visual">
+                                    <defs>
+                                        <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                        <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                        <marker id="arrow-sick-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#ff5252"/></marker>
+                                    </defs>
+                                    <g id="paths-group-vis"></g>
+                                </svg>
                             </div>
                             <div class="zoom-controls">
                                 <button class="btn-zoom" id="btnZoomInVis">➕</button>
@@ -256,7 +263,14 @@ export default class ValueMapView {
                             
                             <div class="map-container" style="border-color: var(--accent-blue); box-shadow: inset 0 0 100px rgba(0,176,255,0.1);">
                                 <div class="map-canvas building-flow" id="mapCanvasEdit">
-                                    <svg id="edges-svg-edit"></svg>
+                                    <svg id="edges-svg-edit">
+                                        <defs>
+                                            <marker id="arrow-tangible-edit" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                            <marker id="arrow-intangible-edit" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                            <marker id="arrow-temp-edit" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#ffab40"/></marker>
+                                        </defs>
+                                        <g id="paths-group-edit"></g>
+                                    </svg>
                                 </div>
                                 <div class="zoom-controls">
                                     <button class="btn-zoom" id="btnZoomInEdit">➕</button>
@@ -416,9 +430,9 @@ export default class ValueMapView {
         
         this.dom = {
             canvasVis: document.getElementById('mapCanvasVisual'),
-            svgVis: document.getElementById('edges-svg-visual'),
+            pathsVis: document.getElementById('paths-group-vis'), // Target for SVG paths Vis
             canvasEdit: document.getElementById('mapCanvasEdit'),
-            svgEdit: document.getElementById('edges-svg-edit'),
+            pathsEdit: document.getElementById('paths-group-edit'), // Target for SVG paths Edit
             seqList: document.getElementById('sequenceList'),
             rolesTabList: document.getElementById('rolesTabList'),
             
@@ -505,11 +519,10 @@ export default class ValueMapView {
         }
 
         // ------------------------------------------------------------------
-        // EVENTOS UNIFICADOS DEL CANVAS DE EDICIÓN (DRAG & D&D & CLICK)
+        // EVENTOS UNIFICADOS DEL CANVAS DE EDICIÓN (DRAG & CLICK)
         // ------------------------------------------------------------------
         if (isPO && this.dom.canvasEdit) {
             
-            // Undo Logic
             if(this.dom.btnUndoTx) {
                 this.dom.btnUndoTx.addEventListener('click', () => {
                     const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -528,7 +541,7 @@ export default class ValueMapView {
                 });
             }
 
-            // Mouse Down en el Canvas (Inicia Drag)
+            // Mouse Down: Prepara para Drag pero no interrumpe el evento click (no usamos stopPropagation)
             this.dom.canvasEdit.addEventListener('mousedown', (e) => {
                 if (window.innerWidth <= 768) return; 
                 const node = e.target.closest('.node-wrapper');
@@ -547,9 +560,8 @@ export default class ValueMapView {
                 if(node) this.openRoleInspector(node.dataset.id);
             });
 
-            // Movimiento del Ratón (Drag o Temp Line)
+            // Movimiento del Ratón
             window.addEventListener('mousemove', (e) => {
-                // Si estamos arrastrando un nodo
                 if (this.isDragging && this.draggedElement) {
                     this.hasMoved = true;
                     const rect = this.dom.canvasEdit.getBoundingClientRect();
@@ -561,7 +573,6 @@ export default class ValueMapView {
                     this.draggedElement.style.top = `${newY}%`;
                     this.drawEdges(); 
                 } 
-                // Si estamos trazando una línea
                 else if (this.flowFromId && this.dom.canvasEdit && window.innerWidth > 768) {
                     const originNode = this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${this.flowFromId}"]`);
                     if (!originNode) return;
@@ -587,8 +598,8 @@ export default class ValueMapView {
                     if (!this.tempVector) {
                         this.tempVector = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                         this.tempVector.setAttribute('class', 'edge-temp');
-                        this.tempVector.setAttribute('marker-end', 'url(#arrow-tangible-edit)');
-                        this.dom.svgEdit.appendChild(this.tempVector);
+                        this.tempVector.setAttribute('marker-end', 'url(#arrow-temp-edit)');
+                        if(this.dom.pathsEdit) this.dom.pathsEdit.appendChild(this.tempVector);
                     }
 
                     this.tempVector.setAttribute('x1', x1);
@@ -598,17 +609,15 @@ export default class ValueMapView {
                 }
             });
 
-            // Mouse Up (Termina Drag o Ejecuta Click)
-            window.addEventListener('mouseup', () => {
+            window.addEventListener('mouseup', (e) => {
                 if (this.isDragging && this.draggedElement) {
                     this.isDragging = false;
                     this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
                     
-                    // Si NO se movió, lo interpretamos como un CLICK normal para instanciar tuberías
+                    // Si soltamos sin moverlo, era un simple CLIC
                     if (!this.hasMoved) {
                         this.handleNodeClick(this.draggedElement.dataset.id);
                     } else {
-                        // Sincronizar posición visual al clon si se soltó
                         const cloneNode = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${this.draggedElement.dataset.id}"]`);
                         if(cloneNode) {
                             cloneNode.style.left = this.draggedElement.style.left;
@@ -637,7 +646,6 @@ export default class ValueMapView {
                 }
             });
 
-            // Guardar Tubería
             this.dom.btnAddFlow.addEventListener('click', () => {
                 const fromId = this.dom.selFrom.value;
                 const toId = this.dom.selTo.value;
@@ -690,7 +698,6 @@ export default class ValueMapView {
                 }
             });
             
-            // Acciones Lista
             this.dom.seqList.addEventListener('click', (e) => {
                 const target = e.target.closest('.btn-step');
                 if (!target) return;
@@ -726,7 +733,6 @@ export default class ValueMapView {
                 }
             });
 
-            // Nodos Builder Modals
             const btnAddNodes = document.querySelectorAll('#btnOpenAddNode, #btnOpenAddNodeRoles');
             btnAddNodes.forEach(btn => btn.addEventListener('click', () => this.dom.addNodeModal.style.display = 'flex'));
             
@@ -788,8 +794,8 @@ export default class ValueMapView {
             });
         }
 
-        // Tooltips (V10 Mapeado dual)
-        const showTooltip = (e, canvasObj) => {
+        // Tooltips 
+        const showTooltip = (e) => {
             if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
                 const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -834,11 +840,11 @@ export default class ValueMapView {
             }
         };
 
-        this.dom.canvasVis.addEventListener('mouseover', (e) => showTooltip(e, this.dom.canvasVis));
+        this.dom.canvasVis.addEventListener('mouseover', showTooltip);
         this.dom.canvasVis.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         
-        if (isPO) {
-            this.dom.canvasEdit.addEventListener('mouseover', (e) => showTooltip(e, this.dom.canvasEdit));
+        if (isPO && this.dom.canvasEdit) {
+            this.dom.canvasEdit.addEventListener('mouseover', showTooltip);
             this.dom.canvasEdit.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         }
 
@@ -865,10 +871,6 @@ export default class ValueMapView {
         if(!canvasObj) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         if (!p || !p.roles) return;
-
-        canvasObj.innerHTML = '';
-        const svgId = isEditMode ? 'edges-svg-edit' : 'edges-svg-visual';
-        canvasObj.innerHTML = `<svg id="${svgId}"></svg>`;
 
         let activeRoles = p.roles.filter(r => !r.isArchived);
         if (activeRoles.length === 0) return;
@@ -1055,14 +1057,14 @@ export default class ValueMapView {
         let markerId = isSick ? 'arrow-sick-vis' : (tx.tipo === 'tangible' ? 'arrow-tangible-vis' : 'arrow-intangible-vis');
         path.setAttribute('marker-end', `url(#${markerId})`);
         
-        const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
+        const strokeColor = isSick ? '#ff5252' : (tx.tipo === 'tangible' ? '#00e676' : '#e040fb');
         const realDist = dist; 
         
         path.style.cssText = `
             fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${realDist}; stroke-dashoffset: ${realDist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});
         `;
 
-        this.dom.svgVis.appendChild(path);
+        if(this.dom.pathsVis) this.dom.pathsVis.appendChild(path);
 
         setTimeout(() => {
             const txX = (x1_center + x2_center) / 2;
@@ -1310,37 +1312,18 @@ export default class ValueMapView {
         });
     }
 
-    // ARREGLO SVG (IDs Únicos para Visual y Edit)
-    injectSvgMarkers() {
-        const createDefs = (suffix) => {
-            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            defs.innerHTML = `
-                <marker id="arrow-tangible-${suffix}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent-green)"/></marker>
-                <marker id="arrow-intangible-${suffix}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent-purple)"/></marker>
-                <marker id="arrow-sick-${suffix}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent-red)"/></marker>
-            `;
-            return defs;
-        };
-
-        if(this.dom.svgVis) {
-            this.dom.svgVis.innerHTML = '';
-            this.dom.svgVis.appendChild(createDefs('vis'));
-        }
-        if(this.dom.svgEdit) {
-            this.dom.svgEdit.innerHTML = '';
-            this.dom.svgEdit.appendChild(createDefs('edit'));
-        }
-    }
-
     drawEdges() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        
+        if(this.dom.pathsVis) this.dom.pathsVis.innerHTML = '';
+        if(this.dom.pathsEdit) this.dom.pathsEdit.innerHTML = '';
+        
         this.dom.canvasVis.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         
         let flows = p?.vna_flows || [];
         if (flows.length === 0 && p?.transactions && p.transactions.length > 0) flows = p.transactions;
 
-        this.injectSvgMarkers();
         if (flows.length === 0) return;
 
         const pairCounts = {};
@@ -1354,13 +1337,17 @@ export default class ValueMapView {
             const edges = pairCounts[key];
             edges.forEach((edgeData, multiIdx) => {
                 const { tx, index } = edgeData;
-                if (this.dom.canvasVis.offsetWidth > 0) this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.svgVis, tx, index, edges, multiIdx, false);
-                if (this.dom.canvasEdit && this.dom.canvasEdit.offsetWidth > 0) this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.svgEdit, tx, index, edges, multiIdx, true);
+                if (this.dom.canvasVis.offsetWidth > 0 && this.dom.pathsVis) {
+                    this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.pathsVis, tx, index, edges, multiIdx, false);
+                }
+                if (this.dom.canvasEdit && this.dom.canvasEdit.offsetWidth > 0 && this.dom.pathsEdit) {
+                    this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.pathsEdit, tx, index, edges, multiIdx, true);
+                }
             });
         });
     }
 
-    drawSingleEdgeForCanvas(canvas, svg, tx, index, edgesGroup, multiIdx, isEditCanvas) {
+    drawSingleEdgeForCanvas(canvas, pathsGroup, tx, index, edgesGroup, multiIdx, isEditCanvas) {
         const dom1 = canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
@@ -1388,15 +1375,14 @@ export default class ValueMapView {
         const ny = dx / dist;
         let offset = 0;
         
-        // ALGORITMO ANTI-SUPERPOSICIÓN MEJORADO
+        // ALGORITMO ANTI-SUPERPOSICIÓN MEJORADO (60px de curva)
         if (edgesGroup.length > 1) {
-            const step = 60; // Mayor separación
+            const step = 60; 
             if (multiIdx % 2 !== 0) {
                 offset = Math.ceil(multiIdx / 2) * step;
             } else {
                 offset = -(Math.ceil(multiIdx / 2) * step);
             }
-            // Invertir si la dirección del flujo es inversa al key
             if (tx.from > tx.to) offset = -offset;
         }
 
@@ -1413,13 +1399,16 @@ export default class ValueMapView {
         const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
         path.setAttribute('class', `edge-line ${lineClass}`);
         
+        // CSS Hex fallback para las flechas si las variables CSS fallan
+        const strokeHex = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+        path.style.stroke = strokeHex;
+        
         if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
             path.style.opacity = '0.2';
         }
         
-        svg.appendChild(path);
+        pathsGroup.appendChild(path);
 
-        // Posición exacta matemática de la placa en la curva Bézier Cuadrática
         const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
         const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
@@ -1427,11 +1416,10 @@ export default class ValueMapView {
         badge.className = 'tx-badge';
         if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) badge.classList.add('ghost');
         
-        // Usamos pixels absolutos calculados, no % para evitar desvíos en redimensionado
         badge.style.left = `${txX}px`;
         badge.style.top = `${txY}px`;
         
-        badge.style.backgroundColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+        badge.style.backgroundColor = strokeHex;
         badge.innerText = `[${index + 1}]`;
         badge.setAttribute('data-idx', index);
         
