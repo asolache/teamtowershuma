@@ -67,12 +67,6 @@ export default class HomeView {
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
-                
-                .tab-content { display: none; animation: fadeIn 0.4s ease-out; padding-bottom: 3rem; }
-                .tab-content.active { display: block; }
-
                 /* PANELES LUXURY */
                 .panel { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); backdrop-filter: blur(10px);}
                 .panel h2 { color: white; font-size: 1.3rem; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-weight: 800; letter-spacing: -0.5px;}
@@ -85,25 +79,18 @@ export default class HomeView {
                 .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; z-index: 2; position: relative;}
 
                 /* =========================================================
-                   FILTROS, BUSCADOR Y BOTÓN CREAR
+                   FILTROS Y BUSCADOR (Integrado con master.css)
                    ========================================================= */
                 .toolbar-lux { display: flex; gap: 15px; margin-bottom: 2.5rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; justify-content: space-between; flex-wrap: wrap; backdrop-filter: blur(5px);}
                 .filter-group { display: flex; gap: 12px; flex: 1; flex-wrap: wrap; align-items: center; }
                 
-                .lux-input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 12px 18px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
-                .lux-input:focus, .lux-input:hover { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.1); }
                 .filter-search { flex: 2; min-width: 250px; }
-                .filter-select { flex: 1; min-width: 180px; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23AAAAAA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 10px auto;}
-                optgroup { font-weight: bold; color: var(--accent-blue); background: #111; }
-
-                .btn-create-lux { 
-                    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); 
-                    color: white; border: none; padding: 12px 24px; border-radius: 12px; 
-                    font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; 
-                    display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 20px rgba(0, 176, 255, 0.2);
-                    white-space: nowrap;
+                .filter-select { 
+                    flex: 1; min-width: 180px; appearance: none; -webkit-appearance: none;
+                    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23AAAAAA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
+                    background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 10px auto;
                 }
-                .btn-create-lux:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
+                optgroup { font-weight: bold; color: var(--accent-blue); background: #111; }
 
                 /* =========================================================
                    GRID PROYECTOS (LUXURY CARDS)
@@ -161,26 +148,21 @@ export default class HomeView {
 
                 /* ETHERSCAN LOCAL */
                 .etherscan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px;}
-                .ledger-table-wrapper { overflow-x: auto; background: #08080a; border: 1px solid #1a1a24; border-radius: var(--border-radius-lg); padding: 1.5rem;}
+                .ledger-table-wrapper { overflow-x: auto; background: #08080a; border: 1px solid #1a1a24; border-radius: var(--border-radius-lg); padding: 1.5rem; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);}
                 .ledger-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; font-family: var(--font-mono); font-size: 0.9rem;}
                 .ledger-table th { padding: 1rem; color: var(--accent-blue); border-bottom: 1px solid #222; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem;}
                 .ledger-table td { padding: 1.2rem 1rem; border-bottom: 1px dashed #1a1a24; color: #ddd; }
                 .ledger-table tr:hover td { background: rgba(255,255,255,0.02); }
                 .hash-badge { color: var(--accent-purple); padding: 4px 8px; border-radius: 6px; background: rgba(224,64,251,0.1); border: 1px solid rgba(224,64,251,0.2); font-weight: bold;}
 
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
-                    .workspace { padding: 80px 1rem 90px 1rem; } 
                     .panel { padding: 1.5rem; }
                     .stats-grid { grid-template-columns: 1fr 1fr; }
                     .stat-value { font-size: 2rem; }
                     
                     .toolbar-lux { flex-direction: column; align-items: stretch; padding: 15px; border-radius: 12px;}
                     .filter-group { flex-direction: column; gap: 10px;}
-                    .lux-input { width: 100%; }
-                    .btn-create-lux { width: 100%; justify-content: center; padding: 14px;}
                     
                     .projects-grid { display: flex; flex-direction: column; gap: 15px; }
                     .project-card { padding: 1.5rem; border-radius: 16px; }
@@ -204,11 +186,11 @@ export default class HomeView {
                         
                         <div class="toolbar-lux" id="filterBar">
                             <div class="filter-group">
-                                <input type="text" id="filterSearch" class="lux-input filter-search" placeholder="🔍 Buscar red por nombre...">
-                                <select id="filterSector" class="lux-input filter-select">
+                                <input type="text" id="filterSearch" class="form-control filter-search" placeholder="🔍 Buscar red por nombre...">
+                                <select id="filterSector" class="form-control filter-select">
                                     ${filterSectorOptions}
                                 </select>
-                                <select id="filterArch" class="lux-input filter-select">
+                                <select id="filterArch" class="form-control filter-select">
                                     <option value="all">🏛️ Todos los Arquetipos</option>
                                     <option value="startup">🚀 Startup</option>
                                     <option value="dao">🤖 IA-DAO</option>
@@ -217,7 +199,7 @@ export default class HomeView {
                                 </select>
                             </div>
                             ${isEcosystemOwner ? `
-                                <button class="btn-create-lux" id="btnCreateNewNet" title="Abre el Creador de Redes y IA">
+                                <button class="btn-primary" id="btnCreateNewNet" title="Abre el Creador de Redes y IA">
                                     <span>➕</span> Instanciar Red
                                 </button>
                             ` : ''}
@@ -244,7 +226,7 @@ export default class HomeView {
                             <div class="etherscan-header">
                                 <h2 style="color:white; margin:0; border:none;">🔎 Explorador de Bloques</h2>
                                 <div class="filter-group" style="flex:0; min-width:300px;">
-                                    <input type="text" id="scanSearch" class="lux-input" placeholder="Buscar Hash o Alias...">
+                                    <input type="text" id="scanSearch" class="form-control" placeholder="Buscar Hash o Alias...">
                                 </div>
                             </div>
                             <div class="ledger-table-wrapper">
@@ -269,7 +251,7 @@ export default class HomeView {
                         <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; text-align:center;">
                             <div style="font-size: 4rem; margin-bottom: 1.5rem;">🕸️</div>
                             <h2 style="border:none; font-size: 2rem;">Topología Macro-Red</h2>
-                            <p style="max-width: 600px; margin:0 auto; color: #888; font-size: 1.1rem;">En la V11, este lienzo conectará los Ecosistemas mediante el protocolo <code>macroFlows</code>.</p>
+                            <p style="max-width: 600px; margin:0 auto; color: #888; font-size: 1.1rem;">En la V12, este lienzo conectará los Ecosistemas mediante el protocolo <code>macroFlows</code> P2P.</p>
                         </div>
                     </div>
 
@@ -279,29 +261,23 @@ export default class HomeView {
         `;
     }
 
-    // --- LANDING PAGE MANTENIDA IGUAL ---
-    getLandingHtml() { return `...`; } // Omitido por brevedad, no hay cambios aquí
+    getLandingHtml() { return `...`; } // Omitido por brevedad
 
     executeViewScript() {
         const state = store.getState();
         if (!state.session.activeUserId || state.session.activeUserId === 'ecosystem-admin' || state.session.role === 'guest') {
-            return; // Manejo en initLandingScripts si la cargasemos entera
+            return; 
         }
 
         Sidebar.initListeners();
         PageHeader.execute();
 
-        const tabBtns = document.querySelectorAll('.ph-tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                tabContents.forEach(content => content.classList.remove('active'));
-                const targetContent = document.getElementById(`view-${btn.dataset.tab}`);
-                if (targetContent) targetContent.classList.add('active');
-            });
+        // Lógica de Tabs Universal con Eventos DRY
+        window.addEventListener('ph-tab-changed', (e) => {
+            if (e.detail && e.detail.tabId) {
+                this.currentTab = e.detail.tabId;
+                // Opcional: redibujar algo si fuera necesario
+            }
         });
 
         this.allProjects = state.projects || [];
@@ -334,7 +310,6 @@ export default class HomeView {
 
             const filtered = this.allProjects.filter(p => {
                 const matchName = p.nombre.toLowerCase().includes(term);
-                // Si el sector es custom_algo, lo comparamos limpio
                 const rawSector = selectedSector.replace('custom_', '').replace('native_', '');
                 const matchSector = selectedSector === 'all' || p.sector === rawSector || p.sector === selectedSector;
                 const matchArch = selectedArch === 'all' || p.archetype === selectedArch;
