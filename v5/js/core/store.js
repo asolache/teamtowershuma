@@ -1,5 +1,5 @@
 // ==========================================================================
-// KERNEL v8.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v10.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad, Capital e Identidad Fractal
 // ==========================================================================
 
@@ -19,7 +19,8 @@ const initialState = {
         theme: 'dark',
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
-        allowUserCreation: false 
+        allowUserCreation: false,
+        archetype: 'startup' // V9.9
     },
     ontology: { sectores: {} },
     globalUsers: [
@@ -67,7 +68,9 @@ async function asyncReducer(state, action) {
         
         // --- SISTEMA Y CONFIGURACIÓN ---
         case 'IMPORT_STATE': return { ...newState, ...action.payload };
-        case 'UPDATE_GLOBAL_CONFIG': return { ...newState, config: { ...newState.config, ...action.payload } };
+        case 'UPDATE_GLOBAL_CONFIG': 
+        case 'UPDATE_CONFIG': // V9.9
+            return { ...newState, config: { ...newState.config, ...action.payload } };
 
         // --- ONTOLOGÍA DINÁMICA ---
         case 'ADD_ONTOLOGY_SECTOR':
@@ -81,7 +84,6 @@ async function asyncReducer(state, action) {
         // --- V8.0: IDENTIDAD FRACTAL (PERMAWEB BRIDGE) ---
         case 'REGISTER_GLOBAL_USER': {
             const newId = action.payload.id.toLowerCase();
-            // Regla de Seguridad: Solo crea si no existe previamente
             const existsGlobal = newState.globalUsers.find(u => u.id === newId);
             
             if (!existsGlobal) {
@@ -91,7 +93,7 @@ async function asyncReducer(state, action) {
                     email: action.payload.email || '',
                     wallet: action.payload.wallet || '',
                     social: action.payload.social || '',
-                    walletOrSocial: action.payload.email || action.payload.wallet || '', // Legacy
+                    walletOrSocial: action.payload.email || action.payload.wallet || '', 
                     globalRole: action.payload.globalRole || 'network-user',
                     profile: action.payload.profile || { lastUpdated: Date.now() }
                 });
@@ -125,7 +127,7 @@ async function asyncReducer(state, action) {
                     social: action.payload.social || '',
                     walletOrSocial: action.payload.walletOrSocial || action.payload.email || '', 
                     globalRole: action.payload.globalRole || 'network-user',
-                    profile: { lastUpdated: Date.now() }
+                    profile: action.payload.profile || { lastUpdated: Date.now() }
                 });
             }
             
@@ -151,6 +153,7 @@ async function asyncReducer(state, action) {
             return newState; 
         }
 
+        case 'CREATE_PROJECT': // Arquitectura V10 Native
         case 'ADD_PROJECT': {
             const canCreate = newState.session.role === 'ecosystem-owner' || newState.config.allowUserCreation || action.payload.bypassSecurity;
             if (!canCreate && !action.payload.ownerId) return newState; 
@@ -161,7 +164,7 @@ async function asyncReducer(state, action) {
 
             if (sectorDataObj) {
                 if (!sectorDataObj.roles) {
-                    sectorRolesArray = Object.keys(sectorDataObj).map(levelId => {
+                    sectorRolesArray = Object.keys(sectorDataObj).filter(k => k !== '_meta').map(levelId => {
                         const r = sectorDataObj[levelId];
                         return { levelId, name: r.name || levelId, multiplier: r.multiplier || 1.0, fmv: r.fmv || 50, ai_prompt: r.ai_prompt || '', standard_deliverables: r.standard_deliverables || [] };
                     });
@@ -184,7 +187,7 @@ async function asyncReducer(state, action) {
             }));
 
             if (baseRoles.length === 0) {
-                baseRoles = action.payload.customRoles || [
+                baseRoles = action.payload.customRoles || action.payload.roles || [
                     { id: 'r1', levelId: '@anxaneta', name: 'Visionario', multiplier: 3.0, fmv: 60, standard_deliverables: [], history: [] },
                     { id: 'r2', levelId: '@aixecador', name: 'Orquestador', multiplier: 2.0, fmv: 50, standard_deliverables: [], history: [] },
                     { id: 'r3', levelId: '@dosos', name: 'Auditor', multiplier: 1.5, fmv: 45, standard_deliverables: [], history: [] },
@@ -199,11 +202,21 @@ async function asyncReducer(state, action) {
 
             const initHash = await generateSHA256(`GENESIS_${projId}_${Date.now()}`);
 
+            // V10: Inyección de estructuras separadas
             newState.projects.push({
                 id: projId, nombre: action.payload.nombre || 'Nuevo Proyecto', sector: pSector, tipo: action.payload.tipo || 'project', 
                 archetype: arquetipo, ownerId: ownerId, prompt: action.payload.prompt || '', config: { tokenomics: 'startup', archetype: arquetipo },
                 isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : false, 
-                roles: baseRoles, usuarios: [{ id: ownerId }], asignaciones: [], transactions: [], ledger: [], alerts: [], invitations: [], genesisHash: initHash 
+                roles: baseRoles, 
+                usuarios: action.payload.usuarios || [{ id: ownerId }], 
+                asignaciones: [], 
+                transactions: action.payload.transactions || [], // V9 Legacy
+                vna_flows: action.payload.vna_flows || [],       // V10 Tuberías
+                work_orders: action.payload.work_orders || [],   // V10 Instancias
+                ledger: action.payload.ledger || [], 
+                alerts: [], 
+                invitations: [], 
+                genesisHash: initHash 
             });
             return newState;
         }
@@ -316,7 +329,143 @@ async function asyncReducer(state, action) {
             }
             return newState;
 
-        // --- SISTEMA PULL, PUSH Y TRIPLE ENTRADA ---
+        // =========================================================
+        // ARQUITECTURA V10: SEPARACIÓN DE MODELO E INSTANCIA
+        // =========================================================
+
+        // --- 1. LAS TUBERÍAS (VNA FLOWS) ---
+        case 'ADD_FLOW':
+            const pFlowAdd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowAdd) {
+                if (!pFlowAdd.vna_flows) pFlowAdd.vna_flows = [];
+                pFlowAdd.vna_flows.push({
+                    ...action.payload.flow,
+                    id: action.payload.flow.id || ('flow_' + Date.now())
+                });
+            }
+            break;
+
+        case 'UPDATE_FLOW':
+            const pFlowUpd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowUpd && pFlowUpd.vna_flows) {
+                const fIdx = pFlowUpd.vna_flows.findIndex(f => f.id === action.payload.flowId);
+                if (fIdx > -1) {
+                    pFlowUpd.vna_flows[fIdx] = { ...pFlowUpd.vna_flows[fIdx], ...action.payload.updates };
+                }
+            }
+            break;
+
+        case 'DELETE_FLOW':
+            const pFlowDel = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowDel && pFlowDel.vna_flows) {
+                pFlowDel.vna_flows = pFlowDel.vna_flows.filter(f => f.id !== action.payload.flowId);
+            }
+            break;
+
+        // --- 2. EL AGUA (WORK ORDERS EN KANBAN) ---
+        case 'SPAWN_WORK_ORDER':
+            const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoAdd) {
+                if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
+                pWoAdd.work_orders.push({
+                    ...action.payload.workOrder,
+                    timestamp: Date.now()
+                });
+            }
+            break;
+
+        case 'UPDATE_WORK_ORDER':
+            const pWoUp = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoUp && pWoUp.work_orders) {
+                const woIdx = pWoUp.work_orders.findIndex(t => t.hash === action.payload.woHash);
+                if (woIdx > -1) {
+                    pWoUp.work_orders[woIdx] = { ...pWoUp.work_orders[woIdx], ...action.payload.updates };
+                }
+            }
+            break;
+
+        case 'DELETE_WORK_ORDER':
+            const pWoDel = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoDel && pWoDel.work_orders) {
+                pWoDel.work_orders = pWoDel.work_orders.filter(t => t.hash !== action.payload.woHash);
+            }
+            break;
+
+        case 'REQUEST_WORK_ORDER':
+        case 'PING_WORK_ORDER':
+            const pWoPing = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoPing) {
+                const wo = pWoPing.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = action.type === 'REQUEST_WORK_ORDER' ? 'requested' : 'pinged';
+                    wo.assigneeId = action.payload.userId;
+                }
+            }
+            break;
+
+        case 'REPORT_WORK_ORDER':
+            const pWoRep = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoRep) {
+                const wo = pWoRep.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'reported';
+                    wo.realHours = action.payload.realHours;
+                    wo.proofLink = action.payload.proofLink;
+                    wo.comentario = action.payload.comentario;
+                }
+            }
+            break;
+
+        case 'APPROVE_WORK_ORDER':
+            const pWoApp = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoApp) {
+                const wo = pWoApp.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'consolidated';
+                    if (!pWoApp.ledger) pWoApp.ledger = [];
+                    
+                    const flow = pWoApp.vna_flows.find(f => f.id === wo.flowId);
+                    let multiplier = 1;
+                    let fmv = 50;
+                    let roleId = 'Unknown';
+                    let deliverableName = 'Work Order Instanciada';
+
+                    if (flow) {
+                        roleId = flow.to;
+                        deliverableName = flow.template || flow.entregable || 'Entregable';
+                        const role = pWoApp.roles.find(r => r.id === roleId);
+                        if (role) {
+                            multiplier = role.multiplier || 1;
+                            fmv = role.fmv || 50;
+                        }
+                    }
+
+                    const tStore = new Store();
+                    const archFactor = tStore.getArchetypeFactor(pWoApp.archetype);
+
+                    const slices = (wo.realHours * fmv) * multiplier * archFactor;
+                    wo.valorCongelado = slices;
+
+                    pWoApp.ledger.push({
+                        id: 'blk_' + Date.now(),
+                        hash: wo.hash,
+                        userId: wo.assigneeId,
+                        roleId: roleId,
+                        horas: wo.realHours,
+                        multiplier: multiplier,
+                        fmv: fmv,
+                        valorCongelado: slices,
+                        timestamp: Date.now(),
+                        description: deliverableName
+                    });
+                }
+            }
+            break;
+
+
+        // =========================================================
+        // MANTENIMIENTO LEGACY V9 (Para que TDD y Kanban V9 no crasheen)
+        // =========================================================
         case 'ADD_TRANSACTION':
             const pAddTx = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAddTx) {
@@ -328,31 +477,35 @@ async function asyncReducer(state, action) {
                 });
             }
             return newState;
-
+        case 'UPDATE_TRANSACTION':
+            const pTxUp = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pTxUp && pTxUp.transactions) {
+                const txIdx = pTxUp.transactions.findIndex(t => t.hash === action.payload.txHash);
+                if (txIdx > -1) pTxUp.transactions[txIdx] = { ...pTxUp.transactions[txIdx], ...action.payload.updates };
+            }
+            return newState;
+        case 'DELETE_TRANSACTION':
+            const pTxDel = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pTxDel && pTxDel.transactions) pTxDel.transactions = pTxDel.transactions.filter(t => t.hash !== action.payload.txHash);
+            return newState;
         case 'REQUEST_TRANSACTION':
             const pReqTx = newState.projects.find(p => p.id === action.payload.projectId);
             if (pReqTx) {
                 const txReq = pReqTx.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txReq && txReq.status === 'theoretical') {
-                    txReq.status = 'requested';
-                    txReq.assigneeId = action.payload.userId; 
-                    txReq.requestTimestamp = Date.now();
+                    txReq.status = 'requested'; txReq.assigneeId = action.payload.userId; txReq.requestTimestamp = Date.now();
                 }
             }
             return newState;
-
         case 'PING_TRANSACTION':
             const pPing = newState.projects.find(p => p.id === action.payload.projectId);
             if (pPing) {
                 const txPing = pPing.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txPing && (txPing.status === 'theoretical' || txPing.status === 'requested')) {
-                    txPing.status = 'pinged';
-                    txPing.assigneeId = action.payload.userId; 
-                    txPing.pingTimestamp = Date.now();
+                    txPing.status = 'pinged'; txPing.assigneeId = action.payload.userId; txPing.pingTimestamp = Date.now();
                 }
             }
             return newState;
-
         case 'REPORT_TRANSACTION':
             const pRep = newState.projects.find(p => p.id === action.payload.projectId);
             if (pRep) {
@@ -363,14 +516,12 @@ async function asyncReducer(state, action) {
                 }
             }
             return newState;
-
         case 'APPROVE_TRANSACTION':
             const pAppr = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAppr) {
                 const txAppr = pAppr.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txAppr && txAppr.status === 'reported') {
                     txAppr.status = 'consolidated'; txAppr.approveTimestamp = Date.now(); txAppr.auditorId = newState.session.activeUserId;
-
                     const tempStore = new Store();
                     const workTimestamp = txAppr.reportTimestamp || txAppr.pingTimestamp || Date.now();
                     const roleEconomics = tempStore.getRoleEconomicsAtTime(pAppr, txAppr.from, workTimestamp);
@@ -412,15 +563,10 @@ async function asyncReducer(state, action) {
 
                 pCap.ledger.push({
                     id: 'ledg_' + Math.random().toString(36).substr(2, 9),
-                    hash: realCryptoHash,
-                    prevHash: lastLedgerHash,
-                    previousHash: lastLedgerHash,
-                    userId: action.payload.userId,
-                    roleId: 'CAPITAL_ASSET',
+                    hash: realCryptoHash, prevHash: lastLedgerHash, previousHash: lastLedgerHash,
+                    userId: action.payload.userId, roleId: 'CAPITAL_ASSET',
                     description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
-                    horas: 0,
-                    valorCongelado: valorGenerado,
-                    timestamp: Date.now()
+                    horas: 0, valorCongelado: valorGenerado, timestamp: Date.now()
                 });
             }
             return newState;
@@ -442,7 +588,8 @@ class Store {
         if (this.state.projects) {
             this.state.projects = this.state.projects.map(p => ({
                 ...p, alerts: p.alerts || [], ownerId: p.ownerId || 'usr_alvaro_001', archetype: p.archetype || 'startup', genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id),
-                isPrivate: p.isPrivate !== undefined ? p.isPrivate : false, invitations: p.invitations || []
+                isPrivate: p.isPrivate !== undefined ? p.isPrivate : false, invitations: p.invitations || [],
+                vna_flows: p.vna_flows || [], work_orders: p.work_orders || [] // Inicializador seguro V10
             }));
         }
         if (!this.state.macroFlows) this.state.macroFlows = [];
@@ -451,7 +598,6 @@ class Store {
 
     getState() { return this.state; }
     
-    // V8.0: Método oficial para persistir el estado manual o forzosamente si es requerido
     saveState() {
         localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
         this.listeners.forEach(l => l());
@@ -497,8 +643,13 @@ class Store {
 
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
-        if (!p || !p.transactions || p.transactions.length === 0) return 100;
-        const atascos = p.transactions.filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        if (!p) return 100;
+        
+        // Evaluamos atascos tanto en V9 (transactions) como en V10 (work_orders)
+        const oldStuck = (p.transactions || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        const newStuck = (p.work_orders || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        const atascos = oldStuck + newStuck;
+        
         return Math.round(Math.max(0, 100 - (atascos * 5)));
     }
 
