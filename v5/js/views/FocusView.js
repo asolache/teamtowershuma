@@ -47,20 +47,21 @@ export default class FocusView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 
-                /* Workspace fluído: Permite scroll y evita superposiciones */
+                /* Workspace fluído y alineado con el resto de la app (padding: 2rem 3rem) */
                 .workspace-focus { 
                     flex: 1; display: flex; flex-direction: column; position: relative; 
                     background: radial-gradient(circle at center, #111116 0%, #050505 100%); 
                     overflow-y: auto; scroll-behavior: smooth;
+                    padding: 2rem 3rem; box-sizing: border-box;
                 }
                 
                 /* =========================================================
-                   CONTENEDOR CENTRAL DE TRABAJO
+                   CONTENEDOR CENTRAL DE TRABAJO (Compactado)
                    ========================================================= */
                 .focus-container { 
                     flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; 
-                    justify-content: flex-start; padding: 2rem; padding-bottom: 6rem;
-                    position: relative; z-index: 10;
+                    justify-content: flex-start; padding: 0; padding-bottom: 6rem;
+                    position: relative; z-index: 10; margin-top: -1rem; /* Reduce el gap con el Header */
                 }
 
                 .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 4rem; animation: fadeIn 0.5s ease-out;}
@@ -69,31 +70,31 @@ export default class FocusView {
                 
                 /* EL MONOLITO DE CRISTAL (Panel Principal) */
                 .task-glass-panel {
-                    width: 100%; max-width: 650px; margin-top: 1rem;
+                    width: 100%; max-width: 680px; margin-top: 0;
                     background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
                     border: 1px solid rgba(255,255,255,0.08); border-radius: 24px;
-                    padding: 3rem 2rem; display: none; flex-direction: column; align-items: center;
+                    padding: 2.5rem; display: none; flex-direction: column; align-items: center;
                     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
                     box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
                     animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-                    position: relative; z-index: 50; /* Z-INDEX ALTO PARA EVITAR BLOQUEOS */
+                    position: relative; z-index: 50; 
                 }
                 
                 /* SELECTOR OMNIPRESENTE LUXURY */
-                .task-selector-box { width: 100%; margin-bottom: 2rem; position: relative; z-index: 9999; }
-                .task-selector-box label { display:block; font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:900; text-align:center;}
+                .task-selector-box { width: 100%; margin-bottom: 2.5rem; position: relative; z-index: 9999; }
+                .task-selector-box label { display:block; font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:900; text-align:center;}
                 .omni-selector { 
-                    width: 100%; background: rgba(0, 0, 0, 0.8); border: 2px solid var(--accent-purple); color: white; 
-                    padding: 16px 45px 16px 20px; border-radius: 16px; font-family: var(--font-main); font-size: 1.05rem; 
+                    width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(224, 64, 251, 0.3); color: white; 
+                    padding: 16px 45px 16px 20px; border-radius: 12px; font-family: var(--font-main); font-size: 1.05rem; 
                     outline: none; cursor: pointer; appearance: none; font-weight: 800;
                     text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.3s;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; z-index: 9999;
+                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 9999;
                 }
-                .omni-selector:focus, .omni-selector:hover { border-color: var(--accent-blue); box-shadow: 0 15px 40px rgba(0,176,255,0.2); }
+                .omni-selector:focus, .omni-selector:hover { border-color: var(--accent-blue); box-shadow: inset 0 0 10px rgba(0, 176, 255, 0.1), 0 10px 20px rgba(0,176,255,0.3); background: rgba(0,0,0,0.8); }
                 .omni-selector option { background: #111; color: white; padding: 10px; font-family: var(--font-mono); font-size:0.95rem;}
                 .omni-selector optgroup { font-family: var(--font-main); font-weight:900; color: var(--accent-blue); background: #000; font-style: normal; padding:8px 0;}
                 .task-selector-box::after {
-                    content: '▼'; position: absolute; right: 20px; bottom: 20px;
+                    content: '▼'; position: absolute; right: 20px; bottom: 18px;
                     color: var(--accent-purple); font-size: 0.8rem; pointer-events: none; z-index: 10000;
                 }
 
@@ -134,11 +135,11 @@ export default class FocusView {
                 .pomodoro-icon.ticking { animation: tickTock 1s infinite alternate ease-in-out; filter: drop-shadow(0 0 30px rgba(255, 82, 82, 1)); }
                 
                 .time-display { font-size: 4.5rem; font-weight: 900; font-family: var(--font-mono); color: white; letter-spacing: -3px; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.8);}
-                .time-display span { font-size: 2.5rem; color: #555; vertical-align: baseline; padding: 0 2px;}
-                .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.9rem; font-weight: 900; margin-top: 10px; text-transform: uppercase; letter-spacing: 4px; opacity:0.9;}
+                .time-display span { font-size: 2.5rem; color: #444; vertical-align: baseline; padding: 0 4px;}
+                .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 900; margin-top: 10px; text-transform: uppercase; letter-spacing: 4px; opacity:0.9;}
 
                 /* CONTROLS */
-                .controls { display: flex; gap: 2rem; z-index: 10; align-items: center; justify-content: center;}
+                .controls { display: flex; gap: 2rem; z-index: 10; align-items: center; justify-content: center; margin-top: 1rem;}
                 .btn-circle { width: 80px; height: 80px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2rem; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
                 .btn-play { background: white; color: black; }
                 .btn-play:hover { transform: scale(1.1); background: #f0f0f0; box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);}
@@ -162,14 +163,14 @@ export default class FocusView {
                 
                 @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5;} 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1;} }
                 @keyframes tickTock { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.15) rotate(5deg); } }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
-                    .workspace-focus { padding-top: 80px; } /* Evitar pisar el header fijo */
-                    .focus-container { padding: 1rem; justify-content: flex-start; }
-                    .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);}
+                    .workspace-focus { padding: 90px 1.2rem 3rem 1.2rem; } 
+                    .focus-container { padding: 0; }
+                    .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px;}
                     .empty-state h2 { font-size: 1.8rem; }
                     
                     .task-selector-box { margin-bottom: 2rem; }
@@ -190,9 +191,7 @@ export default class FocusView {
                 <main class="workspace-focus">
                     <div class="glow-bg" id="glowBg"></div>
                     
-                    <div style="position:relative; z-index:100; width: 100%;">
-                        ${PageHeader.getHtml(headerConfig)}
-                    </div>
+                    ${PageHeader.getHtml(headerConfig)}
 
                     <div class="focus-container">
                         
