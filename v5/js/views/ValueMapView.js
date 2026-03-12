@@ -52,13 +52,13 @@ export default class ValueMapView {
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
         const headerConfig = {
-            title: "Mapa VNA",
+            title: "Arquitectura VNA",
             subtitle: project ? project.nombre : '',
             tagline: "Estructura Base (Tuberías de Valor Permanente).",
             tabs: [
                 { id: 'visual', label: '🕸️ Red Visual', active: true },
                 { id: 'edit', label: '✏️ Editar Mapa' },
-                { id: 'roles', label: '🪑 Roles' },
+                { id: 'roles', label: '🪑 Nodos / Roles' },
                 { id: 'flow', label: '📋 Flujo Operativo' }
             ]
         };
@@ -68,152 +68,155 @@ export default class ValueMapView {
                 .app-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
                 .workspace { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth;}
                 
-                .ph-tabs-container { flex-shrink: 0 !important; }
+                .ph-tabs-container { flex-shrink: 0 !important; margin-bottom: 1rem !important;}
 
-                .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.3s ease-out; min-height: 500px; position: relative; }
+                .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; min-height: 500px; position: relative; }
                 .tab-content.active { display: flex; }
                 
                 /* CONTROLES TÁCTICOS Y TIPS */
-                .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 10px; flex-wrap: wrap;}
+                .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(5px);}
                 .sim-group { display: flex; gap: 10px; }
                 
-                .btn-sm { padding: 8px 15px; font-size: 0.85rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;}
-                .btn-sm:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-                
-                .legend-box { display: flex; gap: 15px; font-size: 0.75rem; color: #aaa; align-items: center; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 10px; width: max-content;}
-                .legend-item { display: flex; align-items: center; gap: 5px;}
-                .legend-color { width: 15px; height: 3px; }
+                .btn-sm { padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; border:none;}
+                .btn-sm-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2);}
+                .btn-sm-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
+                .btn-sm-outline { background: transparent; border: 1px solid #555; color: white;}
+                .btn-sm-outline:hover { background: rgba(255,255,255,0.05); border-color: white;}
 
-                .vna-tip { background: rgba(0, 176, 255, 0.1); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 10px 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;}
+                .legend-box { display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid #333; width: max-content;}
+                .legend-item { display: flex; align-items: center; gap: 8px; text-transform: uppercase;}
+                .legend-color { width: 18px; height: 4px; border-radius: 2px;}
 
-                /* LIENZO PRINCIPAL */
-                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background-color: rgba(0,0,0,0.2);}
+                .vna-tip { background: rgba(0, 176, 255, 0.05); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 15px 20px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:15px;}
+
+                /* =========================================================
+                   LIENZO PRINCIPAL (LUXURY GLASS)
+                   ========================================================= */
+                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8);}
                 
-                /* CAPA DE TRANSFORMACIÓN PARA ZOOM */
-                .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; transform-origin: top left; transition: transform 0.2s ease-out; }
+                .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
                 
                 #edges-svg-visual, #edges-svg-edit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
                 
-                .edge-line { fill: none; stroke-width: 2.5; opacity: 0.85; transition: stroke 0.3s; }
-                .edge-tangible { stroke: var(--accent-green); }
-                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 6, 6; animation: dashAnim 15s linear infinite; }
+                .edge-line { fill: none; stroke-width: 3; opacity: 0.7; transition: stroke 0.3s, opacity 0.3s, stroke-width 0.3s; }
+                .edge-line:hover { opacity: 1; stroke-width: 5; cursor: pointer; pointer-events: stroke;}
+                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
+                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
                 .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
-                .edge-temp { stroke: var(--accent-orange); stroke-width: 3; stroke-dasharray: 5, 5; animation: dashAnim 5s linear infinite; opacity: 0.8;}
+                .edge-temp { stroke: var(--accent-orange); stroke-width: 4; stroke-dasharray: 6, 6; animation: dashAnim 5s linear infinite; opacity: 0.9;}
 
                 /* =========================================================
-                   NUEVA ESTRUCTURA DE NODO (PREMIUM v9.5)
+                   NUEVA ESTRUCTURA DE NODO (PREMIUM V10)
                    ========================================================= */
-                .node-wrapper { position: absolute; z-index: 5; cursor: grab; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 120px; }
+                .node-wrapper { position: absolute; z-index: 5; cursor: grab; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 130px; transition: filter 0.3s;}
                 .node-wrapper:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
                 .node-wrapper.selected { z-index: 10; }
+                .node-wrapper:hover { filter: brightness(1.2); z-index: 9;}
                 
-                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 3px solid var(--glass-border); color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 80px; height: 80px; box-sizing: border-box;}
+                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.1); color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 85px; height: 85px; box-sizing: border-box;}
                 
-                .node-wrapper.selected .node-circle { border-color: var(--accent-blue) !important; box-shadow: 0 0 40px rgba(0, 176, 255, 0.7) !important; }
+                .node-wrapper.selected .node-circle { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.6), inset 0 0 20px rgba(0, 176, 255, 0.2) !important; }
                 .node-wrapper.sick-node .node-circle { border-color: var(--accent-red) !important; box-shadow: 0 0 45px rgba(255, 82, 82, 0.9) !important; animation: pulseSick 1s infinite alternate; }
-                .node-wrapper.ghost-node { opacity: 0.3; filter: grayscale(100%); z-index: 1; }
+                .node-wrapper.ghost-node { opacity: 0.4; filter: grayscale(100%); z-index: 1; }
                 .node-wrapper.ghost-node .node-circle { border-style: dashed;}
                 
-                .node-fmv { font-size: 1rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 2px;}
-                .node-label-fmv { font-size: 0.6rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+                .node-fmv { font-size: 1.1rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 2px;}
+                .node-label-fmv { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
                 
-                .node-level-badge { position: absolute; top: -10px; left: 10px; border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; background: #111; border: 2px solid; box-shadow: 0 5px 10px rgba(0,0,0,0.6); z-index: 2; box-sizing: border-box;}
+                .node-level-badge { position: absolute; top: -12px; left: 12px; border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; background: #000; border: 2px solid; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 2; box-sizing: border-box;}
                 
-                .node-title { margin-top: 8px; font-size: 0.85rem; font-weight: bold; color: white; text-align: center; text-transform: capitalize; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; padding: 0 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;}
+                .node-title { margin-top: 12px; font-size: 0.9rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.5); border-radius: 6px; backdrop-filter: blur(5px);}
 
                 #mapCanvasEdit .node-wrapper { cursor: pointer; } 
-                #mapCanvasEdit .node-wrapper:hover .node-circle { transform: scale(1.1); box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); }
-                .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 30px rgba(255, 171, 64, 0.8) !important; z-index: 20;}
+                #mapCanvasEdit .node-wrapper:hover .node-circle { transform: scale(1.15); box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); }
+                .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 40px rgba(255, 171, 64, 0.6) !important; z-index: 20;}
 
                 /* =========================================================
                    BADGES Y TOOLTIPS
                    ========================================================= */
-                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid #111; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.2s, filter 0.2s; }
-                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.2); filter: brightness(1.2); z-index: 100;}
+                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 6px 10px; border-radius: 8px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: black;}
+                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
                 .tx-badge.ghost { opacity: 0.3; }
 
-                .tx-tooltip { position: fixed; background: rgba(10, 10, 14, 0.98); border: 1px solid var(--accent-blue); color: white; padding: 15px; border-radius: 8px; font-size: 0.85rem; z-index: 9999; box-shadow: 0 15px 50px rgba(0,0,0,0.9); backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity 0.2s; min-width: 250px; max-width: 320px; line-height: 1.4; pointer-events: none;}
+                .tx-tooltip { position: fixed; background: rgba(10, 10, 14, 0.95); border: 1px solid var(--accent-blue); color: white; padding: 20px; border-radius: 12px; font-size: 0.9rem; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9); backdrop-filter: blur(15px); opacity: 0; visibility: hidden; transition: opacity 0.2s; min-width: 280px; max-width: 350px; line-height: 1.5; pointer-events: none;}
                 .tx-tooltip.visible { opacity: 1; visibility: visible; }
 
                 /* ZOOM CONTROLS */
-                .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; gap: 8px; z-index: 100;}
-                .btn-zoom { background: rgba(0,0,0,0.7); border: 1px solid #444; color: white; border-radius: 8px; width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); transition: 0.2s;}
-                .btn-zoom:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
+                .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; gap: 10px; z-index: 100;}
+                .btn-zoom { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; border-radius: 10px; width: 45px; height: 45px; font-size: 1.4rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); transition: 0.2s;}
+                .btn-zoom:hover { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
 
                 /* =========================================================
-                   PESTAÑA ROLES (LISTA DE NODOS)
+                   PESTAÑA ROLES & FLUJO (LUXURY LISTS)
                    ========================================================= */
-                .roles-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap:10px;}
-                .roles-grid-tab { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;}
-                .role-list-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: 0.2s;}
-                .role-list-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+                .roles-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap:15px;}
+                .roles-grid-tab { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;}
+                .role-list-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: transform 0.3s, box-shadow 0.3s; backdrop-filter: blur(10px);}
+                .role-list-card:hover { background: rgba(255,255,255,0.03); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
 
-                /* =========================================================
-                   PESTAÑA FLUJO OPERATIVO (LISTA KANBAN)
-                   ========================================================= */
                 .flow-container { display: flex; gap: 2rem; flex: 1; align-items: flex-start; margin-top: 10px;}
-                .sequence-panel { flex: 2; display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 10px;}
+                .sequence-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 15px;}
                 
-                .flow-step { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
-                .flow-step.simulating { transform: scale(1.02); border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.3); }
+                .flow-step { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
+                .flow-step:hover { background: rgba(255,255,255,0.03); border-color:#444;}
+                .flow-step.simulating { transform: scale(1.03); border-color: var(--accent-blue); box-shadow: 0 0 25px rgba(0, 176, 255, 0.3); background: rgba(0,176,255,0.05); z-index:10; position:relative;}
                 
-                .step-info { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
-                .step-meta { font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
-                .step-route-compact { font-size: 0.9rem; display: flex; align-items: center; flex-wrap: wrap; line-height: 1.2;}
-                .route-level { color: #888; font-family: var(--font-mono); font-size: 0.75rem; margin-right: 4px; }
-                .route-name { font-weight: bold; color: white; }
-                .route-arrow { color: #555; margin: 0 8px; }
-                .step-deliv-name { font-size: 1rem; font-weight: bold; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+                .step-info { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+                .step-meta { font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase; display: flex; align-items: center; gap: 8px; font-weight:bold;}
+                .step-route-compact { font-size: 0.95rem; display: flex; align-items: center; flex-wrap: wrap; line-height: 1.3;}
+                .route-level { color: #888; font-family: var(--font-mono); font-size: 0.8rem; margin-right: 6px; }
+                .route-name { font-weight: 800; color: white; text-transform:uppercase; letter-spacing:0.5px;}
+                .route-arrow { color: #555; margin: 0 10px; }
+                .step-deliv-name { font-size: 1.1rem; font-weight: bold; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color: #ccc;}
                 
-                .step-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-                .btn-step { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-                .btn-step:hover { background: rgba(255,255,255,0.15); color: white; border-color: var(--text-muted); }
+                .step-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+                .btn-step { background: rgba(0,0,0,0.5); border: 1px solid #333; color: var(--text-muted); border-radius: 8px; padding: 8px 15px; cursor: pointer; font-size: 0.85rem; font-weight:bold; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+                .btn-step:hover { background: rgba(255,255,255,0.1); color: white; border-color: #666; }
                 .btn-step.del:hover { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
-                .btn-step.edit { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-color: var(--accent-blue); }
+                .btn-step.edit { background: rgba(0, 176, 255, 0.05); color: var(--accent-blue); border-color: rgba(0,176,255,0.3); }
                 .btn-step.edit:hover { background: var(--accent-blue); color: black; }
 
-                /* MODALS Y FORMS */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
+                /* MODALS LUXURY */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
+                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); padding: 3rem; border-radius: 20px; width: 550px; max-width: 95%; box-shadow: 0 25px 60px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
                 
-                .form-group { margin-bottom: 15px; }
-                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
-                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
-                .form-control:focus { border-color: var(--accent-blue); }
+                .form-group { margin-bottom: 20px; }
+                .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
+                .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.1);}
 
-                @keyframes dashAnim { to { stroke-dashoffset: -100; } }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 40px rgba(255, 82, 82, 0.9); } }
+                @keyframes dashAnim { to { stroke-dashoffset: -200; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
 
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
                     .workspace { padding: 80px 1rem 90px 1rem; } 
                     
-                    .vna-controls { flex-direction: column; align-items: stretch; gap: 10px; }
+                    .vna-controls { flex-direction: column; align-items: stretch; gap: 15px; padding: 15px;}
                     .sim-group { display: flex; flex-direction: row; width: 100%; gap: 10px;}
-                    .sim-group .btn-sm { flex: 1; padding: 12px; font-size: 0.95rem;}
+                    .sim-group .btn-sm { flex: 1; padding: 14px; font-size: 1rem;}
                     
                     .vna-tip { flex-direction: column; align-items: stretch; text-align:center;}
-                    #btnOpenAddNode, #btnOpenAddNodeRoles { padding: 12px; font-size: 0.95rem; width: 100%;}
+                    #btnOpenAddNode, #btnOpenAddNodeRoles { padding: 14px; font-size: 1rem; width: 100%; justify-content:center;}
 
-                    .map-container { flex: 1; height: calc(100vh - 350px); min-height: 400px; border-radius: 12px;}
+                    .map-container { flex: 1; height: calc(100vh - 380px); min-height: 450px; border-radius: 16px;}
                     
-                    .node-wrapper { width: 90px;}
-                    .node-circle { width: 65px; height: 65px; border-width: 2px;} 
-                    .node-level-badge { width: 28px; height: 28px; font-size: 0.9rem; top: -5px; left: 5px; border-width: 1px;}
-                    .node-fmv { font-size: 0.75rem;}
-                    .node-label-fmv { font-size: 0.5rem;}
-                    .node-title { font-size: 0.7rem;}
+                    .node-wrapper { width: 100px;}
+                    .node-circle { width: 70px; height: 70px; border-width: 2px;} 
+                    .node-level-badge { width: 30px; height: 30px; font-size: 1rem; top: -8px; left: 8px;}
+                    .node-fmv { font-size: 0.85rem;}
+                    .node-title { font-size: 0.75rem; background: rgba(0,0,0,0.7);}
                     
-                    .tx-badge { font-size: 0.6rem; padding: 2px 5px;}
-                    .zoom-controls { bottom: 10px; left: 10px;}
+                    .tx-badge { font-size: 0.7rem; padding: 4px 8px;}
+                    .zoom-controls { bottom: 15px; left: 15px;}
 
-                    .flow-container { flex-direction: column; gap: 1rem; margin-top: 0;}
+                    .flow-container { flex-direction: column; gap: 1.5rem; margin-top: 0;}
                     .sequence-panel { width: 100%; max-height: none; padding-right: 0;}
                     
-                    .flow-step { flex-direction: column; align-items: stretch; gap: 12px;}
-                    .step-actions { flex-direction: row; justify-content: space-between; border-top: 1px dashed #333; padding-top: 10px; margin-top: 5px;}
-                    .step-actions .btn-step { flex: 1; }
+                    .flow-step { flex-direction: column; align-items: stretch; gap: 15px;}
+                    .step-actions { flex-direction: row; justify-content: space-between; border-top: 1px dashed #333; padding-top: 15px; margin-top: 5px;}
+                    .step-actions .btn-step { flex: 1; padding: 12px;}
                 }
             </style>
 
@@ -224,18 +227,18 @@ export default class ValueMapView {
                     
                     ${PageHeader.getHtml(headerConfig)}
 
-                    <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; text-align: center; margin-bottom: 1rem;">⚠️ DIAGNÓSTICO: Salto estructural excesivo detectado.</div>
+                    <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 15px; border-radius: 12px; font-size: 0.95rem; font-weight: bold; text-align: center; margin-bottom: 1.5rem;">⚠️ DIAGNÓSTICO: Salto estructural excesivo detectado. Los roles deben pasarse el valor escalonadamente.</div>
 
                     <div id="view-visual" class="tab-content active">
                         <div class="vna-controls">
                             <div class="sim-group">
-                                <button class="btn btn-primary btn-sm" id="btnSimulate">▶ Simular Flujo</button>
-                                <button class="btn btn-outline btn-sm" id="btnPauseSim" style="display:none; background:#333; color:white;">⏸ Pausar</button>
-                                <button class="btn btn-outline btn-sm" id="btnStopSim" style="display:none; border-color:var(--accent-red); color:var(--accent-red);">⏹ Detener</button>
+                                <button class="btn-sm btn-sm-primary" id="btnSimulate">▶ Simular Tuberías V10</button>
+                                <button class="btn-sm btn-sm-outline" id="btnPauseSim" style="display:none;">⏸ Pausar</button>
+                                <button class="btn-sm btn-sm-outline" id="btnStopSim" style="display:none; color:var(--accent-red); border-color:var(--accent-red);">⏹ Detener</button>
                             </div>
                             <div class="legend-box">
                                 <div class="legend-item"><div class="legend-color" style="background:var(--accent-green);"></div> Tangible</div>
-                                <div class="legend-item"><div class="legend-color" style="border-bottom:2px dashed var(--accent-purple);"></div> Intangible</div>
+                                <div class="legend-item"><div class="legend-color" style="border-bottom:2px dashed var(--accent-purple); background:transparent;"></div> Intangible</div>
                             </div>
                         </div>
 
@@ -253,14 +256,14 @@ export default class ValueMapView {
                     <div id="view-edit" class="tab-content">
                         ${isPO ? `
                             <div class="vna-tip" id="editTip">
-                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo origen y luego en destino para trazar flujo permanente. Doble clic para editar nodo.</div>
+                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo origen y luego en destino para trazar una tubería permanente. Doble clic para editar el nodo.</div>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                    <button class="btn btn-outline btn-sm" id="btnUndoTx" style="border-color:var(--accent-orange); color:var(--accent-orange);"><span style="font-size:1rem;">↩️</span> Deshacer Última</button>
-                                    <button class="btn btn-outline btn-sm" id="btnOpenAddNode" style="border-style:dashed; color:white;">➕ Instanciar Rol</button>
+                                    <button class="btn-sm btn-sm-outline" id="btnUndoTx" style="border-color:var(--accent-orange); color:var(--accent-orange);"><span style="font-size:1.2rem;">↩️</span> Deshacer Última</button>
+                                    <button class="btn-sm btn-sm-outline" id="btnOpenAddNode" style="border-style:dashed;">➕ Instanciar Rol</button>
                                 </div>
                             </div>
                             
-                            <div class="map-container" style="border-color: var(--accent-blue);">
+                            <div class="map-container" style="border-color: var(--accent-blue); box-shadow: inset 0 0 100px rgba(0,176,255,0.1);">
                                 <div class="map-canvas building-flow" id="mapCanvasEdit">
                                     <svg id="edges-svg-edit"></svg>
                                 </div>
@@ -270,17 +273,21 @@ export default class ValueMapView {
                                 </div>
                             </div>
                         ` : `
-                            <div style="text-align:center; padding:3rem; color:#888;">🔒 Solo el Project Owner puede editar la topología del Castell.</div>
+                            <div style="text-align:center; padding:5rem; background:rgba(0,0,0,0.3); border-radius:20px; border:1px dashed #333;">
+                                <div style="font-size: 4rem; margin-bottom:1rem;">🔒</div>
+                                <h2 style="color:white;">Modo Arquitecto Bloqueado</h2>
+                                <p style="color:#888;">Solo el Project Owner puede editar la topología inmutable de este Castell.</p>
+                            </div>
                         `}
                     </div>
 
                     <div id="view-roles" class="tab-content">
                         <div class="roles-header">
                             <div>
-                                <h3 style="color:white; margin:0;">Padrón de Nodos Estructurales</h3>
-                                <p style="color:#888; font-size:0.85rem; margin:5px 0 0 0;">Gestión directa de los roles que componen el mapa.</p>
+                                <h2 style="color:white; margin:0; font-weight:900;">Padrón de Nodos Estructurales</h2>
+                                <p style="color:#888; font-size:0.95rem; margin:5px 0 0 0;">Gestión directa de los actores que componen el mapa.</p>
                             </div>
-                            ${isPO ? `<button class="btn btn-primary btn-sm" id="btnOpenAddNodeRoles">➕ Instanciar Rol</button>` : ''}
+                            ${isPO ? `<button class="btn-sm btn-sm-primary" id="btnOpenAddNodeRoles">➕ Instanciar Rol</button>` : ''}
                         </div>
                         <div class="roles-grid-tab" id="rolesTabList">
                             </div>
@@ -297,105 +304,105 @@ export default class ValueMapView {
 
                 <div class="modal-overlay" id="txBuilderModal">
                     <div class="modal-content">
-                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                            <h3 id="formTitle" style="margin:0; font-size:1.2rem; color:var(--accent-blue);">Definir Tubería de Valor (Flow)</h3>
-                            <button id="btnCloseTxBuilder" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                            <h2 id="formTitle" style="margin:0; font-size:1.5rem; color:var(--accent-blue); font-weight:900;">Definir Tubería de Valor (Flow)</h2>
+                            <button id="btnCloseTxBuilder" style="background:none; border:none; color:#aaa; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
                         </div>
                         
-                        <div class="form-group" style="display: flex; gap: 10px;">
-                            <div style="flex:1;">
+                        <div class="form-group" style="display: flex; gap: 15px; flex-wrap:wrap;">
+                            <div style="flex:1; min-width:200px;">
                                 <label>Origen</label>
                                 <select id="selFrom" class="form-control" disabled></select>
                             </div>
-                            <div style="flex:1;">
+                            <div style="flex:1; min-width:200px;">
                                 <label>Destino</label>
                                 <select id="selTo" class="form-control" disabled></select>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Catálogo de Entregables (Work Orders base)</label>
-                            <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
+                            <label>Catálogo de Entregables (Ontología V10)</label>
+                            <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.05); border-color: var(--accent-blue); color:var(--accent-blue); font-weight:bold;">
                                 <option value="">Cargando ontología...</option>
                             </select>
                         </div>
-                        <div class="form-group" style="display: flex; gap: 10px;">
+                        <div class="form-group" style="display: flex; gap: 15px;">
                             <div style="flex:2;">
                                 <label>Tipo de Valor</label>
                                 <select id="selType" class="form-control">
-                                    <option value="tangible">🟢 Tangible</option>
-                                    <option value="intangible">🟣 Intangible</option>
+                                    <option value="tangible">🟢 Tangible (Contractual)</option>
+                                    <option value="intangible">🟣 Intangible (Extra / Soporte)</option>
                                 </select>
                             </div>
                             <div style="flex:1;">
                                 <label>Horas Est.</label>
-                                <input type="number" id="inpHoras" class="form-control" value="2">
+                                <input type="number" id="inpHoras" class="form-control" value="2" style="font-family:var(--font-mono); font-weight:bold; color:var(--accent-green);">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Nombre del Modelo de Entregable</label>
-                            <input type="text" id="inpDesc" class="form-control" placeholder="Ej: Auditoría de Seguridad">
+                            <label>Nombre del Entregable</label>
+                            <input type="text" id="inpDesc" class="form-control" placeholder="Ej: Auditoría de Seguridad Web3">
                         </div>
-                        <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;" id="btnAddFlow">➕ Confirmar Flujo Permanente</button>
+                        <button class="btn-sm btn-sm-primary" style="width: 100%; margin-top: 2rem; padding:15px; font-size:1.1rem;" id="btnAddFlow">➕ Confirmar Tubería Permanente</button>
                     </div>
                 </div>
 
                 <div class="modal-overlay" id="addNodeModal">
                     <div class="modal-content">
-                        <h3 style="color: white; margin-bottom: 1.5rem; margin-top:0;">Instanciar Rol</h3>
+                        <h2 style="color: white; margin-bottom: 2rem; margin-top:0; font-weight:900;">Instanciar Rol</h2>
                         <div class="form-group">
-                            <label>Nombre</label>
+                            <label>Nombre del Puesto/Actividad</label>
                             <input type="text" id="inpNewNodeName" class="form-control" placeholder="Ej: Especialista SEO">
                         </div>
                         <div class="form-group">
-                            <label>Nivel</label>
-                            <select id="selNewNodeLevel" class="form-control">
-                                <option value="@anxaneta">@anxaneta</option>
-                                <option value="@aixecador">@aixecador</option>
-                                <option value="@dosos">@dosos</option>
-                                <option value="@baixos" selected>@baixos</option>
-                                <option value="@pinya">@pinya</option>
+                            <label>Nivel Estructural (Multiplicador de Riesgo)</label>
+                            <select id="selNewNodeLevel" class="form-control" style="font-family:monospace; font-weight:bold;">
+                                <option value="@anxaneta">@anxaneta (x3.0)</option>
+                                <option value="@aixecador">@aixecador (x2.0)</option>
+                                <option value="@dosos">@dosos (x1.5)</option>
+                                <option value="@baixos" selected>@baixos (x1.2)</option>
+                                <option value="@pinya">@pinya (x1.0)</option>
                             </select>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-                            <button class="btn btn-outline btn-sm" id="btnCancelNode">Cancelar</button>
-                            <button class="btn btn-primary btn-sm" id="btnConfirmNode">Añadir Rol</button>
+                        <div style="display: flex; justify-content: space-between; margin-top: 3rem; gap:15px;">
+                            <button class="btn-sm btn-sm-outline" style="flex:1;" id="btnCancelNode">Cancelar</button>
+                            <button class="btn-sm btn-sm-primary" style="flex:2;" id="btnConfirmNode">Añadir Rol</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-overlay" id="inspectorModal">
                     <div class="modal-content">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                            <h3 style="color: white; margin:0;">Editar Nodo</h3>
-                            <button id="btnCloseInspector" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 1.5rem;">&times;</button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom:1px solid #333; padding-bottom:15px;">
+                            <h2 style="color: white; margin:0; font-weight:900;">Inspector de Nodo</h2>
+                            <button id="btnCloseInspector" style="background:none; border:none; color:#aaa; cursor:pointer; font-size: 2rem; line-height:1;">&times;</button>
                         </div>
                         <div class="form-group">
                             <label>Nivel Estructural</label>
-                            <select id="insLevel" class="form-control" style="font-weight: bold;">
-                                <option value="@anxaneta">@anxaneta</option>
-                                <option value="@aixecador">@aixecador</option>
-                                <option value="@dosos">@dosos</option>
-                                <option value="@baixos">@baixos</option>
-                                <option value="@pinya">@pinya</option>
+                            <select id="insLevel" class="form-control" style="font-family:monospace; font-weight: bold;">
+                                <option value="@anxaneta">@anxaneta (Dirección)</option>
+                                <option value="@aixecador">@aixecador (Táctica)</option>
+                                <option value="@dosos">@dosos (Auditoría)</option>
+                                <option value="@baixos">@baixos (Producción)</option>
+                                <option value="@pinya">@pinya (Soporte)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Nombre del Rol</label>
+                            <label>Nombre de la Actividad</label>
                             <input type="text" id="insName" class="form-control">
                         </div>
-                        <div style="display:flex; gap:10px;">
+                        <div style="display:flex; gap:15px;">
                             <div class="form-group" style="flex:1;">
-                                <label>Valor (FMV €/h)</label>
-                                <input type="number" id="inputFmv" class="form-control">
+                                <label>Valor Mercado (FMV €/h)</label>
+                                <input type="number" id="inputFmv" class="form-control" style="color:var(--accent-green); font-weight:bold; font-family:var(--font-mono);">
                             </div>
                             <div class="form-group" style="flex:1;">
                                 <label>Multiplicador</label>
-                                <input type="number" step="0.1" id="inputMult" class="form-control">
+                                <input type="number" step="0.1" id="inputMult" class="form-control" style="color:var(--accent-orange); font-weight:bold; font-family:var(--font-mono);">
                             </div>
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 1rem;">
-                            <button class="btn btn-primary" style="padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; border:none;" id="btnSaveRole">✓ Guardar Cambios</button>
-                            <button class="btn btn-outline" style="border:1px solid var(--accent-red); color: var(--accent-red); padding:10px; border-radius:8px; cursor:pointer;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
+                        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 2rem;">
+                            <button class="btn-sm btn-sm-primary" style="padding:15px; font-size:1.05rem;" id="btnSaveRole">✓ Guardar Cambios en Kernel</button>
+                            <button class="btn-sm" style="background:rgba(255,82,82,0.1); border:1px solid var(--accent-red); color: var(--accent-red); padding:15px;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
                         </div>
                     </div>
                 </div>
@@ -435,7 +442,6 @@ export default class ValueMapView {
             seqList: document.getElementById('sequenceList'),
             rolesTabList: document.getElementById('rolesTabList'),
             
-            // Formularios TX
             txBuilderModal: document.getElementById('txBuilderModal'),
             selFrom: document.getElementById('selFrom'),
             selTo: document.getElementById('selTo'),
@@ -448,7 +454,6 @@ export default class ValueMapView {
             editTipText: document.getElementById('editTipText'),
             btnUndoTx: document.getElementById('btnUndoTx'),
             
-            // Modales e Inspector
             inspectorModal: document.getElementById('inspectorModal'),
             insName: document.getElementById('insName'),
             insLevel: document.getElementById('insLevel'),
@@ -456,7 +461,6 @@ export default class ValueMapView {
             inputMult: document.getElementById('inputMult'),
             addNodeModal: document.getElementById('addNodeModal'),
             
-            // Simulación
             btnSimulate: document.getElementById('btnSimulate'),
             btnPauseSim: document.getElementById('btnPauseSim'),
             btnStopSim: document.getElementById('btnStopSim'),
@@ -533,13 +537,19 @@ export default class ValueMapView {
         // LÓGICA VISUAL FLOW BUILDER (V10 MIGRATION)
         // ------------------------------------------------------------------
         if (isPO) {
-            // Deshacer Última Tubería (V10: DELETE_FLOW)
             if(this.dom.btnUndoTx) {
                 this.dom.btnUndoTx.addEventListener('click', () => {
                     const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
-                    if (pState.vna_flows && pState.vna_flows.length > 0) {
-                        const lastFlowId = pState.vna_flows[pState.vna_flows.length - 1].id;
-                        store.dispatch({ type: 'DELETE_FLOW', payload: { projectId: this.activeProjectId, flowId: lastFlowId } })
+                    // Busca preferentemente vna_flows, si no transactions
+                    const flows = pState.vna_flows && pState.vna_flows.length > 0 ? pState.vna_flows : pState.transactions;
+                    if (flows && flows.length > 0) {
+                        const lastFlowId = flows[flows.length - 1].id || flows[flows.length - 1].hash;
+                        
+                        // Si es legacy, usa la acción vieja, sino la V10
+                        const actionType = pState.vna_flows && pState.vna_flows.length > 0 ? 'DELETE_FLOW' : 'DELETE_TRANSACTION';
+                        const payloadKey = actionType === 'DELETE_FLOW' ? 'flowId' : 'txHash';
+
+                        store.dispatch({ type: actionType, payload: { projectId: this.activeProjectId, [payloadKey]: lastFlowId } })
                         .then(() => {
                             this.forceSaveState(store.getState());
                             this.cancelVisualFlow();
@@ -570,7 +580,7 @@ export default class ValueMapView {
                 const dx = x2_center - x1_center;
                 const dy = y2_center - y1_center;
                 const dist = Math.sqrt(dx*dx + dy*dy);
-                const trim = 42;
+                const trim = 45;
                 
                 let x1 = x1_center;
                 let y1 = y1_center;
@@ -619,20 +629,22 @@ export default class ValueMapView {
                 if(!desc) return alert("Escribe el nombre del entregable base.");
 
                 if (this.editingTxIndex !== null) {
-                    // Update Flow
                     const pCurrent = store.getState().projects.find(x => x.id === this.activeProjectId);
-                    const flowToEdit = pCurrent.vna_flows[this.editingTxIndex];
+                    const isLegacy = !pCurrent.vna_flows || pCurrent.vna_flows.length === 0;
+                    const flows = isLegacy ? pCurrent.transactions : pCurrent.vna_flows;
+                    const flowToEdit = flows[this.editingTxIndex];
+                    
+                    const actionType = isLegacy ? 'UPDATE_TRANSACTION' : 'UPDATE_FLOW';
+                    const payloadKey = isLegacy ? 'txHash' : 'flowId';
+                    const targetId = isLegacy ? flowToEdit.hash : flowToEdit.id;
+
+                    const updates = isLegacy 
+                        ? { horas: parseFloat(this.dom.inpHoras.value) || 1, entregable: desc, tipo: this.dom.selType.value }
+                        : { estimatedHours: parseFloat(this.dom.inpHoras.value) || 1, template: desc, tipo: this.dom.selType.value };
+
                     store.dispatch({
-                        type: 'UPDATE_FLOW',
-                        payload: {
-                            projectId: this.activeProjectId,
-                            flowId: flowToEdit.id,
-                            updates: {
-                                estimatedHours: parseFloat(this.dom.inpHoras.value) || 1,
-                                template: desc,
-                                tipo: this.dom.selType.value
-                            }
-                        }
+                        type: actionType,
+                        payload: { projectId: this.activeProjectId, [payloadKey]: targetId, updates }
                     }).then(() => {
                         this.dom.txBuilderModal.style.display = 'none';
                         this.editingTxIndex = null;
@@ -640,7 +652,6 @@ export default class ValueMapView {
                         this.cancelVisualFlow();
                     });
                 } else {
-                    // Add New Flow
                     store.dispatch({
                         type: 'ADD_FLOW',
                         payload: {
@@ -662,7 +673,7 @@ export default class ValueMapView {
                 }
             });
             
-            // Editar Flow Operativo ListView (V10)
+            // Editar Flow Operativo ListView
             this.dom.seqList.addEventListener('click', (e) => {
                 const target = e.target.closest('.btn-step');
                 if (!target) return;
@@ -671,7 +682,8 @@ export default class ValueMapView {
 
                 const currentState = store.getState();
                 const p = currentState.projects.find(x => x.id === this.activeProjectId);
-                const flows = p.vna_flows || [];
+                const isLegacy = !p.vna_flows || p.vna_flows.length === 0;
+                const flows = isLegacy ? p.transactions : p.vna_flows;
 
                 if (target.classList.contains('btn-move-up')) {
                     [flows[idx - 1], flows[idx]] = [flows[idx], flows[idx - 1]];
@@ -683,7 +695,11 @@ export default class ValueMapView {
                 } 
                 else if (target.classList.contains('btn-del')) {
                     if(confirm('¿Eliminar esta tubería permanente del mapa?')) {
-                        store.dispatch({ type: 'DELETE_FLOW', payload: { projectId: p.id, flowId: flows[idx].id } })
+                        const actionType = isLegacy ? 'DELETE_TRANSACTION' : 'DELETE_FLOW';
+                        const payloadKey = isLegacy ? 'txHash' : 'flowId';
+                        const targetId = isLegacy ? flows[idx].hash : flows[idx].id;
+                        
+                        store.dispatch({ type: actionType, payload: { projectId: p.id, [payloadKey]: targetId } })
                         .then(() => this.forceSaveState(store.getState()));
                     }
                 }
@@ -693,7 +709,6 @@ export default class ValueMapView {
                 }
             });
 
-            // MODAL ADD NODE
             const btnAddNodes = document.querySelectorAll('#btnOpenAddNode, #btnOpenAddNodeRoles');
             btnAddNodes.forEach(btn => btn.addEventListener('click', () => this.dom.addNodeModal.style.display = 'flex'));
             
@@ -707,11 +722,9 @@ export default class ValueMapView {
                 store.dispatch({ type: 'ADD_ROLE', payload: { projectId: this.activeProjectId, role: { name, levelId, multiplier: multipliers[levelId], fmv: 50, isArchived: false } } });
                 this.dom.addNodeModal.style.display = 'none';
                 document.getElementById('inpNewNodeName').value = '';
-                
                 this.forceSaveState(store.getState());
             });
 
-            // INSPECTOR DE NODOS (GUARDADO/BORRADO)
             document.getElementById('btnCloseInspector').addEventListener('click', () => {
                 this.dom.inspectorModal.style.display = 'none';
                 this.selectedRoleId = null;
@@ -796,12 +809,13 @@ export default class ValueMapView {
             });
         }
 
-        // TOOLTIPS HTML HOVER (V10 READS FROM VNA_FLOWS)
+        // TOOLTIPS HTML HOVER (V10 Mapeado dual)
         const showTooltip = (e, canvasObj) => {
             if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
                 const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                const flow = p.vna_flows[idx];
+                const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : p.transactions;
+                const flow = flows[idx];
                 if(!flow) return; 
                 
                 const rFrom = p.roles.find(r => r.id === flow.from);
@@ -809,18 +823,20 @@ export default class ValueMapView {
                 
                 const typeColor = flow.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
                 const typeText = flow.tipo === 'tangible' ? 'TANGIBLE' : 'INTANGIBLE';
+                const delivName = flow.template || flow.entregable || 'Entregable';
+                const hours = flow.estimatedHours || flow.horas || 1;
                 
                 this.dom.tooltip.innerHTML = `
-                    <div style="color: ${typeColor}; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
+                    <div style="color: ${typeColor}; font-weight: 900; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; font-size:0.75rem;">
                         [Tubería ${parseInt(idx) + 1}] ${typeText}
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
-                        <div style="font-size: 0.8rem;"><strong style="color:#888;">De:</strong> ${rFrom ? rFrom.name : '?'}</div>
-                        <div style="font-size: 0.8rem;"><strong style="color:#888;">Hacia:</strong> ${rTo ? rTo.name : '?'}</div>
+                    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px;">
+                        <div style="font-size: 0.8rem;"><strong style="color:#888;">Origen:</strong> ${rFrom ? rFrom.name : '?'}</div>
+                        <div style="font-size: 0.8rem;"><strong style="color:#888;">Destino:</strong> ${rTo ? rTo.name : '?'}</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border: 1px dashed #444;">
-                        <div style="color:white; font-weight:bold; margin-bottom:5px;">${flow.template}</div>
-                        <div style="color:var(--accent-blue); font-family: monospace;">⏱ Est: ${flow.estimatedHours}h</div>
+                    <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px dashed #444; border-left: 3px solid ${typeColor};">
+                        <div style="color:white; font-weight:bold; margin-bottom:5px; font-size:1rem;">${delivName}</div>
+                        <div style="color:var(--text-muted); font-family: monospace;">⏱ Est: ${hours}h</div>
                     </div>
                 `;
                 
@@ -852,100 +868,106 @@ export default class ValueMapView {
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
     }
 
-    openRoleInspector(roleId) {
+    // MAP RENDERING CORE V10
+    renderMap(canvasObj, isEditMode) {
+        if(!canvasObj) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        if(!p) return;
-        const rol = p.roles.find(r => r.id === roleId);
-        if(!rol) return;
+        if (!p || !p.roles) return;
 
-        this.selectedRoleId = rol.id;
-        
-        this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
-        if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
-        
-        const nodeVis = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${rol.id}"]`);
-        const nodeEdit = this.dom.canvasEdit ? this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${rol.id}"]`) : null;
-        if(nodeVis) nodeVis.classList.add('selected');
-        if(nodeEdit) nodeEdit.classList.add('selected');
+        canvasObj.innerHTML = '';
+        const svgId = isEditMode ? 'edges-svg-edit' : 'edges-svg-visual';
+        canvasObj.innerHTML = `<svg id="${svgId}"></svg>`;
 
-        this.dom.inspectorModal.style.display = 'flex';
-        this.dom.insName.value = rol.name;
-        this.dom.insLevel.value = rol.levelId;
-        this.dom.inputFmv.value = rol.fmv || 0;
-        this.dom.inputMult.value = rol.multiplier || 1.0;
-        
-        const isLocked = rol.isArchived;
-        this.dom.insName.disabled = isLocked;
-        this.dom.insLevel.disabled = isLocked;
-        this.dom.inputFmv.disabled = isLocked;
-        this.dom.inputMult.disabled = isLocked;
-        
-        document.getElementById('btnSaveRole').style.display = isLocked ? 'none' : 'block';
-        
-        const btnDel = document.getElementById('btnDeleteRole');
-        btnDel.innerText = isLocked ? '♻️ Desarchivar Nodo (Revivir)' : '🗑️ Archivar Nodo';
-        btnDel.style.borderColor = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
-        btnDel.style.color = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
-    }
+        let activeRoles = p.roles.filter(r => !r.isArchived);
+        if (activeRoles.length === 0) return;
 
-    cancelVisualFlow() {
-        this.flowFromId = null;
-        if(this.dom.canvasEdit) {
-            this.dom.canvasEdit.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('flow-source'));
-        }
-        if (this.tempVector) {
-            this.tempVector.remove();
-            this.tempVector = null;
-        }
-        if(this.dom.editTipText) {
-            this.dom.editTipText.innerHTML = `💡 <b>Modo Arquitecto:</b> Haz click en un nodo origen y luego en uno destino para enlazar valor. Doble click para editar rol.`;
-        }
-    }
+        const layout = { '@anxaneta': 15, '@aixecador': 35, '@dosos': 55, '@baixos': 75, '@pinya': 90 };
+        const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
 
-    openTxBuilderModal(fromId, toId, existingFlow = null) {
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        this.populateDropdowns(p.roles); 
-        
-        this.dom.selFrom.value = fromId;
-        this.dom.selTo.value = toId;
-        
-        this.updateOntologyTemplates();
+        activeRoles.forEach(r => {
+            const level = r.levelId || '@baixos';
+            const color = this.getColor(level);
+            const icon = this.getIcon(level);
+            levelCounts[level]++;
 
-        if (existingFlow) {
-            this.dom.formTitle.innerText = `Editando Flujo`;
-            this.dom.btnAddFlow.innerText = '💾 Guardar Cambios';
-            this.dom.selType.value = existingFlow.tipo;
-            this.dom.inpHoras.value = existingFlow.estimatedHours || existingFlow.horas;
-            this.dom.inpDesc.value = existingFlow.template || existingFlow.entregable;
-            this.dom.selTemplate.value = 'manual';
-        } else {
-            this.dom.formTitle.innerText = `Definir Tubería de Valor (Flow)`;
-            this.dom.btnAddFlow.innerText = '➕ Confirmar Flujo Permanente';
-            this.dom.inpDesc.value = '';
-            this.dom.selTemplate.value = '';
-        }
-        
-        this.dom.txBuilderModal.style.display = 'flex';
-    }
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'node-wrapper';
+            if (this.selectedRoleId === r.id) nodeDiv.classList.add('selected');
+            nodeDiv.dataset.id = r.id;
 
+            let topPos = layout[level];
+            let leftPos = 50;
+            const totalInLevel = activeRoles.filter(role => role.levelId === level).length;
+            if (totalInLevel > 1) {
+                const spacing = 100 / (totalInLevel + 1);
+                leftPos = spacing * levelCounts[level];
+            }
 
-    forceSaveState(newState, highlightIndex = -1) {
-        store.state = newState;
-        localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
-        const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
-        this.populateDropdowns(pUpdate.roles);
-        this.renderSequence(highlightIndex); 
-        this.renderRolesTab(); 
-        if(this.dom.canvasEdit) this.renderMap(this.dom.canvasEdit, true);
-        this.renderMap(this.dom.canvasVis, false);
-        setTimeout(() => this.drawEdges(), 100); 
+            nodeDiv.style.top = `${topPos}%`;
+            nodeDiv.style.left = `${leftPos}%`;
+
+            nodeDiv.innerHTML = `
+                <div class="node-circle">
+                    <div class="node-level-badge" style="color: ${color}; border-color: ${color};" title="${r.name}">${icon}</div>
+                    <div class="node-fmv" style="color: ${color};">${r.fmv}€</div>
+                    <div class="node-label-fmv">x${r.multiplier}</div>
+                </div>
+                <div class="node-title">${r.name}</div>
+            `;
+
+            if (isEditMode) {
+                nodeDiv.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    if(e.button === 0) {
+                        if(!this.flowFromId) {
+                            this.flowFromId = r.id;
+                            nodeDiv.classList.add('flow-source');
+                            this.dom.editTipText.innerHTML = `🌟 <b>Paso 2:</b> Ahora haz click en el <b>nodo destino</b> para crear la tubería.`;
+                        } else if (this.flowFromId !== r.id) {
+                            this.openTxBuilderModal(this.flowFromId, r.id);
+                        } else {
+                            this.cancelVisualFlow();
+                        }
+                    }
+                });
+
+                nodeDiv.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    this.cancelVisualFlow();
+                    this.openRoleInspector(r.id);
+                });
+            }
+
+            canvasObj.appendChild(nodeDiv);
+        });
+
+        // Nodos fantasma (Archivados)
+        const ghostRoles = p.roles.filter(r => r.isArchived);
+        ghostRoles.forEach((r, i) => {
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'node-wrapper ghost-node';
+            nodeDiv.dataset.id = r.id;
+            nodeDiv.style.top = `90%`;
+            nodeDiv.style.left = `${10 + (i * 10)}%`;
+            nodeDiv.innerHTML = `
+                <div class="node-circle">
+                    <div class="node-level-badge" style="color: #666; border-color: #666;">👻</div>
+                    <div class="node-fmv" style="color: #666;">ARCH</div>
+                </div>
+                <div class="node-title">${r.name}</div>
+            `;
+            if (isEditMode) {
+                nodeDiv.addEventListener('dblclick', (e) => { e.stopPropagation(); this.openRoleInspector(r.id); });
+            }
+            canvasObj.appendChild(nodeDiv);
+        });
     }
 
     // SIMULACIÓN (V10 READS FROM vna_flows)
     startSimulation() {
         if (this.isSimulating && !this.isPaused) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const flows = p?.vna_flows || p?.transactions || []; // Retrocompatibilidad visual
+        const flows = p?.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p?.transactions || []);
         if (flows.length === 0) return alert("Dibuja tuberías de valor para simular el flujo.");
 
         this.isSimulating = true;
@@ -1027,7 +1049,7 @@ export default class ValueMapView {
         clearTimeout(this.simTimeoutId);
         
         this.dom.btnSimulate.style.display = 'flex';
-        this.dom.btnSimulate.innerText = '▶ Simular Flujo';
+        this.dom.btnSimulate.innerText = '▶ Simular Tuberías V10';
         this.dom.btnPauseSim.style.display = 'none';
         this.dom.btnStopSim.style.display = 'none';
         this.dom.sickAlert.style.display = 'none';
@@ -1055,7 +1077,7 @@ export default class ValueMapView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
 
-        const trim = 42; 
+        const trim = 50; 
         let x1 = x1_center;
         let y1 = y1_center;
         let x2 = x2_center;
@@ -1084,7 +1106,7 @@ export default class ValueMapView {
         const realDist = dist + Math.abs(offset) * 2; 
         
         path.style.cssText = `
-            fill: none; stroke: ${strokeColor}; stroke-width: 4; stroke-dasharray: ${realDist}; stroke-dashoffset: ${realDist}; animation: drawLine 1.5s ease-out forwards;
+            fill: none; stroke: ${strokeColor}; stroke-width: 4; stroke-dasharray: ${realDist}; stroke-dashoffset: ${realDist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 5px ${strokeColor});
         `;
         
         if(!document.getElementById('svgAnimStyles')) {
@@ -1107,19 +1129,19 @@ export default class ValueMapView {
             badge.style.left = `${txX}px`;
             badge.style.top = `${txY}px`;
             badge.style.backgroundColor = 'rgba(10,10,14,0.9)';
-            badge.style.border = `1px solid ${strokeColor}`;
+            badge.style.border = `2px solid ${strokeColor}`;
             badge.style.color = 'white';
             badge.style.padding = '8px 12px';
             badge.style.borderRadius = '8px';
-            badge.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8)`;
+            badge.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8), 0 0 15px ${strokeColor}`;
             badge.style.zIndex = '1000';
             badge.style.textAlign = 'center';
             badge.style.animation = 'popIn 0.4s ease-out forwards';
             badge.style.pointerEvents = 'none';
             badge.style.minWidth = '120px';
 
-            const delivName = tx.template || tx.entregable;
-            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:bold; font-size:0.7rem; margin-bottom:3px; text-transform:uppercase;">Paso ${index + 1}</div><div style="font-size:0.85rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
+            const delivName = tx.template || tx.entregable || 'Flow';
+            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:900; font-size:0.7rem; margin-bottom:3px; text-transform:uppercase;">Paso ${index + 1}</div><div style="font-size:0.9rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
             this.dom.canvasVis.appendChild(badge);
         }, 1200); 
     }
@@ -1153,9 +1175,9 @@ export default class ValueMapView {
         if(!this.dom.selFrom || !this.dom.selFrom.value) return;
         const levelId = this.getRoleLevel(this.dom.selFrom.value);
         const templates = this.getTemplatesForLevel(levelId);
-        let html = `<option value="">-- Catálogo Ontológico --</option>`;
+        let html = `<option value="">-- Catálogo Ontológico V10 --</option>`;
         templates.forEach((t, i) => html += `<option value="${i}">${t.tipo === 'tangible' ? '🟢' : '🟣'} ${t.name} (${t.estimatedHours}h)</option>`);
-        html += `<option value="manual">✍️ Crear Manualmente...</option>`;
+        html += `<option value="manual">✍️ Crear Tubería Manual...</option>`;
         this.dom.selTemplate.innerHTML = html;
     }
 
@@ -1176,17 +1198,17 @@ export default class ValueMapView {
             html += `
                 <div class="role-list-card" style="border-left: 4px solid ${color}; ${isGhost}">
                     <div style="display:flex; align-items:center; gap: 15px;">
-                        <div style="font-size: 2rem; width: 40px; text-align: center;">${icon}</div>
+                        <div style="font-size: 2rem; width: 40px; text-align: center; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));">${icon}</div>
                         <div>
-                            <h3 style="margin: 0; color: white; font-size: 1.1rem; line-height: 1.2;">
+                            <h3 style="margin: 0; color: white; font-size: 1.1rem; line-height: 1.2; font-weight:800;">
                                 ${rol.name} ${rol.isArchived ? '<span style="color:#ff5252; font-size:0.7rem; vertical-align:middle; margin-left:5px;">(ARCHIVADO)</span>' : ''}
                             </h3>
-                            <div style="color: #888; font-size: 0.8rem; font-family: var(--font-mono); margin-top: 4px;">
-                                ${rol.levelId} | FMV: ${rol.fmv || 0}€/h | Mult: ${rol.multiplier || 1.0}x
+                            <div style="color: #888; font-size: 0.8rem; font-family: var(--font-mono); margin-top: 4px; font-weight:bold;">
+                                ${rol.levelId} | FMV: <span style="color:var(--accent-green);">${rol.fmv || 0}€/h</span> | Riesgo: x${rol.multiplier || 1.0}
                             </div>
                         </div>
                     </div>
-                    ${isPO ? `<button class="btn btn-outline btn-sm btn-edit-role-tab" data-id="${rol.id}" style="border-color:${color}; color:${color};">✎ Editar</button>` : ''}
+                    ${isPO ? `<button class="btn-step edit btn-edit-role-tab" data-id="${rol.id}" style="border-color:${color}; color:${color}; background:transparent;">✎ Editar</button>` : ''}
                 </div>
             `;
         });
@@ -1205,16 +1227,13 @@ export default class ValueMapView {
     renderSequence(highlightIndex = -1) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         
-        // V10 LOGIC: Leemos de vna_flows. Si no hay, fallbaqueamos a transactions para proyectos antiguos.
         let flows = p?.vna_flows || [];
-        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) {
-            flows = p.transactions; // Legacy support visual
-        }
+        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) flows = p.transactions;
 
         this.dom.seqList.innerHTML = '';
         
         if(flows.length === 0) {
-            this.dom.seqList.innerHTML = `<div style="text-align:center; padding: 2rem; color:#666; border: 1px dashed #333; border-radius:12px;">No hay tuberías de valor trazadas. Usa el Modo Arquitecto para dibujarlas.</div>`;
+            this.dom.seqList.innerHTML = `<div style="text-align:center; padding: 3rem; color:#666; border: 1px dashed #333; border-radius:16px; background:rgba(0,0,0,0.3);">No hay tuberías de valor trazadas. Usa el Modo Arquitecto para dibujar flujos permanentes.</div>`;
             return;
         }
 
@@ -1230,26 +1249,26 @@ export default class ValueMapView {
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
             if (i === highlightIndex) stepEl.classList.add('flash-highlight');
-            stepEl.style.borderLeft = `3px solid ${color}`;
+            stepEl.style.borderLeft = `4px solid ${color}`;
             
             const actions = `
                 <div class="step-actions">
-                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" title="Subir">↑</button>` : ''}
-                    ${i < flows.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" title="Bajar">↓</button>` : ''}
-                    <button class="btn-step edit btn-edit" data-idx="${i}" title="Editar">✎</button>
-                    <button class="btn-step del btn-del" data-idx="${i}" title="Eliminar">🗑️</button>
+                    ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" title="Subir Orden">↑</button>` : ''}
+                    ${i < flows.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" title="Bajar Orden">↓</button>` : ''}
+                    <button class="btn-step edit btn-edit" data-idx="${i}" title="Editar Flujo">✎</button>
+                    <button class="btn-step del btn-del" data-idx="${i}" title="Eliminar Flujo">🗑️</button>
                 </div>
             `;
 
             stepEl.innerHTML = `
                 <div class="step-info">
-                    <div class="step-meta" style="color: ${color};"><span style="font-weight:bold;">[${i + 1}]</span> ⏱ ${hours}h Est.</div>
+                    <div class="step-meta" style="color: ${color};"><span style="background:#111; padding:2px 6px; border-radius:4px; border:1px solid #333;">Paso ${i + 1}</span> ⏱ ${hours}h Est.</div>
                     <div class="step-route-compact">
                         <span class="route-level">${rFrom.levelId}</span> <span class="route-name">${rFrom.name}</span>
                         <span class="route-arrow">&rarr;</span>
                         <span class="route-level">${rTo.levelId}</span> <span class="route-name">${rTo.name}</span>
                     </div>
-                    <div class="step-deliv-name" style="color: ${color};">${delivName}</div>
+                    <div class="step-deliv-name" style="color: white;">${delivName}</div>
                 </div>
                 ${isPO ? actions : ''}
             `;
@@ -1313,7 +1332,7 @@ export default class ValueMapView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        const trim = 42; 
+        const trim = 50; 
         let x1 = x1_center;
         let y1 = y1_center;
         let x2 = x2_center;
