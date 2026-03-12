@@ -54,7 +54,7 @@ export default class ValueMapView {
         const headerConfig = {
             title: "Mapa VNA",
             subtitle: project ? project.nombre : '',
-            tagline: "Topología fractal y transferencias de valor.",
+            tagline: "Estructura Base (Tuberías de Valor Permanente).",
             tabs: [
                 { id: 'visual', label: '🕸️ Red Visual', active: true },
                 { id: 'edit', label: '✏️ Editar Mapa' },
@@ -70,15 +70,10 @@ export default class ValueMapView {
                 
                 .ph-tabs-container { flex-shrink: 0 !important; }
 
-                /* =========================================================
-                   TABS CONTENT
-                   ========================================================= */
                 .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.3s ease-out; min-height: 500px; position: relative; }
                 .tab-content.active { display: flex; }
                 
-                /* =========================================================
-                   CONTROLES TÁCTICOS Y TIPS
-                   ========================================================= */
+                /* CONTROLES TÁCTICOS Y TIPS */
                 .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 10px; flex-wrap: wrap;}
                 .sim-group { display: flex; gap: 10px; }
                 
@@ -91,9 +86,7 @@ export default class ValueMapView {
 
                 .vna-tip { background: rgba(0, 176, 255, 0.1); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 10px 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;}
 
-                /* =========================================================
-                   LIENZO PRINCIPAL (Mapa Visual)
-                   ========================================================= */
+                /* LIENZO PRINCIPAL */
                 .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 12px; background-color: rgba(0,0,0,0.2);}
                 
                 /* CAPA DE TRANSFORMACIÓN PARA ZOOM */
@@ -114,10 +107,8 @@ export default class ValueMapView {
                 .node-wrapper:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
                 .node-wrapper.selected { z-index: 10; }
                 
-                /* El círculo principal ahora solo muestra FMV */
                 .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 3px solid var(--glass-border); color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 80px; height: 80px; box-sizing: border-box;}
                 
-                /* Feedback visual de UI */
                 .node-wrapper.selected .node-circle { border-color: var(--accent-blue) !important; box-shadow: 0 0 40px rgba(0, 176, 255, 0.7) !important; }
                 .node-wrapper.sick-node .node-circle { border-color: var(--accent-red) !important; box-shadow: 0 0 45px rgba(255, 82, 82, 0.9) !important; animation: pulseSick 1s infinite alternate; }
                 .node-wrapper.ghost-node { opacity: 0.3; filter: grayscale(100%); z-index: 1; }
@@ -126,13 +117,10 @@ export default class ValueMapView {
                 .node-fmv { font-size: 1rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 2px;}
                 .node-label-fmv { font-size: 0.6rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
                 
-                /* ICONO SATÉLITE: Pequeño, arriba-izquierda, fuera del círculo */
                 .node-level-badge { position: absolute; top: -10px; left: 10px; border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; background: #111; border: 2px solid; box-shadow: 0 5px 10px rgba(0,0,0,0.6); z-index: 2; box-sizing: border-box;}
                 
-                /* NOMBRE DEL ROL: Fuera, debajo del círculo */
                 .node-title { margin-top: 8px; font-size: 0.85rem; font-weight: bold; color: white; text-align: center; text-transform: capitalize; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; padding: 0 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;}
 
-                /* CLASES INTERACTIVAS BUILDER */
                 #mapCanvasEdit .node-wrapper { cursor: pointer; } 
                 #mapCanvasEdit .node-wrapper:hover .node-circle { transform: scale(1.1); box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); }
                 .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 30px rgba(255, 171, 64, 0.8) !important; z-index: 20;}
@@ -184,9 +172,7 @@ export default class ValueMapView {
                 .btn-step.edit { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-color: var(--accent-blue); }
                 .btn-step.edit:hover { background: var(--accent-blue); color: black; }
 
-                /* =========================================================
-                   MODALS Y FORMS
-                   ========================================================= */
+                /* MODALS Y FORMS */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
                 .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
                 
@@ -212,7 +198,6 @@ export default class ValueMapView {
 
                     .map-container { flex: 1; height: calc(100vh - 350px); min-height: 400px; border-radius: 12px;}
                     
-                    /* Ajustes Nodos en móvil */
                     .node-wrapper { width: 90px;}
                     .node-circle { width: 65px; height: 65px; border-width: 2px;} 
                     .node-level-badge { width: 28px; height: 28px; font-size: 0.9rem; top: -5px; left: 5px; border-width: 1px;}
@@ -268,7 +253,7 @@ export default class ValueMapView {
                     <div id="view-edit" class="tab-content">
                         ${isPO ? `
                             <div class="vna-tip" id="editTip">
-                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo origen y luego en destino para trazar flujo. Doble clic para editar nodo.</div>
+                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo origen y luego en destino para trazar flujo permanente. Doble clic para editar nodo.</div>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                                     <button class="btn btn-outline btn-sm" id="btnUndoTx" style="border-color:var(--accent-orange); color:var(--accent-orange);"><span style="font-size:1rem;">↩️</span> Deshacer Última</button>
                                     <button class="btn btn-outline btn-sm" id="btnOpenAddNode" style="border-style:dashed; color:white;">➕ Instanciar Rol</button>
@@ -313,7 +298,7 @@ export default class ValueMapView {
                 <div class="modal-overlay" id="txBuilderModal">
                     <div class="modal-content">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                            <h3 id="formTitle" style="margin:0; font-size:1.2rem; color:var(--accent-blue);">Definir Transacción</h3>
+                            <h3 id="formTitle" style="margin:0; font-size:1.2rem; color:var(--accent-blue);">Definir Tubería de Valor (Flow)</h3>
                             <button id="btnCloseTxBuilder" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
                         </div>
                         
@@ -328,14 +313,14 @@ export default class ValueMapView {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Catálogo de Entregables</label>
+                            <label>Catálogo de Entregables (Work Orders base)</label>
                             <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
                                 <option value="">Cargando ontología...</option>
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; gap: 10px;">
                             <div style="flex:2;">
-                                <label>Tipo</label>
+                                <label>Tipo de Valor</label>
                                 <select id="selType" class="form-control">
                                     <option value="tangible">🟢 Tangible</option>
                                     <option value="intangible">🟣 Intangible</option>
@@ -347,10 +332,10 @@ export default class ValueMapView {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Nombre del Entregable</label>
+                            <label>Nombre del Modelo de Entregable</label>
                             <input type="text" id="inpDesc" class="form-control" placeholder="Ej: Auditoría de Seguridad">
                         </div>
-                        <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;" id="btnAddFlow">➕ Confirmar Flujo</button>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;" id="btnAddFlow">➕ Confirmar Flujo Permanente</button>
                     </div>
                 </div>
 
@@ -498,7 +483,6 @@ export default class ValueMapView {
                 const targetContent = document.getElementById(targetId);
                 if (targetContent) {
                     targetContent.classList.add('active');
-                    // FIX REACTIVO: Redibujar SVG al cambiar a la vista visual
                     if(btn.dataset.tab === 'visual' || btn.dataset.tab === 'edit') {
                         setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 50);
                     }
@@ -527,7 +511,7 @@ export default class ValueMapView {
         setupZoom('btnZoomInEdit', 'btnZoomOutEdit', this.dom.canvasEdit, 'zoomEdit');
 
         // ------------------------------------------------------------------
-        // RENDER INICIAL
+        // RENDER INICIAL (V10)
         // ------------------------------------------------------------------
         setTimeout(() => {
             this.renderMap(this.dom.canvasVis, false);
@@ -546,37 +530,36 @@ export default class ValueMapView {
         }
 
         // ------------------------------------------------------------------
-        // LÓGICA VISUAL FLOW BUILDER (LA MAGIA EN EL CANVAS)
+        // LÓGICA VISUAL FLOW BUILDER (V10 MIGRATION)
         // ------------------------------------------------------------------
         if (isPO) {
-            // Deshacer Última Transacción
+            // Deshacer Última Tubería (V10: DELETE_FLOW)
             if(this.dom.btnUndoTx) {
                 this.dom.btnUndoTx.addEventListener('click', () => {
-                    const currentState = store.getState();
-                    const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
-                    if (currentState.projects[pIndex].transactions && currentState.projects[pIndex].transactions.length > 0) {
-                        currentState.projects[pIndex].transactions.pop();
-                        this.forceSaveState(currentState);
-                        this.cancelVisualFlow();
+                    const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
+                    if (pState.vna_flows && pState.vna_flows.length > 0) {
+                        const lastFlowId = pState.vna_flows[pState.vna_flows.length - 1].id;
+                        store.dispatch({ type: 'DELETE_FLOW', payload: { projectId: this.activeProjectId, flowId: lastFlowId } })
+                        .then(() => {
+                            this.forceSaveState(store.getState());
+                            this.cancelVisualFlow();
+                        });
                     } else {
-                        alert("No hay transacciones para deshacer.");
+                        alert("No hay flujos para deshacer.");
                     }
                 });
             }
 
-            // Doble tap canvas background para limpiar estado del creador de líneas
             this.dom.canvasEdit.addEventListener('dblclick', (e) => {
                 if(!e.target.closest('.node-wrapper')) this.cancelVisualFlow();
             });
 
-            // Dibujar flecha temporal siguiendo al ratón (Solo en Desktop)
             this.dom.canvasEdit.addEventListener('mousemove', (e) => {
                 if (!this.flowFromId || window.innerWidth <= 768) return;
 
                 const originNode = this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${this.flowFromId}"]`);
                 if (!originNode) return;
 
-                // MATH ANTI-ZOOM BUG (Usando la posición real absoluta del nodo)
                 const x1_center = originNode.offsetLeft;
                 const y1_center = originNode.offsetTop;
                 
@@ -584,7 +567,6 @@ export default class ValueMapView {
                 const x2_center = (e.clientX - canvRect.left) / this.zoomEdit;
                 const y2_center = (e.clientY - canvRect.top) / this.zoomEdit;
 
-                // El Trim: Para que la línea naranja empiece en el borde del nodo principal (radio 40)
                 const dx = x2_center - x1_center;
                 const dy = y2_center - y1_center;
                 const dist = Math.sqrt(dx*dx + dy*dy);
@@ -610,7 +592,6 @@ export default class ValueMapView {
                 this.tempVector.setAttribute('y2', y2_center);
             });
 
-            // Modal Builder Logic
             document.getElementById('btnCloseTxBuilder').addEventListener('click', () => {
                 this.dom.txBuilderModal.style.display = 'none';
                 this.cancelVisualFlow();
@@ -629,37 +610,59 @@ export default class ValueMapView {
                 }
             });
 
+            // V10: CREAR TUBERÍA (ADD_FLOW)
             this.dom.btnAddFlow.addEventListener('click', () => {
                 const fromId = this.dom.selFrom.value;
                 const toId = this.dom.selTo.value;
                 const desc = this.dom.inpDesc.value.trim();
                 
-                if(!desc) return alert("Escribe el nombre del entregable.");
-
-                const currentState = JSON.parse(JSON.stringify(store.getState()));
-                const pIndex = currentState.projects.findIndex(x => x.id === this.activeProjectId);
-                if (!currentState.projects[pIndex].transactions) currentState.projects[pIndex].transactions = [];
+                if(!desc) return alert("Escribe el nombre del entregable base.");
 
                 if (this.editingTxIndex !== null) {
-                    currentState.projects[pIndex].transactions[this.editingTxIndex] = {
-                        ...currentState.projects[pIndex].transactions[this.editingTxIndex],
-                        horas: parseFloat(this.dom.inpHoras.value)||1, entregable: desc, tipo: this.dom.selType.value
-                    };
+                    // Update Flow
+                    const pCurrent = store.getState().projects.find(x => x.id === this.activeProjectId);
+                    const flowToEdit = pCurrent.vna_flows[this.editingTxIndex];
+                    store.dispatch({
+                        type: 'UPDATE_FLOW',
+                        payload: {
+                            projectId: this.activeProjectId,
+                            flowId: flowToEdit.id,
+                            updates: {
+                                estimatedHours: parseFloat(this.dom.inpHoras.value) || 1,
+                                template: desc,
+                                tipo: this.dom.selType.value
+                            }
+                        }
+                    }).then(() => {
+                        this.dom.txBuilderModal.style.display = 'none';
+                        this.editingTxIndex = null;
+                        this.forceSaveState(store.getState());
+                        this.cancelVisualFlow();
+                    });
                 } else {
-                    currentState.projects[pIndex].transactions.push({
-                        hash: '0x' + Math.random().toString(16).slice(2, 10),
-                        from: fromId, to: toId, horas: parseFloat(this.dom.inpHoras.value) || 1,
-                        entregable: desc, tipo: this.dom.selType.value, status: 'theoretical', timestamp: Date.now()
+                    // Add New Flow
+                    store.dispatch({
+                        type: 'ADD_FLOW',
+                        payload: {
+                            projectId: this.activeProjectId,
+                            flow: {
+                                from: fromId,
+                                to: toId,
+                                estimatedHours: parseFloat(this.dom.inpHoras.value) || 1,
+                                template: desc,
+                                tipo: this.dom.selType.value
+                            }
+                        }
+                    }).then(() => {
+                        this.dom.txBuilderModal.style.display = 'none';
+                        this.editingTxIndex = null;
+                        this.forceSaveState(store.getState());
+                        this.cancelVisualFlow();
                     });
                 }
-
-                this.dom.txBuilderModal.style.display = 'none';
-                this.editingTxIndex = null;
-                this.forceSaveState(currentState, currentState.projects[pIndex].transactions.length - 1);
-                this.cancelVisualFlow();
             });
             
-            // Editar Flow Operativo ListView
+            // Editar Flow Operativo ListView (V10)
             this.dom.seqList.addEventListener('click', (e) => {
                 const target = e.target.closest('.btn-step');
                 if (!target) return;
@@ -668,25 +671,25 @@ export default class ValueMapView {
 
                 const currentState = store.getState();
                 const p = currentState.projects.find(x => x.id === this.activeProjectId);
-                const txs = p.transactions;
+                const flows = p.vna_flows || [];
 
                 if (target.classList.contains('btn-move-up')) {
-                    [txs[idx - 1], txs[idx]] = [txs[idx], txs[idx - 1]];
+                    [flows[idx - 1], flows[idx]] = [flows[idx], flows[idx - 1]];
                     this.forceSaveState(currentState, idx - 1);
                 } 
                 else if (target.classList.contains('btn-move-down')) {
-                    [txs[idx], txs[idx + 1]] = [txs[idx + 1], txs[idx]];
+                    [flows[idx], flows[idx + 1]] = [flows[idx + 1], flows[idx]];
                     this.forceSaveState(currentState, idx + 1);
                 } 
                 else if (target.classList.contains('btn-del')) {
-                    if(confirm('¿Eliminar transacción del flujo?')) {
-                        txs.splice(idx, 1);
-                        this.forceSaveState(currentState);
+                    if(confirm('¿Eliminar esta tubería permanente del mapa?')) {
+                        store.dispatch({ type: 'DELETE_FLOW', payload: { projectId: p.id, flowId: flows[idx].id } })
+                        .then(() => this.forceSaveState(store.getState()));
                     }
                 }
                 else if (target.classList.contains('btn-edit')) {
                     this.editingTxIndex = idx;
-                    this.openTxBuilderModal(txs[idx].from, txs[idx].to, txs[idx]);
+                    this.openTxBuilderModal(flows[idx].from, flows[idx].to, flows[idx]);
                 }
             });
 
@@ -753,11 +756,9 @@ export default class ValueMapView {
                 }
             });
 
-            // ------------------------------------------------------------------
-            // DRAG LOGIC (SOLO EN CANVAS DE EDICIÓN)
-            // ------------------------------------------------------------------
+            // DRAG LOGIC
             this.dom.canvasEdit.addEventListener('mousedown', (e) => {
-                if (window.innerWidth <= 768 || this.isBuildingFlow) return; 
+                if (window.innerWidth <= 768) return; 
                 const node = e.target.closest('.node-wrapper');
                 if (node) { 
                     this.isDragging = true; 
@@ -784,7 +785,6 @@ export default class ValueMapView {
             window.addEventListener('mouseup', () => { 
                 if (this.draggedElement) {
                     this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
-                    // Al soltar, actualizamos el visual canvas tmb
                     const cloneNode = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${this.draggedElement.dataset.id}"]`);
                     if(cloneNode) {
                         cloneNode.style.left = this.draggedElement.style.left;
@@ -796,31 +796,31 @@ export default class ValueMapView {
             });
         }
 
-        // TOOLTIPS HTML HOVER (UNIVERSAL)
+        // TOOLTIPS HTML HOVER (V10 READS FROM VNA_FLOWS)
         const showTooltip = (e, canvasObj) => {
             if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
                 const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                const tx = p.transactions[idx];
-                if(!tx) return; 
+                const flow = p.vna_flows[idx];
+                if(!flow) return; 
                 
-                const rFrom = p.roles.find(r => r.id === tx.from);
-                const rTo = p.roles.find(r => r.id === tx.to);
+                const rFrom = p.roles.find(r => r.id === flow.from);
+                const rTo = p.roles.find(r => r.id === flow.to);
                 
-                const typeColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-                const typeText = tx.tipo === 'tangible' ? 'TANGIBLE' : 'INTANGIBLE';
+                const typeColor = flow.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+                const typeText = flow.tipo === 'tangible' ? 'TANGIBLE' : 'INTANGIBLE';
                 
                 this.dom.tooltip.innerHTML = `
                     <div style="color: ${typeColor}; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
-                        [Paso ${parseInt(idx) + 1}] ${typeText}
+                        [Tubería ${parseInt(idx) + 1}] ${typeText}
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
                         <div style="font-size: 0.8rem;"><strong style="color:#888;">De:</strong> ${rFrom ? rFrom.name : '?'}</div>
                         <div style="font-size: 0.8rem;"><strong style="color:#888;">Hacia:</strong> ${rTo ? rTo.name : '?'}</div>
                     </div>
                     <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border: 1px dashed #444;">
-                        <div style="color:white; font-weight:bold; margin-bottom:5px;">${tx.entregable}</div>
-                        <div style="color:var(--accent-blue); font-family: monospace;">⏱ Est: ${tx.horas}h</div>
+                        <div style="color:white; font-weight:bold; margin-bottom:5px;">${flow.template}</div>
+                        <div style="color:var(--accent-blue); font-family: monospace;">⏱ Est: ${flow.estimatedHours}h</div>
                     </div>
                 `;
                 
@@ -847,15 +847,11 @@ export default class ValueMapView {
             this.dom.canvasEdit.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         }
 
-        // SIMULACIÓN
         this.dom.btnSimulate.addEventListener('click', () => this.startSimulation());
         this.dom.btnPauseSim.addEventListener('click', () => this.pauseSimulation());
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
     }
 
-    // ---------------------------------------------------------
-    // FUNCION MAESTRA: INSPECTOR DE ROLES OMNIPRESENTE
-    // ---------------------------------------------------------
     openRoleInspector(roleId) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         if(!p) return;
@@ -864,7 +860,6 @@ export default class ValueMapView {
 
         this.selectedRoleId = rol.id;
         
-        // Highlight en ambos mapas (Feedback visual)
         this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
         if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
         
@@ -893,9 +888,6 @@ export default class ValueMapView {
         btnDel.style.color = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
     }
 
-    // ---------------------------------------------------------
-    // LÓGICA VISUAL FLOW BUILDER
-    // ---------------------------------------------------------
     cancelVisualFlow() {
         this.flowFromId = null;
         if(this.dom.canvasEdit) {
@@ -910,25 +902,25 @@ export default class ValueMapView {
         }
     }
 
-    openTxBuilderModal(fromId, toId, existingTx = null) {
+    openTxBuilderModal(fromId, toId, existingFlow = null) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        this.populateDropdowns(p.roles); // Forzamos refresh
+        this.populateDropdowns(p.roles); 
         
         this.dom.selFrom.value = fromId;
         this.dom.selTo.value = toId;
         
         this.updateOntologyTemplates();
 
-        if (existingTx) {
+        if (existingFlow) {
             this.dom.formTitle.innerText = `Editando Flujo`;
             this.dom.btnAddFlow.innerText = '💾 Guardar Cambios';
-            this.dom.selType.value = existingTx.tipo;
-            this.dom.inpHoras.value = existingTx.horas;
-            this.dom.inpDesc.value = existingTx.entregable;
+            this.dom.selType.value = existingFlow.tipo;
+            this.dom.inpHoras.value = existingFlow.estimatedHours || existingFlow.horas;
+            this.dom.inpDesc.value = existingFlow.template || existingFlow.entregable;
             this.dom.selTemplate.value = 'manual';
         } else {
-            this.dom.formTitle.innerText = `Definir Transacción (Paso Final)`;
-            this.dom.btnAddFlow.innerText = '➕ Confirmar Flujo';
+            this.dom.formTitle.innerText = `Definir Tubería de Valor (Flow)`;
+            this.dom.btnAddFlow.innerText = '➕ Confirmar Flujo Permanente';
             this.dom.inpDesc.value = '';
             this.dom.selTemplate.value = '';
         }
@@ -943,17 +935,18 @@ export default class ValueMapView {
         const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
         this.populateDropdowns(pUpdate.roles);
         this.renderSequence(highlightIndex); 
-        this.renderRolesTab(); // Refrescar pestaña roles
+        this.renderRolesTab(); 
         if(this.dom.canvasEdit) this.renderMap(this.dom.canvasEdit, true);
         this.renderMap(this.dom.canvasVis, false);
         setTimeout(() => this.drawEdges(), 100); 
     }
 
+    // SIMULACIÓN (V10 READS FROM vna_flows)
     startSimulation() {
         if (this.isSimulating && !this.isPaused) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const txs = p?.transactions || [];
-        if (txs.length === 0) return alert("Añade transacciones para simular el flujo.");
+        const flows = p?.vna_flows || p?.transactions || []; // Retrocompatibilidad visual
+        if (flows.length === 0) return alert("Dibuja tuberías de valor para simular el flujo.");
 
         this.isSimulating = true;
         this.isPaused = false;
@@ -976,23 +969,22 @@ export default class ValueMapView {
 
         const runNextStep = () => {
             if(!this.isSimulating || this.isPaused) return;
-            if(this.currentSimIndex >= txs.length) {
+            if(this.currentSimIndex >= flows.length) {
                 this.stopSimulation();
                 return;
             }
 
             const index = this.currentSimIndex;
-            const tx = txs[index];
+            const flow = flows[index];
 
-            // Resaltar en lista operativa (Kanban visual flow)
             stepEls.forEach(el => el.classList.remove('simulating'));
             if(stepEls[index]) {
                 stepEls[index].classList.add('simulating');
                 if(window.innerWidth > 768) stepEls[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
 
-            const r1 = p.roles.find(r => r.id === tx.from);
-            const r2 = p.roles.find(r => r.id === tx.to);
+            const r1 = p.roles.find(r => r.id === flow.from);
+            const r2 = p.roles.find(r => r.id === flow.to);
             let isSickFlow = false;
 
             if (r1 && r2) {
@@ -1011,7 +1003,7 @@ export default class ValueMapView {
                 }
             }
 
-            this.drawSingleEdgeAnim(tx, index, isSickFlow, 0, 1); 
+            this.drawSingleEdgeAnim(flow, index, isSickFlow, 0, 1); 
             
             this.currentSimIndex++;
             this.simTimeoutId = setTimeout(runNextStep, 2500);
@@ -1054,7 +1046,6 @@ export default class ValueMapView {
         const dom2 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2) return;
 
-        // MATH ANTI-ZOOM BUG
         const x1_center = dom1.offsetLeft;
         const y1_center = dom1.offsetTop;
         const x2_center = dom2.offsetLeft;
@@ -1127,7 +1118,8 @@ export default class ValueMapView {
             badge.style.pointerEvents = 'none';
             badge.style.minWidth = '120px';
 
-            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:bold; font-size:0.7rem; margin-bottom:3px; text-transform:uppercase;">Paso ${index + 1}</div><div style="font-size:0.85rem; font-weight:bold; line-height:1.2;">${tx.entregable}</div>`;
+            const delivName = tx.template || tx.entregable;
+            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:bold; font-size:0.7rem; margin-bottom:3px; text-transform:uppercase;">Paso ${index + 1}</div><div style="font-size:0.85rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
             this.dom.canvasVis.appendChild(badge);
         }, 1200); 
     }
@@ -1212,20 +1204,28 @@ export default class ValueMapView {
 
     renderSequence(highlightIndex = -1) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const txs = p?.transactions || [];
+        
+        // V10 LOGIC: Leemos de vna_flows. Si no hay, fallbaqueamos a transactions para proyectos antiguos.
+        let flows = p?.vna_flows || [];
+        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) {
+            flows = p.transactions; // Legacy support visual
+        }
+
         this.dom.seqList.innerHTML = '';
         
-        if(txs.length === 0) {
-            this.dom.seqList.innerHTML = `<div style="text-align:center; padding: 2rem; color:#666; border: 1px dashed #333; border-radius:12px;">El mapa no tiene flujos de valor. Usa el Modo Arquitecto para dibujarlos.</div>`;
+        if(flows.length === 0) {
+            this.dom.seqList.innerHTML = `<div style="text-align:center; padding: 2rem; color:#666; border: 1px dashed #333; border-radius:12px;">No hay tuberías de valor trazadas. Usa el Modo Arquitecto para dibujarlas.</div>`;
             return;
         }
 
         const isPO = p.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
 
-        txs.forEach((tx, i) => {
-            const rFrom = p.roles.find(r => r.id === tx.from) || { levelId: '?', name: 'Nodo Borrado' };
-            const rTo = p.roles.find(r => r.id === tx.to) || { levelId: '?', name: 'Nodo Borrado' };
-            const color = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+        flows.forEach((flow, i) => {
+            const rFrom = p.roles.find(r => r.id === flow.from) || { levelId: '?', name: 'Nodo Borrado' };
+            const rTo = p.roles.find(r => r.id === flow.to) || { levelId: '?', name: 'Nodo Borrado' };
+            const color = flow.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+            const delivName = flow.template || flow.entregable;
+            const hours = flow.estimatedHours || flow.horas || 1;
 
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
@@ -1235,7 +1235,7 @@ export default class ValueMapView {
             const actions = `
                 <div class="step-actions">
                     ${i > 0 ? `<button class="btn-step btn-move-up" data-idx="${i}" title="Subir">↑</button>` : ''}
-                    ${i < txs.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" title="Bajar">↓</button>` : ''}
+                    ${i < flows.length - 1 ? `<button class="btn-step btn-move-down" data-idx="${i}" title="Bajar">↓</button>` : ''}
                     <button class="btn-step edit btn-edit" data-idx="${i}" title="Editar">✎</button>
                     <button class="btn-step del btn-del" data-idx="${i}" title="Eliminar">🗑️</button>
                 </div>
@@ -1243,95 +1243,17 @@ export default class ValueMapView {
 
             stepEl.innerHTML = `
                 <div class="step-info">
-                    <div class="step-meta" style="color: ${color};"><span style="font-weight:bold;">[${i + 1}]</span> ⏱ ${tx.horas}h Est.</div>
+                    <div class="step-meta" style="color: ${color};"><span style="font-weight:bold;">[${i + 1}]</span> ⏱ ${hours}h Est.</div>
                     <div class="step-route-compact">
                         <span class="route-level">${rFrom.levelId}</span> <span class="route-name">${rFrom.name}</span>
                         <span class="route-arrow">&rarr;</span>
                         <span class="route-level">${rTo.levelId}</span> <span class="route-name">${rTo.name}</span>
                     </div>
-                    <div class="step-deliv-name" style="color: ${color};">${tx.entregable}</div>
+                    <div class="step-deliv-name" style="color: ${color};">${delivName}</div>
                 </div>
                 ${isPO ? actions : ''}
             `;
             this.dom.seqList.appendChild(stepEl);
-        });
-    }
-
-    renderMap(canvasElement, isEditMode) {
-        if(!canvasElement) return;
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        if (!p) return;
-
-        const positions = {};
-        canvasElement.querySelectorAll('.node-wrapper').forEach(n => { positions[n.dataset.id] = { left: n.style.left, top: n.style.top }; n.remove(); });
-
-        const layout = { '@anxaneta': {x: 50, y: 15}, '@aixecador': {x: 50, y: 35}, '@dosos': {x: 35, y: 55}, '@baixos': {x: 65, y: 55}, '@pinya': {x: 50, y: 80} };
-        const levelCounts = {};
-        const isPO = p.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
-
-        p.roles.forEach(rol => {
-            const level = rol.levelId || '@baixos';
-            levelCounts[level] = (levelCounts[level] || 0) + 1;
-            
-            const wrapper = document.createElement('div');
-            const isGhost = rol.isArchived ? 'ghost-node' : '';
-            wrapper.className = `node-wrapper ${isGhost}`;
-            wrapper.dataset.id = rol.id;
-            
-            if (positions[rol.id]) {
-                wrapper.style.left = positions[rol.id].left; wrapper.style.top = positions[rol.id].top;
-            } else {
-                const pos = { ...(layout[level] || {x:50, y:50}) };
-                if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
-                wrapper.style.left = `${pos.x}%`; wrapper.style.top = `${pos.y}%`;
-            }
-
-            const color = this.getColor(level);
-            const icon = this.getIcon(level);
-            const fmv = rol.fmv || 0;
-
-            wrapper.innerHTML = `
-                <div class="node-level-badge" style="border-color: ${color}; color: ${color};">${icon}</div>
-                <div class="node-circle" style="border-color: ${color};">
-                    <div class="node-fmv">${fmv}€<span style="font-size:0.6rem;">/h</span></div>
-                    <div class="node-label-fmv">fmv</div>
-                </div>
-                <div class="node-title">${rol.name}</div>
-            `;
-
-            if(isEditMode) {
-                wrapper.addEventListener('click', (e) => {
-                    if (this.hasMoved) return; 
-                    
-                    if (!this.flowFromId) {
-                        this.flowFromId = rol.id;
-                        if(this.dom.editTipText) this.dom.editTipText.innerHTML = `🎯 <b>Paso 2:</b> Haz click en el <b>NODO DESTINO</b> para trazar la línea.`;
-                        canvasElement.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('flow-source'));
-                        wrapper.classList.add('flow-source');
-                    } else {
-                        if (this.flowFromId === rol.id) {
-                            this.cancelVisualFlow(); 
-                        } else {
-                            this.openTxBuilderModal(this.flowFromId, rol.id);
-                            this.cancelVisualFlow(); 
-                        }
-                    }
-                });
-
-                wrapper.addEventListener('dblclick', (e) => {
-                    if (window.innerWidth <= 768 || this.isBuildingFlow) return; 
-                    this.openRoleInspector(rol.id);
-                });
-            } else {
-                if (isPO) {
-                    wrapper.addEventListener('dblclick', (e) => {
-                        if (window.innerWidth <= 768 || this.isSimulating) return;
-                        this.openRoleInspector(rol.id);
-                    });
-                }
-            }
-            
-            canvasElement.appendChild(wrapper);
         });
     }
 
@@ -1353,13 +1275,15 @@ export default class ValueMapView {
         this.dom.canvasVis.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         
-        const txs = p?.transactions || [];
-        if (txs.length === 0) return;
+        let flows = p?.vna_flows || [];
+        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) flows = p.transactions;
+
+        if (flows.length === 0) return;
 
         this.injectSvgMarkers();
 
         const pairCounts = {};
-        txs.forEach((tx, i) => {
+        flows.forEach((tx, i) => {
             const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
             if (!pairCounts[key]) pairCounts[key] = [];
             pairCounts[key].push({ tx, index: i });
@@ -1380,7 +1304,6 @@ export default class ValueMapView {
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
 
-        // MATH ANTI-ZOOM BUG: Usamos offsetLeft/Top que devuelve el centro visual de forma absoluta
         const x1_center = dom1.offsetLeft;
         const y1_center = dom1.offsetTop;
         const x2_center = dom2.offsetLeft;
@@ -1390,7 +1313,7 @@ export default class ValueMapView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        const trim = 42; // Radio del círculo interno (.node-circle)
+        const trim = 42; 
         let x1 = x1_center;
         let y1 = y1_center;
         let x2 = x2_center;
