@@ -6,9 +6,7 @@ export const Sidebar = {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         const role = state.session.role;
-        const user = state.globalUsers.find(u => u.id === activeUserId);
         
-        let pName = 'Ninguna Red';
         let pId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === pId);
         
@@ -21,66 +19,44 @@ export const Sidebar = {
             project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
         }
 
-        if (project) {
-            pName = project.nombre;
-        }
-
         const isCollapsed = localStorage.getItem('tt_sidebar_collapsed') === 'true';
         const collapsedClass = isCollapsed ? 'collapsed' : '';
         const arrowIcon = isCollapsed ? '→' : '←';
 
         const globalSection = `
             <div class="side-section">
-                <a href="/v5/" class="side-link ${currentPath === '/' ? 'active' : ''}" data-link title="Ecosistema (Red Global)"><span class="icon">🌐</span> <span class="text">Ecosistema</span></a>
+                <a href="/v5/" class="side-link ${currentPath === '/' ? 'active' : ''}" data-link title="Ecosistema (Centro de Mando)"><span class="icon">🌐</span> <span class="text">Ecosistema</span></a>
                 <a href="/v5/profile" class="side-link ${currentPath === '/profile' ? 'active' : ''}" data-link title="Mi Perfil (CV)"><span class="icon">👤</span> <span class="text">Mi Perfil (CV)</span></a>
             </div>
         `;
 
         let projectSection = '';
-        if (state.projects.length > 0) {
-            let optionsHtml = '';
-            state.projects.forEach(p => {
-                const hasAccess = store.canUserViewProject(p.id, activeUserId, role);
-                if (hasAccess || role === 'ecosystem-owner') {
-                    const isSelected = p.id === (project ? project.id : '') ? 'selected' : '';
-                    optionsHtml += `<option value="${p.id}" ${isSelected}>${p.nombre}</option>`;
-                }
-            });
+        if (project) {
+            const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx') ? 'active-pomodoro' : '';
 
-            if (optionsHtml !== '') {
-                const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx') ? 'active-pomodoro' : '';
-
-                projectSection = `
-                    <div class="project-context-header">
-                        <label class="text">CASTELL ACTIVO</label>
-                        <div class="select-wrapper text">
-                            <select id="sidebarProjectSwitcher" title="Saltar a otro Proyecto">
-                                ${optionsHtml}
-                            </select>
-                            <span class="select-arrow">▼</span>
-                        </div>
-                        <span class="icon-only" style="display:none; text-align:center; font-size:1.4rem; margin:10px 0;" title="${project ? project.nombre : 'Proyecto'}">🏰</span>
-                    </div>
-
-                    <div class="side-section" style="${!project ? 'display:none;' : ''}">
-                        <a href="/v5/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Kanban Tareas">
-                            <span class="icon">📋</span> <span class="text">Kanban Pull</span>
-                        </a>
-                        <a href="/v5/focus" class="side-link ${currentPath === '/focus' ? 'active' : ''}" data-link title="Deep Work Focus">
-                            <span class="icon ${isPomodoroActive}">🍅</span> <span class="text">Deep Work</span>
-                        </a>
-                        <a href="/v5/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Contabilidad y Slicing Pie">
-                            <span class="icon">⚖️</span> <span class="text">Slicing Pie (Equity)</span>
-                        </a>
-                        <a href="/v5/map" class="side-link ${currentPath === '/map' ? 'active' : ''}" data-link title="Mapa de Valor VNA">
-                            <span class="icon">🕸️</span> <span class="text">Mapa VNA</span>
-                        </a>
-                        <a href="/v5/team" class="side-link ${currentPath === '/team' ? 'active' : ''}" data-link title="Equipo / Nodos">
-                            <span class="icon">👥</span> <span class="text">La Colla</span>
-                        </a>
-                    </div>
-                `;
-            }
+            // El Dashboard ahora está primero
+            projectSection = `
+                <div class="side-section" style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <a href="/v5/dashboard" class="side-link ${currentPath === '/dashboard' ? 'active' : ''}" data-link title="Dashboard de Red">
+                        <span class="icon">🛰️</span> <span class="text">Dashboard</span>
+                    </a>
+                    <a href="/v5/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Kanban Tareas">
+                        <span class="icon">📋</span> <span class="text">Kanban Pull</span>
+                    </a>
+                    <a href="/v5/focus" class="side-link ${currentPath === '/focus' ? 'active' : ''}" data-link title="Deep Work Focus">
+                        <span class="icon ${isPomodoroActive}">🍅</span> <span class="text">Deep Work</span>
+                    </a>
+                    <a href="/v5/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Contabilidad y Slicing Pie">
+                        <span class="icon">⚖️</span> <span class="text">Slicing Pie (Equity)</span>
+                    </a>
+                    <a href="/v5/map" class="side-link ${currentPath === '/map' ? 'active' : ''}" data-link title="Mapa de Valor VNA">
+                        <span class="icon">🕸️</span> <span class="text">Mapa VNA</span>
+                    </a>
+                    <a href="/v5/team" class="side-link ${currentPath === '/team' ? 'active' : ''}" data-link title="Equipo / Nodos">
+                        <span class="icon">👥</span> <span class="text">La Colla</span>
+                    </a>
+                </div>
+            `;
         }
 
         return `
@@ -93,7 +69,7 @@ export const Sidebar = {
                 
                 .sidebar-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
                 
-                /* BRAND LOGO SIDEBAR (MANDALA FIX) */
+                /* BRAND LOGO SIDEBAR */
                 .sidebar .brand { display: flex; align-items: center; height: 40px; transition: opacity 0.2s; text-decoration: none; width: 100%;}
                 .sidebar .brand img { height: 100%; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; transform-origin: left center;}
                 
@@ -114,22 +90,6 @@ export const Sidebar = {
                 
                 .active-pomodoro { animation: pulseTomato 1.5s infinite alternate; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
-
-                .sidebar .project-context-header { 
-                    padding: 1rem; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid #333; 
-                    margin: 1rem 0 1.5rem 0; display: flex; flex-direction: column; gap: 8px;
-                }
-                .sidebar .project-context-header label { font-size: 0.7rem; color: var(--accent-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin: 0; display: block; }
-                .sidebar .select-wrapper { position: relative; width: 100%; }
-                .sidebar .select-wrapper select {
-                    width: 100%; background: #050505; border: 1px solid #444; color: white; 
-                    padding: 10px 30px 10px 10px; border-radius: 6px; outline: none; 
-                    font-family: inherit; font-size: 0.9rem; font-weight: bold; cursor: pointer; 
-                    appearance: none; transition: border-color 0.2s;
-                    text-overflow: ellipsis; white-space: nowrap; overflow: hidden; box-sizing: border-box;
-                }
-                .sidebar .select-wrapper select:hover { border-color: var(--accent-blue); }
-                .sidebar .select-wrapper .select-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--accent-blue); pointer-events: none; font-size: 0.7rem; }
                 
                 .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
                 
@@ -140,11 +100,6 @@ export const Sidebar = {
                 .sidebar.collapsed .side-link { padding: 0.8rem; justify-content: center; border-radius: 12px;}
                 .sidebar.collapsed .side-link .icon { margin-right: 0; font-size: 1.4rem;}
                 .sidebar.collapsed .side-link .text { display: none; }
-                .sidebar.collapsed .project-context-header { padding: 0; background: transparent; border: none; margin: 0.5rem 0; width: 100%; display: flex; justify-content: center;}
-                .sidebar.collapsed .project-context-header .text { display: none; }
-                .sidebar.collapsed .project-context-header select { display: none; }
-                .sidebar.collapsed .project-context-header .select-wrapper { display: none; }
-                .sidebar.collapsed .project-context-header .icon-only { display: block !important; cursor: pointer; }
                 .sidebar.collapsed .sidebar-footer .text { display: none; }
 
                 /* OCULTAR EN MÓVIL */
@@ -181,29 +136,6 @@ export const Sidebar = {
     },
 
     initListeners: () => {
-        const projectSwitcher = document.getElementById('sidebarProjectSwitcher');
-        if (projectSwitcher) {
-            projectSwitcher.addEventListener('change', (e) => {
-                const selectedProjectId = e.target.value;
-                const state = store.getState();
-                const projectIndex = state.projects.findIndex(p => p.id === selectedProjectId);
-                
-                if (projectIndex !== -1 && projectIndex !== state.projects.length - 1) {
-                    const projectToMove = state.projects.splice(projectIndex, 1)[0];
-                    state.projects.push(projectToMove);
-                    
-                    store.dispatch({
-                        type: 'UPDATE_PROJECT_INFO',
-                        payload: { projectId: selectedProjectId, updates: { _lastSwitch: Date.now() } }
-                    });
-                }
-                
-                setTimeout(() => {
-                    window.location.reload();
-                }, 150); 
-            });
-        }
-
         const btnLogout = document.getElementById('globalBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
