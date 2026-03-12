@@ -15,7 +15,6 @@ export default class FocusView {
         this.targetSeconds = 0;
         this.startTime = null; 
         
-        // Frases estoicas/zen para inspirar el trabajo profundo
         this.focusTips = [
             "Concéntrate en la tarea presente como si fuera la última. — M. Aurelio",
             "El valor de la red fluye hacia donde la atención se enfoca.",
@@ -29,7 +28,6 @@ export default class FocusView {
     async getHtml() {
         const state = store.getState();
         
-        // Recuperamos el proyecto activo global
         let currentActiveId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === currentActiveId);
         
@@ -47,7 +45,6 @@ export default class FocusView {
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 
-                /* Workspace fluído y alineado con el resto de la app (padding: 2rem 3rem) */
                 .workspace-focus { 
                     flex: 1; display: flex; flex-direction: column; position: relative; 
                     background: radial-gradient(circle at center, #111116 0%, #050505 100%); 
@@ -56,12 +53,12 @@ export default class FocusView {
                 }
                 
                 /* =========================================================
-                   CONTENEDOR CENTRAL DE TRABAJO (Compactado)
+                   CONTENEDOR CENTRAL DE TRABAJO
                    ========================================================= */
                 .focus-container { 
                     flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; 
                     justify-content: flex-start; padding: 0; padding-bottom: 6rem;
-                    position: relative; z-index: 10; margin-top: -1rem; /* Reduce el gap con el Header */
+                    position: relative; z-index: 10; margin-top: -1rem;
                 }
 
                 .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 4rem; animation: fadeIn 0.5s ease-out;}
@@ -78,8 +75,30 @@ export default class FocusView {
                     box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
                     animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
                     position: relative; z-index: 50; 
+                    transition: all 0.5s ease;
                 }
                 
+                /* =========================================================
+                   ZEN MODE ANIMATIONS (Inmersión Absoluta)
+                   ========================================================= */
+                .ph-view-header, .task-selector-box, .rhythm-selector {
+                    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+                    max-height: 200px; opacity: 1; transform-origin: top center; overflow: hidden;
+                }
+                .workspace-focus.zen-active .ph-view-header {
+                    opacity: 0; max-height: 0; margin-bottom: 0; transform: scale(0.95); padding: 0;
+                }
+                .workspace-focus.zen-active .task-selector-box {
+                    opacity: 0; max-height: 0; margin-bottom: 0; transform: scale(0.95); pointer-events: none;
+                }
+                .workspace-focus.zen-active .rhythm-selector {
+                    opacity: 0; max-height: 0; margin-bottom: 0; transform: scale(0.95); pointer-events: none;
+                }
+                .workspace-focus.zen-active .task-glass-panel {
+                    border-color: rgba(0, 230, 118, 0.3);
+                    box-shadow: 0 30px 80px rgba(0, 230, 118, 0.05), inset 0 1px 0 rgba(255,255,255,0.05);
+                }
+
                 /* SELECTOR OMNIPRESENTE LUXURY */
                 .task-selector-box { width: 100%; margin-bottom: 2.5rem; position: relative; z-index: 9999; }
                 .task-selector-box label { display:block; font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:900; text-align:center;}
@@ -148,11 +167,15 @@ export default class FocusView {
                 .btn-stop { background: rgba(255, 82, 82, 0.1); color: var(--accent-red); border: 2px solid var(--accent-red); display: none; }
                 .btn-stop:hover { background: var(--accent-red); color: white; box-shadow: 0 10px 40px rgba(255, 82, 82, 0.5); transform: scale(1.1);}
 
-                /* MODAL DE REPORTE */
+                /* =========================================================
+                   MODAL DE REPORTE (PoW Console)
+                   ========================================================= */
                 .report-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .report-card { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 3rem; border-radius: 24px; width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-sizing: border-box; border-top: 4px solid var(--accent-blue);}
+                .report-card { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 24px; width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-sizing: border-box; border-top: 4px solid var(--accent-blue);}
                 .report-card h2 { color: white; margin-top: 0; font-size: 1.8rem; font-weight:900; letter-spacing:-1px; margin-bottom: 5px;}
                 
+                .report-task-box { background: rgba(0, 176, 255, 0.1); border-left: 4px solid var(--accent-blue); color: white; font-weight: 900; padding: 15px; border-radius: 8px; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.3;}
+
                 .form-group { margin-bottom: 1.5rem; text-align: left; }
                 .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
                 .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 16px; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; outline:none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
@@ -168,7 +191,7 @@ export default class FocusView {
 
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
-                    .workspace-focus { padding: 90px 1.2rem 3rem 1.2rem; } 
+                    .workspace-focus { padding: 90px 1rem 1rem 1rem; } 
                     .focus-container { padding: 0; }
                     .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px;}
                     .empty-state h2 { font-size: 1.8rem; }
@@ -188,10 +211,12 @@ export default class FocusView {
             <div class="app-layout">
                 ${Sidebar.getHtml('/focus')}
 
-                <main class="workspace-focus">
+                <main class="workspace-focus" id="focusWorkspace">
                     <div class="glow-bg" id="glowBg"></div>
                     
-                    ${PageHeader.getHtml(headerConfig)}
+                    <div id="headerWrapper" style="position:relative; z-index:100; width: 100%;">
+                        ${PageHeader.getHtml(headerConfig)}
+                    </div>
 
                     <div class="focus-container">
                         
@@ -253,8 +278,10 @@ export default class FocusView {
 
                     <div class="report-modal" id="reportModal">
                         <div class="report-card">
-                            <h2>Consolidar PoW</h2>
-                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; line-height:1.5;">Sella tu Prueba de Trabajo. El auditor validará estas horas para emitir tus Slices correspondientes.</p>
+                            <h2>Reportar Entregable</h2>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height:1.5;">Sella tu Prueba de Trabajo. El auditor validará estas horas para emitir tus Slices correspondientes.</p>
+                            
+                            <div id="reportTaskName" class="report-task-box">🎯 Cargando Entregable...</div>
                             
                             <div class="form-group">
                                 <label style="color: var(--accent-green);">Tiempo Real Invertido (Horas / Fracciones)</label>
@@ -269,12 +296,12 @@ export default class FocusView {
 
                             <div class="form-group">
                                 <label>Notas de Traspaso (Opcional)</label>
-                                <textarea id="inpComment" class="form-control" rows="3" placeholder="Contexto para el receptor o el auditor..."></textarea>
+                                <textarea id="inpComment" class="form-control" rows="2" placeholder="Contexto para el receptor o el auditor..."></textarea>
                             </div>
 
-                            <div style="display: flex; justify-content: space-between; margin-top: 2.5rem; gap: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-top: 2rem; gap: 15px;">
                                 <button class="btn" id="btnCancelReport" style="background: transparent; border: 1px solid #555; color: white; padding: 14px 20px; border-radius: 12px; cursor: pointer; flex: 1; font-weight:bold; transition:0.2s;">Cancelar</button>
-                                <button class="btn" id="btnSubmitReport" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; flex: 2; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.3);">📤 Enviar al Ledger</button>
+                                <button class="btn" id="btnSubmitReport" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; flex: 2; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.3);">📤 Enviar a validar</button>
                             </div>
                         </div>
                     </div>
@@ -293,6 +320,7 @@ export default class FocusView {
         const activeUserId = state.session.activeUserId;
 
         this.dom = {
+            workspace: document.getElementById('focusWorkspace'),
             emptyState: document.getElementById('emptyState'),
             workState: document.getElementById('workState'),
             taskName: document.getElementById('taskName'),
@@ -309,6 +337,7 @@ export default class FocusView {
             btnStop: document.getElementById('btnStop'),
             btnDirectReport: document.getElementById('btnDirectReport'),
             modal: document.getElementById('reportModal'),
+            reportTaskName: document.getElementById('reportTaskName'), // Nuevo elemento
             inpRealHours: document.getElementById('inpRealHours'),
             inpProof: document.getElementById('inpProof'),
             inpComment: document.getElementById('inpComment'),
@@ -474,6 +503,9 @@ export default class FocusView {
         this.dom.glowBg.classList.add('running');
         this.dom.pomodoroIcon.classList.add('ticking');
 
+        // ZEN MODE ACTIVE
+        this.dom.workspace.classList.add('zen-active');
+
         const activeHash = this.activeTx.id || this.activeTx.hash;
         localStorage.setItem('tt_active_pomodoro_tx', activeHash);
         localStorage.setItem(`tt_focus_${activeHash}_running`, 'true');
@@ -514,6 +546,9 @@ export default class FocusView {
         this.dom.glowBg.classList.remove('running');
         this.dom.pomodoroIcon.classList.remove('ticking');
         
+        // ZEN MODE DEACTIVE
+        this.dom.workspace.classList.remove('zen-active');
+
         const activeHash = this.activeTx.id || this.activeTx.hash;
         localStorage.setItem(`tt_focus_${activeHash}_running`, 'false');
         localStorage.removeItem('tt_active_pomodoro_tx');
@@ -523,6 +558,9 @@ export default class FocusView {
     openReportModal(fromTimer) {
         this.pauseTimer();
         
+        const taskName = this.activeTx.entregable || this.activeTx.template || 'Work Order';
+        this.dom.reportTaskName.innerText = `🎯 ${taskName}`;
+
         if (fromTimer) {
             let workedSecs = this.mode === 'stopwatch' ? this.secondsElapsed : ((this.mode === 'pomodoro_25' ? 25*60 : 50*60) - this.targetSeconds);
             const hoursCalc = (workedSecs / 3600).toFixed(2);
