@@ -55,16 +55,16 @@ export const PageHeader = {
         }
 
         // --- LÓGICA DE ENLACES AUXILIARES (CODEX & AYUDA) ---
-        // Se muestran en HomeView (path === '/v5/' o similar) o si no hay pestañas específicas
+        // Linkeado a /manifesto (que es donde reside el Codex visual) y /help
         const showAuxLinks = currentPath.endsWith('/v5/') || currentPath.endsWith('/') || !config.tabs;
         const auxLinksHtml = showAuxLinks ? `
             <nav class="ph-utility-nav">
-                <a href="/v5/codex" data-link class="ph-utility-link">📖 CODEX</a>
+                <a href="/v5/manifesto" data-link class="ph-utility-link">📖 CODEX</a>
                 <a href="/v5/help" data-link class="ph-utility-link">❓ AYUDA</a>
             </nav>
         ` : '';
 
-        // TABS Y POMODORO
+        // TABS LOCALES DE LA VISTA
         let tabsHtml = '';
         if (config.tabs && config.tabs.length > 0) {
             tabsHtml = `
@@ -93,61 +93,66 @@ export const PageHeader = {
                     margin-bottom: 20px;
                     border-bottom: 1px solid rgba(255,255,255,0.05); 
                     gap: 15px;
+                    background: rgba(10, 10, 15, 0.2);
                 }
 
-                /* ENLACES PEQUEÑOS (DRY PHILOSOPHY) */
-                .ph-utility-nav { display: flex; gap: 15px; }
+                .ph-utility-nav { display: flex; gap: 20px; align-items: center; }
                 .ph-utility-link { 
                     font-size: 0.65rem; 
                     color: var(--text-muted); 
                     text-decoration: none; 
                     font-weight: 800; 
-                    letter-spacing: 1px; 
-                    transition: color 0.2s;
+                    letter-spacing: 1.5px; 
+                    transition: all 0.2s ease;
+                    padding: 4px 0;
+                    border-bottom: 1px solid transparent;
                 }
-                .ph-utility-link:hover { color: var(--accent-blue); }
+                .ph-utility-link:hover { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
 
                 .ph-mob-brand { display: none; align-items: center; height: 32px; text-decoration:none; }
                 .ph-mob-brand img { height: 100%; width: auto; filter: brightness(0) invert(1); }
 
-                .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex: 1; }
+                .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex: 1; }
 
                 .ph-mob-project-select { 
                     appearance: none;
-                    background: rgba(0, 0, 0, 0.5) no-repeat right 12px top 50% / 10px auto;
+                    background: rgba(0, 0, 0, 0.4) no-repeat right 12px top 50% / 10px auto;
                     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300b0ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-                    border: 1px solid rgba(0, 176, 255, 0.3); 
+                    border: 1px solid rgba(0, 176, 255, 0.2); 
                     color: var(--accent-blue); 
                     padding: 8px 35px 8px 15px; 
                     border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold;
-                    outline: none; max-width: 250px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer;
+                    outline: none; max-width: 220px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer;
+                    transition: all 0.3s ease;
                 }
+                .ph-mob-project-select:hover { border-color: var(--accent-blue); background-color: rgba(0, 176, 255, 0.05); }
 
                 .ph-mob-user { 
                     display: flex; align-items: center; justify-content: center; 
                     width: 35px; height: 35px; background: linear-gradient(135deg, var(--accent-purple), #7c4dff); 
                     color: white; border-radius: 50%; font-weight: 800; text-decoration: none; font-size: 0.9rem; 
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
                 }
 
                 .ph-pomodoro-alert { animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8)); }
                 @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 
-                .ph-view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; gap: 15px;}
+                .ph-view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; gap: 15px;}
                 .ph-view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1.5px; font-weight: 900;}
-                .ph-view-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
+                .ph-view-header p { color: var(--text-muted); font-size: 1rem; margin-top: 8px; line-height: 1.4; }
                 .ph-header-subtitle { color: var(--accent-blue); font-weight: 600; }
 
-                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;}
-                .ph-tab-btn { flex: 1; padding: 12px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-                .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; }
-                .ph-tab-badge { background: rgba(255,255,255,0.1); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; margin-left: 5px; }
+                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;}
+                .ph-tab-btn { flex: 1; padding: 10px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+                .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
                 @media (max-width: 768px) {
-                    .ph-global-top-bar { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(15px); }
+                    .ph-global-top-bar { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(15px); padding: 10px 15px; }
                     .ph-mob-brand { display: flex; }
-                    .ph-utility-nav { position: absolute; top: 45px; left: 15px; }
-                    .ph-view-header { margin-top: 30px; }
-                    .ph-view-header h1 { font-size: 1.8rem; }
+                    .ph-utility-nav { position: absolute; top: 50px; left: 15px; background: rgba(0,0,0,0.8); padding: 5px 12px; border-radius: 20px; border: 1px solid #333; }
+                    .ph-view-header { margin-top: 45px; }
+                    .ph-view-header h1 { font-size: 1.7rem; }
+                    .ph-mob-project-select { max-width: 130px; font-size: 0.7rem; }
                 }
             </style>
 
