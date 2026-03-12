@@ -20,15 +20,14 @@ export default class FocusView {
             "Concéntrate en la tarea presente como si fuera la última. — M. Aurelio",
             "El valor de la red fluye hacia donde la atención se enfoca.",
             "💡 Tip: Un sprint de 50m sin interrupciones equivale a 3h de trabajo fragmentado.",
-            "La calidad del código y la estrategia de hoy, es el patrimonio de la DAO de mañana.",
-            "Trabajo profundo: Sin notificaciones. Sin Slack. Solo ejecución brutal."
+            "La calidad del código de hoy es el patrimonio inmutable de mañana.",
+            "Deep Work: Sin notificaciones. Sin distracciones. Solo Proof of Work."
         ];
         this.currentTipIndex = 0;
     }
 
     async getHtml() {
         const state = store.getState();
-        const activeUserId = state.session.activeUserId;
         
         // Recuperamos el proyecto activo global
         let currentActiveId = localStorage.getItem('tt_active_project');
@@ -39,54 +38,73 @@ export default class FocusView {
         }
 
         const headerConfig = {
-            title: "Deep Work Center",
-            subtitle: project ? project.nombre : '',
-            tagline: "Aísla tu atención, ejecuta el Proof of Work y repórtalo al Ledger."
+            title: "Deep Work",
+            subtitle: project ? project.nombre : 'Sin Red',
+            tagline: "Aísla tu atención, ejecuta el entregable y sella tu Proof of Work."
         };
 
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { flex: 1; display: flex; flex-direction: column; position: relative; background: radial-gradient(circle at center, #111116 0%, #050505 100%); overflow-y: auto; scroll-behavior: smooth;}
+                
+                /* Workspace fluído: Permite scroll y evita superposiciones */
+                .workspace-focus { 
+                    flex: 1; display: flex; flex-direction: column; position: relative; 
+                    background: radial-gradient(circle at center, #111116 0%, #050505 100%); 
+                    overflow-y: auto; scroll-behavior: smooth;
+                }
                 
                 /* =========================================================
                    CONTENEDOR CENTRAL DE TRABAJO
                    ========================================================= */
-                .focus-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; padding: 2rem; padding-bottom: 5rem; min-height: 600px;}
+                .focus-container { 
+                    flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; 
+                    justify-content: flex-start; padding: 2rem; padding-bottom: 6rem;
+                    position: relative; z-index: 10;
+                }
 
-                .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1.5rem; z-index: 5; animation: fadeIn 0.5s ease-out;}
+                .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 4rem; animation: fadeIn 0.5s ease-out;}
                 .btn-go-kanban { background: white; color: black; margin-top: 1rem; text-decoration: none; padding: 14px 30px; border-radius: 12px; font-size: 1rem; font-weight: 900; transition: transform 0.2s; box-shadow: 0 10px 30px rgba(255,255,255,0.1);}
                 .btn-go-kanban:hover { transform: translateY(-3px); }
                 
-                /* =========================================================
-                   WORK STATE (TAREA ACTIVA)
-                   ========================================================= */
-                .work-wrapper { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 600px; animation: fadeIn 0.5s ease-out; }
+                /* EL MONOLITO DE CRISTAL (Panel Principal) */
+                .task-glass-panel {
+                    width: 100%; max-width: 650px; margin-top: 1rem;
+                    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+                    border: 1px solid rgba(255,255,255,0.08); border-radius: 24px;
+                    padding: 3rem 2rem; display: none; flex-direction: column; align-items: center;
+                    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+                    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+                    position: relative; z-index: 50; /* Z-INDEX ALTO PARA EVITAR BLOQUEOS */
+                }
                 
                 /* SELECTOR OMNIPRESENTE LUXURY */
-                .task-selector-box { width: 100%; margin-bottom: 3rem; position: relative; }
-                .task-selector-box label { display:block; font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:bold; text-align:center;}
+                .task-selector-box { width: 100%; margin-bottom: 2rem; position: relative; z-index: 9999; }
+                .task-selector-box label { display:block; font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:900; text-align:center;}
                 .omni-selector { 
-                    width: 100%; background: rgba(0, 0, 0, 0.6); border: 2px solid var(--accent-purple); color: white; 
-                    padding: 15px 20px; border-radius: 16px; font-family: var(--font-main); font-size: 1rem; 
-                    outline: none; cursor: pointer; appearance: none; font-weight: bold;
+                    width: 100%; background: rgba(0, 0, 0, 0.8); border: 2px solid var(--accent-purple); color: white; 
+                    padding: 16px 45px 16px 20px; border-radius: 16px; font-family: var(--font-main); font-size: 1.05rem; 
+                    outline: none; cursor: pointer; appearance: none; font-weight: 800;
                     text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.3s;
-                    box-shadow: inset 0 0 20px rgba(224, 64, 251, 0.1), 0 10px 30px rgba(0,0,0,0.5);
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; z-index: 9999;
                 }
-                .omni-selector:focus, .omni-selector:hover { border-color: var(--accent-blue); box-shadow: inset 0 0 20px rgba(0, 176, 255, 0.1), 0 10px 30px rgba(0,0,0,0.6); }
-                .omni-selector option { background: #111; color: white; padding: 10px; font-family: var(--font-mono); font-size:0.9rem;}
-                .omni-selector optgroup { font-family: var(--font-main); font-weight:900; color: var(--accent-blue); background: #000; font-style: normal; padding:5px 0;}
+                .omni-selector:focus, .omni-selector:hover { border-color: var(--accent-blue); box-shadow: 0 15px 40px rgba(0,176,255,0.2); }
+                .omni-selector option { background: #111; color: white; padding: 10px; font-family: var(--font-mono); font-size:0.95rem;}
+                .omni-selector optgroup { font-family: var(--font-main); font-weight:900; color: var(--accent-blue); background: #000; font-style: normal; padding:8px 0;}
                 .task-selector-box::after {
-                    content: '▼'; position: absolute; right: 20px; bottom: 18px;
-                    color: var(--accent-purple); font-size: 0.8rem; pointer-events: none;
+                    content: '▼'; position: absolute; right: 20px; bottom: 20px;
+                    color: var(--accent-purple); font-size: 0.8rem; pointer-events: none; z-index: 10000;
                 }
 
-                .task-title-group { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; justify-content: center; width: 100%;}
-                .task-title { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.2; text-align: center; font-weight:900;}
-                .btn-help-tip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-weight: bold; flex-shrink:0;}
+                /* TITULO Y BADGES */
+                .task-header { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 2rem; gap: 15px;}
+                .task-title-group { display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%;}
+                .task-title { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.2; text-align: center; font-weight:900; word-break: break-word;}
+                .btn-help-tip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; font-weight: bold; flex-shrink:0; font-size: 0.9rem;}
                 .btn-help-tip:hover { background: var(--accent-blue); color: black; border-color: var(--accent-blue); transform: scale(1.1);}
 
-                .task-meta-row { display: flex; gap: 15px; align-items: center; justify-content: center; margin-bottom: 2rem; flex-wrap:wrap;}
+                .task-meta-row { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap:wrap;}
                 .task-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-mono);}
                 .badge-tangible { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
                 .badge-intangible { background: rgba(224, 64, 251, 0.1); color: var(--accent-purple); border: 1px solid rgba(224, 64, 251, 0.3); }
@@ -94,39 +112,40 @@ export default class FocusView {
                 .btn-direct { background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: #ccc; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-size: 0.8rem; font-weight:bold;}
                 .btn-direct:hover { background: rgba(255,255,255,0.1); border-color: white; color: white; transform: translateY(-2px);}
 
-                .focus-tip { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; background: rgba(0, 176, 255, 0.05); padding: 12px 20px; border-radius: 12px; border-left: 3px solid var(--accent-blue); display: none; width: 100%; text-align: left; margin-bottom: 2rem; line-height: 1.5; animation: slideDown 0.3s ease-out;}
+                .focus-tip { font-size: 0.9rem; color: var(--accent-blue); font-style: normal; background: rgba(0, 176, 255, 0.05); padding: 15px 20px; border-radius: 12px; border-left: 4px solid var(--accent-blue); display: none; width: 100%; text-align: center; margin-bottom: 2rem; line-height: 1.5; font-weight: bold; animation: fadeIn 0.3s ease-out; box-sizing: border-box;}
 
-                .rhythm-selector { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 30px; border: 1px solid #222; margin-bottom: 1rem;}
-                .btn-rhythm { background: transparent; border: none; color: #888; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight:bold;}
+                /* SELECTOR DE RITMO */
+                .rhythm-selector { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 30px; border: 1px solid #333; margin-bottom: 2rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
+                .btn-rhythm { background: transparent; border: none; color: #888; padding: 10px 24px; border-radius: 24px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; font-weight:bold;}
                 .btn-rhythm:hover { color: white; background: rgba(255,255,255,0.05);}
-                .btn-rhythm.active { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); box-shadow: 0 0 15px rgba(0,230,118,0.1);}
+                .btn-rhythm.active { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.4); box-shadow: 0 0 20px rgba(0,230,118,0.15);}
 
                 /* =========================================================
                    TIMER SVG & TOMATO 🍅
                    ========================================================= */
-                .timer-wrapper { position: relative; width: 320px; height: 320px; display: flex; justify-content: center; align-items: center; z-index: 2; margin: 1rem 0;}
-                .timer-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-                .timer-circle-bg { fill: none; stroke: rgba(255,255,255,0.03); stroke-width: 6; }
-                .timer-circle-progress { fill: none; stroke: var(--accent-green); stroke-width: 8; stroke-dasharray: 942; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; stroke-linecap: round; filter: drop-shadow(0 0 15px rgba(0,230,118,0.5));}
+                .timer-wrapper { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; z-index: 2; margin: 0 auto 2rem auto;}
+                .timer-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));}
+                .timer-circle-bg { fill: rgba(0,0,0,0.3); stroke: rgba(255,255,255,0.05); stroke-width: 8; }
+                .timer-circle-progress { fill: none; stroke: var(--accent-green); stroke-width: 8; stroke-dasharray: 942; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; stroke-linecap: round; filter: drop-shadow(0 0 15px rgba(0,230,118,0.6));}
                 
-                .timer-container { position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+                .timer-container { position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 10;}
                 
-                .pomodoro-icon { font-size: 2.5rem; margin-bottom: 5px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); transition: all 0.3s;}
-                .pomodoro-icon.ticking { animation: tickTock 1s infinite alternate ease-in-out; filter: drop-shadow(0 0 25px rgba(255, 82, 82, 0.9)); }
+                .pomodoro-icon { font-size: 2.8rem; margin-bottom: 5px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); transition: all 0.3s;}
+                .pomodoro-icon.ticking { animation: tickTock 1s infinite alternate ease-in-out; filter: drop-shadow(0 0 30px rgba(255, 82, 82, 1)); }
                 
-                .time-display { font-size: 5rem; font-weight: 900; font-family: var(--font-mono); color: white; letter-spacing: -3px; z-index: 3; line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.8);}
-                .time-display span { font-size: 2.5rem; color: #444; vertical-align: baseline; padding: 0 4px;}
-                .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; margin-top: 8px; text-transform: uppercase; letter-spacing: 3px; opacity:0.8;}
+                .time-display { font-size: 4.5rem; font-weight: 900; font-family: var(--font-mono); color: white; letter-spacing: -3px; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.8);}
+                .time-display span { font-size: 2.5rem; color: #555; vertical-align: baseline; padding: 0 2px;}
+                .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.9rem; font-weight: 900; margin-top: 10px; text-transform: uppercase; letter-spacing: 4px; opacity:0.9;}
 
                 /* CONTROLS */
-                .controls { display: flex; gap: 2rem; z-index: 2; align-items: center; justify-content: center; margin-top: 1rem;}
-                .btn-circle { width: 75px; height: 75px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-                .btn-play { background: white; color: black; box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3); }
-                .btn-play:hover { transform: scale(1.1); background: #f5f5f5; box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);}
-                .btn-pause { background: rgba(0,0,0,0.6); color: white; border: 1px solid #555; backdrop-filter: blur(5px);}
+                .controls { display: flex; gap: 2rem; z-index: 10; align-items: center; justify-content: center;}
+                .btn-circle { width: 80px; height: 80px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2rem; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+                .btn-play { background: white; color: black; }
+                .btn-play:hover { transform: scale(1.1); background: #f0f0f0; box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);}
+                .btn-pause { background: rgba(0,0,0,0.8); color: white; border: 2px solid #555; backdrop-filter: blur(5px);}
                 .btn-pause:hover { background: rgba(255,255,255,0.1); border-color: white;}
-                .btn-stop { background: rgba(255, 82, 82, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); display: none; }
-                .btn-stop:hover { background: var(--accent-red); color: white; box-shadow: 0 10px 30px rgba(255, 82, 82, 0.4); transform: scale(1.1);}
+                .btn-stop { background: rgba(255, 82, 82, 0.1); color: var(--accent-red); border: 2px solid var(--accent-red); display: none; }
+                .btn-stop:hover { background: var(--accent-red); color: white; box-shadow: 0 10px 40px rgba(255, 82, 82, 0.5); transform: scale(1.1);}
 
                 /* MODAL DE REPORTE */
                 .report-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 4000; }
@@ -138,40 +157,40 @@ export default class FocusView {
                 .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 16px; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; outline:none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);}
 
-                .glow-bg { position: absolute; width: 800px; height: 800px; background: radial-gradient(circle, rgba(224, 64, 251, 0.05) 0%, transparent 60%); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; opacity: 0; transition: opacity 1s, background 1s; pointer-events: none;}
+                .glow-bg { position: fixed; width: 800px; height: 800px; background: radial-gradient(circle, rgba(224, 64, 251, 0.05) 0%, transparent 60%); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; opacity: 0; transition: opacity 1s, background 1s; pointer-events: none;}
                 .glow-bg.running { opacity: 1; animation: pulseGlow 4s infinite alternate; }
                 
                 @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5;} 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1;} }
                 @keyframes tickTock { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.15) rotate(5deg); } }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
-                    .workspace { padding: 90px 1rem 1rem 1rem; }
+                    .workspace-focus { padding-top: 80px; } /* Evitar pisar el header fijo */
                     .focus-container { padding: 1rem; justify-content: flex-start; }
+                    .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);}
                     .empty-state h2 { font-size: 1.8rem; }
                     
                     .task-selector-box { margin-bottom: 2rem; }
-                    .omni-selector { padding: 12px 15px; font-size: 0.9rem; border-radius: 12px;}
+                    .omni-selector { padding: 14px 15px; font-size: 0.95rem; border-radius: 12px;}
                     
-                    .task-title { font-size: 1.8rem; }
-                    .timer-wrapper { width: 260px; height: 260px; margin: 1rem 0; }
-                    .time-display { font-size: 4rem; }
-                    .btn-circle { width: 65px; height: 65px; font-size: 1.5rem; }
+                    .task-title { font-size: 1.6rem; }
+                    .timer-wrapper { width: 240px; height: 240px; margin: 1.5rem 0; }
+                    .time-display { font-size: 3.8rem; }
+                    .btn-circle { width: 70px; height: 70px; font-size: 1.6rem; }
                     
-                    .report-card { padding: 2rem 1.5rem; width: 95%; max-height: 90vh;}
+                    .report-card { padding: 2rem 1.5rem; width: 95%; max-height: 90vh; overflow-y:auto;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/focus')}
 
-                <main class="workspace">
+                <main class="workspace-focus">
                     <div class="glow-bg" id="glowBg"></div>
                     
-                    <div style="position:relative; z-index:20;">
+                    <div style="position:relative; z-index:100; width: 100%;">
                         ${PageHeader.getHtml(headerConfig)}
                     </div>
 
@@ -179,30 +198,32 @@ export default class FocusView {
                         
                         <div class="empty-state" id="emptyState">
                             <div style="font-size: 5rem; margin-bottom: 0; line-height:1; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.5));">☕</div>
-                            <h2>Escritorio Limpio.</h2>
+                            <h2 style="color:white; margin:0; font-weight:900;">Escritorio Limpio.</h2>
                             <p style="max-width: 400px; line-height:1.5;">La mente está despejada. Ve al Kanban, haz PULL de un entregable pendiente y vuelve aquí para entrar en Flow.</p>
                             <a href="/v5/project" data-link class="btn-go-kanban">Ir al Kanban (Mercado de Tareas)</a>
                         </div>
 
-                        <div id="workState" class="work-wrapper">
+                        <div id="workState" class="task-glass-panel">
                             
                             <div class="task-selector-box" id="omniContainer">
                                 <label>🎯 Entregable Activo (Workspace)</label>
-                                <select id="omniSelector" class="omni-selector">
+                                <select id="omniSelector" class="omni-selector" title="Selecciona la tarea a ejecutar">
                                     <option value="" disabled selected>Cargando tareas...</option>
                                 </select>
                             </div>
                             
-                            <div class="task-title-group">
-                                <h1 class="task-title" id="taskName">Cargando...</h1>
-                                <button class="btn-help-tip" id="btnShowTip" title="Consejo de concentración">?</button>
-                            </div>
+                            <div class="task-header">
+                                <div class="task-title-group">
+                                    <h1 class="task-title" id="taskName">Cargando...</h1>
+                                    <button class="btn-help-tip" id="btnShowTip" title="Inspiración y Ayuda">?</button>
+                                </div>
 
-                            <div class="focus-tip" id="focusTip"></div>
+                                <div class="focus-tip" id="focusTip"></div>
 
-                            <div class="task-meta-row">
-                                <div class="task-badge" id="taskType">--</div>
-                                <button class="btn-direct" id="btnDirectReport" title="Saltarse el reloj y reportar horas estimadas.">📝 Ingreso Manual Rápido</button>
+                                <div class="task-meta-row">
+                                    <div class="task-badge" id="taskType">--</div>
+                                    <button class="btn-direct" id="btnDirectReport" title="Saltarse el reloj y reportar horas estimadas.">📝 Ingreso Manual Rápido</button>
+                                </div>
                             </div>
 
                             <div class="rhythm-selector">
@@ -239,7 +260,7 @@ export default class FocusView {
                             <div class="form-group">
                                 <label style="color: var(--accent-green);">Tiempo Real Invertido (Horas / Fracciones)</label>
                                 <input type="number" step="0.1" id="inpRealHours" class="form-control" value="0.0" style="color:var(--accent-green); font-size:1.2rem; font-weight:bold;">
-                                <div style="font-size:0.7rem; color:#666; margin-top:5px;">Ejemplo: 1.5 = Hora y media.</div>
+                                <div style="font-size:0.75rem; color:#888; margin-top:6px; font-family:var(--font-mono);">Ejemplo: 1.5 = 1h 30m | 0.25 = 15m</div>
                             </div>
                             
                             <div class="form-group">
@@ -267,7 +288,7 @@ export default class FocusView {
 
     executeViewScript() {
         Sidebar.initListeners();
-        PageHeader.execute(); // Fix DRY PageHeader
+        PageHeader.execute(); 
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
@@ -298,16 +319,13 @@ export default class FocusView {
             omniSelector: document.getElementById('omniSelector')
         };
 
-        // 1. RECOPILAR TODAS LAS TAREAS (OMNI-RED)
+        // 1. RECOPILAR TODAS LAS TAREAS (OMNI-RED V10)
         let allMyTasks = [];
         
         state.projects.forEach(p => {
-            // V10: Las tareas que importan ahora viven en work_orders (si existen), sino fallback a transactions
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
-            
             let tasks = tasksSource.filter(tx => tx.status === 'pinged' && tx.assigneeId === activeUserId);
             
-            // Si es owner y no tiene asignadas, que pueda ver las pinged de la red para forzar trabajo
             if(tasks.length === 0 && state.session.role === 'ecosystem-owner') {
                 tasks = tasksSource.filter(tx => tx.status === 'pinged');
             }
@@ -318,7 +336,6 @@ export default class FocusView {
             });
         });
 
-        // Agrupar visualmente por Proyecto
         allMyTasks.sort((a, b) => a.projectName.localeCompare(b.projectName));
 
         if (allMyTasks.length === 0) {
@@ -326,9 +343,9 @@ export default class FocusView {
         } else {
             this.dom.workState.style.display = 'flex';
             
-            // Llenar Selector con OptGroups por Proyecto (Luxury Fix)
+            // Llenar Selector con OptGroups
             let currentProjectName = '';
-            let selectHtml = `<option value="" disabled>🎯 Selecciona el entregable que vas a ejecutar...</option>`;
+            let selectHtml = `<option value="" disabled>🎯 SELECCIONA EL ENTREGABLE...</option>`;
             
             allMyTasks.forEach(t => {
                 if (t.projectName !== currentProjectName) {
@@ -400,14 +417,13 @@ export default class FocusView {
         this.dom.taskName.innerText = name;
         
         if(this.activeTx.tipo === 'tangible') {
-            this.dom.taskType.innerText = '🟢 Entregable Tangible';
+            this.dom.taskType.innerText = '🟢 Tangible';
             this.dom.taskType.className = 'task-badge badge-tangible';
         } else {
-            this.dom.taskType.innerText = '🟣 Aporte Intangible';
+            this.dom.taskType.innerText = '🟣 Intangible';
             this.dom.taskType.className = 'task-badge badge-intangible';
         }
 
-        // Logic for Tips Interactivity
         if(this.dom.btnShowTip) {
             this.dom.btnShowTip.addEventListener('click', () => {
                 this.currentTipIndex = (this.currentTipIndex + 1) % this.focusTips.length;
@@ -525,7 +541,6 @@ export default class FocusView {
         
         const activeHash = this.activeTx.id || this.activeTx.hash;
 
-        // V10 Action Migration: 'REPORT_WORK_ORDER' if it's V10, otherwise fallback to V9
         const state = store.getState();
         const p = state.projects.find(x => x.id === this.activeTx.projectId);
         const isV10 = p.work_orders && p.work_orders.some(w => w.id === activeHash);
@@ -549,7 +564,6 @@ export default class FocusView {
             localStorage.removeItem('tt_active_pomodoro_tx');
             this.dispatchNavSyncEvent();
             
-            // Fija el proyecto actual como activo y salta al Kanban
             localStorage.setItem('tt_active_project', this.activeTx.projectId);
             window.location.href = '/v5/project';
         });
