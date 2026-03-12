@@ -20,7 +20,7 @@ const initialState = {
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
         allowUserCreation: false,
-        archetype: 'startup' // V9.9
+        archetype: 'startup' // V9.9 Meta-Ontology
     },
     ontology: { sectores: {} },
     globalUsers: [
@@ -60,32 +60,36 @@ const initialState = {
     session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
 };
 
-// 2. REDUCER ASÍNCRONO
+// 2. REDUCER ASÍNCRONO PURIFICADO
 async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
 
     switch (action.type) {
         
         // --- SISTEMA Y CONFIGURACIÓN ---
-        case 'IMPORT_STATE': return { ...newState, ...action.payload };
+        case 'IMPORT_STATE': 
+            return { ...newState, ...action.payload };
+        
         case 'UPDATE_GLOBAL_CONFIG': 
         case 'UPDATE_CONFIG': // V9.9
             return { ...newState, config: { ...newState.config, ...action.payload } };
 
         // --- ONTOLOGÍA DINÁMICA ---
         case 'ADD_ONTOLOGY_SECTOR':
-            return { ...newState, ontology: { ...newState.ontology, sectores: { ...newState.ontology.sectores, [action.payload.sectorId]: action.payload.rolesData } } };
+            newState.ontology.sectores[action.payload.sectorId] = action.payload.rolesData;
+            return newState;
+            
         case 'ADD_SECTOR': {
             const sectorId = action.payload.id || action.payload.name || 'custom_sector';
             const sectorData = action.payload.data || action.payload.roles || action.payload;
-            return { ...newState, ontology: { ...newState.ontology, sectores: { ...newState.ontology.sectores, [sectorId]: sectorData } } };
+            newState.ontology.sectores[sectorId] = sectorData;
+            return newState;
         }
 
         // --- V8.0: IDENTIDAD FRACTAL (PERMAWEB BRIDGE) ---
         case 'REGISTER_GLOBAL_USER': {
             const newId = action.payload.id.toLowerCase();
             const existsGlobal = newState.globalUsers.find(u => u.id === newId);
-            
             if (!existsGlobal) {
                 newState.globalUsers.push({
                     id: newId,
@@ -134,8 +138,8 @@ async function asyncReducer(state, action) {
             if (action.payload.projectId) {
                 const pUser = newState.projects.find(p => p.id === action.payload.projectId);
                 if (pUser) {
-                    const prev = pUser.usuarios || [];
-                    if (!prev.find(u => u.id === newId)) pUser.usuarios.push({ id: newId, joinedAt: Date.now() });
+                    pUser.usuarios = pUser.usuarios || [];
+                    if (!pUser.usuarios.find(u => u.id === newId)) pUser.usuarios.push({ id: newId, joinedAt: Date.now() });
                 }
             }
             return newState;
@@ -143,9 +147,14 @@ async function asyncReducer(state, action) {
 
         case 'LOGIN_USER': {
             const user = newState.globalUsers.find(u => u.id === action.payload.userId);
-            return { ...newState, session: { activeUserId: action.payload.userId, role: user ? (user.globalRole || 'network-user') : 'guest' } };
+            newState.session.activeUserId = action.payload.userId;
+            newState.session.role = user ? (user.globalRole || 'network-user') : 'guest';
+            return newState;
         }
-        case 'LOGOUT_USER': return { ...newState, session: { activeUserId: null, role: 'guest' } };
+        case 'LOGOUT_USER': 
+            newState.session.activeUserId = null;
+            newState.session.role = 'guest';
+            return newState;
 
         // --- GESTIÓN DE PROYECTOS / REDES ---
         case 'ADD_PROJECT_RESTRICTED': {
@@ -259,13 +268,14 @@ async function asyncReducer(state, action) {
             return newState;
         }
 
-        case 'UPDATE_PROJECT_INFO':
+        case 'UPDATE_PROJECT_INFO': {
             const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
             if (pInfo) Object.assign(pInfo, action.payload.updates);
             return newState;
+        }
 
         case 'UPDATE_ARCHETYPE':
-        case 'UPDATE_PROJECT_CONFIG':
+        case 'UPDATE_PROJECT_CONFIG': {
             const pArch = newState.projects.find(p => p.id === action.payload.projectId);
             if (pArch) {
                 const newArch = action.payload.archetype || action.payload.arquetipo || (action.payload.config && action.payload.config.archetype) || pArch.archetype;
@@ -273,8 +283,9 @@ async function asyncReducer(state, action) {
                 pArch.config = { ...pArch.config, ...(action.payload.config || {}), archetype: newArch };
             }
             return newState;
+        }
 
-        case 'UPDATE_ROLE':
+        case 'UPDATE_ROLE': {
             const pUpdRol = newState.projects.find(p => p.id === action.payload.projectId);
             if (pUpdRol) {
                 const rIdx = pUpdRol.roles.findIndex(r => r.id === action.payload.roleId);
@@ -295,6 +306,7 @@ async function asyncReducer(state, action) {
                 }
             }
             return newState;
+        }
 
         case 'ADD_ROLE': {
             const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
@@ -308,7 +320,7 @@ async function asyncReducer(state, action) {
             return newState;
         }
 
-        case 'TOGGLE_ROLE_ARCHIVE':
+        case 'TOGGLE_ROLE_ARCHIVE': {
             const pTogArc = newState.projects.find(p => p.id === action.payload.projectId);
             if (pTogArc) {
                 const rIdx = pTogArc.roles.findIndex(r => r.id === action.payload.roleId);
@@ -318,8 +330,9 @@ async function asyncReducer(state, action) {
                 }
             }
             return newState;
+        }
 
-        case 'ASSIGN_USER_ROLE':
+        case 'ASSIGN_USER_ROLE': {
             const pAssUsr = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAssUsr) {
                 pAssUsr.asignaciones = pAssUsr.asignaciones.filter(a => a.roleId !== action.payload.roleId);
@@ -328,13 +341,14 @@ async function asyncReducer(state, action) {
                 if (!prevUsers.find(u => u.id === action.payload.userId)) pAssUsr.usuarios.push({ id: action.payload.userId });
             }
             return newState;
+        }
 
         // =========================================================
         // ARQUITECTURA V10: SEPARACIÓN DE MODELO E INSTANCIA
         // =========================================================
 
         // --- 1. LAS TUBERÍAS (VNA FLOWS) ---
-        case 'ADD_FLOW':
+        case 'ADD_FLOW': {
             const pFlowAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pFlowAdd) {
                 if (!pFlowAdd.vna_flows) pFlowAdd.vna_flows = [];
@@ -343,9 +357,10 @@ async function asyncReducer(state, action) {
                     id: action.payload.flow.id || ('flow_' + Date.now())
                 });
             }
-            break;
+            return newState;
+        }
 
-        case 'UPDATE_FLOW':
+        case 'UPDATE_FLOW': {
             const pFlowUpd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pFlowUpd && pFlowUpd.vna_flows) {
                 const fIdx = pFlowUpd.vna_flows.findIndex(f => f.id === action.payload.flowId);
@@ -353,17 +368,19 @@ async function asyncReducer(state, action) {
                     pFlowUpd.vna_flows[fIdx] = { ...pFlowUpd.vna_flows[fIdx], ...action.payload.updates };
                 }
             }
-            break;
+            return newState;
+        }
 
-        case 'DELETE_FLOW':
+        case 'DELETE_FLOW': {
             const pFlowDel = newState.projects.find(p => p.id === action.payload.projectId);
             if (pFlowDel && pFlowDel.vna_flows) {
                 pFlowDel.vna_flows = pFlowDel.vna_flows.filter(f => f.id !== action.payload.flowId);
             }
-            break;
+            return newState;
+        }
 
         // --- 2. EL AGUA (WORK ORDERS EN KANBAN) ---
-        case 'SPAWN_WORK_ORDER':
+        case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
@@ -372,9 +389,10 @@ async function asyncReducer(state, action) {
                     timestamp: Date.now()
                 });
             }
-            break;
+            return newState;
+        }
 
-        case 'UPDATE_WORK_ORDER':
+        case 'UPDATE_WORK_ORDER': {
             const pWoUp = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoUp && pWoUp.work_orders) {
                 const woIdx = pWoUp.work_orders.findIndex(t => t.hash === action.payload.woHash);
@@ -382,30 +400,33 @@ async function asyncReducer(state, action) {
                     pWoUp.work_orders[woIdx] = { ...pWoUp.work_orders[woIdx], ...action.payload.updates };
                 }
             }
-            break;
+            return newState;
+        }
 
-        case 'DELETE_WORK_ORDER':
+        case 'DELETE_WORK_ORDER': {
             const pWoDel = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoDel && pWoDel.work_orders) {
                 pWoDel.work_orders = pWoDel.work_orders.filter(t => t.hash !== action.payload.woHash);
             }
-            break;
+            return newState;
+        }
 
         case 'REQUEST_WORK_ORDER':
-        case 'PING_WORK_ORDER':
+        case 'PING_WORK_ORDER': {
             const pWoPing = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pWoPing) {
+            if (pWoPing && pWoPing.work_orders) {
                 const wo = pWoPing.work_orders.find(t => t.hash === action.payload.woHash);
                 if (wo) {
                     wo.status = action.type === 'REQUEST_WORK_ORDER' ? 'requested' : 'pinged';
                     wo.assigneeId = action.payload.userId;
                 }
             }
-            break;
+            return newState;
+        }
 
-        case 'REPORT_WORK_ORDER':
+        case 'REPORT_WORK_ORDER': {
             const pWoRep = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pWoRep) {
+            if (pWoRep && pWoRep.work_orders) {
                 const wo = pWoRep.work_orders.find(t => t.hash === action.payload.woHash);
                 if (wo) {
                     wo.status = 'reported';
@@ -414,17 +435,18 @@ async function asyncReducer(state, action) {
                     wo.comentario = action.payload.comentario;
                 }
             }
-            break;
+            return newState;
+        }
 
-        case 'APPROVE_WORK_ORDER':
+        case 'APPROVE_WORK_ORDER': {
             const pWoApp = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pWoApp) {
+            if (pWoApp && pWoApp.work_orders) {
                 const wo = pWoApp.work_orders.find(t => t.hash === action.payload.woHash);
                 if (wo) {
                     wo.status = 'consolidated';
                     if (!pWoApp.ledger) pWoApp.ledger = [];
                     
-                    const flow = pWoApp.vna_flows.find(f => f.id === wo.flowId);
+                    let flow = (pWoApp.vna_flows || []).find(f => f.id === wo.flowId);
                     let multiplier = 1;
                     let fmv = 50;
                     let roleId = 'Unknown';
@@ -440,8 +462,8 @@ async function asyncReducer(state, action) {
                         }
                     }
 
-                    const tStore = new Store();
-                    const archFactor = tStore.getArchetypeFactor(pWoApp.archetype);
+                    const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                    const archFactor = archFactors[pWoApp.archetype] || 1.0;
 
                     const slices = (wo.realHours * fmv) * multiplier * archFactor;
                     wo.valorCongelado = slices;
@@ -460,13 +482,13 @@ async function asyncReducer(state, action) {
                     });
                 }
             }
-            break;
-
+            return newState;
+        }
 
         // =========================================================
-        // MANTENIMIENTO LEGACY V9 (Para que TDD y Kanban V9 no crasheen)
+        // MANTENIMIENTO LEGACY V9 (Evita crashes temporales en Kanban/Mapas V9)
         // =========================================================
-        case 'ADD_TRANSACTION':
+        case 'ADD_TRANSACTION': {
             const pAddTx = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAddTx) {
                 const prevTx = pAddTx.transactions && pAddTx.transactions.length > 0 ? pAddTx.transactions[pAddTx.transactions.length - 1] : null;
@@ -477,38 +499,43 @@ async function asyncReducer(state, action) {
                 });
             }
             return newState;
-        case 'UPDATE_TRANSACTION':
+        }
+        case 'UPDATE_TRANSACTION': {
             const pTxUp = newState.projects.find(p => p.id === action.payload.projectId);
             if (pTxUp && pTxUp.transactions) {
                 const txIdx = pTxUp.transactions.findIndex(t => t.hash === action.payload.txHash);
                 if (txIdx > -1) pTxUp.transactions[txIdx] = { ...pTxUp.transactions[txIdx], ...action.payload.updates };
             }
             return newState;
-        case 'DELETE_TRANSACTION':
+        }
+        case 'DELETE_TRANSACTION': {
             const pTxDel = newState.projects.find(p => p.id === action.payload.projectId);
             if (pTxDel && pTxDel.transactions) pTxDel.transactions = pTxDel.transactions.filter(t => t.hash !== action.payload.txHash);
             return newState;
-        case 'REQUEST_TRANSACTION':
+        }
+        case 'REQUEST_TRANSACTION': {
             const pReqTx = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pReqTx) {
+            if (pReqTx && pReqTx.transactions) {
                 const txReq = pReqTx.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txReq && txReq.status === 'theoretical') {
                     txReq.status = 'requested'; txReq.assigneeId = action.payload.userId; txReq.requestTimestamp = Date.now();
                 }
             }
             return newState;
-        case 'PING_TRANSACTION':
+        }
+        case 'PING_TRANSACTION': {
             const pPing = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pPing) {
+            if (pPing && pPing.transactions) {
                 const txPing = pPing.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txPing && (txPing.status === 'theoretical' || txPing.status === 'requested')) {
                     txPing.status = 'pinged'; txPing.assigneeId = action.payload.userId; txPing.pingTimestamp = Date.now();
                 }
             }
             return newState;
-        case 'REPORT_TRANSACTION':
+        }
+        case 'REPORT_TRANSACTION': {
             const pRep = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pRep) {
+            if (pRep && pRep.transactions) {
                 const txRep = pRep.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txRep && txRep.status === 'pinged') {
                     txRep.status = 'reported'; txRep.realHours = action.payload.realHours;
@@ -516,26 +543,35 @@ async function asyncReducer(state, action) {
                 }
             }
             return newState;
-        case 'APPROVE_TRANSACTION':
+        }
+        case 'APPROVE_TRANSACTION': {
             const pAppr = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pAppr) {
+            if (pAppr && pAppr.transactions) {
                 const txAppr = pAppr.transactions.find(tx => tx.hash === action.payload.txHash);
                 if (txAppr && txAppr.status === 'reported') {
                     txAppr.status = 'consolidated'; txAppr.approveTimestamp = Date.now(); txAppr.auditorId = newState.session.activeUserId;
-                    const tempStore = new Store();
-                    const workTimestamp = txAppr.reportTimestamp || txAppr.pingTimestamp || Date.now();
-                    const roleEconomics = tempStore.getRoleEconomicsAtTime(pAppr, txAppr.from, workTimestamp);
-                    const archFactor = tempStore.getArchetypeFactor(pAppr.archetype);
+                    
+                    let roleEconomics = { fmv: 50, multiplier: 1.0, id: txAppr.to };
+                    const role = pAppr.roles.find(r => r.id === txAppr.to);
+                    if (role) {
+                        roleEconomics.fmv = role.fmv || 50;
+                        roleEconomics.multiplier = role.multiplier || 1.0;
+                    }
+
+                    const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                    const archFactor = archFactors[pAppr.archetype] || 1.0;
+
                     const horas = txAppr.realHours || txAppr.horas || 0;
                     const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archFactor;
 
                     if (!pAppr.ledger) pAppr.ledger = [];
                     const lastLedgerHash = pAppr.ledger.length > 0 ? pAppr.ledger[pAppr.ledger.length - 1].hash : pAppr.genesisHash;
-                    const realCryptoHash = await generateSHA256(`${lastLedgerHash}|${txAppr.assigneeId}|${roleEconomics.id}|${horas}|${valorGenerado}|${Date.now()}`);
+                    
+                    const fakeHash = '0xMOCK_' + Date.now();
 
                     pAppr.ledger.push({
                         id: 'ledg_' + Math.random().toString(36).substr(2, 9),
-                        hash: realCryptoHash, prevHash: lastLedgerHash, previousHash: lastLedgerHash, 
+                        hash: fakeHash, prevHash: lastLedgerHash, previousHash: lastLedgerHash, 
                         userId: txAppr.assigneeId, roleId: roleEconomics.id, description: `[PoW] ${txAppr.entregable}`,
                         horas: horas, valorCongelado: valorGenerado, timestamp: Date.now() 
                     });
@@ -543,9 +579,10 @@ async function asyncReducer(state, action) {
                 }
             }
             return newState;
+        }
 
         // V7.4: INYECCIONES DE CAPITAL (SLICING PIE)
-        case 'ADD_CAPITAL_INJECTION':
+        case 'ADD_CAPITAL_INJECTION': {
             const pCap = newState.projects.find(p => p.id === action.payload.projectId);
             if (pCap) {
                 let multiplier = 2.0; 
@@ -558,20 +595,21 @@ async function asyncReducer(state, action) {
                 if (!pCap.ledger) pCap.ledger = [];
                 const lastLedgerHash = pCap.ledger.length > 0 ? pCap.ledger[pCap.ledger.length - 1].hash : pCap.genesisHash;
                 
-                const blockData = `${lastLedgerHash}|${action.payload.userId}|CAPITAL_ASSET|0|${valorGenerado}|${Date.now()}`;
-                const realCryptoHash = await generateSHA256(blockData);
-
                 pCap.ledger.push({
                     id: 'ledg_' + Math.random().toString(36).substr(2, 9),
-                    hash: realCryptoHash, prevHash: lastLedgerHash, previousHash: lastLedgerHash,
+                    hash: '0xCAP_' + Date.now(),
+                    prevHash: lastLedgerHash,
+                    previousHash: lastLedgerHash,
                     userId: action.payload.userId, roleId: 'CAPITAL_ASSET',
                     description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
                     horas: 0, valorCongelado: valorGenerado, timestamp: Date.now()
                 });
             }
             return newState;
+        }
 
-        default: return state;
+        default: 
+            return newState;
     }
 } 
 
