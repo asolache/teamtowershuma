@@ -666,6 +666,28 @@ class Store {
     }
 
     canUserCreateWorkOrder(projectId, userId) {
+        // FIX V11.1.1: Evaluar el rol del usuario específico, NO el de la sesión activa
+        const globalUser = this.state.globalUsers.find(u => u.id === userId);
+        if (globalUser && globalUser.globalRole === 'ecosystem-owner') return true;
+        
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return false;
+        
+        if (p.ownerId === userId) return true; // El PO siempre puede
+        
+        const gov = p.governance || { workOrderCreation: 'open' };
+        if (gov.workOrderCreation === 'open') return true;
+        if (gov.workOrderCreation === 'po_only') return false;
+        
+        if (gov.workOrderCreation === 'custom') {
+            const member = p.usuarios?.find(x => x.id === userId);
+            return member?.permissions?.canCreateWO === true;
+        }
+        
+        return false;
+    }
+
+    canUserCreateWorkOrder(projectId, userId) {
         if (this.state.session.role === 'ecosystem-owner') return true;
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return false;
