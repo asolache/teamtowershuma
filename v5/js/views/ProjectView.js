@@ -30,14 +30,33 @@ export default class ProjectView {
         const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
         const statusBtnText = isOpen ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
 
+        // EVALUACIÓN DE GOBERNANZA V11 (Motor de Permisos)
+        const canCreateWO = store.canUserCreateWorkOrder(activeProjectId, activeUserId);
+
+        // V12 MODULAR: ACTION DROPDOWN
+        let magicActionsHtml = '';
+        if (canCreateWO) {
+            magicActionsHtml = `
+                <div class="magic-action-group">
+                    <select id="selKanbanMagic" class="magic-select">
+                        <option value="" disabled selected>⚡ Acciones del Tablero...</option>
+                        <option value="create_wo">➕ Inyectar Tarea (Work Order)</option>
+                        <option value="ai_sprint" disabled>🤖 Auto-Sprint IA (V12.x)</option>
+                    </select>
+                    <button class="btn-sm btn-sm-primary" id="btnExecuteKanbanMagic">Ejecutar</button>
+                </div>
+            `;
+        }
+
         // Configuración del Header Universal
         const headerConfig = {
             title: "Kanban PULL",
             subtitle: project ? project.nombre : '',
             tagline: "Mercado interno de tareas. Asume responsabilidad y ejecuta valor.",
             actionHtml: `
-                <div style="display:flex; gap:15px; align-items:center;">
+                <div style="display:flex; gap:15px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
                     <button id="btnToggleAvailability" class="${statusBtnClass}" title="Alternar Estado de Matching">${statusBtnText}</button>
+                    ${magicActionsHtml}
                 </div>
             `,
             tabs: [
@@ -47,38 +66,41 @@ export default class ProjectView {
             ]
         };
 
-        // EVALUACIÓN DE GOBERNANZA V11 (Motor de Permisos)
-        const canCreateWO = store.canUserCreateWorkOrder(activeProjectId, activeUserId);
-
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth; transition: box-shadow 0.5s ease-out;}
+                /* FIX SCROLL LATERAL & BOTTOM SAFE */
+                .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
+                .workspace-kanban { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; transition: box-shadow 0.5s ease-out; width: 100%;}
                 
                 /* MAGIA VISUAL: Destello si estás disponible */
-                .workspace.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.05); }
+                .workspace-kanban.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.05); }
+
+                /* FIX TABS MOBILE PARA SIEMPRE (Pre-Master CSS) */
+                .ph-tabs-container { flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; flex-shrink: 0 !important; margin-bottom: 2rem !important; justify-content: flex-start !important;}
+                .ph-tabs-container::-webkit-scrollbar { display: none; }
+                .ph-tab-btn { flex: 0 0 auto !important; }
 
                 /* WRAPPER MAESTRO PARA ALINEACIÓN PERFECTA */
-                .kanban-container {
-                    width: 100%;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    display: flex;
-                    flex-direction: column;
-                }
+                .kanban-container { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; box-sizing:border-box;}
 
                 /* ESTADOS DISPONIBILIDAD */
-                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor:pointer; transition: all 0.2s;}
-                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
-                /* CONTROLES SECUNDARIOS (Filtros y Crear) */
-                .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; width: 100%;}
+                /* MODULAR UX: SELECTORES GLOBALES */
+                .magic-action-group { display: flex; gap: 10px; align-items: center;}
+                .magic-select { background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-weight: 900; outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+                .magic-select:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2);}
+                .magic-select option { background: #111; color: white; }
+                
+                .btn-sm-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2); padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; font-weight: 900; cursor: pointer; border:none; transition:0.3s;}
+                .btn-sm-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
+
+                /* CONTROLES SECUNDARIOS (Filtros) */
+                .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem; width: 100%;}
                 .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
-                .filter-dropdown { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
-                .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
-
-                .btn-create-task { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; white-space:nowrap; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transition: 0.3s;}
-                .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224,64,251,0.4); filter: brightness(1.1);}
+                .filter-dropdown { background: rgba(0,0,0,0.4); border: 1px dashed #444; color: #aaa; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
+                .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); color:white;}
 
                 /* =========================================================
                    GRID DE TARJETAS LUXURY (DESKTOP)
@@ -93,19 +115,12 @@ export default class ProjectView {
                 }
                 
                 .task-card { 
-                    box-sizing: border-box;
-                    width: 100%;
+                    box-sizing: border-box; width: 100%;
                     background: linear-gradient(180deg, rgba(25,25,30,0.8) 0%, rgba(10,10,15,0.9) 100%); 
-                    border: 1px solid rgba(255,255,255,0.05); 
-                    border-radius: 20px; 
-                    padding: 1.8rem; 
+                    border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 1.8rem; 
                     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
-                    position: relative; 
-                    display: flex; 
-                    flex-direction: column; 
-                    gap: 12px; 
-                    backdrop-filter: blur(15px); 
-                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.5);
+                    position: relative; display: flex; flex-direction: column; gap: 12px; 
+                    backdrop-filter: blur(15px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.5);
                 }
                 .task-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 15px 40px rgba(0,0,0,0.8);}
                 
@@ -138,29 +153,32 @@ export default class ProjectView {
                 /* =========================================================
                    MODALS (CREAR WORK ORDER V10)
                    ========================================================= */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
-                .form-group { margin-bottom: 15px; }
-                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
-                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
-                .form-control:focus { border-color: var(--accent-blue); }
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; overflow-y:auto;}
+                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 3rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; max-height: 90vh; overflow-y:auto; margin: 2rem auto; border-top: 4px solid var(--accent-blue);}
+                .form-group { margin-bottom: 20px; width:100%; }
+                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing:1px; }
+                .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2);}
 
-                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
                    RESPONSIVE MOBILE LUXURY APP (BOTTOM SAFE FIX)
                    ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace { 
-                        padding: 90px 1.2rem 120px 1.2rem; /* 120px bottom asegura que Safari/Android barra no tapen tarjetas ni el BottomNav */
+                    .workspace-kanban { 
+                        padding: 90px 1rem 120px 1rem; /* 120px BOTTOM SAFE */
                     } 
                     
                     .kanban-container { width: 100%; display: block; }
+                    
+                    /* Magic Actions apiladas */
+                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top:10px;}
+                    .magic-select, .btn-sm-primary { width: 100%; padding: 14px; font-size: 1rem;}
 
                     .controls-row { justify-content: stretch; margin-bottom: 1.5rem; }
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
                     .filter-dropdown { width: 100%; padding: 14px; box-sizing: border-box; }
-                    .btn-create-task { width: 100%; padding: 14px; box-sizing: border-box; }
                     
                     /* RESTRICCIÓN GRID MÓVIL PARA EVITAR DEFORMACIONES */
                     .task-grid { 
@@ -168,7 +186,7 @@ export default class ProjectView {
                         gap: 1.2rem; 
                         width: 100%;
                         display: grid;
-                        padding-bottom: 2rem; /* Padding extra interno de la grid */
+                        padding-bottom: 2rem;
                     }
                     
                     .task-card { 
@@ -177,23 +195,23 @@ export default class ProjectView {
                         width: 100%; 
                         max-width: 100%; 
                         margin: 0; 
-                        box-sizing: border-box;
                     }
 
                     .task-title { font-size: 1.15rem; }
-                    
                     .task-meta-row { flex-wrap: wrap; gap: 8px; }
 
                     /* Botones apilados en móvil para ergonomía de pulgares */
                     .task-actions { flex-direction: column; padding-top: 15px; margin-top: 10px; gap: 10px; }
-                    .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; margin: 0; padding: 14px; font-size: 1rem; box-sizing: border-box;}
+                    .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; margin: 0; padding: 14px; font-size: 1rem;}
+                    
+                    .modal-content { padding: 2rem 1.5rem; width: 95%;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
 
-                <main class="workspace ${isOpen ? 'is-open-to-work' : ''}">
+                <main class="workspace-kanban ${isOpen ? 'is-open-to-work' : ''}">
                     
                     ${PageHeader.getHtml(headerConfig)}
 
@@ -206,7 +224,6 @@ export default class ProjectView {
                                     <option value="tangible">🟢 Solo Tangibles</option>
                                     <option value="intangible">🟣 Solo Intangibles</option>
                                 </select>
-                                ${canCreateWO ? `<button class="btn-create-task" id="btnOpenCreateTask">➕ Generar Work Order</button>` : ''}
                             </div>
                         </div>
 
@@ -217,7 +234,7 @@ export default class ProjectView {
                 <div class="modal-overlay" id="createTaskModal">
                     <div class="modal-content">
                         <h2 style="color:white; margin-top:0; margin-bottom: 5px; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">Abrir el Grifo</h2>
-                        <p style="color:#aaa; font-size:0.95rem; margin-bottom:2rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes diseñadas en el Mapa VNA.</p>
+                        <p style="color:#aaa; font-size:0.95rem; margin-bottom:2.5rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes diseñadas en el Mapa VNA.</p>
                         
                         <div class="form-group">
                             <label>Tubería de Valor Origen (Flow)</label>
@@ -225,18 +242,18 @@ export default class ProjectView {
                         </div>
 
                         <div class="form-group">
-                            <label>Contexto / Instrucciones</label>
+                            <label>Contexto / Instrucciones Especiales</label>
                             <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Especificaciones, enlaces a repositorios o detalles tácticos..."></textarea>
                         </div>
 
-                        <div class="form-group" style="margin-top: 20px; border-top: 1px dashed #333; padding-top: 20px;">
+                        <div class="form-group" style="margin-top: 25px; border-top: 1px dashed #333; padding-top: 20px;">
                             <label style="color:var(--accent-orange);">Asignar Directamente (Opcional)</label>
                             <select id="newTaskAssignee" class="form-control" style="border-color:#555;">
                                 <option value="">-- Dejar Libre en "Oportunidades" --</option>
                             </select>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; margin-top: 2.5rem; gap:15px;">
+                        <div style="display: flex; justify-content: space-between; margin-top: 3rem; gap:15px;">
                             <button class="btn" style="flex:1; background:transparent; border:1px solid #555; color:white; padding:14px; border-radius:12px; cursor:pointer; font-weight:bold;" id="btnCancelCreateTask">Cancelar</button>
                             <button class="btn" style="flex:2; background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color:white; font-weight:900; border:none; padding:14px; border-radius:12px; cursor:pointer; box-shadow:0 5px 15px rgba(0,176,255,0.3);" id="btnConfirmCreateTask">🚀 Inyectar al Kanban</button>
                         </div>
@@ -313,47 +330,51 @@ export default class ProjectView {
                     btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
                     btnToggleAvailability.innerText = newStatus ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
                     
-                    const workspace = document.querySelector('.workspace');
+                    const workspace = document.querySelector('.workspace-kanban');
                     if (newStatus) workspace.classList.add('is-open-to-work');
                     else workspace.classList.remove('is-open-to-work');
                 }
             });
         }
 
-        // LÓGICA DE CREACIÓN DE WORK ORDERS (V10) - Respetando Gobernanza
+        // LÓGICA DE MAGIC ACTIONS (MODULAR)
+        const selMagic = document.getElementById('selKanbanMagic');
+        const btnExecuteMagic = document.getElementById('btnExecuteKanbanMagic');
         const createModal = document.getElementById('createTaskModal');
-        const btnOpenCreate = document.getElementById('btnOpenCreateTask');
-        
-        if (btnOpenCreate) {
-            btnOpenCreate.addEventListener('click', () => {
-                const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-                const flows = activeProject.vna_flows || [];
-                
-                if (flows.length === 0) {
-                    alert("Debes dibujar Tuberías (Flujos permanentes) en el Mapa VNA antes de poder generar tareas en el Kanban.");
-                    window.location.href = '/v5/map';
-                    return;
+
+        if (btnExecuteMagic && selMagic) {
+            btnExecuteMagic.addEventListener('click', () => {
+                const action = selMagic.value;
+                if (action === 'create_wo') {
+                    const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+                    const flows = activeProject.vna_flows || [];
+                    
+                    if (flows.length === 0) {
+                        alert("Debes dibujar Tuberías (Flujos permanentes) en el Mapa VNA antes de poder generar tareas en el Kanban.");
+                        window.location.href = '/v5/map';
+                        return;
+                    }
+
+                    let flowOpts = '';
+                    const selFlow = document.getElementById('newTaskFlowId');
+                    flows.forEach(f => {
+                        const rFrom = activeProject.roles.find(r => r.id === f.from);
+                        const rTo = activeProject.roles.find(r => r.id === f.to);
+                        const nameF = rFrom ? rFrom.name : 'Unknown';
+                        const nameT = rTo ? rTo.name : 'Unknown';
+                        flowOpts += `<option value="${f.id}">[${nameF} -> ${nameT}] ${f.template}</option>`;
+                    });
+                    selFlow.innerHTML = flowOpts;
+
+                    let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
+                    (activeProject.usuarios || []).forEach(u => {
+                        const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
+                        userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+                    });
+                    document.getElementById('newTaskAssignee').innerHTML = userOpts;
+
+                    createModal.style.display = 'flex';
                 }
-
-                let flowOpts = '';
-                const selFlow = document.getElementById('newTaskFlowId');
-                flows.forEach(f => {
-                    const rFrom = activeProject.roles.find(r => r.id === f.from);
-                    const rTo = activeProject.roles.find(r => r.id === f.to);
-                    const nameF = rFrom ? rFrom.name : 'Unknown';
-                    const nameT = rTo ? rTo.name : 'Unknown';
-                    flowOpts += `<option value="${f.id}">[${nameF} -> ${nameT}] ${f.template}</option>`;
-                });
-                selFlow.innerHTML = flowOpts;
-
-                let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
-                (activeProject.usuarios || []).forEach(u => {
-                    const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
-                    userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
-                });
-                document.getElementById('newTaskAssignee').innerHTML = userOpts;
-
-                createModal.style.display = 'flex';
             });
         }
 
@@ -397,6 +418,9 @@ export default class ProjectView {
 
                 createModal.style.display = 'none';
                 this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                
+                // Reset select
+                if(selMagic) selMagic.selectedIndex = 0;
             });
         }
 
@@ -413,11 +437,10 @@ export default class ProjectView {
             const isLegacyTx = target.dataset.legacy === "true";
             const txHash = target.dataset.hash;
 
-            // FIX: Validar si el usuario tiene permiso PO/EO
             const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
 
             if (target.classList.contains('btn-approve')) {
-                if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal de Acción
+                if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal
                 
                 const action = target.dataset.action;
                 if (action === 'approve-pull') {
