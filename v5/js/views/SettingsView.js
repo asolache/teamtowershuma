@@ -74,17 +74,19 @@ export default class SettingsView {
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
                 .tab-content.active { display: block; }
 
-                .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 2rem;}
-                .panel h2 { color: white; font-size: 1.2rem; margin-top: 0; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;}
-                .panel p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+                /* PANELES LUXURY */
+                .panel { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); backdrop-filter: blur(10px);}
+                .panel h2 { color: white; font-size: 1.3rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-weight: 800; letter-spacing: -0.5px;}
+                .panel p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
 
-                .form-group { margin-bottom: 1.5rem; }
-                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
-                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.9rem; transition: border-color 0.2s; outline: none; box-sizing: border-box;}
-                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0, 176, 255, 0.1);}
+                /* FORMS LUXURY */
+                .form-group { margin-bottom: 20px; }
+                .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
+                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 14px 18px; border-radius: 12px; font-family: var(--font-mono); font-size: 0.95rem; transition: all 0.3s; outline: none; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.1);}
                 
-                .btn-save { background: var(--accent-blue); color: black; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s;}
-                .btn-save:hover { transform: translateY(-2px); }
+                .btn-save { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0, 176, 255, 0.2);}
+                .btn-save:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
 
                 /* TOGGLE SWITCH */
                 .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0;}
@@ -95,7 +97,7 @@ export default class SettingsView {
                 input:checked + .slider:before { transform: translateX(22px); }
 
                 /* DATOS & BACKUPS */
-                .btn-data { width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; border: none; margin-bottom: 10px;}
+                .btn-data { width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; border: none; margin-bottom: 10px;}
                 .btn-export { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
                 .btn-export:hover { background: rgba(0, 230, 118, 0.2); transform: translateY(-2px); }
                 .btn-import { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.3); position: relative; overflow: hidden; }
@@ -105,28 +107,30 @@ export default class SettingsView {
                 #fileInput { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
                 /* ONTOLOGÍA Y AGENTES */
-                .ontology-grid, .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;}
-                .sector-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; border-left: 4px solid var(--accent-blue); display:flex; flex-direction:column;}
+                .ontology-grid, .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;}
+                
+                .sector-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.8rem; border-left: 4px solid var(--accent-blue); display:flex; flex-direction:column; backdrop-filter: blur(10px); transition: transform 0.3s;}
+                .sector-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.1); box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
                 .sector-card.native { border-left-color: #555; background: rgba(0,0,0,0.5); border-color: #222;}
-                .sector-card h3 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 1.1rem; color: white; }
-                .deliv-badge { background: rgba(0,0,0,0.4); border: 1px solid #333; font-size: 0.65rem; color: var(--accent-green); padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; font-family: monospace;}
+                .sector-card h3 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 1.2rem; color: white; font-weight: 800;}
+                .deliv-badge { background: rgba(0,0,0,0.4); border: 1px solid #333; font-size: 0.7rem; color: var(--accent-green); padding: 4px 8px; border-radius: 8px; margin-top: 6px; display: inline-block; font-family: monospace;}
 
                 /* TABLA USUARIOS (RESPONSIVE) */
-                .user-table-wrapper { overflow-x: auto; }
-                .user-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; min-width: 600px;}
-                .user-table th { padding: 12px 10px; border-bottom: 1px solid #333; color: var(--text-muted); }
-                .user-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+                .user-table-wrapper { overflow-x: auto; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid #333;}
+                .user-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; min-width: 600px;}
+                .user-table th { padding: 15px; border-bottom: 1px solid #444; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;}
+                .user-table td { padding: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); }
 
-                /* MODAL */
+                /* MODAL LUXURY */
                 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: flex-start; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; padding: 2rem 0;}
-                .modal-content { background: var(--bg-dark); width: 95%; max-width: 1000px; border-radius: 12px; border: 1px solid var(--glass-border); padding: 2.5rem; border-top: 4px solid var(--accent-blue); margin-bottom: 3rem;}
+                .modal-content { background: var(--bg-dark); width: 95%; max-width: 1000px; border-radius: 20px; border: 1px solid var(--glass-border); padding: 3rem; border-top: 4px solid var(--accent-blue); margin-bottom: 3rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8);}
 
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) { 
                     .workspace { padding: 80px 1rem 90px 1rem; } 
-                    .panel { padding: 1.5rem; }
+                    .panel { padding: 1.5rem; border-radius: 16px;}
                     .ai-grid { grid-template-columns: 1fr; }
                     .modal-content { padding: 1.5rem; }
                 }
@@ -160,13 +164,13 @@ export default class SettingsView {
 
                             <div class="form-group">
                                 <label>System Prompt Maestro (Propósito Global)</label>
-                                <textarea id="set-eco-prompt" class="form-control" style="height: 120px; resize:vertical;">${state.config.globalPrompt}</textarea>
+                                <textarea id="set-eco-prompt" class="form-control" style="height: 140px; resize:vertical; line-height: 1.5;">${state.config.globalPrompt}</textarea>
                             </div>
 
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 2rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 2rem;">
                                 <div>
-                                    <div style="color: white; font-weight: bold; margin-bottom: 5px;">Creación Libre de Castells (Bottom-Up)</div>
-                                    <div style="color: #888; font-size: 0.8rem;">Si está desactivado, solo tú (Owner) podrás instanciar nuevas redes/proyectos.</div>
+                                    <div style="color: white; font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">Creación Libre de Castells (Bottom-Up)</div>
+                                    <div style="color: #888; font-size: 0.9rem;">Si está desactivado, solo tú (Owner) podrás instanciar nuevas redes/proyectos.</div>
                                 </div>
                                 <label class="switch">
                                     <input type="checkbox" id="toggleUserCreation" ${state.config.allowUserCreation ? 'checked' : ''}>
@@ -174,7 +178,7 @@ export default class SettingsView {
                                 </label>
                             </div>
 
-                            <button class="btn-save" id="btn-save-general" style="width:100%; margin-top: 1.5rem;">Guardar Configuración Macro</button>
+                            <button class="btn-save" id="btn-save-general" style="width:100%; margin-top: 2rem;">Guardar Configuración Macro</button>
                         </div>
                     </div>
 
@@ -205,27 +209,27 @@ export default class SettingsView {
                             </div>
 
                             <button class="btn-save" id="btn-save-keys" style="background: var(--accent-purple); color:white; width:100%; margin-top:1rem;">Guardar Llaves en Navegador</button>
-                            <div id="keysFeedback" style="display:none; color: var(--accent-green); margin-top: 10px; font-size: 0.8rem; font-weight: bold; text-align:center;">✅ Guardado Seguro (Local)</div>
+                            <div id="keysFeedback" style="display:none; color: var(--accent-green); margin-top: 15px; font-size: 0.9rem; font-weight: bold; text-align:center;">✅ Guardado Seguro (Local)</div>
                         </div>
 
-                        <h3 style="color: white; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px;">🤖 Enjambre de Agentes (MOCKUP V9)</h3>
-                        <p style="color:#888; font-size:0.85rem;">Instancia agentes especializados para cada capa fractal de la organización.</p>
+                        <h3 style="color: white; font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 3rem;">🤖 Enjambre de Agentes (MOCKUP V10)</h3>
+                        <p style="color:#888; font-size:0.95rem; margin-bottom: 2rem;">Instancia agentes especializados para cada capa fractal de la organización.</p>
                         
                         <div class="agents-grid">
                             <div class="sector-card" style="border-left-color: var(--accent-orange);">
                                 <h3 style="color:var(--accent-orange);">Agente de Ecosistema</h3>
-                                <p style="font-size:0.8rem; color:#ccc;">Audita la resiliencia global y la transferencia de valor entre proyectos.</p>
-                                <button class="btn-save" style="background:transparent; border:1px dashed var(--accent-orange); color:var(--accent-orange); font-size:0.8rem;">Desarrollo V9</button>
+                                <p style="font-size:0.9rem; color:#ccc; flex:1;">Audita la resiliencia global y la transferencia de valor entre proyectos.</p>
+                                <button class="btn-save" style="background:transparent; border:1px dashed var(--accent-orange); color:var(--accent-orange); font-size:0.9rem; margin-top:1rem;">Desarrollo V10</button>
                             </div>
                             <div class="sector-card" style="border-left-color: var(--accent-blue);">
                                 <h3 style="color:var(--accent-blue);">Agente de Proyecto</h3>
-                                <p style="font-size:0.8rem; color:#ccc;">El Project Owner IA. Analiza cuellos de botella en el Kanban y sugiere PULLs.</p>
-                                <button class="btn-save" style="background:transparent; border:1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.8rem;">Desarrollo V9</button>
+                                <p style="font-size:0.9rem; color:#ccc; flex:1;">El Project Owner IA. Analiza cuellos de botella en el Kanban y sugiere PULLs.</p>
+                                <button class="btn-save" style="background:transparent; border:1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.9rem; margin-top:1rem;">Desarrollo V10</button>
                             </div>
                             <div class="sector-card" style="border-left-color: var(--accent-green);">
                                 <h3 style="color:var(--accent-green);">Agente de Persona (Match)</h3>
-                                <p style="font-size:0.8rem; color:#ccc;">Lee tu Ikigai y busca oportunidades de trabajo en la red automáticamente.</p>
-                                <button class="btn-save" style="background:transparent; border:1px dashed var(--accent-green); color:var(--accent-green); font-size:0.8rem;">Desarrollo V9</button>
+                                <p style="font-size:0.9rem; color:#ccc; flex:1;">Lee tu Ikigai y busca oportunidades de trabajo en la red automáticamente.</p>
+                                <button class="btn-save" style="background:transparent; border:1px dashed var(--accent-green); color:var(--accent-green); font-size:0.9rem; margin-top:1rem;">Desarrollo V10</button>
                             </div>
                         </div>
                     </div>
@@ -235,8 +239,8 @@ export default class SettingsView {
                             <h2 style="color: var(--accent-blue);">Inyectar Nodo Local</h2>
                             <p style="margin-top:0;">Da de alta usuarios en el Padrón del Ecosistema para asignarles Capital o Slices.</p>
                             
-                            <div style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:8px;">
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; margin-bottom: 15px;">
+                            <div style="background: rgba(0,0,0,0.3); padding:2rem; border-radius:12px; border: 1px solid #333;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: end; margin-bottom: 20px;">
                                     <div class="form-group" style="margin:0;">
                                         <label>Alias Único (@id)</label>
                                         <input type="text" id="new-user-id" class="form-control" placeholder="Ej: @maria_dev">
@@ -250,7 +254,7 @@ export default class SettingsView {
                                         <input type="text" id="new-user-contact" class="form-control" placeholder="Email o Dirección 0x">
                                     </div>
                                 </div>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end; padding-top: 15px; border-top: 1px dashed #333;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; align-items: end; padding-top: 20px; border-top: 1px dashed #444;">
                                     <div class="form-group" style="margin:0;">
                                         <label>País</label>
                                         <input type="text" id="new-user-country" class="form-control" placeholder="Ej: España">
@@ -263,7 +267,7 @@ export default class SettingsView {
                                         <label>Código Postal</label>
                                         <input type="text" id="new-user-cp" class="form-control" placeholder="Ej: 08001">
                                     </div>
-                                    <button id="btn-create-user" class="btn-save" style="height: 42px;">➕ Añadir Nodo</button>
+                                    <button id="btn-create-user" class="btn-save" style="height: 50px;">➕ Añadir Nodo</button>
                                 </div>
                             </div>
                         </div>
@@ -282,10 +286,10 @@ export default class SettingsView {
                                     ${state.globalUsers.map(u => `
                                         <tr>
                                             <td style="font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
-                                            <td style="color: white;">${u.name}</td>
+                                            <td style="color: white; font-weight: bold;">${u.name}</td>
                                             <td style="color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'};">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : 'Ciudadano'}</td>
                                             <td style="color: #aaa; font-size:0.85rem;">${u.location?.city ? `📍 ${u.location.city}, ${u.location.country}` : '<span style="color:#555;">No definida</span>'}</td>
-                                            <td style="color: #666; font-size:0.8rem;">${u.walletOrSocial || '---'}</td>
+                                            <td style="color: #666; font-size:0.85rem; font-family: monospace;">${u.walletOrSocial || '---'}</td>
                                         </tr>
                                     `).join('')}
                                 </table>
@@ -298,7 +302,7 @@ export default class SettingsView {
                             <h2>💾 Gestión Local y Backups</h2>
                             <p>El sistema es 100% Local (Free). El estado del Ecosistema vive en tu navegador. Haz copias de seguridad regularmente.</p>
                             
-                            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:2rem;">
+                            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-top:2rem;">
                                 <button class="btn-data btn-export" id="btnExport" style="flex:1;">⬇️ Descargar Backup (JSON)</button>
                                 <div class="btn-data btn-import" style="flex:1;">
                                     ⬆️ Restaurar Backup
@@ -311,30 +315,30 @@ export default class SettingsView {
 
                         <div class="panel" style="background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(0, 176, 255, 0.1)); border: 1px solid rgba(224, 64, 251, 0.3);">
                             <h2 style="color:var(--accent-purple);">☁️ TeamTowers Anchor (Permaweb Node)</h2>
-                            <p style="color:#ddd;">Conecta tu Ecosistema Local a la red Arweave para persistencia inmutable y orquestación multi-jugador real.</p>
-                            <ul style="list-style:none; padding:0; color:#aaa; font-size:0.9rem; line-height:1.8; margin-bottom: 1.5rem;">
-                                <li><span style="color:var(--accent-green); margin-right:10px;">✓</span> <strong>Sincronización P2P:</strong> Multi-usuario sin servidores centrales.</li>
-                                <li><span style="color:var(--accent-green); margin-right:10px;">✓</span> <strong>Notaría Web3:</strong> Sella el Ledger y los pactos de socios en Blockchain.</li>
+                            <p style="color:#ddd; font-size:1.05rem;">Conecta tu Ecosistema Local a la red Arweave para persistencia inmutable y orquestación multi-jugador real.</p>
+                            <ul style="list-style:none; padding:0; color:#aaa; font-size:0.95rem; line-height:2; margin-bottom: 2rem;">
+                                <li><span style="color:var(--accent-green); margin-right:10px; font-size:1.2rem;">✓</span> <strong>Sincronización P2P:</strong> Multi-usuario sin servidores centrales.</li>
+                                <li><span style="color:var(--accent-green); margin-right:10px; font-size:1.2rem;">✓</span> <strong>Notaría Web3:</strong> Sella el Ledger y los pactos de socios en Blockchain.</li>
                             </ul>
-                            <button class="btn-save" style="background:transparent; border: 1px solid var(--accent-purple); color:var(--accent-purple); width:100%;">Configurar Nodo Anchor (V9)</button>
+                            <button class="btn-save" style="background:transparent; border: 1px solid var(--accent-purple); color:var(--accent-purple); width:100%;">Configurar Nodo Anchor (Próximamente)</button>
                         </div>
                     </div>
 
                     <div id="view-ontology" class="tab-content ${this.tab === 'ontology' ? 'active' : ''}">
                         <div class="panel">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap:10px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap:15px;">
                                 <div>
                                     <h2>Plantillas de Proyecto (ADN)</h2>
-                                    <p style="margin:0; max-width:600px;">El código fuente de tus redes. Incluye Roles, Arquetipos y Flujos VNA predefinidos.</p>
+                                    <p style="margin:0; max-width:600px;">El código fuente de tus redes. Incluye Roles, Arquetipos y Flujos VNA predefinidos para la instanciación rápida.</p>
                                 </div>
                                 <button class="btn-save" id="btn-new-sector" style="background:var(--accent-green); color:black;">➕ Crear Plantilla Custom</button>
                             </div>
                             
-                            <h3 style="color: var(--accent-blue); margin-top: 2rem; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">🌟 Tus Plantillas Custom</h3>
+                            <h3 style="color: var(--accent-blue); margin-top: 3rem; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px;">🌟 Tus Plantillas Custom</h3>
                             <div class="ontology-grid" id="customOntologyGrid">
                                 </div>
 
-                            <h3 style="color: #666; margin-top: 2rem; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">📦 Plantillas Nativas (Kernel Base)</h3>
+                            <h3 style="color: #888; margin-top: 3rem; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px;">📦 Plantillas Nativas (Kernel Base V10)</h3>
                             <div class="ontology-grid" id="nativeOntologyGrid">
                                 </div>
                         </div>
@@ -398,7 +402,6 @@ export default class SettingsView {
             const globalPrompt = document.getElementById('set-eco-prompt').value;
             await store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { ecosystemName, globalPrompt } });
             alert("✅ Configuración de Ecosistema Guardada.");
-            // Recargar para que cambie el Sidebar Name si hace falta
             window.location.reload();
         });
 
@@ -416,7 +419,6 @@ export default class SettingsView {
             const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             uiKeys.provider.value = savedProvider;
             
-            // Cargar la key correspondiente al cargar la vista
             const loadKey = (prov) => {
                 if (prov === 'deepseek') return localStorage.getItem('tt_key_deepseek') || '';
                 if (prov === 'openai') return localStorage.getItem('tt_key_openai') || '';
@@ -461,7 +463,7 @@ export default class SettingsView {
                 if (!id.startsWith('@')) id = '@' + id; 
 
                 await store.dispatch({ type: 'ADD_USER', payload: { id, name, walletOrSocial: contact, location } });
-                window.location.reload(); // Recargar para actualizar tabla
+                window.location.reload(); 
             });
         }
 
@@ -525,44 +527,53 @@ export default class SettingsView {
                 }).join(' ');
             }
             return `
-                <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0;">
+                <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span style="font-family:monospace; font-size:0.75rem; color:#888;">${lvl}</span>
-                        <b style="color:white; font-size:0.9rem;">${data.name} ${data.guardian ? `<span style="color:var(--accent-gold); font-weight:normal; font-size:0.7rem;">(${data.guardian})</span>` : ''}</b>
+                        <span style="font-family:monospace; font-size:0.8rem; color:#888; font-weight:bold;">${lvl}</span>
+                        <b style="color:white; font-size:0.95rem;">${data.name} ${data.guardian ? `<span style="color:var(--accent-gold); font-weight:normal; font-size:0.75rem;">(${data.guardian})</span>` : ''}</b>
                     </div>
-                    <div style="margin-top:4px;">${delivsHtml}</div>
+                    <div style="margin-top:6px;">${delivsHtml}</div>
                 </div>
             `;
         };
 
-        if(Object.keys(customSectores).length === 0) {
-            customGrid.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; padding:1rem; border: 1px dashed #333; text-align:center; border-radius:8px;">No has creado plantillas propias.</p>';
+        // CUSTOM SECTORS
+        const customKeys = Object.keys(customSectores).filter(k => k !== '_meta');
+        if(customKeys.length === 0) {
+            customGrid.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; padding:2rem; border: 1px dashed #333; text-align:center; border-radius:12px; background: rgba(0,0,0,0.2);">No has creado plantillas propias.</p>';
         } else {
-            customGrid.innerHTML = Object.entries(customSectores).map(([key, roles]) => `
+            customGrid.innerHTML = customKeys.map(key => {
+                const roles = customSectores[key];
+                return `
                 <div class="sector-card">
                     <h3>${key.toUpperCase()}</h3>
                     <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
-                        ${Object.entries(roles).map(([lvl, data]) => renderRoleData(data.levelId || lvl, data)).join('')}
+                        ${Object.entries(roles).filter(([k])=> k !== '_meta' && k !== 'roles').map(([lvl, data]) => renderRoleData(data.levelId || lvl, data)).join('')}
                     </div>
-                    <div style="display:flex; gap:10px; margin-top:1.5rem;">
-                        <button class="btn-save btn-use-template" data-sector="custom_${key}" style="flex:2; background:var(--accent-green); color:black; font-size:0.8rem;">🚀 Usar Plantilla</button>
-                        <button class="btn-save btn-edit-sector" data-sector="${key}" style="flex:1; background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue); font-size:0.8rem;">⚙️ Editar</button>
+                    <div style="display:flex; gap:10px; margin-top:2rem;">
+                        <button class="btn-save btn-use-template" data-sector="custom_${key}" style="flex:2; background:var(--accent-green); color:black; font-size:0.9rem;">🚀 Usar Plantilla</button>
+                        <button class="btn-save btn-edit-sector" data-sector="${key}" style="flex:1; background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue); font-size:0.9rem;">⚙️ Editar</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        nativeGrid.innerHTML = Object.entries(nativeSectores).map(([key, data]) => {
+        // NATIVE SECTORS (GLOBAL_ONTOLOGY V10 SAFE)
+        const nativeKeys = Object.keys(nativeSectores).filter(k => k !== '_meta');
+        nativeGrid.innerHTML = nativeKeys.map(key => {
+            const data = nativeSectores[key];
             const rolesObj = data.roles || data; 
+            
             return `
             <div class="sector-card native">
                 <h3 style="color:#aaa;">${key.toUpperCase().replace(/_/g, ' ')}</h3>
                 <div style="display: flex; flex-direction: column; gap: 5px; flex:1;">
-                    ${Object.entries(rolesObj).map(([lvl, roleData]) => renderRoleData(roleData.levelId || lvl, roleData)).join('')}
+                    ${Object.entries(rolesObj).filter(([k])=> k !== '_meta' && k !== 'roles').map(([lvl, roleData]) => renderRoleData(roleData.levelId || lvl, roleData)).join('')}
                 </div>
-                <button class="btn-save btn-use-template" data-sector="native_${key}" style="width:100%; margin-top:1.5rem; background:rgba(0, 230, 118, 0.2); color:var(--accent-green); font-size:0.8rem;">🚀 Usar Plantilla</button>
+                <button class="btn-save btn-use-template" data-sector="native_${key}" style="width:100%; margin-top:2rem; background:rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color:var(--accent-green); font-size:0.9rem;">🚀 Usar Plantilla</button>
             </div>
-            `}).join('');
+            `
+        }).join('');
 
         // Re-bind listeners para los botones que se acaban de inyectar
         document.querySelectorAll('.btn-use-template').forEach(btn => {
@@ -585,6 +596,8 @@ export default class SettingsView {
         let modalRoles = [];
         if (sectorData) {
             Object.entries(sectorData).forEach(([key, data]) => {
+                if (key === '_meta' || key === 'roles') return; // FIX: Saltar meta en el modal de edición
+                
                 const levelId = data.levelId || (key.startsWith('@') ? key : '@baixos');
                 modalRoles.push({
                     uid: `role_${Math.random().toString(36).substr(2, 9)}`,
@@ -611,37 +624,37 @@ export default class SettingsView {
                 const guardianOptions = `<option value="">-- Seleccionar --</option>` + GUARDIANS.map(g => `<option value="${g}" ${r.guardian === g ? 'selected' : ''}>${g}</option>`).join('');
 
                 return `
-                    <div class="role-block" data-uid="${r.uid}" style="background:rgba(255,255,255,0.02); padding:1.5rem; border-radius:8px; border-left:4px solid var(--accent-blue); position:relative;">
-                        <button type="button" class="btn-remove-role" data-uid="${r.uid}" style="position:absolute; top:10px; right:10px; background:var(--accent-red); color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.7rem; font-weight:bold;">🗑️ Eliminar</button>
+                    <div class="role-block" data-uid="${r.uid}" style="background:rgba(255,255,255,0.02); padding:2rem; border-radius:12px; border-left:4px solid var(--accent-blue); position:relative; margin-bottom: 1.5rem;">
+                        <button type="button" class="btn-remove-role" data-uid="${r.uid}" style="position:absolute; top:15px; right:15px; background:var(--accent-red); color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.8rem; font-weight:bold;">🗑️ Eliminar</button>
                         
-                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px; align-items:end; margin-bottom:15px;">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; align-items:end; margin-bottom:20px;">
                             <div>
-                                <label style="font-size:0.7rem; color:white; margin-bottom:5px; display:block;">Nivel HUMA</label>
+                                <label style="font-size:0.75rem; color:white; margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Nivel HUMA</label>
                                 <select class="form-control inp-level" style="font-family:monospace;">${levelOptions}</select>
                             </div>
                             <div>
-                                <label style="font-size:0.7rem; color:#aaa; margin-bottom:5px; display:block;">Nombre del Rol (Puesto)</label>
+                                <label style="font-size:0.75rem; color:#aaa; margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Nombre del Rol (Puesto)</label>
                                 <input type="text" class="form-control inp-name" placeholder="Ej: Director Creativo" value="${r.name}">
                             </div>
                             <div>
-                                <label style="font-size:0.7rem; color:var(--accent-gold); margin-bottom:5px; display:block;">Guardián</label>
+                                <label style="font-size:0.75rem; color:var(--accent-gold); margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Guardián</label>
                                 <select class="form-control inp-guardian">${guardianOptions}</select>
                             </div>
                             <div>
-                                <label style="font-size:0.7rem; color:#aaa; margin-bottom:5px; display:block;">Riesgo (Mult.)</label>
+                                <label style="font-size:0.75rem; color:#aaa; margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Riesgo (Mult.)</label>
                                 <input type="number" step="0.1" class="form-control inp-mult" value="${r.multiplier}">
                             </div>
                         </div>
 
-                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
                             <div>
-                                <label style="font-size:0.7rem; color:#888; margin-bottom:5px; display:block;">🤖 System Prompt del Agente (IA)</label>
-                                <textarea class="form-control inp-prompt" placeholder="Contexto: Eres el encargado de supervisar..." style="height:80px; font-size:0.8rem; resize:vertical;">${r.ai_prompt}</textarea>
+                                <label style="font-size:0.75rem; color:#888; margin-bottom:8px; display:block; font-weight:bold; text-transform:uppercase;">🤖 System Prompt del Agente (IA)</label>
+                                <textarea class="form-control inp-prompt" placeholder="Contexto: Eres el encargado de supervisar..." style="height:100px; font-size:0.85rem; resize:vertical;">${r.ai_prompt}</textarea>
                             </div>
                             <div>
-                                <label style="font-size:0.7rem; color:var(--accent-green); margin-bottom:5px; display:block;">🕸️ Flujos VNA (Una por línea)</label>
-                                <p style="font-size: 0.65rem; color: #666; margin-top:0; margin-bottom:5px;">Formato: <code>@destino | Horas | Tipo | Nombre Tarea</code></p>
-                                <textarea class="form-control inp-deliv" placeholder="@dosos | 10 | tangible | Definir Arquitectura" style="height:60px; font-size:0.8rem; color:var(--accent-green); resize:vertical;">${delivs}</textarea>
+                                <label style="font-size:0.75rem; color:var(--accent-green); margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">🕸️ Tuberías VNA (Una por línea)</label>
+                                <p style="font-size: 0.75rem; color: #666; margin-top:0; margin-bottom:8px; font-family:monospace;">Formato: <code>@destino | Horas | Tipo | Nombre Tarea</code></p>
+                                <textarea class="form-control inp-deliv" placeholder="@dosos | 10 | tangible | Definir Arquitectura" style="height:80px; font-size:0.85rem; color:var(--accent-green); resize:vertical; font-family:var(--font-mono);">${delivs}</textarea>
                             </div>
                         </div>
                     </div>
@@ -650,30 +663,30 @@ export default class SettingsView {
         };
 
         content.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:15px;">
                 <div>
-                    <h2 style="color:white; margin:0;">🧬 Editor Dinámico de Plantillas VNA</h2>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Configura los Roles, Arquetipos y Flujos predefinidos.</p>
+                    <h2 style="color:white; margin:0; font-size:1.8rem; font-weight:900;">🧬 Editor Dinámico de Plantillas</h2>
+                    <p style="color:var(--text-muted); font-size:0.95rem; margin-top:5px;">Configura los Roles, Arquetipos y Tuberías VNA predefinidas.</p>
                 </div>
-                <button class="btn-save" onclick="document.getElementById('modalOntology').style.display='none'" style="background:transparent; border:1px solid #555; color:#aaa; padding:8px 15px;">❌ Cancelar</button>
+                <button class="btn-save" onclick="document.getElementById('modalOntology').style.display='none'" style="background:transparent; border:1px solid #555; color:#aaa; padding:10px 20px;">❌ Cancelar</button>
             </div>
             
-            <div class="form-group" style="background: rgba(0,0,0,0.3); padding:1rem; border-radius:8px;">
-                <label style="color: var(--accent-blue);">ID de la Plantilla (Identificador único)</label>
-                <input type="text" id="modal-sector-id" class="form-control" value="${sectorKey}" ${sectorKey?'disabled':''} style="font-family:monospace; color:var(--accent-blue); font-size:1.1rem; max-width: 100%;">
+            <div class="form-group" style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:12px; border: 1px dashed #333;">
+                <label style="color: var(--accent-blue); font-size:0.85rem;">ID de la Plantilla (Identificador único)</label>
+                <input type="text" id="modal-sector-id" class="form-control" value="${sectorKey}" ${sectorKey?'disabled':''} style="font-family:monospace; color:var(--accent-blue); font-size:1.2rem; max-width: 100%;">
             </div>
             
-            <div id="dynamic-roles-container" style="display:flex; flex-direction:column; gap:1.5rem; margin-top:2rem;">
+            <div id="dynamic-roles-container" style="display:flex; flex-direction:column; margin-top:2rem;">
                 ${renderDynamicRoles()}
             </div>
 
             <div style="margin-top: 1.5rem; text-align:center;">
-                <button id="btn-add-modal-role" class="btn-save" style="background:transparent; border:1px dashed var(--accent-blue); color:var(--accent-blue); width:100%;">➕ Añadir Nuevo Rol a la Plantilla</button>
+                <button id="btn-add-modal-role" class="btn-save" style="background:transparent; border:2px dashed var(--accent-blue); color:var(--accent-blue); width:100%; padding:15px; font-size:1.1rem;">➕ Añadir Nuevo Nodo Funcional</button>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2rem; background:rgba(0,0,0,0.5); padding:1rem; border-radius:8px; flex-wrap:wrap; gap:10px;">
-                <span style="font-size:0.8rem; color:var(--text-muted);">Puedes reusar esta plantilla para crear infinitos proyectos.</span>
-                <button class="btn-save" id="btn-save-sector-action" style="background:var(--accent-green); color:black; font-size:1rem; padding:12px 30px; width:100%; max-width:300px;">💾 Guardar Plantilla</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:3rem; background:rgba(0,0,0,0.5); padding:1.5rem; border-radius:12px; flex-wrap:wrap; gap:15px; border-top: 1px solid #333;">
+                <span style="font-size:0.9rem; color:var(--text-muted);">Puedes reusar esta plantilla para instanciar infinitos proyectos.</span>
+                <button class="btn-save" id="btn-save-sector-action" style="background:var(--accent-green); color:black; font-size:1.1rem; padding:15px 40px; width:100%; max-width:350px;">💾 Guardar Plantilla en ADN</button>
             </div>
         `;
 
@@ -740,7 +753,7 @@ export default class SettingsView {
             await store.dispatch({ type: 'ADD_ONTOLOGY_SECTOR', payload: { sectorId: newId, rolesData } });
 
             modal.style.display = 'none';
-            this.renderOntologyGrids(); // Re-render rápido sin recargar la página entera
+            this.renderOntologyGrids(); 
         });
     }
 }
