@@ -1,3 +1,4 @@
+// v5/js/router.js
 import { store } from './core/store.js';
 
 const routes = {
@@ -38,13 +39,11 @@ class Router {
             if (view.executeViewScript) view.executeViewScript();
             window.scrollTo(0, 0);
         } catch (error) {
-            this.renderError(viewFileName, error);
+            console.error("Router Error:", error);
+            this.appContainer.innerHTML = `<div style="padding:4rem;text-align:center;color:white;font-family:monospace;">
+                <h1 style="color:var(--accent-red)">ERROR DE CARGA</h1><p>${error.message}</p>
+                <a href="/v5/" data-link style="color:var(--accent-blue)">REINICIAR KERNEL</a></div>`;
         }
-    }
-    renderError(viewName, error) {
-        this.appContainer.innerHTML = `<div style="padding:4rem;text-align:center;color:white;font-family:monospace;">
-            <h1 style="color:red">ERROR KERNEL</h1><p>${error.message}</p>
-            <a href="/v5/" data-link style="color:cyan">REBOOT</a></div>`;
     }
 }
 const appRouter = new Router();
