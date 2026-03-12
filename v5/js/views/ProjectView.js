@@ -9,7 +9,8 @@ export default class ProjectView {
         document.title = "Tareas | TeamTowers SOS";
         this.activeProjectId = null;
         this.currentFilter = 'all'; // all, mine, tangible, intangible
-        this.currentTab = 'oportunidades'; // oportunidades, en-curso, contabilizado
+        // Si estamos en móvil forzamos 'oportunidades', si estamos en PC forzamos 'all'
+        this.currentTab = window.innerWidth > 768 ? 'all' : 'oportunidades'; 
     }
 
     async getHtml() {
@@ -30,10 +31,8 @@ export default class ProjectView {
         const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
         const statusBtnText = isOpen ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
 
-        // EVALUACIÓN DE GOBERNANZA V11 (Motor de Permisos)
         const canCreateWO = store.canUserCreateWorkOrder(activeProjectId, activeUserId);
 
-        // V12 MODULAR: ACTION DROPDOWN
         let magicActionsHtml = '';
         if (canCreateWO) {
             magicActionsHtml = `
@@ -43,12 +42,11 @@ export default class ProjectView {
                         <option value="create_wo">➕ Inyectar Tarea (Work Order)</option>
                         <option value="ai_sprint" disabled>🤖 Auto-Sprint IA (V12.x)</option>
                     </select>
-                    <button class="btn-sm btn-sm-primary" id="btnExecuteKanbanMagic">Ejecutar</button>
+                    <button class="btn-primary" id="btnExecuteKanbanMagic">Ejecutar</button>
                 </div>
             `;
         }
 
-        // Configuración del Header Universal
         const headerConfig = {
             title: "Kanban PULL",
             subtitle: project ? project.nombre : '',
@@ -60,7 +58,8 @@ export default class ProjectView {
                 </div>
             `,
             tabs: [
-                { id: 'oportunidades', label: 'Oportunidades', active: this.currentTab === 'oportunidades', badge: '0' },
+                { id: 'all', label: '🗂️ Tablero Completo', active: this.currentTab === 'all' },
+                { id: 'oportunidades', label: 'Libres', active: this.currentTab === 'oportunidades', badge: '0' },
                 { id: 'en-curso', label: 'En Curso', active: this.currentTab === 'en-curso', badge: '0' },
                 { id: 'contabilizado', label: 'Selladas', active: this.currentTab === 'contabilizado', badge: '0' }
             ]
@@ -68,150 +67,119 @@ export default class ProjectView {
 
         return `
             <style>
-                /* FIX SCROLL LATERAL & BOTTOM SAFE */
-                .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
-                .workspace-kanban { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; transition: box-shadow 0.5s ease-out; width: 100%;}
+                /* ELIMINADAS LAS CLASES .app-layout y .workspace (ESTAN EN MASTER.CSS) */
                 
-                /* MAGIA VISUAL: Destello si estás disponible */
-                .workspace-kanban.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.05); }
-
-                /* FIX TABS MOBILE PARA SIEMPRE (Pre-Master CSS) */
+                /* FIX TABS MOBILE PARA SIEMPRE (Se oculta la pestaña 'all' en móvil) */
                 .ph-tabs-container { flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; flex-shrink: 0 !important; margin-bottom: 2rem !important; justify-content: flex-start !important;}
                 .ph-tabs-container::-webkit-scrollbar { display: none; }
                 .ph-tab-btn { flex: 0 0 auto !important; }
 
-                /* WRAPPER MAESTRO PARA ALINEACIÓN PERFECTA */
-                .kanban-container { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; box-sizing:border-box;}
+                @media (max-width: 768px) {
+                    .ph-tab-btn[data-tab="all"] { display: none !important; }
+                }
 
-                /* ESTADOS DISPONIBILIDAD */
-                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
-                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
+                .kanban-container { width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing:border-box;}
 
-                /* MODULAR UX: SELECTORES GLOBALES */
-                .magic-action-group { display: flex; gap: 10px; align-items: center;}
-                .magic-select { background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-weight: 900; outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
-                .magic-select:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2);}
-                .magic-select option { background: #111; color: white; }
-                
-                .btn-sm-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2); padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; font-weight: 900; cursor: pointer; border:none; transition:0.3s;}
-                .btn-sm-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
                 /* CONTROLES SECUNDARIOS (Filtros) */
                 .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem; width: 100%;}
                 .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
-                .filter-dropdown { background: rgba(0,0,0,0.4); border: 1px dashed #444; color: #aaa; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
+                .filter-dropdown { background: rgba(0,0,0,0.4); border: 1px dashed #444; color: #aaa; padding: 10px 15px; border-radius: 10px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); color:white;}
 
                 /* =========================================================
-                   GRID DE TARJETAS LUXURY (DESKTOP)
+                   GRID KANBAN (3 COLUMNAS PC / 1 COLUMNA MÓVIL)
                    ========================================================= */
-                .task-grid { 
+                .kanban-board { 
                     display: grid; 
-                    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+                    grid-template-columns: repeat(3, 1fr); 
                     gap: 1.5rem; 
-                    align-items: start; 
-                    padding-bottom: 5rem;
                     width: 100%;
+                    height: 100%;
+                    padding-bottom: 5rem;
+                }
+
+                .kanban-col { 
+                    background: rgba(255,255,255,0.01); 
+                    border: 1px dashed rgba(255,255,255,0.05); 
+                    border-radius: 16px; 
+                    padding: 1rem; 
+                    display: flex; 
+                    flex-direction: column; 
+                    gap: 1.2rem;
+                    min-height: 300px;
                 }
                 
+                /* Si no estamos en la pestaña 'all', forzamos 1 columna */
+                .kanban-board.single-col-mode { grid-template-columns: 1fr; }
+                .kanban-board.single-col-mode .kanban-col { border: none; padding: 0; background: transparent; }
+                
+                .col-header { color: white; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 5px; display: flex; justify-content: space-between;}
+
+                /* TARJETAS DE TAREA */
                 .task-card { 
                     box-sizing: border-box; width: 100%;
-                    background: linear-gradient(180deg, rgba(25,25,30,0.8) 0%, rgba(10,10,15,0.9) 100%); 
-                    border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 1.8rem; 
+                    background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9)); 
+                    border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; 
                     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
-                    position: relative; display: flex; flex-direction: column; gap: 12px; 
-                    backdrop-filter: blur(15px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.5);
+                    display: flex; flex-direction: column; gap: 10px; 
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 5px 15px rgba(0,0,0,0.3);
                 }
-                .task-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 15px 40px rgba(0,0,0,0.8);}
+                .task-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 25px rgba(0,0,0,0.6);}
                 
-                .task-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-                .task-route { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;}
-                .route-badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 8px; font-family: var(--font-mono); font-weight: 900; border: 1px solid; white-space: nowrap;}
+                .task-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+                .task-route { display: flex; gap: 6px; align-items: center; flex-wrap: wrap;}
+                .route-badge { font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; font-family: var(--font-mono); font-weight: 900; border: 1px solid; white-space: nowrap;}
                 
-                .task-title { color: white; font-size: 1.25rem; margin: 5px 0 0 0; line-height: 1.3; font-weight: 900; letter-spacing: -0.5px; word-break: break-word;}
-                .task-desc-bubble { font-size: 0.85rem; color: #aaa; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent-blue); margin-bottom: 5px; font-style: italic; line-height: 1.5; word-break: break-word;}
+                .task-title { color: white; font-size: 1.15rem; margin: 0; line-height: 1.3; font-weight: 900; letter-spacing: -0.5px; word-break: break-word;}
+                .task-desc-bubble { font-size: 0.85rem; color: #aaa; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border-left: 2px solid var(--accent-blue); font-style: italic; line-height: 1.4; word-break: break-word;}
                 
-                .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 12px; border: 1px solid #222;}
+                .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; background: rgba(0,0,0,0.5); padding: 10px 12px; border-radius: 10px; border: 1px solid #222;}
                 
-                /* BOTONES LADO A LADO EN DESKTOP */
-                .task-actions { margin-top: auto; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 10px;}
+                /* BOTONES ACCIÓN TARJETA */
+                .task-actions { margin-top: auto; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 8px;}
                 
-                .btn-pull { flex: 1; box-sizing: border-box; background: transparent; border: 1px solid #666; color: white; transition: all 0.2s; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem;}
+                .btn-pull { flex: 1; box-sizing: border-box; background: transparent; border: 1px solid #666; color: white; transition: all 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align:center;}
                 .btn-pull:hover { background: white; color: black; border-color: white;}
                 
-                .btn-push { flex: 1; box-sizing: border-box; background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem; text-align: center;}
+                .btn-push { flex: 1; box-sizing: border-box; background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align: center;}
                 .btn-push:hover { background: rgba(224, 64, 251, 0.1); border-style: solid;}
 
-                .btn-focus { flex: 1; box-sizing: border-box; background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 900; transition: all 0.3s; font-size: 0.9rem;}
-                .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 20px rgba(0,176,255,0.4);}
+                .btn-focus { flex: 1; box-sizing: border-box; background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: 900; transition: all 0.3s; font-size: 0.85rem;}
+                .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
                 
-                .btn-approve { flex: 1; box-sizing: border-box; background: var(--accent-green); color: black; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: transform 0.2s; font-size: 0.9rem;}
+                .btn-approve { flex: 1; box-sizing: border-box; background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: transform 0.2s; font-size: 0.85rem;}
                 .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
 
-                .empty-state { grid-column: 1 / -1; text-align: center; padding: 5rem 2rem; color: var(--text-muted); font-size: 1.2rem; border: 1px dashed #333; border-radius: 20px; background: rgba(0,0,0,0.3);}
+                .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 16px; background: rgba(0,0,0,0.3);}
 
-                /* =========================================================
-                   MODALS (CREAR WORK ORDER V10)
-                   ========================================================= */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; overflow-y:auto;}
-                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 3rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; max-height: 90vh; overflow-y:auto; margin: 2rem auto; border-top: 4px solid var(--accent-blue);}
-                .form-group { margin-bottom: 20px; width:100%; }
-                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing:1px; }
-                .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
-                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2);}
+                @media (max-width: 1024px) {
+                    /* En pantallas medianas (iPad) ocultamos la tercera columna si estamos en ALL */
+                    .kanban-board { grid-template-columns: 1fr 1fr; }
+                    .kanban-board > .kanban-col:nth-child(3) { display: none; }
+                }
 
-                @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
-                /* =========================================================
-                   RESPONSIVE MOBILE LUXURY APP (BOTTOM SAFE FIX)
-                   ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace-kanban { 
-                        padding: 90px 1rem 120px 1rem; /* 120px BOTTOM SAFE */
-                    } 
-                    
-                    .kanban-container { width: 100%; display: block; }
-                    
-                    /* Magic Actions apiladas */
-                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top:10px;}
-                    .magic-select, .btn-sm-primary { width: 100%; padding: 14px; font-size: 1rem;}
-
                     .controls-row { justify-content: stretch; margin-bottom: 1.5rem; }
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
                     .filter-dropdown { width: 100%; padding: 14px; box-sizing: border-box; }
                     
-                    /* RESTRICCIÓN GRID MÓVIL PARA EVITAR DEFORMACIONES */
-                    .task-grid { 
-                        grid-template-columns: 1fr; 
-                        gap: 1.2rem; 
-                        width: 100%;
-                        display: grid;
-                        padding-bottom: 2rem;
-                    }
+                    /* Fuerza una sola columna sin marcos en móvil */
+                    .kanban-board { grid-template-columns: 1fr !important; padding-bottom: 2rem;}
+                    .kanban-col { border: none !important; padding: 0 !important; background: transparent !important; }
+                    .col-header { display: none !important; }
                     
-                    .task-card { 
-                        padding: 1.5rem; 
-                        border-radius: 16px; 
-                        width: 100%; 
-                        max-width: 100%; 
-                        margin: 0; 
-                    }
-
-                    .task-title { font-size: 1.15rem; }
-                    .task-meta-row { flex-wrap: wrap; gap: 8px; }
-
-                    /* Botones apilados en móvil para ergonomía de pulgares */
-                    .task-actions { flex-direction: column; padding-top: 15px; margin-top: 10px; gap: 10px; }
+                    .task-actions { flex-direction: column; }
                     .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; margin: 0; padding: 14px; font-size: 1rem;}
-                    
-                    .modal-content { padding: 2rem 1.5rem; width: 95%;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
 
-                <main class="workspace-kanban ${isOpen ? 'is-open-to-work' : ''}">
+                <main class="workspace ${isOpen ? 'is-open-to-work' : ''}">
                     
                     ${PageHeader.getHtml(headerConfig)}
 
@@ -227,12 +195,13 @@ export default class ProjectView {
                             </div>
                         </div>
 
-                        <div class="task-grid" id="taskGrid"></div>
+                        <div class="kanban-board" id="taskGrid">
+                            </div>
                     </div>
                 </main>
 
                 <div class="modal-overlay" id="createTaskModal">
-                    <div class="modal-content">
+                    <div class="modal-content" style="border-top-color:var(--accent-blue);">
                         <h2 style="color:white; margin-top:0; margin-bottom: 5px; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">Abrir el Grifo</h2>
                         <p style="color:#aaa; font-size:0.95rem; margin-bottom:2.5rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes diseñadas en el Mapa VNA.</p>
                         
@@ -254,8 +223,8 @@ export default class ProjectView {
                         </div>
 
                         <div style="display: flex; justify-content: space-between; margin-top: 3rem; gap:15px;">
-                            <button class="btn" style="flex:1; background:transparent; border:1px solid #555; color:white; padding:14px; border-radius:12px; cursor:pointer; font-weight:bold;" id="btnCancelCreateTask">Cancelar</button>
-                            <button class="btn" style="flex:2; background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color:white; font-weight:900; border:none; padding:14px; border-radius:12px; cursor:pointer; box-shadow:0 5px 15px rgba(0,176,255,0.3);" id="btnConfirmCreateTask">🚀 Inyectar al Kanban</button>
+                            <button class="btn-outline" style="flex:1;" id="btnCancelCreateTask">Cancelar</button>
+                            <button class="btn-primary" style="flex:2;" id="btnConfirmCreateTask">🚀 Inyectar al Kanban</button>
                         </div>
                     </div>
                 </div>
@@ -275,16 +244,6 @@ export default class ProjectView {
         let currentActiveId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === currentActiveId);
         
-        if (!project) {
-            const userProjects = state.projects.filter(p => 
-                state.session.role === 'ecosystem-owner' || 
-                p.ownerId === activeUserId || 
-                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
-            );
-            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
-            if(project) localStorage.setItem('tt_active_project', project.id);
-        }
-
         if (!project) return;
         this.activeProjectId = project.id;
 
@@ -330,14 +289,14 @@ export default class ProjectView {
                     btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
                     btnToggleAvailability.innerText = newStatus ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
                     
-                    const workspace = document.querySelector('.workspace-kanban');
+                    const workspace = document.querySelector('.workspace');
                     if (newStatus) workspace.classList.add('is-open-to-work');
                     else workspace.classList.remove('is-open-to-work');
                 }
             });
         }
 
-        // LÓGICA DE MAGIC ACTIONS (MODULAR)
+        // LÓGICA DE MAGIC ACTIONS
         const selMagic = document.getElementById('selKanbanMagic');
         const btnExecuteMagic = document.getElementById('btnExecuteKanbanMagic');
         const createModal = document.getElementById('createTaskModal');
@@ -419,7 +378,6 @@ export default class ProjectView {
                 createModal.style.display = 'none';
                 this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                 
-                // Reset select
                 if(selMagic) selMagic.selectedIndex = 0;
             });
         }
@@ -499,19 +457,34 @@ export default class ProjectView {
             }
         });
 
+        // Aseguramos que al cargar en PC esté en 'all' y en móvil en 'oportunidades'
+        if (window.innerWidth <= 768 && this.currentTab === 'all') {
+            this.currentTab = 'oportunidades';
+            const opsTab = document.querySelector('.ph-tab-btn[data-tab="oportunidades"]');
+            if (opsTab) {
+                document.querySelectorAll('.ph-tab-btn').forEach(b => b.classList.remove('active'));
+                opsTab.classList.add('active');
+            }
+        }
+        
         this.renderTasks(project);
     }
 
     renderTasks(project) {
-        const grid = document.getElementById('taskGrid');
-        grid.innerHTML = '';
+        const board = document.getElementById('taskGrid');
+        board.innerHTML = '';
 
         const state = store.getState();
         const activeUser = state.session.activeUserId;
         const isPO = project.ownerId === activeUser || state.session.role === 'ecosystem-owner';
         
         let counts = { op: 0, cur: 0, con: 0 };
-        let activeCardsHtml = [];
+        
+        const cols = {
+            'oportunidades': { title: 'Oportunidades (Libres)', html: [] },
+            'en-curso': { title: 'En Curso (Asignadas)', html: [] },
+            'contabilizado': { title: 'Selladas (Auditadas)', html: [] }
+        };
 
         const allTasks = [
             ...(project.work_orders || []).map(wo => ({ ...wo, isWorkOrder: true })),
@@ -523,8 +496,6 @@ export default class ProjectView {
             if (tx.status === 'theoretical' || tx.status === 'requested') { tabCategory = 'oportunidades'; counts.op++; }
             else if (tx.status === 'pinged' || tx.status === 'reported') { tabCategory = 'en-curso'; counts.cur++; }
             else if (tx.status === 'consolidated' || tx.status === 'approved') { tabCategory = 'contabilizado'; counts.con++; }
-
-            if (tabCategory !== this.currentTab) return;
 
             let flowData = null;
             if (tx.isWorkOrder) {
@@ -540,12 +511,14 @@ export default class ProjectView {
                 if (tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
             }
             if (!isPO && this.currentFilter === 'all') {
-                if (tabCategory !== 'oportunidades' && tx.assigneeId !== activeUser) return;
+                // Modificación V12: Permitir ver todo el tablero a cualquiera si se quiere
             }
 
-            activeCardsHtml.push(this.createTaskCardHTML(tx, flowData, project, state.session, isPO));
+            const cardHTML = this.createTaskCardHTML(tx, flowData, project, state.session, isPO);
+            if (cols[tabCategory]) cols[tabCategory].html.push(cardHTML);
         });
 
+        // Actualizar Badges
         const badgeOp = document.getElementById('badge-oportunidades');
         const badgeCur = document.getElementById('badge-en-curso');
         const badgeCon = document.getElementById('badge-contabilizado');
@@ -554,15 +527,30 @@ export default class ProjectView {
         if(badgeCur) badgeCur.innerText = counts.cur;
         if(badgeCon) badgeCon.innerText = counts.con;
 
-        if (activeCardsHtml.length > 0) {
-            grid.innerHTML = activeCardsHtml.join('');
-        } else {
-            let emptyMsg = "No hay tareas en esta categoría.";
-            if (this.currentTab === 'oportunidades') emptyMsg = "No hay oportunidades libres en el mercado de la red.";
-            if (this.currentTab === 'en-curso') emptyMsg = "No hay ninguna tarea activa en proceso.";
-            if (this.currentTab === 'contabilizado') emptyMsg = "Aún no se han sellado Slices en esta red.";
+        // RENDERIZADO DEL GRID
+        if (this.currentTab === 'all') {
+            board.className = 'kanban-board';
+            let boardHtml = '';
             
-            grid.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
+            Object.keys(cols).forEach(colKey => {
+                const colData = cols[colKey];
+                boardHtml += `
+                    <div class="kanban-col">
+                        <div class="col-header">${colData.title} <span style="color:#666;">${colData.html.length}</span></div>
+                        ${colData.html.length > 0 ? colData.html.join('') : `<div style="text-align:center; padding:2rem; color:#666; font-size:0.85rem;">Vacío</div>`}
+                    </div>
+                `;
+            });
+            board.innerHTML = boardHtml;
+        } else {
+            board.className = 'kanban-board single-col-mode';
+            const activeColData = cols[this.currentTab];
+            
+            if (activeColData.html.length > 0) {
+                board.innerHTML = activeColData.html.join('');
+            } else {
+                board.innerHTML = `<div class="empty-state">No hay tareas en esta fase.</div>`;
+            }
         }
     }
 
@@ -585,10 +573,10 @@ export default class ProjectView {
             if (isPO) {
                 actionHtml = `
                     <button class="btn-pull" ${hashAttr} title="Adjudicarme la tarea">📥 Hacer PULL</button>
-                    <button class="btn-push" ${hashAttr} title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
+                    <button class="btn-push" ${hashAttr} title="Asignar a un miembro de la Colla">👤 Delegar</button>
                 `;
             } else {
-                actionHtml = `<button class="btn-pull" data-action="request" ${hashAttr}>✋ Solicitar Asignación</button>`;
+                actionHtml = `<button class="btn-pull" data-action="request" ${hashAttr}>✋ Solicitar</button>`;
             }
         } 
         else if (tx.status === 'requested') {
@@ -599,19 +587,19 @@ export default class ProjectView {
             if (isPO) {
                 actionHtml = `
                     <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; border-left:2px solid var(--accent-red);">
-                        <b>${reqName}</b> solicita ejecutar esto.
+                        <b>${reqName}</b> quiere ejecutar esto.
                     </div>
-                    <button class="btn-approve" data-action="approve-pull" ${hashAttr} data-userid="${tx.assigneeId}">✅ Aprobar Asignación</button>
+                    <button class="btn-approve" data-action="approve-pull" ${hashAttr} data-userid="${tx.assigneeId}">✅ Aprobar</button>
                 `;
             } else {
-                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.85rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando aprobación del Project Owner...</div>`;
+                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando al PO...</div>`;
             }
         }
         else if (tx.status === 'pinged') {
             statusTag = `<span style="color:var(--accent-orange); font-size:0.7rem; border:1px solid var(--accent-orange); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,171,64,0.1);">EN CURSO</span>`;
             const isMine = tx.assigneeId === session.activeUserId;
             if (isMine) {
-                actionHtml = `<a href="/v5/focus?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link>▶ MODO FOCUS / REPORTAR</a>`;
+                actionHtml = `<a href="/v5/focus?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link>▶ FOCUS / REPORTAR</a>`;
             } else {
                 const worker = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
                 actionHtml = `<div style="color: #888; font-size: 0.85rem; text-align: center; padding: 12px; background:rgba(0,0,0,0.4); border-radius: 10px; border:1px solid #333;">Ejecutando: <span style="color:white; font-weight:bold;">${worker ? worker.name : tx.assigneeId}</span></div>`;
@@ -624,7 +612,7 @@ export default class ProjectView {
                     <span>Horas Reales: <strong style="color: white; font-family:var(--font-mono); font-size:1rem;">${tx.realHours}h</strong></span>
                     <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink ? '🔗 Ver Proof' : 'No Link'}</a>
                 </div>
-                ${isPO ? `<button class="btn-approve" data-action="consolidate" ${hashAttr}>✅ Sellar en Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px;">Pendiente de firma del PO.</div>`}
+                ${isPO ? `<button class="btn-approve" data-action="consolidate" ${hashAttr}>✅ Sellar Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px;">Pendiente de firma del PO.</div>`}
             `;
         }
         else if (tx.status === 'consolidated') {
