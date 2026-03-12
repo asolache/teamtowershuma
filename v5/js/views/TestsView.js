@@ -256,4 +256,16 @@ export default class TestsView {
                     <div style="margin-top: 25px; padding: 20px; border: 1px solid var(--accent-red); background: rgba(255, 82, 82, 0.1); border-radius: var(--border-radius-md); animation: fadeIn 0.5s ease-in;">
                         <h2 style="color: var(--accent-red); margin: 0;">💥 ERROR DE CÓDIGO PENAL</h2>
                         <p style="color: white; margin-top: 10px; font-family: var(--font-mono);">${error.message}</p>
-                        <div style="background: #000; padding: 15
+                        <div style="background: #000; padding: 15px; border-radius: 8px; margin-top: 10px; font-size: 0.8rem; overflow-x: auto; color: #ff8a80; border: 1px solid #333;">
+                            ${error.stack}
+                        </div>
+                    </div>
+                `;
+                console.error(error);
+                score.style.color = 'var(--accent-red)';
+            }
+            
+            terminal.scrollTop = terminal.scrollHeight;
+        });
+    }
+}
