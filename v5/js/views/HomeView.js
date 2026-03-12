@@ -78,9 +78,7 @@ export default class HomeView {
                 .stat-value { font-size: 3rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 8px; z-index: 2; position: relative;}
                 .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; z-index: 2; position: relative;}
 
-                /* =========================================================
-                   FILTROS Y BUSCADOR (Integrado con master.css)
-                   ========================================================= */
+                /* FILTROS Y BUSCADOR */
                 .toolbar-lux { display: flex; gap: 15px; margin-bottom: 2.5rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; justify-content: space-between; flex-wrap: wrap; backdrop-filter: blur(5px);}
                 .filter-group { display: flex; gap: 12px; flex: 1; flex-wrap: wrap; align-items: center; }
                 
@@ -90,11 +88,8 @@ export default class HomeView {
                     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23AAAAAA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
                     background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 10px auto;
                 }
-                optgroup { font-weight: bold; color: var(--accent-blue); background: #111; }
 
-                /* =========================================================
-                   GRID PROYECTOS (LUXURY CARDS)
-                   ========================================================= */
+                /* GRID PROYECTOS */
                 .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; }
                 
                 .project-card { 
@@ -261,7 +256,17 @@ export default class HomeView {
         `;
     }
 
-    getLandingHtml() { return `...`; } // Omitido por brevedad
+    getLandingHtml() { 
+        return `
+            <div style="display:flex; height:100vh; justify-content:center; align-items:center; background:var(--bg-dark); color:white; font-family:var(--font-main);">
+                <div style="text-align:center;">
+                    <h1 style="font-size:3rem; margin-bottom:1rem; color:var(--accent-blue);">TeamTowers SOS</h1>
+                    <p style="color:#888;">El Social Operating System. Conéctate para continuar.</p>
+                    <a href="/v5/" data-link style="display:inline-block; margin-top:2rem; padding:10px 20px; background:var(--accent-blue); color:black; font-weight:bold; border-radius:8px; text-decoration:none;">ENTRAR AL KERNEL</a>
+                </div>
+            </div>
+        `; 
+    }
 
     executeViewScript() {
         const state = store.getState();
@@ -272,11 +277,9 @@ export default class HomeView {
         Sidebar.initListeners();
         PageHeader.execute();
 
-        // Lógica de Tabs Universal con Eventos DRY
         window.addEventListener('ph-tab-changed', (e) => {
             if (e.detail && e.detail.tabId) {
                 this.currentTab = e.detail.tabId;
-                // Opcional: redibujar algo si fuera necesario
             }
         });
 
