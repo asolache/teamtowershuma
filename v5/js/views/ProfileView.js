@@ -2,7 +2,7 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN COMPONENTE UNIVERSAL
+import { PageHeader } from '../components/PageHeader.js';
 
 export default class ProfileView {
     constructor() {
@@ -24,11 +24,11 @@ export default class ProfileView {
         ];
 
         this.levels = [
-            { id: '@anxaneta', label: '👑 @anxaneta (Visión)' },
-            { id: '@aixecador', label: '🧭 @aixecador (Coordinación)' },
-            { id: '@dosos', label: '👁️ @dosos (Auditoría/QA)' },
-            { id: '@baixos', label: '⚙️ @baixos (Especialista)' },
-            { id: '@pinya', label: '🤝 @pinya (Operaciones)' }
+            { id: '@anxaneta', label: '👑 @anxaneta (Master/Visión)' },
+            { id: '@aixecador', label: '🧭 @aixecador (Senior/Táctica)' },
+            { id: '@dosos', label: '👁️ @dosos (Mid/Auditoría)' },
+            { id: '@baixos', label: '⚙️ @baixos (Junior/Técnico)' },
+            { id: '@pinya', label: '🤝 @pinya (Iniciado/Soporte)' }
         ];
     }
 
@@ -39,131 +39,152 @@ export default class ProfileView {
 
         const isOpen = user?.profile?.isOpenToWork || false;
         const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
-        const statusBtnText = isOpen ? '🟢 Disponible para Match' : '🔴 No Disponible';
+        const statusBtnText = isOpen ? '🟢 Abierto a Proyectos (Match)' : '🔴 Modo Oculto (Privado)';
 
-        // Configuración del Header Universal
         const headerConfig = {
-            title: "Perfil",
+            title: "Identidad",
             subtitle: user?.name || 'Usuario',
-            tagline: "Tu Identidad Fractal y Reputación Web3.",
+            tagline: "Tu ADN Fractal y Reputación P2P (Open Badges).",
             actionHtml: `<button id="btnToggleAvailability" class="${statusBtnClass}">${statusBtnText}</button>`,
             tabs: [
-                { id: 'perfil', label: '🧬 Identidad', active: true },
-                { id: 'proyectos', label: '🌐 Redes Activas' },
-                { id: 'skills', label: '🏅 Skills' }
+                { id: 'perfil', label: '🧬 Identidad (Ikigai)', active: true },
+                { id: 'skills', label: '🏅 Badges & Skills' },
+                { id: 'proyectos', label: '🌐 Ecosistemas (Equity)' }
             ]
         };
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                /* FIX SCROLL LATERAL & BOTTOM SAFE */
+                .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
+                .workspace-profile { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; width: 100%; box-sizing: border-box;}
                 
-                /* FIX V8.3: Cambiamos a display:block para evitar el clipping (corte) del contenido en las pestañas */
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
-                
-                /* =========================================================
-                   TABS CONTENT (FIX CLIPPING)
-                   ========================================================= */
-                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
-                .tab-content.active { display: block; }
+                /* FIX TABS MOBILE PARA SIEMPRE */
+                .ph-tabs-container { flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; flex-shrink: 0 !important; margin-bottom: 2rem !important; justify-content: flex-start !important;}
+                .ph-tabs-container::-webkit-scrollbar { display: none; }
+                .ph-tab-btn { flex: 0 0 auto !important; }
+
+                .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; padding-bottom: 3rem; width: 100%; box-sizing:border-box;}
+                .tab-content.active { display: flex; }
 
                 /* BOTONES DE STATUS HEADER */
-                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
-                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px 20px; border-radius: 12px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 20px; border-radius: 12px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
                 /* =========================================================
                    TAB 1: IDENTIDAD FRACTAL
                    ========================================================= */
-                .form-group { margin-bottom: 1.5rem; }
-                .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase;}
-                .vision-textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; min-height: 100px; resize: vertical; box-sizing: border-box;}
-                .vision-textarea:focus { outline: none; border-color: var(--accent-blue); }
+                .form-group { margin-bottom: 2rem; width: 100%;}
+                .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; font-weight: 900; text-transform: uppercase; letter-spacing:1px;}
+                .vision-textarea { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 12px; font-family: inherit; font-size: 1rem; min-height: 120px; resize: vertical; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .vision-textarea:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5);}
 
-                .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+                .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
                 .tag-checkbox { display: none; }
-                .tag-label { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 6px; color: #ccc; font-size: 0.8rem; cursor: pointer; text-align: center; transition: all 0.2s; user-select: none; display: block;}
-                .tag-checkbox:checked + .tag-label { background: rgba(0, 176, 255, 0.15); border-color: var(--accent-blue); color: white; font-weight: bold;}
-                .tag-checkbox:checked + .tag-label.guardian-auth { background: rgba(224, 64, 251, 0.15); border-color: var(--accent-purple); }
+                .tag-label { background: rgba(255,255,255,0.03); border: 1px solid #333; padding: 12px 15px; border-radius: 10px; color: #aaa; font-size: 0.85rem; font-weight:bold; cursor: pointer; text-align: center; transition: all 0.2s; user-select: none; display: block;}
+                .tag-checkbox:checked + .tag-label { background: rgba(0, 176, 255, 0.15); border-color: var(--accent-blue); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transform: translateY(-2px);}
+                .tag-checkbox:checked + .tag-label.guardian-auth { background: rgba(224, 64, 251, 0.15); border-color: var(--accent-purple); box-shadow: 0 5px 15px rgba(224,64,251,0.2);}
+                .tag-checkbox:checked + .tag-label.guardian-grow { background: rgba(0, 230, 118, 0.15); border-color: var(--accent-green); box-shadow: 0 5px 15px rgba(0,230,118,0.2);}
 
-                .pm-ikigai { background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 8px; padding: 20px; margin-top: 2rem;}
-                .pm-section-title { font-size: 0.85rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
-                .pm-prompt-text { font-family: var(--font-mono); font-size: 0.9rem; color: #ccc; line-height: 1.6; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; border: 1px dashed #444; word-break: break-word;}
-                .verified-badge { font-size: 0.7rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;}
+                .btn-save-profile { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; width: 100%; margin-top: 1rem; text-transform:uppercase; letter-spacing:1px;}
+                .btn-save-profile:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(179, 136, 255, 0.4); }
 
-                .btn-save-profile { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 100%; margin-top: 1rem;}
-                .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); }
+                /* IKIGAI & IA PROMPT */
+                .pm-ikigai { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid rgba(224, 64, 251, 0.3); border-radius: 16px; padding: 2rem; margin-top: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+                .pm-section-title { font-size: 1rem; color: var(--accent-purple); text-transform: uppercase; font-weight: 900; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap:wrap; gap:15px;}
+                .pm-prompt-text { font-family: var(--font-mono); font-size: 0.95rem; color: #ccc; line-height: 1.6; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px; border: 1px dashed #444; word-break: break-word;}
+                .verified-badge { font-size: 0.75rem; background: rgba(255, 171, 64, 0.2); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;}
 
-                .btn-mint { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px;}
-                .btn-mint:hover { background: rgba(255, 171, 64, 0.1); }
-
-                /* =========================================================
-                   TAB 2: PROYECTOS (ESTADÍSTICAS)
-                   ========================================================= */
-                .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-                .stat-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: var(--border-radius-md); text-align: center; }
-                .stat-value { font-size: 2.5rem; color: var(--accent-green); font-weight: 800; font-family: var(--font-mono); margin-bottom: 5px; }
-                .stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-
-                .project-row { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 10px;}
-                .project-row:last-child { border-bottom: none; }
-                .project-name { color: white; font-weight: bold; font-size: 1.1rem; }
-                .project-role { color: var(--accent-blue); font-size: 0.8rem; font-family: var(--font-mono); background: rgba(0, 176, 255, 0.1); padding: 4px 8px; border-radius: 4px; margin-top: 5px; display: inline-block;}
-                .project-slices { text-align: right; }
-                .project-slices .amt { color: var(--accent-green); font-size: 1.2rem; font-weight: bold; font-family: var(--font-mono); }
+                .btn-mint { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 900; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px;}
+                .btn-mint:hover { background: rgba(255, 171, 64, 0.1); transform:translateY(-2px); box-shadow: 0 5px 15px rgba(255,171,64,0.2);}
 
                 /* =========================================================
-                   TAB 3: SKILLS (SBTs)
+                   TAB 2: SKILLS Y OPEN BADGES (V12 LMS)
                    ========================================================= */
-                .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-                .skill-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; }
-                .skill-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;}
-                .skill-name { color: var(--accent-blue); font-weight: bold; font-size: 1.1rem; }
-                .skill-count { background: rgba(0, 176, 255, 0.2); color: var(--accent-blue); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-family: var(--font-mono); font-weight: bold;}
+                .ia-import-box { background: rgba(0,176,255,0.05); border: 1px dashed var(--accent-blue); padding: 2rem; border-radius: 16px; margin-bottom: 3rem; text-align:center;}
+                .ia-import-box p { color: #aaa; font-size: 0.9rem; margin-bottom: 1.5rem; line-height:1.5;}
+                
+                .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; width:100%;}
+                
+                .skill-card { background: rgba(25,25,30,0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; transition: transform 0.3s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);}
+                .skill-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
+                .skill-card.theoretical { border-style: dashed; border-color: #444; background: rgba(0,0,0,0.4); opacity: 0.8;}
+                
+                .skill-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; gap:10px;}
+                .skill-name { color: white; font-weight: 900; font-size: 1.15rem; line-height:1.2;}
+                .skill-card.theoretical .skill-name { color: #aaa; }
+                
+                .skill-level-badge { padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: 900; letter-spacing:0.5px; white-space:nowrap;}
+                .level-real { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0,230,118,0.4);}
+                .level-theory { background: rgba(255, 255, 255, 0.05); color: #888; border: 1px solid #444;}
+                
                 .skill-source-list { display: flex; flex-direction: column; gap: 8px;}
-                .skill-source { font-size: 0.8rem; color: #aaa; display: flex; align-items: center; gap: 5px;}
-                .skill-link { color: #888; text-decoration: none; border-bottom: 1px dashed #555; transition: color 0.2s;}
-                .skill-link:hover { color: white; border-color: white;}
+                .skill-source { font-size: 0.85rem; color: #888; display: flex; align-items: center; gap: 8px;}
+                .skill-link { color: var(--accent-blue); text-decoration: none; border-bottom: 1px dashed transparent; transition: 0.2s; font-weight:bold;}
+                .skill-link:hover { border-bottom-color: var(--accent-blue);}
 
                 /* =========================================================
-                   MODAL PERMAWEB
+                   TAB 3: PROYECTOS (ESTADÍSTICAS)
                    ========================================================= */
-                .checkout-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center;}
-                .checkout-card { background: #111; border: 1px solid var(--accent-orange); border-radius: 16px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(255, 171, 64, 0.2); box-sizing: border-box;}
-                .checkout-price { font-size: 3.5rem; font-weight: 900; color: white; margin: 1rem 0; font-family: var(--font-mono);}
-                .pay-btn { width: 100%; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;}
+                .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; width:100%;}
+                .stat-card { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; text-align: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);}
+                .stat-value { font-size: 3rem; color: var(--accent-green); font-weight: 900; font-family: var(--font-mono); margin-bottom: 5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+                .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight:bold;}
+
+                .project-row { background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); border-radius:16px; margin-bottom:15px; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
+                .project-row:hover { background: rgba(255,255,255,0.04); border-color:#444;}
+                .project-name { color: white; font-weight: 900; font-size: 1.2rem; margin-bottom:5px;}
+                .project-role { color: var(--accent-blue); font-size: 0.85rem; font-family: var(--font-mono); background: rgba(0, 176, 255, 0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; font-weight:bold;}
+                .project-slices { text-align: right; }
+                .project-slices .amt { color: var(--accent-green); font-size: 1.4rem; font-weight: 900; font-family: var(--font-mono); }
+
+                /* =========================================================
+                   MODALS LUXURY
+                   ========================================================= */
+                .overlay-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 5000; display: none; justify-content: center; align-items: center;}
+                .card-modal { background: var(--bg-dark); border: 1px solid var(--accent-orange); border-radius: 24px; padding: 3rem; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8); animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; max-height: 90vh; overflow-y:auto; border-top: 4px solid currentColor;}
+                
+                .checkout-price { font-size: 4rem; font-weight: 900; color: white; margin: 1.5rem 0; font-family: var(--font-mono); text-shadow: 0 5px 20px rgba(0,0,0,0.5);}
+                .pay-btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 900; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; transition: transform 0.2s;}
                 .pay-gpay { background: white; color: #3c4043; }
                 .pay-card { background: #635bff; color: white; }
 
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
-                   RESPONSIVE MOBILE (FIELD APP)
+                   RESPONSIVE MOBILE (FIELD APP - BOTTOM SAFE)
                    ========================================================= */
                 @media (max-width: 768px) { 
-                    .workspace { padding: 80px 1rem 90px 1rem; } 
-                    .btn-status-closed, .btn-status-open { width: 100%; justify-content: center; display: flex;}
+                    .workspace-profile { padding: 90px 1rem 120px 1rem; } /* 120px BOTTOM SAFE */
+                    .btn-status-closed, .btn-status-open { width: 100%; justify-content: center; display: flex; padding: 14px;}
                     .stats-grid { grid-template-columns: 1fr; gap: 1rem;}
-                    .pm-section-title { flex-direction: column; align-items: flex-start; gap: 10px; }
-                    .btn-mint { width: 100%; justify-content: center; }
-                    .checkout-card { padding: 2rem 1.5rem; width: 95%; }
+                    .pm-section-title { flex-direction: column; align-items: flex-start; gap: 15px; }
+                    .btn-mint { width: 100%; justify-content: center; padding: 14px; font-size:1rem;}
+                    .card-modal { padding: 2.5rem 1.5rem; width: 95%; margin: 0 auto;}
+                    
+                    /* Formularios e Inputs Móvil */
+                    .ia-import-box { padding: 1.5rem 1rem; }
+                    .project-row { flex-direction: column; align-items: flex-start;}
+                    .project-slices { text-align: left; width:100%; margin-top: 10px; border-top: 1px dashed #333; padding-top: 10px;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/profile')}
 
-                <main class="workspace">
+                <main class="workspace-profile">
                     
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="view-perfil" class="tab-content active">
                         <div class="form-group">
-                            <label>1. Visión y Skills en Bruto</label>
+                            <label>1. Visión y Propósito</label>
                             <textarea id="inpVision" class="vision-textarea" placeholder="Ej: Desarrollador Full-Stack apasionado por la gobernanza descentralizada. Busco DAOs donde aportar en código y diseño de incentivos..."></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label>2. Afinidad Estructural (¿Dónde aportas más valor?)</label>
+                            <label>2. Afinidad Estructural (Nivel Casteller / Seniority)</label>
                             <div class="tag-grid" id="gridLevels">
                                 ${this.levels.map(l => `
                                     <div>
@@ -174,8 +195,8 @@ export default class ProfileView {
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-top: 2rem;">
-                            <label style="color: var(--accent-purple);">3. Autoridad Actual (Tus Arquetipos)</label>
+                        <div class="form-group" style="margin-top: 3rem;">
+                            <label style="color: var(--accent-purple);">3. Autoridad Actual (Arquetipos Demostrados)</label>
                             <div class="tag-grid" id="gridGuardiansAuth">
                                 ${this.guardians.map(g => `
                                     <div>
@@ -186,29 +207,49 @@ export default class ProfileView {
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-top: 2rem;">
-                            <label style="color: var(--accent-green);">4. Interés de Crecimiento</label>
+                        <div class="form-group" style="margin-top: 3rem;">
+                            <label style="color: var(--accent-green);">4. Interés de Crecimiento (A dónde vas)</label>
                             <div class="tag-grid" id="gridGuardiansGrowth">
                                 ${this.guardians.map(g => `
                                     <div>
                                         <input type="checkbox" class="tag-checkbox" id="g_grow_${g.id}" value="${g.id}">
-                                        <label class="tag-label" for="g_grow_${g.id}">${g.label}</label>
+                                        <label class="tag-label guardian-grow" for="g_grow_${g.id}">${g.label}</label>
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
 
-                        <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Identidad Local</button>
+                        <button class="btn-save-profile" id="btnSaveProfile">💾 Guardar Identidad (Local)</button>
 
                         <div class="pm-ikigai">
                             <div class="pm-section-title">
-                                <span style="display:flex; align-items:center; gap:8px;">🧠 AI System Prompt (Ikigai) <span id="badgeMinted" class="verified-badge" style="display:none;">🕸️ Permaweb</span></span>
+                                <span style="display:flex; align-items:center; gap:10px;">🧠 AI System Prompt (Ikigai) <span id="badgeMinted" class="verified-badge" style="display:none;">🕸️ Permaweb</span></span>
                                 <button class="btn-mint" id="btnOpenMintModal">⚡ Generar Ikigai (IA)</button>
                             </div>
                             <div class="pm-prompt-text" id="aiSystemPrompt">
                                 Rellena tu Identidad Fractal y guárdala para generar tu huella semántica orientada al Motor de Matching.
                             </div>
                         </div>
+                    </div>
+
+                    <div id="view-skills" class="tab-content">
+                        <div class="ia-import-box">
+                            <h3 style="color:white; margin-top:0; font-weight:900;">Proyección de Skills Teóricos (IA)</h3>
+                            <p>Proporciona un enlace a tu LinkedIn, GitHub o pega tu CV. El Agente IA deducirá tus habilidades y nivel (Pinya a Anxaneta) para que el Ecosistema te reconozca antes de tener Proof of Work.</p>
+                            <div style="display:flex; gap:10px; max-width:600px; margin:0 auto; flex-wrap:wrap;">
+                                <input type="text" class="form-control" placeholder="URL o texto del CV..." style="flex:2; min-width:200px;">
+                                <button class="btn-save-profile" style="flex:1; margin-top:0; padding:12px; font-size:1rem; min-width:180px;">🪄 Proyectar (IA)</button>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                            <h3 style="color: white; font-size: 1.3rem; margin:0; font-weight:900;">Tus Open Badges (SBTs)</h3>
+                            <div style="font-size:0.8rem; color:#888;">
+                                <span style="color:var(--accent-green);">■ Real (PoW)</span> &nbsp;&nbsp; 
+                                <span style="color:#666;">■ Teórico (IA)</span>
+                            </div>
+                        </div>
+                        <div class="skills-grid" id="skillsList"></div>
                     </div>
 
                     <div id="view-proyectos" class="tab-content">
@@ -227,35 +268,31 @@ export default class ProfileView {
                             </div>
                         </div>
 
-                        <h3 style="color: white; font-size: 1.2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; margin-bottom: 1rem;">Mis Ecosistemas</h3>
+                        <h3 style="color: white; font-size: 1.3rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 1.5rem; font-weight:900;">Mis Ecosistemas</h3>
                         <div id="projectsList"></div>
                     </div>
 
-                    <div id="view-skills" class="tab-content">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Las habilidades se infieren inmutablemente de las tareas <i>(Proof of Work)</i> que has completado y consolidado en el Ledger.</p>
-                        <div class="skills-grid" id="skillsList"></div>
-                    </div>
-
-                    <div id="checkoutModal" class="checkout-modal">
-                        <div class="checkout-card">
-                            <h2 style="color: var(--accent-orange); margin-top: 0; font-size: 1.8rem;">Soberanía Permaweb</h2>
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">La IA procesará tu visión y arquetipos para redactar tu Identidad Fractal y sellarla en Arweave.</p>
+                    <div id="checkoutModal" class="overlay-modal">
+                        <div class="card-modal" style="color: var(--accent-orange);">
+                            <h2 style="color: var(--accent-orange); margin-top: 0; font-size: 2rem; font-weight:900; letter-spacing:-1px;">Soberanía Permaweb</h2>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; line-height:1.5;">La IA procesará tu visión y arquetipos para redactar tu Identidad Fractal y sellarla en Arweave.</p>
                             
                             <div class="checkout-price">€1.99</div>
-                            <p style="color: #666; font-size: 0.75rem; margin-top:-10px;">Pago único por Minting + Invocación IA</p>
+                            <p style="color: #666; font-size: 0.8rem; margin-top:-15px; text-transform:uppercase; font-weight:bold;">Pago único por Minting + IA</p>
 
-                            <div id="paymentButtons" style="margin-top: 2rem;">
+                            <div id="paymentButtons" style="margin-top: 2.5rem;">
                                 <button class="pay-btn pay-gpay" id="btnGooglePay">Pagar con Google Pay</button>
                                 <button class="pay-btn pay-card" id="btnStripePay">💳 Pagar con Tarjeta</button>
-                                <button class="btn btn-outline" style="width: 100%; border: none; margin-top: 10px; background:transparent; color:#888; cursor:pointer;" id="btnCloseModal">Cancelar</button>
+                                <button class="btn btn-outline" style="width: 100%; border: none; margin-top: 10px; background:transparent; color:#888; cursor:pointer; padding:12px; font-weight:bold;" id="btnCloseModal">Cancelar</button>
                             </div>
 
-                            <div id="mintingLoader" style="display: none; flex-direction: column; align-items: center; gap: 15px; margin-top: 2rem;">
-                                <div style="width: 40px; height: 40px; border: 4px solid rgba(255, 171, 64, 0.3); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                                <p id="loaderStatusMsg" style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0;">Invocando Orquestador IA...</p>
+                            <div id="mintingLoader" style="display: none; flex-direction: column; align-items: center; gap: 20px; margin-top: 2rem;">
+                                <div style="width: 50px; height: 50px; border: 5px solid rgba(255, 171, 64, 0.2); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                <p id="loaderStatusMsg" style="color: var(--accent-orange); font-family: var(--font-mono); font-weight: bold; margin:0; font-size:1.1rem;">Invocando Orquestador IA...</p>
                             </div>
                         </div>
                     </div>
+
                 </main>
 
                 ${BottomNav.getHtml('/profile')}
@@ -314,7 +351,7 @@ export default class ProfileView {
             this.updateSystemPromptDisplay(user.profile.permawebHash, user.profile.ikigaiSummary);
         }
 
-        // TABS LOGIC (FIXED FOR CLIPPING)
+        // TABS LOGIC
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -335,7 +372,7 @@ export default class ProfileView {
             });
         });
 
-        // STATUS TOGGLE (Open To Work)
+        // STATUS TOGGLE
         if(this.dom.btnToggleAvailability) {
             this.dom.btnToggleAvailability.addEventListener('click', () => {
                 const currentState = store.getState();
@@ -349,7 +386,7 @@ export default class ProfileView {
                         payload: { userId: this.activeUserId, profile: { isOpenToWork: newStatus } }
                     }).then(() => {
                         this.dom.btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
-                        this.dom.btnToggleAvailability.innerText = newStatus ? '🟢 Disponible para Match' : '🔴 No Disponible';
+                        this.dom.btnToggleAvailability.innerText = newStatus ? '🟢 Abierto a Proyectos (Match)' : '🔴 Modo Oculto (Privado)';
                     });
                 }
             });
@@ -403,7 +440,7 @@ export default class ProfileView {
                     this.dom.btnSave.style.color = "black";
                     setTimeout(() => {
                         this.dom.btnSave.innerText = originalText;
-                        this.dom.btnSave.style.background = "linear-gradient(45deg, var(--accent-blue), var(--accent-purple))";
+                        this.dom.btnSave.style.background = "linear-gradient(135deg, var(--accent-blue), var(--accent-purple))";
                         this.dom.btnSave.style.color = "white";
                     }, 2000);
                 }
@@ -538,10 +575,13 @@ export default class ProfileView {
                     const rolObj = p.roles.find(r => r.id === entry.roleId);
                     if (rolObj) {
                         projectRoles.add(rolObj.name);
-                        const skillTag = this.inferSkill(rolObj.levelId, entry.description);
                         
-                        if (!skillsMap[skillTag]) skillsMap[skillTag] = new Map();
-                        skillsMap[skillTag].set(p.id, p.nombre);
+                        // V12 SKILLS INFER (Reales por Proof of Work)
+                        const skillTag = this.inferSkill(rolObj.levelId, entry.description);
+                        if (!skillsMap[skillTag]) skillsMap[skillTag] = { realLvl: rolObj.levelId, count: 0, sources: new Map() };
+                        
+                        skillsMap[skillTag].count++;
+                        skillsMap[skillTag].sources.set(p.id, p.nombre);
                     }
                 });
 
@@ -553,7 +593,7 @@ export default class ProfileView {
                         </div>
                         <div class="project-slices">
                             <div class="amt">${Math.round(projectSlices).toLocaleString()} <span style="font-size:0.7rem; color:#888;">Slices</span></div>
-                            <a href="/v5/ledger" data-link style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;" onclick="localStorage.setItem('tt_active_project', '${p.id}')">Ver Ledger &rarr;</a>
+                            <a href="/v5/ledger" data-link style="font-size:0.8rem; color:var(--accent-blue); text-decoration:none; display:inline-block; margin-top:5px; font-weight:bold;" onclick="localStorage.setItem('tt_active_project', '${p.id}')">Ver Ledger &rarr;</a>
                         </div>
                     </div>
                 `);
@@ -568,38 +608,48 @@ export default class ProfileView {
         if (projectRowsHtml.length > 0) {
             pList.innerHTML = projectRowsHtml.join('');
         } else {
-            pList.innerHTML = `<div style="text-align: center; padding: 3rem; border: 1px dashed #333; border-radius: 8px; color: #888;">Aún no tienes Slices consolidados.<br>Usa el Kanban para hacer Pull de tareas.</div>`;
+            pList.innerHTML = `<div style="text-align: center; padding: 4rem; border: 1px dashed #333; border-radius: 16px; color: #888; background:rgba(0,0,0,0.3);">Aún no tienes Slices consolidados.<br>Usa el Kanban para hacer Pull de tareas y ganar equidad.</div>`;
         }
 
+        // RENDER DE SKILLS (Reales vs Teóricos)
         const sList = document.getElementById('skillsList');
         
+        // Simulamos un skill Teórico inyectado por IA
+        skillsMap['Desarrollo Full-Stack (IA)'] = { realLvl: '@aixecador', count: 0, isTheoretical: true, sources: new Map([['github', 'Análisis de Repositorios P2P']]) };
+
         const skillsArray = Object.keys(skillsMap).map(skillName => {
             return {
                 name: skillName,
-                projects: Array.from(skillsMap[skillName].entries()).map(([id, name]) => ({id, name})),
-                count: skillsMap[skillName].size
+                ...skillsMap[skillName]
             };
         }).sort((a, b) => b.count - a.count);
         
         if (skillsArray.length > 0) {
-            sList.innerHTML = skillsArray.map(skill => `
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-name">${skill.name}</span>
-                        <span class="skill-count">Nivel ${skill.count}</span>
+            sList.innerHTML = skillsArray.map(skill => {
+                const badgeClass = skill.isTheoretical ? 'level-theory' : 'level-real';
+                const cardClass = skill.isTheoretical ? 'theoretical' : '';
+                const lvlText = skill.realLvl.replace('@', '').toUpperCase();
+                const iconCheck = skill.isTheoretical ? '🤖' : '✅';
+
+                return `
+                    <div class="skill-card ${cardClass}">
+                        <div class="skill-header">
+                            <span class="skill-name">${skill.name}</span>
+                            <span class="skill-level-badge ${badgeClass}">${lvlText}</span>
+                        </div>
+                        <div class="skill-source-list">
+                            ${Array.from(skill.sources.entries()).map(([id, name]) => `
+                                <div class="skill-source">
+                                    <span>${iconCheck}</span> 
+                                    ${skill.isTheoretical ? `<span style="color:#888;">${name}</span>` : `<a href="/v5/ledger" data-link class="skill-link" onclick="localStorage.setItem('tt_active_project', '${id}')">${name} (PoW)</a>`}
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                    <div class="skill-source-list">
-                        ${skill.projects.map(p => `
-                            <div class="skill-source">
-                                <span>🏅</span> 
-                                <a href="/v5/ledger" data-link class="skill-link" onclick="localStorage.setItem('tt_active_project', '${p.id}')">${p.name}</a>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
+                `
+            }).join('');
         } else {
-            sList.innerHTML = `<div style="grid-column:1/-1; color:#888; font-size:0.9rem;">Completa entregables en el Kanban para ganar Soulbound Tokens (Skills).</div>`;
+            sList.innerHTML = `<div style="grid-column:1/-1; color:#888; font-size:1rem; text-align:center; padding:3rem; border:1px dashed #444; border-radius:16px;">Completa entregables en el Kanban para ganar Soulbound Tokens (Skills reales) o usa la IA para proyectar tu conocimiento.</div>`;
         }
     }
 
@@ -609,12 +659,12 @@ export default class ProfileView {
         if (descLower.includes('diseño') || descLower.includes('ui') || descLower.includes('ux') || descLower.includes('figma')) return 'Diseño de Producto (UI/UX)';
         if (descLower.includes('marketing') || descLower.includes('seo') || descLower.includes('redes')) return 'Growth & Marketing';
         
-        if (levelId === '@anxaneta') return 'Estrategia & Liderazgo';
+        if (levelId === '@anxaneta') return 'Estrategia Organizacional';
         if (levelId === '@aixecador') return 'Project Management';
-        if (levelId === '@dosos') return 'Auditoría & QA';
-        if (levelId === '@baixos') return 'Ejecución Técnica';
-        if (levelId === '@pinya') return 'Operaciones & Soporte';
+        if (levelId === '@dosos') return 'Auditoría y QA';
+        if (levelId === '@baixos') return 'Ejecución Operativa';
+        if (levelId === '@pinya') return 'Soporte General';
         
-        return 'Contribución General';
+        return 'Contribución Ecosistémica';
     }
 }
