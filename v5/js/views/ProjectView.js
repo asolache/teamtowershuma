@@ -9,7 +9,6 @@ export default class ProjectView {
         document.title = "Tareas | TeamTowers SOS";
         this.activeProjectId = null;
         this.currentFilter = 'all'; 
-        // Lógica adaptativa: En PC mostramos Todo el tablero, en móvil saltamos a Oportunidades.
         this.currentTab = window.innerWidth > 768 ? 'all' : 'oportunidades'; 
     }
 
@@ -35,14 +34,15 @@ export default class ProjectView {
 
         let magicActionsHtml = '';
         if (canCreateWO) {
+            // DISEÑO PÍLDORA UNIFICADA (Aplica master.css)
             magicActionsHtml = `
                 <div class="magic-action-group">
                     <select id="selKanbanMagic" class="magic-select">
-                        <option value="" disabled selected>⚡ Acciones IA / Tablero...</option>
-                        <option value="create_wo">➕ Inyectar Tarea (Work Order)</option>
-                        <option value="ai_sprint" disabled>🤖 Auto-Sprint IA (V12.x)</option>
+                        <option value="" disabled selected>⚡ Acción IA...</option>
+                        <option value="create_wo">➕ Tarea (WO)</option>
+                        <option value="ai_sprint" disabled>🤖 Sprint IA</option>
                     </select>
-                    <button class="btn-primary" id="btnExecuteKanbanMagic">Ejecutar</button>
+                    <button class="btn-magic-exec" id="btnExecuteKanbanMagic">Ejecutar</button>
                 </div>
             `;
         }
@@ -67,22 +67,17 @@ export default class ProjectView {
 
         return `
             <style>
-                /* ELIMINADAS LAS CLASES APP-LAYOUT, TABS Y MODALES (AHORA GOBIERNA MASTER.CSS) */
-
                 .kanban-container { width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing:border-box;}
 
                 .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
                 .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
-                /* CONTROLES SECUNDARIOS (Filtros) */
                 .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem; width: 100%; flex-shrink: 0;}
                 .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px dashed #444; color: #aaa; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); color:white;}
 
-                /* =========================================================
-                   GRID KANBAN (COLUMNAS INDEPENDIENTES PC)
-                   ========================================================= */
+                /* GRID KANBAN */
                 .kanban-board { 
                     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; 
                     width: 100%; flex: 1; min-height: 0; padding-bottom: 2rem;
@@ -110,9 +105,7 @@ export default class ProjectView {
                 .kanban-board.single-col-mode .col-header { display: none; }
                 .kanban-board.single-col-mode .col-body { padding: 0; overflow: visible; }
 
-                /* =========================================================
-                   TARJETAS DE TAREA LUXURY
-                   ========================================================= */
+                /* TARJETAS DE TAREA LUXURY */
                 .task-card { 
                     flex-shrink: 0; box-sizing: border-box; width: 100%;
                     background: linear-gradient(145deg, rgba(25,25,30,0.9), rgba(15,15,20,1)); 
@@ -153,7 +146,6 @@ export default class ProjectView {
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
                     .filter-dropdown { width: 100%; padding: 14px; box-sizing: border-box; }
                     
-                    /* En móvil, las columnas ya no tienen scroll interno, fluyen con la página (Workspace hereda Bottom Safe) */
                     .kanban-board { display: flex; flex-direction: column; gap: 1.2rem; padding-bottom: 2rem; height: auto;}
                     .kanban-col { border: none; padding: 0; background: transparent; height: auto; box-shadow:none;}
                     .col-header { display: none; }
@@ -237,7 +229,7 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
 
-        // V12.5: ESCUCHAR EL EVENTO GLOBAL DE TABS (DRY desde PageHeader.js)
+        // V12.5: ESCUCHAR EL EVENTO GLOBAL DE TABS (DRY)
         window.addEventListener('ph-tab-changed', (e) => {
             if (e.detail && e.detail.tabId) {
                 this.currentTab = e.detail.tabId;
@@ -384,7 +376,7 @@ export default class ProjectView {
                 const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
 
                 if (target.classList.contains('btn-approve')) {
-                    if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal
+                    if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); 
                     
                     const action = target.dataset.action;
                     if (action === 'approve-pull') {
@@ -443,16 +435,6 @@ export default class ProjectView {
                 }
             });
         }
-
-        // MÓVIL: Forzar 'oportunidades' si está en 'all' al cargar (Aseguramos UX)
-        if (window.innerWidth <= 768 && this.currentTab === 'all') {
-            this.currentTab = 'oportunidades';
-            const opsTab = document.querySelector('.ph-tab-btn[data-tab="oportunidades"]');
-            if (opsTab) {
-                document.querySelectorAll('.ph-tab-btn').forEach(b => b.classList.remove('active'));
-                opsTab.classList.add('active');
-            }
-        }
         
         this.renderTasks(project);
     }
@@ -503,7 +485,6 @@ export default class ProjectView {
             if (cols[tabCategory]) cols[tabCategory].html.push(cardHTML);
         });
 
-        // Actualizar Badges en las pestañas
         const badgeOp = document.getElementById('badge-oportunidades');
         const badgeCur = document.getElementById('badge-en-curso');
         const badgeCon = document.getElementById('badge-contabilizado');
@@ -512,7 +493,6 @@ export default class ProjectView {
         if(badgeCur) badgeCur.innerText = counts.cur;
         if(badgeCon) badgeCon.innerText = counts.con;
 
-        // RENDERIZADO DEL GRID (3 Columnas PC vs 1 Columna Móvil/Pestaña)
         if (this.currentTab === 'all') {
             board.className = 'kanban-board';
             let boardHtml = '';
@@ -534,7 +514,6 @@ export default class ProjectView {
             const activeColData = cols[this.currentTab];
             
             if (activeColData && activeColData.html.length > 0) {
-                // En modo 1 columna, no ponemos wrapper de scroll interno, dejamos que fluya con la ventana
                 board.innerHTML = `<div class="col-body" style="overflow:visible; padding:0;">${activeColData.html.join('')}</div>`;
             } else {
                 board.innerHTML = `<div class="empty-state">No hay tareas en esta fase.</div>`;
