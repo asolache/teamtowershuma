@@ -23,10 +23,10 @@ export const Sidebar = {
         const collapsedClass = isCollapsed ? 'collapsed' : '';
         const arrowIcon = isCollapsed ? '→' : '←';
 
+        // 1. Ecosistema
         const globalSection = `
             <div class="side-section">
                 <a href="/v5/" class="side-link ${currentPath === '/' ? 'active' : ''}" data-link title="Ecosistema (Centro de Mando)"><span class="icon">🌐</span> <span class="text">Ecosistema</span></a>
-                <a href="/v5/profile" class="side-link ${currentPath === '/profile' ? 'active' : ''}" data-link title="Mi Perfil (CV)"><span class="icon">👤</span> <span class="text">Mi Perfil (CV)</span></a>
             </div>
         `;
 
@@ -34,24 +34,29 @@ export const Sidebar = {
         if (project) {
             const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx') ? 'active-pomodoro' : '';
 
-            // El Dashboard ahora está primero
+            // ORDEN SOLICITADO: 2. Dashboard, 3. Mapa, 4. Kanban Pull, 5. Focus, 6. Wallet, 7. La Colla
             projectSection = `
                 <div class="side-section" style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 1rem;">
                     <a href="/v5/dashboard" class="side-link ${currentPath === '/dashboard' ? 'active' : ''}" data-link title="Dashboard de Red">
                         <span class="icon">🛰️</span> <span class="text">Dashboard</span>
                     </a>
-                    <a href="/v5/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Kanban Tareas">
-                        <span class="icon">📋</span> <span class="text">Kanban Pull</span>
-                    </a>
-                    <a href="/v5/focus" class="side-link ${currentPath === '/focus' ? 'active' : ''}" data-link title="Deep Work Focus">
-                        <span class="icon ${isPomodoroActive}">🍅</span> <span class="text">Deep Work</span>
-                    </a>
-                    <a href="/v5/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Contabilidad y Slicing Pie">
-                        <span class="icon">⚖️</span> <span class="text">Slicing Pie (Equity)</span>
-                    </a>
+                    
                     <a href="/v5/map" class="side-link ${currentPath === '/map' ? 'active' : ''}" data-link title="Mapa de Valor VNA">
                         <span class="icon">🕸️</span> <span class="text">Mapa VNA</span>
                     </a>
+
+                    <a href="/v5/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Kanban Tareas">
+                        <span class="icon">📋</span> <span class="text">Kanban Pull</span>
+                    </a>
+                    
+                    <a href="/v5/focus" class="side-link ${currentPath === '/focus' ? 'active' : ''}" data-link title="Deep Work Focus">
+                        <span class="icon ${isPomodoroActive}">🍅</span> <span class="text">Deep Work</span>
+                    </a>
+                    
+                    <a href="/v5/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Contabilidad y Slicing Pie">
+                        <span class="icon">⚖️</span> <span class="text">Wallet (Ledger)</span>
+                    </a>
+                    
                     <a href="/v5/team" class="side-link ${currentPath === '/team' ? 'active' : ''}" data-link title="Equipo / Nodos">
                         <span class="icon">👥</span> <span class="text">La Colla</span>
                     </a>
@@ -64,7 +69,7 @@ export const Sidebar = {
                 .sidebar { 
                     width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid var(--glass-border); 
                     padding: 2rem 1.2rem; display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; 
-                    overflow-y: auto; height: 100vh; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.3s;
+                    overflow-y: auto; height: 100vh; height: 100dvh; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.3s;
                 }
                 
                 .sidebar-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
@@ -91,7 +96,7 @@ export const Sidebar = {
                 .active-pomodoro { animation: pulseTomato 1.5s infinite alternate; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
                 
-                .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+                .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; overflow: hidden; padding-bottom: 1rem; }
                 
                 /* MODO COLAPSADO */
                 .sidebar.collapsed { width: 80px; padding: 2rem 0.8rem; align-items: center; }
@@ -102,7 +107,7 @@ export const Sidebar = {
                 .sidebar.collapsed .side-link .text { display: none; }
                 .sidebar.collapsed .sidebar-footer .text { display: none; }
 
-                /* OCULTAR EN MÓVIL */
+                /* OCULTAR EN MÓVIL (El BottomNav y el PageHeader toman el control) */
                 @media (max-width: 768px) {
                     .sidebar { display: none !important; }
                 }
@@ -122,13 +127,16 @@ export const Sidebar = {
                 ${projectSection}
                 
                 <div class="sidebar-footer">
+                    <a href="/v5/profile" class="side-link ${currentPath === '/profile' ? 'active' : ''}" data-link title="Mi Perfil">
+                        <span class="icon">👤</span> <span class="text">Mi Identidad</span>
+                    </a>
                     ${role === 'ecosystem-owner' ? `
                         <a href="/v5/settings" class="side-link ${currentPath === '/settings' ? 'active' : ''}" data-link title="Configuración Ecosistema">
                             <span class="icon">⚙️</span> <span class="text">Configuración</span>
                         </a>
                     ` : ''}
                     <button class="side-link" id="globalBtnLogout" title="Desconectar" style="width:100%; text-align:left; background:transparent; border:none;">
-                        <span class="icon">🚪</span> <span class="text">Desconectar</span>
+                        <span class="icon" style="color:var(--accent-red);">🚪</span> <span class="text" style="color:var(--accent-red);">Desconectar Nodo</span>
                     </button>
                 </div>
             </aside>
@@ -139,7 +147,7 @@ export const Sidebar = {
         const btnLogout = document.getElementById('globalBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
-                if(confirm('¿Desconectar el Exoesqueleto y volver al portal público?')) {
+                if(confirm('¿Desconectar el Nodo y salir del ecosistema?')) {
                     store.dispatch({ type: 'LOGOUT_USER' });
                     window.location.href = '/v5/';
                 }
