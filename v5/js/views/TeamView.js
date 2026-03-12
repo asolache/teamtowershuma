@@ -2,7 +2,7 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { PageHeader } from '../components/PageHeader.js'; // INYECCIÓN UNIVERSAL
+import { PageHeader } from '../components/PageHeader.js';
 
 const GEO_DATA = {
     "España": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Bilbao", "Alicante", "Palma", "Otra..."],
@@ -46,7 +46,7 @@ export default class TeamView {
         const headerConfig = {
             title: "La Colla",
             subtitle: project ? project.nombre : '',
-            tagline: "Gestión de Talento y Asignación de Nodos.",
+            tagline: "Gestión de Talento, Gobernanza y Asignación de Nodos.",
             actionHtml: isPO ? `
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <button class="btn-primary" id="btnOpenMarketplace">🔍 Explorar Ecosistema</button>
@@ -61,100 +61,145 @@ export default class TeamView {
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
                 
-                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 2rem; }
+                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 5rem; }
                 .tab-content.active { display: block; }
 
-                /* GRID & CARDS (LUXURY COMPACT) */
-                .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+                /* =========================================================
+                   GRID & CARDS (LUXURY COMPACT)
+                   ========================================================= */
+                .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
                 
-                .user-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.2rem; display: flex; align-items: center; gap: 15px; transition: all 0.2s; cursor: pointer; position: relative; backdrop-filter: blur(10px);}
-                .user-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 176, 255, 0.1); }
-                .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 1.2rem; border: 2px solid #333; flex-shrink: 0;}
+                .user-card { 
+                    background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9));
+                    border: 1px solid rgba(255,255,255,0.05); 
+                    border-radius: 20px; 
+                    padding: 1.5rem; 
+                    display: flex; align-items: center; gap: 15px; 
+                    transition: all 0.3s; cursor: pointer; position: relative; 
+                    backdrop-filter: blur(10px);
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 5px 15px rgba(0,0,0,0.3);
+                }
+                .user-card:hover { border-color: var(--accent-blue); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 176, 255, 0.15); }
+                
+                .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5);}
                 .user-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-                .user-name { color: white; font-weight: bold; font-size: 1rem; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
-                .user-id { color: #888; font-family: var(--font-mono); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .po-badge { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.3); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
+                .user-name { color: white; font-weight: 900; font-size: 1.1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
+                .user-id { color: #888; font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+                .po-badge { background: rgba(255, 171, 64, 0.15); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.4); font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 900; text-transform: uppercase;}
 
-                /* ASIGNACIÓN DE SILLAS (ROLES) */
-                .roles-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; max-width: 800px; margin: 0 auto;}
-                .role-slot { background: rgba(20, 20, 25, 0.6); border: 1px dashed rgba(255,255,255,0.2); border-radius: 16px; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
+                /* =========================================================
+                   ASIGNACIÓN DE SILLAS (ROLES)
+                   ========================================================= */
+                .roles-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; max-width: 900px; margin: 0 auto;}
+                .role-slot { 
+                    background: linear-gradient(145deg, rgba(20, 20, 25, 0.6), rgba(10,10,15,0.8)); 
+                    border: 1px dashed rgba(255,255,255,0.15); 
+                    border-radius: 20px; padding: 1.5rem; 
+                    display: flex; justify-content: space-between; align-items: center; gap: 20px; 
+                    transition: all 0.3s;
+                }
                 .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.05); }
-                .role-meta { display: flex; flex-direction: column; gap: 6px; flex: 1;}
+                .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1;}
                 
-                .ai-match-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono);}
-                .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-1px); box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);}
+                .ai-match-badge { font-size: 0.75rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 6px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); font-weight: bold;}
+                .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);}
 
-                /* FORMULARIOS Y BOTONES */
-                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
-                .form-control:focus { border-color: var(--accent-blue); }
+                /* =========================================================
+                   FORMULARIOS Y BOTONES
+                   ========================================================= */
+                .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 12px 15px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), 0 0 10px rgba(0,176,255,0.2);}
                 .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
                 .form-group { margin-bottom: 15px; }
-                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;}
 
-                .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center;}
+                .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 10px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center;}
                 .btn-invite:hover { background: rgba(0, 176, 255, 0.1); }
-                .btn-primary { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;}
-                .btn-outline { background: transparent; border: 1px solid #333; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-                .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: #666; }
+                .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,176,255,0.2);}
+                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4);}
+                .btn-outline { background: transparent; border: 1px solid #555; color: white; padding: 10px 20px; border-radius: 10px; font-weight:bold; cursor: pointer; transition: 0.2s; }
+                .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: #888; }
 
-                /* MODAL PERFIL USUARIO */
+                /* =========================================================
+                   MODAL PERFIL USUARIO (CON GOBERNANZA V11)
+                   ========================================================= */
                 .profile-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
-                .profile-modal { background: #121216; border: 1px solid #333; border-radius: var(--border-radius-lg); width: 500px; max-width: 90%; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out;}
-                .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; overflow: hidden;}
-                .pm-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 2.5rem; border: 3px solid #333; z-index: 1; flex-shrink: 0;}
+                .profile-modal { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 24px; width: 500px; max-width: 95%; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); border-top: 4px solid var(--accent-blue);}
+                .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; background: rgba(255,255,255,0.01);}
+                .pm-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 2.5rem; border: 3px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); flex-shrink: 0;}
                 .pm-info { z-index: 1; overflow: hidden; flex: 1;}
-                .pm-name { font-size: 1.5rem; color: white; margin: 0 0 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;}
-                .pm-id { font-family: var(--font-mono); color: #888; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .pm-body { padding: 2rem; }
+                .pm-name { font-size: 1.6rem; color: white; margin: 0 0 5px 0; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;}
+                .pm-id { font-family: var(--font-mono); color: #888; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+                
+                .pm-body { padding: 2rem; max-height: 60vh; overflow-y: auto;}
                 .pm-stats { display: flex; gap: 15px; margin-bottom: 1.5rem; }
-                .pm-stat-box { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #222; padding: 15px; border-radius: 8px; text-align: center; }
-                .pm-stat-val { font-size: 1.8rem; font-weight: bold; font-family: var(--font-mono); color: var(--accent-green); margin-bottom: 5px;}
-                .pm-stat-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-                .pm-footer { padding: 1.5rem 2rem; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
+                .pm-stat-box { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; text-align: center; }
+                .pm-stat-val { font-size: 1.8rem; font-weight: 900; font-family: var(--font-mono); color: var(--accent-green); margin-bottom: 5px;}
+                .pm-stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+                
+                .pm-footer { padding: 1.5rem 2rem; background: rgba(0,0,0,0.6); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
 
-                /* MODAL STANDARD (AÑADIR USUARIO) */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2rem; border-radius: 16px; width: 500px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
+                /* TOGGLES DE PERMISOS V11 */
+                .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 10px; margin-bottom: 10px; }
+                .toggle-label { color: #ccc; font-size: 0.9rem; font-weight: bold; }
+                .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+                .switch input { opacity: 0; width: 0; height: 0; }
+                .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 24px; }
+                .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+                input:checked + .slider { background-color: var(--accent-green); }
+                input:checked + .slider:before { transform: translateX(20px); }
 
-                /* MARKETPLACE SIDE PANEL */
-                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000; box-shadow: -15px 0 40px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
+                /* =========================================================
+                   MODAL STANDARD (AÑADIR USUARIO)
+                   ========================================================= */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
+                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 20px; width: 550px; max-width: 95%; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
+
+                /* =========================================================
+                   MARKETPLACE SIDE PANEL
+                   ========================================================= */
+                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000; box-shadow: -20px 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
                 .marketplace-panel.open { transform: translateX(0); }
                 .mk-header { padding: 2rem; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
-                .mk-filters { padding: 1.5rem 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;}
+                .mk-filters { padding: 1.5rem 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
                 .mk-list { flex: 1; overflow-y: auto; padding: 2rem;}
                 
-                .mk-card { background: rgba(255,255,255,0.03); border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
-                .mk-card-info { display: flex; flex-direction: column; gap: 5px;}
-                .mk-card-name { color: white; font-weight: bold; font-size: 1.1rem; display:flex; align-items:center; gap:8px;}
-                .mk-card-geo { font-size: 0.75rem; color: var(--accent-orange); font-family: var(--font-mono); text-transform: uppercase;}
-                .mk-card-skills { font-size: 0.7rem; color: #888; display:flex; gap:5px; flex-wrap:wrap; margin-top:4px;}
-                .mk-card-skills span { background:#222; padding:2px 6px; border-radius:4px; border:1px solid #333;}
+                .mk-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid #333; padding: 1.2rem; border-radius: 16px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;}
+                .mk-card:hover { border-color: var(--accent-blue); transform: translateX(-5px);}
+                .mk-card-info { display: flex; flex-direction: column; gap: 6px;}
+                .mk-card-name { color: white; font-weight: 900; font-size: 1.1rem; display:flex; align-items:center; gap:10px;}
+                .mk-card-geo { font-size: 0.8rem; color: var(--accent-orange); font-family: var(--font-mono); text-transform: uppercase; font-weight:bold;}
+                .mk-card-skills { font-size: 0.75rem; color: #aaa; display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;}
+                .mk-card-skills span { background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; border:1px solid #444;}
                 
-                .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-                .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); }
+                .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s;}
+                .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); transform: scale(1.05);}
 
-                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* RESPONSIVE MOBILE */
+                /* =========================================================
+                   RESPONSIVE MOBILE LUXURY APP (BOTTOM SAFE FIX)
+                   ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace { padding: 80px 1rem 90px 1rem; } 
+                    .workspace { 
+                        padding: 90px 1rem 120px 1rem; /* 120px bottom safe area para iOS Safari Nav Bar */
+                    } 
                     
-                    /* Role slots en móvil (apilar elementos) */
-                    .role-slot { flex-direction: column; align-items: stretch; padding: 1.2rem; }
-                    .role-slot > div:last-child { width: 100% !important; text-align: left !important; margin-top: 10px; }
+                    /* Role slots apilados */
+                    .role-slot { flex-direction: column; align-items: stretch; padding: 1.5rem; gap: 15px;}
+                    .role-slot > div:last-child { width: 100% !important; text-align: left !important; }
                     
-                    /* MK Panel ocupa todo */
                     .marketplace-panel { width: 100vw; }
                     .mk-filters { grid-template-columns: 1fr; }
                     .mk-card { flex-direction: column; align-items: stretch; gap: 15px;}
-                    .btn-recruit { width: 100%; padding: 10px;}
+                    .btn-recruit { width: 100%; padding: 12px;}
                     
-                    /* Form elements */
-                    .btn-primary, .btn-invite, .btn-outline { width: 100%; margin-bottom: 10px;}
+                    /* Form elements ergonómicos */
+                    .btn-primary, .btn-invite, .btn-outline { width: 100%; margin-bottom: 10px; padding: 14px;}
                 }
             </style>
 
@@ -165,22 +210,19 @@ export default class TeamView {
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="view-nodos" class="tab-content active">
-                        <div class="team-grid" id="usersList">
-                            </div>
+                        <div class="team-grid" id="usersList"></div>
                     </div>
 
                     <div id="view-asignaciones" class="tab-content">
-                        <div class="roles-grid" id="rolesList">
-                            </div>
+                        <div class="roles-grid" id="rolesList"></div>
                     </div>
-
                 </main>
 
                 <aside class="marketplace-panel" id="mkPanel">
                     <div class="mk-header">
                         <div>
-                            <h2 style="margin:0; color:white; font-size:1.5rem;">Ecosistema Global</h2>
-                            <p style="margin:5px 0 0 0; color:#888; font-size:0.8rem;">Recluta nodos para tu proyecto</p>
+                            <h2 style="margin:0; color:white; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px;">Ecosistema Global</h2>
+                            <p style="margin:5px 0 0 0; color:#888; font-size:0.85rem;">Recluta talento y mercenarios para tu red</p>
                         </div>
                         <button id="btnCloseMarketplace" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
                     </div>
@@ -205,7 +247,7 @@ export default class TeamView {
 
                 <div class="modal-overlay" id="addUserModal">
                     <div class="modal-content">
-                        <h2 style="color:white; margin-top:0; margin-bottom:1.5rem;">➕ Instanciar Nodo Externo</h2>
+                        <h2 style="color:white; margin-top:0; margin-bottom:1.5rem; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">➕ Nuevo Nodo Externo</h2>
                         <div style="display:flex; gap:15px; flex-wrap:wrap;">
                             <div class="form-group" style="flex:1; min-width: 200px;">
                                 <label>Alias Único (@user)</label>
@@ -245,7 +287,7 @@ export default class TeamView {
                                 <select id="addUCity" class="form-control" disabled>
                                     <option value="">Primero elige país</option>
                                 </select>
-                                <input type="text" id="addUCityCustom" class="form-control" placeholder="Escribe tu ciudad..." style="display:none; margin-top:5px;">
+                                <input type="text" id="addUCityCustom" class="form-control" placeholder="Escribe tu ciudad..." style="display:none; margin-top:8px;">
                             </div>
                             <div class="form-group" style="width:100px;">
                                 <label>C. Postal</label>
@@ -253,9 +295,9 @@ export default class TeamView {
                             </div>
                         </div>
                         
-                        <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top: 1rem; border-top: 1px dashed #333; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top: 1.5rem; border-top: 1px dashed #333; gap:15px;">
                             <button class="btn-outline" id="btnCancelAddUser" style="flex:1;">Cancelar</button>
-                            <button class="btn-primary" id="btnConfirmAddUser" style="flex:2;">Crear Perfil</button>
+                            <button class="btn-primary" id="btnConfirmAddUser" style="flex:2;">Vincular Perfil</button>
                         </div>
                     </div>
                 </div>
@@ -280,20 +322,20 @@ export default class TeamView {
                                 </div>
                                 <div class="pm-stat-box">
                                     <div class="pm-stat-val" id="pmHours" style="color: var(--accent-blue);">0h</div>
-                                    <div class="pm-stat-label">Horas Trabajadas</div>
+                                    <div class="pm-stat-label">Work Orders</div>
                                 </div>
                             </div>
                             
-                            <div style="background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 1.5rem;">
-                                <div style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; margin-bottom: 15px;">🧠 Identidad y Localización</div>
+                            <div style="background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 16px; padding: 20px; margin-bottom: 1.5rem;">
+                                <div style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: 900; margin-bottom: 12px; letter-spacing:1px;">🧠 Identidad y Localización</div>
                                 <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.6;" id="pmSemanticProfile"></div>
                             </div>
 
-                            <div class="form-group" style="margin-bottom: 0;" id="govContainer"></div>
+                            <div id="govContainer"></div>
                         </div>
                         <div class="pm-footer">
                             <button class="btn-outline" id="btnCloseProfileModal" style="border:none; color: #888;">Cerrar Expediente</button>
-                            <div style="font-size: 0.8rem; color: var(--accent-green); font-weight:bold;">ID Verificado ✓</div>
+                            <div style="font-size: 0.85rem; color: var(--accent-green); font-weight:900; font-family:var(--font-mono);">ID Validado ✓</div>
                         </div>
                     </div>
                 </div>
@@ -308,13 +350,25 @@ export default class TeamView {
         PageHeader.execute();
 
         const state = store.getState();
-        const activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
-        let project = state.projects.find(p => p.id === activeProjectId);
+        const activeUserId = state.session.activeUserId;
+        
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
+        
+        if (!project) {
+            const userProjects = state.projects.filter(p => 
+                state.session.role === 'ecosystem-owner' || 
+                p.ownerId === activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+            );
+            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
+            if(project) localStorage.setItem('tt_active_project', project.id);
+        }
 
         if (!project) return;
         this.activeProjectId = project.id;
         
-        // TABS LOGIC (FIXED FOR CLIPPING)
+        // TABS LOGIC
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -345,7 +399,7 @@ export default class TeamView {
         if (btnOpenMarketplace) {
             btnOpenMarketplace.addEventListener('click', () => {
                 mkPanel.classList.add('open');
-                this.renderMarketplace(store.getState().globalUsers, project.usuarios);
+                this.renderMarketplace(store.getState().globalUsers, project.usuarios || []);
             });
         }
         
@@ -353,14 +407,13 @@ export default class TeamView {
             mkPanel.classList.remove('open');
         });
 
-        const filterMK = () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId).usuarios);
+        const filterMK = () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId)?.usuarios || []);
         document.getElementById('mkSearchName').addEventListener('input', filterMK);
         document.getElementById('mkSearchCountry').addEventListener('change', filterMK); 
         document.getElementById('mkSearchCity').addEventListener('input', filterMK);
         document.getElementById('mkSearchSkills').addEventListener('input', filterMK);
 
-
-        // -- FORMULARIO DRY: ALTA DE USUARIOS (LOGICA DE DEPENDENCIAS) --
+        // -- FORMULARIO DRY: ALTA DE USUARIOS --
         const addUserModal = document.getElementById('addUserModal');
         const selCountry = document.getElementById('addUCountry');
         const selCity = document.getElementById('addUCity');
@@ -436,18 +489,7 @@ export default class TeamView {
 
             await this.handleNewUser(newUser);
             addUserModal.style.display = 'none';
-            
-            document.getElementById('addUAlias').value = '';
-            document.getElementById('addUName').value = '';
-            document.getElementById('addUEmail').value = '';
-            document.getElementById('addUWallet').value = '';
-            document.getElementById('addUSocial').value = '';
-            selCountry.value = '';
-            selCity.innerHTML = '<option value="">Primero elige país</option>';
-            selCity.disabled = true;
-            inpCityCustom.style.display = 'none';
-            inpCityCustom.value = '';
-            document.getElementById('addUZip').value = '';
+            window.location.reload();
         });
 
         document.getElementById('btnCloseProfileModal')?.addEventListener('click', () => {
@@ -504,21 +546,21 @@ export default class TeamView {
             card.innerHTML = `
                 <div class="mk-card-info">
                     <div class="mk-card-name">
-                        <div style="width:24px; height:24px; background:#333; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:0.7rem;">${gu.name.charAt(0).toUpperCase()}</div>
-                        ${gu.name} <span style="font-size:0.7rem; color:#666; font-family:monospace;">${gu.id}</span>
+                        <div style="width:28px; height:28px; background:#444; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:0.8rem;">${gu.name.charAt(0).toUpperCase()}</div>
+                        ${gu.name} <span style="font-size:0.75rem; color:#666; font-family:monospace;">${gu.id}</span>
                     </div>
                     <div class="mk-card-geo">${geoText}</div>
                     ${skillsHtml ? `<div class="mk-card-skills">${skillsHtml}</div>` : ''}
                 </div>
-                <button class="btn-recruit" data-id="${gu.id}" data-name="${gu.name}">+ Reclutar</button>
+                <button class="btn-recruit" data-id="${gu.id}">+ Reclutar</button>
             `;
 
-            card.querySelector('.btn-recruit').addEventListener('click', async (e) => {
+            card.querySelector('.btn-recruit').addEventListener('click', async () => {
                 await store.dispatch({
                     type: 'ADD_USER',
                     payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, walletOrSocial: gu.walletOrSocial, globalRole: gu.globalRole }
                 });
-                window.location.reload(); // Recarga para actualizar las vistas y badges
+                window.location.reload(); 
             });
 
             listContainer.appendChild(card);
@@ -543,7 +585,6 @@ export default class TeamView {
                     store.saveState(); 
                 }
             }
-            window.location.reload();
         } catch (e) { console.warn("Aviso:", e.message); }
     }
 
@@ -583,7 +624,7 @@ export default class TeamView {
                     <div class="user-id">${fullUser.id}</div>
                 </div>
                 <div style="text-align: right; margin-right: 15px; flex-shrink: 0;">${slicesStr}</div>
-                <div style="font-size: 1rem; color: var(--text-muted);">&rarr;</div>
+                <div style="font-size: 1.2rem; color: var(--text-muted);">&rarr;</div>
             `;
 
             card.addEventListener('click', () => {
@@ -621,36 +662,68 @@ export default class TeamView {
                     promptBox.innerHTML = '<span style="color: #888;">// Sin Identidad Fractal ni contacto.</span>';
                 }
 
+                // =========================================================
+                // GOBERNANZA V11 - CONTROLES DEL PROJECT OWNER
+                // =========================================================
                 const govContainer = document.getElementById('govContainer');
                 const isEcosystemOwner = sessionRole === 'ecosystem-owner';
                 const isCurrentPO = pOwnerId === activeUserId;
                 const canManage = isEcosystemOwner || isCurrentPO;
 
                 if (canManage && fullUser.id !== pOwnerId) {
+                    const permissions = u.permissions || { canCreateWO: false, canApprove: false };
+                    
                     govContainer.innerHTML = `
-                        <label style="font-size: 0.75rem; color: #aaa; text-transform:uppercase; margin-bottom: 5px; display:block;">🛡️ Gobernanza de Red</label>
-                        <button id="btnPromotePO" class="btn-invite" style="border-color: var(--accent-orange); color: var(--accent-orange); width: 100%;">
-                            👑 Ceder Propiedad (Hacer Project Owner)
-                        </button>
+                        <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 1.5rem;">
+                            <label style="font-size: 0.8rem; color: #aaa; text-transform:uppercase; margin-bottom: 15px; display:block; font-weight:bold;">🛡️ Delegación de Poderes</label>
+                            
+                            <div class="toggle-row">
+                                <span class="toggle-label">Puede generar tareas (Work Orders)</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="togCreateWO" ${permissions.canCreateWO ? 'checked' : ''}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <button id="btnPromotePO" class="btn-invite" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%; margin-top: 15px; font-weight:bold;">
+                                👑 Ceder el Castell (Hacer PO)
+                            </button>
+                        </div>
                     `;
+
                     setTimeout(() => {
+                        const togCreateWO = document.getElementById('togCreateWO');
+                        if(togCreateWO) {
+                            togCreateWO.addEventListener('change', async (e) => {
+                                const newPerms = { ...permissions, canCreateWO: e.target.checked };
+                                await store.dispatch({
+                                    type: 'UPDATE_PROJECT_INFO',
+                                    payload: {
+                                        projectId: this.activeProjectId,
+                                        updates: { usuarios: [{ id: fullUser.id, permissions: newPerms }] }
+                                    }
+                                });
+                                u.permissions = newPerms; // Actualizar memoria local para UI
+                            });
+                        }
+
                         const btnPromo = document.getElementById('btnPromotePO');
                         if(btnPromo) {
                             btnPromo.addEventListener('click', async () => {
-                                if(confirm(`¿Estás seguro de ceder el control del Castell a ${fullUser.name}?`)) {
+                                if(confirm(`¿Estás seguro de CEDER EL CONTROL TOTAL de la red a ${fullUser.name}? Dejarás de ser el Project Owner.`)) {
                                     await store.dispatch({ type: 'PROMOTE_TO_PO', payload: { projectId: this.activeProjectId, userId: fullUser.id } });
-                                    document.getElementById('userProfileModal').style.display = 'none';
                                     window.location.reload(); 
                                 }
                             });
                         }
                     }, 50);
+
                 } else {
                     govContainer.innerHTML = `
-                        <label style="font-size: 0.75rem; color: #aaa; text-transform:uppercase; margin-bottom: 5px; display:block;">🛡️ Rol en la Red</label>
-                        <select class="form-control" disabled style="opacity: 0.5;">
-                            <option>${fullUser.id === pOwnerId ? 'Project Owner (Líder)' : 'Miembro Estándar (Lectura/Ejecución)'}</option>
-                        </select>
+                        <div style="background: rgba(0,0,0,0.3); border: 1px dashed #333; border-radius: 12px; padding: 15px; text-align:center;">
+                            <label style="font-size: 0.75rem; color: #888; text-transform:uppercase; margin-bottom: 5px; display:block;">🛡️ Rol en la Red</label>
+                            <span style="color:white; font-weight:bold; font-family:var(--font-mono);">${fullUser.id === pOwnerId ? '👑 LÍDER DE RED (PO)' : '⚔️ NODO OPERATIVO'}</span>
+                        </div>
                     `;
                 }
 
@@ -670,7 +743,7 @@ export default class TeamView {
         container.innerHTML = '';
 
         if (roles.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#666; padding:2rem; border:1px dashed #333; border-radius:12px;">No hay roles instanciados en este proyecto. Ve al mapa VNA para crear la estructura.</div>`;
+            container.innerHTML = `<div style="text-align:center; color:#888; padding:3rem; border:1px dashed #444; border-radius:16px;">No hay sillas instanciadas. Ve al Mapa VNA para diseñar la estructura de la red.</div>`;
             return;
         }
 
@@ -709,13 +782,13 @@ export default class TeamView {
 
             slot.innerHTML = `
                 <div class="role-meta">
-                    <div style="color: white; font-weight: bold; font-size: 1.1rem; letter-spacing:-0.5px;">${rol.name}</div>
-                    <div style="color: ${color}; font-size: 0.75rem; font-family: var(--font-mono); font-weight:bold;">
-                        ${rol.levelId} | <span style="color:#aaa;">FMV: ${rol.fmv}€/h</span> | 🛡️ ${rol.guardian || 'N/A'}
+                    <div style="color: white; font-weight: 900; font-size: 1.2rem; letter-spacing:-0.5px;">${rol.name}</div>
+                    <div style="color: ${color}; font-size: 0.8rem; font-family: var(--font-mono); font-weight:bold; letter-spacing:0.5px;">
+                        ${rol.levelId} | <span style="color:#aaa;">FMV: ${rol.fmv}€/h</span> | 🛡️ ${rol.guardian || 'Any'}
                     </div>
                 </div>
-                <div style="width: 45%; text-align: right; min-width: 200px;">
-                    <select class="form-control user-select" data-roleid="${rol.id}" style="border-color:${isAssigned ? 'var(--accent-green)' : '#333'};">
+                <div style="width: 45%; text-align: right; min-width: 220px;">
+                    <select class="form-control user-select" data-roleid="${rol.id}" style="border-color:${isAssigned ? 'var(--accent-green)' : '#444'}; background:${isAssigned ? 'rgba(0, 230, 118, 0.05)' : 'rgba(0,0,0,0.5)'}; font-weight:bold;">
                         ${optionsHtml}
                     </select>
                     ${suggestionHtml}
