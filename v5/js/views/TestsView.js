@@ -61,7 +61,7 @@ export default class TestsView {
                                 <p>Tests Superados</p>
                             </div>
                             <div class="metric-box" style="background: rgba(0, 176, 255, 0.05); border-color: rgba(0, 176, 255, 0.2);">
-                                <h3 style="color: var(--accent-blue);">V11.0</h3>
+                                <h3 style="color: var(--accent-blue);">V11.1.1</h3>
                                 <p>Versión del Motor</p>
                             </div>
                         </div>
@@ -181,11 +181,10 @@ export default class TestsView {
 
 
                 // =========================================================================
-                // BLOQUE 2: GOBERNANZA FRACTAL (NUEVOS TESTS V11)
+                // BLOQUE 2: GOBERNANZA FRACTAL (NUEVOS TESTS V11.1)
                 // =========================================================================
 
                 // TEST 2.1: SOBERANÍA DEL ECOSYSTEM OWNER (EO)
-                // El EO actual es 'usr_alvaro_001'. Evaluamos si puede ver un proyecto de otro (dynPoId).
                 const hasAccessEO = store.canUserViewProject(PID_ECO, 'usr_alvaro_001', 'ecosystem-owner');
                 assert(hasAccessEO === true, "[Soberanía Global] Ecosystem Owner tiene acceso y visión sobre proyectos creados por otros.", "GOV-MACRO", true);
 
@@ -200,13 +199,11 @@ export default class TestsView {
                 });
 
                 // TEST 2.3: POLÍTICA DE CREACIÓN MACRO (EO Restringe creación)
-                // (Requiere actualización del store.js para atrapar la lógica)
                 await store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { projectCreationMode: 'closed' } });
                 const creationPolicy = store.getState().config.projectCreationMode;
                 assert(creationPolicy === 'closed', "[Kernel Config] EO ha bloqueado la creación libre de Castells.", "GOV-MACRO", true);
                 
                 // TEST 2.4: GOBERNANZA MICRO (PO controla el grifo)
-                // Hacemos que el proyecto solo permita al PO crear Tareas
                 await store.dispatch({ 
                     type: 'UPDATE_PROJECT_INFO', 
                     payload: { projectId: PID_ECO, updates: { governance: { workOrderCreation: 'po_only' } } }
@@ -216,21 +213,10 @@ export default class TestsView {
                 const isPoOnly = pMicro.governance && pMicro.governance.workOrderCreation === 'po_only';
                 assert(isPoOnly === true, "[Micro-Management] Project Owner ha cerrado la inyección de tareas a la Colla.", "GOV-MICRO", true);
                 
-                // Evaluador de permisos simulado (la misma lógica que usaremos en la Vista)
-                const checkUserCanCreateWO = (userId, proj) => {
-                    if (store.getState().session.role === 'ecosystem-owner') return true;
-                    if (proj.ownerId === userId) return true;
-                    if (!proj.governance || proj.governance.workOrderCreation === 'open') return true;
-                    
-                    if (proj.governance.workOrderCreation === 'custom') {
-                        const u = proj.usuarios?.find(x => x.id === userId);
-                        return u?.permissions?.canCreateWO === true;
-                    }
-                    return false; // po_only
-                };
-
-                assert(checkUserCanCreateWO(dynPoId, pMicro) === true, "[Autoridad] El PO siempre puede crear tareas en su red.", "RBAC", true);
-                assert(checkUserCanCreateWO(dynLauraId, pMicro) === false, "[Restricción] El Nodo Base (Laura) NO puede crear tareas si la política es po_only.", "RBAC", true);
+                // TEST 2.5: VALIDACIÓN DE RESTRICCIÓN ACTIVA (El Fix)
+                // Ahora usamos el método real del store en lugar de simularlo.
+                assert(store.canUserCreateWorkOrder(PID_ECO, dynPoId) === true, "[Autoridad] El PO siempre puede inyectar tareas en su red.", "RBAC", true);
+                assert(store.canUserCreateWorkOrder(PID_ECO, dynLauraId) === false, "[Restricción] El Nodo Base (Laura) NO puede crear tareas si la política es po_only.", "RBAC", true);
 
 
                 // =========================================================================
@@ -241,7 +227,7 @@ export default class TestsView {
                     score.style.color = finalColor;
                     terminal.innerHTML += `
                         <div style="margin-top: 30px; padding: 25px; border: 1px solid ${finalColor}; background: rgba(224, 64, 251, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in; box-shadow: 0 0 30px rgba(224,64,251,0.2);">
-                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2.2rem; letter-spacing: -1px;">🚀 KERNEL v11.0 VALIDADO (NIVEL DIOS)</h2>
+                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2.2rem; letter-spacing: -1px;">🚀 KERNEL v11.1 VALIDADO (NIVEL DIOS)</h2>
                             <p style="color: white; margin-top: 10px; font-size: 1.1rem; line-height:1.5;">El motor ha superado exactamente los ${total} vectores críticos.</p>
                             <p style="color: #aaa; font-family: var(--font-mono); font-size: 0.85rem; margin-top: 15px;">Matriz asegurada: Inmutabilidad (V10) + Soberanía (V11) + Motor Slicing Pie.</p>
                         </div>
