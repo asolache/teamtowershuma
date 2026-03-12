@@ -30,7 +30,7 @@ export default class DashboardView {
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🛰️</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Frecuencia no detectada</h2>
                              <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">Aún no has instanciado ninguna red en este Kernel.</p>
-                             <a href="/v5/create" data-link class="btn-primary" style="text-decoration:none; display:inline-block;">➕ Instanciar Proyecto</a>
+                             <a href="/v5/create" data-link class="btn-magic" style="text-decoration:none; display:inline-block;">➕ Instanciar Proyecto</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/dashboard')}
@@ -88,15 +88,15 @@ export default class DashboardView {
             ? project.tags.map(t => `<span class="badge-tag">#${t}</span>`).join('') 
             : `<span class="badge-tag">#VNA</span>`;
 
-        // MODULAR UX: SELECTOR DE IA EN EL HEADER
+        // V12 MODULAR: EL SELECTOR MÁGICO (TOTALMENTE FORMATEADO Y NATIVO)
         const magicActionsHtml = isPO ? `
             <div class="magic-action-group">
-                <select id="selDashboardMagic" class="magic-select" style="border-color:var(--accent-purple); color:var(--accent-purple);">
+                <select id="selDashboardMagic" class="magic-select">
                     <option value="" disabled selected>🔮 Orquestador IA...</option>
                     <option value="audit">🧠 Auditoría VNA & Equity</option>
                     <option value="legal">⚖️ Redactar Pacto de Socios</option>
                 </select>
-                <button class="btn-primary" id="btnExecuteDashboardMagic" style="background:var(--accent-purple);">Invocar</button>
+                <button class="btn-magic" id="btnExecuteDashboardMagic">Invocar</button>
             </div>
         ` : '';
 
@@ -109,8 +109,6 @@ export default class DashboardView {
 
         return `
             <style>
-                /* ELIMINADAS LAS CLASES .app-layout y .workspace PORQUE ESTÁN EN MASTER.CSS */
-
                 /* =========================================================
                    WORKFLOW SCHEMA (EL CICLO DE VALOR)
                    ========================================================= */
@@ -181,6 +179,45 @@ export default class DashboardView {
                 /* MODAL IA */
                 .modal-ia-body { padding: 30px; overflow-y: auto; color: #ccc; font-size: 1rem; line-height: 1.7; white-space: pre-wrap; font-family: inherit;}
 
+                /* =========================================================
+                   MAGIA DROPDOWN V12 (Estilo Deluxe Inquebrantable)
+                   ========================================================= */
+                .magic-action-group { display: flex; gap: 10px; align-items: center; }
+                
+                .magic-select { 
+                    appearance: none; -webkit-appearance: none;
+                    background-color: rgba(0,0,0,0.6);
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                    background-repeat: no-repeat;
+                    background-position: right 12px center;
+                    background-size: 16px;
+                    border: 1px solid var(--accent-purple); 
+                    color: var(--accent-purple); 
+                    padding: 12px 40px 12px 15px; 
+                    border-radius: 12px; 
+                    font-family: inherit; 
+                    font-size: 0.95rem;
+                    font-weight: 900; 
+                    outline: none; cursor: pointer; transition: all 0.3s; 
+                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 15px rgba(224, 64, 251, 0.1);
+                }
+                .magic-select:focus, .magic-select:hover { 
+                    border-color: white; color: white;
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 20px rgba(224, 64, 251, 0.3);
+                }
+                .magic-select option { background: var(--bg-dark); color: white; font-weight: bold; }
+                
+                .btn-magic { 
+                    background: linear-gradient(135deg, var(--accent-purple), #7c4dff); 
+                    color: white; border: none; padding: 12px 24px; border-radius: 12px; 
+                    font-weight: 900; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; 
+                    box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2); 
+                }
+                .btn-magic:hover { 
+                    transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1); 
+                }
+
                 @media (max-width: 1100px) { 
                     .content-row { grid-template-columns: 1fr; } 
                     .kpi-grid { grid-template-columns: 1fr 1fr; } 
@@ -200,6 +237,10 @@ export default class DashboardView {
                     .panel-box { padding: 1.5rem; }
                     .vacante-card { flex-direction: column; align-items: stretch; gap: 15px;}
                     .btn-invite { width: 100%; padding: 12px; }
+
+                    /* Magic Selector a pantalla completa en móvil */
+                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top: 15px; }
+                    .magic-select, .btn-magic { width: 100%; padding: 16px; font-size: 1.05rem; }
                 }
             </style>
 
@@ -292,7 +333,7 @@ export default class DashboardView {
                     </div>
                     <div class="modal-ia-body" id="aiModalBody"></div>
                     <div style="padding:20px 30px; border-top:1px solid #333; display:flex; justify-content:flex-end; background:rgba(0,0,0,0.5);">
-                        <button class="btn-primary" id="btnDownloadPDF" style="display:none;">⬇️ DESCARGAR INFORME (.TXT)</button>
+                        <button class="btn-magic" id="btnDownloadPDF" style="display:none;">⬇️ DESCARGAR INFORME (.TXT)</button>
                     </div>
                 </div>
             </div>
