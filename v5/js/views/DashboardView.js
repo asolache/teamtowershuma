@@ -82,6 +82,11 @@ export default class DashboardView {
 
         const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red está en fase de definición...';
         
+        // FIX: Variable Tags restaurada
+        const tagsHtml = (project.tags && project.tags.length > 0) 
+            ? project.tags.map(t => `<span class="badge-tag">#${t}</span>`).join('') 
+            : `<span class="badge-tag">#VNA</span>`;
+        
         // Integración del PageHeader
         const headerConfig = {
             title: project.nombre,
@@ -118,8 +123,8 @@ export default class DashboardView {
                 
                 .s-icon { 
                     font-size: 2.5rem; 
-                    line-height: normal; /* Fix emoji crop */
-                    overflow: visible; /* Fix emoji crop */
+                    line-height: normal;
+                    overflow: visible; 
                     background: rgba(255,255,255,0.03); 
                     width: 75px; height: 75px; 
                     display: flex; justify-content: center; align-items: center; 
@@ -178,10 +183,10 @@ export default class DashboardView {
 
                 /* BOTONES IA PREMIUM */
                 .btn-ai-action { width: 100%; padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(224, 64, 251, 0.3); background: linear-gradient(145deg, rgba(15,10,20,0.8), rgba(0,0,0,0.9)); color: white; text-align: left; cursor: pointer; transition: all 0.3s; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
-                .btn-ai-action::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(224,64,251,0.1), transparent); transition: 0.5s; }
+                .btn-ai-action::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: 0.5s; }
                 .btn-ai-action:hover::before { left: 100%; }
-                .btn-ai-action:hover { border-color: var(--accent-purple); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(224,64,251,0.2);}
-                .btn-ai-action strong { color: var(--accent-purple); display: block; font-size: 1.1rem; margin-bottom: 6px; font-weight: 900; letter-spacing: 0.5px;}
+                .btn-ai-action:hover { border-color: var(--accent-purple); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(224,64,251,0.15);}
+                .btn-ai-action strong { color: var(--accent-purple); display: block; font-size: 1.05rem; margin-bottom: 5px; font-weight: 900; letter-spacing: 0.5px;}
                 .btn-ai-action span { color: #aaa; font-size: 0.85rem; line-height: 1.5; display: block;}
 
                 .status-ok { padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 12px; color: var(--accent-green); text-align: center; font-weight: bold; font-size: 0.95rem;}
@@ -288,7 +293,7 @@ export default class DashboardView {
                     <div class="content-row">
                         <div class="panel-box">
                             <h2 class="panel-title">🎯 Mercado Interno (Vacantes)</h2>
-                            <p style="color:#888; font-size:0.9rem; margin-bottom:1.5rem; line-height:1.5;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano asignado.</p>
+                            <p style="color:#888; font-size:0.85rem; margin-bottom:1.5rem; line-height:1.4;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano asignado.</p>
                             <div class="vacantes-list">
                                 ${vacantesHtml}
                             </div>
@@ -296,7 +301,7 @@ export default class DashboardView {
 
                         <div class="panel-box" style="border-color: rgba(224, 64, 251, 0.3); background: linear-gradient(180deg, rgba(20, 10, 25, 0.8), rgba(10, 5, 15, 0.9));">
                             <h2 class="panel-title" style="color:var(--accent-purple);">🔮 Orquestador Legal IA</h2>
-                            <p style="color:#aaa; font-size:0.9rem; margin-bottom:2rem; line-height:1.5;">Agentes cognitivos para auditar el estado del proyecto y emitir pactos de socios en tiempo real.</p>
+                            <p style="color:#aaa; font-size:0.85rem; margin-bottom:2rem; line-height:1.4;">Agentes cognitivos para auditar el estado del proyecto y emitir pactos de socios en tiempo real.</p>
                             
                             <button class="btn-ai-action" id="btnAIAuditor">
                                 <strong>🧠 Auditoría VNA & Equity</strong>
