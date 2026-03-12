@@ -7,8 +7,9 @@ import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
 
 export default class HomeView {
     constructor() {
-        document.title = "Centro de Mando | TeamTowers SOS";
+        document.title = "Ecosistema | TeamTowers SOS";
         this.currentTab = 'proyectos'; 
+        this.allProjects = [];
     }
 
     async getHtml() {
@@ -16,27 +17,16 @@ export default class HomeView {
         const activeUserId = state.session.activeUserId;
         const config = state.config;
 
+        // Fallback para invitados o admin inicial
         if (!activeUserId || activeUserId === 'ecosystem-admin' || state.session.role === 'guest') {
             return this.getLandingHtml();
         }
 
-        const archetypeColors = {
-            'startup': { label: '🚀 STARTUP', color: 'var(--accent-green)' },
-            'corp': { label: '🏢 HOLDING / CORP', color: 'var(--accent-blue)' },
-            'corporate': { label: '🏢 HOLDING / CORP', color: 'var(--accent-blue)' },
-            'dao': { label: '🤖 IA-DAO', color: 'var(--accent-purple)' },
-            'incubator': { label: '🏭 INCUBADORA', color: 'var(--accent-orange)' },
-            'sos': { label: '🆘 S.O.S. COMUNITARIO', color: 'var(--accent-red)' },
-            'custom': { label: '✨ RED CUSTOM', color: 'white' }
-        };
-
-        const globalArchetype = config.archetype || (state.projects[0] ? state.projects[0].archetype : 'startup');
-        const archData = archetypeColors[globalArchetype] || archetypeColors['startup'];
-
+        // Configuración de Pestañas (Design System V12)
         const headerConfig = {
             title: config.ecosystemName || "TeamTowers Network",
-            subtitle: `<span style="font-size:0.6rem; padding:4px 10px; border-radius:12px; border:1px solid ${archData.color}; color:${archData.color}; vertical-align:middle; margin-left:10px; letter-spacing:1px; background: rgba(0,0,0,0.5);">${archData.label}</span>`,
-            tagline: "Panel de control del Ecosistema (Macro-Red).",
+            subtitle: "Macro-Red",
+            tagline: "Panel de control del Ecosistema y Gobernanza Fractal.",
             tabs: [
                 { id: 'proyectos', label: '🪐 Redes', active: this.currentTab === 'proyectos' },
                 { id: 'identidad', label: '📜 Misión', active: this.currentTab === 'identidad' },
@@ -47,206 +37,68 @@ export default class HomeView {
 
         const isEcosystemOwner = state.session.role === 'ecosystem-owner' || config.allowUserCreation;
 
-        // Carga Dinámica de Sectores para el Buscador
+        // Carga de Sectores para el buscador
         const customSectores = state.ontology?.sectores || {};
-        let filterSectorOptions = `<option value="all">🌐 Todos los Sectores</option>`;
-        
+        let sectorOptions = `<option value="all">🌐 Todos los Sectores</option>`;
         if (Object.keys(customSectores).length > 0) {
-            filterSectorOptions += `<optgroup label="🌟 Tus Plantillas Custom">`;
-            Object.keys(customSectores).forEach(k => {
-                if(k !== '_meta') filterSectorOptions += `<option value="custom_${k}">${k.toUpperCase()}</option>`;
-            });
-            filterSectorOptions += `</optgroup>`;
+            sectorOptions += `<optgroup label="🌟 Tus Plantillas">`;
+            Object.keys(customSectores).forEach(k => { if(k !== '_meta') sectorOptions += `<option value="custom_${k}">${k.toUpperCase()}</option>`; });
+            sectorOptions += `</optgroup>`;
         }
-        
-        filterSectorOptions += `<optgroup label="📦 Catálogo Kernel V10">`;
-        Object.keys(GLOBAL_ONTOLOGY).forEach(k => {
-            if(k !== '_meta') filterSectorOptions += `<option value="${k}">${k.replace(/_/g, ' ').toUpperCase()}</option>`;
-        });
-        filterSectorOptions += `</optgroup>`;
+        sectorOptions += `<optgroup label="📦 Catálogo V10">`;
+        Object.keys(GLOBAL_ONTOLOGY).forEach(k => { if(k !== '_meta') sectorOptions += `<option value="${k}">${k.replace(/_/g, ' ').toUpperCase()}</option>`; });
+        sectorOptions += `</optgroup>`;
 
         return `
-            <style>
-                /* PANELES LUXURY */
-                .panel { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); backdrop-filter: blur(10px);}
-                .panel h2 { color: white; font-size: 1.3rem; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-weight: 800; letter-spacing: -0.5px;}
-                
-                .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-                .stat-card { background: linear-gradient(145deg, rgba(0,0,0,0.6), rgba(10,10,15,0.8)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden;}
-                .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
-                
-                .stat-value { font-size: 3rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 8px; z-index: 2; position: relative;}
-                .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; z-index: 2; position: relative;}
-
-                /* FILTROS Y BUSCADOR */
-                .toolbar-lux { display: flex; gap: 15px; margin-bottom: 2.5rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; justify-content: space-between; flex-wrap: wrap; backdrop-filter: blur(5px);}
-                .filter-group { display: flex; gap: 12px; flex: 1; flex-wrap: wrap; align-items: center; }
-                
-                .filter-search { flex: 2; min-width: 250px; }
-                .filter-select { 
-                    flex: 1; min-width: 180px; appearance: none; -webkit-appearance: none;
-                    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23AAAAAA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
-                    background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 10px auto;
-                }
-
-                /* GRID PROYECTOS */
-                .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; }
-                
-                .project-card { 
-                    background: linear-gradient(180deg, rgba(25, 25, 30, 0.8) 0%, rgba(15, 15, 20, 0.9) 100%);
-                    border: 1px solid rgba(255,255,255,0.08); 
-                    border-radius: 20px; padding: 1.8rem; display: flex; flex-direction: column; 
-                    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden; backdrop-filter: blur(15px);
-                    cursor: pointer; text-decoration: none;
-                }
-                .project-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0; transition: opacity 0.3s; }
-                .project-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-                .project-card:hover::before { opacity: 1; }
-                
-                .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; margin-bottom: 1.2rem;}
-                .card-title { font-size: 1.4rem; color: white; margin: 0 0 10px 0; font-weight: 800; letter-spacing: -0.5px;}
-                
-                .card-arch { font-size: 0.65rem; padding: 4px 10px; border-radius: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); white-space:nowrap;}
-                .arch-startup { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.2); }
-                .arch-dao { background: rgba(224, 64, 251, 0.1); color: var(--accent-purple); border: 1px solid rgba(224, 64, 251, 0.2); }
-                .arch-corp { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.2); }
-                .arch-incubator { background: rgba(255, 171, 64, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.2); }
-
-                /* TAGS */
-                .card-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.2rem; z-index: 1;}
-                .tag-pill { background: rgba(0,0,0,0.6); border: 1px solid #333; color: #bbb; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;}
-
-                .card-metrics { display: flex; justify-content: space-between; margin-bottom: 1.5rem; z-index: 1; padding: 12px 15px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.02);}
-                .metric { display: flex; flex-direction: column; align-items: center; }
-                .metric-val { font-size: 1.3rem; color: white; font-family: var(--font-mono); font-weight: 900; }
-                .metric-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;}
-
-                .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; z-index: 1;}
-                
-                /* PILL DE OFERTAS PREMIUM */
-                .opp-pill { 
-                    background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.2); color: var(--accent-blue);
-                    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; 
-                    display: inline-flex; align-items: center; gap: 6px; transition: 0.3s; font-family: var(--font-mono);
-                }
-                .opp-pill.has-offers {
-                    background: rgba(255, 171, 64, 0.15); border-color: var(--accent-orange); color: var(--accent-orange);
-                    box-shadow: 0 0 15px rgba(255, 171, 64, 0.2);
-                }
-                .project-card:hover .opp-pill.has-offers { box-shadow: 0 0 20px rgba(255, 171, 64, 0.4); transform: scale(1.05);}
-
-                .btn-enter { color: var(--text-muted); font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 5px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
-                .project-card:hover .btn-enter { color: white; transform: translateX(5px);}
-
-                .desktop-only { display: flex; }
-                .mobile-only { display: none; }
-
-                /* ETHERSCAN LOCAL */
-                .etherscan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px;}
-                .ledger-table-wrapper { overflow-x: auto; background: #08080a; border: 1px solid #1a1a24; border-radius: var(--border-radius-lg); padding: 1.5rem; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);}
-                .ledger-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; font-family: var(--font-mono); font-size: 0.9rem;}
-                .ledger-table th { padding: 1rem; color: var(--accent-blue); border-bottom: 1px solid #222; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem;}
-                .ledger-table td { padding: 1.2rem 1rem; border-bottom: 1px dashed #1a1a24; color: #ddd; }
-                .ledger-table tr:hover td { background: rgba(255,255,255,0.02); }
-                .hash-badge { color: var(--accent-purple); padding: 4px 8px; border-radius: 6px; background: rgba(224,64,251,0.1); border: 1px solid rgba(224,64,251,0.2); font-weight: bold;}
-
-                /* RESPONSIVE MOBILE */
-                @media (max-width: 768px) {
-                    .panel { padding: 1.5rem; }
-                    .stats-grid { grid-template-columns: 1fr 1fr; }
-                    .stat-value { font-size: 2rem; }
-                    
-                    .toolbar-lux { flex-direction: column; align-items: stretch; padding: 15px; border-radius: 12px;}
-                    .filter-group { flex-direction: column; gap: 10px;}
-                    
-                    .projects-grid { display: flex; flex-direction: column; gap: 15px; }
-                    .project-card { padding: 1.5rem; border-radius: 16px; }
-                    .card-header { margin-bottom: 10px; }
-                    .card-title { font-size: 1.2rem; margin-bottom: 8px;}
-                    
-                    .desktop-only { display: none !important; }
-                    .mobile-only { display: flex !important; }
-                    .card-footer { padding-top: 15px; border-top: 1px dashed #333; margin-top: 5px;}
-                    .mob-meta-stats { font-size: 0.8rem; color: #888; font-family: var(--font-mono); font-weight: bold;}
-                }
-            </style>
-
             <div class="app-layout">
                 ${Sidebar.getHtml('/')}
 
                 <main class="workspace">
                     ${PageHeader.getHtml(headerConfig)}
 
-                    <div id="view-proyectos" class="tab-content active">
-                        
-                        <div class="toolbar-lux" id="filterBar">
-                            <div class="filter-group">
-                                <input type="text" id="filterSearch" class="form-control filter-search" placeholder="🔍 Buscar red por nombre...">
-                                <select id="filterSector" class="form-control filter-select">
-                                    ${filterSectorOptions}
-                                </select>
-                                <select id="filterArch" class="form-control filter-select">
-                                    <option value="all">🏛️ Todos los Arquetipos</option>
-                                    <option value="startup">🚀 Startup</option>
-                                    <option value="dao">🤖 IA-DAO</option>
-                                    <option value="corp">🏢 Holding</option>
-                                    <option value="incubator">🏭 Incubadora</option>
-                                </select>
+                    <div id="view-proyectos" class="tab-content ${this.currentTab === 'proyectos' ? 'active' : ''}">
+                        <div class="toolbar-lux" style="display: flex; gap: 15px; margin-bottom: 2rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 10px; flex: 1; min-width: 300px;">
+                                <input type="text" id="filterSearch" class="form-control" placeholder="🔍 Buscar red..." style="flex: 2;">
+                                <select id="filterSector" class="form-control" style="flex: 1;">${sectorOptions}</select>
                             </div>
-                            ${isEcosystemOwner ? `
-                                <button class="btn-primary" id="btnCreateNewNet" title="Abre el Creador de Redes y IA">
-                                    <span>➕</span> Instanciar Red
-                                </button>
-                            ` : ''}
+                            ${isEcosystemOwner ? `<button class="btn-primary" id="btnCreateNewNet">➕ Instanciar Red</button>` : ''}
                         </div>
-
-                        <div class="projects-grid" id="ecosystemProjectsGrid"></div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;" id="ecosystemProjectsGrid"></div>
                     </div>
 
-                    <div id="view-identidad" class="tab-content">
-                        <div class="panel">
-                            <h2>📊 Tablero de Comando Global</h2>
-                            <div class="stats-grid" id="globalStatsGrid"></div>
-                        </div>
-                        <div class="panel">
-                            <h2>📜 Misión y System Prompt Global</h2>
-                            <p style="font-family: var(--font-mono); color: #ccc; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px dashed #444; line-height: 1.6;">
-                                ${config.globalPrompt || "El Ecosistema aún no tiene un System Prompt definido."}
+                    <div id="view-identidad" class="tab-content ${this.currentTab === 'identidad' ? 'active' : ''}">
+                        <div class="panel" style="background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem;">
+                            <h2 style="margin-top:0;">📊 Estado de la Red</h2>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;" id="globalStatsGrid"></div>
+                            
+                            <h2 style="border-top: 1px solid #222; padding-top: 2rem;">📜 System Prompt / Misión</h2>
+                            <p style="font-family: var(--font-mono); color: #888; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; border: 1px dashed #444;">
+                                ${config.globalPrompt || "Definiendo propósito del ecosistema..."}
                             </p>
                         </div>
                     </div>
 
-                    <div id="view-explorador" class="tab-content">
-                        <div class="panel" style="padding: 1.5rem;">
-                            <div class="etherscan-header">
-                                <h2 style="color:white; margin:0; border:none;">🔎 Explorador de Bloques</h2>
-                                <div class="filter-group" style="flex:0; min-width:300px;">
-                                    <input type="text" id="scanSearch" class="form-control" placeholder="Buscar Hash o Alias...">
-                                </div>
+                    <div id="view-explorador" class="tab-content ${this.currentTab === 'explorador' ? 'active' : ''}">
+                        <div class="panel" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; align-items:center;">
+                                <h2 style="margin:0;">🔎 Ledger Global</h2>
+                                <input type="text" id="scanSearch" class="form-control" placeholder="Buscar Hash o Usuario..." style="width:300px;">
                             </div>
-                            <div class="ledger-table-wrapper">
-                                <table class="ledger-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Hash</th>
-                                            <th>Red (Proyecto)</th>
-                                            <th>Fecha</th>
-                                            <th>Nodo</th>
-                                            <th>Concepto</th>
-                                            <th style="text-align:right;">Slices</th>
-                                        </tr>
-                                    </thead>
+                            <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #222;">
+                                <table class="ledger-table" style="width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.85rem; min-width: 800px;">
+                                    <thead><tr style="text-align: left; color: var(--accent-blue); border-bottom: 2px solid #222;"><th style="padding:15px;">HASH</th><th>PROYECTO</th><th>NODO</th><th>VALOR</th><th style="text-align:right; padding-right:15px;">TIMESTAMP</th></tr></thead>
                                     <tbody id="scanTableBody"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <div id="view-mapa" class="tab-content">
-                        <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; text-align:center;">
-                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">🕸️</div>
-                            <h2 style="border:none; font-size: 2rem;">Topología Macro-Red</h2>
-                            <p style="max-width: 600px; margin:0 auto; color: #888; font-size: 1.1rem;">En la V12, este lienzo conectará los Ecosistemas mediante el protocolo <code>macroFlows</code> P2P.</p>
+                    <div id="view-mapa" class="tab-content ${this.currentTab === 'mapa' ? 'active' : ''}">
+                        <div style="text-align: center; padding: 5rem; color: #444; border: 2px dashed #222; border-radius: 24px;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🕸️</div>
+                            <h2 style="color: white;">Macro-Topología P2P</h2>
+                            <p>En la V12, este lienzo conectará los Ecosistemas mediante protocolos de valor cruzado.</p>
                         </div>
                     </div>
 
@@ -256,230 +108,132 @@ export default class HomeView {
         `;
     }
 
-    getLandingHtml() { 
+    getLandingHtml() {
         return `
-            <div style="display:flex; height:100vh; justify-content:center; align-items:center; background:var(--bg-dark); color:white; font-family:var(--font-main);">
-                <div style="text-align:center;">
-                    <h1 style="font-size:3rem; margin-bottom:1rem; color:var(--accent-blue);">TeamTowers SOS</h1>
-                    <p style="color:#888;">El Social Operating System. Conéctate para continuar.</p>
-                    <a href="/v5/" data-link style="display:inline-block; margin-top:2rem; padding:10px 20px; background:var(--accent-blue); color:black; font-weight:bold; border-radius:8px; text-decoration:none;">ENTRAR AL KERNEL</a>
+            <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-dark); text-align: center;">
+                <div>
+                    <h1 style="font-size: 3.5rem; letter-spacing: -2px; margin-bottom: 1rem;">TeamTowers <span style="color:var(--accent-blue);">SOS</span></h1>
+                    <p style="color: #666; margin-bottom: 3rem;">Iniciando Exoesqueleto Cognitivo...</p>
+                    <a href="/v5/" data-link class="btn-primary" style="padding: 15px 40px; font-size: 1.1rem; text-decoration:none;">CONECTAR NODO</a>
                 </div>
             </div>
-        `; 
+        `;
     }
 
     executeViewScript() {
         const state = store.getState();
-        if (!state.session.activeUserId || state.session.activeUserId === 'ecosystem-admin' || state.session.role === 'guest') {
-            return; 
-        }
+        if (!state.session.activeUserId || state.session.role === 'guest') return;
 
         Sidebar.initListeners();
         PageHeader.execute();
 
+        // LÓGICA DRY DE TABS (ESCUCHA EVENTO GLOBAL)
         window.addEventListener('ph-tab-changed', (e) => {
             if (e.detail && e.detail.tabId) {
                 this.currentTab = e.detail.tabId;
+                // No hace falta redibujar todo, las clases 'active' las maneja el DOM si usas IDs estándar, 
+                // pero aquí forzamos render de componentes internos.
+                if (this.currentTab === 'explorador') this.renderEtherscan();
             }
         });
 
         this.allProjects = state.projects || [];
         this.renderGlobalStats(state);
-        this.setupFilters();
         this.renderEcosystemProjects([...this.allProjects].reverse());
-        this.renderEtherscan(state);
+        this.renderEtherscan();
+        this.setupFilters();
 
-        document.getElementById('scanSearch')?.addEventListener('input', () => this.renderEtherscan(store.getState()));
-
-        const btnCreateNet = document.getElementById('btnCreateNewNet');
-        if (btnCreateNet) {
-            btnCreateNet.addEventListener('click', () => {
-                window.location.href = '/v5/create';
-            });
-        }
+        document.getElementById('btnCreateNewNet')?.addEventListener('click', () => window.location.href = '/v5/create');
     }
 
     setupFilters() {
-        const searchInput = document.getElementById('filterSearch');
-        const sectorSelect = document.getElementById('filterSector');
-        const archSelect = document.getElementById('filterArch');
-
-        if (!searchInput || !sectorSelect || !archSelect) return;
-
-        const applyFilters = () => {
-            const term = searchInput.value.toLowerCase();
-            const selectedSector = sectorSelect.value;
-            const selectedArch = archSelect.value;
+        const apply = () => {
+            const term = document.getElementById('filterSearch').value.toLowerCase();
+            const sector = document.getElementById('filterSector').value;
+            const arch = document.getElementById('filterArch')?.value || 'all';
 
             const filtered = this.allProjects.filter(p => {
                 const matchName = p.nombre.toLowerCase().includes(term);
-                const rawSector = selectedSector.replace('custom_', '').replace('native_', '');
-                const matchSector = selectedSector === 'all' || p.sector === rawSector || p.sector === selectedSector;
-                const matchArch = selectedArch === 'all' || p.archetype === selectedArch;
-                return matchName && matchSector && matchArch;
+                const rawSector = sector.replace('custom_', '');
+                const matchSector = sector === 'all' || p.sector === rawSector;
+                return matchName && matchSector;
             });
-
             this.renderEcosystemProjects([...filtered].reverse());
         };
 
-        searchInput.addEventListener('input', applyFilters);
-        sectorSelect.addEventListener('change', applyFilters);
-        archSelect.addEventListener('change', applyFilters);
+        document.getElementById('filterSearch')?.addEventListener('input', apply);
+        document.getElementById('filterSector')?.addEventListener('change', apply);
+        document.getElementById('scanSearch')?.addEventListener('input', () => this.renderEtherscan());
     }
 
     renderGlobalStats(state) {
-        let totalProjects = state.projects.length;
-        let totalGlobalSlices = 0;
-        let totalGlobalUsers = new Set();
-        let totalTxs = 0;
-
+        let totalSlices = 0;
+        let users = new Set();
         state.projects.forEach(p => {
-            (p.ledger || []).forEach(l => {
-                totalGlobalSlices += l.valorCongelado || 0;
-                totalTxs++;
-            });
-            (p.usuarios || []).forEach(u => totalGlobalUsers.add(u.id));
+            (p.ledger || []).forEach(l => totalSlices += (l.valorCongelado || 0));
+            (p.usuarios || []).forEach(u => users.add(u.id));
         });
 
-        document.getElementById('globalStatsGrid').innerHTML = `
-            <div class="stat-card" style="border-bottom: 3px solid var(--accent-blue);">
-                <div class="stat-value" style="color: var(--accent-blue);">${totalProjects}</div>
-                <div class="stat-label">Nodos Activos (Redes)</div>
+        const grid = document.getElementById('globalStatsGrid');
+        if(!grid) return;
+        grid.innerHTML = `
+            <div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:12px; border:1px solid #222; text-align:center;">
+                <div style="font-size:2rem; font-weight:900; color:var(--accent-blue);">${state.projects.length}</div>
+                <div style="font-size:0.7rem; color:#666; font-weight:bold;">REDES ACTIVAS</div>
             </div>
-            <div class="stat-card" style="border-bottom: 3px solid var(--accent-green);">
-                <div class="stat-value" style="color: var(--accent-green);">${Math.round(totalGlobalSlices).toLocaleString()}</div>
-                <div class="stat-label">Slices Emitidos (Equity)</div>
+            <div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:12px; border:1px solid #222; text-align:center;">
+                <div style="font-size:2rem; font-weight:900; color:var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</div>
+                <div style="font-size:0.7rem; color:#666; font-weight:bold;">SLICES EMITIDOS</div>
             </div>
-            <div class="stat-card" style="border-bottom: 3px solid var(--accent-purple);">
-                <div class="stat-label" style="margin-bottom:8px;">Comunidad Web3</div>
-                <div style="font-size: 1.8rem; color: white; font-weight:900; font-family:var(--font-mono);">${totalGlobalUsers.size} <span style="font-size:1rem; color:#888;">Wallets</span></div>
-                <div style="font-size: 0.85rem; color: var(--accent-purple); margin-top:8px; font-weight:bold;">${totalTxs} Bloques Validados</div>
+            <div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:12px; border:1px solid #222; text-align:center;">
+                <div style="font-size:2rem; font-weight:900; color:var(--accent-purple);">${users.size}</div>
+                <div style="font-size:0.7rem; color:#666; font-weight:bold;">NODOS HUMANOS</div>
             </div>
         `;
     }
 
-    renderEcosystemProjects(projectsToRender) {
+    renderEcosystemProjects(list) {
         const grid = document.getElementById('ecosystemProjectsGrid');
         if(!grid) return;
-        
-        if (projectsToRender.length === 0) {
-            grid.innerHTML = `
-                <div style="grid-column:1/-1; padding:4rem; text-align:center; color:#888; border:1px dashed #333; border-radius:16px; background:rgba(0,0,0,0.3);">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">🌌</div>
-                    <h3 style="color:white;">El universo está vacío</h3>
-                    <p>No se encontraron redes con estos filtros. Crea tu primera DAO.</p>
-                </div>`;
-            return;
-        }
-
-        grid.innerHTML = projectsToRender.map(p => {
-            const usersCount = (p.usuarios || []).length;
-            const ledgerCount = (p.ledger || []).length;
-            
-            const openTxs = (p.transactions || []).filter(tx => tx.status === 'theoretical').length;
-            const openWos = (p.work_orders || []).filter(wo => wo.status === 'theoretical').length;
-            const openTasks = openTxs + openWos;
-
-            let tags = p.tags || [];
-            if (tags.length === 0) tags = ['VNA', (p.sector || 'Agnóstico').split('_')[0]];
-
-            let archClass = 'arch-startup';
-            let privacyIcon = '🌐';
-            
-            if(p.archetype === 'dao') archClass = 'arch-dao';
-            if(p.archetype === 'corporate' || p.archetype === 'corp') { archClass = 'arch-corp'; privacyIcon = '🔒'; }
-            if(p.archetype === 'incubator') archClass = 'arch-incubator';
-
-            const oppClass = openTasks > 0 ? 'has-offers' : '';
-
-            return `
-                <div class="project-card btn-navigate" data-id="${p.id}" data-target="/project">
-                    <div class="card-header">
-                        <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
-                            <h3 class="card-title">${p.nombre}</h3>
-                            <div class="card-tags">
-                                ${tags.slice(0,3).map(t => `<span class="tag-pill">#${t}</span>`).join('')}
-                            </div>
-                        </div>
-                        <div class="card-arch ${archClass}" style="flex-shrink:0;">${privacyIcon} ${p.archetype}</div>
-                    </div>
-
-                    <div class="card-metrics desktop-only">
-                        <div class="metric">
-                            <span class="metric-val">${usersCount}</span>
-                            <span class="metric-label">Nodos Huma</span>
-                        </div>
-                        <div class="metric" style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 20px;">
-                            <span class="metric-val">${ledgerCount}</span>
-                            <span class="metric-label">Bloques</span>
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="opp-pill ${oppClass}">
-                            🎯 ${openTasks} Tareas Libres
-                        </div>
-                        <div class="mob-meta-stats mobile-only">
-                            👥 ${usersCount} Nodos | 🧱 ${ledgerCount} Bloques
-                        </div>
-                        <div class="btn-enter desktop-only">
-                            ENTRAR &rarr;
-                        </div>
-                    </div>
+        grid.innerHTML = list.map(p => `
+            <div class="project-card" onclick="localStorage.setItem('tt_active_project','${p.id}'); window.location.href='/v5/project'">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1rem;">
+                    <h3 style="margin:0; font-size:1.3rem;">${p.nombre}</h3>
+                    <span style="font-size:0.6rem; padding:4px 8px; border-radius:6px; background:rgba(0,176,255,0.1); color:var(--accent-blue); font-weight:900;">${p.archetype.toUpperCase()}</span>
                 </div>
-            `;
-        }).join('');
-
-        document.querySelectorAll('.btn-navigate').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                localStorage.setItem('tt_active_project', e.currentTarget.getAttribute('data-id'));
-                window.location.href = `/v5${e.currentTarget.getAttribute('data-target')}`;
-            });
-        });
+                <div style="display:flex; gap:8px; margin-bottom:1.5rem;">
+                    <span style="font-size:0.7rem; color:#666;">#${p.sector}</span>
+                    <span style="font-size:0.7rem; color:#666;">#${p.usuarios?.length || 0}Nodos</span>
+                </div>
+                <div style="margin-top:auto; padding-top:1rem; border-top:1px dashed #333; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--accent-green); font-weight:bold; font-size:0.8rem;">${(p.ledger?.length || 0)} Bloques</span>
+                    <span style="font-weight:bold; font-size:0.8rem; color:white;">ENTRAR &rarr;</span>
+                </div>
+            </div>
+        `).join('');
     }
 
-    renderEtherscan(state) {
-        const tbody = document.getElementById('scanTableBody');
-        if(!tbody) return;
+    renderEtherscan() {
+        const body = document.getElementById('scanTableBody');
+        const query = document.getElementById('scanSearch')?.value.toLowerCase() || '';
+        if(!body) return;
 
-        const searchQ = document.getElementById('scanSearch')?.value.toLowerCase() || '';
-
-        let globalLedger = [];
-        state.projects.forEach(p => {
-            (p.ledger || []).forEach(l => { globalLedger.push({ ...l, projectName: p.nombre }); });
+        let allLogs = [];
+        store.getState().projects.forEach(p => {
+            (p.ledger || []).forEach(l => allLogs.push({...l, pName: p.nombre}));
         });
 
-        globalLedger.sort((a, b) => b.timestamp - a.timestamp);
+        allLogs.sort((a,b) => b.timestamp - a.timestamp);
+        const filtered = allLogs.filter(l => l.hash.toLowerCase().includes(query) || l.userId.toLowerCase().includes(query) || l.pName.toLowerCase().includes(query));
 
-        if (searchQ) {
-            globalLedger = globalLedger.filter(l => 
-                (l.hash || '').toLowerCase().includes(searchQ) || 
-                (l.userId || '').toLowerCase().includes(searchQ) || 
-                (l.description || '').toLowerCase().includes(searchQ)
-            );
-        }
-
-        if (globalLedger.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 3rem; color:#666; font-size:1rem;">La red está inactiva. No hay bloques minados.</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = globalLedger.slice(0, 100).map(entry => {
-            const date = new Date(entry.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
-            const user = state.globalUsers.find(u => u.id === entry.userId) || { name: entry.userId };
-            const rawHash = entry.hash || entry.id || 'LEGACY_BLOCK';
-            const slicesFmt = `+${Math.round(entry.valorCongelado || 0).toLocaleString()}`;
-            
-            return `
-                <tr>
-                    <td><span class="hash-badge" title="${rawHash}">${rawHash.substring(0,10)}...</span></td>
-                    <td style="color:var(--accent-blue); font-weight:bold;">${entry.projectName}</td>
-                    <td style="color:#888;">${date}</td>
-                    <td style="font-weight:bold; color:white;">${user.name}</td>
-                    <td style="color:#ccc;">${entry.description || ''}</td>
-                    <td style="text-align:right; font-weight:900; color:var(--accent-green); font-family:var(--font-mono); font-size:1rem;">${slicesFmt}</td>
-                </tr>
-            `;
-        }).join('');
+        body.innerHTML = filtered.slice(0, 50).map(l => `
+            <tr style="border-bottom: 1px solid #1a1a1a;">
+                <td style="padding:15px; color:#444;">${l.hash.substring(0,12)}...</td>
+                <td style="font-weight:bold; color:var(--accent-blue);">${l.pName}</td>
+                <td>${l.userId}</td>
+                <td style="color:var(--accent-green); font-weight:900;">+${Math.round(l.valorCongelado)}</td>
+                <td style="text-align:right; color:#444; padding-right:15px;">${new Date(l.timestamp).toLocaleTimeString()}</td>
+            </tr>
+        `).join('');
     }
 }
