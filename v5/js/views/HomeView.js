@@ -44,6 +44,8 @@ export default class HomeView {
             ]
         };
 
+        const isEcosystemOwner = state.session.role === 'ecosystem-owner' || config.allowUserCreation;
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
@@ -62,13 +64,19 @@ export default class HomeView {
                 .stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
                 /* =========================================================
-                   FILTROS Y BUSCADOR
+                   FILTROS, BUSCADOR Y BOTÓN CREAR
                    ========================================================= */
-                .filter-bar { display: flex; gap: 15px; margin-bottom: 2rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: var(--border-radius-md); border: 1px solid var(--glass-border); flex-wrap: wrap; align-items: center;}
+                .filter-bar { display: flex; gap: 15px; margin-bottom: 2rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: var(--border-radius-md); border: 1px solid var(--glass-border); flex-wrap: wrap; align-items: center; justify-content: space-between;}
+                .filter-group { display: flex; gap: 15px; flex: 1; flex-wrap: wrap; }
                 .filter-bar input, .filter-bar select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
                 .filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent-blue); }
                 .filter-search { flex: 2; min-width: 200px; }
                 .filter-select { flex: 1; min-width: 150px; }
+
+                .btn-create-net { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); padding: 2px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; border: none; display: flex;}
+                .btn-create-net:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 176, 255, 0.3); }
+                .btn-create-inner { background: #000; color: white; padding: 8px 20px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; width: 100%; text-align: center;}
+                .btn-create-net:hover .btn-create-inner { background: transparent; }
 
                 /* =========================================================
                    GRID PROYECTOS (LUXURY CARDS)
@@ -103,7 +111,6 @@ export default class HomeView {
 
                 .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; z-index: 1;}
                 
-                /* PILL DE OFERTAS PREMIUM */
                 .opp-pill { 
                     background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.2); color: var(--accent-blue);
                     padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; 
@@ -133,16 +140,14 @@ export default class HomeView {
 
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* =========================================================
-                   RESPONSIVE MOBILE (COMPACT ROWS)
-                   ========================================================= */
+                /* RESPONSIVE MOBILE */
                 @media (max-width: 768px) {
                     .workspace { padding: 80px 1rem 90px 1rem; } 
                     .stats-grid { grid-template-columns: 1fr 1fr; }
-                    .filter-bar { flex-direction: column; align-items: stretch; padding: 10px;}
+                    .filter-bar { flex-direction: column; align-items: stretch; padding: 15px;}
+                    .filter-group { flex-direction: column; }
                     .filter-bar input, .filter-bar select { width: 100%; }
                     
-                    /* UX LUXURY LIST */
                     .projects-grid { display: flex; flex-direction: column; gap: 12px; }
                     .project-card { padding: 1rem 1.2rem; border-radius: 16px; }
                     .card-header { margin-bottom: 8px; }
@@ -166,18 +171,24 @@ export default class HomeView {
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="view-proyectos" class="tab-content active">
-                        <div class="filter-bar" id="filterBar" style="display: none;">
-                            <input type="text" id="filterSearch" class="filter-search" placeholder="🔍 Buscar red por nombre...">
-                            <select id="filterSector" class="filter-select">
-                                <option value="all">🌐 Todos los Sectores</option>
-                            </select>
-                            <select id="filterArch" class="filter-select">
-                                <option value="all">🏛️ Todos los Arquetipos</option>
-                            </select>
+                        <div class="filter-bar" id="filterBar" style="${this.allProjects?.length === 0 ? 'display:none;' : ''}">
+                            <div class="filter-group">
+                                <input type="text" id="filterSearch" class="filter-search" placeholder="🔍 Buscar red por nombre...">
+                                <select id="filterSector" class="filter-select">
+                                    <option value="all">🌐 Todos los Sectores</option>
+                                </select>
+                                <select id="filterArch" class="filter-select">
+                                    <option value="all">🏛️ Todos los Arquetipos</option>
+                                </select>
+                            </div>
+                            ${isEcosystemOwner ? `
+                                <button class="btn-create-net" id="btnCreateNewNet">
+                                    <div class="btn-create-inner">➕ Instanciar Red</div>
+                                </button>
+                            ` : ''}
                         </div>
 
-                        <div class="projects-grid" id="ecosystemProjectsGrid">
-                            </div>
+                        <div class="projects-grid" id="ecosystemProjectsGrid"></div>
                     </div>
 
                     <div id="view-identidad" class="tab-content">
@@ -191,7 +202,7 @@ export default class HomeView {
                         <div class="panel">
                             <h2>📜 Misión y System Prompt Global</h2>
                             <p style="font-family: var(--font-mono); color: #ccc; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #444;">
-                                ${config.globalPrompt || "El Ecosistema aún no tiene un System Prompt definido. Ve a Configuración para establecer su propósito."}
+                                ${config.globalPrompt || "El Ecosistema aún no tiene un System Prompt definido."}
                             </p>
                         </div>
                     </div>
@@ -219,8 +230,7 @@ export default class HomeView {
                                         <th style="text-align:right;">Slices Generados</th>
                                     </tr>
                                 </thead>
-                                <tbody id="scanTableBody">
-                                    </tbody>
+                                <tbody id="scanTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -229,7 +239,7 @@ export default class HomeView {
                         <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; text-align:center;">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">🕸️</div>
                             <h2 style="border:none;">Topología Macro-Red (En Construcción)</h2>
-                            <p style="max-width: 500px; margin:0 auto;">En la V9, este lienzo mostrará cómo las empresas/proyectos (nodos macro) se pasan valor entre ellos mediante el orquestador de <code>macroFlows</code> del Kernel.</p>
+                            <p style="max-width: 500px; margin:0 auto;">En la V10, este lienzo mostrará cómo las empresas/proyectos (nodos macro) se pasan valor entre ellos mediante el orquestador de <code>macroFlows</code> del Kernel.</p>
                         </div>
                     </div>
 
@@ -330,6 +340,30 @@ export default class HomeView {
 
         document.getElementById('scanSearch')?.addEventListener('input', () => this.renderEtherscan(store.getState()));
         document.getElementById('scanProjectFilter')?.addEventListener('change', () => this.renderEtherscan(store.getState()));
+
+        // BOTÓN DE CREAR RED (V10)
+        const btnCreateNet = document.getElementById('btnCreateNewNet');
+        if (btnCreateNet) {
+            btnCreateNet.addEventListener('click', async () => {
+                const name = prompt("Nombre de la nueva red / proyecto:");
+                if (!name) return;
+                
+                const newId = 'proj-' + Date.now();
+                await store.dispatch({
+                    type: 'CREATE_PROJECT',
+                    payload: {
+                        id: newId,
+                        nombre: name,
+                        sector: 'digital_media_growth',
+                        archetype: 'startup',
+                        ownerId: state.session.activeUserId
+                    }
+                });
+                
+                localStorage.setItem('tt_active_project', newId);
+                window.location.href = '/v5/project';
+            });
+        }
     }
 
     setupFilters() {
@@ -405,7 +439,7 @@ export default class HomeView {
         if(!grid) return;
         
         if (projectsToRender.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; padding:3rem; text-align:center; color:#888; border:1px dashed #333; border-radius:12px;">No se encontraron redes con estos filtros.</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1; padding:3rem; text-align:center; color:#888; border:1px dashed #333; border-radius:12px;">El ecosistema está vacío. Crea tu primera red.</div>`;
             return;
         }
 
@@ -413,7 +447,10 @@ export default class HomeView {
             const usersCount = (p.usuarios || []).length;
             const ledgerCount = (p.ledger || []).length;
             
-            const openTasks = (p.transactions || []).filter(tx => tx.status === 'theoretical').length;
+            // Evaluamos ofertas usando ambas estructuras
+            const openTxs = (p.transactions || []).filter(tx => tx.status === 'theoretical').length;
+            const openWos = (p.work_orders || []).filter(wo => wo.status === 'theoretical').length;
+            const openTasks = openTxs + openWos;
 
             let tags = p.tags || [];
             if (tags.length === 0) tags = ['VNA', (p.sector || 'Agnóstico').split('_')[0]];
@@ -430,7 +467,6 @@ export default class HomeView {
 
             const oppClass = openTasks > 0 ? 'has-offers' : '';
 
-            // Estructura de tarjeta clickable híbrida (Pill Button para Ofertas)
             return `
                 <div class="project-card btn-navigate" data-id="${p.id}" data-target="/project">
                     <div class="card-header">
