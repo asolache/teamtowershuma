@@ -20,6 +20,286 @@ const initialState = {
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
         allowUserCreation: false,
+        archetype: 'startup' 
+    },
+    ontology: { sectores: {} },
+    globalUsers: [
+        {
+            id: 'usr_alvaro_001',
+            name: 'Alvaro',
+            globalRole: 'ecosystem-owner', 
+            walletOrSocial: 'founder@teamtowers.com',
+            email: 'founder@teamtowers.com',
+            wallet: '0xMasterArchitect...',
+            profile: {
+                vision: "Fundador y Master Architect de TeamTowers SOS.",
+                structural_affinity: ["@anxaneta", "@aixecador"],
+                guardian_authority: ["creator", "magician"],
+                guardian_growth: ["ruler"],
+                lastUpdated: Date.now()
+            }
+        }
+    ],
+    macroFlows: [], 
+    projects: [],
+    session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
+};
+
+// 2. REDUCER ASÍNCRONO BLINDADO (v10.2)
+async function asyncReducer(state, action) {
+    let newState = JSON.parse(JSON.stringify(state)); 
+
+    switch (action.type) {
+        
+        case 'IMPORT_STATE': 
+            return { ...newState, ...action.payload };
+            
+        case 'UPDATE_GLOBAL_CONFIG': 
+        case 'UPDATE_CONFIG':
+            newState.config = { ...newState.config, ...action.payload };
+            break;
+
+        case 'ADD_ONTOLOGY_SECTOR':
+            newState.ontology.sectores[action.payload.sectorId] = action.payload.rolesData;
+            break;
+            
+        case 'REGISTER_GLOBAL_USER':
+        case 'ADD_USER': {
+            const newId = (action.payload.id || action.payload.userId).toLowerCase();
+            const existsGlobal = newState.globalUsers.find(u => u.id === newId);
+            if (!existsGlobal) {
+                newState.globalUsers.push({
+                    id: newId,
+                    name: action.payload.name,
+                    email: action.payload.email || '',
+                    wallet: action.payload.wallet || '',
+                    social: action.payload.social || '',
+                    globalRole: action.payload.globalRole || 'network-user',
+                    profile: action.payload.profile || { lastUpdated: Date.now() }
+                });
+            }
+            if (action.payload.projectId) {
+                const pUser = newState.projects.find(p => p.id === action.payload.projectId);
+                if (pUser) {
+                    pUser.usuarios = pUser.usuarios || [];
+                    if (!pUser.usuarios.find(u => u.id === newId)) pUser.usuarios.push({ id: newId, joinedAt: Date.now() });
+                }
+            }
+            break;
+        }
+
+        case 'UPDATE_USER_PROFILE': {
+            const uIdx = newState.globalUsers.findIndex(u => u.id === action.payload.userId);
+            if (uIdx > -1) {
+                newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
+            }
+            break;
+        }
+
+        case 'LOGIN_USER': {
+            const user = newState.globalUsers.find(u => u.id === action.payload.userId);
+            newState.session = { activeUserId: action.payload.userId, role: user ? (user.globalRole || 'network-user') : 'guest' };
+            break;
+        }
+        
+        case 'LOGOUT_USER': 
+            newState.session = { activeUserId: null, role: 'guest' };
+            break;
+
+        case 'CREATE_PROJECT':
+        case 'ADD_PROJECT': {
+            const ownerId = action.payload.ownerId || newState.session.activeUserId;
+            const pSector = action.payload.sector || 'startup';
+            const projId = action.payload.id || ('proj-' + Date.now());
+            const initHash = await generateSHA256(`GENESIS_${projId}_${Date.now()}`);
+
+            newState.projects.push({
+                id: projId, nombre: action.payload.nombre || 'Nuevo Proyecto', sector: pSector,
+                archetype: action.payload.archetype || 'startup', ownerId: ownerId,
+                roles: action.payload.roles || [], usuarios: [{ id: ownerId }], 
+                vna_flows: [], work_orders: [], ledger: [], genesisHash: initHash 
+            });
+            break;
+        }
+
+        case 'UPDATE_PROJECT_INFO': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p) Object.assign(p, action.payload.updates);
+            break;
+        }
+
+        case 'UPDATE_ROLE': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p) {
+                const rIdx = p.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) p.roles[rIdx] = { ...p.roles[rIdx], ...action.payload.updates };
+            }
+            break;
+        }
+
+        case 'ADD_ROLE': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p) p.roles.push({ id: action.payload.role.id || `role-${Date.now()}`, isArchived: false, ...action.payload.role });
+            break;
+        }
+
+        case 'TOGGLE_ROLE_ARCHIVE': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p) {
+                const r = p.roles.find(r => r.id === action.payload.roleId);
+                if (r) r.isArchived = !r.isArchived;
+            }
+            break;
+        }
+
+        // --- ARQUITECTURA V10: FLOWS & ORDERS ---
+        case 'ADD_FLOW': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p) {
+                p.vna_flows = p.vna_flows || [];
+                p.vna_flows.push({ id: action.payload.flow.id || ('flow_' + Date.now()), ...action.payload.flow });
+            }
+            break;
+        }
+
+        case 'UPDATE_FLOW': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p && p.vna_flows) {
+                const f = p.vna_flows.find(f => f.id === action.payload.flowId);
+                if (f) Object.assign(f, action.payload.updates);
+            }
+            break;
+        }
+
+        case 'DELETE_FLOW': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p && p.vna_flows) p.vna_flows = p.vna_flows.filter(f => f.id !== action.payload.flowId);
+            break;
+        }
+
+        case 'SPAWN_WORK_ORDER': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p) {
+                p.work_orders = p.work_orders || [];
+                p.work_orders.push({ ...action.payload.workOrder, timestamp: Date.now() });
+            }
+            break;
+        }
+
+        case 'PING_WORK_ORDER':
+        case 'REPORT_WORK_ORDER': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p && p.work_orders) {
+                const wo = p.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    if (action.type === 'PING_WORK_ORDER') { wo.status = 'pinged'; wo.assigneeId = action.payload.userId; }
+                    else { wo.status = 'reported'; wo.realHours = action.payload.realHours; }
+                }
+            }
+            break;
+        }
+
+        case 'APPROVE_WORK_ORDER': {
+            const p = newState.projects.find(p => p.id === action.payload.projectId);
+            if (p && p.work_orders) {
+                const wo = p.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'consolidated';
+                    const flow = p.vna_flows.find(f => f.id === wo.flowId);
+                    const role = p.roles.find(r => r.id === (flow?.to || ''));
+                    const multiplier = role ? (role.multiplier || 1) : 1;
+                    const fmv = role ? (role.fmv || 50) : 50;
+                    const archFactor = { 'startup': 2.0, 'corp': 1.0, 'dao': 1.5 }[p.archetype] || 1.0;
+                    const slices = (wo.realHours * fmv) * multiplier * archFactor;
+                    
+                    if (!p.ledger) p.ledger = [];
+                    p.ledger.push({
+                        id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId,
+                        roleId: role?.id || 'unknown', horas: wo.realHours, valorCongelado: slices, timestamp: Date.now(),
+                        description: flow?.template || 'Work Order'
+                    });
+                }
+            }
+            break;
+        }
+    }
+    
+    this.state = newState; // Actualización interna previa al return
+    return newState; 
+} 
+
+// 3. CLASE STORE: Controlador de Métodos
+class Store {
+    constructor() {
+        const saved = localStorage.getItem('tt_sos_state');
+        this.state = saved ? JSON.parse(saved) : initialState;
+        this.listeners = [];
+        this.initializeSoberanity();
+    }
+
+    initializeSoberanity() {
+        if (!this.state.globalUsers.find(u => u.id === 'usr_alvaro_001')) this.state.globalUsers.unshift(initialState.globalUsers[0]);
+        if (this.state.projects) {
+            this.state.projects = this.state.projects.map(p => ({
+                ...p, vna_flows: p.vna_flows || [], work_orders: p.work_orders || [], ledger: p.ledger || []
+            }));
+        }
+    }
+
+    getState() { return this.state; }
+    
+    saveState() {
+        localStorage.setItem('tt_sos_state', JSON.stringify(this.state));
+        this.listeners.forEach(l => l());
+    }
+
+    async dispatch(action) {
+        const nextState = await asyncReducer(this.state, action);
+        if (nextState) {
+            this.state = nextState;
+            this.saveState();
+        } else {
+            console.error("CRITICAL: Reducer returned undefined for action", action.type);
+        }
+    }
+    
+    subscribe(listener) { this.listeners.push(listener); }
+
+    getArchetypeFactor(archetype) { return { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 }[archetype] || 1.0; }
+
+    calculateMaturityIndex(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return { score: 0 };
+        const hasStructure = (p.vna_flows && p.vna_flows.length > 0) ? 50 : 0;
+        const hasActivity = (p.work_orders && p.work_orders.length > 0) ? 50 : 0;
+        return { score: hasStructure + hasActivity };
+    }
+
+    calculateResilience(projectId) { return 100; }
+} 
+
+export const store = new Store();// ==========================================================================
+// KERNEL v10.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad, Capital e Identidad Fractal
+// ==========================================================================
+
+import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
+
+// --- UTILIDAD CRIPTOGRÁFICA (V7.0) ---
+async function generateSHA256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// 1. ESTADO INICIAL
+const initialState = {
+    config: {
+        theme: 'dark',
+        ecosystemName: 'TeamTowers Network',
+        globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
+        allowUserCreation: false,
         archetype: 'startup' // V9.9
     },
     ontology: { sectores: {} },
