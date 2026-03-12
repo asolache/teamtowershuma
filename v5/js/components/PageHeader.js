@@ -37,18 +37,108 @@ export const PageHeader = {
         return `
             <style>
                 /* REUSABLE PAGE HEADER STYLES */
-                .ph-mobile-top-bar { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box; }
+                .ph-mobile-top-bar { 
+                    display: none; 
+                    justify-content: space-between; 
+                    align-items: center; 
+                    padding: 10px 15px; 
+                    background: rgba(10, 10, 14, 0.85); 
+                    border-bottom: 1px solid rgba(255,255,255,0.05); 
+                    backdrop-filter: blur(15px); 
+                    -webkit-backdrop-filter: blur(15px);
+                    position: fixed; 
+                    top: 0; 
+                    left: 0; 
+                    width: 100%; 
+                    z-index: 1000; 
+                    box-sizing: border-box; 
+                    gap: 10px;
+                }
                 
                 /* BRAND LOGO MOBILE (MANDALA FIX) */
-                .ph-mob-brand { display: flex; align-items: center; justify-content: flex-start; text-decoration: none; height: 35px; min-width: 140px; }
-                .ph-mob-brand img { height: 100%; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; transform-origin: left center; }
+                .ph-mob-brand { 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: flex-start; 
+                    text-decoration: none; 
+                    height: 32px; 
+                    flex-shrink: 0;
+                }
+                .ph-mob-brand img { 
+                    height: 100%; 
+                    width: auto; 
+                    object-fit: contain; 
+                    filter: brightness(0) invert(1); 
+                    opacity: 0.9; 
+                    transform-origin: left center; 
+                }
 
-                .ph-mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 130px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin: 0 10px;}
-                .ph-mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; flex-shrink:0;}
+                /* LUXURY MOBILE DROPDOWN */
+                .ph-mob-controls-right {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    gap: 8px;
+                    flex: 1;
+                    min-width: 0; /* Permite que los hijos encojan */
+                }
+
+                .ph-mob-project-select { 
+                    appearance: none;
+                    background-color: rgba(255, 255, 255, 0.05);
+                    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300b0ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+                    background-repeat: no-repeat;
+                    background-position: right 10px top 50%;
+                    background-size: 8px auto;
+                    border: 1px solid rgba(0, 176, 255, 0.3); 
+                    color: var(--accent-blue); 
+                    padding: 6px 25px 6px 12px; 
+                    border-radius: 20px; 
+                    font-family: var(--font-mono); 
+                    font-size: 0.75rem; 
+                    font-weight: bold;
+                    outline: none; 
+                    max-width: 140px; 
+                    text-overflow: ellipsis; 
+                    white-space: nowrap; 
+                    overflow: hidden; 
+                    transition: all 0.2s;
+                    flex-shrink: 1;
+                }
+                .ph-mob-project-select:focus {
+                    border-color: var(--accent-blue);
+                    box-shadow: 0 0 10px rgba(0, 176, 255, 0.2);
+                    background-color: rgba(0, 176, 255, 0.05);
+                }
+
+                .ph-mob-user { 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    width: 32px; 
+                    height: 32px; 
+                    background: linear-gradient(135deg, var(--accent-purple), #7c4dff); 
+                    color: white; 
+                    border-radius: 50%; 
+                    font-weight: 800; 
+                    text-decoration: none; 
+                    font-size: 0.9rem; 
+                    flex-shrink: 0;
+                    box-shadow: 0 2px 8px rgba(224, 64, 251, 0.4);
+                }
 
                 /* POMODORO ALERT ANIMATION */
-                .ph-pomodoro-alert { display: flex; align-items: center; justify-content: center; font-size: 1.2rem; text-decoration: none; margin-right: 10px; animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 5px var(--accent-red));}
-                @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
+                .ph-pomodoro-alert { 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    font-size: 1.1rem; 
+                    text-decoration: none; 
+                    animation: pulseTomato 1s infinite alternate; 
+                    filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8));
+                    flex-shrink: 0;
+                }
+                @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 
                 .ph-view-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;}
                 .ph-view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
@@ -79,9 +169,9 @@ export const PageHeader = {
                     <img src="/v5/logoteamtowers.png" alt="TeamTowers">
                 </a>
                 
-                <div style="display:flex; align-items:center; flex:1; justify-content: flex-end;">
+                <div class="ph-mob-controls-right">
                     ${pomodoroAlertHtml}
-                    <select class="ph-mob-project-select" id="phMobProjectSelect">
+                    <select class="ph-mob-project-select" id="phMobProjectSelect" title="Cambiar Red">
                         ${userProjects.map(p => `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.nombre}</option>`).join('')}
                     </select>
                     <a href="/v5/profile" data-link class="ph-mob-user" title="Mi Perfil">
