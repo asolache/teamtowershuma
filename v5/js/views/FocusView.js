@@ -38,12 +38,13 @@ export default class FocusView {
         const headerConfig = {
             title: "Deep Work",
             subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Aísla tu atención, ejecuta el entregable y sella tu Proof of Work."
+            tagline: "Aísla tu atención, ejecuta el entregable y sella tu Proof of Work.",
+            actionHtml: '' // En Focus Mode no queremos distracciones ni Dropdowns Mágicos.
         };
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                /* ELIMINADAS clases globales .app-layout, .workspace, modales (Ahora en master.css) */
                 
                 .workspace-focus { 
                     flex: 1; display: flex; flex-direction: column; position: relative; 
@@ -141,9 +142,9 @@ export default class FocusView {
                 .btn-rhythm.active { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.4); box-shadow: 0 0 20px rgba(0,230,118,0.15);}
 
                 /* =========================================================
-                   TIMER SVG & TOMATO 🍅
+                   TIMER SVG & TOMATO (RESPONSIVE FIX)
                    ========================================================= */
-                .timer-wrapper { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; z-index: 2; margin: 0 auto 2rem auto;}
+                .timer-wrapper { position: relative; width: 100%; max-width: 300px; aspect-ratio: 1 / 1; display: flex; justify-content: center; align-items: center; z-index: 2; margin: 0 auto 2rem auto;}
                 .timer-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));}
                 .timer-circle-bg { fill: rgba(0,0,0,0.3); stroke: rgba(255,255,255,0.05); stroke-width: 8; }
                 .timer-circle-progress { fill: none; stroke: var(--accent-green); stroke-width: 8; stroke-dasharray: 942; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; stroke-linecap: round; filter: drop-shadow(0 0 15px rgba(0,230,118,0.6));}
@@ -167,33 +168,17 @@ export default class FocusView {
                 .btn-stop { background: rgba(255, 82, 82, 0.1); color: var(--accent-red); border: 2px solid var(--accent-red); display: none; }
                 .btn-stop:hover { background: var(--accent-red); color: white; box-shadow: 0 10px 40px rgba(255, 82, 82, 0.5); transform: scale(1.1);}
 
-                /* =========================================================
-                   MODAL DE REPORTE (PoW Console)
-                   ========================================================= */
-                .report-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 5000; overflow-y: auto;}
-                .report-card { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 24px; width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-sizing: border-box; border-top: 4px solid var(--accent-blue); margin: 2rem auto; max-height: 85vh; overflow-y: auto;}
-                .report-card h2 { color: white; margin-top: 0; font-size: 1.8rem; font-weight:900; letter-spacing:-1px; margin-bottom: 5px;}
-                
                 .report-task-box { background: rgba(0, 176, 255, 0.1); border-left: 4px solid var(--accent-blue); color: white; font-weight: 900; padding: 15px; border-radius: 8px; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.3;}
-
-                .form-group { margin-bottom: 1.5rem; text-align: left; width: 100%;}
-                .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
-                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 16px; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; outline:none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
-                .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);}
 
                 .glow-bg { position: fixed; width: 800px; height: 800px; background: radial-gradient(circle, rgba(224, 64, 251, 0.05) 0%, transparent 60%); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; opacity: 0; transition: opacity 1s, background 1s; pointer-events: none;}
                 .glow-bg.running { opacity: 1; animation: pulseGlow 4s infinite alternate; }
                 
                 @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5;} 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1;} }
                 @keyframes tickTock { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.15) rotate(5deg); } }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* RESPONSIVE MOBILE FIXES */
                 @media (max-width: 768px) {
-                    .workspace-focus { 
-                        padding: 90px 1rem 120px 1rem; /* 120px asegura que en iOS la UI llegue hasta arriba de la nav bar sin taparse */
-                    } 
+                    .workspace-focus { padding: 90px 1rem 120px 1rem; } 
                     .focus-container { padding: 0; }
                     .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px;}
                     .empty-state h2 { font-size: 1.8rem; }
@@ -202,12 +187,9 @@ export default class FocusView {
                     .omni-selector { padding: 14px 15px; font-size: 0.95rem; border-radius: 12px;}
                     
                     .task-title { font-size: 1.6rem; }
-                    .timer-wrapper { width: 240px; height: 240px; margin: 1.5rem 0; }
+                    .timer-wrapper { max-width: 240px; margin: 1.5rem auto; }
                     .time-display { font-size: 3.8rem; }
                     .btn-circle { width: 70px; height: 70px; font-size: 1.6rem; }
-                    
-                    /* Formulario Mobile Safe */
-                    .report-card { padding: 2rem 1.5rem; width: 95%; max-height: 85vh; overflow-y:auto; margin: 10vh auto;}
                 }
             </style>
 
@@ -279,16 +261,16 @@ export default class FocusView {
                         </div>
                     </div>
 
-                    <div class="report-modal" id="reportModal">
-                        <div class="report-card">
-                            <h2>Reportar Entregable</h2>
-                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height:1.5;">Sella tu Prueba de Trabajo. El auditor validará estas horas para emitir tus Slices correspondientes.</p>
+                    <div class="modal-overlay" id="reportModal">
+                        <div class="modal-content" style="border-top-color:var(--accent-blue);">
+                            <h2 style="color: white; margin-top: 0; font-size: 1.8rem; font-weight:900; letter-spacing:-1px;">Sellar Entregable</h2>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height:1.5;">Certifica tu Prueba de Trabajo (PoW). El auditor validará estas horas para emitir tus Slices.</p>
                             
                             <div id="reportTaskName" class="report-task-box">🎯 Cargando Entregable...</div>
                             
                             <div class="form-group">
                                 <label style="color: var(--accent-green);">Tiempo Real Invertido (Horas / Fracciones)</label>
-                                <input type="number" step="0.1" id="inpRealHours" class="form-control" value="0.0" style="color:var(--accent-green); font-size:1.2rem; font-weight:bold;">
+                                <input type="number" step="0.1" id="inpRealHours" class="form-control" value="0.0" style="color:var(--accent-green); font-size:1.2rem; font-weight:900;">
                                 <div style="font-size:0.75rem; color:#888; margin-top:6px; font-family:var(--font-mono);">Ejemplo: 1.5 = 1h 30m | 0.25 = 15m</div>
                             </div>
                             
@@ -303,8 +285,8 @@ export default class FocusView {
                             </div>
 
                             <div style="display: flex; justify-content: space-between; margin-top: 2rem; gap: 15px;">
-                                <button class="btn" id="btnCancelReport" style="background: transparent; border: 1px solid #555; color: white; padding: 14px 20px; border-radius: 12px; cursor: pointer; flex: 1; font-weight:bold; transition:0.2s;">Cancelar</button>
-                                <button class="btn" id="btnSubmitReport" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; flex: 2; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.3);">📤 Enviar a validar</button>
+                                <button class="btn-outline" id="btnCancelReport" style="flex: 1;">Cancelar</button>
+                                <button class="btn-primary" id="btnSubmitReport" style="flex: 2;">📤 Enviar a validar</button>
                             </div>
                         </div>
                     </div>
@@ -350,7 +332,6 @@ export default class FocusView {
             omniSelector: document.getElementById('omniSelector')
         };
 
-        // 1. RECOPILAR TODAS LAS TAREAS (OMNI-RED V10)
         let allMyTasks = [];
         
         state.projects.forEach(p => {
@@ -364,7 +345,6 @@ export default class FocusView {
             tasks.forEach(tx => {
                 const roleFrom = p.roles.find(r => r.id === tx.from);
                 
-                // V11 FIX: Resolver el nombre real desde el flow si existe
                 let resolvedName = tx.entregable || tx.template;
                 if (!resolvedName && tx.flowId) {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
@@ -388,7 +368,6 @@ export default class FocusView {
         } else {
             this.dom.workState.style.display = 'flex';
             
-            // Llenar Selector con OptGroups
             let currentProjectName = '';
             let selectHtml = `<option value="" disabled>🎯 SELECCIONA EL ENTREGABLE...</option>`;
             
@@ -404,7 +383,6 @@ export default class FocusView {
             
             this.dom.omniSelector.innerHTML = selectHtml;
 
-            // LÓGICA DE PERSISTENCIA V10
             const cachedTxHash = localStorage.getItem('tt_active_pomodoro_tx');
             if (cachedTxHash && allMyTasks.find(t => (t.id || t.hash) === cachedTxHash)) {
                 this.activeTx = allMyTasks.find(t => (t.id || t.hash) === cachedTxHash);
@@ -518,7 +496,6 @@ export default class FocusView {
         this.dom.glowBg.classList.add('running');
         this.dom.pomodoroIcon.classList.add('ticking');
 
-        // ZEN MODE ACTIVE
         this.dom.workspace.classList.add('zen-active');
 
         const activeHash = this.activeTx.id || this.activeTx.hash;
@@ -561,7 +538,6 @@ export default class FocusView {
         this.dom.glowBg.classList.remove('running');
         this.dom.pomodoroIcon.classList.remove('ticking');
         
-        // ZEN MODE DEACTIVE
         this.dom.workspace.classList.remove('zen-active');
 
         const activeHash = this.activeTx.id || this.activeTx.hash;
