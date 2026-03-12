@@ -9,7 +9,7 @@ export default class ProjectView {
         document.title = "Tareas | TeamTowers SOS";
         this.activeProjectId = null;
         this.currentFilter = 'all'; // all, mine, tangible, intangible
-        // Si estamos en móvil forzamos 'oportunidades', si estamos en PC forzamos 'all'
+        // Lógica adaptativa: Si es pantalla grande abre Todo (3 columnas), si es móvil abre Oportunidades.
         this.currentTab = window.innerWidth > 768 ? 'all' : 'oportunidades'; 
     }
 
@@ -67,27 +67,22 @@ export default class ProjectView {
 
         return `
             <style>
-                /* ELIMINADAS LAS CLASES .app-layout y .workspace (ESTAN EN MASTER.CSS) */
-                
-                /* FIX TABS MOBILE PARA SIEMPRE (Se oculta la pestaña 'all' en móvil) */
-                .ph-tabs-container { flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; flex-shrink: 0 !important; margin-bottom: 2rem !important; justify-content: flex-start !important;}
-                .ph-tabs-container::-webkit-scrollbar { display: none; }
-                .ph-tab-btn { flex: 0 0 auto !important; }
-
+                /* Ocultar la pestaña 'all' en móviles */
                 @media (max-width: 768px) {
                     .ph-tab-btn[data-tab="all"] { display: none !important; }
                 }
 
                 .kanban-container { width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing:border-box;}
 
-                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
-                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
-
-                /* CONTROLES SECUNDARIOS (Filtros) */
+                /* Controles Secundarios */
                 .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem; width: 100%;}
                 .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
                 .filter-dropdown { background: rgba(0,0,0,0.4); border: 1px dashed #444; color: #aaa; padding: 10px 15px; border-radius: 10px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); color:white;}
+
+                /* Botones Status Específicos Kanban */
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
                 /* =========================================================
                    GRID KANBAN (3 COLUMNAS PC / 1 COLUMNA MÓVIL)
@@ -112,13 +107,15 @@ export default class ProjectView {
                     min-height: 300px;
                 }
                 
-                /* Si no estamos en la pestaña 'all', forzamos 1 columna */
+                /* Modo 1 columna (Cuando no estás en pestaña 'all') */
                 .kanban-board.single-col-mode { grid-template-columns: 1fr; }
                 .kanban-board.single-col-mode .kanban-col { border: none; padding: 0; background: transparent; }
                 
                 .col-header { color: white; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 5px; display: flex; justify-content: space-between;}
 
-                /* TARJETAS DE TAREA */
+                /* =========================================================
+                   TARJETAS DE TAREA LUXURY
+                   ========================================================= */
                 .task-card { 
                     box-sizing: border-box; width: 100%;
                     background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9)); 
@@ -156,7 +153,6 @@ export default class ProjectView {
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 16px; background: rgba(0,0,0,0.3);}
 
                 @media (max-width: 1024px) {
-                    /* En pantallas medianas (iPad) ocultamos la tercera columna si estamos en ALL */
                     .kanban-board { grid-template-columns: 1fr 1fr; }
                     .kanban-board > .kanban-col:nth-child(3) { display: none; }
                 }
@@ -264,11 +260,13 @@ export default class ProjectView {
 
         // FILTROS
         const filterDropdown = document.getElementById('filterDropdown');
-        filterDropdown.value = this.currentFilter;
-        filterDropdown.addEventListener('change', (e) => {
-            this.currentFilter = e.target.value;
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-        });
+        if(filterDropdown) {
+            filterDropdown.value = this.currentFilter;
+            filterDropdown.addEventListener('change', (e) => {
+                this.currentFilter = e.target.value;
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            });
+        }
 
         // EVENTO DISPONIBILIDAD
         const btnToggleAvailability = document.getElementById('btnToggleAvailability');
@@ -382,82 +380,84 @@ export default class ProjectView {
             });
         }
 
-        // KANBAN ACTIONS LOGIC (V10 & V9 Legacy Support)
+        // KANBAN ACTIONS LOGIC
         const taskGrid = document.getElementById('taskGrid');
-        taskGrid.addEventListener('click', async (e) => {
-            const target = e.target.closest('button'); 
-            if (!target) return;
+        if (taskGrid) {
+            taskGrid.addEventListener('click', async (e) => {
+                const target = e.target.closest('button'); 
+                if (!target) return;
 
-            const currentState = store.getState();
-            const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
-            if (!currProject) return;
+                const currentState = store.getState();
+                const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
+                if (!currProject) return;
 
-            const isLegacyTx = target.dataset.legacy === "true";
-            const txHash = target.dataset.hash;
+                const isLegacyTx = target.dataset.legacy === "true";
+                const txHash = target.dataset.hash;
 
-            const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
+                const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
 
-            if (target.classList.contains('btn-approve')) {
-                if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal
-                
-                const action = target.dataset.action;
-                if (action === 'approve-pull') {
-                    const targetUserId = target.dataset.userid;
-                    const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                    const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
+                if (target.classList.contains('btn-approve')) {
+                    if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal
+                    
+                    const action = target.dataset.action;
+                    if (action === 'approve-pull') {
+                        const targetUserId = target.dataset.userid;
+                        const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                        const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
+                        await store.dispatch({ type: actType, payload });
+                        this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                    } 
+                    else if (action === 'consolidate') {
+                        if (confirm('¿Aprobar Proof of Work y generar Slices inmutables?')) {
+                            const actType = isLegacyTx ? 'APPROVE_TRANSACTION' : 'APPROVE_WORK_ORDER';
+                            const payload = isLegacyTx ? { projectId: currProject.id, txHash } : { projectId: currProject.id, woHash: txHash };
+                            await store.dispatch({ type: actType, payload });
+                            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                        }
+                    }
+                    return;
+                }
+
+                if (target.classList.contains('btn-pull')) {
+                    const action = target.dataset.action;
+                    const actType = isLegacyTx 
+                        ? (action === 'request' ? 'REQUEST_TRANSACTION' : 'PING_TRANSACTION')
+                        : (action === 'request' ? 'REQUEST_WORK_ORDER' : 'PING_WORK_ORDER');
+                    
+                    const payload = isLegacyTx 
+                        ? { projectId: currProject.id, txHash, userId: currentState.session.activeUserId }
+                        : { projectId: currProject.id, woHash: txHash, userId: currentState.session.activeUserId };
+
                     await store.dispatch({ type: actType, payload });
                     this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                } 
-                else if (action === 'consolidate') {
-                    if (confirm('¿Aprobar Proof of Work y generar Slices inmutables?')) {
-                        const actType = isLegacyTx ? 'APPROVE_TRANSACTION' : 'APPROVE_WORK_ORDER';
-                        const payload = isLegacyTx ? { projectId: currProject.id, txHash } : { projectId: currProject.id, woHash: txHash };
+                    return;
+                }
+
+                if (target.classList.contains('btn-push')) {
+                    if (!isPO) return alert("Solo el PO puede forzar la delegación de tareas.");
+
+                    const usersInProject = currProject.usuarios || [];
+                    if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
+                    
+                    let userListStr = "IDs disponibles:\n";
+                    usersInProject.forEach(u => {
+                        const globalData = currentState.globalUsers.find(gu => gu.id === u.id);
+                        userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
+                    });
+
+                    const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:\n\n${userListStr}`);
+                    if (targetUserId) {
+                        const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                        const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
                         await store.dispatch({ type: actType, payload });
                         this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                     }
+                    return;
                 }
-                return;
-            }
+            });
+        }
 
-            if (target.classList.contains('btn-pull')) {
-                const action = target.dataset.action;
-                const actType = isLegacyTx 
-                    ? (action === 'request' ? 'REQUEST_TRANSACTION' : 'PING_TRANSACTION')
-                    : (action === 'request' ? 'REQUEST_WORK_ORDER' : 'PING_WORK_ORDER');
-                
-                const payload = isLegacyTx 
-                    ? { projectId: currProject.id, txHash, userId: currentState.session.activeUserId }
-                    : { projectId: currProject.id, woHash: txHash, userId: currentState.session.activeUserId };
-
-                await store.dispatch({ type: actType, payload });
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                return;
-            }
-
-            if (target.classList.contains('btn-push')) {
-                if (!isPO) return alert("Solo el PO puede forzar la delegación de tareas.");
-
-                const usersInProject = currProject.usuarios || [];
-                if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
-                
-                let userListStr = "IDs disponibles:\n";
-                usersInProject.forEach(u => {
-                    const globalData = currentState.globalUsers.find(gu => gu.id === u.id);
-                    userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
-                });
-
-                const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:\n\n${userListStr}`);
-                if (targetUserId) {
-                    const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                    const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
-                    await store.dispatch({ type: actType, payload });
-                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                }
-                return;
-            }
-        });
-
-        // Aseguramos que al cargar en PC esté en 'all' y en móvil en 'oportunidades'
+        // MÓVIL: Forzar 'oportunidades' si está en 'all' al cargar
         if (window.innerWidth <= 768 && this.currentTab === 'all') {
             this.currentTab = 'oportunidades';
             const opsTab = document.querySelector('.ph-tab-btn[data-tab="oportunidades"]');
@@ -472,6 +472,7 @@ export default class ProjectView {
 
     renderTasks(project) {
         const board = document.getElementById('taskGrid');
+        if (!board) return;
         board.innerHTML = '';
 
         const state = store.getState();
@@ -481,7 +482,7 @@ export default class ProjectView {
         let counts = { op: 0, cur: 0, con: 0 };
         
         const cols = {
-            'oportunidades': { title: 'Oportunidades (Libres)', html: [] },
+            'oportunidades': { title: 'Libres (Oportunidades)', html: [] },
             'en-curso': { title: 'En Curso (Asignadas)', html: [] },
             'contabilizado': { title: 'Selladas (Auditadas)', html: [] }
         };
@@ -510,15 +511,12 @@ export default class ProjectView {
             if (this.currentFilter === 'mine') {
                 if (tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
             }
-            if (!isPO && this.currentFilter === 'all') {
-                // Modificación V12: Permitir ver todo el tablero a cualquiera si se quiere
-            }
 
             const cardHTML = this.createTaskCardHTML(tx, flowData, project, state.session, isPO);
             if (cols[tabCategory]) cols[tabCategory].html.push(cardHTML);
         });
 
-        // Actualizar Badges
+        // Actualizar Badges en las pestañas
         const badgeOp = document.getElementById('badge-oportunidades');
         const badgeCur = document.getElementById('badge-en-curso');
         const badgeCon = document.getElementById('badge-contabilizado');
@@ -527,7 +525,7 @@ export default class ProjectView {
         if(badgeCur) badgeCur.innerText = counts.cur;
         if(badgeCon) badgeCon.innerText = counts.con;
 
-        // RENDERIZADO DEL GRID
+        // RENDERIZADO DEL GRID (3 Columnas PC vs 1 Columna Móvil/Pestaña)
         if (this.currentTab === 'all') {
             board.className = 'kanban-board';
             let boardHtml = '';
@@ -537,7 +535,7 @@ export default class ProjectView {
                 boardHtml += `
                     <div class="kanban-col">
                         <div class="col-header">${colData.title} <span style="color:#666;">${colData.html.length}</span></div>
-                        ${colData.html.length > 0 ? colData.html.join('') : `<div style="text-align:center; padding:2rem; color:#666; font-size:0.85rem;">Vacío</div>`}
+                        ${colData.html.length > 0 ? colData.html.join('') : `<div style="text-align:center; padding:2rem; color:#666; font-size:0.85rem;">Fase vacía</div>`}
                     </div>
                 `;
             });
@@ -546,7 +544,7 @@ export default class ProjectView {
             board.className = 'kanban-board single-col-mode';
             const activeColData = cols[this.currentTab];
             
-            if (activeColData.html.length > 0) {
+            if (activeColData && activeColData.html.length > 0) {
                 board.innerHTML = activeColData.html.join('');
             } else {
                 board.innerHTML = `<div class="empty-state">No hay tareas en esta fase.</div>`;
