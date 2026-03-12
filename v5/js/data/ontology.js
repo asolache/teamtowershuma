@@ -1,11 +1,7 @@
 // v5/js/data/ontology.js
-// 🌐 BASE DE DATOS ONTOLÓGICA v9.9 (The TeamTowers Master Dictionary)
+// 🌐 BASE DE DATOS ONTOLÓGICA v10.0 (The TeamTowers Master Dictionary)
 // Diseñado con metodologías VNA, Slicing Pie y Entrenamiento Fractal de Agentes IA (Swarm).
 
-/**
- * 1. META_ECOSYSTEMS (Nivel 1: El Ecosistema)
- * Define el System Prompt global para el Agente Orquestador del Macro-Castell.
- */
 export const META_ECOSYSTEMS = {
     'startup': {
         label: '🚀 Startup Tech',
@@ -39,12 +35,7 @@ export const META_ECOSYSTEMS = {
     }
 };
 
-/**
- * 2. GLOBAL_ONTOLOGY (Niveles 2 y 3: Proyecto y Rol)
- * Define las reglas de la industria y el Prompt Cognitivo para cada nodo VNA.
- */
 export const GLOBAL_ONTOLOGY = {
-    
     // ---------------------------------------------------------
     // 1. SOFTWARE & SAAS (Plataformas Tecnológicas y Apps)
     // ---------------------------------------------------------
@@ -258,6 +249,253 @@ export const GLOBAL_ONTOLOGY = {
                 { name: "Scraping y Limpieza de Datos", estimatedHours: 12, tipo: "tangible" },
                 { name: "Formateo Profesional de Decks (PPT)", estimatedHours: 8, tipo: "tangible" },
                 { name: "Transcripción y Resumen de Entrevistas", estimatedHours: 10, tipo: "intangible" }
+            ]
+        }
+    },
+
+    // ---------------------------------------------------------
+    // 5. HEALTHTECH & AI
+    // ---------------------------------------------------------
+    "healthtech_ai": {
+        "_meta": {
+            "ai_project_prompt": "Agente de Salud y Ética Médica. Máxima prioridad en el compliance (HIPAA/GDPR), la reducción de sesgos en los modelos predictivos y el cuidado centrado en el paciente."
+        },
+        "@anxaneta": { 
+            name: "Director Médico / Ethics Lead", multiplier: 3.0, fmv: 70,
+            ai_prompt: "Actúas como Director Médico. Tu enfoque es la visión clínica y la ética algorítmica. Cuidas que la tecnología mejore la salud sin deshumanizarla.", 
+            standard_deliverables: [
+                { name: "Marco Ético de IA Médica", estimatedHours: 12, tipo: "tangible" },
+                { name: "Alianzas Clínicas y Hospitalarias", estimatedHours: 15, tipo: "intangible" },
+                { name: "Aprobación de Protocolos Médicos", estimatedHours: 10, tipo: "tangible" }
+            ]
+        },
+        "@aixecador": { 
+            name: "Coordinador Clínico / Ops", multiplier: 2.0, fmv: 55,
+            ai_prompt: "Actúas como Coordinador Clínico. Implementas los flujos de triaje, integraciones con sistemas hospitalarios (EHR) y orquestas los recursos.", 
+            standard_deliverables: [
+                { name: "Diseño de Flujo de Pacientes", estimatedHours: 10, tipo: "tangible" },
+                { name: "Setup de Plataforma Telemedicina", estimatedHours: 15, tipo: "tangible" }
+            ]
+        },
+        "@dosos": { 
+            name: "Auditor de Sesgos (AI Bias)", multiplier: 1.5, fmv: 50,
+            ai_prompt: "Actúas como Auditor de Sesgos. Validas los datasets para asegurar que las predicciones de IA no discriminen por demografía. Control estricto de privacidad.", 
+            standard_deliverables: [
+                { name: "Reporte de Análisis de Sesgos", estimatedHours: 15, tipo: "tangible" },
+                { name: "Auditoría de Compliance (HIPAA)", estimatedHours: 10, tipo: "tangible" }
+            ]
+        },
+        "@baixos": { 
+            name: "Ingeniero IA Clínica", multiplier: 1.2, fmv: 45,
+            ai_prompt: "Actúas como Ingeniero de IA. Entrenas y haces fine-tuning a los Modelos de Lenguaje Médico o visión computacional con rigor científico.", 
+            standard_deliverables: [
+                { name: "Finetuning de Modelo LLM/Vision", estimatedHours: 25, tipo: "tangible" },
+                { name: "Curación de Datasets Médicos", estimatedHours: 20, tipo: "tangible" }
+            ]
+        },
+        "@pinya": { 
+            name: "Operador de Derivación (Human in the Loop)", multiplier: 1.0, fmv: 35,
+            ai_prompt: "Actúas como el 'Human in the Loop'. Supervisas las alertas de la IA y derivas casos a médicos reales, ofreciendo empatía y soporte de primera línea.", 
+            standard_deliverables: [
+                { name: "Resolución de Casos Sintéticos", estimatedHours: 10, tipo: "tangible" },
+                { name: "Soporte Empático a Pacientes", estimatedHours: 15, tipo: "intangible" }
+            ]
+        }
+    },
+
+    // ---------------------------------------------------------
+    // 6. DEEPTECH & HARDWARE
+    // ---------------------------------------------------------
+    "deeptech_hardware": {
+        "_meta": {
+            "ai_project_prompt": "Agente I+D y Robótica Industrial. Los ciclos son largos, el capital intensivo. El foco está en la ciencia fundamental, la cadena de suministro y la viabilidad física del producto."
+        },
+        "@anxaneta": { 
+            name: "Chief Scientific Officer (CSO)", multiplier: 3.0, fmv: 75,
+            ai_prompt: "Actúas como CSO. Lideras la visión científica a 5 años. Rompes límites tecnológicos y proteges la propiedad intelectual.", 
+            standard_deliverables: [
+                { name: "Borrador de Patente Core", estimatedHours: 25, tipo: "tangible" },
+                { name: "Roadmap Tecnológico a 5 años", estimatedHours: 10, tipo: "tangible" }
+            ]
+        },
+        "@aixecador": { 
+            name: "Supply Chain & Ops Lead", multiplier: 2.0, fmv: 55,
+            ai_prompt: "Actúas como Lead de Supply Chain. Negocias con fábricas, gestionas el BOM (Bill of Materials) y aseguras que el prototipo pueda fabricarse a escala.", 
+            standard_deliverables: [
+                { name: "BOM Optimizado", estimatedHours: 12, tipo: "tangible" },
+                { name: "Cierre de Contrato con Manufactura", estimatedHours: 15, tipo: "intangible" }
+            ]
+        },
+        "@dosos": { 
+            name: "Hardware QA & Certifications", multiplier: 1.5, fmv: 50,
+            ai_prompt: "Actúas como QA de Hardware. Destruyes prototipos para probar sus límites (Stress Tests) y lideras las auditorías de certificaciones (CE, FCC, ISO).", 
+            standard_deliverables: [
+                { name: "Informe de Stress Test Físico", estimatedHours: 15, tipo: "tangible" },
+                { name: "Dossier de Certificación CE/FCC", estimatedHours: 20, tipo: "tangible" }
+            ]
+        },
+        "@baixos": { 
+            name: "Mechatronics / Embedded Engineer", multiplier: 1.2, fmv: 50,
+            ai_prompt: "Actúas como Ingeniero Embebido y Mecatrónico. Diseñas PCBs, haces CAD 3D y picas código en C/C++ muy cercano al metal.", 
+            standard_deliverables: [
+                { name: "Diseño CAD 3D para Impresión", estimatedHours: 25, tipo: "tangible" },
+                { name: "Firmware Base (C++)", estimatedHours: 30, tipo: "tangible" }
+            ]
+        },
+        "@pinya": { 
+            name: "Assembly Tech", multiplier: 1.0, fmv: 30,
+            ai_prompt: "Actúas como Técnico de Ensamblaje. Eres las manos que unen las piezas. Sueldas, imprimes en 3D, usas CNC y mantienes el taller organizado.", 
+            standard_deliverables: [
+                { name: "Ensamblaje de Prototipo Funcional", estimatedHours: 15, tipo: "tangible" },
+                { name: "Mantenimiento de Taller y Herramientas", estimatedHours: 5, tipo: "intangible" }
+            ]
+        }
+    },
+
+    // ---------------------------------------------------------
+    // 7. E-COMMERCE & D2C (Direct to Consumer)
+    // ---------------------------------------------------------
+    "ecommerce_d2c": {
+        "_meta": {
+            "ai_project_prompt": "Agente D2C y Logística. Optimización de márgenes, Customer Lifetime Value (CLV), construcción de comunidad alrededor de la marca y excelencia en la última milla."
+        },
+        "@anxaneta": { 
+            name: "Brand Director", multiplier: 3.0, fmv: 50,
+            ai_prompt: "Actúas como Director de Marca. Tu foco es el P&L, el posicionamiento en el mercado y la identidad visual que conecta emocionalmente con el consumidor.", 
+            standard_deliverables: [
+                { name: "Brand Book y Lineamientos Visuales", estimatedHours: 15, tipo: "tangible" },
+                { name: "Modelo Financiero P&L", estimatedHours: 10, tipo: "tangible" }
+            ]
+        },
+        "@aixecador": { 
+            name: "E-commerce Ops", multiplier: 2.0, fmv: 40,
+            ai_prompt: "Actúas como Operador E-commerce. Manejas la plataforma (Shopify/WooCommerce), configuras el merchandising y aseguras el flujo desde la compra hasta el envío.", 
+            standard_deliverables: [
+                { name: "Setup / Optimización Shopify", estimatedHours: 20, tipo: "tangible" },
+                { name: "Coordinación de Lanzamiento de Stock", estimatedHours: 8, tipo: "intangible" }
+            ]
+        },
+        "@dosos": { 
+            name: "Inventory & Returns Auditor", multiplier: 1.5, fmv: 35,
+            ai_prompt: "Actúas como Auditor de Inventario. Controlas la merma, analizas las tasas de devolución y optimizas el coste de almacenamiento.", 
+            standard_deliverables: [
+                { name: "Auditoría de Stock", estimatedHours: 8, tipo: "tangible" },
+                { name: "Reporte de Motivos de Devolución", estimatedHours: 5, tipo: "tangible" }
+            ]
+        },
+        "@baixos": { 
+            name: "Performance Marketer (Ads & Email)", multiplier: 1.2, fmv: 35,
+            ai_prompt: "Actúas como Marketer de Performance. Obsesionado con el ROAS y el CAC. Diseñas flujos automatizados de email marketing (Klaviyo) y retargeting.", 
+            standard_deliverables: [
+                { name: "Campañas ROAS (Meta/Tiktok Ads)", estimatedHours: 10, tipo: "tangible" },
+                { name: "Secuencia de Email (Carrito Abandonado)", estimatedHours: 6, tipo: "tangible" }
+            ]
+        },
+        "@pinya": { 
+            name: "Pick, Pack & CX Support", multiplier: 1.0, fmv: 20,
+            ai_prompt: "Actúas como Especialista de Empaquetado y Atención. Empaquetado físico (Unboxing experience) y atención cálida a dudas del consumidor.", 
+            standard_deliverables: [
+                { name: "Logística Diaria de Pick & Pack", estimatedHours: 20, tipo: "tangible" },
+                { name: "Resolución de Dudas de Envío (Zendesk)", estimatedHours: 10, tipo: "intangible" }
+            ]
+        }
+    },
+
+    // ---------------------------------------------------------
+    // 8. EDTECH & COMMUNITY
+    // ---------------------------------------------------------
+    "edtech_community": {
+        "_meta": {
+            "ai_project_prompt": "Agente Edtech y Comunidad. El producto es la transformación humana. Diseño de experiencias de aprendizaje, retención de estudiantes y fomento del networking peer-to-peer."
+        },
+        "@anxaneta": { 
+            name: "Chief Learning Officer", multiplier: 3.0, fmv: 55,
+            ai_prompt: "Actúas como Director de Aprendizaje. Defines la metodología pedagógica, los resultados de transformación del alumno y las alianzas institucionales.", 
+            standard_deliverables: [
+                { name: "Modelo Académico y Pedagógico", estimatedHours: 15, tipo: "tangible" },
+                { name: "Alineación de Outcomes de Estudiantes", estimatedHours: 5, tipo: "intangible" }
+            ]
+        },
+        "@aixecador": { 
+            name: "Program Director / Cohort Manager", multiplier: 2.0, fmv: 45,
+            ai_prompt: "Actúas como Director de Programa. Orquestas las fechas de las cohortes, reclutas instructores y mantienes el ritmo del calendario académico.", 
+            standard_deliverables: [
+                { name: "Syllabus y Calendario de Cohorte", estimatedHours: 12, tipo: "tangible" },
+                { name: "Onboarding de Estudiantes (Kickoff)", estimatedHours: 4, tipo: "intangible" }
+            ]
+        },
+        "@dosos": { 
+            name: "Student Success Auditor", multiplier: 1.5, fmv: 40,
+            ai_prompt: "Actúas como Auditor de Éxito Estudiantil. Analizas el Churn (abandono), los NPS (Net Promoter Score) y las calificaciones para mejorar la retención.", 
+            standard_deliverables: [
+                { name: "Reporte de Churn y Engagement", estimatedHours: 6, tipo: "tangible" },
+                { name: "Análisis de Calidad de Clases (QA)", estimatedHours: 8, tipo: "tangible" }
+            ]
+        },
+        "@baixos": { 
+            name: "Instructional Designer", multiplier: 1.2, fmv: 35,
+            ai_prompt: "Actúas como Diseñador Instruccional. Bajas la teoría a la práctica. Creas el material interactivo, los SCORMs, las presentaciones y grabas contenido.", 
+            standard_deliverables: [
+                { name: "Creación de Material Interactivo (LMS)", estimatedHours: 25, tipo: "tangible" },
+                { name: "Grabación y Edición de Módulos", estimatedHours: 15, tipo: "tangible" }
+            ]
+        },
+        "@pinya": { 
+            name: "Tutor Comunitario / Mentor", multiplier: 1.0, fmv: 25,
+            ai_prompt: "Actúas como Tutor Comunitario. Moderación de foros, respuesta a dudas técnicas específicas y sesiones 1 a 1 de apoyo emocional o académico.", 
+            standard_deliverables: [
+                { name: "Tutoría 1-1 / Resolución de Dudas", estimatedHours: 15, tipo: "intangible" },
+                { name: "Dinamización de Foros (Discord/Slack)", estimatedHours: 10, tipo: "intangible" }
+            ]
+        }
+    },
+
+    // ---------------------------------------------------------
+    // 9. IMPACT NGO & PUBLIC GOODS
+    // ---------------------------------------------------------
+    "impact_dao_ngo": {
+        "_meta": {
+            "ai_project_prompt": "Agente ONG y Bienes Públicos. Misión guiada por la teoría del cambio, la transparencia radical en fondos (grants) y el empoderamiento de comunidades vulnerables."
+        },
+        "@anxaneta": { 
+            name: "Director de Impacto", multiplier: 2.0, fmv: 45,
+            ai_prompt: "Actúas como Director de Impacto. Levantas fondos (Grants), haces Lobbying institucional y formulas la Teoría del Cambio a largo plazo.", 
+            standard_deliverables: [
+                { name: "Teoría del Cambio (Documento Fundacional)", estimatedHours: 15, tipo: "tangible" },
+                { name: "Aplicación a Grants / Fondos Internacionales", estimatedHours: 20, tipo: "tangible" },
+                { name: "Lobbying y Relaciones Institucionales", estimatedHours: 10, tipo: "intangible" }
+            ]
+        },
+        "@aixecador": { 
+            name: "Coordinador de Terreno", multiplier: 1.5, fmv: 35,
+            ai_prompt: "Actúas como Coordinador de Terreno. Mueves los recursos al lugar de la acción. Gestionas la logística de voluntarios y la seguridad de las misiones.", 
+            standard_deliverables: [
+                { name: "Logística y Ruta de Voluntarios", estimatedHours: 10, tipo: "tangible" },
+                { name: "Plan de Seguridad de Terreno", estimatedHours: 6, tipo: "tangible" }
+            ]
+        },
+        "@dosos": { 
+            name: "Auditor de Transparencia", multiplier: 1.2, fmv: 35,
+            ai_prompt: "Actúas como Auditor de Transparencia. Garantizas que cada céntimo recibido llegue a la causa. Creas métricas de impacto (KPIs sociales).", 
+            standard_deliverables: [
+                { name: "Impact Report (Auditoría Pública)", estimatedHours: 15, tipo: "tangible" },
+                { name: "Trazabilidad de Fondos", estimatedHours: 10, tipo: "tangible" }
+            ]
+        },
+        "@baixos": { 
+            name: "Especialista Local", multiplier: 1.0, fmv: 30,
+            ai_prompt: "Actúas como Especialista Local. Ejecutas herramientas, das talleres educativos o implementas soluciones directas en la comunidad.", 
+            standard_deliverables: [
+                { name: "Ejecución de Taller Comunitario", estimatedHours: 12, tipo: "intangible" },
+                { name: "Despliegue de Infraestructura Local", estimatedHours: 20, tipo: "tangible" }
+            ]
+        },
+        "@pinya": { 
+            name: "Voluntario Core", multiplier: 1.0, fmv: 15,
+            ai_prompt: "Actúas como Voluntario de Base. El trabajo físico: reparto de suministros, acompañamiento o construcción manual.", 
+            standard_deliverables: [
+                { name: "Reparto de Suministros", estimatedHours: 20, tipo: "tangible" },
+                { name: "Acompañamiento y Cuidados Básicos", estimatedHours: 15, tipo: "intangible" }
             ]
         }
     }
