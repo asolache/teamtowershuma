@@ -8,7 +8,7 @@ export default class ProjectView {
     constructor() {
         document.title = "Tareas | TeamTowers SOS";
         this.activeProjectId = null;
-        this.currentFilter = 'all'; // all, mine, tangible, intangible
+        this.currentFilter = 'all'; 
         // Lógica adaptativa: En PC mostramos Todo el tablero, en móvil saltamos a Oportunidades.
         this.currentTab = window.innerWidth > 768 ? 'all' : 'oportunidades'; 
     }
@@ -33,7 +33,6 @@ export default class ProjectView {
 
         const canCreateWO = store.canUserCreateWorkOrder(activeProjectId, activeUserId);
 
-        // EL DROP DOWN MÁGICO V12
         let magicActionsHtml = '';
         if (canCreateWO) {
             magicActionsHtml = `
@@ -43,7 +42,7 @@ export default class ProjectView {
                         <option value="create_wo">➕ Inyectar Tarea (Work Order)</option>
                         <option value="ai_sprint" disabled>🤖 Auto-Sprint IA (V12.x)</option>
                     </select>
-                    <button class="btn-magic-exec" id="btnExecuteKanbanMagic">Ejecutar</button>
+                    <button class="btn-primary" id="btnExecuteKanbanMagic">Ejecutar</button>
                 </div>
             `;
         }
@@ -59,7 +58,7 @@ export default class ProjectView {
                 </div>
             `,
             tabs: [
-                { id: 'all', label: '🗂️ Tablero Completo', active: this.currentTab === 'all' },
+                { id: 'all', label: '🗂️ Tablero Completo', active: this.currentTab === 'all', hideOnMobile: true },
                 { id: 'oportunidades', label: 'Libres', active: this.currentTab === 'oportunidades', badge: '0' },
                 { id: 'en-curso', label: 'En Curso', active: this.currentTab === 'en-curso', badge: '0' },
                 { id: 'contabilizado', label: 'Selladas', active: this.currentTab === 'contabilizado', badge: '0' }
@@ -68,56 +67,16 @@ export default class ProjectView {
 
         return `
             <style>
-                /* =========================================================
-                   LAYOUT ESPECÍFICO DE KANBAN (TRELLO STYLE EN PC)
-                   ========================================================= */
-                .workspace-kanban { 
-                    display: flex; flex-direction: column; flex: 1; 
-                    padding: 2rem 3rem 0 3rem; /* Sin padding bottom en PC para que las columnas toquen el fondo */
-                    overflow: hidden; /* Cortamos el scroll general en PC */
-                    height: 100%; box-sizing: border-box; transition: box-shadow 0.5s ease-out; width: 100%;
-                }
-                
-                .workspace-kanban.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.05); }
+                /* ELIMINADAS LAS CLASES APP-LAYOUT, TABS Y MODALES (AHORA GOBIERNA MASTER.CSS) */
 
-                /* CONTENEDOR MAESTRO KANBAN */
-                .kanban-container { 
-                    width: 100%; height: 100%; 
-                    display: flex; flex-direction: column; 
-                    min-height: 0; /* Vital para que el Flex hijo haga scroll interno */
-                    padding-bottom: 2rem;
-                }
+                .kanban-container { width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing:border-box;}
 
-                /* =========================================================
-                   BOTONES Y CONTROLES (UX DELUXE)
-                   ========================================================= */
                 .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
                 .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
-                /* DROPDOWN MÁGICO NATIVO */
-                .magic-action-group { display: flex; gap: 10px; align-items: center; }
-                .magic-select { 
-                    appearance: none; -webkit-appearance: none; -moz-appearance: none;
-                    background-color: rgba(10,10,15,0.9);
-                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300b0ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-                    background-repeat: no-repeat;
-                    background-position: right 12px center;
-                    background-size: 18px;
-                    border: 1px solid var(--glass-border); 
-                    color: white; 
-                    padding: 10px 45px 10px 15px; 
-                    border-radius: 10px; 
-                    font-family: var(--font-main); font-weight: 900; font-size: 0.95rem;
-                    outline: none; cursor: pointer; transition: all 0.3s; 
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                }
-                .magic-select:focus, .magic-select:hover { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.3); }
-                .magic-select option { background: var(--bg-dark); color: white; padding: 10px; }
-                
-                .btn-magic-exec { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 900; font-size: 0.95rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transition: 0.3s;}
-                .btn-magic-exec:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
-
+                /* CONTROLES SECUNDARIOS (Filtros) */
                 .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem; width: 100%; flex-shrink: 0;}
+                .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px dashed #444; color: #aaa; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); color:white;}
 
@@ -125,49 +84,27 @@ export default class ProjectView {
                    GRID KANBAN (COLUMNAS INDEPENDIENTES PC)
                    ========================================================= */
                 .kanban-board { 
-                    display: grid; 
-                    grid-template-columns: repeat(3, 1fr); 
-                    gap: 1.5rem; 
-                    width: 100%;
-                    flex: 1; /* Ocupa el resto de la pantalla */
-                    min-height: 0; /* Necesario para que el overflow funcione en Flex/Grid hijos */
+                    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; 
+                    width: 100%; flex: 1; min-height: 0; padding-bottom: 2rem;
                 }
-
                 .kanban-col { 
-                    background: rgba(255,255,255,0.015); 
-                    border: 1px solid rgba(255,255,255,0.05); 
-                    border-radius: 16px; 
-                    display: flex; 
-                    flex-direction: column; 
-                    height: 100%; /* Toma la altura del tablero */
-                    overflow: hidden;
-                    box-shadow: inset 0 5px 20px rgba(0,0,0,0.3);
+                    background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); 
+                    border-radius: 16px; display: flex; flex-direction: column; 
+                    height: 100%; overflow: hidden; box-shadow: inset 0 5px 20px rgba(0,0,0,0.3);
                 }
-                
                 .col-header { 
-                    flex-shrink: 0; padding: 15px; 
-                    color: white; font-weight: 900; text-transform: uppercase; 
-                    font-size: 0.85rem; letter-spacing: 1px; 
-                    border-bottom: 1px solid rgba(255,255,255,0.05); 
-                    display: flex; justify-content: space-between; align-items: center;
-                    background: rgba(0,0,0,0.3);
+                    flex-shrink: 0; padding: 15px; color: white; font-weight: 900; text-transform: uppercase; 
+                    font-size: 0.85rem; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); 
+                    display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);
                 }
-
-                /* CÓDIGO SCROLLBAR OSCURO DELUXE */
                 .col-body {
-                    flex: 1; overflow-y: auto; padding: 15px; 
-                    display: flex; flex-direction: column; gap: 15px;
-                    scrollbar-width: thin;
-                    scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);
+                    flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px;
+                    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);
                 }
-
-                /* Scrollbar estético Chrome/Safari/Edge */
                 .col-body::-webkit-scrollbar { width: 8px; }
                 .col-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
                 .col-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-                .col-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
                 
-                /* Si no estamos en 'all', forzamos una columna grande */
                 .kanban-board.single-col-mode { grid-template-columns: 1fr; }
                 .kanban-board.single-col-mode .kanban-col { border: none; background: transparent; box-shadow: none; overflow: visible;}
                 .kanban-board.single-col-mode .col-header { display: none; }
@@ -181,8 +118,7 @@ export default class ProjectView {
                     background: linear-gradient(145deg, rgba(25,25,30,0.9), rgba(15,15,20,1)); 
                     border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; 
                     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; 
-                    display: flex; flex-direction: column; gap: 12px; 
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                    display: flex; flex-direction: column; gap: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
                 }
                 .task-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 25px rgba(0,0,0,0.8);}
                 
@@ -192,51 +128,32 @@ export default class ProjectView {
                 
                 .task-title { color: white; font-size: 1.15rem; margin: 0; line-height: 1.3; font-weight: 900; letter-spacing: -0.5px; word-break: break-word;}
                 .task-desc-bubble { font-size: 0.85rem; color: #aaa; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border-left: 2px solid var(--accent-blue); font-style: italic; line-height: 1.4; word-break: break-word;}
-                
                 .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; background: rgba(0,0,0,0.5); padding: 10px 12px; border-radius: 10px; border: 1px solid #222;}
                 
-                /* BOTONES ACCIÓN TARJETA */
                 .task-actions { margin-top: auto; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 8px;}
                 
                 .btn-pull { flex: 1; box-sizing: border-box; background: transparent; border: 1px solid #666; color: white; transition: all 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align:center;}
                 .btn-pull:hover { background: white; color: black; border-color: white;}
-                
                 .btn-push { flex: 1; box-sizing: border-box; background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align: center;}
                 .btn-push:hover { background: rgba(224, 64, 251, 0.1); border-style: solid;}
-
                 .btn-focus { flex: 1; box-sizing: border-box; background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: 900; transition: all 0.3s; font-size: 0.85rem;}
                 .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
-                
                 .btn-approve { flex: 1; box-sizing: border-box; background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: transform 0.2s; font-size: 0.85rem;}
                 .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
 
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 16px; background: rgba(0,0,0,0.3);}
 
                 @media (max-width: 1024px) {
-                    /* En pantallas medianas (iPad) ocultamos la tercera columna si estamos en ALL */
                     .kanban-board { grid-template-columns: 1fr 1fr; }
                     .kanban-board > .kanban-col:nth-child(3) { display: none; }
                 }
 
                 @media (max-width: 768px) {
-                    .ph-tab-btn[data-tab="all"] { display: none !important; } /* Ocultar Tablero Completo en móvil */
-
-                    .workspace-kanban { 
-                        padding: 90px 1rem 120px 1rem !important; /* 120px BOTTOM SAFE */
-                        overflow-y: auto !important; /* En móvil SÍ hacemos scroll de la página entera */
-                        height: auto; min-height: 100vh;
-                    } 
-
-                    .kanban-container { height: auto; display: block;}
-                    
-                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top:10px;}
-                    .magic-select, .btn-magic-exec { width: 100%; padding: 16px; font-size: 1.05rem;}
-
                     .controls-row { justify-content: stretch; margin-bottom: 1.5rem; }
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
                     .filter-dropdown { width: 100%; padding: 14px; box-sizing: border-box; }
                     
-                    /* En móvil, las columnas ya no tienen scroll interno, fluyen con la página */
+                    /* En móvil, las columnas ya no tienen scroll interno, fluyen con la página (Workspace hereda Bottom Safe) */
                     .kanban-board { display: flex; flex-direction: column; gap: 1.2rem; padding-bottom: 2rem; height: auto;}
                     .kanban-col { border: none; padding: 0; background: transparent; height: auto; box-shadow:none;}
                     .col-header { display: none; }
@@ -245,7 +162,6 @@ export default class ProjectView {
                     .task-card { padding: 1.5rem; border-radius: 16px; width: 100%; max-width: 100%; margin: 0; }
                     .task-title { font-size: 1.15rem; }
                     .task-meta-row { flex-wrap: wrap; gap: 8px; }
-
                     .task-actions { flex-direction: column; padding-top: 15px; margin-top: 10px; gap: 10px; }
                     .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; margin: 0; padding: 14px; font-size: 1rem;}
                 }
@@ -254,7 +170,7 @@ export default class ProjectView {
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
 
-                <main class="workspace-kanban ${isOpen ? 'is-open-to-work' : ''}">
+                <main class="workspace ${isOpen ? 'is-open-to-work' : ''}">
                     
                     ${PageHeader.getHtml(headerConfig)}
 
@@ -270,8 +186,7 @@ export default class ProjectView {
                             </div>
                         </div>
 
-                        <div class="kanban-board" id="taskGrid">
-                            </div>
+                        <div class="kanban-board" id="taskGrid"></div>
                     </div>
                 </main>
 
@@ -322,19 +237,12 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
 
-        // TABS LOGIC
-        const tabBtns = document.querySelectorAll('.ph-tab-btn');
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const tabId = btn.dataset.tab;
-                if (tabId) {
-                    this.currentTab = tabId;
-                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                }
-            });
+        // V12.5: ESCUCHAR EL EVENTO GLOBAL DE TABS (DRY desde PageHeader.js)
+        window.addEventListener('ph-tab-changed', (e) => {
+            if (e.detail && e.detail.tabId) {
+                this.currentTab = e.detail.tabId;
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            }
         });
 
         // FILTROS
@@ -366,7 +274,7 @@ export default class ProjectView {
                     btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
                     btnToggleAvailability.innerText = newStatus ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
                     
-                    const workspace = document.querySelector('.workspace-kanban');
+                    const workspace = document.querySelector('.workspace');
                     if (newStatus) workspace.classList.add('is-open-to-work');
                     else workspace.classList.remove('is-open-to-work');
                 }
@@ -536,7 +444,7 @@ export default class ProjectView {
             });
         }
 
-        // MÓVIL: Forzar 'oportunidades' si está en 'all' al cargar
+        // MÓVIL: Forzar 'oportunidades' si está en 'all' al cargar (Aseguramos UX)
         if (window.innerWidth <= 768 && this.currentTab === 'all') {
             this.currentTab = 'oportunidades';
             const opsTab = document.querySelector('.ph-tab-btn[data-tab="oportunidades"]');
@@ -626,7 +534,7 @@ export default class ProjectView {
             const activeColData = cols[this.currentTab];
             
             if (activeColData && activeColData.html.length > 0) {
-                // En modo 1 columna, no ponemos wrapper de scroll interno, dejamos que fluya
+                // En modo 1 columna, no ponemos wrapper de scroll interno, dejamos que fluya con la ventana
                 board.innerHTML = `<div class="col-body" style="overflow:visible; padding:0;">${activeColData.html.join('')}</div>`;
             } else {
                 board.innerHTML = `<div class="empty-state">No hay tareas en esta fase.</div>`;
