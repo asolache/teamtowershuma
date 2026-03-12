@@ -43,13 +43,13 @@ export default class FocusView {
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 
                 .workspace-focus { 
                     flex: 1; display: flex; flex-direction: column; position: relative; 
                     background: radial-gradient(circle at center, #111116 0%, #050505 100%); 
-                    overflow-y: auto; scroll-behavior: smooth;
-                    padding: 2rem 3rem; box-sizing: border-box;
+                    overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+                    padding: 2rem 3rem; box-sizing: border-box; width: 100%;
                 }
                 
                 /* =========================================================
@@ -57,8 +57,8 @@ export default class FocusView {
                    ========================================================= */
                 .focus-container { 
                     flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; 
-                    justify-content: flex-start; padding: 0; padding-bottom: 6rem;
-                    position: relative; z-index: 10; margin-top: -1rem;
+                    justify-content: flex-start; padding: 0; padding-bottom: 2rem;
+                    position: relative; z-index: 10; margin-top: -1rem; width: 100%; box-sizing: border-box;
                 }
 
                 .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 4rem; animation: fadeIn 0.5s ease-out;}
@@ -75,7 +75,7 @@ export default class FocusView {
                     box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
                     animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
                     position: relative; z-index: 50; 
-                    transition: all 0.5s ease;
+                    transition: all 0.5s ease; box-sizing: border-box;
                 }
                 
                 /* =========================================================
@@ -107,7 +107,7 @@ export default class FocusView {
                     padding: 16px 45px 16px 20px; border-radius: 12px; font-family: var(--font-main); font-size: 1.05rem; 
                     outline: none; cursor: pointer; appearance: none; font-weight: 800;
                     text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.3s;
-                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 9999;
+                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 9999; box-sizing: border-box;
                 }
                 .omni-selector:focus, .omni-selector:hover { border-color: var(--accent-blue); box-shadow: inset 0 0 10px rgba(0, 176, 255, 0.1), 0 10px 20px rgba(0,176,255,0.3); background: rgba(0,0,0,0.8); }
                 .omni-selector option { background: #111; color: white; padding: 10px; font-family: var(--font-mono); font-size:0.95rem;}
@@ -158,7 +158,7 @@ export default class FocusView {
                 .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 900; margin-top: 10px; text-transform: uppercase; letter-spacing: 4px; opacity:0.9;}
 
                 /* CONTROLS */
-                .controls { display: flex; gap: 2rem; z-index: 10; align-items: center; justify-content: center; margin-top: 1rem;}
+                .controls { display: flex; gap: 2rem; z-index: 10; align-items: center; justify-content: center; margin-top: 1rem; padding-bottom: 1rem;}
                 .btn-circle { width: 80px; height: 80px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2rem; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
                 .btn-play { background: white; color: black; }
                 .btn-play:hover { transform: scale(1.1); background: #f0f0f0; box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);}
@@ -170,13 +170,13 @@ export default class FocusView {
                 /* =========================================================
                    MODAL DE REPORTE (PoW Console)
                    ========================================================= */
-                .report-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .report-card { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 24px; width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-sizing: border-box; border-top: 4px solid var(--accent-blue);}
+                .report-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 5000; overflow-y: auto;}
+                .report-card { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 24px; width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-sizing: border-box; border-top: 4px solid var(--accent-blue); margin: 2rem auto; max-height: 85vh; overflow-y: auto;}
                 .report-card h2 { color: white; margin-top: 0; font-size: 1.8rem; font-weight:900; letter-spacing:-1px; margin-bottom: 5px;}
                 
                 .report-task-box { background: rgba(0, 176, 255, 0.1); border-left: 4px solid var(--accent-blue); color: white; font-weight: 900; padding: 15px; border-radius: 8px; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.3;}
 
-                .form-group { margin-bottom: 1.5rem; text-align: left; }
+                .form-group { margin-bottom: 1.5rem; text-align: left; width: 100%;}
                 .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
                 .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 16px; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; outline:none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);}
@@ -189,9 +189,11 @@ export default class FocusView {
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* RESPONSIVE MOBILE */
+                /* RESPONSIVE MOBILE FIXES */
                 @media (max-width: 768px) {
-                    .workspace-focus { padding: 90px 1rem 1rem 1rem; } 
+                    .workspace-focus { 
+                        padding: 90px 1rem 120px 1rem; /* 120px asegura que en iOS la UI llegue hasta arriba de la nav bar sin taparse */
+                    } 
                     .focus-container { padding: 0; }
                     .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px;}
                     .empty-state h2 { font-size: 1.8rem; }
@@ -204,7 +206,8 @@ export default class FocusView {
                     .time-display { font-size: 3.8rem; }
                     .btn-circle { width: 70px; height: 70px; font-size: 1.6rem; }
                     
-                    .report-card { padding: 2rem 1.5rem; width: 95%; max-height: 90vh; overflow-y:auto;}
+                    /* Formulario Mobile Safe */
+                    .report-card { padding: 2rem 1.5rem; width: 95%; max-height: 85vh; overflow-y:auto; margin: 10vh auto;}
                 }
             </style>
 
@@ -337,7 +340,7 @@ export default class FocusView {
             btnStop: document.getElementById('btnStop'),
             btnDirectReport: document.getElementById('btnDirectReport'),
             modal: document.getElementById('reportModal'),
-            reportTaskName: document.getElementById('reportTaskName'), // Nuevo elemento
+            reportTaskName: document.getElementById('reportTaskName'), 
             inpRealHours: document.getElementById('inpRealHours'),
             inpProof: document.getElementById('inpProof'),
             inpComment: document.getElementById('inpComment'),
@@ -360,7 +363,21 @@ export default class FocusView {
             
             tasks.forEach(tx => {
                 const roleFrom = p.roles.find(r => r.id === tx.from);
-                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'Nodo' });
+                
+                // V11 FIX: Resolver el nombre real desde el flow si existe
+                let resolvedName = tx.entregable || tx.template;
+                if (!resolvedName && tx.flowId) {
+                    const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
+                    if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
+                }
+
+                allMyTasks.push({ 
+                    ...tx, 
+                    projectId: p.id, 
+                    projectName: p.nombre, 
+                    roleName: roleFrom ? roleFrom.name : 'Nodo',
+                    displayName: resolvedName || 'Work Order Anónima'
+                });
             });
         });
 
@@ -381,8 +398,7 @@ export default class FocusView {
                     selectHtml += `<optgroup label="🏰 ${t.projectName.toUpperCase()}">`;
                     currentProjectName = t.projectName;
                 }
-                const name = t.entregable || t.template || 'Work Order';
-                selectHtml += `<option value="${t.id || t.hash}">${t.roleName}: ${name}</option>`;
+                selectHtml += `<option value="${t.id || t.hash}">${t.roleName}: ${t.displayName}</option>`;
             });
             if (currentProjectName !== '') selectHtml += `</optgroup>`;
             
@@ -441,8 +457,7 @@ export default class FocusView {
 
     setupTaskData() {
         if (!this.activeTx) return;
-        const name = this.activeTx.entregable || this.activeTx.template || 'Work Order';
-        this.dom.taskName.innerText = name;
+        this.dom.taskName.innerText = this.activeTx.displayName;
         
         if(this.activeTx.tipo === 'tangible') {
             this.dom.taskType.innerText = '🟢 Tangible';
@@ -558,8 +573,7 @@ export default class FocusView {
     openReportModal(fromTimer) {
         this.pauseTimer();
         
-        const taskName = this.activeTx.entregable || this.activeTx.template || 'Work Order';
-        this.dom.reportTaskName.innerText = `🎯 ${taskName}`;
+        this.dom.reportTaskName.innerText = `🎯 ${this.activeTx.displayName}`;
 
         if (fromTimer) {
             let workedSecs = this.mode === 'stopwatch' ? this.secondsElapsed : ((this.mode === 'pomodoro_25' ? 25*60 : 50*60) - this.targetSeconds);
