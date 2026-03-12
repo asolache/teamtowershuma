@@ -1,5 +1,5 @@
 // ==========================================================================
-// KERNEL v10.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v10.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad, Capital e Identidad Fractal
 // ==========================================================================
 
@@ -20,7 +20,7 @@ const initialState = {
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
         allowUserCreation: false,
-        archetype: 'startup' // V9.9 Meta-Ontology
+        archetype: 'startup' // V9.9
     },
     ontology: { sectores: {} },
     globalUsers: [
@@ -60,7 +60,7 @@ const initialState = {
     session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
 };
 
-// 2. REDUCER ASÍNCRONO PURIFICADO
+// 2. REDUCER ASÍNCRONO BLINDADO
 async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
 
@@ -69,7 +69,7 @@ async function asyncReducer(state, action) {
         // --- SISTEMA Y CONFIGURACIÓN ---
         case 'IMPORT_STATE': 
             return { ...newState, ...action.payload };
-        
+            
         case 'UPDATE_GLOBAL_CONFIG': 
         case 'UPDATE_CONFIG': // V9.9
             return { ...newState, config: { ...newState.config, ...action.payload } };
@@ -90,6 +90,7 @@ async function asyncReducer(state, action) {
         case 'REGISTER_GLOBAL_USER': {
             const newId = action.payload.id.toLowerCase();
             const existsGlobal = newState.globalUsers.find(u => u.id === newId);
+            
             if (!existsGlobal) {
                 newState.globalUsers.push({
                     id: newId,
@@ -151,6 +152,7 @@ async function asyncReducer(state, action) {
             newState.session.role = user ? (user.globalRole || 'network-user') : 'guest';
             return newState;
         }
+        
         case 'LOGOUT_USER': 
             newState.session.activeUserId = null;
             newState.session.role = 'guest';
@@ -357,7 +359,7 @@ async function asyncReducer(state, action) {
                     id: action.payload.flow.id || ('flow_' + Date.now())
                 });
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'UPDATE_FLOW': {
@@ -368,7 +370,7 @@ async function asyncReducer(state, action) {
                     pFlowUpd.vna_flows[fIdx] = { ...pFlowUpd.vna_flows[fIdx], ...action.payload.updates };
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'DELETE_FLOW': {
@@ -376,7 +378,7 @@ async function asyncReducer(state, action) {
             if (pFlowDel && pFlowDel.vna_flows) {
                 pFlowDel.vna_flows = pFlowDel.vna_flows.filter(f => f.id !== action.payload.flowId);
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         // --- 2. EL AGUA (WORK ORDERS EN KANBAN) ---
@@ -389,7 +391,7 @@ async function asyncReducer(state, action) {
                     timestamp: Date.now()
                 });
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'UPDATE_WORK_ORDER': {
@@ -400,7 +402,7 @@ async function asyncReducer(state, action) {
                     pWoUp.work_orders[woIdx] = { ...pWoUp.work_orders[woIdx], ...action.payload.updates };
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'DELETE_WORK_ORDER': {
@@ -408,7 +410,7 @@ async function asyncReducer(state, action) {
             if (pWoDel && pWoDel.work_orders) {
                 pWoDel.work_orders = pWoDel.work_orders.filter(t => t.hash !== action.payload.woHash);
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'REQUEST_WORK_ORDER':
@@ -421,7 +423,7 @@ async function asyncReducer(state, action) {
                     wo.assigneeId = action.payload.userId;
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'REPORT_WORK_ORDER': {
@@ -435,7 +437,7 @@ async function asyncReducer(state, action) {
                     wo.comentario = action.payload.comentario;
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         case 'APPROVE_WORK_ORDER': {
@@ -462,8 +464,8 @@ async function asyncReducer(state, action) {
                         }
                     }
 
-                    const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
-                    const archFactor = archFactors[pWoApp.archetype] || 1.0;
+                    const tStore = new Store();
+                    const archFactor = tStore.getArchetypeFactor(pWoApp.archetype);
 
                     const slices = (wo.realHours * fmv) * multiplier * archFactor;
                     wo.valorCongelado = slices;
@@ -482,7 +484,7 @@ async function asyncReducer(state, action) {
                     });
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         // =========================================================
@@ -498,7 +500,7 @@ async function asyncReducer(state, action) {
                     prevHash: prevTx ? prevTx.hash : null, timestamp: Date.now(), status: action.payload.tx?.status || 'theoretical', ...action.payload.tx
                 });
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
         case 'UPDATE_TRANSACTION': {
             const pTxUp = newState.projects.find(p => p.id === action.payload.projectId);
@@ -506,12 +508,12 @@ async function asyncReducer(state, action) {
                 const txIdx = pTxUp.transactions.findIndex(t => t.hash === action.payload.txHash);
                 if (txIdx > -1) pTxUp.transactions[txIdx] = { ...pTxUp.transactions[txIdx], ...action.payload.updates };
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
         case 'DELETE_TRANSACTION': {
             const pTxDel = newState.projects.find(p => p.id === action.payload.projectId);
             if (pTxDel && pTxDel.transactions) pTxDel.transactions = pTxDel.transactions.filter(t => t.hash !== action.payload.txHash);
-            return newState;
+            return newState; // FIX: Return enforced
         }
         case 'REQUEST_TRANSACTION': {
             const pReqTx = newState.projects.find(p => p.id === action.payload.projectId);
@@ -521,7 +523,7 @@ async function asyncReducer(state, action) {
                     txReq.status = 'requested'; txReq.assigneeId = action.payload.userId; txReq.requestTimestamp = Date.now();
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
         case 'PING_TRANSACTION': {
             const pPing = newState.projects.find(p => p.id === action.payload.projectId);
@@ -531,7 +533,7 @@ async function asyncReducer(state, action) {
                     txPing.status = 'pinged'; txPing.assigneeId = action.payload.userId; txPing.pingTimestamp = Date.now();
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
         case 'REPORT_TRANSACTION': {
             const pRep = newState.projects.find(p => p.id === action.payload.projectId);
@@ -542,7 +544,7 @@ async function asyncReducer(state, action) {
                     txRep.proofLink = action.payload.proofLink; txRep.reportComment = action.payload.comentario; txRep.reportTimestamp = Date.now();
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
         case 'APPROVE_TRANSACTION': {
             const pAppr = newState.projects.find(p => p.id === action.payload.projectId);
@@ -578,7 +580,7 @@ async function asyncReducer(state, action) {
                     txAppr.valorCongelado = valorGenerado;
                 }
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         // V7.4: INYECCIONES DE CAPITAL (SLICING PIE)
@@ -605,12 +607,14 @@ async function asyncReducer(state, action) {
                     horas: 0, valorCongelado: valorGenerado, timestamp: Date.now()
                 });
             }
-            return newState;
+            return newState; // FIX: Return enforced
         }
 
         default: 
-            return newState;
+            return state; // Válvula de seguridad si el case no existe
     }
+    
+    return newState; // Doble seguro final
 } 
 
 // 3. CLASE STORE: Controlador de Métodos
