@@ -33,7 +33,8 @@ class Router {
 
         const viewFileName = routes[path] || 'HomeView';
         try {
-            const { default: View } = await import(`./views/${viewFileName}.js`);
+            const modulePath = `./views/${viewFileName}.js`;
+            const { default: View } = await import(modulePath);
             const view = new View();
             this.appContainer.innerHTML = await view.getHtml();
             if (view.executeViewScript) view.executeViewScript();
@@ -41,8 +42,8 @@ class Router {
         } catch (error) {
             console.error("Router Error:", error);
             this.appContainer.innerHTML = `<div style="padding:4rem;text-align:center;color:white;font-family:monospace;">
-                <h1 style="color:var(--accent-red)">ERROR DE CARGA</h1><p>${error.message}</p>
-                <a href="/v5/" data-link style="color:var(--accent-blue)">REINICIAR KERNEL</a></div>`;
+                <h1 style="color:#ff5252">ERROR DE CARGA</h1><p>${error.message}</p>
+                <a href="/v5/" data-link style="color:#00b0ff">[ REBOOT SYSTEM ]</a></div>`;
         }
     }
 }
