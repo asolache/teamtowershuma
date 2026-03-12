@@ -19,8 +19,9 @@ export default class ValueMapView {
         this.flowFromId = null;
         this.tempVector = null;
 
-        // Simulación
+        // Simulación & Heatmap
         this.isSimulating = false;
+        this.isHeatmapActive = false;
         this.simulationTimeouts = [];
         this.currentSimIndex = 0;
 
@@ -53,7 +54,7 @@ export default class ValueMapView {
         const headerConfig = {
             title: "Arquitectura VNA",
             subtitle: project ? project.nombre : '',
-            tagline: "Estructura Base (Tuberías de Valor Permanente).",
+            tagline: "Estructura Base y Tuberías de Valor Permanente.",
             tabs: [
                 { id: 'visual', label: '🕸️ Red Visual', active: true },
                 { id: 'edit', label: '✏️ Editar Mapa' },
@@ -64,39 +65,49 @@ export default class ValueMapView {
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
-                .workspace { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth;}
+                /* FIX SCROLL LATERAL & BOTTOM SAFE */
+                .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; background: var(--bg-dark); }
+                .workspace-map { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; width: 100%; box-sizing: border-box;}
                 
-                .ph-tabs-container { flex-shrink: 0 !important; margin-bottom: 1rem !important;}
+                /* FIX TABS MOBILE PARA SIEMPRE (Sobreescribe comportamiento de PageHeader temporalmente) */
+                .ph-tabs-container { flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; flex-shrink: 0 !important; margin-bottom: 1rem !important; justify-content: flex-start !important;}
+                .ph-tabs-container::-webkit-scrollbar { display: none; }
+                .ph-tab-btn { flex: 0 0 auto !important; }
 
-                .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; min-height: 500px; position: relative; }
+                .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; min-height: 500px; position: relative; width: 100%;}
                 .tab-content.active { display: flex; }
                 
                 /* CONTROLES TÁCTICOS Y TIPS */
-                .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(5px);}
-                .sim-group { display: flex; gap: 10px; }
+                .vna-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(5px); width: 100%; box-sizing: border-box;}
                 
-                .btn-sm { padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; border:none;}
+                /* SELECTOR DE MAGIA (SIMULACIÓN / HEATMAP) */
+                .magic-action-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex:1;}
+                .magic-select { background: rgba(0,0,0,0.6); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-weight: 900; outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+                .magic-select:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224,64,251,0.2);}
+                .magic-select option { background: #111; color: white; }
+                
+                .btn-sm { padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; border:none; box-sizing: border-box;}
                 .btn-sm-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2);}
                 .btn-sm-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
                 .btn-sm-outline { background: transparent; border: 1px solid #555; color: white;}
                 .btn-sm-outline:hover { background: rgba(255,255,255,0.05); border-color: white;}
 
-                .legend-box { display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid #333; width: max-content;}
+                .legend-box { display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid #333; width: max-content; flex-shrink:0;}
                 .legend-item { display: flex; align-items: center; gap: 8px; text-transform: uppercase;}
                 .legend-color { width: 18px; height: 4px; border-radius: 2px;}
 
-                .vna-tip { background: rgba(0, 176, 255, 0.05); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 15px 20px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:15px;}
+                .vna-tip { background: rgba(0, 176, 255, 0.05); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 15px 20px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:15px; width: 100%; box-sizing: border-box;}
 
                 /* LIENZO PRINCIPAL (LUXURY GLASS) */
-                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8);}
+                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); width: 100%; min-height: 500px;}
                 
                 .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
                 
                 #edges-svg-visual, #edges-svg-edit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
                 
-                .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.3s, opacity 0.3s, stroke-width 0.3s; }
-                .edge-line:hover { opacity: 1; stroke-width: 5; cursor: pointer; pointer-events: stroke;}
+                /* LÍNEAS SVG */
+                .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
+                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.5);}
                 .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
                 .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
                 .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
@@ -141,7 +152,7 @@ export default class ValueMapView {
 
                 /* PESTAÑAS Y FLUJO (LUXURY LISTS) */
                 .roles-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap:15px;}
-                .roles-grid-tab { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;}
+                .roles-grid-tab { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; width: 100%;}
                 .role-list-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: transform 0.3s, box-shadow 0.3s; backdrop-filter: blur(10px);}
                 .role-list-card:hover { background: rgba(255,255,255,0.03); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
 
@@ -156,7 +167,7 @@ export default class ValueMapView {
                 .step-meta { font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase; display: flex; align-items: center; gap: 8px; font-weight:bold;}
                 .step-route-compact { font-size: 0.95rem; display: flex; align-items: center; flex-wrap: wrap; line-height: 1.3;}
                 .route-level { color: #888; font-family: var(--font-mono); font-size: 0.8rem; margin-right: 6px; }
-                .route-name { font-weight: 800; color: white; text-transform:uppercase; letter-spacing:0.5px;}
+                .route-name { font-weight: 900; color: white; text-transform:uppercase; letter-spacing:0.5px;}
                 .route-arrow { color: #555; margin: 0 10px; }
                 .step-deliv-name { font-size: 1.1rem; font-weight: bold; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color: #ccc;}
                 
@@ -169,7 +180,7 @@ export default class ValueMapView {
 
                 /* MODALS LUXURY */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); padding: 3rem; border-radius: 20px; width: 550px; max-width: 95%; box-shadow: 0 25px 60px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
+                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); padding: 3rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
                 
                 .form-group { margin-bottom: 20px; }
                 .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
@@ -180,18 +191,22 @@ export default class ValueMapView {
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
 
-                /* RESPONSIVE MOBILE */
+                /* =========================================================
+                   RESPONSIVE MOBILE FIXES (BOTTOM SAFE)
+                   ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace { padding: 80px 1rem 90px 1rem; } 
+                    .workspace-map { 
+                        padding: 90px 1rem 120px 1rem; /* BOTTOM SAFE ZONE */
+                    } 
                     
                     .vna-controls { flex-direction: column; align-items: stretch; gap: 15px; padding: 15px;}
-                    .sim-group { display: flex; flex-direction: row; width: 100%; gap: 10px;}
-                    .sim-group .btn-sm { flex: 1; padding: 14px; font-size: 1rem;}
+                    .magic-action-group { flex-direction: column; align-items: stretch; width:100%;}
+                    .magic-select, .btn-sm { width: 100%; padding: 14px; font-size: 1rem;}
                     
                     .vna-tip { flex-direction: column; align-items: stretch; text-align:center;}
-                    #btnOpenAddNode, #btnOpenAddNodeRoles { padding: 14px; font-size: 1rem; width: 100%; justify-content:center;}
+                    #btnOpenAddNode, #btnOpenAddNodeRoles, #btnUndoTx { padding: 14px; font-size: 1rem; width: 100%; justify-content:center;}
 
-                    .map-container { flex: 1; height: calc(100vh - 380px); min-height: 450px; border-radius: 16px;}
+                    .map-container { flex: 1; height: calc(100vh - 400px); min-height: 450px; border-radius: 16px;}
                     
                     .node-wrapper { width: 100px;}
                     .node-circle { width: 70px; height: 70px; border-width: 2px;} 
@@ -206,15 +221,17 @@ export default class ValueMapView {
                     .sequence-panel { width: 100%; max-height: none; padding-right: 0;}
                     
                     .flow-step { flex-direction: column; align-items: stretch; gap: 15px;}
-                    .step-actions { flex-direction: row; justify-content: space-between; border-top: 1px dashed #333; padding-top: 15px; margin-top: 5px;}
-                    .step-actions .btn-step { flex: 1; padding: 12px;}
+                    .step-actions { flex-direction: row; justify-content: space-between; border-top: 1px dashed #333; padding-top: 15px; margin-top: 5px; flex-wrap:wrap;}
+                    .step-actions .btn-step { flex: 1; padding: 12px; min-width: 45%;}
+
+                    .modal-content { padding: 2rem 1.5rem; }
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/map')}
 
-                <main class="workspace">
+                <main class="workspace-map">
                     
                     ${PageHeader.getHtml(headerConfig)}
 
@@ -222,10 +239,15 @@ export default class ValueMapView {
 
                     <div id="view-visual" class="tab-content active">
                         <div class="vna-controls">
-                            <div class="sim-group">
-                                <button class="btn-sm btn-sm-primary" id="btnSimulate">▶ Simular Tuberías V10</button>
+                            <div class="magic-action-group">
+                                <select id="selMagicAction" class="magic-select">
+                                    <option value="sim">▶ Simular Tuberías (Flujo V10)</option>
+                                    <option value="heat">🔥 Activar Heatmap Analítico (Tiempo V11)</option>
+                                </select>
+                                <button class="btn-sm btn-sm-primary" id="btnExecuteMagic">Ejecutar Magia</button>
+                                
                                 <button class="btn-sm btn-sm-outline" id="btnPauseSim" style="display:none;">⏸ Pausar</button>
-                                <button class="btn-sm btn-sm-outline" id="btnStopSim" style="display:none; color:var(--accent-red); border-color:var(--accent-red);">⏹ Detener</button>
+                                <button class="btn-sm btn-sm-outline" id="btnStopSim" style="display:none; color:var(--accent-red); border-color:var(--accent-red);">⏹ Detener / Reset</button>
                             </div>
                             <div class="legend-box">
                                 <div class="legend-item"><div class="legend-color" style="background:var(--accent-green);"></div> Tangible</div>
@@ -280,8 +302,8 @@ export default class ValueMapView {
                         ` : `
                             <div style="text-align:center; padding:5rem; background:rgba(0,0,0,0.3); border-radius:20px; border:1px dashed #333;">
                                 <div style="font-size: 4rem; margin-bottom:1rem;">🔒</div>
-                                <h2 style="color:white;">Modo Arquitecto Bloqueado</h2>
-                                <p style="color:#888;">Solo el Project Owner puede editar la topología inmutable de este Castell.</p>
+                                <h2 style="color:white; font-weight:900;">Modo Arquitecto Bloqueado</h2>
+                                <p style="color:#888;">Solo el Project Owner (El Creador) puede editar la topología inmutable de este Castell.</p>
                             </div>
                         `}
                     </div>
@@ -308,22 +330,22 @@ export default class ValueMapView {
                 <div class="modal-overlay" id="txBuilderModal">
                     <div class="modal-content">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                            <h2 id="formTitle" style="margin:0; font-size:1.5rem; color:var(--accent-blue); font-weight:900;">Definir Tubería de Valor (Flow)</h2>
-                            <button id="btnCloseTxBuilder" style="background:none; border:none; color:#aaa; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+                            <h2 id="formTitle" style="margin:0; font-size:1.5rem; color:var(--accent-blue); font-weight:900; letter-spacing:-0.5px;">Definir Tubería (Flow)</h2>
+                            <button id="btnCloseTxBuilder" style="background:none; border:none; color:#aaa; font-size:2.5rem; cursor:pointer; line-height:1;">&times;</button>
                         </div>
                         
                         <div class="form-group" style="display: flex; gap: 15px; flex-wrap:wrap;">
                             <div style="flex:1; min-width:200px;">
                                 <label>Origen</label>
-                                <select id="selFrom" class="form-control" disabled></select>
+                                <select id="selFrom" class="form-control" disabled style="opacity:0.6; font-weight:bold;"></select>
                             </div>
                             <div style="flex:1; min-width:200px;">
                                 <label>Destino</label>
-                                <select id="selTo" class="form-control" disabled></select>
+                                <select id="selTo" class="form-control" disabled style="opacity:0.6; font-weight:bold;"></select>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Catálogo de Entregables (Ontología V10)</label>
+                            <label>Catálogo de Entregables (ADN V10)</label>
                             <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.05); border-color: var(--accent-blue); color:var(--accent-blue); font-weight:bold;">
                                 <option value="">Cargando ontología...</option>
                             </select>
@@ -345,25 +367,25 @@ export default class ValueMapView {
                             <label>Nombre del Modelo de Entregable</label>
                             <input type="text" id="inpDesc" class="form-control" placeholder="Ej: Auditoría de Seguridad Web3">
                         </div>
-                        <button class="btn-sm btn-sm-primary" style="width: 100%; margin-top: 2rem; padding:15px; font-size:1.1rem;" id="btnAddFlow">➕ Confirmar Tubería Permanente</button>
+                        <button class="btn-sm btn-sm-primary" style="width: 100%; margin-top: 2rem; padding:15px; font-size:1.1rem;" id="btnAddFlow">➕ Confirmar Tubería</button>
                     </div>
                 </div>
 
                 <div class="modal-overlay" id="addNodeModal">
                     <div class="modal-content">
-                        <h2 style="color: white; margin-bottom: 2rem; margin-top:0; font-weight:900;">Instanciar Rol</h2>
+                        <h2 style="color: white; margin-bottom: 2rem; margin-top:0; font-weight:900;">Instanciar Silla (Rol)</h2>
                         <div class="form-group">
                             <label>Nombre del Puesto/Actividad</label>
                             <input type="text" id="inpNewNodeName" class="form-control" placeholder="Ej: Especialista SEO">
                         </div>
                         <div class="form-group">
                             <label>Nivel Estructural (Multiplicador de Riesgo)</label>
-                            <select id="selNewNodeLevel" class="form-control" style="font-family:monospace; font-weight:bold;">
-                                <option value="@anxaneta">@anxaneta (x3.0)</option>
-                                <option value="@aixecador">@aixecador (x2.0)</option>
-                                <option value="@dosos">@dosos (x1.5)</option>
-                                <option value="@baixos" selected>@baixos (x1.2)</option>
-                                <option value="@pinya">@pinya (x1.0)</option>
+                            <select id="selNewNodeLevel" class="form-control" style="font-family:monospace; font-weight: bold;">
+                                <option value="@anxaneta">@anxaneta (x3.0) - Cúpula</option>
+                                <option value="@aixecador">@aixecador (x2.0) - Táctica</option>
+                                <option value="@dosos">@dosos (x1.5) - Supervisión</option>
+                                <option value="@baixos" selected>@baixos (x1.2) - Base Operativa</option>
+                                <option value="@pinya">@pinya (x1.0) - Soporte Periférico</option>
                             </select>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 3rem; gap:15px;">
@@ -376,8 +398,8 @@ export default class ValueMapView {
                 <div class="modal-overlay" id="inspectorModal">
                     <div class="modal-content">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom:1px solid #333; padding-bottom:15px;">
-                            <h2 style="color: white; margin:0; font-weight:900;">Inspector de Nodo</h2>
-                            <button id="btnCloseInspector" style="background:none; border:none; color:#aaa; cursor:pointer; font-size: 2rem; line-height:1;">&times;</button>
+                            <h2 style="color: white; margin:0; font-weight:900;">Inspector de Silla</h2>
+                            <button id="btnCloseInspector" style="background:none; border:none; color:#aaa; cursor:pointer; font-size: 2.5rem; line-height:1;">&times;</button>
                         </div>
                         <div class="form-group">
                             <label>Nivel Estructural</label>
@@ -430,9 +452,9 @@ export default class ValueMapView {
         
         this.dom = {
             canvasVis: document.getElementById('mapCanvasVisual'),
-            pathsVis: document.getElementById('paths-group-vis'), // Target for SVG paths Vis
+            pathsVis: document.getElementById('paths-group-vis'), 
             canvasEdit: document.getElementById('mapCanvasEdit'),
-            pathsEdit: document.getElementById('paths-group-edit'), // Target for SVG paths Edit
+            pathsEdit: document.getElementById('paths-group-edit'), 
             seqList: document.getElementById('sequenceList'),
             rolesTabList: document.getElementById('rolesTabList'),
             
@@ -455,14 +477,15 @@ export default class ValueMapView {
             inputMult: document.getElementById('inputMult'),
             addNodeModal: document.getElementById('addNodeModal'),
             
-            btnSimulate: document.getElementById('btnSimulate'),
+            selMagicAction: document.getElementById('selMagicAction'),
+            btnExecuteMagic: document.getElementById('btnExecuteMagic'),
             btnPauseSim: document.getElementById('btnPauseSim'),
             btnStopSim: document.getElementById('btnStopSim'),
             sickAlert: document.getElementById('sickAlert'),
             tooltip: document.getElementById('txTooltip')
         };
 
-        // TABS LOGIC
+        // TABS LOGIC (FIXED)
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -519,7 +542,7 @@ export default class ValueMapView {
         }
 
         // ------------------------------------------------------------------
-        // EVENTOS UNIFICADOS DEL CANVAS DE EDICIÓN (DRAG & CLICK)
+        // EVENTOS CANVAS EDICIÓN (DRAG & CLICK)
         // ------------------------------------------------------------------
         if (isPO && this.dom.canvasEdit) {
             
@@ -541,7 +564,6 @@ export default class ValueMapView {
                 });
             }
 
-            // Mouse Down: Prepara para Drag pero no interrumpe el evento click (no usamos stopPropagation)
             this.dom.canvasEdit.addEventListener('mousedown', (e) => {
                 if (window.innerWidth <= 768) return; 
                 const node = e.target.closest('.node-wrapper');
@@ -553,14 +575,12 @@ export default class ValueMapView {
                 }
             });
 
-            // Double Click Inspector
             this.dom.canvasEdit.addEventListener('dblclick', (e) => {
                 const node = e.target.closest('.node-wrapper');
                 this.cancelVisualFlow();
                 if(node) this.openRoleInspector(node.dataset.id);
             });
 
-            // Movimiento del Ratón
             window.addEventListener('mousemove', (e) => {
                 if (this.isDragging && this.draggedElement) {
                     this.hasMoved = true;
@@ -614,7 +634,6 @@ export default class ValueMapView {
                     this.isDragging = false;
                     this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
                     
-                    // Si soltamos sin moverlo, era un simple CLIC
                     if (!this.hasMoved) {
                         this.handleNodeClick(this.draggedElement.dataset.id);
                     } else {
@@ -811,6 +830,10 @@ export default class ValueMapView {
                 const delivName = flow.template || flow.entregable || 'Entregable';
                 const hours = flow.estimatedHours || flow.horas || 1;
                 
+                // Métrica V11
+                const totalRealHours = flow.total_hours_processed || 0;
+                const txCount = flow.total_txs || 0;
+
                 this.dom.tooltip.innerHTML = `
                     <div style="color: ${typeColor}; font-weight: 900; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; font-size:0.75rem;">
                         [Tubería ${parseInt(idx) + 1}] ${typeText}
@@ -819,10 +842,15 @@ export default class ValueMapView {
                         <div style="font-size: 0.8rem;"><strong style="color:#888;">Origen:</strong> ${rFrom ? rFrom.name : '?'}</div>
                         <div style="font-size: 0.8rem;"><strong style="color:#888;">Destino:</strong> ${rTo ? rTo.name : '?'}</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px dashed #444; border-left: 3px solid ${typeColor};">
+                    <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px dashed #444; border-left: 3px solid ${typeColor}; margin-bottom: 10px;">
                         <div style="color:white; font-weight:bold; margin-bottom:5px; font-size:1rem;">${delivName}</div>
                         <div style="color:var(--text-muted); font-family: monospace;">⏱ Est: ${hours}h</div>
                     </div>
+                    ${this.isHeatmapActive ? `
+                        <div style="background: rgba(255,171,64,0.1); border:1px solid rgba(255,171,64,0.3); padding:8px; border-radius:6px; color:var(--accent-orange); font-size:0.75rem; font-family:monospace; text-align:center;">
+                            🔥 Ledger Analytics: ${totalRealHours}h procesadas en ${txCount} transacciones.
+                        </div>
+                    ` : ''}
                 `;
                 
                 this.dom.tooltip.classList.add('visible');
@@ -848,12 +876,29 @@ export default class ValueMapView {
             this.dom.canvasEdit.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         }
 
-        this.dom.btnSimulate.addEventListener('click', () => this.startSimulation());
+        // =========================================================
+        // MOTOR DE MAGIA (SIMULACIÓN & HEATMAP V11)
+        // =========================================================
+        this.dom.btnExecuteMagic.addEventListener('click', () => {
+            const action = this.dom.selMagicAction.value;
+            if (action === 'sim') {
+                this.isHeatmapActive = false;
+                this.startSimulation();
+            } else if (action === 'heat') {
+                this.stopSimulation();
+                this.isHeatmapActive = true;
+                this.drawEdges(); // Redibujar con reglas de Heatmap
+                this.dom.btnStopSim.style.display = 'flex';
+                this.dom.btnStopSim.innerText = '⏹ Desactivar Heatmap';
+                this.dom.btnExecuteMagic.style.display = 'none';
+                this.dom.selMagicAction.style.display = 'none';
+            }
+        });
+
         this.dom.btnPauseSim.addEventListener('click', () => this.pauseSimulation());
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
     }
 
-    // GESTOR DE CLICS DE NODOS PARA FLUJOS
     handleNodeClick(nodeId) {
         if (!this.flowFromId) {
             this.flowFromId = nodeId;
@@ -912,7 +957,6 @@ export default class ValueMapView {
             canvasObj.appendChild(nodeDiv);
         });
 
-        // Nodos fantasma (Archivados)
         const ghostRoles = p.roles.filter(r => r.isArchived);
         ghostRoles.forEach((r, i) => {
             const nodeDiv = document.createElement('div');
@@ -940,16 +984,18 @@ export default class ValueMapView {
         this.isSimulating = true;
         this.isPaused = false;
         
-        this.dom.btnSimulate.style.display = 'none';
+        this.dom.btnExecuteMagic.style.display = 'none';
+        this.dom.selMagicAction.style.display = 'none';
         this.dom.btnPauseSim.style.display = 'flex';
         this.dom.btnStopSim.style.display = 'flex';
+        this.dom.btnStopSim.innerText = '⏹ Detener Sim.';
         this.dom.sickAlert.style.display = 'none';
         
         if(this.currentSimIndex === undefined) this.currentSimIndex = 0;
         
         if(this.currentSimIndex === 0) {
             this.dom.canvasVis.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
-            this.drawEdges(); // Redibuja base
+            this.drawEdges(); 
         }
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
@@ -1002,19 +1048,22 @@ export default class ValueMapView {
     pauseSimulation() {
         this.isPaused = true;
         clearTimeout(this.simTimeoutId);
-        this.dom.btnSimulate.style.display = 'flex';
-        this.dom.btnSimulate.innerText = '▶ Reanudar';
         this.dom.btnPauseSim.style.display = 'none';
+        
+        this.dom.btnExecuteMagic.style.display = 'flex';
+        this.dom.btnExecuteMagic.innerText = '▶ Reanudar';
     }
 
     stopSimulation() {
         this.isSimulating = false;
         this.isPaused = false;
+        this.isHeatmapActive = false;
         this.currentSimIndex = 0;
         clearTimeout(this.simTimeoutId);
         
-        this.dom.btnSimulate.style.display = 'flex';
-        this.dom.btnSimulate.innerText = '▶ Simular Tuberías V10';
+        this.dom.btnExecuteMagic.style.display = 'flex';
+        this.dom.btnExecuteMagic.innerText = 'Ejecutar Magia';
+        this.dom.selMagicAction.style.display = 'flex';
         this.dom.btnPauseSim.style.display = 'none';
         this.dom.btnStopSim.style.display = 'none';
         this.dom.sickAlert.style.display = 'none';
@@ -1326,6 +1375,15 @@ export default class ValueMapView {
 
         if (flows.length === 0) return;
 
+        // Calcular el flujo de horas máximas para normalizar el Heatmap V11
+        let maxHours = 1;
+        if (this.isHeatmapActive) {
+            flows.forEach(tx => {
+                const h = tx.total_hours_processed || 0;
+                if (h > maxHours) maxHours = h;
+            });
+        }
+
         const pairCounts = {};
         flows.forEach((tx, i) => {
             const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
@@ -1338,16 +1396,17 @@ export default class ValueMapView {
             edges.forEach((edgeData, multiIdx) => {
                 const { tx, index } = edgeData;
                 if (this.dom.canvasVis.offsetWidth > 0 && this.dom.pathsVis) {
-                    this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.pathsVis, tx, index, edges, multiIdx, false);
+                    this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.pathsVis, tx, index, edges, multiIdx, false, maxHours);
                 }
                 if (this.dom.canvasEdit && this.dom.canvasEdit.offsetWidth > 0 && this.dom.pathsEdit) {
-                    this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.pathsEdit, tx, index, edges, multiIdx, true);
+                    // El Edit canvas no muestra Heatmap
+                    this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.pathsEdit, tx, index, edges, multiIdx, true, 1);
                 }
             });
         });
     }
 
-    drawSingleEdgeForCanvas(canvas, pathsGroup, tx, index, edgesGroup, multiIdx, isEditCanvas) {
+    drawSingleEdgeForCanvas(canvas, pathsGroup, tx, index, edgesGroup, multiIdx, isEditCanvas, maxHours) {
         const dom1 = canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
@@ -1375,7 +1434,6 @@ export default class ValueMapView {
         const ny = dx / dist;
         let offset = 0;
         
-        // ALGORITMO ANTI-SUPERPOSICIÓN MEJORADO (60px de curva)
         if (edgesGroup.length > 1) {
             const step = 60; 
             if (multiIdx % 2 !== 0) {
@@ -1394,14 +1452,31 @@ export default class ValueMapView {
         
         const suffix = isEditCanvas ? 'edit' : 'vis';
         let markerId = tx.tipo === 'tangible' ? `arrow-tangible-${suffix}` : `arrow-intangible-${suffix}`;
-        path.setAttribute('marker-end', `url(#${markerId})`);
         
         const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
         path.setAttribute('class', `edge-line ${lineClass}`);
         
-        // CSS Hex fallback para las flechas si las variables CSS fallan
         const strokeHex = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
         path.style.stroke = strokeHex;
+        
+        // ==========================================
+        // 🔥 LOGICA HEATMAP V11
+        // ==========================================
+        if (this.isHeatmapActive && !isEditCanvas) {
+            const hProcessed = tx.total_hours_processed || 0;
+            // Normalizar entre 3px y 18px de grosor
+            const normalizedWidth = 3 + (hProcessed / maxHours) * 15;
+            // Si el flow nunca se ha usado, lo hacemos transparente y fino
+            const opac = hProcessed > 0 ? 0.9 : 0.15;
+            
+            path.style.strokeWidth = `${normalizedWidth}px`;
+            path.style.opacity = opac;
+            
+            // Si es muy grueso, quitamos la flecha porque queda rara
+            if (normalizedWidth < 10) path.setAttribute('marker-end', `url(#${markerId})`);
+        } else {
+            path.setAttribute('marker-end', `url(#${markerId})`);
+        }
         
         if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
             path.style.opacity = '0.2';
@@ -1418,9 +1493,23 @@ export default class ValueMapView {
         
         badge.style.left = `${txX}px`;
         badge.style.top = `${txY}px`;
-        
         badge.style.backgroundColor = strokeHex;
-        badge.innerText = `[${index + 1}]`;
+        
+        if (this.isHeatmapActive && !isEditCanvas) {
+            // Heatmap Badge: Mostrar horas procesadas en la vena
+            const h = tx.total_hours_processed || 0;
+            badge.innerText = `${h}h`;
+            badge.style.borderRadius = '50%';
+            badge.style.width = '30px';
+            badge.style.height = '30px';
+            badge.style.display = 'flex';
+            badge.style.justifyContent = 'center';
+            badge.style.alignItems = 'center';
+            badge.style.opacity = h > 0 ? 1 : 0.3;
+        } else {
+            badge.innerText = `[${index + 1}]`;
+        }
+        
         badge.setAttribute('data-idx', index);
         
         if(isEditCanvas) {
