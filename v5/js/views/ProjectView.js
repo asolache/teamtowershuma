@@ -47,9 +47,12 @@ export default class ProjectView {
             ]
         };
 
+        // EVALUACIÓN DE GOBERNANZA V11 (Motor de Permisos)
+        const canCreateWO = store.canUserCreateWorkOrder(activeProjectId, activeUserId);
+
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth; transition: box-shadow 0.5s ease-out;}
                 
                 /* MAGIA VISUAL: Destello si estás disponible */
@@ -145,10 +148,12 @@ export default class ProjectView {
                 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* =========================================================
-                   RESPONSIVE MOBILE LUXURY APP
+                   RESPONSIVE MOBILE LUXURY APP (BOTTOM SAFE FIX)
                    ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace { padding: 90px 1.2rem 90px 1.2rem; } 
+                    .workspace { 
+                        padding: 90px 1.2rem 120px 1.2rem; /* 120px bottom asegura que Safari/Android barra no tapen tarjetas ni el BottomNav */
+                    } 
                     
                     .kanban-container { width: 100%; display: block; }
 
@@ -163,6 +168,7 @@ export default class ProjectView {
                         gap: 1.2rem; 
                         width: 100%;
                         display: grid;
+                        padding-bottom: 2rem; /* Padding extra interno de la grid */
                     }
                     
                     .task-card { 
@@ -200,7 +206,7 @@ export default class ProjectView {
                                     <option value="tangible">🟢 Solo Tangibles</option>
                                     <option value="intangible">🟣 Solo Intangibles</option>
                                 </select>
-                                <button class="btn-create-task" id="btnOpenCreateTask">➕ Generar Work Order</button>
+                                ${canCreateWO ? `<button class="btn-create-task" id="btnOpenCreateTask">➕ Generar Work Order</button>` : ''}
                             </div>
                         </div>
 
@@ -265,8 +271,6 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
 
-        const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
-        
         // TABS LOGIC
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         tabBtns.forEach(btn => {
@@ -316,75 +320,85 @@ export default class ProjectView {
             });
         }
 
-        // LÓGICA DE CREACIÓN DE WORK ORDERS (V10)
+        // LÓGICA DE CREACIÓN DE WORK ORDERS (V10) - Respetando Gobernanza
         const createModal = document.getElementById('createTaskModal');
-        const selFlow = document.getElementById('newTaskFlowId');
+        const btnOpenCreate = document.getElementById('btnOpenCreateTask');
         
-        document.getElementById('btnOpenCreateTask').addEventListener('click', () => {
-            const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const flows = activeProject.vna_flows || [];
-            
-            if (flows.length === 0) {
-                alert("Debes dibujar Tuberías (Flujos permanentes) en el Mapa VNA antes de poder generar tareas en el Kanban.");
-                window.location.href = '/v5/map';
-                return;
-            }
-
-            let flowOpts = '';
-            flows.forEach(f => {
-                const rFrom = activeProject.roles.find(r => r.id === f.from);
-                const rTo = activeProject.roles.find(r => r.id === f.to);
-                const nameF = rFrom ? rFrom.name : 'Unknown';
-                const nameT = rTo ? rTo.name : 'Unknown';
-                flowOpts += `<option value="${f.id}">[${nameF} -> ${nameT}] ${f.template}</option>`;
-            });
-            selFlow.innerHTML = flowOpts;
-
-            let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
-            (activeProject.usuarios || []).forEach(u => {
-                const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
-                userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
-            });
-            document.getElementById('newTaskAssignee').innerHTML = userOpts;
-
-            createModal.style.display = 'flex';
-        });
-
-        document.getElementById('btnCancelCreateTask').addEventListener('click', () => createModal.style.display = 'none');
-
-        document.getElementById('btnConfirmCreateTask').addEventListener('click', async () => {
-            const flowId = selFlow.value;
-            const desc = document.getElementById('newTaskDesc').value.trim();
-            const assignee = document.getElementById('newTaskAssignee').value;
-            
-            if(!flowId) return alert("Selecciona un Flujo base.");
-
-            const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
-
-            await store.dispatch({
-                type: 'SPAWN_WORK_ORDER',
-                payload: {
-                    projectId: this.activeProjectId,
-                    workOrder: {
-                        hash: newHash,
-                        flowId: flowId,
-                        comentario: desc,
-                        status: 'theoretical',
-                        realHours: 0
-                    }
+        if (btnOpenCreate) {
+            btnOpenCreate.addEventListener('click', () => {
+                const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+                const flows = activeProject.vna_flows || [];
+                
+                if (flows.length === 0) {
+                    alert("Debes dibujar Tuberías (Flujos permanentes) en el Mapa VNA antes de poder generar tareas en el Kanban.");
+                    window.location.href = '/v5/map';
+                    return;
                 }
-            });
 
-            if (assignee !== "") {
-                await store.dispatch({
-                    type: 'PING_WORK_ORDER',
-                    payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee }
+                let flowOpts = '';
+                const selFlow = document.getElementById('newTaskFlowId');
+                flows.forEach(f => {
+                    const rFrom = activeProject.roles.find(r => r.id === f.from);
+                    const rTo = activeProject.roles.find(r => r.id === f.to);
+                    const nameF = rFrom ? rFrom.name : 'Unknown';
+                    const nameT = rTo ? rTo.name : 'Unknown';
+                    flowOpts += `<option value="${f.id}">[${nameF} -> ${nameT}] ${f.template}</option>`;
                 });
-            }
+                selFlow.innerHTML = flowOpts;
 
-            createModal.style.display = 'none';
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-        });
+                let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
+                (activeProject.usuarios || []).forEach(u => {
+                    const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
+                    userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+                });
+                document.getElementById('newTaskAssignee').innerHTML = userOpts;
+
+                createModal.style.display = 'flex';
+            });
+        }
+
+        const btnCancelCreateTask = document.getElementById('btnCancelCreateTask');
+        if (btnCancelCreateTask) {
+            btnCancelCreateTask.addEventListener('click', () => createModal.style.display = 'none');
+        }
+
+        const btnConfirmCreateTask = document.getElementById('btnConfirmCreateTask');
+        if (btnConfirmCreateTask) {
+            btnConfirmCreateTask.addEventListener('click', async () => {
+                const selFlow = document.getElementById('newTaskFlowId');
+                const flowId = selFlow.value;
+                const desc = document.getElementById('newTaskDesc').value.trim();
+                const assignee = document.getElementById('newTaskAssignee').value;
+                
+                if(!flowId) return alert("Selecciona un Flujo base.");
+
+                const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
+
+                await store.dispatch({
+                    type: 'SPAWN_WORK_ORDER',
+                    payload: {
+                        projectId: this.activeProjectId,
+                        workOrder: {
+                            hash: newHash,
+                            flowId: flowId,
+                            comentario: desc,
+                            status: 'theoretical',
+                            realHours: 0
+                        }
+                    }
+                });
+
+                if (assignee !== "") {
+                    await store.dispatch({
+                        type: 'PING_WORK_ORDER',
+                        payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee }
+                    });
+                }
+
+                createModal.style.display = 'none';
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            });
+        }
 
         // KANBAN ACTIONS LOGIC (V10 & V9 Legacy Support)
         const taskGrid = document.getElementById('taskGrid');
@@ -399,7 +413,12 @@ export default class ProjectView {
             const isLegacyTx = target.dataset.legacy === "true";
             const txHash = target.dataset.hash;
 
+            // FIX: Validar si el usuario tiene permiso PO/EO
+            const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
+
             if (target.classList.contains('btn-approve')) {
+                if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal de Acción
+                
                 const action = target.dataset.action;
                 if (action === 'approve-pull') {
                     const targetUserId = target.dataset.userid;
@@ -435,6 +454,8 @@ export default class ProjectView {
             }
 
             if (target.classList.contains('btn-push')) {
+                if (!isPO) return alert("Solo el PO puede forzar la delegación de tareas.");
+
                 const usersInProject = currProject.usuarios || [];
                 if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
                 
