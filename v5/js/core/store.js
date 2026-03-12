@@ -1,5 +1,5 @@
 // ==========================================================================
-// KERNEL v11.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v11.1.2 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Gobernanza Fractal, Slicing Pie y Time-VNA
 // ==========================================================================
 
@@ -21,7 +21,6 @@ const initialState = {
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
         allowUserCreation: false,
         archetype: 'startup',
-        // NUEVO V11: Gobernanza Macro
         projectCreationMode: 'open' // 'open', 'templates_only', 'closed'
     },
     ontology: { sectores: {} },
@@ -97,7 +96,6 @@ async function asyncReducer(state, action) {
                 if (pUser) {
                     pUser.usuarios = pUser.usuarios || [];
                     if (!pUser.usuarios.find(u => u.id === newId)) {
-                        // V11: Nuevo usuario entra con permisos base
                         pUser.usuarios.push({ 
                             id: newId, 
                             joinedAt: Date.now(), 
@@ -182,18 +180,14 @@ async function asyncReducer(state, action) {
 
             const initHash = await generateSHA256(`GENESIS_${projId}_${Date.now()}`);
 
-            // V11: Nuevo usuario (Owner)
             const initialUsers = action.payload.usuarios || [{ id: ownerId, permissions: { canCreateWO: true, canApprove: true } }];
 
             newState.projects.push({
                 id: projId, nombre: action.payload.nombre || 'Nuevo Proyecto', sector: pSector, tipo: action.payload.tipo || 'project', 
                 archetype: arquetipo, ownerId: ownerId, prompt: action.payload.prompt || '', 
                 config: { tokenomics: 'startup', archetype: arquetipo },
-                // V11: Gobernanza del Castell
-                governance: {
-                    workOrderCreation: 'open' // open, po_only, custom
-                },
-                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : true, // V11 Muro de cristal activado por defecto
+                governance: { workOrderCreation: 'open' }, // V11 Gobernanza base
+                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : true, 
                 roles: baseRoles, 
                 usuarios: initialUsers, 
                 asignaciones: [], 
@@ -249,7 +243,7 @@ async function asyncReducer(state, action) {
         case 'UPDATE_PROJECT_INFO': {
             const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
             if (pInfo) {
-                // V11: Merge profundo si es para usuarios o gobernanza
+                // V11: Merge profundo y seguro de usuarios
                 if (action.payload.updates.usuarios) {
                     action.payload.updates.usuarios.forEach(newU => {
                         const idx = pInfo.usuarios.findIndex(u => u.id === newU.id);
@@ -261,6 +255,12 @@ async function asyncReducer(state, action) {
                     });
                     delete action.payload.updates.usuarios;
                 }
+                // V11: Merge seguro de gobernanza
+                if (action.payload.updates.governance) {
+                    pInfo.governance = { ...pInfo.governance, ...action.payload.updates.governance };
+                    delete action.payload.updates.governance;
+                }
+                
                 Object.assign(pInfo, action.payload.updates);
             }
             break;
@@ -348,7 +348,6 @@ async function asyncReducer(state, action) {
                 pFlowAdd.vna_flows.push({
                     ...action.payload.flow,
                     id: action.payload.flow.id || ('flow_' + Date.now()),
-                    // V11 Time-VNA Analytics (Acumuladores)
                     total_hours_processed: 0,
                     total_txs: 0
                 });
@@ -456,12 +455,10 @@ async function asyncReducer(state, action) {
                             fmv = role.fmv || 50;
                         }
 
-                        // V11: Time-VNA Analytics (Añadimos horas al tubo permanente)
                         flow.total_hours_processed = (flow.total_hours_processed || 0) + (wo.realHours || 0);
                         flow.total_txs = (flow.total_txs || 0) + 1;
                     }
 
-                    // V10 EXACT MATH: Horas x FMV x Multiplicador
                     const slices = wo.realHours * fmv * multiplier;
                     wo.valorCongelado = slices;
 
@@ -578,7 +575,6 @@ async function asyncReducer(state, action) {
             break;
         }
 
-        // V7.4: INYECCIONES DE CAPITAL (SLICING PIE)
         case 'ADD_CAPITAL_INJECTION': {
             const pCap = newState.projects.find(p => p.id === action.payload.projectId);
             if (pCap) {
@@ -627,7 +623,7 @@ class Store {
                 ...p, alerts: p.alerts || [], ownerId: p.ownerId || 'usr_alvaro_001', archetype: p.archetype || 'startup', genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id),
                 isPrivate: p.isPrivate !== undefined ? p.isPrivate : true, invitations: p.invitations || [],
                 vna_flows: p.vna_flows || [], work_orders: p.work_orders || [],
-                governance: p.governance || { workOrderCreation: 'open' } // V11 Default Governance
+                governance: p.governance || { workOrderCreation: 'open' }
             }));
         }
         if (!this.state.macroFlows) this.state.macroFlows = [];
@@ -666,7 +662,7 @@ class Store {
     }
 
     canUserCreateWorkOrder(projectId, userId) {
-        // FIX V11.1.1: Evaluar el rol del usuario específico, NO el de la sesión activa
+        // FIX V11.1.2: Evaluar el rol del usuario específico, no el de la sesión
         const globalUser = this.state.globalUsers.find(u => u.id === userId);
         if (globalUser && globalUser.globalRole === 'ecosystem-owner') return true;
         
@@ -682,25 +678,6 @@ class Store {
         if (gov.workOrderCreation === 'custom') {
             const member = p.usuarios?.find(x => x.id === userId);
             return member?.permissions?.canCreateWO === true;
-        }
-        
-        return false;
-    }
-
-    canUserCreateWorkOrder(projectId, userId) {
-        if (this.state.session.role === 'ecosystem-owner') return true;
-        const p = this.state.projects.find(x => x.id === projectId);
-        if (!p) return false;
-        
-        if (p.ownerId === userId) return true; // El PO siempre puede
-        
-        const gov = p.governance || { workOrderCreation: 'open' };
-        if (gov.workOrderCreation === 'open') return true;
-        if (gov.workOrderCreation === 'po_only') return false;
-        
-        if (gov.workOrderCreation === 'custom') {
-            const u = p.usuarios?.find(x => x.id === userId);
-            return u?.permissions?.canCreateWO === true;
         }
         
         return false;
