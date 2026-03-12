@@ -55,7 +55,6 @@ export const PageHeader = {
         }
 
         // --- LÓGICA DE ENLACES AUXILIARES (CODEX & AYUDA) ---
-        // Linkeado a /manifesto (que es donde reside el Codex visual) y /help
         const showAuxLinks = currentPath.endsWith('/v5/') || currentPath.endsWith('/') || !config.tabs;
         const auxLinksHtml = showAuxLinks ? `
             <nav class="ph-utility-nav">
@@ -112,7 +111,7 @@ export const PageHeader = {
                 .ph-mob-brand { display: none; align-items: center; height: 32px; text-decoration:none; }
                 .ph-mob-brand img { height: 100%; width: auto; filter: brightness(0) invert(1); }
 
-                .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex: 1; }
+                .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex: 1; }
 
                 .ph-mob-project-select { 
                     appearance: none;
@@ -147,10 +146,17 @@ export const PageHeader = {
                 .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
                 @media (max-width: 768px) {
-                    .ph-global-top-bar { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(15px); padding: 10px 15px; }
+                    .ph-global-top-bar { 
+                        position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
+                        background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(15px); 
+                        padding: 10px 15px; box-sizing: border-box;
+                    }
                     .ph-mob-brand { display: flex; }
-                    .ph-utility-nav { position: absolute; top: 50px; left: 15px; background: rgba(0,0,0,0.8); padding: 5px 12px; border-radius: 20px; border: 1px solid #333; }
-                    .ph-view-header { margin-top: 45px; }
+                    
+                    /* FIX LUXURY MOBILE: Ocultamos el utility nav para evitar solapamientos y mantener minimalismo */
+                    .ph-utility-nav { display: none !important; }
+                    
+                    .ph-view-header { margin-top: 10px; }
                     .ph-view-header h1 { font-size: 1.7rem; }
                     .ph-mob-project-select { max-width: 130px; font-size: 0.7rem; }
                 }
