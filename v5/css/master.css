@@ -47,6 +47,12 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Scrollbar Premium Global (Dark Mode) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
 /* Layout App Global - Strict No Horizontal Scroll */
 .app-layout { 
     display: flex; 
@@ -76,8 +82,8 @@ body {
    TABS & NAVEGACIÓN (Diseño Segmented Control iOS)
    ========================================================================== */
 .ph-tabs-container { 
-    display: inline-flex; 
-    background: rgba(255,255,255,0.03); 
+    display: flex; 
+    background: rgba(0,0,0,0.4); 
     padding: 6px; 
     border-radius: 14px; 
     border: 1px solid var(--glass-border); 
@@ -105,7 +111,7 @@ body {
     white-space: nowrap; 
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
 }
-.ph-tab-btn:hover { color: white; }
+.ph-tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
 .ph-tab-btn.active { 
     background: rgba(255,255,255,0.1); 
     color: white; 
@@ -126,66 +132,15 @@ body {
 .tab-content.active { display: flex; }
 
 /* ==========================================================================
-   DROPDOWN MÁGICO (V12 PILL DESIGN)
+   COMPONENTES UI REUTILIZABLES (LUXURY)
    ========================================================================== */
-.magic-action-group { 
-    display: inline-flex; 
-    gap: 6px; 
-    align-items: center; 
-    background: rgba(0,0,0,0.5);
-    padding: 6px;
-    border-radius: 14px;
-    border: 1px solid var(--glass-border);
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-}
 
-.magic-select { 
-    appearance: none; -webkit-appearance: none; -moz-appearance: none;
-    background-color: transparent;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    border: none; 
-    color: var(--text-main); 
-    padding: 0 40px 0 15px; 
-    font-family: var(--font-main); 
-    font-weight: 800; 
-    font-size: 0.9rem;
-    outline: none; cursor: pointer; transition: 0.3s; 
-    height: 40px; /* ALTURA FIJA PARA ALINEACIÓN PERFECTA */
-}
-.magic-select:focus { color: var(--accent-purple); }
-.magic-select option { background: var(--bg-panel); color: white; padding: 10px; }
-
-.btn-magic-exec { 
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); 
-    color: white; border: none; 
-    padding: 0 20px; 
-    border-radius: 10px; 
-    font-weight: 900; font-size: 0.9rem; 
-    cursor: pointer; 
-    height: 40px; /* ALTURA FIJA IGUAL AL SELECTOR */
-    box-shadow: 0 4px 15px rgba(0,176,255,0.2); transition: 0.3s;
-}
-.btn-magic-exec:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
-
-/* ==========================================================================
-   RESPONSIVE MOBILE (THE BOTTOM-SAFE STANDARD V12)
-   ========================================================================== */
-@media (max-width: 768px) {
-    .hide-on-mobile { display: none !important; }
-    
-    /* En móvil, la píldora se rompe en dos bloques anchos */
-    .magic-action-group { 
-        flex-direction: column; width: 100%; background: transparent; border: none; padding: 0; box-shadow: none; gap: 10px; margin-top: 10px;
-    }
-    .magic-select { 
-        background-color: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); 
-        width: 100%; height: 50px; border-radius: 12px;
-    }
-    .btn-magic-exec { width: 100%; height: 50px; border-radius: 12px; font-size: 1.05rem;}
-}
+/* Formularios */
+.form-group { margin-bottom: 1.5rem; width: 100%; }
+.form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 900; letter-spacing: 1px; }
+.form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); outline: none;}
+.form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5); }
+.form-control:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* --------------------------------------------------------------------------
    EL SELECTOR MÁGICO (Dropdowns Nativos Estandarizados V12)
@@ -197,39 +152,42 @@ body {
     background-color: rgba(10,10,15,0.9);
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 15px center;
+    background-position: right 12px center;
     background-size: 16px;
     border: 1px solid var(--accent-purple); 
     color: var(--accent-purple); 
-    padding: 12px 45px 12px 15px; 
-    border-radius: 10px; font-family: var(--font-main); font-weight: 900; 
-    outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-    font-size: 0.95rem;
+    padding: 0 40px 0 15px; 
+    font-family: var(--font-main); 
+    font-weight: 800; 
+    font-size: 0.9rem;
+    outline: none; cursor: pointer; transition: 0.3s; 
+    height: 40px; /* ALTURA FIJA PARA ALINEACIÓN PERFECTA */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
 .magic-select:focus, .magic-select:hover { 
     border-color: white; color: white;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     box-shadow: 0 0 15px rgba(224,64,251,0.3);
 }
-.magic-select option { background: var(--bg-dark); color: white; font-weight: bold; padding: 10px; }
+.magic-select option { background: var(--bg-panel); color: white; padding: 10px; font-weight:bold; }
 
 /* Botones Base */
-.btn-primary { 
+.btn-primary, .btn-magic-exec { 
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); 
-    color: white; border: none; padding: 12px 24px; border-radius: 10px; 
-    font-weight: 900; cursor: pointer; display: flex; align-items: center; 
+    color: white; border: none; padding: 0 24px; border-radius: 10px; 
+    font-weight: 900; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; 
     justify-content: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,176,255,0.2); 
-    transition: 0.3s; font-size: 0.95rem;
+    transition: 0.3s; height: 40px; /* Altura unificada con el dropdown */
 }
-.btn-primary:hover { 
+.btn-primary:hover, .btn-magic-exec:hover { 
     transform: translateY(-2px); 
     box-shadow: 0 8px 25px rgba(224,64,251,0.4); filter: brightness(1.1);
 }
 
 .btn-outline { 
     background: transparent; border: 1px solid #555; color: white; 
-    padding: 12px 24px; border-radius: 10px; font-weight: bold; 
-    cursor: pointer; transition: 0.2s; font-size: 0.95rem;
+    padding: 0 24px; height: 40px; border-radius: 10px; font-weight: bold; 
+    cursor: pointer; transition: 0.2s; font-size: 0.95rem; display: flex; align-items:center; justify-content:center;
 }
 .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: #888; }
 
@@ -271,9 +229,9 @@ body {
     /* Utilidades */
     .hide-on-mobile { display: none !important; }
     
-    /* Desplegables y Botones se vuelven 100% anchos */
+    /* Desplegables y Botones se vuelven 100% anchos y más altos (Ergonomía pulgar) */
     .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top: 10px; }
-    .magic-select, .btn-primary, .btn-outline { width: 100%; padding: 16px; font-size: 1.05rem; }
+    .magic-select, .btn-primary, .btn-outline, .btn-magic-exec { width: 100%; height: 50px; font-size: 1.05rem; }
     
     /* Ajuste de Modales en Móvil */
     .modal-content { padding: 2rem 1.5rem; width: 100%; border-radius: var(--border-radius-md); }
