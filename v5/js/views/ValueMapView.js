@@ -12,20 +12,19 @@ export default class ValueMapView {
         this.selectedRoleId = null; 
         this.editingTxIndex = null; 
         
-        // Drag Nodos
+        // Drag & Interacción
         this.isDragging = false;
         this.draggedElement = null;
         this.hasMoved = false; 
-        
-        // Simulación
-        this.isSimulating = false;
-        this.simulationTimeouts = [];
-        
-        // Lógica Visual Flow Builder
         this.flowFromId = null;
         this.tempVector = null;
 
-        // Zoom Levels
+        // Simulación
+        this.isSimulating = false;
+        this.simulationTimeouts = [];
+        this.currentSimIndex = 0;
+
+        // Zoom
         this.zoomVis = 1;
         this.zoomEdit = 1;
 
@@ -89,26 +88,22 @@ export default class ValueMapView {
 
                 .vna-tip { background: rgba(0, 176, 255, 0.05); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 15px 20px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:15px;}
 
-                /* =========================================================
-                   LIENZO PRINCIPAL (LUXURY GLASS)
-                   ========================================================= */
+                /* LIENZO PRINCIPAL (LUXURY GLASS) */
                 .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8);}
                 
                 .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
                 
                 #edges-svg-visual, #edges-svg-edit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
                 
-                .edge-line { fill: none; stroke-width: 3; opacity: 0.7; transition: stroke 0.3s, opacity 0.3s, stroke-width 0.3s; }
+                .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.3s, opacity 0.3s, stroke-width 0.3s; }
                 .edge-line:hover { opacity: 1; stroke-width: 5; cursor: pointer; pointer-events: stroke;}
                 .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
                 .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
                 .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
                 .edge-temp { stroke: var(--accent-orange); stroke-width: 4; stroke-dasharray: 6, 6; animation: dashAnim 5s linear infinite; opacity: 0.9;}
 
-                /* =========================================================
-                   NUEVA ESTRUCTURA DE NODO (PREMIUM V10)
-                   ========================================================= */
-                .node-wrapper { position: absolute; z-index: 5; cursor: grab; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 130px; transition: filter 0.3s;}
+                /* ESTRUCTURA DE NODO (PREMIUM V10) */
+                .node-wrapper { position: absolute; z-index: 5; cursor: grab; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 140px; transition: filter 0.3s;}
                 .node-wrapper:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
                 .node-wrapper.selected { z-index: 10; }
                 .node-wrapper:hover { filter: brightness(1.2); z-index: 9;}
@@ -125,16 +120,14 @@ export default class ValueMapView {
                 
                 .node-level-badge { position: absolute; top: -12px; left: 12px; border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; background: #000; border: 2px solid; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 2; box-sizing: border-box;}
                 
-                .node-title { margin-top: 12px; font-size: 0.9rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.5); border-radius: 6px; backdrop-filter: blur(5px);}
+                .node-title { margin-top: 12px; font-size: 0.85rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px);}
 
                 #mapCanvasEdit .node-wrapper { cursor: pointer; } 
                 #mapCanvasEdit .node-wrapper:hover .node-circle { transform: scale(1.15); box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); }
                 .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 40px rgba(255, 171, 64, 0.6) !important; z-index: 20;}
 
-                /* =========================================================
-                   BADGES Y TOOLTIPS
-                   ========================================================= */
-                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 6px 10px; border-radius: 8px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: black;}
+                /* BADGES Y TOOLTIPS */
+                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: black;}
                 .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
                 .tx-badge.ghost { opacity: 0.3; }
 
@@ -146,9 +139,7 @@ export default class ValueMapView {
                 .btn-zoom { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; border-radius: 10px; width: 45px; height: 45px; font-size: 1.4rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); transition: 0.2s;}
                 .btn-zoom:hover { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
 
-                /* =========================================================
-                   PESTAÑA ROLES & FLUJO (LUXURY LISTS)
-                   ========================================================= */
+                /* PESTAÑAS Y FLUJO (LUXURY LISTS) */
                 .roles-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap:15px;}
                 .roles-grid-tab { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;}
                 .role-list-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: transform 0.3s, box-shadow 0.3s; backdrop-filter: blur(10px);}
@@ -206,7 +197,7 @@ export default class ValueMapView {
                     .node-circle { width: 70px; height: 70px; border-width: 2px;} 
                     .node-level-badge { width: 30px; height: 30px; font-size: 1rem; top: -8px; left: 8px;}
                     .node-fmv { font-size: 0.85rem;}
-                    .node-title { font-size: 0.75rem; background: rgba(0,0,0,0.7);}
+                    .node-title { font-size: 0.75rem;}
                     
                     .tx-badge { font-size: 0.7rem; padding: 4px 8px;}
                     .zoom-controls { bottom: 15px; left: 15px;}
@@ -256,7 +247,7 @@ export default class ValueMapView {
                     <div id="view-edit" class="tab-content">
                         ${isPO ? `
                             <div class="vna-tip" id="editTip">
-                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo origen y luego en destino para trazar una tubería permanente. Doble clic para editar el nodo.</div>
+                                <div id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo y luego en otro para trazar una tubería permanente. Arrástralos para moverlos.</div>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                                     <button class="btn-sm btn-sm-outline" id="btnUndoTx" style="border-color:var(--accent-orange); color:var(--accent-orange);"><span style="font-size:1.2rem;">↩️</span> Deshacer Última</button>
                                     <button class="btn-sm btn-sm-outline" id="btnOpenAddNode" style="border-style:dashed;">➕ Instanciar Rol</button>
@@ -289,14 +280,12 @@ export default class ValueMapView {
                             </div>
                             ${isPO ? `<button class="btn-sm btn-sm-primary" id="btnOpenAddNodeRoles">➕ Instanciar Rol</button>` : ''}
                         </div>
-                        <div class="roles-grid-tab" id="rolesTabList">
-                            </div>
+                        <div class="roles-grid-tab" id="rolesTabList"></div>
                     </div>
 
                     <div id="view-flow" class="tab-content">
                         <div class="flow-container">
-                            <div class="sequence-panel" id="sequenceList">
-                                </div>
+                            <div class="sequence-panel" id="sequenceList"></div>
                         </div>
                     </div>
 
@@ -339,7 +328,7 @@ export default class ValueMapView {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Nombre del Entregable</label>
+                            <label>Nombre del Modelo de Entregable</label>
                             <input type="text" id="inpDesc" class="form-control" placeholder="Ej: Auditoría de Seguridad Web3">
                         </div>
                         <button class="btn-sm btn-sm-primary" style="width: 100%; margin-top: 2rem; padding:15px; font-size:1.1rem;" id="btnAddFlow">➕ Confirmar Tubería Permanente</button>
@@ -421,16 +410,7 @@ export default class ValueMapView {
         let currentActiveId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === currentActiveId);
         
-        if (!project) {
-            const userProjects = state.projects.filter(p => 
-                state.session.role === 'ecosystem-owner' || 
-                p.ownerId === state.session.activeUserId || 
-                (p.usuarios && p.usuarios.find(u => u.id === state.session.activeUserId))
-            );
-            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
-        }
-
-        if (!project || !project.roles) return;
+        if (!project) return;
         this.activeProjectId = project.id;
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         
@@ -468,9 +448,7 @@ export default class ValueMapView {
             tooltip: document.getElementById('txTooltip')
         };
 
-        // ------------------------------------------------------------------
         // TABS LOGIC
-        // ------------------------------------------------------------------
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -478,10 +456,7 @@ export default class ValueMapView {
             btn.addEventListener('click', () => {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                tabContents.forEach(content => {
-                    content.classList.remove('active');
-                });
+                tabContents.forEach(content => content.classList.remove('active'));
                 
                 const targetId = `view-${btn.dataset.tab}`;
                 const targetContent = document.getElementById(targetId);
@@ -494,9 +469,7 @@ export default class ValueMapView {
             });
         });
 
-        // ------------------------------------------------------------------
         // ZOOM LOGIC
-        // ------------------------------------------------------------------
         const setupZoom = (btnInId, btnOutId, canvasObj, propName) => {
             const btnIn = document.getElementById(btnInId);
             const btnOut = document.getElementById(btnOutId);
@@ -514,9 +487,7 @@ export default class ValueMapView {
         setupZoom('btnZoomInVis', 'btnZoomOutVis', this.dom.canvasVis, 'zoomVis');
         setupZoom('btnZoomInEdit', 'btnZoomOutEdit', this.dom.canvasEdit, 'zoomEdit');
 
-        // ------------------------------------------------------------------
-        // RENDER INICIAL (V10)
-        // ------------------------------------------------------------------
+        // RENDER INICIAL
         setTimeout(() => {
             this.renderMap(this.dom.canvasVis, false);
             if(isPO) this.renderMap(this.dom.canvasEdit, true);
@@ -534,18 +505,17 @@ export default class ValueMapView {
         }
 
         // ------------------------------------------------------------------
-        // LÓGICA VISUAL FLOW BUILDER (V10 MIGRATION)
+        // EVENTOS UNIFICADOS DEL CANVAS DE EDICIÓN (DRAG & D&D & CLICK)
         // ------------------------------------------------------------------
-        if (isPO) {
+        if (isPO && this.dom.canvasEdit) {
+            
+            // Undo Logic
             if(this.dom.btnUndoTx) {
                 this.dom.btnUndoTx.addEventListener('click', () => {
                     const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
-                    // Busca preferentemente vna_flows, si no transactions
                     const flows = pState.vna_flows && pState.vna_flows.length > 0 ? pState.vna_flows : pState.transactions;
                     if (flows && flows.length > 0) {
                         const lastFlowId = flows[flows.length - 1].id || flows[flows.length - 1].hash;
-                        
-                        // Si es legacy, usa la acción vieja, sino la V10
                         const actionType = pState.vna_flows && pState.vna_flows.length > 0 ? 'DELETE_FLOW' : 'DELETE_TRANSACTION';
                         const payloadKey = actionType === 'DELETE_FLOW' ? 'flowId' : 'txHash';
 
@@ -554,52 +524,99 @@ export default class ValueMapView {
                             this.forceSaveState(store.getState());
                             this.cancelVisualFlow();
                         });
-                    } else {
-                        alert("No hay flujos para deshacer.");
-                    }
+                    } else { alert("No hay flujos para deshacer."); }
                 });
             }
 
-            this.dom.canvasEdit.addEventListener('dblclick', (e) => {
-                if(!e.target.closest('.node-wrapper')) this.cancelVisualFlow();
+            // Mouse Down en el Canvas (Inicia Drag)
+            this.dom.canvasEdit.addEventListener('mousedown', (e) => {
+                if (window.innerWidth <= 768) return; 
+                const node = e.target.closest('.node-wrapper');
+                if (node) {
+                    this.isDragging = true;
+                    this.hasMoved = false;
+                    this.draggedElement = node;
+                    node.style.zIndex = 1000;
+                }
             });
 
-            this.dom.canvasEdit.addEventListener('mousemove', (e) => {
-                if (!this.flowFromId || window.innerWidth <= 768) return;
+            // Double Click Inspector
+            this.dom.canvasEdit.addEventListener('dblclick', (e) => {
+                const node = e.target.closest('.node-wrapper');
+                this.cancelVisualFlow();
+                if(node) this.openRoleInspector(node.dataset.id);
+            });
 
-                const originNode = this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${this.flowFromId}"]`);
-                if (!originNode) return;
+            // Movimiento del Ratón (Drag o Temp Line)
+            window.addEventListener('mousemove', (e) => {
+                // Si estamos arrastrando un nodo
+                if (this.isDragging && this.draggedElement) {
+                    this.hasMoved = true;
+                    const rect = this.dom.canvasEdit.getBoundingClientRect();
+                    let newX = ((e.clientX - rect.left) / rect.width) * 100;
+                    let newY = ((e.clientY - rect.top) / rect.height) * 100;
+                    newX = Math.max(5, Math.min(newX, 95));
+                    newY = Math.max(5, Math.min(newY, 95));
+                    this.draggedElement.style.left = `${newX}%`;
+                    this.draggedElement.style.top = `${newY}%`;
+                    this.drawEdges(); 
+                } 
+                // Si estamos trazando una línea
+                else if (this.flowFromId && this.dom.canvasEdit && window.innerWidth > 768) {
+                    const originNode = this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${this.flowFromId}"]`);
+                    if (!originNode) return;
 
-                const x1_center = originNode.offsetLeft;
-                const y1_center = originNode.offsetTop;
-                
-                const canvRect = this.dom.canvasEdit.getBoundingClientRect();
-                const x2_center = (e.clientX - canvRect.left) / this.zoomEdit;
-                const y2_center = (e.clientY - canvRect.top) / this.zoomEdit;
+                    const x1_center = originNode.offsetLeft;
+                    const y1_center = originNode.offsetTop;
+                    
+                    const canvRect = this.dom.canvasEdit.getBoundingClientRect();
+                    const x2_center = (e.clientX - canvRect.left) / this.zoomEdit;
+                    const y2_center = (e.clientY - canvRect.top) / this.zoomEdit;
 
-                const dx = x2_center - x1_center;
-                const dy = y2_center - y1_center;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                const trim = 45;
-                
-                let x1 = x1_center;
-                let y1 = y1_center;
-                if (dist > trim) {
-                    x1 = x1_center + (dx/dist) * trim;
-                    y1 = y1_center + (dy/dist) * trim;
+                    const dx = x2_center - x1_center;
+                    const dy = y2_center - y1_center;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const trim = 50; 
+                    
+                    let x1 = x1_center, y1 = y1_center;
+                    if (dist > trim) {
+                        x1 = x1_center + (dx/dist) * trim;
+                        y1 = y1_center + (dy/dist) * trim;
+                    }
+
+                    if (!this.tempVector) {
+                        this.tempVector = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        this.tempVector.setAttribute('class', 'edge-temp');
+                        this.tempVector.setAttribute('marker-end', 'url(#arrow-tangible-edit)');
+                        this.dom.svgEdit.appendChild(this.tempVector);
+                    }
+
+                    this.tempVector.setAttribute('x1', x1);
+                    this.tempVector.setAttribute('y1', y1);
+                    this.tempVector.setAttribute('x2', x2_center);
+                    this.tempVector.setAttribute('y2', y2_center);
                 }
+            });
 
-                if (!this.tempVector) {
-                    this.tempVector = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    this.tempVector.setAttribute('class', 'edge-temp');
-                    this.tempVector.setAttribute('marker-end', 'url(#arrow-tangible)');
-                    this.dom.svgEdit.appendChild(this.tempVector);
+            // Mouse Up (Termina Drag o Ejecuta Click)
+            window.addEventListener('mouseup', () => {
+                if (this.isDragging && this.draggedElement) {
+                    this.isDragging = false;
+                    this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
+                    
+                    // Si NO se movió, lo interpretamos como un CLICK normal para instanciar tuberías
+                    if (!this.hasMoved) {
+                        this.handleNodeClick(this.draggedElement.dataset.id);
+                    } else {
+                        // Sincronizar posición visual al clon si se soltó
+                        const cloneNode = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${this.draggedElement.dataset.id}"]`);
+                        if(cloneNode) {
+                            cloneNode.style.left = this.draggedElement.style.left;
+                            cloneNode.style.top = this.draggedElement.style.top;
+                        }
+                    }
+                    this.draggedElement = null;
                 }
-
-                this.tempVector.setAttribute('x1', x1);
-                this.tempVector.setAttribute('y1', y1);
-                this.tempVector.setAttribute('x2', x2_center);
-                this.tempVector.setAttribute('y2', y2_center);
             });
 
             document.getElementById('btnCloseTxBuilder').addEventListener('click', () => {
@@ -620,7 +637,7 @@ export default class ValueMapView {
                 }
             });
 
-            // V10: CREAR TUBERÍA (ADD_FLOW)
+            // Guardar Tubería
             this.dom.btnAddFlow.addEventListener('click', () => {
                 const fromId = this.dom.selFrom.value;
                 const toId = this.dom.selTo.value;
@@ -673,7 +690,7 @@ export default class ValueMapView {
                 }
             });
             
-            // Editar Flow Operativo ListView
+            // Acciones Lista
             this.dom.seqList.addEventListener('click', (e) => {
                 const target = e.target.closest('.btn-step');
                 if (!target) return;
@@ -709,6 +726,7 @@ export default class ValueMapView {
                 }
             });
 
+            // Nodos Builder Modals
             const btnAddNodes = document.querySelectorAll('#btnOpenAddNode, #btnOpenAddNodeRoles');
             btnAddNodes.forEach(btn => btn.addEventListener('click', () => this.dom.addNodeModal.style.display = 'flex'));
             
@@ -768,48 +786,9 @@ export default class ValueMapView {
                      this.forceSaveState(store.getState());
                 }
             });
-
-            // DRAG LOGIC
-            this.dom.canvasEdit.addEventListener('mousedown', (e) => {
-                if (window.innerWidth <= 768) return; 
-                const node = e.target.closest('.node-wrapper');
-                if (node) { 
-                    this.isDragging = true; 
-                    this.hasMoved = false; 
-                    this.draggedElement = node; 
-                    node.style.zIndex = 1000; 
-                }
-            });
-            
-            window.addEventListener('mousemove', (e) => {
-                if (!this.isDragging || !this.draggedElement) return;
-                this.hasMoved = true; 
-                const rect = this.dom.canvasEdit.getBoundingClientRect();
-                let newX = ((e.clientX - rect.left) / rect.width) * 100;
-                let newY = ((e.clientY - rect.top) / rect.height) * 100;
-                newX = Math.max(5, Math.min(newX, 95));
-                newY = Math.max(5, Math.min(newY, 95));
-
-                this.draggedElement.style.left = `${newX}%`;
-                this.draggedElement.style.top = `${newY}%`;
-                this.drawEdges();
-            });
-            
-            window.addEventListener('mouseup', () => { 
-                if (this.draggedElement) {
-                    this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
-                    const cloneNode = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${this.draggedElement.dataset.id}"]`);
-                    if(cloneNode) {
-                        cloneNode.style.left = this.draggedElement.style.left;
-                        cloneNode.style.top = this.draggedElement.style.top;
-                    }
-                }
-                this.isDragging = false; 
-                this.draggedElement = null; 
-            });
         }
 
-        // TOOLTIPS HTML HOVER (V10 Mapeado dual)
+        // Tooltips (V10 Mapeado dual)
         const showTooltip = (e, canvasObj) => {
             if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
@@ -868,7 +847,20 @@ export default class ValueMapView {
         this.dom.btnStopSim.addEventListener('click', () => this.stopSimulation());
     }
 
-    // MAP RENDERING CORE V10
+    // GESTOR DE CLICS DE NODOS PARA FLUJOS
+    handleNodeClick(nodeId) {
+        if (!this.flowFromId) {
+            this.flowFromId = nodeId;
+            const nodeEl = this.dom.canvasEdit.querySelector(`[data-id="${nodeId}"]`);
+            if(nodeEl) nodeEl.classList.add('flow-source');
+            this.dom.editTipText.innerHTML = `🌟 <b>Paso 2:</b> Ahora haz click en el <b>nodo destino</b> para trazar la tubería.`;
+        } else if (this.flowFromId !== nodeId) {
+            this.openTxBuilderModal(this.flowFromId, nodeId);
+        } else {
+            this.cancelVisualFlow();
+        }
+    }
+
     renderMap(canvasObj, isEditMode) {
         if(!canvasObj) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -915,29 +907,6 @@ export default class ValueMapView {
                 <div class="node-title">${r.name}</div>
             `;
 
-            if (isEditMode) {
-                nodeDiv.addEventListener('mousedown', (e) => {
-                    e.stopPropagation();
-                    if(e.button === 0) {
-                        if(!this.flowFromId) {
-                            this.flowFromId = r.id;
-                            nodeDiv.classList.add('flow-source');
-                            this.dom.editTipText.innerHTML = `🌟 <b>Paso 2:</b> Ahora haz click en el <b>nodo destino</b> para crear la tubería.`;
-                        } else if (this.flowFromId !== r.id) {
-                            this.openTxBuilderModal(this.flowFromId, r.id);
-                        } else {
-                            this.cancelVisualFlow();
-                        }
-                    }
-                });
-
-                nodeDiv.addEventListener('dblclick', (e) => {
-                    e.stopPropagation();
-                    this.cancelVisualFlow();
-                    this.openRoleInspector(r.id);
-                });
-            }
-
             canvasObj.appendChild(nodeDiv);
         });
 
@@ -956,14 +925,10 @@ export default class ValueMapView {
                 </div>
                 <div class="node-title">${r.name}</div>
             `;
-            if (isEditMode) {
-                nodeDiv.addEventListener('dblclick', (e) => { e.stopPropagation(); this.openRoleInspector(r.id); });
-            }
             canvasObj.appendChild(nodeDiv);
         });
     }
 
-    // SIMULACIÓN (V10 READS FROM vna_flows)
     startSimulation() {
         if (this.isSimulating && !this.isPaused) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -981,10 +946,8 @@ export default class ValueMapView {
         if(this.currentSimIndex === undefined) this.currentSimIndex = 0;
         
         if(this.currentSimIndex === 0) {
-            this.dom.svgVis.innerHTML = '';
-            this.dom.canvasVis.querySelectorAll('.tx-badge').forEach(b => b.remove());
             this.dom.canvasVis.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
-            this.injectSvgMarkers();
+            this.drawEdges(); // Redibuja base
         }
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
@@ -1025,7 +988,7 @@ export default class ValueMapView {
                 }
             }
 
-            this.drawSingleEdgeAnim(flow, index, isSickFlow, 0, 1); 
+            this.drawSingleEdgeAnim(flow, index, isSickFlow); 
             
             this.currentSimIndex++;
             this.simTimeoutId = setTimeout(runNextStep, 2500);
@@ -1063,7 +1026,7 @@ export default class ValueMapView {
         this.drawEdges(); 
     }
 
-    drawSingleEdgeAnim(tx, index, isSick, multiIdx, totalEdgesInPair) {
+    drawSingleEdgeAnim(tx, index, isSick) {
         const dom1 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
         const dom2 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2) return;
@@ -1078,11 +1041,7 @@ export default class ValueMapView {
         const dist = Math.sqrt(dx*dx + dy*dy);
 
         const trim = 50; 
-        let x1 = x1_center;
-        let y1 = y1_center;
-        let x2 = x2_center;
-        let y2 = y2_center;
-        
+        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
         if (dist > trim) {
             x1 = x1_center + (dx/dist) * trim;
             y1 = y1_center + (dy/dist) * trim;
@@ -1090,60 +1049,45 @@ export default class ValueMapView {
             y2 = y2_center - (dy/dist) * trim;
         }
 
-        const nx = -dy / dist; 
-        const ny = dx / dist;
-        const offset = 40; 
-        const cx = (x1_center + x2_center) / 2 + nx * offset;
-        const cy = (y1_center + y2_center) / 2 + ny * offset;
-
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+        path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
         
-        let markerId = isSick ? 'arrow-sick' : (tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible');
+        let markerId = isSick ? 'arrow-sick-vis' : (tx.tipo === 'tangible' ? 'arrow-tangible-vis' : 'arrow-intangible-vis');
         path.setAttribute('marker-end', `url(#${markerId})`);
         
         const strokeColor = isSick ? 'var(--accent-red)' : (tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)');
-        const realDist = dist + Math.abs(offset) * 2; 
+        const realDist = dist; 
         
         path.style.cssText = `
-            fill: none; stroke: ${strokeColor}; stroke-width: 4; stroke-dasharray: ${realDist}; stroke-dashoffset: ${realDist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 5px ${strokeColor});
+            fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${realDist}; stroke-dashoffset: ${realDist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});
         `;
-        
-        if(!document.getElementById('svgAnimStyles')) {
-            const style = document.createElement('style');
-            style.id = 'svgAnimStyles';
-            style.innerHTML = `@keyframes drawLine { to { stroke-dashoffset: 0; } }
-                               @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); opacity:0;} 80% { transform: translate(-50%, -50%) scale(1.1); opacity:1;} 100% { transform: translate(-50%, -50%) scale(1); opacity:1;} }`;
-            document.head.appendChild(style);
-        }
 
         this.dom.svgVis.appendChild(path);
 
         setTimeout(() => {
-            const txX = 0.25 * x1_center + 0.5 * cx + 0.25 * x2_center;
-            const txY = 0.25 * y1_center + 0.5 * cy + 0.25 * y2_center;
+            const txX = (x1_center + x2_center) / 2;
+            const txY = (y1_center + y2_center) / 2;
 
             const badge = document.createElement('div');
             badge.className = 'sim-tx-badge';
             badge.style.position = 'absolute';
             badge.style.left = `${txX}px`;
             badge.style.top = `${txY}px`;
-            badge.style.backgroundColor = 'rgba(10,10,14,0.9)';
+            badge.style.backgroundColor = 'rgba(10,10,14,0.95)';
             badge.style.border = `2px solid ${strokeColor}`;
             badge.style.color = 'white';
-            badge.style.padding = '8px 12px';
-            badge.style.borderRadius = '8px';
-            badge.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8), 0 0 15px ${strokeColor}`;
+            badge.style.padding = '10px 15px';
+            badge.style.borderRadius = '10px';
+            badge.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8), 0 0 20px ${strokeColor}`;
             badge.style.zIndex = '1000';
             badge.style.textAlign = 'center';
             badge.style.animation = 'popIn 0.4s ease-out forwards';
             badge.style.pointerEvents = 'none';
-            badge.style.minWidth = '120px';
 
             const delivName = tx.template || tx.entregable || 'Flow';
-            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:900; font-size:0.7rem; margin-bottom:3px; text-transform:uppercase;">Paso ${index + 1}</div><div style="font-size:0.9rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
+            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:900; font-size:0.75rem; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px;">Flujo ${index + 1}</div><div style="font-size:1rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
             this.dom.canvasVis.appendChild(badge);
-        }, 1200); 
+        }, 1000); 
     }
 
     populateDropdowns(roles) {
@@ -1179,6 +1123,94 @@ export default class ValueMapView {
         templates.forEach((t, i) => html += `<option value="${i}">${t.tipo === 'tangible' ? '🟢' : '🟣'} ${t.name} (${t.estimatedHours}h)</option>`);
         html += `<option value="manual">✍️ Crear Tubería Manual...</option>`;
         this.dom.selTemplate.innerHTML = html;
+    }
+
+    openRoleInspector(roleId) {
+        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        if(!p) return;
+        const rol = p.roles.find(r => r.id === roleId);
+        if(!rol) return;
+
+        this.selectedRoleId = rol.id;
+        
+        this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
+        if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
+        
+        const nodeVis = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${rol.id}"]`);
+        const nodeEdit = this.dom.canvasEdit ? this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${rol.id}"]`) : null;
+        if(nodeVis) nodeVis.classList.add('selected');
+        if(nodeEdit) nodeEdit.classList.add('selected');
+
+        this.dom.inspectorModal.style.display = 'flex';
+        this.dom.insName.value = rol.name;
+        this.dom.insLevel.value = rol.levelId;
+        this.dom.inputFmv.value = rol.fmv || 0;
+        this.dom.inputMult.value = rol.multiplier || 1.0;
+        
+        const isLocked = rol.isArchived;
+        this.dom.insName.disabled = isLocked;
+        this.dom.insLevel.disabled = isLocked;
+        this.dom.inputFmv.disabled = isLocked;
+        this.dom.inputMult.disabled = isLocked;
+        
+        document.getElementById('btnSaveRole').style.display = isLocked ? 'none' : 'block';
+        
+        const btnDel = document.getElementById('btnDeleteRole');
+        btnDel.innerText = isLocked ? '♻️ Desarchivar Nodo (Revivir)' : '🗑️ Archivar Nodo';
+        btnDel.style.borderColor = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
+        btnDel.style.color = isLocked ? 'var(--accent-green)' : 'var(--accent-red)';
+    }
+
+    cancelVisualFlow() {
+        this.flowFromId = null;
+        if(this.dom.canvasEdit) {
+            this.dom.canvasEdit.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('flow-source'));
+        }
+        if (this.tempVector) {
+            this.tempVector.remove();
+            this.tempVector = null;
+        }
+        if(this.dom.editTipText) {
+            this.dom.editTipText.innerHTML = `💡 <b>Modo Arquitecto:</b> Haz clic en un nodo y luego en otro para trazar una tubería permanente. Arrástralos para moverlos.`;
+        }
+    }
+
+    openTxBuilderModal(fromId, toId, existingFlow = null) {
+        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        this.populateDropdowns(p.roles); 
+        
+        this.dom.selFrom.value = fromId;
+        this.dom.selTo.value = toId;
+        
+        this.updateOntologyTemplates();
+
+        if (existingFlow) {
+            this.dom.formTitle.innerText = `Editando Flujo`;
+            this.dom.btnAddFlow.innerText = '💾 Guardar Cambios';
+            this.dom.selType.value = existingFlow.tipo;
+            this.dom.inpHoras.value = existingFlow.estimatedHours || existingFlow.horas;
+            this.dom.inpDesc.value = existingFlow.template || existingFlow.entregable;
+            this.dom.selTemplate.value = 'manual';
+        } else {
+            this.dom.formTitle.innerText = `Definir Tubería de Valor (Flow)`;
+            this.dom.btnAddFlow.innerText = '➕ Confirmar Flujo Permanente';
+            this.dom.inpDesc.value = '';
+            this.dom.selTemplate.value = '';
+        }
+        
+        this.dom.txBuilderModal.style.display = 'flex';
+    }
+
+    forceSaveState(newState, highlightIndex = -1) {
+        store.state = newState;
+        localStorage.setItem('tt_sos_state', JSON.stringify(store.state));
+        const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
+        this.populateDropdowns(pUpdate.roles);
+        this.renderSequence(highlightIndex); 
+        this.renderRolesTab(); 
+        if(this.dom.canvasEdit) this.renderMap(this.dom.canvasEdit, true);
+        this.renderMap(this.dom.canvasVis, false);
+        setTimeout(() => this.drawEdges(), 100); 
     }
 
     renderRolesTab() {
@@ -1228,7 +1260,9 @@ export default class ValueMapView {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         
         let flows = p?.vna_flows || [];
-        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) flows = p.transactions;
+        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) {
+            flows = p.transactions;
+        }
 
         this.dom.seqList.innerHTML = '';
         
@@ -1276,30 +1310,38 @@ export default class ValueMapView {
         });
     }
 
+    // ARREGLO SVG (IDs Únicos para Visual y Edit)
     injectSvgMarkers() {
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `
-            <marker id="arrow-tangible" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-green)"/></marker>
-            <marker id="arrow-intangible" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-purple)"/></marker>
-            <marker id="arrow-sick" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-red)"/></marker>
-        `;
-        if(this.dom.svgVis) this.dom.svgVis.appendChild(defs.cloneNode(true));
-        if(this.dom.svgEdit) this.dom.svgEdit.appendChild(defs.cloneNode(true));
+        const createDefs = (suffix) => {
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            defs.innerHTML = `
+                <marker id="arrow-tangible-${suffix}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent-green)"/></marker>
+                <marker id="arrow-intangible-${suffix}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent-purple)"/></marker>
+                <marker id="arrow-sick-${suffix}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent-red)"/></marker>
+            `;
+            return defs;
+        };
+
+        if(this.dom.svgVis) {
+            this.dom.svgVis.innerHTML = '';
+            this.dom.svgVis.appendChild(createDefs('vis'));
+        }
+        if(this.dom.svgEdit) {
+            this.dom.svgEdit.innerHTML = '';
+            this.dom.svgEdit.appendChild(createDefs('edit'));
+        }
     }
 
     drawEdges() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        if(this.dom.svgVis) this.dom.svgVis.innerHTML = '';
-        if(this.dom.svgEdit) this.dom.svgEdit.innerHTML = '';
         this.dom.canvasVis.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
         
         let flows = p?.vna_flows || [];
         if (flows.length === 0 && p?.transactions && p.transactions.length > 0) flows = p.transactions;
 
-        if (flows.length === 0) return;
-
         this.injectSvgMarkers();
+        if (flows.length === 0) return;
 
         const pairCounts = {};
         flows.forEach((tx, i) => {
@@ -1333,10 +1375,7 @@ export default class ValueMapView {
         const dist = Math.sqrt(dx*dx + dy*dy);
         
         const trim = 50; 
-        let x1 = x1_center;
-        let y1 = y1_center;
-        let x2 = x2_center;
-        let y2 = y2_center;
+        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
             x1 = x1_center + (dx/dist) * trim;
@@ -1348,9 +1387,17 @@ export default class ValueMapView {
         const nx = -dy / dist; 
         const ny = dx / dist;
         let offset = 0;
+        
+        // ALGORITMO ANTI-SUPERPOSICIÓN MEJORADO
         if (edgesGroup.length > 1) {
-            const step = 45; 
-            offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
+            const step = 60; // Mayor separación
+            if (multiIdx % 2 !== 0) {
+                offset = Math.ceil(multiIdx / 2) * step;
+            } else {
+                offset = -(Math.ceil(multiIdx / 2) * step);
+            }
+            // Invertir si la dirección del flujo es inversa al key
+            if (tx.from > tx.to) offset = -offset;
         }
 
         const cx = (x1_center + x2_center) / 2 + nx * offset;
@@ -1359,7 +1406,8 @@ export default class ValueMapView {
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         
-        let markerId = tx.tipo === 'tangible' ? 'arrow-tangible' : 'arrow-intangible';
+        const suffix = isEditCanvas ? 'edit' : 'vis';
+        let markerId = tx.tipo === 'tangible' ? `arrow-tangible-${suffix}` : `arrow-intangible-${suffix}`;
         path.setAttribute('marker-end', `url(#${markerId})`);
         
         const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
@@ -1371,14 +1419,18 @@ export default class ValueMapView {
         
         svg.appendChild(path);
 
-        const txX = 0.25 * x1_center + 0.5 * cx + 0.25 * x2_center;
-        const txY = 0.25 * y1_center + 0.5 * cy + 0.25 * y2_center;
+        // Posición exacta matemática de la placa en la curva Bézier Cuadrática
+        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
         const badge = document.createElement('div');
         badge.className = 'tx-badge';
         if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) badge.classList.add('ghost');
+        
+        // Usamos pixels absolutos calculados, no % para evitar desvíos en redimensionado
         badge.style.left = `${txX}px`;
         badge.style.top = `${txY}px`;
+        
         badge.style.backgroundColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
         badge.innerText = `[${index + 1}]`;
         badge.setAttribute('data-idx', index);
