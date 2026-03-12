@@ -60,7 +60,7 @@ export default class LedgerView {
                 .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
                 .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; width: 100%;}
                 
-                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 2rem; width: 100%;}
+                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 2rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
 
                 /* =========================================================
@@ -80,7 +80,8 @@ export default class LedgerView {
                 /* =========================================================
                    DASHBOARD (PIE CHART & CAP TABLE)
                    ========================================================= */
-                .equity-dashboard { display: grid; grid-template-columns: 350px 1fr; gap: 2.5rem; margin-bottom: 3rem; width: 100%; box-sizing: border-box;}
+                /* FIX OVERFLOW: minmax(0, 1fr) prevents the grid from expanding beyond screen limits */
+                .equity-dashboard { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 2.5rem; margin-bottom: 3rem; width: 100%; box-sizing: border-box;}
                 
                 .pie-panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 3rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(15px);}
                 .pie-chart { width: 220px; height: 220px; border-radius: 50%; background: conic-gradient(#333 0 100%); box-shadow: 0 0 0 10px rgba(255,255,255,0.02), inset 0 0 20px rgba(0,0,0,0.8); transition: background 1s ease-out; animation: spinIn 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -88,19 +89,24 @@ export default class LedgerView {
                 .pie-center .total-val { font-size: 2rem; font-weight: 900; font-family: var(--font-mono); color: white;}
                 .pie-center .total-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
 
-                .cap-table-container { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; display: flex; flex-direction: column; backdrop-filter: blur(10px); width: 100%; box-sizing: border-box;}
+                /* FIX OVERFLOW: width 100%, overflow-x auto just in case */
+                .cap-table-container { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; display: flex; flex-direction: column; backdrop-filter: blur(10px); width: 100%; box-sizing: border-box; overflow-x: auto;}
                 .panel-title { color: white; font-size: 1.4rem; font-weight: 900; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; flex-wrap: wrap; gap: 10px;}
                 
-                .cap-row { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); min-width: 500px;}
+                /* FIX OVERFLOW: Eliminar min-width, añadir width 100% y gap */
+                .cap-row { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; gap: 15px;}
                 .cap-row:last-child { border-bottom: none; }
-                .cap-user { display: flex; align-items: center; gap: 15px; width: 30%; color: white; font-weight: 900; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5);}
-                .user-info { display: flex; flex-direction: column; }
                 
-                .cap-bar-container { flex: 1; margin: 0 2rem; background: rgba(0,0,0,0.6); height: 12px; border-radius: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+                /* FIX OVERFLOW: min-width: 0 permite que el text-overflow funcione y no expanda la caja */
+                .cap-user { display: flex; align-items: center; gap: 15px; width: 35%; color: white; font-weight: 900; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;}
+                .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5);}
+                .user-info { display: flex; flex-direction: column; overflow: hidden; text-overflow: ellipsis; min-width: 0;}
+                .user-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                
+                .cap-bar-container { flex: 1; min-width: 50px; background: rgba(0,0,0,0.6); height: 12px; border-radius: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
                 .cap-bar-fill { height: 100%; border-radius: 6px; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); width: 0%; box-shadow: 0 0 10px currentColor;}
                 
-                .cap-stats { text-align: right; width: 25%; font-family: var(--font-mono); }
+                .cap-stats { text-align: right; width: 25%; font-family: var(--font-mono); min-width: 0; white-space: nowrap;}
                 .cap-percent { font-size: 1.3rem; color: white; font-weight: 900; }
                 .cap-slices { font-size: 0.9rem; color: var(--text-muted); }
                 
@@ -135,6 +141,8 @@ export default class LedgerView {
                     transition: all 0.2s;
                     position: relative;
                     overflow: hidden; /* Mantiene el contenido compacto al estar cerrado */
+                    box-sizing: border-box;
+                    width: 100%;
                 }
                 .mlc-card:hover { background: rgba(255,255,255,0.04); }
                 .mlc-card.expanded { border-color: #555; background: rgba(0,0,0,0.5); }
@@ -180,7 +188,7 @@ export default class LedgerView {
                 /* =========================================================
                    PORTFOLIO GLOBAL TAB
                    ========================================================= */
-                .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; width: 100%;}
+                .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; width: 100%; box-sizing: border-box;}
                 .portfolio-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; transition: transform 0.3s, box-shadow 0.3s; box-sizing: border-box;}
                 .portfolio-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
                 
@@ -216,10 +224,10 @@ export default class LedgerView {
                     .btn-permaweb, .btn-capital { width: 100%; padding: 15px; font-size: 1.05rem; }
                     
                     .cap-table-container { padding: 2rem 1.2rem; border-radius: 20px;}
-                    .cap-row { min-width: 0; flex-wrap: nowrap; align-items: center; padding: 1rem 0; border-bottom: 1px dashed #333;}
-                    .cap-user { width: auto; flex: 1; font-size: 1rem; overflow: visible;}
+                    .cap-row { min-width: 0; flex-wrap: nowrap; align-items: center; padding: 1rem 0; border-bottom: 1px dashed #333; gap: 10px;}
+                    .cap-user { width: auto; flex: 1; font-size: 1rem; overflow: hidden;}
                     .desktop-only { display: none !important; }
-                    .mobile-only { display: block; font-size: 0.75rem; color: #888; font-family: var(--font-mono); margin-top: 4px; font-weight: normal;}
+                    .mobile-only { display: block; font-size: 0.75rem; color: #888; font-family: var(--font-mono); margin-top: 4px; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
                     
                     .cap-stats { width: auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end;}
                     .cap-percent { font-size: 1.2rem; }
