@@ -1,0 +1,129 @@
+/* ==========================================================================
+   TEAMTOWERS OS - GLOBAL DESIGN SYSTEM (v12)
+   Arquitectura Modular: Glassmorphism, Bottom-Safe, Fluid UX
+   ========================================================================== */
+
+:root {
+    /* 1. Paleta de Colores Base */
+    --bg-dark: #0a0a0c;
+    --bg-panel: #111116;
+    
+    /* 2. Glassmorphism (Cristal Esmerilado) */
+    --glass-border: rgba(255, 255, 255, 0.08);
+    
+    /* 3. Tipografía y Textos */
+    --text-main: #ffffff;
+    --text-muted: #8e8e93;
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "Fira Code", monospace;
+    
+    /* 4. Acentos de Sistema */
+    --accent-blue: #00b0ff;   /* Acción / Flow / Info */
+    --accent-green: #00e676;  /* Ledger / PoW / Tangible */
+    --accent-orange: #ff9100; /* Deep Work / Alertas */
+    --accent-purple: #e040fb; /* IA / Intangible */
+    --accent-red: #ff5252;    /* Peligro / Eliminar */
+    
+    /* 5. Dimensiones Estructurales */
+    --sidebar-width: 260px;
+    --border-radius-lg: 24px;
+    --border-radius-md: 16px;
+    --border-radius-sm: 8px;
+}
+
+/* ==========================================================================
+   RESET Y LAYOUT BASE
+   ========================================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Layout App Global */
+.app-layout { 
+    display: flex; height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; 
+    background: var(--bg-dark); 
+}
+
+.workspace { 
+    display: flex; flex-direction: column; flex: 1; 
+    padding: 2rem 3rem; 
+    overflow-y: auto; overflow-x: hidden; 
+    position: relative; scroll-behavior: smooth; 
+    width: 100%; box-sizing: border-box;
+}
+
+/* Magia Visual: Destello si estás disponible */
+.workspace.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.05); }
+
+/* ==========================================================================
+   TABS & NAVEGACIÓN
+   ========================================================================== */
+.ph-tabs-container { 
+    display: flex; background: rgba(0,0,0,0.3); padding: 5px; 
+    border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; 
+    margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+    flex-wrap: nowrap; -webkit-overflow-scrolling: touch; flex-shrink: 0;
+}
+.ph-tabs-container::-webkit-scrollbar { display: none; }
+.ph-tab-btn { 
+    flex: 1 0 auto; padding: 10px 20px; background: transparent; border: none; 
+    border-radius: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; 
+    cursor: pointer; transition: all 0.2s; white-space: nowrap; 
+}
+.ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+.tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; padding-bottom: 3rem; width: 100%; box-sizing:border-box;}
+.tab-content.active { display: flex; }
+
+/* ==========================================================================
+   COMPONENTES UI REUTILIZABLES (LUXURY)
+   ========================================================================== */
+
+/* Formularios */
+.form-group { margin-bottom: 1.5rem; width: 100%; }
+.form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 900; letter-spacing: 1px; }
+.form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); outline: none;}
+.form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5); }
+.form-control:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Botones Mágicos (V12) */
+.magic-action-group { display: flex; gap: 10px; align-items: center; flex-wrap:wrap;}
+.magic-select { background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: white; padding: 12px 15px; border-radius: 10px; font-family: var(--font-main); font-weight: 900; outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+.magic-select:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.2);}
+.magic-select option { background: #111; color: white; }
+
+.btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transition: 0.3s;}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224,64,251,0.4); filter: brightness(1.1);}
+
+.btn-outline { background: transparent; border: 1px solid #555; color: white; padding: 12px 24px; border-radius: 10px; font-weight:bold; cursor: pointer; transition: 0.2s; }
+.btn-outline:hover { background: rgba(255,255,255,0.05); border-color: #888; }
+
+/* Modales Base */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; overflow-y:auto;}
+.modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 3rem; border-radius: var(--border-radius-lg); width: 100%; max-width: 550px; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; max-height: 90vh; overflow-y:auto; margin: 2rem auto; border-top: 4px solid var(--accent-blue);}
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ==========================================================================
+   RESPONSIVE MOBILE (THE BOTTOM-SAFE STANDARD)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .workspace { 
+        padding: 90px 1rem 120px 1rem !important; /* 120px Bottom Safe Zone Safari iOS */
+    } 
+    
+    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top:10px;}
+    .magic-select, .btn-primary { width: 100%; padding: 14px; font-size: 1rem;}
+    
+    .modal-content { padding: 2rem 1.5rem; width: 95%; margin: 10vh auto;}
+}
