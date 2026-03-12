@@ -12,21 +12,6 @@ try {
     console.warn("Cargando sin GLOBAL_ONTOLOGY externa.");
 }
 
-const HUMA_LEVELS = [
-    { id: '@anxaneta', label: 'Cima / Estrategia', color: 'var(--accent-red)' },
-    { id: '@aixecador', label: 'Coordinación / Táctica', color: '#ff4081' },
-    { id: '@dosos', label: 'Auditoría / Control', color: 'var(--accent-purple)' },
-    { id: '@baixos', label: 'Especialistas / Ejecución', color: 'var(--accent-indigo)' },
-    { id: '@pinya', label: 'Soporte / Base', color: 'var(--accent-blue)' }
-];
-
-const GUARDIANS = [
-    "El Soberano / Visionario", "El Mago / Transformador", "El Sabio / Juez",
-    "El Creador / Constructor", "El Cuidador / Protector", "El Explorador / Pionero",
-    "El Héroe / Guerrero", "El Amante / Conector", "El Bufón / Disruptor",
-    "El Inocente / Purista", "El Rebelde / Revolucionario", "El Huérfano / Realista", "Sin Guardián"
-];
-
 export default class SettingsView {
     constructor() {
         document.title = "Configuración Ecosistema | TeamTowers SOS";
@@ -121,10 +106,6 @@ export default class SettingsView {
                 .user-table th { padding: 15px; border-bottom: 1px solid #444; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;}
                 .user-table td { padding: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); }
 
-                /* MODAL LUXURY */
-                .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: flex-start; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; padding: 2rem 0;}
-                .modal-content { background: var(--bg-dark); width: 95%; max-width: 1000px; border-radius: 20px; border: 1px solid var(--glass-border); padding: 3rem; border-top: 4px solid var(--accent-blue); margin-bottom: 3rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8);}
-
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
                 /* RESPONSIVE MOBILE */
@@ -132,7 +113,6 @@ export default class SettingsView {
                     .workspace { padding: 80px 1rem 90px 1rem; } 
                     .panel { padding: 1.5rem; border-radius: 16px;}
                     .ai-grid { grid-template-columns: 1fr; }
-                    .modal-content { padding: 1.5rem; }
                 }
             </style>
 
@@ -331,7 +311,7 @@ export default class SettingsView {
                                     <h2>Plantillas de Proyecto (ADN)</h2>
                                     <p style="margin:0; max-width:600px;">El código fuente de tus redes. Incluye Roles, Arquetipos y Flujos VNA predefinidos para la instanciación rápida.</p>
                                 </div>
-                                <button class="btn-save" id="btn-new-sector" style="background:var(--accent-green); color:black;">➕ Crear Plantilla Custom</button>
+                                <button class="btn-save" id="btn-new-sector" style="background:var(--accent-green); color:black;">➕ Diseñar Plantilla (IA)</button>
                             </div>
                             
                             <h3 style="color: var(--accent-blue); margin-top: 3rem; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px;">🌟 Tus Plantillas Custom</h3>
@@ -345,10 +325,6 @@ export default class SettingsView {
                     </div>
 
                 </main>
-                
-                <div id="modalOntology" class="modal">
-                    <div class="modal-content" id="modalOntologyContent"></div>
-                </div>
 
                 ${BottomNav.getHtml('/settings')}
             </div>
@@ -378,12 +354,10 @@ export default class SettingsView {
                 this.tab = btn.dataset.tab;
                 localStorage.setItem('tt_settings_tab', this.tab);
 
-                // Si entramos a Ontología, forzamos renderizado
                 if(this.tab === 'ontology') this.renderOntologyGrids();
             });
         });
 
-        // Trigger inicial si empezamos en ontología
         if(this.tab === 'ontology') this.renderOntologyGrids();
 
         this.bindContentEvents();
@@ -392,7 +366,6 @@ export default class SettingsView {
     bindContentEvents() {
         const state = store.getState();
 
-        // GENERAL
         document.getElementById('toggleUserCreation')?.addEventListener('change', async (e) => {
             await store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { allowUserCreation: e.target.checked } });
         });
@@ -405,7 +378,6 @@ export default class SettingsView {
             window.location.reload();
         });
 
-        // IA
         const uiKeys = {
             provider: document.getElementById('inpDefaultProvider'),
             apiKey: document.getElementById('inpApiKeyCommon'),
@@ -446,7 +418,6 @@ export default class SettingsView {
             });
         }
 
-        // USERS
         const btnCreateUser = document.getElementById('btn-create-user');
         if (btnCreateUser) {
             btnCreateUser.addEventListener('click', async () => {
@@ -467,7 +438,6 @@ export default class SettingsView {
             });
         }
 
-        // DATA
         document.getElementById('btnExport')?.addEventListener('click', () => {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(store.getState(), null, 2));
             const a = document.createElement('a');
@@ -504,8 +474,10 @@ export default class SettingsView {
             }
         });
 
-        // BIND ONTOLOGY NEW BTN
-        document.getElementById('btn-new-sector')?.addEventListener('click', () => this.openOntologyModal('', store.getState()));
+        // FIX DRY: Redirigir al creador
+        document.getElementById('btn-new-sector')?.addEventListener('click', () => {
+            window.location.href = '/v5/create'; 
+        });
     }
 
     renderOntologyGrids() {
@@ -537,7 +509,7 @@ export default class SettingsView {
             `;
         };
 
-        // CUSTOM SECTORS
+        // CUSTOM SECTORS (Saltando _meta)
         const customKeys = Object.keys(customSectores).filter(k => k !== '_meta');
         if(customKeys.length === 0) {
             customGrid.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; padding:2rem; border: 1px dashed #333; text-align:center; border-radius:12px; background: rgba(0,0,0,0.2);">No has creado plantillas propias.</p>';
@@ -551,14 +523,13 @@ export default class SettingsView {
                         ${Object.entries(roles).filter(([k])=> k !== '_meta' && k !== 'roles').map(([lvl, data]) => renderRoleData(data.levelId || lvl, data)).join('')}
                     </div>
                     <div style="display:flex; gap:10px; margin-top:2rem;">
-                        <button class="btn-save btn-use-template" data-sector="custom_${key}" style="flex:2; background:var(--accent-green); color:black; font-size:0.9rem;">🚀 Usar Plantilla</button>
-                        <button class="btn-save btn-edit-sector" data-sector="${key}" style="flex:1; background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue); font-size:0.9rem;">⚙️ Editar</button>
+                        <button class="btn-save btn-use-template" data-sector="custom_${key}" style="flex:2; background:var(--accent-green); color:black; font-size:0.9rem;">🚀 Instanciar DAO</button>
                     </div>
                 </div>
             `}).join('');
         }
 
-        // NATIVE SECTORS (GLOBAL_ONTOLOGY V10 SAFE)
+        // NATIVE SECTORS (Saltando _meta)
         const nativeKeys = Object.keys(nativeSectores).filter(k => k !== '_meta');
         nativeGrid.innerHTML = nativeKeys.map(key => {
             const data = nativeSectores[key];
@@ -570,190 +541,17 @@ export default class SettingsView {
                 <div style="display: flex; flex-direction: column; gap: 5px; flex:1;">
                     ${Object.entries(rolesObj).filter(([k])=> k !== '_meta' && k !== 'roles').map(([lvl, roleData]) => renderRoleData(roleData.levelId || lvl, roleData)).join('')}
                 </div>
-                <button class="btn-save btn-use-template" data-sector="native_${key}" style="width:100%; margin-top:2rem; background:rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color:var(--accent-green); font-size:0.9rem;">🚀 Usar Plantilla</button>
+                <button class="btn-save btn-use-template" data-sector="native_${key}" style="width:100%; margin-top:2rem; background:rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color:var(--accent-green); font-size:0.9rem;">🚀 Instanciar DAO</button>
             </div>
             `
         }).join('');
 
-        // Re-bind listeners para los botones que se acaban de inyectar
+        // Re-bind listeners
         document.querySelectorAll('.btn-use-template').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const sector = e.currentTarget.dataset.sector;
                 window.location.href = `/v5/create?sector=${sector}`;
             });
-        });
-
-        document.querySelectorAll('.btn-edit-sector').forEach(btn => {
-            btn.addEventListener('click', (e) => this.openOntologyModal(e.currentTarget.dataset.sector, store.getState()));
-        });
-    }
-
-    openOntologyModal(sectorKey, state) {
-        const sectorData = sectorKey ? (state.ontology?.sectores[sectorKey] || {}) : null;
-        const modal = document.getElementById('modalOntology');
-        const content = document.getElementById('modalOntologyContent');
-
-        let modalRoles = [];
-        if (sectorData) {
-            Object.entries(sectorData).forEach(([key, data]) => {
-                if (key === '_meta' || key === 'roles') return; // FIX: Saltar meta en el modal de edición
-                
-                const levelId = data.levelId || (key.startsWith('@') ? key : '@baixos');
-                modalRoles.push({
-                    uid: `role_${Math.random().toString(36).substr(2, 9)}`,
-                    levelId: levelId, name: data.name || '', guardian: data.guardian || '',
-                    multiplier: data.multiplier || 1.0, ai_prompt: data.ai_prompt || '',
-                    standard_deliverables: data.standard_deliverables || []
-                });
-            });
-        } else {
-            modalRoles = HUMA_LEVELS.map(l => ({
-                uid: `role_${Math.random().toString(36).substr(2, 9)}`,
-                levelId: l.id, name: '', guardian: '', multiplier: 1.0, ai_prompt: '', standard_deliverables: []
-            }));
-        }
-
-        const renderDynamicRoles = () => {
-            return modalRoles.map((r, index) => {
-                let delivs = '';
-                if (r.standard_deliverables && r.standard_deliverables.length > 0) {
-                    delivs = r.standard_deliverables.map(d => `${d.to || '?'} | ${d.estimatedHours} | ${d.tipo || 'tangible'} | ${d.name}`).join('\n');
-                }
-
-                const levelOptions = HUMA_LEVELS.map(l => `<option value="${l.id}" ${r.levelId === l.id ? 'selected' : ''}>${l.id} (${l.label})</option>`).join('');
-                const guardianOptions = `<option value="">-- Seleccionar --</option>` + GUARDIANS.map(g => `<option value="${g}" ${r.guardian === g ? 'selected' : ''}>${g}</option>`).join('');
-
-                return `
-                    <div class="role-block" data-uid="${r.uid}" style="background:rgba(255,255,255,0.02); padding:2rem; border-radius:12px; border-left:4px solid var(--accent-blue); position:relative; margin-bottom: 1.5rem;">
-                        <button type="button" class="btn-remove-role" data-uid="${r.uid}" style="position:absolute; top:15px; right:15px; background:var(--accent-red); color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.8rem; font-weight:bold;">🗑️ Eliminar</button>
-                        
-                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; align-items:end; margin-bottom:20px;">
-                            <div>
-                                <label style="font-size:0.75rem; color:white; margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Nivel HUMA</label>
-                                <select class="form-control inp-level" style="font-family:monospace;">${levelOptions}</select>
-                            </div>
-                            <div>
-                                <label style="font-size:0.75rem; color:#aaa; margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Nombre del Rol (Puesto)</label>
-                                <input type="text" class="form-control inp-name" placeholder="Ej: Director Creativo" value="${r.name}">
-                            </div>
-                            <div>
-                                <label style="font-size:0.75rem; color:var(--accent-gold); margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Guardián</label>
-                                <select class="form-control inp-guardian">${guardianOptions}</select>
-                            </div>
-                            <div>
-                                <label style="font-size:0.75rem; color:#aaa; margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">Riesgo (Mult.)</label>
-                                <input type="number" step="0.1" class="form-control inp-mult" value="${r.multiplier}">
-                            </div>
-                        </div>
-
-                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-                            <div>
-                                <label style="font-size:0.75rem; color:#888; margin-bottom:8px; display:block; font-weight:bold; text-transform:uppercase;">🤖 System Prompt del Agente (IA)</label>
-                                <textarea class="form-control inp-prompt" placeholder="Contexto: Eres el encargado de supervisar..." style="height:100px; font-size:0.85rem; resize:vertical;">${r.ai_prompt}</textarea>
-                            </div>
-                            <div>
-                                <label style="font-size:0.75rem; color:var(--accent-green); margin-bottom:5px; display:block; font-weight:bold; text-transform:uppercase;">🕸️ Tuberías VNA (Una por línea)</label>
-                                <p style="font-size: 0.75rem; color: #666; margin-top:0; margin-bottom:8px; font-family:monospace;">Formato: <code>@destino | Horas | Tipo | Nombre Tarea</code></p>
-                                <textarea class="form-control inp-deliv" placeholder="@dosos | 10 | tangible | Definir Arquitectura" style="height:80px; font-size:0.85rem; color:var(--accent-green); resize:vertical; font-family:var(--font-mono);">${delivs}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        };
-
-        content.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:15px;">
-                <div>
-                    <h2 style="color:white; margin:0; font-size:1.8rem; font-weight:900;">🧬 Editor Dinámico de Plantillas</h2>
-                    <p style="color:var(--text-muted); font-size:0.95rem; margin-top:5px;">Configura los Roles, Arquetipos y Tuberías VNA predefinidas.</p>
-                </div>
-                <button class="btn-save" onclick="document.getElementById('modalOntology').style.display='none'" style="background:transparent; border:1px solid #555; color:#aaa; padding:10px 20px;">❌ Cancelar</button>
-            </div>
-            
-            <div class="form-group" style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:12px; border: 1px dashed #333;">
-                <label style="color: var(--accent-blue); font-size:0.85rem;">ID de la Plantilla (Identificador único)</label>
-                <input type="text" id="modal-sector-id" class="form-control" value="${sectorKey}" ${sectorKey?'disabled':''} style="font-family:monospace; color:var(--accent-blue); font-size:1.2rem; max-width: 100%;">
-            </div>
-            
-            <div id="dynamic-roles-container" style="display:flex; flex-direction:column; margin-top:2rem;">
-                ${renderDynamicRoles()}
-            </div>
-
-            <div style="margin-top: 1.5rem; text-align:center;">
-                <button id="btn-add-modal-role" class="btn-save" style="background:transparent; border:2px dashed var(--accent-blue); color:var(--accent-blue); width:100%; padding:15px; font-size:1.1rem;">➕ Añadir Nuevo Nodo Funcional</button>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:3rem; background:rgba(0,0,0,0.5); padding:1.5rem; border-radius:12px; flex-wrap:wrap; gap:15px; border-top: 1px solid #333;">
-                <span style="font-size:0.9rem; color:var(--text-muted);">Puedes reusar esta plantilla para instanciar infinitos proyectos.</span>
-                <button class="btn-save" id="btn-save-sector-action" style="background:var(--accent-green); color:black; font-size:1.1rem; padding:15px 40px; width:100%; max-width:350px;">💾 Guardar Plantilla en ADN</button>
-            </div>
-        `;
-
-        modal.style.display = 'flex';
-
-        const rolesContainer = document.getElementById('dynamic-roles-container');
-        
-        rolesContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('btn-remove-role')) {
-                const uidToRemove = e.target.dataset.uid;
-                modalRoles = modalRoles.filter(r => r.uid !== uidToRemove);
-                rolesContainer.innerHTML = renderDynamicRoles(); 
-            }
-        });
-
-        document.getElementById('btn-add-modal-role').addEventListener('click', () => {
-            modalRoles.push({
-                uid: `role_${Math.random().toString(36).substr(2, 9)}`,
-                levelId: '@baixos', name: '', guardian: '', multiplier: 1.0, ai_prompt: '', standard_deliverables: []
-            });
-            rolesContainer.innerHTML = renderDynamicRoles();
-        });
-
-        document.getElementById('btn-save-sector-action').addEventListener('click', async () => {
-            let newId = document.getElementById('modal-sector-id').value.trim().toLowerCase().replace(/\s+/g, '_');
-            if(!newId) return alert("El identificador de plantilla es obligatorio.");
-
-            const rolesData = {};
-            
-            document.querySelectorAll('.role-block').forEach((block, idx) => {
-                const levelId = block.querySelector('.inp-level').value;
-                const delivText = block.querySelector('.inp-deliv').value;
-                
-                const standard_deliverables = delivText.split('\n')
-                    .filter(line => line.trim() !== '')
-                    .map(line => {
-                        const parts = line.split('|').map(p => p.trim());
-                        let to = '?'; let estimatedHours = 0; let tipo = 'tangible'; let name = 'Entregable';
-                        
-                        if (parts.length >= 4) {
-                            to = parts[0]; estimatedHours = parseFloat(parts[1]) || 0;
-                            tipo = parts[2].toLowerCase().startsWith('i') ? 'intangible' : 'tangible';
-                            name = parts.slice(3).join('|') || name;
-                        } else if (parts.length === 3) {
-                            to = parts[0]; estimatedHours = parseFloat(parts[1]) || 0;
-                            name = parts.slice(2).join('|') || name;
-                        } else if (parts.length === 2) {
-                            estimatedHours = parseFloat(parts[0]) || 0; name = parts[1];
-                        } else { name = parts[0]; }
-                        return { to, estimatedHours, tipo, name };
-                    });
-
-                const uniqueKey = `role_${Date.now()}_${idx}`; 
-                rolesData[uniqueKey] = {
-                    levelId: levelId,
-                    name: block.querySelector('.inp-name').value || HUMA_LEVELS.find(l=>l.id===levelId).label,
-                    guardian: block.querySelector('.inp-guardian').value || '',
-                    multiplier: parseFloat(block.querySelector('.inp-mult').value) || 1.0,
-                    ai_prompt: block.querySelector('.inp-prompt').value.trim(),
-                    standard_deliverables
-                };
-            });
-
-            await store.dispatch({ type: 'ADD_ONTOLOGY_SECTOR', payload: { sectorId: newId, rolesData } });
-
-            modal.style.display = 'none';
-            this.renderOntologyGrids(); 
         });
     }
 }
