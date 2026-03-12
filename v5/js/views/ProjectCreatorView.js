@@ -5,7 +5,7 @@ import { Sidebar } from '../components/Sidebar.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciador Agnóstico | TeamTowers SOS";
+        document.title = "Crear Red | TeamTowers SOS";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
@@ -44,85 +44,100 @@ export default class ProjectCreatorView {
         const state = store.getState();
         const customSectores = state.ontology?.sectores || {};
         
-        let sectorOptions = `<optgroup label="🌟 Tus Plantillas Custom">`;
-        Object.keys(customSectores).forEach(k => {
-            sectorOptions += `<option value="custom_${k}" ${preselectedSector === k ? 'selected' : ''}>[Custom] ${k.toUpperCase()}</option>`;
-        });
-        sectorOptions += `</optgroup><optgroup label="📦 Plantillas Nativas">`;
+        let sectorOptions = '';
+        if (Object.keys(customSectores).length > 0) {
+            sectorOptions += `<optgroup label="🌟 Tus Plantillas Custom">`;
+            Object.keys(customSectores).forEach(k => {
+                if (k === '_meta') return;
+                sectorOptions += `<option value="custom_${k}" ${preselectedSector === k ? 'selected' : ''}>[Custom] ${k.toUpperCase()}</option>`;
+            });
+            sectorOptions += `</optgroup>`;
+        }
+        
+        sectorOptions += `<optgroup label="📦 Plantillas Nativas (V10)">`;
         Object.keys(GLOBAL_ONTOLOGY).forEach(k => {
-            sectorOptions += `<option value="native_${k}" ${preselectedSector === k ? 'selected' : ''}>[Nativa] ${k.toUpperCase().replace(/_/g, ' ')}</option>`;
+            if (k === '_meta') return;
+            sectorOptions += `<option value="native_${k}" ${preselectedSector === k ? 'selected' : ''}>${k.toUpperCase().replace(/_/g, ' ')}</option>`;
         });
         sectorOptions += `</optgroup>`;
 
         return `
             <style>
                 .wizard-workspace { flex: 1; padding: 3rem; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; background: var(--bg-dark);}
-                .wizard-card { background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); width: 100%; max-width: 900px; padding: 3rem; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
+                .wizard-card { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; width: 100%; max-width: 900px; padding: 3rem; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(15px);}
+                
                 .wizard-header { text-align: center; margin-bottom: 2rem; }
-                .wizard-header h1 { font-size: 2.5rem; color: white; margin: 0; letter-spacing: -1px; }
-                .wizard-header p { color: var(--text-muted); margin-top: 10px; }
+                .wizard-header h1 { font-size: 2.5rem; color: white; margin: 0; letter-spacing: -1px; font-weight: 900; }
+                .wizard-header p { color: var(--text-muted); margin-top: 10px; font-size: 1.1rem; }
                 
-                .step-indicator { display: flex; justify-content: center; gap: 10px; margin-bottom: 2rem; }
+                .step-indicator { display: flex; justify-content: center; gap: 12px; margin-bottom: 2rem; }
                 .dot { width: 12px; height: 12px; border-radius: 50%; background: #333; transition: all 0.3s; }
-                .dot.active { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); transform: scale(1.2); }
+                .dot.active { background: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue); transform: scale(1.3); }
 
-                .vision-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 15px; color: white; font-size: 1.1rem; width: 100%; min-height: 120px; font-family: inherit; resize: vertical; margin-bottom: 1rem;}
-                .vision-box:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 15px rgba(0, 176, 255, 0.2); }
+                /* FORMS LUXURY */
+                .form-group { margin-bottom: 20px; }
+                .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; }
+                .lux-input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); box-sizing: border-box;}
+                .lux-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.1); }
                 
-                .ai-config-panel { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px dashed #333; display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem;}
-                .ai-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 10px;}
+                .vision-box { min-height: 140px; resize: vertical; line-height: 1.5; }
                 
-                .ai-loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 0; animation: pulse 2s infinite; }
-                .ai-loading span { font-size: 3rem; margin-bottom: 1rem; }
-                .ai-loading p { color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px;}
+                .ai-config-panel { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px dashed #444; display: flex; flex-direction: column; gap: 15px; margin-bottom: 2rem; margin-top: 10px;}
+                .ai-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px;}
+                
+                .ai-loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 0; animation: pulse 2s infinite; }
+                .ai-loading span { font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0,176,255,0.5); }
+                .ai-loading p { color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-size: 1.2rem;}
 
-                .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: var(--border-radius-sm); padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-                .legend-item { display: flex; align-items: flex-start; gap: 8px; }
+                .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+                .legend-item { display: flex; align-items: flex-start; gap: 8px; font-weight: bold;}
 
-                .role-draft-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; max-height: 350px; overflow-y: auto; padding-right: 10px;}
-                .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: var(--border-radius-sm); gap: 15px;}
+                .role-draft-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
+                .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 15px; transition: transform 0.2s;}
+                .role-draft-item:hover { background: rgba(255,255,255,0.04); border-color: #444; }
                 
-                .role-inputs { display: flex; gap: 10px; flex: 1; align-items: center; flex-wrap: wrap;}
-                .inp-role-level, .inp-role-guardian { background: #050505; border: 1px solid #333; border-radius: 6px; padding: 6px; font-size: 0.75rem; font-weight: bold; outline: none; cursor: pointer; transition: border-color 0.2s; color: white;}
+                .role-inputs { display: flex; gap: 12px; flex: 1; align-items: center; flex-wrap: wrap;}
+                .inp-role-level, .inp-role-guardian { background: #050505; border: 1px solid #333; border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; font-weight: bold; outline: none; cursor: pointer; transition: border-color 0.2s; color: white;}
                 .inp-role-level:focus, .inp-role-guardian:focus { border-color: var(--accent-blue); }
                 
-                .role-inputs input.inp-role-name { background: transparent; border: none; color: white; font-size: 0.9rem; border-bottom: 1px solid #333; padding: 5px; flex: 1; min-width: 150px;}
+                .role-inputs input.inp-role-name { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #444; padding: 8px 5px; flex: 1; min-width: 180px; font-weight: bold;}
                 .role-inputs input.inp-role-name:focus { border-bottom-color: var(--accent-blue); outline: none; }
-                .role-inputs .fmv-input { width: 60px; min-width: 60px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); background: transparent; border: none; border-bottom: 1px solid #333;}
+                .role-inputs .fmv-input { width: 70px; min-width: 70px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); background: transparent; border: none; border-bottom: 1px solid #444; font-size: 1rem; font-weight: bold;}
                 
-                .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
-                .btn-del-role:hover { transform: scale(1.2); }
+                .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.5rem; padding: 5px 10px; transition: transform 0.2s; border-radius: 8px;}
+                .btn-del-role:hover { transform: scale(1.1); background: rgba(255,82,82,0.1); }
 
-                .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.2);}
-                .mini-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.2rem; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: help;}
+                .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: 16px; position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.3);}
+                .mini-node { position: absolute; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.3rem; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5); cursor: help;}
 
-                .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
-                .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px);}
+                .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
+                .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
                 
-                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto;}
-                .tx-preview-item { font-size: 0.8rem; color: #ccc; padding: 8px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
+                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 350px; overflow-y: auto;}
+                .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 10px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
 
-                .actions-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
+                .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
+                
+                .btn-lux { padding: 12px 24px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.3s; border: none;}
+                .btn-lux-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2);}
+                .btn-lux-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,176,255,0.4); filter: brightness(1.1);}
+                .btn-lux-success { background: var(--accent-green); color: black; box-shadow: 0 5px 15px rgba(0,230,118,0.2);}
+                .btn-lux-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,230,118,0.4);}
+                .btn-lux-outline { background: transparent; border: 1px solid #555; color: white;}
+                .btn-lux-outline:hover { border-color: white; background: rgba(255,255,255,0.05);}
 
-                @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-
-                /* FORM CONTROLS REUSABLES */
-                .form-group { margin-bottom: 15px; }
-                .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
-                .form-control { background: #050505; border: 1px solid #333; color: white; padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.2s; box-sizing: border-box; }
-                .form-control:focus { border-color: var(--accent-blue); }
+                @keyframes pulse { 0% { opacity: 0.6; transform: scale(0.98);} 50% { opacity: 1; transform: scale(1.02);} 100% { opacity: 0.6; transform: scale(0.98);} }
 
                 @media (max-width: 768px) {
-                    .wizard-workspace { padding: 1rem; padding-top: 70px; }
-                    .wizard-card { padding: 1.5rem; }
+                    .wizard-workspace { padding: 1rem; padding-top: 80px; }
+                    .wizard-card { padding: 1.5rem; border-radius: 16px; }
                     .role-draft-item { flex-direction: column; align-items: stretch; }
                     .role-inputs { flex-direction: column; align-items: stretch; }
-                    .btn-del-role { align-self: flex-end; background: rgba(255, 82, 82, 0.1); border-radius: 6px; padding: 10px; margin-top: 5px; width: 100%;}
-                    .educational-legend { grid-template-columns: 1fr; }
+                    .btn-del-role { align-self: stretch; background: rgba(255, 82, 82, 0.1); border-radius: 8px; padding: 10px; margin-top: 5px; width: 100%; border: 1px solid rgba(255,82,82,0.3);}
                     .actions-row { flex-direction: column; }
-                    .actions-row .btn { width: 100%; padding: 12px;}
-                    .tx-preview-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+                    .actions-row .btn-lux { width: 100%; justify-content: center; }
+                    .tx-preview-item { flex-direction: column; align-items: flex-start; gap: 8px; }
                     .ai-grid { grid-template-columns: 1fr; }
                 }
             </style>
@@ -139,26 +154,28 @@ export default class ProjectCreatorView {
 
                         <div id="step1">
                             <div class="wizard-header">
-                                <h1>Instanciador de Red</h1>
-                                <p>Diseña ecosistemas de valor inmutables.</p>
+                                <h1>Crear Red</h1>
+                                <p>Instancia un ecosistema VNA y despliega su estructura.</p>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 1.5rem;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 2rem;">
                                 <div class="form-group" style="margin: 0;">
-                                    <label>Nombre del Castell (Proyecto)</label>
-                                    <input type="text" id="inpName" class="form-control" placeholder="Ej: Cooperativa Solar">
+                                    <label>Nombre de la Red</label>
+                                    <input type="text" id="inpName" class="lux-input" placeholder="Ej: Cooperativa Solar">
                                 </div>
                                 <div class="form-group" style="margin: 0;">
                                     <label>Arquetipo de Gobernanza</label>
-                                    <select id="inpArchetype" class="form-control">
+                                    <select id="inpArchetype" class="lux-input">
                                         <option value="startup">🚀 Startup (Agilidad/Equidad)</option>
                                         <option value="corp">🏢 Empresa (Jerarquía Clásica)</option>
                                         <option value="dao">🤖 IA-DAO (Humanos + Agentes IA)</option>
+                                        <option value="incubator">🏭 Incubadora (Venture)</option>
+                                        <option value="sos">🆘 Red S.O.S (Apoyo Mutuo)</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="margin: 0;">
                                     <label>Plantilla Base (ADN)</label>
-                                    <select id="inpSector" class="form-control">
+                                    <select id="inpSector" class="lux-input">
                                         ${sectorOptions}
                                     </select>
                                 </div>
@@ -166,80 +183,80 @@ export default class ProjectCreatorView {
 
                             <div class="form-group">
                                 <label>Visión Bruta / Input Cognitivo</label>
-                                <textarea id="inpVision" class="vision-box" placeholder="Describe brevemente la idea. El Orquestador IA aplicará el modelo de Verna Allee y Pantheon para crear el mapa base..."></textarea>
+                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe brevemente la idea. El Orquestador IA aplicará el modelo de Verna Allee y Pantheon para crear el mapa base de transacciones de valor..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
-                                <summary style="color: var(--accent-purple); font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">✨ Configurar Llave IA Manualmente</summary>
+                                <summary style="color: var(--accent-purple); font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 10px; padding: 10px; background: rgba(224,64,251,0.1); border-radius: 8px; display:inline-block;">✨ Configurar Llave IA Manualmente</summary>
                                 <div class="ai-config-panel">
                                     <div class="ai-grid">
                                         <div>
-                                            <label style="font-size: 0.7rem; color:#888;">Proveedor IA</label>
-                                            <select id="inpAiProvider" class="form-control">
+                                            <label style="font-size: 0.75rem; color:#aaa;">Proveedor IA</label>
+                                            <select id="inpAiProvider" class="lux-input" style="padding: 10px;">
                                                 <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (API Abierta)</option>
                                                 <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
                                                 <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
-                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo</option>
+                                                <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Agente Corporativo Custom</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label style="font-size: 0.7rem; color:#888;">API Key / Bearer Token</label>
-                                            <input type="password" id="inpApiKey" class="form-control" placeholder="sk-..." value="${savedKey}">
+                                            <label style="font-size: 0.75rem; color:#aaa;">API Key / Bearer Token</label>
+                                            <input type="password" id="inpApiKey" class="lux-input" style="padding: 10px;" placeholder="sk-..." value="${savedKey}">
                                         </div>
                                     </div>
                                     <div id="customEndpointBox" style="display: ${savedProvider === 'custom' ? 'block' : 'none'}; margin-top: 10px;">
-                                        <label style="font-size: 0.7rem; color:#888;">URL del Endpoint Custom</label>
-                                        <input type="text" id="inpCustomUrl" class="form-control" placeholder="https://mi-empresa.com/api/agent/architect">
+                                        <label style="font-size: 0.75rem; color:#aaa;">URL del Endpoint Custom</label>
+                                        <input type="text" id="inpCustomUrl" class="lux-input" style="padding: 10px;" placeholder="https://mi-empresa.com/api/agent/architect">
                                     </div>
                                 </div>
                             </details>
 
                             <div class="actions-row">
-                                <button class="btn btn-outline" id="btnStartBlank">📄 Empezar en Blanco</button>
-                                <button class="btn btn-outline" id="btnLoadTemplate">🏗️ Cargar Plantilla Seleccionada</button>
-                                <button class="btn btn-primary" id="btnGenerateAI" style="background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue)); border:none;">🧠 Diseñar con IA (VNA)</button>
+                                <button class="btn-lux btn-lux-outline" id="btnStartBlank">📄 Empezar en Blanco</button>
+                                <button class="btn-lux btn-lux-outline" id="btnLoadTemplate">🏗️ Cargar Plantilla Seleccionada</button>
+                                <button class="btn-lux btn-lux-primary" id="btnGenerateAI">🧠 Diseñar con IA (VNA)</button>
                             </div>
                         </div>
 
                         <div id="aiLoading" class="ai-loading">
-                            <span>🔌</span>
+                            <span>🪐</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 10px;" id="loadingSubMsg">Mapeando Ecosistema VNA e Ikigai...</div>
+                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Mapeando Ecosistema VNA e Ikigai...</div>
                         </div>
 
                         <div id="step2" style="display: none;">
-                            <div class="wizard-header" style="margin-bottom: 1.5rem;">
+                            <div class="wizard-header" style="margin-bottom: 2rem;">
                                 <h1>Validación de Arquitectura</h1>
-                                <p>Ajusta los nodos funcionales o revisa el mapa visual antes de registrarlo.</p>
+                                <p>Ajusta los nodos funcionales o revisa el mapa visual antes de inyectarlo en el Kernel V10.</p>
                             </div>
 
                             <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
 
-                            <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de los flujos de valor y el Pitch">
+                            <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de las tuberías y el Pitch">
                                 <div>
-                                    <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">⚡ Tuberías V10 y Pitch Generados</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Se ha redactado la presentación y <strong id="txCount" style="color: white; font-size: 1.1rem; font-family: monospace;">0</strong> flujos base (Clic para previsualizar).</div>
+                                    <div style="font-size: 0.85rem; color: var(--accent-green); font-weight: 900; text-transform: uppercase; margin-bottom: 5px;">⚡ Tuberías V10 y Pitch Generados</div>
+                                    <div style="color: var(--text-muted); font-size: 0.9rem;">Se ha redactado la presentación y <strong id="txCount" style="color: white; font-size: 1.2rem; font-family: monospace;">0</strong> flujos base (Clic para previsualizar).</div>
                                 </div>
-                                <div style="font-size: 1.5rem; opacity: 0.5;">&darr;</div>
+                                <div style="font-size: 1.8rem; opacity: 0.5;">&darr;</div>
                             </div>
                             
                             <div id="txPreviewList" class="tx-preview-list"></div>
 
                             <div class="educational-legend">
-                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Estrategia/Visión (x3)</div>
-                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Táctica/Conexión (x2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-purple);">👁️ @dosos:</span> Auditoría/QA (x1.5)</div>
+                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Visión (x3)</div>
+                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Táctica (x2)</div>
+                                <div class="legend-item"><span style="color:var(--accent-purple);">👁️ @dosos:</span> Auditoría (x1.5)</div>
                                 <div class="legend-item"><span style="color:var(--accent-indigo);">⚙️ @baixos:</span> Producción (x1.2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Soporte Base (x1)</div>
+                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Soporte (x1)</div>
                             </div>
 
                             <div class="role-draft-list" id="draftRolesContainer"></div>
                             
-                            <button class="btn btn-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">+ Instanciar Nuevo Nodo Funcional</button>
+                            <button class="btn-lux btn-lux-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">➕ Instanciar Nuevo Nodo Funcional</button>
 
-                            <div class="actions" style="border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem; display: flex; justify-content: space-between;">
-                                <button class="btn btn-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn btn-success" id="btnLaunch" style="background: var(--accent-green); color: black;">🚀 Firmar y Registrar Ecosistema</button>
+                            <div class="actions-row" style="border-top: 1px solid var(--glass-border); padding-top: 2rem;">
+                                <button class="btn-lux btn-lux-outline" id="btnBack">&larr; Volver</button>
+                                <button class="btn-lux btn-lux-success" id="btnLaunch">🚀 Firmar y Registrar Red</button>
                             </div>
                         </div>
 
@@ -293,7 +310,7 @@ export default class ProjectCreatorView {
         });
 
         this.dom.btnStartBlank.addEventListener('click', () => {
-            if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
+            if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
             this.draftRoles = [];
             this.draftTxs = [];
             this.draftPresentation = this.dom.inpVision.value.trim(); 
@@ -302,7 +319,7 @@ export default class ProjectCreatorView {
         });
 
         this.dom.btnLoadTemplate.addEventListener('click', () => {
-            if (!this.dom.inpName.value.trim()) return alert("El nombre es obligatorio.");
+            if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
             
             const sectorVal = this.dom.inpSector.value; 
             const state = store.getState();
@@ -317,14 +334,22 @@ export default class ProjectCreatorView {
             }
 
             this.draftRoles = [];
-            this.draftTxs = []; // V10: Estos serán vna_flows
-            this.draftTags = [sectorVal.split('_')[1], this.dom.inpArchetype.value];
-            this.draftPresentation = this.dom.inpVision.value.trim() || `Ecosistema basado en plantilla: ${this.dom.inpSector.options[this.dom.inpSector.selectedIndex].text}.`;
+            this.draftTxs = []; // V10: vna_flows
+            this.draftTags = [sectorVal.split('_')[1] || 'Web3', this.dom.inpArchetype.value];
+            
+            let metaPrompt = "";
+            if (sectorData && sectorData._meta && sectorData._meta.ai_project_prompt) {
+                metaPrompt = `[SYSTEM PROMPT INYECTADO]\n${sectorData._meta.ai_project_prompt}\n\n`;
+            }
+            
+            this.draftPresentation = metaPrompt + (this.dom.inpVision.value.trim() || `Red instanciada con plantilla: ${this.dom.inpSector.options[this.dom.inpSector.selectedIndex].text}.`);
             
             if (sectorData) {
                 const rolesObj = sectorData.roles || sectorData;
 
                 Object.entries(rolesObj).forEach(([levelKey, data]) => {
+                    if (levelKey === '_meta' || levelKey === 'roles') return; // FIX CRÍTICO V10: Saltar metadatos
+
                     const level = data.levelId || levelKey; 
                     
                     this.draftRoles.push({
@@ -333,7 +358,8 @@ export default class ProjectCreatorView {
                         name: data.name || level,
                         fmv: data.fmv || 50,
                         multiplier: data.multiplier || 1.0,
-                        guardian: data.guardian || 'everyman'
+                        guardian: data.guardian || 'everyman',
+                        ai_prompt: data.ai_prompt || '' // Prompt específico para agente del rol
                     });
 
                     if (data.standard_deliverables) {
@@ -374,7 +400,8 @@ export default class ProjectCreatorView {
                 name: 'Nueva Actividad',
                 fmv: 40,
                 multiplier: 1.2,
-                guardian: 'everyman'
+                guardian: 'everyman',
+                ai_prompt: ''
             });
             this.renderDraftRoles();
         });
@@ -393,7 +420,7 @@ export default class ProjectCreatorView {
             this.dom.aiTxFeedback.style.display = 'flex';
             this.dom.txCount.innerText = this.draftTxs.length;
             
-            const tagsHtml = this.draftTags.length > 0 ? `<div style="margin-bottom:10px;">${this.draftTags.map(t => `<span style="background:#333; padding:2px 8px; border-radius:12px; font-size:0.7rem; margin-right:5px;">#${t}</span>`).join('')}</div>` : '';
+            const tagsHtml = this.draftTags.length > 0 ? `<div style="margin-bottom:15px;">${this.draftTags.map(t => `<span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:0.75rem; margin-right:8px; font-family:var(--font-mono);">#${t}</span>`).join('')}</div>` : '';
 
             const listHtml = this.draftTxs.map((tx, i) => `
                 <div class="tx-preview-item">
@@ -401,18 +428,18 @@ export default class ProjectCreatorView {
                         <span style="color:${tx.tipo==='intangible'?'var(--accent-purple)':'var(--accent-green)'}; font-weight:bold; font-family:var(--font-mono);">[${i+1}]</span> 
                         <span style="color:#888;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
                     </span>
-                    <span style="color:white; font-weight:bold;">${tx.template || tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></span>
+                    <span style="color:white; font-weight:bold; font-size:0.95rem;">${tx.template || tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></span>
                 </div>
             `).join('');
             
             this.dom.txPreviewList.innerHTML = `
                 ${tagsHtml}
-                <div style="color: white; font-size: 0.9rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                    <strong>📖 Presentación Estratégica (Pitch):</strong><br>
-                    <span style="color:#aaa; font-style:italic;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border-left: 3px solid var(--accent-blue); margin-bottom: 20px;">
+                    <strong style="color: white; font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">📖 Misión / System Prompt:</strong>
+                    <span style="color:#ccc; font-style:italic; line-height:1.5;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
                 </div>
                 ${listHtml}
-                <div style="text-align:center; margin-top:15px; font-size:0.75rem; color:var(--accent-orange); font-weight:bold;">Podrás editar la presentación y los flujos en el Mapa de Valor.</div>
+                <div style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--accent-orange); font-weight:bold; background:rgba(255,171,64,0.1); padding:10px; border-radius:8px;">Podrás editar la presentación y las tuberías más adelante.</div>
             `;
         } else {
             this.dom.aiTxFeedback.style.display = 'none';
@@ -455,7 +482,7 @@ export default class ProjectCreatorView {
 
             BASE TEÓRICA CRÍTICA (VNA & PANTHEON):
             1. ROLES = ACTIVIDADES: En la metodología de Verna Allee, los roles NO son puestos de trabajo (Job Titles) ni un organigrama jerárquico. Son "nodos de actividad" que generan entregables.
-            2. TRANSACCIONES = ENTREGABLES: El valor fluye a través de entregables (siempre descritos como SUSTANTIVOS, no verbos). 
+            2. TRANSACCIONES = TUBERÍAS: El valor fluye a través de entregables (siempre descritos como SUSTANTIVOS, no verbos). 
                - TANGIBLES (MUST): Entregables contractuales, exigibles, productos, código, informes, dinero.
                - INTANGIBLES (EXTRA): Conocimiento, mentoría, favores, validación, decisiones. El pegamento de la red.
             3. GUARDIANES: Asigna uno de los 12 arquetipos (creator, caregiver, ruler, jester, everyman, lover, hero, outlaw, magician, innocent, explorer, sage).
@@ -463,17 +490,17 @@ export default class ProjectCreatorView {
             REGLAS DE DENSIDAD:
             1. Cada rol DEBE tener al menos 1 transacción de entrada y 1 de salida.
             2. Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte).
-            3. Genera un mínimo de 8 a 10 transacciones (tuberías). 
+            3. Genera un mínimo de 8 a 10 transacciones (tuberías V10). 
             
             ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido):
             {
                 "presentacion": "Pitch institucional (3 párrafos) atractivo...",
                 "tags": ["Sector", "ModeloNegocio", "Tag3"],
                 "roles": [
-                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "magician" }
+                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "magician", "ai_prompt": "Instrucción base para este rol" }
                 ],
                 "transactions": [
-                    { "fromLevel": "@origen", "toLevel": "@destino", "tipo": "tangible|intangible", "entregable": "Sustantivo (Ej: Informe de métricas)", "horas": 4 }
+                    { "fromLevel": "@origen", "toLevel": "@destino", "tipo": "tangible|intangible", "template": "Sustantivo (Ej: Informe de métricas)", "horas": 4 }
                 ]
             }
         `;
@@ -557,15 +584,15 @@ export default class ProjectCreatorView {
                 name: r.name,
                 fmv: r.fmv || 50,
                 multiplier: r.multiplier || 1.0,
-                guardian: r.guardian || 'everyman'
+                guardian: r.guardian || 'everyman',
+                ai_prompt: r.ai_prompt || ''
             }));
 
-            // Adaptamos a V10 (template en lugar de entregable)
             this.draftTxs = (parsedData.transactions || []).map(tx => ({
                 fromLevel: tx.fromLevel,
                 toLevel: tx.toLevel,
                 tipo: tx.tipo,
-                template: tx.entregable || tx.template,
+                template: tx.template || tx.entregable,
                 horas: tx.horas
             }));
             
@@ -610,12 +637,12 @@ export default class ProjectCreatorView {
                     ${selectGuardian}
                     <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Actividad del Rol">
                     <div style="display:flex; align-items:center; gap: 5px;">
-                        <span style="color: var(--text-muted); font-size: 0.7rem;">FMV:</span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem; font-weight:bold;">FMV:</span>
                         <input type="number" value="${role.fmv}" class="fmv-input inp-role-fmv" data-idx="${index}" title="Valor Mercado €/h">
-                        <span style="color: var(--text-muted); font-size: 0.7rem;">€/h</span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem; font-weight:bold;">€/h</span>
                     </div>
                 </div>
-                <button class="btn-del-role" data-idx="${index}" title="Eliminar Rol">×</button>
+                <button class="btn-del-role" data-idx="${index}" title="Eliminar Rol">&times;</button>
             `;
             this.dom.container.appendChild(row);
         });
@@ -778,7 +805,7 @@ export default class ProjectCreatorView {
                 sector: this.dom.inpSector.value,
                 prompt: visionText, 
                 archetype: arch, 
-                customRoles: this.draftRoles,
+                roles: this.draftRoles,
                 vna_flows: [],
                 work_orders: []
             } 
