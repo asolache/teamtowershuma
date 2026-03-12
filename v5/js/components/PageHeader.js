@@ -13,8 +13,59 @@ export const PageHeader = {
             (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
         );
         
-        let activeProjectId = localStorage.getItem('tt_active_project') || (userProjects.length > 0 ? userProjects[userProjects.length - 1].id : null);
+        let activeProjectId = localStorage.getItem('tt_active_project');
 
+        // --- ALGORITMO DE ORDENACIÓN (LUXURY DROPDOWN) ---
+        const getArchIcon = (arch) => {
+            const icons = { 'startup': '🚀', 'dao': '🤖', 'corp': '🏢', 'corporate': '🏢', 'incubator': '🏭', 'sos': '🆘' };
+            return icons[arch] || '🪐';
+        };
+
+        // Enriquecemos con métricas de actividad y timestamp de creación
+        const enrichedProjects = userProjects.map(p => {
+            const activity = (p.vna_flows?.length || 0) + (p.work_orders?.length || 0) + (p.ledger?.length || 0) + (p.transactions?.length || 0);
+            const tsMatch = p.id.match(/\d+/);
+            const timestamp = tsMatch ? parseInt(tsMatch[0]) : 0;
+            return { ...p, activity, timestamp, icon: getArchIcon(p.archetype) };
+        });
+
+        // Por defecto, ordenamos por más recientes
+        enrichedProjects.sort((a, b) => b.timestamp - a.timestamp);
+
+        // Extraemos las Top 3 más activas
+        const activeProjects = [...enrichedProjects].filter(p => p.activity > 0).sort((a, b) => b.activity - a.activity).slice(0, 3);
+        const activeIds = activeProjects.map(p => p.id);
+
+        // El resto serán las recientes/otras
+        const recentProjects = enrichedProjects.filter(p => !activeIds.includes(p.id));
+
+        // Si no hay proyecto activo guardado, pillamos el más activo o el más reciente
+        if (!activeProjectId && enrichedProjects.length > 0) {
+            activeProjectId = activeProjects.length > 0 ? activeProjects[0].id : recentProjects[0].id;
+        }
+
+        // Construcción del HTML Interno del Select con OptGroups
+        let projectOptionsHtml = '';
+        
+        if (activeProjects.length > 0) {
+            projectOptionsHtml += `<optgroup label="🔥 MÁS ACTIVAS">`;
+            activeProjects.forEach(p => {
+                const isSelected = p.id === activeProjectId ? 'selected' : '';
+                projectOptionsHtml += `<option value="${p.id}" ${isSelected}>${p.icon} ${p.nombre.toUpperCase()} (${p.activity} txs)</option>`;
+            });
+            projectOptionsHtml += `</optgroup>`;
+        }
+
+        if (recentProjects.length > 0) {
+            projectOptionsHtml += `<optgroup label="🆕 RECIENTES / OTRAS">`;
+            recentProjects.forEach(p => {
+                const isSelected = p.id === activeProjectId ? 'selected' : '';
+                projectOptionsHtml += `<option value="${p.id}" ${isSelected}>${p.icon} ${p.nombre.toUpperCase()}</option>`;
+            });
+            projectOptionsHtml += `</optgroup>`;
+        }
+
+        // --- TABS Y POMODORO ---
         let tabsHtml = '';
         if (config.tabs && config.tabs.length > 0) {
             tabsHtml = `
@@ -28,7 +79,6 @@ export const PageHeader = {
             `;
         }
 
-        // LÓGICA DE ALERTA POMODORO (Global para móviles)
         const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
         const pomodoroAlertHtml = isPomodoroActive 
             ? `<a href="/v5/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` 
@@ -55,7 +105,7 @@ export const PageHeader = {
                     gap: 10px;
                 }
                 
-                /* BRAND LOGO MOBILE (MANDALA FIX) */
+                /* BRAND LOGO MOBILE */
                 .ph-mob-brand { 
                     display: flex; 
                     align-items: center; 
@@ -80,7 +130,7 @@ export const PageHeader = {
                     justify-content: flex-end;
                     gap: 8px;
                     flex: 1;
-                    min-width: 0; /* Permite que los hijos encojan */
+                    min-width: 0;
                 }
 
                 .ph-mob-project-select { 
@@ -98,7 +148,7 @@ export const PageHeader = {
                     font-size: 0.75rem; 
                     font-weight: bold;
                     outline: none; 
-                    max-width: 140px; 
+                    max-width: 160px; 
                     text-overflow: ellipsis; 
                     white-space: nowrap; 
                     overflow: hidden; 
@@ -172,7 +222,7 @@ export const PageHeader = {
                 <div class="ph-mob-controls-right">
                     ${pomodoroAlertHtml}
                     <select class="ph-mob-project-select" id="phMobProjectSelect" title="Cambiar Red">
-                        ${userProjects.map(p => `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.nombre}</option>`).join('')}
+                        ${projectOptionsHtml}
                     </select>
                     <a href="/v5/profile" data-link class="ph-mob-user" title="Mi Perfil">
                         ${user?.name.charAt(0).toUpperCase() || '?'}
