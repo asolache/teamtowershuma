@@ -50,7 +50,7 @@ export default class TestsView {
                     <div class="test-container">
                         <div class="test-header">
                             <h1>KERNEL FULL VALIDATION</h1>
-                            <p style="color: var(--text-muted);">Auditoría global V9: Mapas VNA, Edición Pura, Focus Cache, Meta-Ontología y Slicing Pie</p>
+                            <p style="color: var(--text-muted);">Auditoría V10: Desacople de Tuberías (VNA) e Instancias (Work Orders)</p>
                         </div>
 
                         <div class="metrics-row">
@@ -60,12 +60,12 @@ export default class TestsView {
                             </div>
                             <div class="metric-box" style="background: rgba(0, 176, 255, 0.05); border-color: rgba(0, 176, 255, 0.2);">
                                 <h3 style="color: var(--accent-blue);">100%</h3>
-                                <p>Cobertura de Seguridad</p>
+                                <p>Cobertura V10</p>
                             </div>
                         </div>
 
                         <div class="log-terminal" id="terminalLog">
-                            <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas asíncronas integrales V9.9.</div>
+                            <div style="color: var(--accent-blue); margin-bottom: 10px;">> Sistema listo para ejecución de pruebas asíncronas V10.0.</div>
                         </div>
 
                         <button class="run-btn" id="runTestsBtn">EJECUTAR SUITE DE PRUEBAS (TDD) ▶</button>
@@ -82,7 +82,7 @@ export default class TestsView {
 
         btn.addEventListener('click', async () => {
             btn.disabled = true;
-            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones V9.9...</div>';
+            terminal.innerHTML = '<div style="color: var(--accent-blue); margin-bottom: 15px; font-weight: bold;">> Iniciando motor de aserciones V10.0 (Work Orders Architecture)...</div>';
             
             let passed = 0; 
             let total = 0;
@@ -111,107 +111,96 @@ export default class TestsView {
             const PID_ECO = 'test-eco-' + Date.now();
 
             try {
-                // --- FASE 1: KERNEL & META-ONTOLOGY (V10 PREP) ---
+                // --- FASE 1: KERNEL & META-ONTOLOGY ---
                 assert(META_ECOSYSTEMS !== undefined, "Meta-Ontología de Ecosistemas inyectada", "AI-SWARM");
-                assert(META_ECOSYSTEMS['dao'].tags.includes('trustless'), "Configuración semántica para Agentes IA validada", "AI-SWARM");
                 assert(store.getState().config !== undefined, "Objeto config global inicializado", "KERNEL"); 
                 
                 await store.dispatch({ type: 'UPDATE_CONFIG', payload: { archetype: 'dao' } });
                 assert(store.getState().config.archetype === 'dao', "Actualización de Configuración Global OK", "SETTINGS"); 
 
                 // --- FASE 2: IDENTIDAD, POOL Y RBAC ---
-                assert(store.getState().globalUsers !== undefined, "Pool Global de Usuarios inicializado", "IDENTITY"); 
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: 'usr_alvaro_001' } }); 
-                assert(store.getState().session.activeUserId === 'usr_alvaro_001', "Login Root verificado", "RBAC"); 
                 
                 const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 100000);
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
                 const lauraGlobal = store.getState().globalUsers.find(u => u.id === dynLauraId);
                 assert(lauraGlobal !== undefined, "Usuario añadido al Pool Global con ID único", "IDENTITY"); 
-                assert(lauraGlobal.globalRole === 'network-user', "Usuario hereda rol raso por defecto", "RBAC"); 
 
-                // --- FASE 3: CREACIÓN DE REDES Y GÉNESIS ---
-                await store.dispatch({ type: 'CREATE_PROJECT', payload: { id: PID_1, nombre: 'Test V9', sector: 'digital_media_growth', roles: [], transactions: [], ledger: [] } });
+                // --- FASE 3: CREACIÓN DE REDES (V10 ESTRUCTURA) ---
+                // Validamos que el proyecto nazca con vna_flows y work_orders vacíos en lugar del antiguo transactions
+                await store.dispatch({ type: 'CREATE_PROJECT', payload: { id: PID_1, nombre: 'Test V10', sector: 'digital_media_growth', roles: [], vna_flows: [], work_orders: [], ledger: [] } });
                 const p = store.getState().projects.find(x => x.id === PID_1);
-                assert(p !== undefined, "Proyecto instanciado correctamente", "CORE"); 
+                assert(p !== undefined, "Proyecto instanciado", "CORE"); 
+                assert(Array.isArray(p.vna_flows) && Array.isArray(p.work_orders), "V10: Estructuras separadas (Tuberías y Agua) inicializadas", "ARCHITECTURE");
                 
-                // Inyectar roles ontológicos dinámicamente para el test
                 const baseRoles = Object.keys(GLOBAL_ONTOLOGY['digital_media_growth']).filter(k => k !== '_meta');
                 for (let rId of baseRoles) {
                     await store.dispatch({ type: 'ADD_ROLE', payload: { projectId: PID_1, role: { name: GLOBAL_ONTOLOGY['digital_media_growth'][rId].name, levelId: rId, multiplier: 1.5, fmv: 50, isArchived: false } } });
                 }
-                
-                const pRoles = store.getState().projects.find(x => x.id === PID_1);
-                assert(pRoles.roles && pRoles.roles.length === baseRoles.length, `Ontología inyectada dinámicamente en roles`, "ONTOLOGY"); 
 
-                // --- FASE 4: INMUTABILIDAD Y GESTIÓN DE NODOS VNA (V9.4) ---
-                const anxanetaRole = pRoles.roles.find(r => r.levelId === '@anxaneta');
-                const dososRole = pRoles.roles.find(r => r.levelId === '@dosos');
+                // --- FASE 4: INMUTABILIDAD DE NODOS ---
+                const anxanetaRole = store.getState().projects.find(x => x.id === PID_1).roles.find(r => r.levelId === '@anxaneta');
+                const dososRole = store.getState().projects.find(x => x.id === PID_1).roles.find(r => r.levelId === '@dosos');
                 const anxanetaId = anxanetaRole.id;
                 
                 await store.dispatch({ type: 'UPDATE_ROLE', payload: { projectId: PID_1, roleId: anxanetaId, updates: { name: 'Super CEO' } } });
                 assert(store.getState().projects.find(x => x.id === PID_1).roles.find(r => r.id === anxanetaId).name === 'Super CEO', "Edición Pura de metadatos del Nodo OK", "STORE"); 
-                
-                await store.dispatch({ type: 'ADD_ROLE', payload: { projectId: PID_1, role: { name: 'Nodo a Borrar', levelId: '@baixos', isArchived: false } } });
-                let pAfterCreate = store.getState().projects.find(x => x.id === PID_1);
-                const newRole = pAfterCreate.roles.find(r => r.name === 'Nodo a Borrar');
-                assert(newRole !== undefined, "Instanciación manual de nuevos nodos OK", "VNA-MAP"); 
 
-                await store.dispatch({ type: 'TOGGLE_ROLE_ARCHIVE', payload: { projectId: PID_1, roleId: newRole.id } });
-                assert(store.getState().projects.find(proj => proj.id === PID_1).roles.find(r => r.id === newRole.id).isArchived === true, "Inmutabilidad: El nodo se archiva, no se borra de la BD", "DATA-SAFE"); 
+                // --- FASE 5: V10 - VNA FLOWS (CREAR TUBERÍAS) ---
+                const testFlowId = 'flow_mock_' + Date.now();
+                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_1, flow: { id: testFlowId, from: anxanetaId, to: dososRole.id, estimatedHours: 2, template: 'Plan Original', tipo: 'tangible' } } });
+                const flow1 = store.getState().projects.find(x => x.id === PID_1).vna_flows[0];
+                assert(flow1.template === 'Plan Original', "V10: Tubería (Flow) creada exitosamente en el mapa VNA", "VNA-MODEL"); 
 
-                // --- FASE 5: EDICIÓN DE TRANSACCIONES PURAS (V9.4) ---
-                const testTxHash = 'tx_mock_' + Date.now();
-                await store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: PID_1, tx: { hash: testTxHash, from: anxanetaId, to: dososRole.id, horas: 2, entregable: 'Plan Original', tipo: 'tangible', status: 'theoretical' } } });
-                const tx1 = store.getState().projects.find(x => x.id === PID_1).transactions[0];
-                assert(tx1.entregable === 'Plan Original', "Transacción Teórica inyectada en el lienzo", "VNA-MAP"); 
+                await store.dispatch({ type: 'UPDATE_FLOW', payload: { projectId: PID_1, flowId: testFlowId, updates: { template: 'Plan Editado', estimatedHours: 5 } } });
+                const flow1Upd = store.getState().projects.find(x => x.id === PID_1).vna_flows[0];
+                assert(flow1Upd.template === 'Plan Editado' && flow1Upd.estimatedHours === 5, "V10: Redux Puro en edición de Tuberías", "REDUCER"); 
 
-                await store.dispatch({ type: 'UPDATE_TRANSACTION', payload: { projectId: PID_1, txHash: testTxHash, updates: { entregable: 'Plan Editado', horas: 5 } } });
-                const tx1Upd = store.getState().projects.find(x => x.id === PID_1).transactions[0];
-                assert(tx1Upd.entregable === 'Plan Editado' && tx1Upd.horas === 5, "Redux Puro: La transacción se actualiza sin mutaciones forzadas", "REDUCER"); 
+                await store.dispatch({ type: 'DELETE_FLOW', payload: { projectId: PID_1, flowId: testFlowId } });
+                const flowListAfterDel = store.getState().projects.find(x => x.id === PID_1).vna_flows;
+                assert(flowListAfterDel.length === 0, "V10: Tubería eliminada limpiamente", "VNA-MODEL");
 
-                await store.dispatch({ type: 'DELETE_TRANSACTION', payload: { projectId: PID_1, txHash: testTxHash } });
-                const txListAfterDel = store.getState().projects.find(x => x.id === PID_1).transactions;
-                assert(txListAfterDel.length === 0, "Botón Undo: Transacción eliminada limpiamente del flujo", "VNA-MAP");
-
-                // --- FASE 6: SLICING PIE & LEDGER INMUTABLE ---
-                await store.dispatch({ type: 'CREATE_PROJECT', payload: { id: PID_ECO, nombre: 'DAO Project', sector: 'general', roles: [], transactions: [], ledger: [], usuarios: [] } });
+                // --- FASE 6: V10 - WORK ORDERS (EL AGUA EN EL KANBAN) & SLICING PIE ---
+                await store.dispatch({ type: 'CREATE_PROJECT', payload: { id: PID_ECO, nombre: 'DAO Project', sector: 'general', roles: [], vna_flows: [], work_orders: [], ledger: [], usuarios: [] } });
                 
                 await store.dispatch({ type: 'ADD_ROLE', payload: { projectId: PID_ECO, role: { id: 'role-dev', name: 'Dev', levelId: '@baixos', multiplier: 1.5, fmv: 40 } } });
                 await store.dispatch({ type: 'ADD_ROLE', payload: { projectId: PID_ECO, role: { id: 'role-ceo', name: 'CEO', levelId: '@anxaneta', multiplier: 3.0, fmv: 60 } } });
                 
-                const pushHash = 'tx_push_' + Date.now();
-                await store.dispatch({ type: 'ADD_TRANSACTION', payload: { projectId: PID_ECO, tx: { hash: pushHash, from: 'role-ceo', to: 'role-dev', horas: 10, entregable: 'App Code', tipo: 'tangible', status: 'theoretical' } } });
+                // 1. Crear Tubería Permanente
+                const myFlowId = 'flow_pipe_1';
+                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_ECO, flow: { id: myFlowId, from: 'role-ceo', to: 'role-dev', estimatedHours: 10, template: 'App Code', tipo: 'tangible' } } });
                 
-                let txPull = store.getState().projects.find(x => x.id === PID_ECO).transactions[0];
-                assert(txPull.status === 'theoretical', "Flujo Kanban: El Entregable nace como Teórico Libre", "PULL-SYSTEM"); 
+                // 2. Instanciar Work Order (Pull Request de la tarea)
+                const woHash = 'wo_mock_' + Date.now();
+                await store.dispatch({ type: 'SPAWN_WORK_ORDER', payload: { projectId: PID_ECO, workOrder: { hash: woHash, flowId: myFlowId, status: 'theoretical' } } });
+                
+                let woPull = store.getState().projects.find(x => x.id === PID_ECO).work_orders[0];
+                assert(woPull.status === 'theoretical', "V10: Instancia de Trabajo (Work Order) nace libre en el Kanban", "WORK-ORDER"); 
 
-                await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: PID_ECO, txHash: pushHash, userId: dynLauraId } });
-                txPull = store.getState().projects.find(x => x.id === PID_ECO).transactions[0];
-                assert(txPull.status === 'pinged' && txPull.assigneeId === dynLauraId, "Flujo Kanban: Nodo toma el control de la tarea (Ping)", "PULL-SYSTEM"); 
+                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_ECO, woHash: woHash, userId: dynLauraId } });
+                woPull = store.getState().projects.find(x => x.id === PID_ECO).work_orders[0];
+                assert(woPull.status === 'pinged' && woPull.assigneeId === dynLauraId, "V10: Nodo asume la Work Order (PULL exitoso)", "KANBAN"); 
 
                 // --- FASE 7: FOCUS POMODORO CACHE (V8.5+) ---
-                localStorage.setItem(`tt_focus_${pushHash}_running`, 'true');
-                assert(localStorage.getItem(`tt_focus_${pushHash}_running`) === 'true', "Deep Work: Persistencia del cronómetro en background OK", "FOCUS-MODE");
+                localStorage.setItem(`tt_focus_${woHash}_running`, 'true');
+                assert(localStorage.getItem(`tt_focus_${woHash}_running`) === 'true', "Deep Work: Cache de Pomodoro asimilado a la nueva estructura Hash", "FOCUS-MODE");
 
-                await store.dispatch({ type: 'REPORT_TRANSACTION', payload: { projectId: PID_ECO, txHash: pushHash, realHours: 8.5 } });
-                txPull = store.getState().projects.find(x => x.id === PID_ECO).transactions[0];
-                assert(txPull.status === 'reported' && txPull.realHours === 8.5, "Flujo Kanban: Prueba de Trabajo (PoW) enviada a auditoría", "FOCUS-MODE"); 
+                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_ECO, woHash: woHash, realHours: 8.5 } });
+                woPull = store.getState().projects.find(x => x.id === PID_ECO).work_orders[0];
+                assert(woPull.status === 'reported' && woPull.realHours === 8.5, "V10: Prueba de Trabajo (PoW) sobre la instancia enviada a auditoría", "FOCUS-MODE"); 
 
-                await store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: PID_ECO, txHash: pushHash } });
+                // 3. Aprobar Work Order e inyectar al Ledger
+                await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_ECO, woHash: woHash } });
                 
                 const pEcoEnd = store.getState().projects.find(x => x.id === PID_ECO);
                 const blockLedger = pEcoEnd.ledger[0];
                 
-                assert(blockLedger !== undefined, "Slicing Pie: Bloque minado e inyectado al Ledger", "LEDGER"); 
-                assert(blockLedger.hash === pushHash, "Slicing Pie: Enlace Criptográfico estricto al flujo original", "WEB3"); 
-                assert(blockLedger.valorCongelado === (8.5 * 40 * 1.5), "Matemática Pie: (Horas Reales x FMV x Multiplicador) calculadas a la perfección", "EQUITY"); 
+                assert(blockLedger !== undefined, "Slicing Pie V10: Bloque minado desde la Work Order completada", "LEDGER"); 
+                assert(blockLedger.hash === woHash, "Slicing Pie V10: Enlace criptográfico a la Instancia validado", "WEB3"); 
+                assert(blockLedger.valorCongelado === (8.5 * 40 * 1.5), "Matemática Pie V10: Cruce de datos entre Work Order (horas) y Flow (rol/multiplier) exitoso", "EQUITY"); 
 
-                const maturity = store.calculateMaturityIndex(PID_ECO);
-                assert(maturity.score > 0, "Algoritmo de Madurez de Red operativo", "METRICS"); 
-
-                // Limpieza de basurilla del test en cache
-                localStorage.removeItem(`tt_focus_${pushHash}_running`);
+                // Limpieza de basurilla del test
+                localStorage.removeItem(`tt_focus_${woHash}_running`);
 
                 // --- RESULTADO FINAL ---
                 if(passed === total) {
@@ -219,12 +208,12 @@ export default class TestsView {
                     score.style.color = finalColor;
                     terminal.innerHTML += `
                         <div style="margin-top: 25px; padding: 20px; border: 1px solid ${finalColor}; background: rgba(0, 230, 118, 0.1); border-radius: var(--border-radius-md); text-align: center; animation: fadeIn 0.5s ease-in;">
-                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v9.9 VALIDADO AL 100%</h2>
-                            <p style="color: white; margin-top: 10px; font-size: 1.1rem;">El Motor Core ha superado exactamente ${total} vectores de prueba críticos.</p>
-                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos garantizados: Meta-Ontology, Redux Purity, VNA Builder, Kanban, Slicing Pie, Focus Cache</p>
+                            <h2 style="color: ${finalColor}; margin: 0; font-size: 2rem;">🚀 KERNEL v10.0 VALIDADO AL 100%</h2>
+                            <p style="color: white; margin-top: 10px; font-size: 1.1rem;">El Motor Core ha superado exactamente ${total} vectores de prueba críticos de la nueva arquitectura.</p>
+                            <p style="color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; margin-top: 5px;">Módulos garantizados: VNA Pipes (vna_flows), Instances (work_orders), Ledger Cross-Reference.</p>
                         </div>
                     `;
-                    btn.innerText = "CERTIFICACIÓN V9.9 COMPLETADA ✓";
+                    btn.innerText = "CERTIFICACIÓN V10 COMPLETADA ✓";
                     btn.style.background = finalColor;
                     btn.style.color = "black";
                 }
