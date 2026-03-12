@@ -1,5 +1,5 @@
 // ==========================================================================
-// KERNEL v10.3 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// KERNEL v10.3.1 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
 // Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad, Capital e Identidad Fractal
 // ==========================================================================
 
@@ -60,7 +60,7 @@ const initialState = {
     session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
 };
 
-// 2. REDUCER ASÍNCRONO BLINDADO
+// 2. REDUCER ASÍNCRONO BLINDADO Y PURO
 async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
 
@@ -71,7 +71,7 @@ async function asyncReducer(state, action) {
             return { ...newState, ...action.payload };
             
         case 'UPDATE_GLOBAL_CONFIG': 
-        case 'UPDATE_CONFIG': // V9.9
+        case 'UPDATE_CONFIG':
             newState.config = { ...newState.config, ...action.payload };
             break;
 
@@ -262,20 +262,39 @@ async function asyncReducer(state, action) {
                 const wo = p.work_orders.find(t => t.hash === action.payload.woHash);
                 if (wo) {
                     wo.status = 'consolidated';
-                    const flow = p.vna_flows.find(f => f.id === wo.flowId);
-                    const role = p.roles.find(r => r.id === (flow?.to || ''));
-                    
-                    const multiplier = role ? (role.multiplier || 1) : 1;
-                    const fmv = role ? (role.fmv || 50) : 50;
-                    
-                    // Cálculo V10 exacto: Solo usamos Horas x FMV x Multiplicador del Rol
-                    const slices = wo.realHours * fmv * multiplier;
-                    
                     if (!p.ledger) p.ledger = [];
+                    
+                    let flow = (p.vna_flows || []).find(f => f.id === wo.flowId);
+                    let multiplier = 1;
+                    let fmv = 50;
+                    let roleId = 'Unknown';
+                    let deliverableName = 'Work Order Instanciada';
+
+                    if (flow) {
+                        roleId = flow.to;
+                        deliverableName = flow.template || flow.entregable || 'Entregable';
+                        const role = p.roles.find(r => r.id === roleId);
+                        if (role) {
+                            multiplier = role.multiplier || 1;
+                            fmv = role.fmv || 50;
+                        }
+                    }
+
+                    // V10 EXACT MATH: Horas x FMV x Multiplicador del Rol (SIN ARCHFACTOR)
+                    const slices = wo.realHours * fmv * multiplier;
+                    wo.valorCongelado = slices;
+
                     p.ledger.push({
-                        id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId,
-                        roleId: role?.id || 'unknown', horas: wo.realHours, valorCongelado: slices, timestamp: Date.now(),
-                        description: flow?.template || 'Work Order'
+                        id: 'blk_' + Date.now(),
+                        hash: wo.hash,
+                        userId: wo.assigneeId,
+                        roleId: roleId,
+                        horas: wo.realHours,
+                        multiplier: multiplier,
+                        fmv: fmv,
+                        valorCongelado: slices,
+                        timestamp: Date.now(),
+                        description: deliverableName
                     });
                 }
             }
@@ -355,8 +374,8 @@ async function asyncReducer(state, action) {
                         roleEconomics.multiplier = role.multiplier || 1.0;
                     }
 
-                    const tStore = new Store();
-                    const archFactor = tStore.getArchetypeFactor(pAppr.archetype);
+                    const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                    const archFactor = archFactors[pAppr.archetype] || 1.0;
 
                     const horas = txAppr.realHours || txAppr.horas || 0;
                     const valorGenerado = horas * roleEconomics.fmv * roleEconomics.multiplier * archFactor;
@@ -385,8 +404,8 @@ async function asyncReducer(state, action) {
                 let multiplier = 2.0; 
                 if (action.payload.assetType === 'cash') multiplier = 4.0;
                 
-                const tStore = new Store();
-                const archFactor = tStore.getArchetypeFactor(pCap.archetype);
+                const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                const archFactor = archFactors[pCap.archetype] || 1.0;
                 const valorGenerado = action.payload.amount * multiplier * archFactor;
 
                 if (!pCap.ledger) pCap.ledger = [];
@@ -406,7 +425,7 @@ async function asyncReducer(state, action) {
         }
     }
     
-    return newState; // Único punto de salida, 100% seguro.
+    return newState; // Único punto de salida. 100% puro.
 } 
 
 // 3. CLASE STORE: Controlador de Métodos
