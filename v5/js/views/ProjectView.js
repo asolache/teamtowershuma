@@ -35,7 +35,7 @@ export default class ProjectView {
         const headerConfig = {
             title: "Tareas",
             subtitle: project ? project.nombre : '',
-            tagline: "Kanban de oportunidades, en curso y contabilizado.",
+            tagline: "Kanban de Work Orders (Instancias de Valor).",
             actionHtml: `
                 <div style="display:flex; gap:10px; align-items:center;">
                     <button id="btnToggleAvailability" class="${statusBtnClass}" title="Alternar Estado de Matching">${statusBtnText}</button>
@@ -66,7 +66,7 @@ export default class ProjectView {
                 .filter-dropdown { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
                 .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); }
 
-                .btn-create-task { background: linear-gradient(45deg, var(--accent-green), #00bfa5); color: black; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; align-items: center; justify-content:center; gap: 5px; white-space:nowrap;}
+                .btn-create-task { background: linear-gradient(45deg, var(--accent-green), #00bfa5); color: black; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 5px; white-space:nowrap;}
                 .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
 
                 /* =========================================================
@@ -105,7 +105,7 @@ export default class ProjectView {
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 12px; background: rgba(0,0,0,0.2);}
 
                 /* =========================================================
-                   MODALS (CREAR TAREA Y FEEDBACK VNA)
+                   MODALS (CREAR WORK ORDER V10)
                    ========================================================= */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; }
                 .modal-content { background: var(--bg-panel); border: 1px solid #333; padding: 2.5rem; border-radius: 12px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
@@ -131,7 +131,7 @@ export default class ProjectView {
                     .task-grid { display: flex; flex-direction: column; gap: 12px;}
                     .task-card { 
                         padding: 1.2rem 1rem; 
-                        border-radius: 16px; /* Más redondeado, tipo Wallet */
+                        border-radius: 16px; 
                         background: rgba(255, 255, 255, 0.03); 
                         border: 1px solid rgba(255, 255, 255, 0.08);
                     }
@@ -159,7 +159,7 @@ export default class ProjectView {
                                 <option value="tangible">🟢 Solo Tangibles</option>
                                 <option value="intangible">🟣 Solo Intangibles</option>
                             </select>
-                            <button class="btn-create-task" id="btnOpenCreateTask">➕ Nueva Tarea</button>
+                            <button class="btn-create-task" id="btnOpenCreateTask">➕ Instanciar Work Order</button>
                         </div>
                     </div>
 
@@ -168,45 +168,17 @@ export default class ProjectView {
 
                 <div class="modal-overlay" id="createTaskModal">
                     <div class="modal-content">
-                        <h2 style="color:white; margin-top:0; margin-bottom: 5px;">Añadir Tarea</h2>
-                        <p style="color:#888; font-size:0.8rem; margin-bottom:1.5rem;">Crea un entregable para la red.</p>
+                        <h2 style="color:white; margin-top:0; margin-bottom: 5px;">Abrir el Grifo (Nueva Work Order)</h2>
+                        <p style="color:#888; font-size:0.8rem; margin-bottom:1.5rem;">Instancia una tarea a partir de las tuberías permanentes del Mapa VNA.</p>
                         
-                        <div style="display:flex; gap:10px;">
-                            <div class="form-group" style="flex:1;">
-                                <label>Origen (Quién lo hace)</label>
-                                <select id="newTaskFrom" class="form-control"></select>
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label>Destino (Quién lo recibe)</label>
-                                <select id="newTaskTo" class="form-control"></select>
-                            </div>
+                        <div class="form-group">
+                            <label>Flujo / Tubería de Valor a Instanciar</label>
+                            <select id="newTaskFlowId" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue); font-weight:bold;"></select>
                         </div>
 
                         <div class="form-group">
-                            <label>Entregable</label>
-                            <select id="newTaskTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.1); border-color: var(--accent-blue);">
-                                <option value="">Selecciona Origen primero...</option>
-                            </select>
-                            <input type="text" id="newTaskName" class="form-control" placeholder="Nombre del nuevo entregable..." style="display:none; margin-top:10px;">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Contexto / Instrucciones (Opcional)</label>
-                            <textarea id="newTaskDesc" class="form-control" rows="2" placeholder="Detalles de lo que se espera de esta tarea..."></textarea>
-                        </div>
-
-                        <div style="display:flex; gap:10px;">
-                            <div class="form-group" style="flex:1;">
-                                <label>Tipo de Valor</label>
-                                <select id="newTaskType" class="form-control">
-                                    <option value="tangible">🟢 Tangible (Código, Diseño...)</option>
-                                    <option value="intangible">🟣 Intangible (Auditoría, Plan...)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="width:100px;">
-                                <label>Horas Est.</label>
-                                <input type="number" id="newTaskHours" class="form-control" value="2" min="0.5" step="0.5">
-                            </div>
+                            <label>Contexto / Instrucciones para esta instancia</label>
+                            <textarea id="newTaskDesc" class="form-control" rows="2" placeholder="Detalles específicos para esta ocasión..."></textarea>
                         </div>
 
                         <div class="form-group" style="margin-top: 10px; border-top: 1px dashed #333; padding-top: 15px;">
@@ -218,7 +190,7 @@ export default class ProjectView {
 
                         <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
                             <button class="btn btn-outline" style="background:transparent; border:1px solid #555; color:white; padding:10px 20px; border-radius:8px; cursor:pointer;" id="btnCancelCreateTask">Cancelar</button>
-                            <button class="btn btn-primary" style="background:var(--accent-blue); color:black; font-weight:bold; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;" id="btnConfirmCreateTask">Añadir Tarea</button>
+                            <button class="btn btn-primary" style="background:var(--accent-blue); color:black; font-weight:bold; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;" id="btnConfirmCreateTask">Generar Tarea</button>
                         </div>
                     </div>
                 </div>
@@ -230,7 +202,7 @@ export default class ProjectView {
 
     executeViewScript() {
         Sidebar.initListeners();
-        PageHeader.execute(); // Inicializa el selector móvil
+        PageHeader.execute(); 
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
@@ -253,13 +225,6 @@ export default class ProjectView {
 
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         
-        // VISIBILIDAD DE BOTÓN CREAR
-        if (!isPO) {
-            this.currentFilter = 'all'; 
-        } else {
-            document.getElementById('btnOpenCreateTask').style.display = 'flex';
-        }
-
         // TABS LOGIC
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         tabBtns.forEach(btn => {
@@ -301,137 +266,81 @@ export default class ProjectView {
                         payload: { userId: activeUserId, profile: { isOpenToWork: newStatus } }
                     });
                     
-                    // Efectos visuales inmediatos
                     btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
                     btnToggleAvailability.innerText = newStatus ? '🟢 Disponible' : '🔴 Ocupado';
                     
                     const workspace = document.querySelector('.workspace');
-                    if (newStatus) {
-                        workspace.classList.add('is-open-to-work');
-                    } else {
-                        workspace.classList.remove('is-open-to-work');
-                    }
+                    if (newStatus) workspace.classList.add('is-open-to-work');
+                    else workspace.classList.remove('is-open-to-work');
                 }
             });
         }
 
         // -------------------------------------------------------------
-        // LÓGICA DE CREACIÓN DE TAREAS Y MAPA VNA
+        // LÓGICA DE CREACIÓN DE WORK ORDERS (V10)
         // -------------------------------------------------------------
         const createModal = document.getElementById('createTaskModal');
+        const selFlow = document.getElementById('newTaskFlowId');
         
-        const selFrom = document.getElementById('newTaskFrom');
-        const selTo = document.getElementById('newTaskTo');
-        const selTemplate = document.getElementById('newTaskTemplate');
-        const inpName = document.getElementById('newTaskName');
-        const selType = document.getElementById('newTaskType');
-        const inpHours = document.getElementById('newTaskHours');
-
-        const updateTemplatesDropdown = () => {
-            const p = store.getState().projects.find(proj => proj.id === this.activeProjectId);
-            const roleId = selFrom.value;
-            const r = p.roles.find(rol => rol.id === roleId);
-            const levelId = r ? r.levelId : '@baixos';
-            
-            const sectorData = GLOBAL_ONTOLOGY[p.sector || 'startup_tech'];
-            let templates = [];
-            if (sectorData && sectorData[levelId] && sectorData[levelId].standard_deliverables) {
-                templates = sectorData[levelId].standard_deliverables;
-            }
-
-            let html = `<option value="">-- Selecciona Entregable --</option>`;
-            templates.forEach((t, i) => {
-                html += `<option value="${i}" data-type="${t.tipo}" data-hrs="${t.estimatedHours}">${t.tipo === 'tangible' ? '🟢' : '🟣'} ${t.name}</option>`;
-            });
-            html += `<option value="manual" style="font-weight:bold; color:var(--accent-orange);">✍️ Crear Nuevo (Mutar Mapa VNA)...</option>`;
-            
-            selTemplate.innerHTML = html;
-            inpName.style.display = 'none';
-        };
-
         document.getElementById('btnOpenCreateTask').addEventListener('click', () => {
             const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const roleOpts = activeProject.roles.filter(r => !r.isArchived).map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
-            selFrom.innerHTML = roleOpts;
-            selTo.innerHTML = roleOpts;
-            if(activeProject.roles.length > 1) selTo.selectedIndex = 1;
+            const flows = activeProject.vna_flows || [];
+            
+            if (flows.length === 0) {
+                alert("Debes dibujar Tuberías (Flujos) en el Mapa VNA antes de poder generar tareas en el Kanban.");
+                window.location.href = '/v5/map';
+                return;
+            }
 
-            let userOpts = `<option value="">-- Dejar Libre en Mercado --</option>`;
+            let flowOpts = '';
+            flows.forEach(f => {
+                const rFrom = activeProject.roles.find(r => r.id === f.from);
+                const rTo = activeProject.roles.find(r => r.id === f.to);
+                const nameF = rFrom ? rFrom.name : 'Unknown';
+                const nameT = rTo ? rTo.name : 'Unknown';
+                flowOpts += `<option value="${f.id}">${f.template} (${nameF} -> ${nameT})</option>`;
+            });
+            selFlow.innerHTML = flowOpts;
+
+            let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
             (activeProject.usuarios || []).forEach(u => {
                 const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
                 userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
             });
             document.getElementById('newTaskAssignee').innerHTML = userOpts;
 
-            updateTemplatesDropdown();
             createModal.style.display = 'flex';
-        });
-
-        selFrom.addEventListener('change', updateTemplatesDropdown);
-        
-        selTemplate.addEventListener('change', (e) => {
-            if (e.target.value === 'manual') {
-                inpName.style.display = 'block';
-                inpName.value = '';
-                inpName.focus();
-            } else if (e.target.value !== "") {
-                inpName.style.display = 'none';
-                const selectedOpt = e.target.options[e.target.selectedIndex];
-                selType.value = selectedOpt.getAttribute('data-type');
-                inpHours.value = selectedOpt.getAttribute('data-hrs');
-            } else {
-                inpName.style.display = 'none';
-            }
         });
 
         document.getElementById('btnCancelCreateTask').addEventListener('click', () => createModal.style.display = 'none');
 
         document.getElementById('btnConfirmCreateTask').addEventListener('click', async () => {
-            const from = selFrom.value;
-            const to = selTo.value;
+            const flowId = selFlow.value;
             const desc = document.getElementById('newTaskDesc').value.trim();
             const assignee = document.getElementById('newTaskAssignee').value;
             
-            let finalName = "";
-            let type = selType.value;
-            let hours = parseFloat(inpHours.value) || 1;
-            
-            const isManualNewFlow = selTemplate.value === 'manual';
+            if(!flowId) return alert("Selecciona un Flujo base.");
 
-            if (isManualNewFlow) {
-                finalName = inpName.value.trim();
-            } else {
-                const selectedOpt = selTemplate.options[selTemplate.selectedIndex];
-                if (!selectedOpt || selectedOpt.value === "") return alert("Selecciona un entregable o crea uno nuevo.");
-                finalName = selectedOpt.innerText.replace('🟢 ', '').replace('🟣 ', '');
-            }
-
-            if(!finalName) return alert("Por favor, introduce el nombre del entregable.");
-            if(from === to) return alert("Una tarea debe fluir entre dos roles diferentes para aportar valor.");
-
-            const newHash = 'tx_' + Math.random().toString(36).substr(2, 9);
+            const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
 
             await store.dispatch({
-                type: 'ADD_TRANSACTION',
+                type: 'SPAWN_WORK_ORDER',
                 payload: {
                     projectId: this.activeProjectId,
-                    tx: {
+                    workOrder: {
                         hash: newHash,
-                        from: from,
-                        to: to,
-                        entregable: finalName,
-                        descripcionContexto: desc,
-                        tipo: type,
-                        horas: hours,
-                        status: 'theoretical'
+                        flowId: flowId,
+                        comentario: desc,
+                        status: 'theoretical',
+                        realHours: 0
                     }
                 }
             });
 
             if (assignee !== "") {
                 await store.dispatch({
-                    type: 'PING_TRANSACTION',
-                    payload: { projectId: this.activeProjectId, txHash: newHash, userId: assignee }
+                    type: 'PING_WORK_ORDER',
+                    payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee }
                 });
             }
 
@@ -440,7 +349,7 @@ export default class ProjectView {
         });
 
         // -------------------------------------------------------------
-        // KANBAN ACTIONS LOGIC
+        // KANBAN ACTIONS LOGIC (V10 & V9 Legacy Support)
         // -------------------------------------------------------------
         const taskGrid = document.getElementById('taskGrid');
         taskGrid.addEventListener('click', async (e) => {
@@ -449,18 +358,23 @@ export default class ProjectView {
             const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
             if (!currProject) return;
 
+            const isLegacyTx = target.dataset.legacy === "true";
+            const txHash = target.dataset.hash;
+
             if (target.classList.contains('btn-approve')) {
                 const action = target.dataset.action;
-                const txHash = target.dataset.hash;
-
                 if (action === 'approve-pull') {
                     const targetUserId = target.dataset.userid;
-                    await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: currProject.id, txHash, userId: targetUserId } });
+                    const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                    const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
+                    await store.dispatch({ type: actType, payload });
                     this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                 } 
                 else if (action === 'consolidate') {
                     if (confirm('¿Aprobar Proof of Work y generar Slices inmutables?')) {
-                        await store.dispatch({ type: 'APPROVE_TRANSACTION', payload: { projectId: currProject.id, txHash } });
+                        const actType = isLegacyTx ? 'APPROVE_TRANSACTION' : 'APPROVE_WORK_ORDER';
+                        const payload = isLegacyTx ? { projectId: currProject.id, txHash } : { projectId: currProject.id, woHash: txHash };
+                        await store.dispatch({ type: actType, payload });
                         this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                     }
                 }
@@ -468,22 +382,22 @@ export default class ProjectView {
             }
 
             if (target.classList.contains('btn-pull')) {
-                const txHash = target.dataset.hash;
                 const action = target.dataset.action;
+                const actType = isLegacyTx 
+                    ? (action === 'request' ? 'REQUEST_TRANSACTION' : 'PING_TRANSACTION')
+                    : (action === 'request' ? 'REQUEST_WORK_ORDER' : 'PING_WORK_ORDER');
                 
-                if (action === 'request') {
-                    await store.dispatch({ type: 'REQUEST_TRANSACTION', payload: { projectId: currProject.id, txHash, userId: currentState.session.activeUserId } });
-                } else {
-                    await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: currProject.id, txHash, userId: currentState.session.activeUserId } });
-                }
+                const payload = isLegacyTx 
+                    ? { projectId: currProject.id, txHash, userId: currentState.session.activeUserId }
+                    : { projectId: currProject.id, woHash: txHash, userId: currentState.session.activeUserId };
+
+                await store.dispatch({ type: actType, payload });
                 this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                 return;
             }
 
             if (target.classList.contains('btn-push')) {
-                const txHash = target.dataset.hash;
                 const usersInProject = currProject.usuarios || [];
-                
                 if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
                 
                 let userListStr = "IDs disponibles:\n";
@@ -493,13 +407,10 @@ export default class ProjectView {
                 });
 
                 const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:\n\n${userListStr}`);
-                
                 if (targetUserId) {
-                    const exists = usersInProject.find(u => u.id === targetUserId);
-                    if (!exists && targetUserId !== currProject.ownerId) {
-                        return alert("Ese usuario no es miembro del proyecto. Invítalo primero.");
-                    }
-                    await store.dispatch({ type: 'PING_TRANSACTION', payload: { projectId: currProject.id, txHash, userId: targetUserId } });
+                    const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                    const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
+                    await store.dispatch({ type: actType, payload });
                     this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
                 }
                 return;
@@ -513,7 +424,6 @@ export default class ProjectView {
         const grid = document.getElementById('taskGrid');
         grid.innerHTML = '';
 
-        const txs = project.transactions || [];
         const state = store.getState();
         const activeUser = state.session.activeUserId;
         const isPO = project.ownerId === activeUser || state.session.role === 'ecosystem-owner';
@@ -521,7 +431,13 @@ export default class ProjectView {
         let counts = { op: 0, cur: 0, con: 0 };
         let activeCardsHtml = [];
 
-        txs.forEach(tx => {
+        // V10: Unificar Work Orders (Nuevas) y Transactions (Legacy)
+        const allTasks = [
+            ...(project.work_orders || []).map(wo => ({ ...wo, isWorkOrder: true })),
+            ...(project.transactions || []).map(tx => ({ ...tx, isWorkOrder: false }))
+        ];
+
+        allTasks.forEach(tx => {
             let tabCategory = '';
             if (tx.status === 'theoretical' || tx.status === 'requested') { tabCategory = 'oportunidades'; counts.op++; }
             else if (tx.status === 'pinged' || tx.status === 'reported') { tabCategory = 'en-curso'; counts.cur++; }
@@ -529,8 +445,17 @@ export default class ProjectView {
 
             if (tabCategory !== this.currentTab) return;
 
-            if (this.currentFilter === 'tangible' && tx.tipo !== 'tangible') return;
-            if (this.currentFilter === 'intangible' && tx.tipo !== 'intangible') return;
+            // Extraer metadata del Flow si es V10, o de la Tx si es V9
+            let flowData = null;
+            if (tx.isWorkOrder) {
+                flowData = (project.vna_flows || []).find(f => f.id === tx.flowId) || { tipo: 'tangible', template: 'Tarea Huérfana', estimatedHours: 0 };
+            } else {
+                flowData = tx; // Legacy Tx has all data inside
+            }
+
+            if (this.currentFilter === 'tangible' && flowData.tipo !== 'tangible') return;
+            if (this.currentFilter === 'intangible' && flowData.tipo !== 'intangible') return;
+            
             if (this.currentFilter === 'mine') {
                 if (tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
             }
@@ -538,7 +463,7 @@ export default class ProjectView {
                 if (tabCategory !== 'oportunidades' && tx.assigneeId !== activeUser) return;
             }
 
-            activeCardsHtml.push(this.createTaskCardHTML(tx, project, state.session, isPO));
+            activeCardsHtml.push(this.createTaskCardHTML(tx, flowData, project, state.session, isPO));
         });
 
         // Actualizar Badges Nativos del Componente PageHeader
@@ -562,14 +487,16 @@ export default class ProjectView {
         }
     }
 
-    createTaskCardHTML(tx, project, session, isPO) {
-        const role = project.roles.find(r => r.id === tx.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
-        const receiverRole = project.roles.find(r => r.id === tx.to) || { name: 'Destino', levelId: '?' };
+    createTaskCardHTML(tx, flowData, project, session, isPO) {
+        const role = project.roles.find(r => r.id === flowData.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
+        const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?' };
         
         const color = this.getColorForLevel(role.levelId);
-        const receiverColor = this.getColorForLevel(receiverRole.levelId);
-        const tipoColor = tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-        const tipoEmoji = tx.tipo === 'tangible' ? '🟢' : '🟣';
+        const tipoColor = flowData.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+        const tipoEmoji = flowData.tipo === 'tangible' ? '🟢' : '🟣';
+        
+        const isLegacy = !tx.isWorkOrder;
+        const hashAttr = `data-hash="${tx.hash}" data-legacy="${isLegacy}"`;
 
         let actionHtml = '';
         let statusTag = '';
@@ -578,11 +505,11 @@ export default class ProjectView {
             statusTag = `<span style="color:#aaa; font-size:0.75rem; border:1px solid #555; padding:2px 8px; border-radius:12px;">LIBRE</span>`;
             if (isPO) {
                 actionHtml = `
-                    <button class="btn-pull" data-hash="${tx.hash}" title="Adjudicarme la tarea">📥 Hacer PULL</button>
-                    <button class="btn-push" data-hash="${tx.hash}" title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
+                    <button class="btn-pull" ${hashAttr} title="Adjudicarme la tarea">📥 Hacer PULL</button>
+                    <button class="btn-push" ${hashAttr} title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
                 `;
             } else {
-                actionHtml = `<button class="btn-pull" data-action="request" data-hash="${tx.hash}">✋ Solicitar Tarea</button>`;
+                actionHtml = `<button class="btn-pull" data-action="request" ${hashAttr}>✋ Solicitar Tarea</button>`;
             }
         } 
         else if (tx.status === 'requested') {
@@ -595,7 +522,7 @@ export default class ProjectView {
                     <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px;">
                         <b>${reqName}</b> solicita ejecutar esto.
                     </div>
-                    <button class="btn-approve" data-action="approve-pull" data-hash="${tx.hash}" data-userid="${tx.assigneeId}">✅ Aprobar Asignación</button>
+                    <button class="btn-approve" data-action="approve-pull" ${hashAttr} data-userid="${tx.assigneeId}">✅ Aprobar Asignación</button>
                 `;
             } else {
                 actionHtml = `<div style="color: var(--accent-orange); font-size: 0.85rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando aprobación del PO...</div>`;
@@ -605,7 +532,8 @@ export default class ProjectView {
             statusTag = `<span style="color:var(--accent-orange); font-size:0.75rem; border:1px solid var(--accent-orange); padding:2px 8px; border-radius:12px;">EN CURSO</span>`;
             const isMine = tx.assigneeId === session.activeUserId;
             if (isMine) {
-                actionHtml = `<a href="/v5/focus" class="btn-focus" data-link>▶ MODO FOCUS / REPORTAR</a>`;
+                // Focus Mode envía parámetros URL para saber si es Legacy o V10
+                actionHtml = `<a href="/v5/focus?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link>▶ MODO FOCUS / REPORTAR</a>`;
             } else {
                 const worker = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
                 actionHtml = `<div style="color: #888; font-size: 0.85rem; text-align: center; padding: 10px; background:rgba(0,0,0,0.3); border-radius: 8px;">Ejecutando: <span style="color:white; font-weight:bold;">${worker ? worker.name : tx.assigneeId}</span></div>`;
@@ -618,7 +546,7 @@ export default class ProjectView {
                     <span>Horas Reales: <strong style="color: white;">${tx.realHours}h</strong></span>
                     <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink ? '🔗 Ver Proof' : 'No Link'}</a>
                 </div>
-                ${isPO ? `<button class="btn-approve" data-action="consolidate" data-hash="${tx.hash}">✅ Sellar en Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center;">Pendiente de firma del PO.</div>`}
+                ${isPO ? `<button class="btn-approve" data-action="consolidate" ${hashAttr}>✅ Sellar en Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center;">Pendiente de firma del PO.</div>`}
             `;
         }
         else if (tx.status === 'consolidated') {
@@ -631,7 +559,12 @@ export default class ProjectView {
         }
 
         const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 15px rgba(255,82,82,0.1);' : '';
-        const contextHtml = tx.descripcionContexto ? `<div class="task-desc-bubble">💬 "${tx.descripcionContexto}"</div>` : '';
+        const titleText = flowData.template || flowData.entregable || 'Work Order';
+        
+        // Mostrar contexto propio de la instancia, si no, el del flow base
+        const contextText = tx.comentario || tx.descripcionContexto || flowData.context || '';
+        const contextHtml = contextText ? `<div class="task-desc-bubble">💬 "${contextText}"</div>` : '';
+        const hoursText = flowData.estimatedHours || flowData.horas || 1;
 
         return `
             <div class="task-card" style="${borderStyle}">
@@ -644,12 +577,12 @@ export default class ProjectView {
                     ${statusTag}
                 </div>
                 
-                <h3 class="task-title">${tx.entregable}</h3>
+                <h3 class="task-title">${titleText}</h3>
                 ${contextHtml}
                 
                 <div class="task-meta-row">
-                    <span style="font-weight:bold; color:white;">⏱ ${tx.horas}h <span style="color:#666; font-weight:normal;">Est.</span></span>
-                    <span style="color: ${tipoColor}; font-weight: bold; font-size:0.7rem;">${tipoEmoji} ${tx.tipo.toUpperCase()}</span>
+                    <span style="font-weight:bold; color:white;">⏱ ${hoursText}h <span style="color:#666; font-weight:normal;">Est.</span></span>
+                    <span style="color: ${tipoColor}; font-weight: bold; font-size:0.7rem;">${tipoEmoji} ${flowData.tipo.toUpperCase()}</span>
                 </div>
 
                 <div class="task-actions">
