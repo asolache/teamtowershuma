@@ -656,4 +656,209 @@ export default class ProjectCreatorView {
 
         this.dom.container.querySelectorAll('.inp-role-level').forEach(sel => {
             sel.addEventListener('change', (e) => {
-                const idx = e.target.
+                const idx = e.target.dataset.idx;
+                const newLevel = e.target.value;
+                this.draftRoles[idx].levelId = newLevel;
+                const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
+                this.draftRoles[idx].multiplier = multipliers[newLevel];
+                this.renderDraftRoles();
+            });
+        });
+        this.dom.container.querySelectorAll('.inp-role-guardian').forEach(sel => {
+            sel.addEventListener('change', (e) => this.draftRoles[e.target.dataset.idx].guardian = e.target.value);
+        });
+        this.dom.container.querySelectorAll('.inp-role-name').forEach(inp => {
+            inp.addEventListener('input', (e) => this.draftRoles[e.target.dataset.idx].name = e.target.value);
+        });
+        this.dom.container.querySelectorAll('.inp-role-fmv').forEach(inp => {
+            inp.addEventListener('input', (e) => this.draftRoles[e.target.dataset.idx].fmv = parseFloat(e.target.value) || 0);
+        });
+        this.dom.container.querySelectorAll('.btn-del-role').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.draftRoles.splice(e.target.dataset.idx, 1);
+                this.renderDraftRoles();
+            });
+        });
+
+        this.renderMiniMap();
+    }
+
+    renderMiniMap() {
+        const container = document.getElementById('miniMapContainer');
+        if (!container) return;
+
+        container.innerHTML = '<svg id="mini-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>';
+        const svg = document.getElementById('mini-svg');
+
+        if (this.draftRoles.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+
+        const layout = { '@anxaneta': {x: 50, y: 20}, '@aixecador': {x: 50, y: 40}, '@dosos': {x: 35, y: 60}, '@baixos': {x: 65, y: 60}, '@pinya': {x: 50, y: 80} };
+        const levelCounts = {};
+
+        this.draftRoles.forEach((rol, i) => {
+            const level = rol.levelId || '@baixos';
+            levelCounts[level] = (levelCounts[level] || 0) + 1;
+            
+            const pos = { ...(layout[level] || {x:50, y:50}) };
+            if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
+
+            const el = document.createElement('div');
+            el.className = 'mini-node';
+            el.dataset.idx = i;
+            el.style.left = `${pos.x}%`; el.style.top = `${pos.y}%`;
+            el.style.borderColor = this.getColor(level);
+            el.innerHTML = this.getIcon(level);
+            el.title = `${rol.name} (${this.guardians.find(g => g.id === rol.guardian)?.label || ''})`;
+            container.appendChild(el);
+        });
+
+        setTimeout(() => {
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            defs.innerHTML = `
+                <marker id="mini-arrow-tangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-green)"/></marker>
+                <marker id="mini-arrow-intangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-purple)"/></marker>
+            `;
+            svg.appendChild(defs);
+
+            const pairCounts = {};
+            this.draftTxs.forEach((tx, i) => {
+                const fromIdx = this.draftRoles.findIndex(r => r.levelId === tx.fromLevel);
+                const toIdx = this.draftRoles.findIndex(r => r.levelId === tx.toLevel);
+                
+                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+                    const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
+                    if (!pairCounts[key]) pairCounts[key] = [];
+                    pairCounts[key].push({ tx, fromIdx, toIdx, i });
+                }
+            });
+
+            const canvRect = container.getBoundingClientRect();
+
+            Object.keys(pairCounts).forEach(key => {
+                const edges = pairCounts[key];
+                edges.forEach((edge, multiIdx) => {
+                    const dom1 = container.querySelector(`.mini-node[data-idx="${edge.fromIdx}"]`);
+                    const dom2 = container.querySelector(`.mini-node[data-idx="${edge.toIdx}"]`);
+                    if (!dom1 || !dom2) return;
+
+                    const r1 = dom1.getBoundingClientRect();
+                    const r2 = dom2.getBoundingClientRect();
+
+                    const x1 = r1.left + r1.width/2 - canvRect.left;
+                    const y1 = r1.top + r1.height/2 - canvRect.top;
+                    const x2 = r2.left + r2.width/2 - canvRect.left;
+                    const y2 = r2.top + r2.height/2 - canvRect.top;
+
+                    const dx = x2 - x1, dy = y2 - y1;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const nx = -dy / dist, ny = dx / dist;
+
+                    let offset = 0;
+                    if (edges.length > 1) {
+                        const step = 20; 
+                        offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
+                    }
+
+                    const cx = (x1 + x2) / 2 + nx * offset;
+                    const cy = (y1 + y2) / 2 + ny * offset;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+                    path.setAttribute('marker-end', edge.tx.tipo === 'tangible' ? 'url(#mini-arrow-tangible)' : 'url(#mini-arrow-intangible)');
+                    
+                    path.style.fill = 'none';
+                    path.style.stroke = edge.tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+                    path.style.strokeWidth = '2';
+                    if(edge.tx.tipo === 'intangible') path.style.strokeDasharray = '4,4';
+                    
+                    svg.appendChild(path);
+                    
+                    const txtX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+                    const txtY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+                    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    txt.setAttribute('x', txtX); 
+                    txt.setAttribute('y', txtY - 4);
+                    txt.setAttribute('text-anchor', 'middle');
+                    txt.style.cssText = `fill:${edge.tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:10px;font-weight:bold;font-family:monospace;paint-order:stroke;stroke:#111;stroke-width:4px;`;
+                    txt.textContent = `[${edge.i + 1}]`;
+                    svg.appendChild(txt);
+                });
+            });
+        }, 150);
+    }
+
+    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
+    getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
+
+    async finalizeProject() {
+        const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
+        const visionText = this.dom.inpVision.value.trim();
+        const arch = this.dom.inpArchetype.value; 
+        
+        this.dom.btnLaunch.disabled = true;
+        this.dom.btnLaunch.innerText = 'Creando Tuberías V10...';
+
+        // 1. CREATE_PROJECT: Instancia base V10
+        await store.dispatch({ 
+            type: 'CREATE_PROJECT', 
+            payload: {
+                id: projectId,
+                nombre: this.dom.inpName.value.trim() || 'Nueva Red',
+                sector: this.dom.inpSector.value,
+                prompt: visionText, 
+                archetype: arch, 
+                roles: this.draftRoles,
+                vna_flows: [],
+                work_orders: []
+            } 
+        });
+
+        // 2. Inyectar Pitch y Tags
+        await store.dispatch({
+            type: 'UPDATE_PROJECT_INFO',
+            payload: { 
+                projectId: projectId, 
+                updates: { 
+                    presentation: this.draftPresentation,
+                    tags: this.draftTags
+                } 
+            }
+        });
+
+        const state = store.getState();
+        const p = state.projects.find(x => x.id === projectId);
+        
+        if (p && this.draftTxs && this.draftTxs.length > 0) {
+            for (const aiTx of this.draftTxs) {
+                const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
+                const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
+                
+                if (roleFrom && roleTo) {
+                    // V10: Creador de Tuberías permanentes desde la IA/Plantilla
+                    await store.dispatch({
+                        type: 'ADD_FLOW',
+                        payload: {
+                            projectId: projectId,
+                            flow: {
+                                from: roleFrom.id, 
+                                to: roleTo.id,     
+                                estimatedHours: aiTx.horas || 2,
+                                template: aiTx.template || aiTx.entregable || 'Flow',
+                                tipo: aiTx.tipo || 'tangible'
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // Fija el proyecto como activo y manda al Kanban Oficial
+        localStorage.setItem('tt_active_project', projectId);
+        window.location.href = '/v5/project';
+    }
+}
