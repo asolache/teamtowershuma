@@ -1,6 +1,6 @@
 // ==========================================================================
-// KERNEL v10.3 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
-// Motor de Estado Global, RBAC, Contabilidad Triple Entrada, Slicing Pie, Privacidad, Capital e Identidad Fractal
+// KERNEL v11.0 - SISTEMA OPERATIVO TEAMTOWERS (store.js)
+// Motor de Estado Global, RBAC, Gobernanza Fractal, Slicing Pie y Time-VNA
 // ==========================================================================
 
 import { GLOBAL_ONTOLOGY } from '../data/ontology.js';
@@ -20,7 +20,9 @@ const initialState = {
         ecosystemName: 'TeamTowers Network',
         globalPrompt: 'Eres el orquestador principal de un sistema DAO enfocado en meritocracia y transparencia.',
         allowUserCreation: false,
-        archetype: 'startup' 
+        archetype: 'startup',
+        // NUEVO V11: Gobernanza Macro
+        projectCreationMode: 'open' // 'open', 'templates_only', 'closed'
     },
     ontology: { sectores: {} },
     globalUsers: [
@@ -94,7 +96,14 @@ async function asyncReducer(state, action) {
                 const pUser = newState.projects.find(p => p.id === action.payload.projectId);
                 if (pUser) {
                     pUser.usuarios = pUser.usuarios || [];
-                    if (!pUser.usuarios.find(u => u.id === newId)) pUser.usuarios.push({ id: newId, joinedAt: Date.now() });
+                    if (!pUser.usuarios.find(u => u.id === newId)) {
+                        // V11: Nuevo usuario entra con permisos base
+                        pUser.usuarios.push({ 
+                            id: newId, 
+                            joinedAt: Date.now(), 
+                            permissions: { canCreateWO: false, canApprove: false } 
+                        });
+                    }
                 }
             }
             break;
@@ -173,16 +182,24 @@ async function asyncReducer(state, action) {
 
             const initHash = await generateSHA256(`GENESIS_${projId}_${Date.now()}`);
 
+            // V11: Nuevo usuario (Owner)
+            const initialUsers = action.payload.usuarios || [{ id: ownerId, permissions: { canCreateWO: true, canApprove: true } }];
+
             newState.projects.push({
                 id: projId, nombre: action.payload.nombre || 'Nuevo Proyecto', sector: pSector, tipo: action.payload.tipo || 'project', 
-                archetype: arquetipo, ownerId: ownerId, prompt: action.payload.prompt || '', config: { tokenomics: 'startup', archetype: arquetipo },
-                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : false, 
+                archetype: arquetipo, ownerId: ownerId, prompt: action.payload.prompt || '', 
+                config: { tokenomics: 'startup', archetype: arquetipo },
+                // V11: Gobernanza del Castell
+                governance: {
+                    workOrderCreation: 'open' // open, po_only, custom
+                },
+                isPrivate: action.payload.isPrivate !== undefined ? action.payload.isPrivate : true, // V11 Muro de cristal activado por defecto
                 roles: baseRoles, 
-                usuarios: action.payload.usuarios || [{ id: ownerId }], 
+                usuarios: initialUsers, 
                 asignaciones: [], 
                 transactions: action.payload.transactions || [], 
-                vna_flows: action.payload.vna_flows || [],       
-                work_orders: action.payload.work_orders || [],   
+                vna_flows: action.payload.vna_flows || [],        
+                work_orders: action.payload.work_orders || [],    
                 ledger: action.payload.ledger || [], 
                 alerts: [], 
                 invitations: [], 
@@ -231,7 +248,21 @@ async function asyncReducer(state, action) {
 
         case 'UPDATE_PROJECT_INFO': {
             const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pInfo) Object.assign(pInfo, action.payload.updates);
+            if (pInfo) {
+                // V11: Merge profundo si es para usuarios o gobernanza
+                if (action.payload.updates.usuarios) {
+                    action.payload.updates.usuarios.forEach(newU => {
+                        const idx = pInfo.usuarios.findIndex(u => u.id === newU.id);
+                        if (idx > -1) {
+                            pInfo.usuarios[idx] = { ...pInfo.usuarios[idx], ...newU };
+                        } else {
+                            pInfo.usuarios.push(newU);
+                        }
+                    });
+                    delete action.payload.updates.usuarios;
+                }
+                Object.assign(pInfo, action.payload.updates);
+            }
             break;
         }
 
@@ -299,13 +330,15 @@ async function asyncReducer(state, action) {
                 pAssUsr.asignaciones = pAssUsr.asignaciones.filter(a => a.roleId !== action.payload.roleId);
                 pAssUsr.asignaciones.push({ roleId: action.payload.roleId, userId: action.payload.userId, assignedAt: Date.now() });
                 const prevUsers = pAssUsr.usuarios || [];
-                if (!prevUsers.find(u => u.id === action.payload.userId)) pAssUsr.usuarios.push({ id: action.payload.userId });
+                if (!prevUsers.find(u => u.id === action.payload.userId)) {
+                    pAssUsr.usuarios.push({ id: action.payload.userId, permissions: { canCreateWO: false, canApprove: false } });
+                }
             }
             break;
         }
 
         // =========================================================
-        // ARQUITECTURA V10: SEPARACIÓN DE MODELO E INSTANCIA
+        // ARQUITECTURA V10 & V11: SEPARACIÓN DE MODELO E INSTANCIA
         // =========================================================
 
         case 'ADD_FLOW': {
@@ -314,7 +347,10 @@ async function asyncReducer(state, action) {
                 if (!pFlowAdd.vna_flows) pFlowAdd.vna_flows = [];
                 pFlowAdd.vna_flows.push({
                     ...action.payload.flow,
-                    id: action.payload.flow.id || ('flow_' + Date.now())
+                    id: action.payload.flow.id || ('flow_' + Date.now()),
+                    // V11 Time-VNA Analytics (Acumuladores)
+                    total_hours_processed: 0,
+                    total_txs: 0
                 });
             }
             break;
@@ -419,6 +455,10 @@ async function asyncReducer(state, action) {
                             multiplier = role.multiplier || 1;
                             fmv = role.fmv || 50;
                         }
+
+                        // V11: Time-VNA Analytics (Añadimos horas al tubo permanente)
+                        flow.total_hours_processed = (flow.total_hours_processed || 0) + (wo.realHours || 0);
+                        flow.total_txs = (flow.total_txs || 0) + 1;
                     }
 
                     // V10 EXACT MATH: Horas x FMV x Multiplicador
@@ -577,13 +617,17 @@ class Store {
 
         if (!this.state.globalUsers.find(u => u.id === 'usr_alvaro_001')) this.state.globalUsers.unshift(initialState.globalUsers[0]);
         if (this.state.session.activeUserId === 'ecosystem-admin') { this.state.session.activeUserId = 'usr_alvaro_001'; this.state.session.role = 'ecosystem-owner'; }
-        if (!this.state.config) this.state.config = initialState.config; else if (this.state.config.allowUserCreation === undefined) this.state.config.allowUserCreation = false;
+        
+        // V11 Default Configs
+        if (!this.state.config) this.state.config = initialState.config; 
+        if (this.state.config.projectCreationMode === undefined) this.state.config.projectCreationMode = 'open';
 
         if (this.state.projects) {
             this.state.projects = this.state.projects.map(p => ({
                 ...p, alerts: p.alerts || [], ownerId: p.ownerId || 'usr_alvaro_001', archetype: p.archetype || 'startup', genesisHash: p.genesisHash || ('0xGENESIS_LEGACY_' + p.id),
-                isPrivate: p.isPrivate !== undefined ? p.isPrivate : false, invitations: p.invitations || [],
-                vna_flows: p.vna_flows || [], work_orders: p.work_orders || [] 
+                isPrivate: p.isPrivate !== undefined ? p.isPrivate : true, invitations: p.invitations || [],
+                vna_flows: p.vna_flows || [], work_orders: p.work_orders || [],
+                governance: p.governance || { workOrderCreation: 'open' } // V11 Default Governance
             }));
         }
         if (!this.state.macroFlows) this.state.macroFlows = [];
@@ -604,16 +648,45 @@ class Store {
     
     subscribe(listener) { this.listeners.push(listener); }
 
+    // =========================================================
+    // V11 GOBERNANZA FRACTAL: PRIVACIDAD & PERMISOS
+    // =========================================================
     canUserViewProject(projectId, userId, globalRole) {
         if (globalRole === 'ecosystem-owner') return true; 
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return false;
-        if (!p.isPrivate) return true; 
+        
         if (p.ownerId === userId) return true;
         if (p.usuarios && p.usuarios.find(u => u.id === userId)) return true;
+        
+        // El Muro de Cristal: Si es privado y no estás en la Colla, no entras.
+        if (p.isPrivate) return false; 
+        
+        return true; // Es público y visible para todos
+    }
+
+    canUserCreateWorkOrder(projectId, userId) {
+        if (this.state.session.role === 'ecosystem-owner') return true;
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return false;
+        
+        if (p.ownerId === userId) return true; // El PO siempre puede
+        
+        const gov = p.governance || { workOrderCreation: 'open' };
+        if (gov.workOrderCreation === 'open') return true;
+        if (gov.workOrderCreation === 'po_only') return false;
+        
+        if (gov.workOrderCreation === 'custom') {
+            const u = p.usuarios?.find(x => x.id === userId);
+            return u?.permissions?.canCreateWO === true;
+        }
+        
         return false;
     }
 
+    // =========================================================
+    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA
+    // =========================================================
     getRoleEconomicsAtTime(project, roleId, targetTimestamp) {
         const role = project.roles.find(r => r.id === roleId);
         if (!role) return { id: 'unknown', fmv: 50, multiplier: 1.0 };
