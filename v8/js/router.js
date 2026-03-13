@@ -1,4 +1,4 @@
-// v7/js/router.js
+// v8/js/router.js
 
 const routes = {
     '/': 'HomeView',
@@ -39,9 +39,11 @@ class Router {
     }
 
     async handleRoute() {
-        let path = window.location.pathname;
+        // ESCUDO DE MAYÚSCULAS: Convierte "/Dashboard" en "/dashboard"
+        let path = window.location.pathname.toLowerCase(); 
         
-        const basePath = '/v7';
+        // MIGRACIÓN A V8: El motor ahora sabe que vive en la v8
+        const basePath = '/v8';
         if (path.startsWith(basePath)) path = path.slice(basePath.length);
         if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
         if (path === '' || path === '/') path = '/';
@@ -49,9 +51,11 @@ class Router {
         const viewFileName = routes[path] || 'HomeView';
 
         try {
-            const modulePath = `/v7/js/views/${viewFileName}.js`;
+            // CACHE BUSTING V8: Evitamos que el navegador se trague archivos viejos
+            const cacheBuster = Date.now();
+            const modulePath = `/v8/js/views/${viewFileName}.js?v=${cacheBuster}`;
             
-            // FIX ANTIFALLOS: Importación en dos pasos para evitar conflictos con la palabra reservada 'default'
+            // FIX ANTIFALLOS: Importación en dos pasos
             const module = await import(modulePath);
             const View = module.default;
             const view = new View();
@@ -65,7 +69,7 @@ class Router {
             window.scrollTo(0, 0);
 
         } catch (error) {
-            console.error(`💥 Router V7 Error cargando [${viewFileName}]:`, error);
+            console.error(`💥 Router V8 Error cargando [${viewFileName}]:`, error);
             this.renderError(viewFileName, error);
         }
     }
@@ -76,10 +80,10 @@ class Router {
                 <h1 style="color: #ff5252; font-size: 5rem; margin-bottom: 1rem;">404</h1>
                 <h2 style="color: white; margin-bottom: 1rem;">Módulo "${viewName}" no hallado</h2>
                 <p style="color: #888; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; word-break: break-all; line-height: 1.5;">
-                    El archivo <b>/v7/js/views/${viewName}.js</b> falló al cargar.<br><br>
+                    El archivo <b>/v8/js/views/${viewName}.js</b> falló al cargar.<br><br>
                     <span style="color: #ff5252;">${error.message}</span>
                 </p>
-                <a href="/v7/" data-link style="color: #00b0ff; text-decoration: none; font-weight: bold; border: 1px solid #00b0ff; padding: 10px 20px; border-radius: 8px;">REBOOT SYSTEM</a>
+                <a href="/v8/" data-link style="color: #00b0ff; text-decoration: none; font-weight: bold; border: 1px solid #00b0ff; padding: 10px 20px; border-radius: 8px;">REBOOT SYSTEM V8</a>
             </div>
         `;
     }
