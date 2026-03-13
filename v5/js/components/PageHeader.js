@@ -1,255 +1,183 @@
-// v5/js/components/PageHeader.js
+// v5/js/components/Sidebar.js
 import { store } from '../core/store.js';
 
-export const PageHeader = {
-    getHtml: (config) => {
+export const Sidebar = {
+    getHtml: (currentPath = '') => {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
-        const user = state.globalUsers.find(u => u.id === activeUserId);
-        const currentPath = window.location.pathname;
+        const role = state.session.role;
         
-        const userProjects = state.projects.filter(p => 
-            state.session.role === 'ecosystem-owner' || 
-            p.ownerId === activeUserId || 
-            (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
-        );
+        let pId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === pId);
         
-        let activeProjectId = localStorage.getItem('tt_active_project');
-
-        const getArchIcon = (arch) => {
-            const icons = { 'startup': '🚀', 'dao': '🤖', 'corp': '🏢', 'corporate': '🏢', 'incubator': '🏭', 'sos': '🆘' };
-            return icons[arch] || '🪐';
-        };
-
-        const enrichedProjects = userProjects.map(p => {
-            const activity = (p.vna_flows?.length || 0) + (p.work_orders?.length || 0) + (p.ledger?.length || 0);
-            const tsMatch = p.id.match(/\d+/);
-            const timestamp = tsMatch ? parseInt(tsMatch[0]) : 0;
-            return { ...p, activity, timestamp, icon: getArchIcon(p.archetype) };
-        });
-
-        enrichedProjects.sort((a, b) => b.timestamp - a.timestamp);
-        const activeProjects = [...enrichedProjects].filter(p => p.activity > 0).sort((a, b) => b.activity - a.activity).slice(0, 3);
-        const activeIds = activeProjects.map(p => p.id);
-        const recentProjects = enrichedProjects.filter(p => !activeIds.includes(p.id));
-
-        if (!activeProjectId && enrichedProjects.length > 0) {
-            activeProjectId = activeProjects.length > 0 ? activeProjects[0].id : recentProjects[0].id;
+        if (!project) {
+            const userProjects = state.projects.filter(p => 
+                role === 'ecosystem-owner' || 
+                p.ownerId === activeUserId || 
+                (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+            );
+            project = userProjects.length > 0 ? userProjects[userProjects.length - 1] : null;
         }
 
-        let projectOptionsHtml = '';
-        if (activeProjects.length > 0) {
-            projectOptionsHtml += `<optgroup label="🔥 MÁS ACTIVAS">`;
-            activeProjects.forEach(p => {
-                projectOptionsHtml += `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.icon} ${p.nombre.toUpperCase()} (${p.activity})</option>`;
-            });
-            projectOptionsHtml += `</optgroup>`;
-        }
-        if (recentProjects.length > 0) {
-            projectOptionsHtml += `<optgroup label="🆕 RECIENTES / OTRAS">`;
-            recentProjects.forEach(p => {
-                projectOptionsHtml += `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.icon} ${p.nombre.toUpperCase()}</option>`;
-            });
-            projectOptionsHtml += `</optgroup>`;
-        }
+        const isCollapsed = localStorage.getItem('tt_sidebar_collapsed') === 'true';
+        const collapsedClass = isCollapsed ? 'collapsed' : '';
+        const arrowIcon = isCollapsed ? '→' : '←';
 
-        const showAuxLinks = currentPath.endsWith('/v5/') || currentPath.endsWith('/') || !config.tabs;
-        const auxLinksHtml = showAuxLinks ? `
-            <nav class="ph-utility-nav">
-                <a href="/v5/manifesto" data-link class="ph-utility-link">📖 CODEX</a>
-                <a href="/v5/help" data-link class="ph-utility-link">❓ AYUDA</a>
-            </nav>
-        ` : '';
+        // 1. Ecosistema
+        const globalSection = `
+            <div class="side-section">
+                <a href="/v5/" class="side-link ${currentPath === '/' ? 'active' : ''}" data-link title="Ecosistema (Centro de Mando)"><span class="icon">🌐</span> <span class="text">Ecosistema</span></a>
+            </div>
+        `;
 
-        let tabsHtml = '';
-        if (config.tabs && config.tabs.length > 0) {
-            tabsHtml = `
-                <div class="ph-tabs-container" id="phTabsContainer">
-                    ${config.tabs.map(t => `
-                        <button class="ph-tab-btn ${t.active ? 'active' : ''}" data-tab="${t.id}">
-                            ${t.label} ${t.badge ? `<span class="ph-tab-badge" id="badge-${t.id}">${t.badge}</span>` : ''}
-                        </button>
-                    `).join('')}
+        let projectSection = '';
+        if (project) {
+            const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx') ? 'active-pomodoro' : '';
+
+            // ORDEN SOLICITADO: 2. Dashboard, 3. Mapa, 4. Kanban Pull, 5. Focus, 6. Wallet, 7. La Colla
+            projectSection = `
+                <div class="side-section" style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <a href="/v5/dashboard" class="side-link ${currentPath === '/dashboard' ? 'active' : ''}" data-link title="Dashboard de Red">
+                        <span class="icon">🛰️</span> <span class="text">Dashboard</span>
+                    </a>
+                    
+                    <a href="/v5/map" class="side-link ${currentPath === '/map' ? 'active' : ''}" data-link title="Mapa de Valor VNA">
+                        <span class="icon">🕸️</span> <span class="text">Mapa VNA</span>
+                    </a>
+
+                    <a href="/v5/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Kanban Tareas">
+                        <span class="icon">📋</span> <span class="text">Kanban Pull</span>
+                    </a>
+                    
+                    <a href="/v5/focus" class="side-link ${currentPath === '/focus' ? 'active' : ''}" data-link title="Deep Work Focus">
+                        <span class="icon ${isPomodoroActive}">🍅</span> <span class="text">Deep Work</span>
+                    </a>
+                    
+                    <a href="/v5/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Contabilidad y Slicing Pie">
+                        <span class="icon">⚖️</span> <span class="text">Wallet (Ledger)</span>
+                    </a>
+                    
+                    <a href="/v5/team" class="side-link ${currentPath === '/team' ? 'active' : ''}" data-link title="Equipo / Nodos">
+                        <span class="icon">👥</span> <span class="text">La Colla</span>
+                    </a>
                 </div>
             `;
         }
 
-        const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
-        const pomodoroAlertHtml = isPomodoroActive 
-            ? `<a href="/v5/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` 
-            : '';
-
         return `
             <style>
-                .ph-global-top-bar { 
-                    display: flex; justify-content: space-between; align-items: center; 
-                    padding: 12px 20px; margin-bottom: 20px;
-                    border-bottom: 1px solid rgba(255,255,255,0.05); gap: 15px;
-                    background: rgba(10, 10, 15, 0.2);
+                .sidebar { 
+                    width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid var(--glass-border); 
+                    padding: 2rem 1.2rem; display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; 
+                    overflow-y: auto; height: 100vh; height: 100dvh; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.3s;
                 }
-
-                .ph-utility-nav { display: flex; gap: 20px; align-items: center; }
-                .ph-utility-link { 
-                    font-size: 0.65rem; color: var(--text-muted); text-decoration: none; 
-                    font-weight: 800; letter-spacing: 1.5px; transition: all 0.2s ease;
-                    padding: 4px 0; border-bottom: 1px solid transparent;
-                }
-                .ph-utility-link:hover { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
-
-                .ph-mob-brand { display: none; align-items: center; height: 32px; text-decoration:none; }
-                .ph-mob-brand img { height: 100%; width: auto; filter: brightness(0) invert(1); }
-
-                .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex: 1; position: relative;}
-
-                .ph-mob-project-select { 
-                    appearance: none;
-                    background: rgba(0, 0, 0, 0.4) no-repeat right 12px top 50% / 10px auto;
-                    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300b0ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-                    border: 1px solid rgba(0, 176, 255, 0.2); color: var(--accent-blue); 
-                    padding: 8px 35px 8px 15px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold;
-                    outline: none; max-width: 220px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-                .ph-mob-project-select:hover { border-color: var(--accent-blue); background-color: rgba(0, 176, 255, 0.05); }
-
-                /* USER MENU CONTAINER */
-                .ph-user-container { position: relative; display: flex; align-items: center; justify-content: center;}
-                .ph-mob-user { 
-                    display: flex; align-items: center; justify-content: center; 
-                    width: 35px; height: 35px; background: linear-gradient(135deg, var(--accent-purple), #7c4dff); 
-                    color: white; border-radius: 50%; font-weight: 900; text-decoration: none; font-size: 0.9rem; 
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; border: 2px solid transparent; transition:0.3s;
-                }
-                .ph-mob-user:hover { transform: scale(1.05); border-color:white; }
                 
-                /* EL MENÚ DESPLEGABLE GOD-LEVEL */
-                .ph-user-dropdown {
-                    position: absolute; top: 45px; right: -5px;
-                    background: rgba(15,15,20, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
-                    min-width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-                    opacity: 0; visibility: hidden; transform: translateY(-10px);
-                    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 10000;
-                    overflow: hidden;
+                .sidebar-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+                
+                /* BRAND LOGO SIDEBAR */
+                .sidebar .brand { display: flex; align-items: center; height: 40px; transition: opacity 0.2s; text-decoration: none; width: 100%;}
+                .sidebar .brand img { height: 100%; width: auto; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; transform-origin: left center;}
+                
+                .btn-toggle-sidebar { background: transparent; border: 1px solid #333; color: white; border-radius: 6px; padding: 4px 8px; cursor: pointer; transition: 0.2s; font-size: 1rem; font-family: monospace;}
+                .btn-toggle-sidebar:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
+
+                .sidebar .side-section { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 4px;}
+                .sidebar .side-link { 
+                    padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; color: var(--text-muted); 
+                    text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; transition: all 0.2s; 
+                    font-weight: 600; white-space: nowrap; overflow: hidden;
                 }
-                .ph-user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+                .sidebar .side-link .icon { margin-right: 12px; font-size: 1.2rem; flex-shrink: 0;}
+                .sidebar .side-link .text { transition: opacity 0.2s; }
                 
-                .ph-dd-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.3);}
-                .ph-dd-name { color: white; font-weight: 900; font-size: 1rem; margin-bottom: 3px; display:block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .ph-dd-id { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.75rem;}
+                .sidebar .side-link:hover { background: rgba(255,255,255,0.05); color: white; transform: translateX(3px);}
+                .sidebar .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); }
                 
-                .ph-dd-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;}
-                .ph-dd-link:hover { background: rgba(255,255,255,0.05); color: white;}
-                .ph-dd-link.danger { color: var(--accent-red); border-top: 1px dashed rgba(255,255,255,0.1); background: rgba(255, 82, 82, 0.05);}
-                .ph-dd-link.danger:hover { background: rgba(255, 82, 82, 0.15); color: white;}
+                .active-pomodoro { animation: pulseTomato 1.5s infinite alternate; filter: drop-shadow(0 0 8px var(--accent-red)); }
+                @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
+                
+                .sidebar .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; overflow: hidden; padding-bottom: 1rem; }
+                
+                /* MODO COLAPSADO */
+                .sidebar.collapsed { width: 80px; padding: 2rem 0.8rem; align-items: center; }
+                .sidebar.collapsed .brand { display: none; }
+                .sidebar.collapsed .sidebar-top-bar { justify-content: center; width: 100%; margin-bottom: 2rem;}
+                .sidebar.collapsed .side-link { padding: 0.8rem; justify-content: center; border-radius: 12px;}
+                .sidebar.collapsed .side-link .icon { margin-right: 0; font-size: 1.4rem;}
+                .sidebar.collapsed .side-link .text { display: none; }
+                .sidebar.collapsed .sidebar-footer .text { display: none; }
 
-                .ph-pomodoro-alert { animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8)); font-size: 1.2rem; cursor: pointer; text-decoration: none;}
-                @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
-
-                .ph-view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; gap: 15px;}
-                .ph-view-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1.5px; font-weight: 900;}
-                .ph-view-header p { color: var(--text-muted); font-size: 1rem; margin-top: 8px; line-height: 1.4; }
-                .ph-header-subtitle { color: var(--accent-blue); font-weight: 600; }
-                .ph-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
-
+                /* OCULTAR EN MÓVIL (El BottomNav y el PageHeader toman el control) */
                 @media (max-width: 768px) {
-                    .ph-global-top-bar { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 10px 15px; box-sizing: border-box; }
-                    .ph-mob-brand { display: flex; }
-                    .ph-utility-nav { display: none !important; }
-                    .ph-view-header { margin-top: 10px; flex-direction: column; align-items: flex-start; }
-                    .ph-view-header h1 { font-size: 1.7rem; }
-                    .ph-header-actions { width: 100%; justify-content: flex-start; }
-                    
-                    /* Ajustes para que quepa todo arriba */
-                    .ph-mob-controls-right { gap: 10px; }
-                    .ph-mob-project-select { max-width: 130px; font-size: 0.75rem; padding-right:25px;}
-                    .ph-pomodoro-alert { font-size: 1.1rem; }
+                    .sidebar { display: none !important; }
                 }
             </style>
-
-            <header class="ph-global-top-bar">
-                <a href="/v5/" data-link class="ph-mob-brand">
-                    <img src="/v5/logoteamtowers.png" alt="TeamTowers">
-                </a>
+            
+            <aside class="sidebar ${collapsedClass}" id="mainSidebar">
+                <div class="sidebar-top-bar">
+                    <a href="/v5/" class="brand" data-link>
+                        <img src="/v5/logoteamtowers.png" alt="TeamTowers">
+                    </a>
+                    <button class="btn-toggle-sidebar" id="btnToggleSidebar" title="Colapsar / Expandir Menú">
+                        <span id="btnToggleIcon">${arrowIcon}</span>
+                    </button>
+                </div>
                 
-                ${auxLinksHtml}
-
-                <div class="ph-mob-controls-right">
-                    ${pomodoroAlertHtml}
-                    <select class="ph-mob-project-select" id="phMobProjectSelect" title="Cambiar Red">
-                        ${projectOptionsHtml}
-                    </select>
-                    
-                    <div class="ph-user-container">
-                        <div class="ph-mob-user" id="phUserAvatarToggle" title="Menú de Usuario">
-                            ${user?.name.charAt(0).toUpperCase() || '?'}
-                        </div>
-                        
-                        <div class="ph-user-dropdown" id="phUserDropdown">
-                            <div class="ph-dd-header">
-                                <span class="ph-dd-name">${user?.name || 'Usuario'}</span>
-                                <span class="ph-dd-id">${user?.id || '@guest'}</span>
-                            </div>
-                            <a href="/v5/profile" data-link class="ph-dd-link">👤 Mi Identidad / Perfil</a>
-                            <a href="/v5/map" data-link class="ph-dd-link">🕸️ Mapa Ecosistema (VNA)</a>
-                            ${state.session.role === 'ecosystem-owner' ? `<a href="/v5/settings" data-link class="ph-dd-link">⚙️ Consola de Gobernanza</a>` : ''}
-                            <a href="/v5/help" data-link class="ph-dd-link">📖 Manual de Supervivencia</a>
-                            <div class="ph-dd-link danger" id="phBtnLogout" style="cursor:pointer;">🚪 Desconectar Nodo</div>
-                        </div>
-                    </div>
+                ${globalSection}
+                ${projectSection}
+                
+                <div class="sidebar-footer">
+                    <a href="/v5/profile" class="side-link ${currentPath === '/profile' ? 'active' : ''}" data-link title="Mi Perfil">
+                        <span class="icon">👤</span> <span class="text">Mi Identidad</span>
+                    </a>
+                    ${role === 'ecosystem-owner' ? `
+                        <a href="/v5/settings" class="side-link ${currentPath === '/settings' ? 'active' : ''}" data-link title="Configuración Ecosistema">
+                            <span class="icon">⚙️</span> <span class="text">Configuración</span>
+                        </a>
+                    ` : ''}
+                    <button class="side-link" id="globalBtnLogout" title="Desconectar" style="width:100%; text-align:left; background:transparent; border:none;">
+                        <span class="icon" style="color:var(--accent-red);">🚪</span> <span class="text" style="color:var(--accent-red);">Desconectar Nodo</span>
+                    </button>
                 </div>
-            </header>
-
-            <div class="ph-view-header">
-                <div>
-                    <h1>${config.title} ${config.subtitle ? `<span class="ph-header-subtitle">${config.subtitle}</span>` : ''}</h1>
-                    ${config.tagline ? `<p>${config.tagline}</p>` : ''}
-                </div>
-                <div class="ph-header-actions">
-                    ${config.actionHtml || ''}
-                </div>
-            </div>
-
-            ${tabsHtml}
+            </aside>
         `;
     },
 
-    execute: () => {
-        const globalSelect = document.getElementById('phMobProjectSelect');
-        if (globalSelect) {
-            globalSelect.addEventListener('change', (e) => {
-                const selectedId = e.target.value;
-                localStorage.setItem('tt_active_project', selectedId);
-                store.dispatch({
-                    type: 'UPDATE_PROJECT_INFO',
-                    payload: { projectId: selectedId, updates: { _lastSwitch: Date.now() } }
-                }).then(() => window.location.reload());
-            });
-        }
-
-        const avatarToggle = document.getElementById('phUserAvatarToggle');
-        const userDropdown = document.getElementById('phUserDropdown');
-        
-        if (avatarToggle && userDropdown) {
-            avatarToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userDropdown.classList.toggle('open');
-            });
-            document.addEventListener('click', (e) => {
-                if (!avatarToggle.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.remove('open');
-                }
-            });
-            userDropdown.querySelectorAll('.ph-dd-link').forEach(link => {
-                link.addEventListener('click', () => userDropdown.classList.remove('open'));
-            });
-        }
-
-        const btnLogout = document.getElementById('phBtnLogout');
+    initListeners: () => {
+        const btnLogout = document.getElementById('globalBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
-                store.dispatch({ type: 'LOGOUT_USER' }).then(() => window.location.href = '/v5/');
+                if(confirm('¿Desconectar el Nodo y salir del ecosistema?')) {
+                    store.dispatch({ type: 'LOGOUT_USER' });
+                    window.location.href = '/v5/';
+                }
             });
         }
+
+        const btnToggle = document.getElementById('btnToggleSidebar');
+        const sidebar = document.getElementById('mainSidebar');
+        const iconToggle = document.getElementById('btnToggleIcon');
+        
+        if (btnToggle && sidebar && iconToggle) {
+            btnToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                const isCollapsedNow = sidebar.classList.contains('collapsed');
+                localStorage.setItem('tt_sidebar_collapsed', isCollapsedNow ? 'true' : 'false');
+                iconToggle.innerText = isCollapsedNow ? '→' : '←';
+            });
+        }
+
+        window.addEventListener('pomodoro_tick', () => {
+            const icons = document.querySelectorAll('.sidebar .icon');
+            icons.forEach(i => {
+                if(i.innerText === '🍅') {
+                    if (localStorage.getItem('tt_active_pomodoro_tx')) {
+                        i.classList.add('active-pomodoro');
+                    } else {
+                        i.classList.remove('active-pomodoro');
+                    }
+                }
+            });
+        });
     }
 };
