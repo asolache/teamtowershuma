@@ -236,3 +236,57 @@ body {
     /* Ajuste de Modales en Móvil */
     .modal-content { padding: 2rem 1.5rem; width: 100%; border-radius: var(--border-radius-md); }
 }
+
+/* ==========================================================================
+   COMPONENTES GLOBALES (V12)
+   ========================================================================== */
+
+/* SIDEBAR */
+.sidebar { 
+    width: 260px; background: rgba(15, 15, 20, 0.95); border-right: 1px solid var(--glass-border); 
+    padding: 2rem 1.2rem; display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; 
+    overflow-y: auto; height: 100vh; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sidebar.collapsed { width: 80px; padding: 2rem 0.8rem; }
+.sidebar.collapsed .text, .sidebar.collapsed .brand { display: none; }
+.side-link { 
+    padding: 0.8rem 1rem; border-radius: 8px; color: var(--text-muted); 
+    display: flex; align-items: center; text-decoration: none; font-weight: 600; transition: 0.2s;
+}
+.side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); }
+.active-pomodoro { animation: pulseTomato 1.5s infinite alternate; filter: drop-shadow(0 0 8px var(--accent-red)); }
+
+/* BOTTOM NAV (Móvil) */
+.bottom-nav { 
+    display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
+    background: rgba(10, 10, 14, 0.95); backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.05); z-index: 9999; padding-bottom: env(safe-area-inset-bottom);
+}
+.bn-menu { display: flex; justify-content: space-around; align-items: center; height: 75px; }
+.bn-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 0.65rem; font-weight: 900; }
+.bn-item.active { color: white; }
+
+/* PAGE HEADER & TOP BAR */
+.ph-global-top-bar { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(10, 10, 15, 0.2);
+}
+.ph-utility-link { font-size: 0.65rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1.5px; margin-left: 20px; }
+.ph-mob-project-select { 
+    background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 176, 255, 0.2); 
+    color: var(--accent-blue); padding: 8px 15px; border-radius: 8px; font-family: var(--font-mono); font-weight: bold;
+}
+.ph-user-dropdown {
+    position: absolute; top: 45px; right: -5px; background: rgba(15,15,20, 0.98); 
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; min-width: 240px;
+    opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.3s; z-index: 10000;
+}
+.ph-user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+
+@keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
+
+@media (max-width: 768px) {
+    .sidebar { display: none !important; }
+    .bottom-nav { display: block; }
+    .workspace { padding-bottom: 100px !important; }
+}
