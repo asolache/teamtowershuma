@@ -53,7 +53,6 @@ export const PageHeader = {
             projectOptionsHtml += `</optgroup>`;
         }
 
-        // --- ENLACES AUXILIARES ---
         const isBaseRoute = currentPath.endsWith('/') || currentPath.endsWith('index.html');
         const showAuxLinks = isBaseRoute || !config.tabs;
         const auxLinksHtml = showAuxLinks ? `
@@ -90,9 +89,8 @@ export const PageHeader = {
             }
         }
 
-        // --- LÓGICA DEL MAGIC BUTTON (ACCIONES DELUXE) ---
-        let finalActionsHtml = config.actionHtml || ''; // Fallback a html normal si no hay magicActions
-        
+        // --- LÓGICA DEL MAGIC BUTTON ---
+        let finalActionsHtml = config.actionHtml || ''; 
         if (config.magicActions && config.magicActions.length > 0) {
             finalActionsHtml = `
                 <div class="magic-action-group">
@@ -118,7 +116,6 @@ export const PageHeader = {
 
         return `
             <style>
-                /* --- TOP BAR GLOBAL --- */
                 .ph-global-top-bar { 
                     display: flex; justify-content: space-between; align-items: center; 
                     padding: 12px 20px; margin-bottom: 20px;
@@ -131,7 +128,6 @@ export const PageHeader = {
                 .ph-utility-link:hover { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
 
                 .ph-mob-brand { display: none; align-items: center; height: 32px; text-decoration:none; flex-shrink: 0; }
-                
                 .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex: 1; }
 
                 .ph-mob-project-select { 
@@ -155,102 +151,32 @@ export const PageHeader = {
                 .ph-dd-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
                 .ph-dd-link:hover { background: rgba(255,255,255,0.05); color: white;}
 
-                .ph-pomodoro-alert { animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8)); }
-                @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
-
-                /* --- NUEVO SISTEMA DE TÍTULOS (DISEÑO DE BLOQUES, NO FLEX) --- */
-                .ph-view-header { 
-                    margin-bottom: 2rem; 
-                    width: 100%;
-                }
-                
-                .ph-title-wrapper {
-                    display: flex;
-                    align-items: center;
-                    gap: 15px;
-                    flex-wrap: wrap; /* En PC se ponen uno al lado del otro si hay espacio */
-                    margin-bottom: 8px;
-                }
-                
-                .ph-title-text { 
-                    font-size: 2.2rem; 
-                    color: white; 
-                    margin: 0; 
-                    letter-spacing: -1px; 
-                    font-weight: 900; 
-                    line-height: 1.2;
-                    word-wrap: break-word; /* Nunca se sale del div */
-                    overflow-wrap: break-word;
-                }
-                
-                .ph-badge-startup {
-                    background: rgba(0, 230, 118, 0.1); color: var(--accent-green);
-                    border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 12px;
-                    border-radius: 20px; font-family: var(--font-mono); font-size: 0.85rem;
-                    font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
-                    white-space: nowrap; display: inline-block; /* Bloque sólido */
-                }
-
+                /* --- TÍTULOS --- */
+                .ph-view-header { margin-bottom: 2rem; width: 100%; }
+                .ph-title-wrapper { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 8px; }
+                .ph-title-text { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; font-weight: 900; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; }
+                .ph-badge-startup { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 12px; border-radius: 20px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; display: inline-block; }
                 .ph-tagline { color: var(--text-muted); font-size: 1rem; margin-top: 0; margin-bottom: 1.5rem; line-height: 1.4; max-width: 700px; }
 
-                /* --- MAGIC ACTION GROUP (EL SELECTOR DELUXE) --- */
-                .magic-action-group {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    flex-wrap: wrap;
-                    background: rgba(10, 10, 15, 0.6);
-                    padding: 6px;
-                    border-radius: 14px;
-                    border: 1px solid var(--glass-border);
-                }
-
-                .magic-select {
-                    appearance: none;
-                    background: rgba(0,0,0,0.5) no-repeat right 12px top 50% / 10px auto;
-                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-                    border: 1px solid rgba(224, 64, 251, 0.3);
-                    color: white;
-                    padding: 10px 35px 10px 15px;
-                    border-radius: 10px;
-                    font-family: var(--font-main);
-                    font-size: 0.9rem;
-                    font-weight: 800;
-                    outline: none;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
-                }
+                /* --- MAGIC ACTION GROUP --- */
+                .magic-action-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: rgba(10, 10, 15, 0.6); padding: 6px; border-radius: 14px; border: 1px solid var(--glass-border); }
+                .magic-select { appearance: none; background: rgba(0,0,0,0.5) no-repeat right 12px top 50% / 10px auto; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); border: 1px solid rgba(224, 64, 251, 0.3); color: white; padding: 10px 35px 10px 15px; border-radius: 10px; font-family: var(--font-main); font-size: 0.9rem; font-weight: 800; outline: none; cursor: pointer; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
                 .magic-select:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224, 64, 251, 0.2); }
                 .magic-select option { background: var(--bg-panel); color: white; }
-
-                .btn-magic-exec {
-                    background: linear-gradient(135deg, var(--accent-purple), #7c4dff);
-                    color: white; border: none; padding: 0 20px; border-radius: 10px;
-                    font-weight: 900; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center;
-                    justify-content: center; gap: 8px; box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);
-                    transition: 0.3s; height: 40px;
-                }
-                .btn-magic-exec:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1); }
-                
-                .magic-token-badge {
-                    background: rgba(0,0,0,0.5);
-                    color: var(--accent-green);
-                    font-family: var(--font-mono);
-                    font-size: 0.7rem;
-                    padding: 2px 6px;
-                    border-radius: 6px;
-                    border: 1px solid rgba(0, 230, 118, 0.3);
-                }
+                .btn-magic-exec { background: linear-gradient(135deg, var(--accent-purple), #7c4dff); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 900; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2); transition: 0.3s; height: 40px; }
+                .btn-magic-exec:hover { transform: translateY(-2px); filter: brightness(1.1); }
+                .magic-token-badge { background: rgba(0,0,0,0.5); color: var(--accent-green); font-family: var(--font-mono); font-size: 0.7rem; padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(0, 230, 118, 0.3); }
 
                 /* --- TABS --- */
                 .ph-tabs-container { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;}
                 .ph-tabs-container::-webkit-scrollbar { display: none; }
                 .ph-tab-btn { flex: 1; padding: 10px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
                 .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-
                 .ph-mob-tabs-wrapper { display: none; width: 100%; margin-bottom: 1.5rem; }
                 .ph-mob-tabs-select { appearance: none; background: linear-gradient(145deg, rgba(25, 25, 30, 0.9), rgba(10, 10, 15, 0.95)) no-repeat right 15px top 50% / 12px auto; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e040fb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); border: 1px solid var(--accent-purple); color: white; padding: 14px 40px 14px 20px; border-radius: 12px; font-size: 1rem; font-weight: 800; outline: none; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+                /* EL ESPACIADOR MÓVIL (Por defecto oculto en PC) */
+                .ph-mobile-spacer { display: none; }
 
                 /* --- BLINDAJE MÓVIL TOTAL (<768px) --- */
                 @media (max-width: 768px) {
@@ -259,35 +185,23 @@ export const PageHeader = {
                         background: rgba(10, 10, 14, 0.98); backdrop-filter: blur(20px); 
                         padding: 10px 15px; box-sizing: border-box; margin-bottom: 0;
                     }
+                    
+                    /* AQUÍ ESTÁ LA MAGIA: El Spacer se vuelve un bloque físico de 90px de alto */
+                    .ph-mobile-spacer {
+                        display: block;
+                        height: 95px; /* Empuja el título exactamente por debajo de la barra top */
+                        width: 100%;
+                        flex-shrink: 0;
+                    }
+
                     .ph-mob-brand { display: flex; }
                     .ph-utility-nav { display: none !important; }
                     
-                    /* EL TRUCO DE LOS BLOQUES: Cero Flexbox complejo, solo bloques verticales puros */
-                    .ph-view-header { 
-                        display: block; /* Adiós Flexbox aquí en móvil */
-                        margin-top: 85px !important; /* Salva la barra fija superior */
-                        margin-bottom: 1.5rem;
-                        width: 100%;
-                    }
-                    
-                    .ph-title-wrapper {
-                        display: flex;
-                        flex-direction: column; /* Apila el título arriba y el badge abajo SIEMPRE */
-                        align-items: flex-start;
-                        gap: 10px;
-                        margin-bottom: 12px;
-                        width: 100%;
-                    }
-
-                    .ph-title-text { 
-                        font-size: 1.8rem; /* Tamaño adaptado a móvil */
-                        line-height: 1.2;
-                        width: 100%; /* Todo el ancho disponible */
-                    }
-                    
+                    .ph-view-header { display: block; margin-bottom: 1.5rem; width: 100%; }
+                    .ph-title-wrapper { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 12px; width: 100%; }
+                    .ph-title-text { font-size: 1.8rem; line-height: 1.2; width: 100%; }
                     .ph-badge-startup { font-size: 0.7rem; padding: 4px 10px; margin-bottom: 4px; }
                     
-                    /* Magic Select se expande al 100% en móvil para dedo gordo */
                     .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top: 15px;}
                     .magic-select { width: 100%; height: 45px;}
                     .btn-magic-exec { width: 100%; height: 45px;}
@@ -333,6 +247,8 @@ export const PageHeader = {
                 </div>
             </header>
 
+            <div class="ph-mobile-spacer"></div>
+
             <div class="ph-view-header">
                 <div class="ph-title-wrapper">
                     <h1 class="ph-title-text">${config.title}</h1>
@@ -349,7 +265,6 @@ export const PageHeader = {
     },
 
     execute: () => {
-        // --- PROYECTO SELECTOR ---
         const globalSelect = document.getElementById('phMobProjectSelect');
         if (globalSelect) {
             globalSelect.addEventListener('change', (e) => {
@@ -361,7 +276,6 @@ export const PageHeader = {
             });
         }
 
-        // --- MENÚ AVATAR ---
         const avatarToggle = document.getElementById('phUserAvatarToggle');
         const userDropdown = document.getElementById('phUserDropdown');
         if (avatarToggle && userDropdown) {
@@ -380,7 +294,6 @@ export const PageHeader = {
             store.dispatch({ type: 'LOGOUT_USER' }).then(() => { window.location.href = '/v7/'; });
         });
 
-        // --- PESTAÑAS ---
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const mobTabsSelect = document.getElementById('phMobTabsSelect');
 
@@ -404,7 +317,6 @@ export const PageHeader = {
             });
         }
 
-        // --- LÓGICA DEL MAGIC BUTTON (IA TOKENS) ---
         const magicSelect = document.getElementById('phMagicSelect');
         const magicBtn = document.getElementById('phMagicBtn');
         const magicTokenBadge = document.getElementById('phMagicTokenBadge');
@@ -422,12 +334,8 @@ export const PageHeader = {
                     magicTokenBadge.style.display = 'none';
                 }
             };
-
-            // Ejecutar al inicio y cada vez que cambie
             updateMagicButton();
             magicSelect.addEventListener('change', updateMagicButton);
-
-            // Emitir evento cuando pulsen "Ejecutar"
             magicBtn.addEventListener('click', () => {
                 const actionId = magicSelect.value;
                 window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
