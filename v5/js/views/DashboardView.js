@@ -2,7 +2,6 @@
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { BottomNav } from '../components/BottomNav.js';
 
 export default class DashboardView {
     constructor() {
@@ -25,15 +24,14 @@ export default class DashboardView {
             return `
                 <div class="app-layout">
                     ${Sidebar.getHtml('/dashboard')}
-                    <main class="workspace" style="justify-content:center; align-items:center; display:flex;">
+                    <main class="workspace" style="justify-content:center; align-items:center; display:flex; height:100vh; background: var(--bg-dark);">
                         <div style="text-align:center; padding: 4rem; border: 1px dashed #333; border-radius: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🛰️</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Frecuencia no detectada</h2>
                              <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">Aún no has instanciado ninguna red en este Kernel.</p>
-                             <a href="/v5/create" data-link class="btn-magic" style="text-decoration:none; display:inline-block;">➕ Instanciar Proyecto</a>
+                             <a href="/v5/create" data-link class="btn-lux-primary" style="text-decoration:none; display:inline-block;">➕ Instanciar Proyecto</a>
                         </div>
                     </main>
-                    ${BottomNav.getHtml('/dashboard')}
                 </div>
             `;
         }
@@ -45,19 +43,18 @@ export default class DashboardView {
             return `
                 <div class="app-layout">
                     ${Sidebar.getHtml('/dashboard')}
-                    <main class="workspace" style="justify-content:center; align-items:center; display:flex;">
+                    <main class="workspace" style="justify-content:center; align-items:center; display:flex; background: var(--bg-dark);">
                         <div style="text-align:center; background: rgba(255, 82, 82, 0.05); border: 1px dashed var(--accent-red); padding: 4rem; border-radius: 20px; max-width: 600px; backdrop-filter: blur(10px);">
                             <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🔒</div>
                             <h1 style="color: var(--accent-red); margin-top:0; font-weight:900; letter-spacing:-1px;">ACCESO DENEGADO</h1>
                             <p style="color: #ccc; font-size:1.1rem;">Este Castell es privado. No eres un nodo reconocido en su Colla.</p>
                         </div>
                     </main>
-                    ${BottomNav.getHtml('/dashboard')}
                 </div>
             `;
         }
 
-        // --- CÁLCULOS V10/V11 ---
+        // --- CÁLCULOS V10 ---
         const harvest = store.calculateHarvest(project.id) || [];
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
@@ -79,84 +76,89 @@ export default class DashboardView {
                             <div class="vacante-meta">${r.levelId} | FMV: <span style="color:var(--accent-green); font-weight:bold;">${r.fmv}€/h</span></div>
                         </div>
                     </div>
-                    <button class="btn-outline btn-invite" data-rolename="${r.name}" style="padding: 6px 12px; font-size:0.8rem; color:var(--accent-blue); border-color:var(--accent-blue);">➕ Invitar</button>
+                    <button class="btn-invite" data-rolename="${r.name}">➕ Invitar</button>
                 </div>
             `).join('');
 
         const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red está en fase de definición...';
+        
+        // FIX: Variable Tags restaurada
         const tagsHtml = (project.tags && project.tags.length > 0) 
             ? project.tags.map(t => `<span class="badge-tag">#${t}</span>`).join('') 
             : `<span class="badge-tag">#VNA</span>`;
-
-        // V12 MODULAR: EL SELECTOR MÁGICO (TOTALMENTE FORMATEADO Y NATIVO)
-        const magicActionsHtml = isPO ? `
-            <div class="magic-action-group">
-                <select id="selDashboardMagic" class="magic-select">
-                    <option value="" disabled selected>🔮 Orquestador IA...</option>
-                    <option value="audit">🧠 Auditoría VNA & Equity</option>
-                    <option value="legal">⚖️ Redactar Pacto de Socios</option>
-                </select>
-                <button class="btn-magic" id="btnExecuteDashboardMagic">Invocar</button>
-            </div>
-        ` : '';
-
+        
+        // Integración del PageHeader
         const headerConfig = {
             title: project.nombre,
             subtitle: `<span style="font-size:0.65rem; padding:4px 10px; border-radius:12px; border:1px solid var(--accent-blue); color:var(--accent-blue); vertical-align:middle; margin-left:10px; text-transform:uppercase; background:rgba(0,176,255,0.05);">${project.archetype}</span>`,
-            tagline: "Resumen Operativo y Cuadro de Mandos",
-            actionHtml: magicActionsHtml
+            tagline: "Resumen Operativo y Cuadro de Mandos"
         };
 
         return `
             <style>
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth;}
+                
                 /* =========================================================
-                   WORKFLOW SCHEMA (EL CICLO DE VALOR)
+                   WORKFLOW SCHEMA (EL CICLO DE VALOR) - GRID REPAIR
                    ========================================================= */
                 .workflow-schema { 
-                    display: flex; justify-content: space-between; align-items: flex-start; 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: flex-start; 
                     background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(5,5,8,0.9)); 
-                    border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem; 
-                    margin-bottom: 2rem; box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+                    border: 1px solid var(--glass-border); 
+                    border-radius: 20px; 
+                    padding: 2.5rem; 
+                    margin-bottom: 2rem; 
+                    box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
                 }
                 .schema-step { 
                     display: flex; flex-direction: column; align-items: center; 
-                    text-decoration: none; text-align: center; gap: 12px; flex: 1; 
-                    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+                    text-decoration: none; text-align: center; gap: 12px; 
+                    flex: 1; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
                     filter: grayscale(40%) opacity(0.8); position: relative; z-index: 2;
                 }
                 .schema-step:hover { transform: translateY(-5px); filter: grayscale(0%) opacity(1); }
                 
                 .s-icon { 
-                    font-size: 2.5rem; line-height: normal; overflow: visible; 
-                    background: rgba(255,255,255,0.03); width: 75px; height: 75px; 
+                    font-size: 2.5rem; 
+                    line-height: normal;
+                    overflow: visible; 
+                    background: rgba(255,255,255,0.03); 
+                    width: 75px; height: 75px; 
                     display: flex; justify-content: center; align-items: center; 
                     border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); 
-                    box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: border-color 0.3s, box-shadow 0.3s;
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.4); 
+                    transition: border-color 0.3s, box-shadow 0.3s;
                 }
                 .schema-step:hover .s-icon { border-color: var(--accent-blue); box-shadow: 0 15px 30px rgba(0,176,255,0.2); }
                 
                 .s-text { color: white; font-weight: 900; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3;}
                 .s-text span { color: var(--accent-blue); font-size: 0.75rem; font-family: var(--font-mono); display: block; margin-top: 4px; font-weight: normal;}
                 
-                .schema-arrow { color: rgba(255,255,255,0.1); font-size: 2rem; font-weight: bold; margin-top: 20px; display: flex; align-items: center; justify-content: center; }
+                .schema-arrow { 
+                    color: rgba(255,255,255,0.1); font-size: 2rem; font-weight: bold; 
+                    margin-top: 20px; display: flex; align-items: center; justify-content: center;
+                }
 
                 /* =========================================================
                    PRESENTACIÓN Y TAGS COMPACTOS
                    ========================================================= */
                 .presentation-box { 
                     margin-bottom: 2rem; background: rgba(255,255,255,0.015); padding: 1.5rem 2rem; 
-                    border-radius: 16px; border: 1px solid var(--glass-border); position: relative; 
-                    border-left: 4px solid var(--accent-purple); backdrop-filter: blur(10px);
+                    border-radius: 16px; border: 1px solid var(--glass-border); 
+                    position: relative; border-left: 4px solid var(--accent-purple); backdrop-filter: blur(10px);
                 }
-                .presentation-text { color: #ccc; font-size: 1rem; line-height: 1.6; overflow: hidden; transition: max-height 0.4s ease;}
+                .presentation-text { color: #ccc; font-size: 1rem; line-height: 1.6; overflow: hidden; transition: max-height 0.4s ease; font-family: var(--font-main);}
                 .presentation-text.collapsed { max-height: 75px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
                 .btn-read-more { background: none; border: none; color: var(--accent-purple); font-weight: 900; cursor: pointer; padding: 10px 0 0 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;}
                 .badge-tag { font-family: var(--font-mono); font-size: 0.7rem; color: #888; border: 1px solid #333; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; background: rgba(0,0,0,0.5); font-weight: bold;}
 
                 /* =========================================================
-                   KPIS COMPACTAS
+                   KPIS COMPACTAS (DENSE GRID)
                    ========================================================= */
-                .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 2.5rem; }
+                .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 2.5rem; }
                 .kpi-card { background: linear-gradient(145deg, rgba(0,0,0,0.6), rgba(15,15,20,0.8)); border: 1px solid var(--glass-border); padding: 1.5rem 1rem; border-radius: 16px; text-align: center; transition: 0.3s; box-shadow: inset 0 2px 10px rgba(255,255,255,0.01);}
                 .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.1);}
                 .kpi-val { font-size: 2.2rem; font-weight: 900; display: block; margin-bottom: 5px; font-family: var(--font-mono); line-height: 1;}
@@ -166,70 +168,60 @@ export default class DashboardView {
                    PANELES INFERIORES
                    ========================================================= */
                 .content-row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; }
+                
                 .panel-box { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px);}
                 .panel-title { color: white; margin-top: 0; font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;}
                 
+                /* VACANTES */
                 .vacantes-list { max-height: 350px; overflow-y: auto; padding-right: 5px;}
                 .vacante-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 1.2rem; border-radius: 12px; margin-bottom: 12px; transition: transform 0.2s;}
                 .vacante-card:hover { transform: translateX(5px); border-color: #555; background: rgba(255,255,255,0.02);}
                 .vacante-name { color: white; font-weight: 900; font-size: 1rem; letter-spacing: 0.5px;}
                 .vacante-meta { font-size: 0.8rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+                .btn-invite { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 900; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px;}
+                .btn-invite:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.3);}
+
+                /* BOTONES IA PREMIUM */
+                .btn-ai-action { width: 100%; padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(224, 64, 251, 0.3); background: linear-gradient(145deg, rgba(15,10,20,0.8), rgba(0,0,0,0.9)); color: white; text-align: left; cursor: pointer; transition: all 0.3s; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
+                .btn-ai-action::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: 0.5s; }
+                .btn-ai-action:hover::before { left: 100%; }
+                .btn-ai-action:hover { border-color: var(--accent-purple); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(224,64,251,0.15);}
+                .btn-ai-action strong { color: var(--accent-purple); display: block; font-size: 1.05rem; margin-bottom: 5px; font-weight: 900; letter-spacing: 0.5px;}
+                .btn-ai-action span { color: #aaa; font-size: 0.85rem; line-height: 1.5; display: block;}
+
                 .status-ok { padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 12px; color: var(--accent-green); text-align: center; font-weight: bold; font-size: 0.95rem;}
 
+                /* BOTONES GLOBALES */
+                .btn-lux-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; padding: 12px 24px; font-weight: 900; border-radius: 10px; border:none; cursor: pointer; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 15px rgba(0,176,255,0.2);}
+                .btn-lux-primary:hover { filter: brightness(1.2); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); transform: translateY(-2px);}
+
                 /* MODAL IA */
+                .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);}
+                .modal-ia-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow:hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border-top: 4px solid var(--accent-purple);}
                 .modal-ia-body { padding: 30px; overflow-y: auto; color: #ccc; font-size: 1rem; line-height: 1.7; white-space: pre-wrap; font-family: inherit;}
 
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+                
                 /* =========================================================
-                   MAGIA DROPDOWN V12 (Estilo Deluxe Inquebrantable)
+                   RESPONSIVE MOBILE (GRID IPAD/MOVIL)
                    ========================================================= */
-                .magic-action-group { display: flex; gap: 10px; align-items: center; }
-                
-                .magic-select { 
-                    appearance: none; -webkit-appearance: none;
-                    background-color: rgba(0,0,0,0.6);
-                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-                    background-repeat: no-repeat;
-                    background-position: right 12px center;
-                    background-size: 16px;
-                    border: 1px solid var(--accent-purple); 
-                    color: var(--accent-purple); 
-                    padding: 12px 40px 12px 15px; 
-                    border-radius: 12px; 
-                    font-family: inherit; 
-                    font-size: 0.95rem;
-                    font-weight: 900; 
-                    outline: none; cursor: pointer; transition: all 0.3s; 
-                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 15px rgba(224, 64, 251, 0.1);
-                }
-                .magic-select:focus, .magic-select:hover { 
-                    border-color: white; color: white;
-                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 20px rgba(224, 64, 251, 0.3);
-                }
-                .magic-select option { background: var(--bg-dark); color: white; font-weight: bold; }
-                
-                .btn-magic { 
-                    background: linear-gradient(135deg, var(--accent-purple), #7c4dff); 
-                    color: white; border: none; padding: 12px 24px; border-radius: 12px; 
-                    font-weight: 900; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; 
-                    box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2); 
-                }
-                .btn-magic:hover { 
-                    transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1); 
-                }
-
                 @media (max-width: 1100px) { 
                     .content-row { grid-template-columns: 1fr; } 
                     .kpi-grid { grid-template-columns: 1fr 1fr; } 
                 }
                 @media (max-width: 768px) {
+                    .workspace { padding: 90px 1.2rem 3rem 1.2rem; }
+                    
                     /* Grid 2x2 para el Workflow Schema */
                     .workflow-schema { 
-                        display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1.5rem; 
-                        padding: 2rem 1.5rem; background: rgba(0,0,0,0.6);
+                        display: grid; 
+                        grid-template-columns: 1fr 1fr; 
+                        gap: 2rem 1.5rem; 
+                        padding: 2rem 1.5rem;
+                        background: rgba(0,0,0,0.6);
                     }
-                    .schema-arrow { display: none; } 
-                    .schema-step { filter: grayscale(0%) opacity(1); } 
+                    .schema-arrow { display: none; } /* Ocultar flechas en grid */
+                    .schema-step { filter: grayscale(0%) opacity(1); } /* Mejor visibilidad */
                     .s-icon { width: 60px; height: 60px; font-size: 2rem; border-radius: 16px; margin-bottom: 10px;}
                     .s-text { font-size: 0.8rem; }
                     .s-text span { font-size: 0.65rem; }
@@ -237,10 +229,6 @@ export default class DashboardView {
                     .panel-box { padding: 1.5rem; }
                     .vacante-card { flex-direction: column; align-items: stretch; gap: 15px;}
                     .btn-invite { width: 100%; padding: 12px; }
-
-                    /* Magic Selector a pantalla completa en móvil */
-                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top: 15px; }
-                    .magic-select, .btn-magic { width: 100%; padding: 16px; font-size: 1.05rem; }
                 }
             </style>
 
@@ -312,28 +300,32 @@ export default class DashboardView {
                         </div>
 
                         <div class="panel-box" style="border-color: rgba(224, 64, 251, 0.3); background: linear-gradient(180deg, rgba(20, 10, 25, 0.8), rgba(10, 5, 15, 0.9));">
-                            <h2 class="panel-title" style="color:var(--accent-purple);">⏱️ Sprints y Fases (V12)</h2>
-                            <p style="color:#aaa; font-size:0.85rem; margin-bottom:2rem; line-height:1.4;">Agrupación ágil de entregables. En desarrollo durante la Épica 2.</p>
-                            <div style="text-align:center; opacity:0.5;">
-                                <div style="font-size:3rem;">🧱</div>
-                                <div style="font-family:var(--font-mono); color:#888;">Próximamente</div>
-                            </div>
+                            <h2 class="panel-title" style="color:var(--accent-purple);">🔮 Orquestador Legal IA</h2>
+                            <p style="color:#aaa; font-size:0.85rem; margin-bottom:2rem; line-height:1.4;">Agentes cognitivos para auditar el estado del proyecto y emitir pactos de socios en tiempo real.</p>
+                            
+                            <button class="btn-ai-action" id="btnAIAuditor">
+                                <strong>🧠 Auditoría VNA & Equity</strong>
+                                <span>Analiza flujos, detecta cuellos de botella y evalúa el balance entre PoW y Capital.</span>
+                            </button>
+
+                            <button class="btn-ai-action" id="btnAILegal">
+                                <strong>⚖️ Emitir Pacto de Socios</strong>
+                                <span>Redacta un contrato legal dinámico desglosando la Cap Table basada en el Ledger.</span>
+                            </button>
                         </div>
                     </div>
                 </main>
-                
-                ${BottomNav.getHtml('/dashboard')}
             </div>
 
-            <div id="aiModal" class="modal-overlay">
-                <div class="modal-content" style="padding:0; display:flex; flex-direction:column; max-width:800px; border-top-color:var(--accent-purple);">
+            <div id="aiModal" class="modal-ia">
+                <div class="modal-ia-content">
                     <div style="padding:20px 30px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
                         <h2 id="aiModalTitle" style="margin:0; font-size:1.2rem; color:var(--accent-purple); font-weight:900; text-transform:uppercase; letter-spacing:1px;">Procesando...</h2>
                         <button id="aiModalClose" style="background:transparent; border:none; color:#aaa; cursor:pointer; font-size:1.5rem; transition:0.2s;">✖</button>
                     </div>
                     <div class="modal-ia-body" id="aiModalBody"></div>
                     <div style="padding:20px 30px; border-top:1px solid #333; display:flex; justify-content:flex-end; background:rgba(0,0,0,0.5);">
-                        <button class="btn-magic" id="btnDownloadPDF" style="display:none;">⬇️ DESCARGAR INFORME (.TXT)</button>
+                        <button class="btn-lux-primary" id="btnDownloadPDF" style="display:none;">⬇️ DESCARGAR INFORME (.TXT)</button>
                     </div>
                 </div>
             </div>
@@ -373,7 +365,7 @@ export default class DashboardView {
             });
         });
 
-        // -- MÓDULO IA (ORQUESTADOR) DESDE EL SELECTOR DEL HEADER --
+        // -- MÓDULO IA --
         const modal = document.getElementById('aiModal');
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
@@ -395,7 +387,7 @@ export default class DashboardView {
             btnDownload.style.display = 'none';
             modalTitle.innerText = type === 'audit' ? 'Auditoría VNA & Equity' : 'Pacto de Socios (Slicing Pie)';
 
-            // EXTRACCIÓN PROFUNDA V10/V11
+            // EXTRACCIÓN PROFUNDA V10
             const harvest = store.calculateHarvest(project.id) || [];
             const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
             
@@ -523,15 +515,7 @@ export default class DashboardView {
             }
         };
 
-        const selMagic = document.getElementById('selDashboardMagic');
-        const btnExecuteMagic = document.getElementById('btnExecuteDashboardMagic');
-
-        if (btnExecuteMagic && selMagic) {
-            btnExecuteMagic.addEventListener('click', () => {
-                const action = selMagic.value;
-                if (action === 'audit') runAI('audit');
-                if (action === 'legal') runAI('legal');
-            });
-        }
+        document.getElementById('btnAIAuditor')?.addEventListener('click', () => runAI('audit'));
+        document.getElementById('btnAILegal')?.addEventListener('click', () => runAI('legal'));
     }
 }
