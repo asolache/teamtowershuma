@@ -62,7 +62,6 @@ async function asyncReducer(state, action) {
         case 'UPDATE_PROJECT_INFO': {
             const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
             if (pInfo) {
-                // Merge seguro de usuarios
                 if (action.payload.updates.usuarios) {
                     action.payload.updates.usuarios.forEach(newU => {
                         const idx = pInfo.usuarios.findIndex(u => u.id === newU.id);
@@ -72,6 +71,76 @@ async function asyncReducer(state, action) {
                     delete action.payload.updates.usuarios;
                 }
                 Object.assign(pInfo, action.payload.updates);
+            }
+            break;
+        }
+        
+        // --- EVENTOS PULL (KANBAN) REQUERIDOS POR PROJECT VIEW ---
+        case 'SPAWN_WORK_ORDER': {
+            const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoAdd) {
+                if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
+                pWoAdd.work_orders.push({
+                    ...action.payload.workOrder,
+                    timestamp: Date.now()
+                });
+            }
+            break;
+        }
+
+        case 'REQUEST_WORK_ORDER':
+        case 'PING_WORK_ORDER': {
+            const pWoPing = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoPing && pWoPing.work_orders) {
+                const wo = pWoPing.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = action.type === 'REQUEST_WORK_ORDER' ? 'requested' : 'pinged';
+                    wo.assigneeId = action.payload.userId;
+                }
+            }
+            break;
+        }
+        
+        case 'APPROVE_WORK_ORDER': {
+            const pWoApp = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoApp && pWoApp.work_orders) {
+                const wo = pWoApp.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'consolidated';
+                    if (!pWoApp.ledger) pWoApp.ledger = [];
+                    
+                    let flow = (pWoApp.vna_flows || []).find(f => f.id === wo.flowId);
+                    let multiplier = 1;
+                    let fmv = 50;
+                    let roleId = 'Unknown';
+                    let deliverableName = 'Work Order Instanciada';
+
+                    if (flow) {
+                        roleId = flow.to;
+                        deliverableName = flow.template || flow.entregable || 'Entregable';
+                        const role = pWoApp.roles.find(r => r.id === roleId);
+                        if (role) {
+                            multiplier = role.multiplier || 1;
+                            fmv = role.fmv || 50;
+                        }
+                    }
+
+                    const slices = (wo.realHours || 1) * fmv * multiplier;
+                    wo.valorCongelado = slices;
+
+                    pWoApp.ledger.push({
+                        id: 'blk_' + Date.now(),
+                        hash: wo.hash,
+                        userId: wo.assigneeId,
+                        roleId: roleId,
+                        horas: wo.realHours || 1,
+                        multiplier: multiplier,
+                        fmv: fmv,
+                        valorCongelado: slices,
+                        timestamp: Date.now(),
+                        description: deliverableName
+                    });
+                }
             }
             break;
         }
@@ -93,7 +162,6 @@ class Store {
                 this.state = JSON.parse(saved);
                 if (!this.state.agents) this.state.agents = initialState.agents;
                 
-                // Asegurar que los proyectos antiguos tengan las matrices necesarias para no fallar
                 if (this.state.projects) {
                     this.state.projects = this.state.projects.map(p => ({
                         ...p,
@@ -134,7 +202,7 @@ class Store {
     notifyListeners() { this.listeners.forEach(listener => listener()); }
 
     // =========================================================
-    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA (Heredados de V7)
+    // MÉTODOS DE GOBERNANZA Y SEGURIDAD (RBAC)
     // =========================================================
     
     canUserViewProject(projectId, userId, globalRole) {
@@ -147,11 +215,36 @@ class Store {
         return true;
     }
 
+    // EL MÉTODO QUE FALTABA (SOLUCIONA EL ERROR 404/CRASH DEL KANBAN)
+    canUserCreateWorkOrder(projectId, userId) {
+        const globalUser = this.state.globalUsers.find(u => u.id === userId);
+        if (globalUser && globalUser.globalRole === 'ecosystem-owner') return true;
+        
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return false;
+        
+        if (p.ownerId === userId) return true; // El PO siempre puede
+        
+        const gov = p.governance || { workOrderCreation: 'open' };
+        if (gov.workOrderCreation === 'open') return true;
+        if (gov.workOrderCreation === 'po_only') return false;
+        
+        if (gov.workOrderCreation === 'custom') {
+            const member = p.usuarios?.find(x => x.id === userId);
+            return member?.permissions?.canCreateWO === true;
+        }
+        
+        return false;
+    }
+
+    // =========================================================
+    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA
+    // =========================================================
+
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return 100;
         
-        // Sumar transacciones atascadas
         const oldStuck = (p.transactions || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
         const newStuck = (p.work_orders || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
         const atascos = oldStuck + newStuck;
