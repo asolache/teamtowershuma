@@ -1,4 +1,4 @@
-// js/components/PageHeader.js
+// v7/js/components/PageHeader.js
 import { store } from '../core/store.js';
 
 export const PageHeader = {
@@ -56,19 +56,18 @@ export const PageHeader = {
         const isBaseRoute = currentPath.endsWith('/') || currentPath.endsWith('index.html');
         const showAuxLinks = isBaseRoute || !config.tabs;
         const auxLinksHtml = showAuxLinks ? `
-            <nav class="ph-utility-nav">
-                <a href="/manifesto" data-link class="ph-utility-link">📖 CODEX</a>
-                <a href="/help" data-link class="ph-utility-link">❓ AYUDA</a>
+            <nav class="ph-utility-nav hide-on-mobile">
+                <a href="/v7/manifesto" data-link class="ph-utility-link">📖 CODEX</a>
+                <a href="/v7/help" data-link class="ph-utility-link">❓ AYUDA</a>
             </nav>
         ` : '';
 
-        // --- LÓGICA DE PESTAÑAS (BOTONERA VS SELECT MÓVIL) ---
+        // --- PESTAÑAS: RENDERIZAMOS AMBAS VERSIONES Y CSS DECIDE ---
         let tabsHtml = '';
-        let mobSelectHtml = '';
         if (config.tabs && config.tabs.length > 0) {
-            const isManyTabs = config.tabs.length > 3;
-            tabsHtml = `
-                <div class="ph-tabs-container ${isManyTabs ? 'hide-tabs-on-mobile' : ''}" id="phTabsContainer">
+            // Versión Botones (PC)
+            const desktopTabs = `
+                <div class="ph-tabs-desktop">
                     ${config.tabs.map(t => `
                         <button class="ph-tab-btn ${t.active ? 'active' : ''}" data-tab="${t.id}">
                             ${t.label} ${t.badge ? `<span class="ph-tab-badge" id="badge-${t.id}">${t.badge}</span>` : ''}
@@ -76,20 +75,20 @@ export const PageHeader = {
                     `).join('')}
                 </div>
             `;
-            if (isManyTabs) {
-                mobSelectHtml = `
-                    <div class="ph-mob-tabs-wrapper">
-                        <select class="ph-mob-tabs-select" id="phMobTabsSelect">
-                            ${config.tabs.map(t => `
-                                <option value="${t.id}" ${t.active ? 'selected' : ''}>${t.label.replace(/<[^>]*>?/gm, '')}</option>
-                            `).join('')}
-                        </select>
-                    </div>
-                `;
-            }
+            // Versión Desplegable Deluxe (Móvil)
+            const mobileTabs = `
+                <div class="ph-tabs-mobile">
+                    <select class="ph-mob-tabs-select" id="phMobTabsSelect">
+                        ${config.tabs.map(t => `
+                            <option value="${t.id}" ${t.active ? 'selected' : ''}>${t.label.replace(/<[^>]*>?/gm, '')}</option>
+                        `).join('')}
+                    </select>
+                </div>
+            `;
+            tabsHtml = desktopTabs + mobileTabs;
         }
 
-        // --- LÓGICA DEL MAGIC BUTTON ---
+        // --- MAGIC ACTION GROUP ---
         let finalActionsHtml = config.actionHtml || ''; 
         if (config.magicActions && config.magicActions.length > 0) {
             finalActionsHtml = `
@@ -110,24 +109,30 @@ export const PageHeader = {
         }
 
         const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
-        const pomodoroAlertHtml = isPomodoroActive ? `<a href="/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` : '';
-
+        const pomodoroAlertHtml = isPomodoroActive ? `<a href="/v7/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` : '';
         const archetypeBadgeHtml = config.subtitle ? `<span class="ph-badge-startup">${config.subtitle}</span>` : '';
 
         return `
             <style>
+                /* --- TOP BAR MAGICA CON 'STICKY' --- */
                 .ph-global-top-bar { 
+                    position: sticky; /* <- ESTA ES LA MAGIA QUE EVITA QUE SE SUPERPONGA */
+                    top: 0; 
+                    z-index: 1000;
                     display: flex; justify-content: space-between; align-items: center; 
                     padding: 12px 20px; margin-bottom: 20px;
                     border-bottom: 1px solid rgba(255,255,255,0.05); gap: 15px;
-                    background: rgba(10, 10, 15, 0.2); flex-shrink: 0; 
+                    background: rgba(10, 10, 15, 0.95); /* Fondo sólido para que no transparente */
+                    backdrop-filter: blur(10px);
+                    border-radius: 0 0 16px 16px;
                 }
 
                 .ph-utility-nav { display: flex; gap: 20px; align-items: center; }
                 .ph-utility-link { font-size: 0.65rem; color: var(--text-muted); text-decoration: none; font-weight: 800; letter-spacing: 1.5px; transition: all 0.2s; padding: 4px 0; border-bottom: 1px solid transparent; white-space: nowrap; }
                 .ph-utility-link:hover { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
 
-                .ph-mob-brand { display: none; align-items: center; height: 32px; text-decoration:none; flex-shrink: 0; }
+                .ph-mob-brand { display: flex; align-items: center; height: 32px; text-decoration:none; flex-shrink: 0; }
+                
                 .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex: 1; }
 
                 .ph-mob-project-select { 
@@ -145,74 +150,53 @@ export const PageHeader = {
                     box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; flex-shrink: 0;
                 }
                 
-                .ph-user-dropdown { position: absolute; top: 50px; right: 0; background: rgba(15,15,20, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; min-width: 220px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 10000; overflow: hidden; }
+                .ph-user-dropdown { position: absolute; top: 50px; right: 0; background: rgba(15,15,20, 0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; min-width: 220px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 10000; overflow: hidden; }
                 .ph-user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
                 .ph-dd-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.3);}
                 .ph-dd-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
                 .ph-dd-link:hover { background: rgba(255,255,255,0.05); color: white;}
 
                 /* --- TÍTULOS --- */
-                .ph-view-header { margin-bottom: 2rem; width: 100%; }
-                .ph-title-wrapper { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 8px; }
-                .ph-title-text { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; font-weight: 900; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; }
+                .ph-view-header { margin-bottom: 2rem; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+                .ph-title-wrapper { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+                .ph-title-text { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; font-weight: 900; line-height: 1.2; word-break: break-word; }
                 .ph-badge-startup { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 12px; border-radius: 20px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; display: inline-block; }
-                .ph-tagline { color: var(--text-muted); font-size: 1rem; margin-top: 0; margin-bottom: 1.5rem; line-height: 1.4; max-width: 700px; }
+                .ph-tagline { color: var(--text-muted); font-size: 1rem; margin: 0; line-height: 1.4; max-width: 700px; }
 
                 /* --- MAGIC ACTION GROUP --- */
                 .magic-action-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: rgba(10, 10, 15, 0.6); padding: 6px; border-radius: 14px; border: 1px solid var(--glass-border); }
-                .magic-select { appearance: none; background: rgba(0,0,0,0.5) no-repeat right 12px top 50% / 10px auto; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); border: 1px solid rgba(224, 64, 251, 0.3); color: white; padding: 10px 35px 10px 15px; border-radius: 10px; font-family: var(--font-main); font-size: 0.9rem; font-weight: 800; outline: none; cursor: pointer; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
-                .magic-select:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224, 64, 251, 0.2); }
-                .magic-select option { background: var(--bg-panel); color: white; }
-                .btn-magic-exec { background: linear-gradient(135deg, var(--accent-purple), #7c4dff); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 900; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2); transition: 0.3s; height: 40px; }
-                .btn-magic-exec:hover { transform: translateY(-2px); filter: brightness(1.1); }
+                .magic-select { appearance: none; background: rgba(0,0,0,0.5) no-repeat right 12px top 50% / 10px auto; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); border: 1px solid rgba(224, 64, 251, 0.3); color: white; padding: 10px 35px 10px 15px; border-radius: 10px; font-family: var(--font-main); font-size: 0.9rem; font-weight: 800; outline: none; cursor: pointer; transition: all 0.3s; }
+                .btn-magic-exec { background: linear-gradient(135deg, var(--accent-purple), #7c4dff); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 900; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; height: 40px; }
                 .magic-token-badge { background: rgba(0,0,0,0.5); color: var(--accent-green); font-family: var(--font-mono); font-size: 0.7rem; padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(0, 230, 118, 0.3); }
 
-                /* --- TABS --- */
-                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;}
-                .ph-tabs-container::-webkit-scrollbar { display: none; }
+                /* --- TABS (CONFIGURACIÓN DUAL) --- */
+                .ph-tabs-desktop { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;}
+                .ph-tabs-desktop::-webkit-scrollbar { display: none; }
                 .ph-tab-btn { flex: 1; padding: 10px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
                 .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-                .ph-mob-tabs-wrapper { display: none; width: 100%; margin-bottom: 1.5rem; }
+                
+                .ph-tabs-mobile { display: none; width: 100%; margin-bottom: 1.5rem; }
                 .ph-mob-tabs-select { appearance: none; background: linear-gradient(145deg, rgba(25, 25, 30, 0.9), rgba(10, 10, 15, 0.95)) no-repeat right 15px top 50% / 12px auto; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e040fb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); border: 1px solid var(--accent-purple); color: white; padding: 14px 40px 14px 20px; border-radius: 12px; font-size: 1rem; font-weight: 800; outline: none; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-                /* EL ESPACIADOR MÓVIL (Por defecto oculto en PC) */
-                .ph-mobile-spacer { display: none; }
-
-                /* --- BLINDAJE MÓVIL TOTAL (<768px) --- */
+                /* --- MEDIA QUERIES (MÓVIL < 768px) --- */
                 @media (max-width: 768px) {
-                    .ph-global-top-bar { 
-                        position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
-                        background: rgba(10, 10, 14, 0.98); backdrop-filter: blur(20px); 
-                        padding: 10px 15px; box-sizing: border-box; margin-bottom: 0;
-                    }
+                    .hide-on-mobile { display: none !important; }
                     
-                    /* AQUÍ ESTÁ LA MAGIA: El Spacer se vuelve un bloque físico de 90px de alto */
-                    .ph-mobile-spacer {
-                        display: block;
-                        height: 95px; /* Empuja el título exactamente por debajo de la barra top */
-                        width: 100%;
-                        flex-shrink: 0;
-                    }
-
-                    .ph-mob-brand { display: flex; }
-                    .ph-utility-nav { display: none !important; }
+                    /* Título apilado verticalmente */
+                    .ph-title-wrapper { flex-direction: column; align-items: flex-start; gap: 8px; }
+                    .ph-title-text { font-size: 1.8rem; }
+                    .ph-badge-startup { font-size: 0.7rem; }
                     
-                    .ph-view-header { display: block; margin-bottom: 1.5rem; width: 100%; }
-                    .ph-title-wrapper { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 12px; width: 100%; }
-                    .ph-title-text { font-size: 1.8rem; line-height: 1.2; width: 100%; }
-                    .ph-badge-startup { font-size: 0.7rem; padding: 4px 10px; margin-bottom: 4px; }
-                    
-                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top: 15px;}
-                    .magic-select { width: 100%; height: 45px;}
-                    .btn-magic-exec { width: 100%; height: 45px;}
+                    /* Magic Button apilado */
+                    .magic-action-group { flex-direction: column; align-items: stretch; margin-top: 10px; }
+                    .magic-select, .btn-magic-exec { width: 100%; height: 45px; }
 
                     .ph-mob-project-select { max-width: 130px; font-size: 0.75rem; padding-right:25px;}
                     .ph-mob-user { width: 32px; height: 32px; font-size: 0.85rem; }
-                    
-                    .hide-tabs-on-mobile { display: none !important; }
-                    .ph-mob-tabs-wrapper { display: block; }
-                    .ph-tabs-container:not(.hide-tabs-on-mobile) { justify-content: flex-start; margin-bottom: 1.5rem; }
-                    .ph-tab-btn { flex: 0 0 auto; padding: 8px 15px; font-size: 0.8rem;}
+
+                    /* Cambio de Tabs a Select (Pura Magia CSS) */
+                    .ph-tabs-desktop { display: none !important; }
+                    .ph-tabs-mobile { display: block !important; }
                 }
             </style>
 
@@ -238,16 +222,14 @@ export const PageHeader = {
                                 <span style="color:white; font-weight:900; display:block;">${user?.name || 'Usuario'}</span>
                                 <span style="color:var(--accent-blue); font-family:var(--font-mono); font-size:0.75rem;">${user?.id || '@guest'}</span>
                             </div>
-                            <a href="/profile" data-link class="ph-dd-link">👤 Mi Identidad / Perfil</a>
-                            <a href="/map" data-link class="ph-dd-link">🕸️ Mapa Ecosistema (VNA)</a>
-                            ${state.session.role === 'ecosystem-owner' ? `<a href="/settings" data-link class="ph-dd-link">⚙️ Consola de Gobernanza</a>` : ''}
+                            <a href="/v7/profile" data-link class="ph-dd-link">👤 Mi Identidad / Perfil</a>
+                            <a href="/v7/map" data-link class="ph-dd-link">🕸️ Mapa Ecosistema (VNA)</a>
+                            ${state.session.role === 'ecosystem-owner' ? `<a href="/v7/settings" data-link class="ph-dd-link">⚙️ Consola de Gobernanza</a>` : ''}
                             <div class="ph-dd-link danger" id="phBtnLogout" style="cursor:pointer; border-top:1px solid rgba(255,255,255,0.05);">🚪 Desconectar Nodo</div>
                         </div>
                     </div>
                 </div>
             </header>
-
-            <div class="ph-mobile-spacer"></div>
 
             <div class="ph-view-header">
                 <div class="ph-title-wrapper">
@@ -255,12 +237,10 @@ export const PageHeader = {
                     ${archetypeBadgeHtml}
                 </div>
                 ${config.tagline ? `<p class="ph-tagline">${config.tagline}</p>` : ''}
-                
                 ${finalActionsHtml ? `<div class="ph-header-actions">${finalActionsHtml}</div>` : ''}
             </div>
 
             ${tabsHtml}
-            ${mobSelectHtml}
         `;
     },
 
@@ -294,15 +274,20 @@ export const PageHeader = {
             store.dispatch({ type: 'LOGOUT_USER' }).then(() => { window.location.href = '/v7/'; });
         });
 
+        // --- LÓGICA SINCRONIZADA DE TABS ---
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const mobTabsSelect = document.getElementById('phMobTabsSelect');
 
         if (tabBtns.length > 0) {
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    // Update Desktop Buttons
                     tabBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
+                    
+                    // Sync Mobile Select
                     if (mobTabsSelect) mobTabsSelect.value = btn.dataset.tab;
+                    
                     window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: btn.dataset.tab } }));
                 });
             });
@@ -310,6 +295,7 @@ export const PageHeader = {
 
         if (mobTabsSelect) {
             mobTabsSelect.addEventListener('change', (e) => {
+                // Sync Desktop Buttons
                 tabBtns.forEach(b => {
                     b.classList.toggle('active', b.dataset.tab === e.target.value);
                 });
@@ -317,6 +303,7 @@ export const PageHeader = {
             });
         }
 
+        // --- LÓGICA MAGIC BUTTON ---
         const magicSelect = document.getElementById('phMagicSelect');
         const magicBtn = document.getElementById('phMagicBtn');
         const magicTokenBadge = document.getElementById('phMagicTokenBadge');
