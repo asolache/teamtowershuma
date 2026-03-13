@@ -29,6 +29,7 @@ export default class LedgerView {
 
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
+        // Configuración del Header Universal
         let actionHtml = '';
         if (isPO) {
             actionHtml = `
@@ -56,11 +57,10 @@ export default class LedgerView {
 
         return `
             <style>
-                /* FIX SCROLL LATERAL: overflow-x: hidden estricto y anchos máximos del 100% */
-                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; width: 100%;}
+                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
                 
-                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 2rem; width: 100%; box-sizing: border-box;}
+                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 2rem; }
                 .tab-content.active { display: block; }
 
                 /* =========================================================
@@ -80,8 +80,7 @@ export default class LedgerView {
                 /* =========================================================
                    DASHBOARD (PIE CHART & CAP TABLE)
                    ========================================================= */
-                /* FIX OVERFLOW: minmax(0, 1fr) prevents the grid from expanding beyond screen limits */
-                .equity-dashboard { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 2.5rem; margin-bottom: 3rem; width: 100%; box-sizing: border-box;}
+                .equity-dashboard { display: grid; grid-template-columns: 350px 1fr; gap: 2.5rem; margin-bottom: 3rem;}
                 
                 .pie-panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 3rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(15px);}
                 .pie-chart { width: 220px; height: 220px; border-radius: 50%; background: conic-gradient(#333 0 100%); box-shadow: 0 0 0 10px rgba(255,255,255,0.02), inset 0 0 20px rgba(0,0,0,0.8); transition: background 1s ease-out; animation: spinIn 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -89,24 +88,19 @@ export default class LedgerView {
                 .pie-center .total-val { font-size: 2rem; font-weight: 900; font-family: var(--font-mono); color: white;}
                 .pie-center .total-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
 
-                /* FIX OVERFLOW: width 100%, overflow-x auto just in case */
-                .cap-table-container { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; display: flex; flex-direction: column; backdrop-filter: blur(10px); width: 100%; box-sizing: border-box; overflow-x: auto;}
+                .cap-table-container { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; display: flex; flex-direction: column; backdrop-filter: blur(10px);}
                 .panel-title { color: white; font-size: 1.4rem; font-weight: 900; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; flex-wrap: wrap; gap: 10px;}
                 
-                /* FIX OVERFLOW: Eliminar min-width, añadir width 100% y gap */
-                .cap-row { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; gap: 15px;}
+                .cap-row { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); min-width: 500px;}
                 .cap-row:last-child { border-bottom: none; }
-                
-                /* FIX OVERFLOW: min-width: 0 permite que el text-overflow funcione y no expanda la caja */
-                .cap-user { display: flex; align-items: center; gap: 15px; width: 35%; color: white; font-weight: 900; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;}
+                .cap-user { display: flex; align-items: center; gap: 15px; width: 30%; color: white; font-weight: 900; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
                 .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5);}
-                .user-info { display: flex; flex-direction: column; overflow: hidden; text-overflow: ellipsis; min-width: 0;}
-                .user-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .user-info { display: flex; flex-direction: column; }
                 
-                .cap-bar-container { flex: 1; min-width: 50px; background: rgba(0,0,0,0.6); height: 12px; border-radius: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+                .cap-bar-container { flex: 1; margin: 0 2rem; background: rgba(0,0,0,0.6); height: 12px; border-radius: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
                 .cap-bar-fill { height: 100%; border-radius: 6px; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); width: 0%; box-shadow: 0 0 10px currentColor;}
                 
-                .cap-stats { text-align: right; width: 25%; font-family: var(--font-mono); min-width: 0; white-space: nowrap;}
+                .cap-stats { text-align: right; width: 25%; font-family: var(--font-mono); }
                 .cap-percent { font-size: 1.3rem; color: white; font-weight: 900; }
                 .cap-slices { font-size: 0.9rem; color: var(--text-muted); }
                 
@@ -114,9 +108,9 @@ export default class LedgerView {
                 .mobile-only { display: none; }
 
                 /* =========================================================
-                   BLOCKCHAIN LOG (FRAMELESS DESKTOP)
+                   BLOCKCHAIN LOG (FRAMELESS)
                    ========================================================= */
-                .ledger-container { background: transparent; border: none; padding: 0; margin-top: 1rem; overflow-x: auto; width: 100%;}
+                .ledger-container { background: transparent; border: none; padding: 0; margin-top: 1rem; overflow-x: auto;}
                 
                 .ledger-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;}
                 .ledger-table th { padding: 1.2rem 1rem; background: rgba(0,0,0,0.4); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #333; font-weight: 900;}
@@ -127,75 +121,22 @@ export default class LedgerView {
                 .slice-badge { color: var(--accent-green); font-weight: 900; font-family: var(--font-mono); font-size: 1.1rem; text-shadow: 0 0 10px rgba(0,230,118,0.3);}
                 .empty-ledger { padding: 4rem; text-align: center; color: #666; font-style: italic; font-size: 1.1rem;}
 
-                /* =========================================================
-                   MOBILE LEDGER CARDS (COMPACT ACCORDION FIX)
-                   ========================================================= */
-                .mobile-ledger-list { display: none; flex-direction: column; gap: 10px; width: 100%;}
-                
-                .mlc-card {
-                    background: rgba(255,255,255,0.02);
-                    border: 1px solid var(--glass-border);
-                    border-radius: 12px;
-                    padding: 12px 15px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    position: relative;
-                    overflow: hidden; /* Mantiene el contenido compacto al estar cerrado */
-                    box-sizing: border-box;
-                    width: 100%;
-                }
-                .mlc-card:hover { background: rgba(255,255,255,0.04); }
-                .mlc-card.expanded { border-color: #555; background: rgba(0,0,0,0.5); }
-                
-                .mlc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-                .mlc-hash { font-size: 0.7rem; color: var(--accent-purple); font-family: var(--font-mono); background: rgba(224, 64, 251, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(224, 64, 251, 0.2);}
-                .mlc-date { font-size: 0.75rem; color: #666; font-family: var(--font-mono); }
-                
-                .mlc-main { display: flex; justify-content: space-between; align-items: center; }
-                .mlc-user { color: white; font-weight: 900; font-size: 1.05rem; }
-                .mlc-slices { color: var(--accent-green); font-weight: 900; font-size: 1.2rem; font-family: var(--font-mono); }
-                
-                .mlc-role { font-size: 0.8rem; color: #aaa; margin-top: 4px; }
-
-                /* Contenedor expandible */
-                .mlc-details {
-                    max-height: 0;
-                    opacity: 0;
-                    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
-                    margin-top: 0;
-                }
-                .mlc-card.expanded .mlc-details {
-                    max-height: 300px;
-                    opacity: 1;
-                    margin-top: 10px;
-                    padding-top: 10px;
-                    border-top: 1px dashed #333;
-                }
-                
-                .mlc-desc { font-size: 0.85rem; color: #ccc; line-height: 1.4; word-break: break-word;}
-                .mlc-proof { margin-top: 8px; display: inline-block;}
-                
-                .mlc-chevron {
-                    position: absolute;
-                    bottom: 12px;
-                    right: 15px;
-                    font-size: 0.8rem;
-                    color: #666;
-                    transition: transform 0.3s;
-                }
-                .mlc-card.expanded .mlc-chevron { transform: rotate(180deg); color: var(--accent-blue); }
+                /* MOBILE LEDGER CARDS */
+                .mobile-ledger-list { display: none; flex-direction: column; gap: 15px;}
+                .mob-ledger-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(10px);}
+                .mob-ledger-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem;}
 
                 /* =========================================================
                    PORTFOLIO GLOBAL TAB
                    ========================================================= */
-                .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; width: 100%; box-sizing: border-box;}
-                .portfolio-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; transition: transform 0.3s, box-shadow 0.3s; box-sizing: border-box;}
+                .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;}
+                .portfolio-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; transition: transform 0.3s, box-shadow 0.3s;}
                 .portfolio-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
                 
                 /* =========================================================
-                   MODALS GLOBALES (Anchos 100%)
+                   MODALS GLOBALES
                    ========================================================= */
-                .overlay-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 5000; display: none; justify-content: center; align-items: center;}
+                .overlay-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 5000; display: none; justify-content: center; align-items: center;}
                 .card-modal { background: var(--bg-dark); border: 1px solid #444; border-radius: 24px; padding: 3rem; width: 100%; max-width: 500px; text-align: center; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8); animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; max-height: 90vh; overflow-y:auto; border-top: 4px solid currentColor;}
                 
                 .form-group { text-align: left; margin-bottom: 20px; }
@@ -224,10 +165,10 @@ export default class LedgerView {
                     .btn-permaweb, .btn-capital { width: 100%; padding: 15px; font-size: 1.05rem; }
                     
                     .cap-table-container { padding: 2rem 1.2rem; border-radius: 20px;}
-                    .cap-row { min-width: 0; flex-wrap: nowrap; align-items: center; padding: 1rem 0; border-bottom: 1px dashed #333; gap: 10px;}
-                    .cap-user { width: auto; flex: 1; font-size: 1rem; overflow: hidden;}
+                    .cap-row { min-width: 0; flex-wrap: nowrap; align-items: center; padding: 1rem 0; border-bottom: 1px dashed #333;}
+                    .cap-user { width: auto; flex: 1; font-size: 1rem; overflow: visible;}
                     .desktop-only { display: none !important; }
-                    .mobile-only { display: block; font-size: 0.75rem; color: #888; font-family: var(--font-mono); margin-top: 4px; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+                    .mobile-only { display: block; font-size: 0.75rem; color: #888; font-family: var(--font-mono); margin-top: 4px; font-weight: normal;}
                     
                     .cap-stats { width: auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end;}
                     .cap-percent { font-size: 1.2rem; }
@@ -235,7 +176,7 @@ export default class LedgerView {
                     .ledger-table { display: none; }
                     .mobile-ledger-list { display: flex; }
                     
-                    .card-modal { padding: 2.5rem 1.5rem; width: 95%; margin: 0 auto;}
+                    .card-modal { padding: 2.5rem 1.5rem; width: 95%; }
                 }
             </style>
 
@@ -285,7 +226,6 @@ export default class LedgerView {
                                 </thead>
                                 <tbody id="ledgerBody"></tbody>
                             </table>
-                            
                             <div class="mobile-ledger-list" id="mobileLedgerList"></div>
                         </div>
                     </div>
@@ -373,7 +313,7 @@ export default class LedgerView {
                             </div>
 
                             <div class="form-group" style="margin-top: 25px;">
-                                <label style="color:var(--accent-purple);">Ruta de Salida Disponible</label>
+                                <label style="color:var(--accent-purple);">Ruta de Salida Disponible (Legal Framework)</label>
                                 <select id="selExitRoute" class="form-control" style="background: rgba(224, 64, 251, 0.05); border-color: var(--accent-purple); color:var(--accent-purple); font-weight:bold;">
                                     </select>
                             </div>
@@ -759,7 +699,6 @@ export default class LedgerView {
             const slicesFmt = `+${Math.round(entry.valorCongelado).toLocaleString()}`;
             const hashShort = entry.hash.substring(0,8);
 
-            // RENDER DESKTOP ROW
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><span class="hash-badge" title="${entry.hash}">${hashShort}...</span></td>
@@ -772,58 +711,50 @@ export default class LedgerView {
             `;
             tbody.appendChild(row);
 
-            // RENDER MOBILE COMPACT CARD (ACCORDION)
             const mobCard = document.createElement('div');
-            mobCard.className = 'mlc-card';
+            mobCard.className = 'mob-ledger-card';
             mobCard.innerHTML = `
-                <div class="mlc-top">
-                    <span class="mlc-hash" title="${entry.hash}">${hashShort}...</span>
-                    <span class="mlc-date">${date}</span>
+                <div class="mob-ledger-header">
+                    <span class="hash-badge" title="${entry.hash}">${hashShort}...</span>
+                    <span style="color: var(--text-muted); font-family: var(--font-mono);">${date}</span>
                 </div>
-                <div class="mlc-main">
-                    <div>
-                        <div class="mlc-user">${user.name}</div>
-                        <div class="mlc-role">${roleName} ${isCapital ? '' : ` | ⏱ ${horasStr}`}</div>
-                    </div>
-                    <div class="mlc-slices">${slicesFmt}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <strong style="color:white; font-size:1.15rem; font-weight:900;">${user.name}</strong>
+                    <span class="slice-badge" style="font-size:1.3rem;">${slicesFmt}</span>
                 </div>
-                
-                <div class="mlc-details">
-                    <div class="mlc-desc">${entry.description}</div>
-                    <div class="mlc-proof">${proofLink}</div>
+                <div style="font-size:0.9rem; color:#ccc; margin-bottom:8px;">${roleName}</div>
+                <div style="font-size:0.85rem; color:#aaa; background:rgba(0,0,0,0.5); padding:12px; border-radius:8px; line-height:1.5;">
+                    ${entry.description} ${isCapital ? '' : `<span style="color:white; font-weight:bold; font-family:var(--font-mono); float:right;">⏱ ${horasStr}</span>`} ${proofLink}
                 </div>
-                <div class="mlc-chevron">▼</div>
             `;
-            
-            // Lógica Acordeón
-            mobCard.addEventListener('click', function() {
-                this.classList.toggle('expanded');
-            });
-
             mobileList.appendChild(mobCard);
         });
 
-        // GENESIS BLOCK MOBILE CARD (COMPACT)
         const genesisHash = (project.genesisHash || 'GENESIS').substring(0,8);
+        
+        const genesisRow = document.createElement('tr');
+        genesisRow.innerHTML = `
+            <td><span class="hash-badge" style="border-color:#555; color:#888; background:transparent;">${genesisHash}...</span></td>
+            <td style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem;">--</td>
+            <td style="color: #666; font-style: italic; font-weight:bold;">Sistema Core</td>
+            <td style="color: #666;">Orquestador</td>
+            <td style="color: #888;">Instanciación del Castell (Bloque Génesis)</td>
+            <td style="font-family: var(--font-mono); color: #666;">0h</td>
+            <td style="text-align: right;"><span class="slice-badge" style="color:#666; text-shadow:none;">+0</span></td>
+        `;
+        tbody.appendChild(genesisRow);
+
         const mobGen = document.createElement('div');
-        mobGen.className = 'mlc-card';
+        mobGen.className = 'mob-ledger-card';
         mobGen.style.borderColor = '#333';
         mobGen.style.background = 'transparent';
         mobGen.innerHTML = `
-            <div class="mlc-top">
-                <span class="mlc-hash" style="border-color:#555; color:#888; background:transparent;">${genesisHash}...</span>
-                <span class="mlc-date">--</span>
+            <div class="mob-ledger-header">
+                <span class="hash-badge" style="border-color:#555; color:#888; background:transparent;">${genesisHash}...</span>
+                <span style="color: #666; font-family: var(--font-mono);">--</span>
             </div>
-            <div class="mlc-main">
-                <div style="color:#888; font-weight:bold; font-style:italic;">Bloque Génesis</div>
-                <div class="mlc-slices" style="color:#666;">+0</div>
-            </div>
-            <div class="mlc-details">
-                <div class="mlc-desc">Instanciación del Castell en el Kernel.</div>
-            </div>
-            <div class="mlc-chevron">▼</div>
+            <div style="color:#888; font-size:0.9rem; font-style:italic; font-weight:bold;">Bloque Génesis (Instanciación de Red)</div>
         `;
-        mobGen.addEventListener('click', function() { this.classList.toggle('expanded'); });
         mobileList.appendChild(mobGen);
     }
 }
