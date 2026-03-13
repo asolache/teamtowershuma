@@ -1,292 +1,250 @@
 // v5/js/views/FocusView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
-import { BottomNav } from '../components/BottomNav.js'; 
-import { PageHeader } from '../components/PageHeader.js';
+import { BottomNav } from '../components/BottomNav.js'; // INYECCIÓN V8.0
 
 export default class FocusView {
     constructor() {
-        document.title = "Deep Work | TeamTowers SOS";
+        document.title = "Deep Work | TeamTowers";
         this.timerInterval = null;
         this.secondsElapsed = 0;
         this.isRunning = false;
         this.activeTx = null;
         this.mode = 'stopwatch'; // 'stopwatch', 'pomodoro_25', 'pomodoro_50'
         this.targetSeconds = 0;
-        this.startTime = null; 
-        
-        this.focusTips = [
-            "Concéntrate en la tarea presente como si fuera la última. — M. Aurelio",
-            "El valor de la red fluye hacia donde la atención se enfoca.",
-            "💡 Tip: Un sprint de 50m sin interrupciones equivale a 3h de trabajo fragmentado.",
-            "La calidad del código de hoy es el patrimonio inmutable de mañana.",
-            "Deep Work: Sin notificaciones. Sin distracciones. Solo Proof of Work."
-        ];
-        this.currentTipIndex = 0;
     }
 
     async getHtml() {
+        // Datos para el Mobile Top Bar
         const state = store.getState();
-        
-        let currentActiveId = localStorage.getItem('tt_active_project');
-        let project = state.projects.find(p => p.id === currentActiveId);
-        
-        if (!project && state.projects.length > 0) {
-            project = state.projects[state.projects.length - 1];
-        }
-
-        const headerConfig = {
-            title: "Deep Work",
-            subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Aísla tu atención, ejecuta el entregable y sella tu Proof of Work.",
-            actionHtml: '' // En Focus Mode no queremos distracciones ni Dropdowns Mágicos.
-        };
+        const activeUserId = state.session.activeUserId;
+        const userProjects = state.projects.filter(p => 
+            state.session.role === 'ecosystem-owner' || 
+            p.ownerId === activeUserId || 
+            (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+        );
 
         return `
             <style>
-                /* ELIMINADAS clases globales .app-layout, .workspace, modales (Ahora en master.css) */
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: #0a0a0c; font-family: var(--font-main); }
                 
-                .workspace-focus { 
-                    flex: 1; display: flex; flex-direction: column; position: relative; 
-                    background: radial-gradient(circle at center, #111116 0%, #050505 100%); 
-                    overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-                    padding: 2rem 3rem; box-sizing: border-box; width: 100%;
+                .focus-workspace { 
+                    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                    background: radial-gradient(circle at center, #16161e 0%, #050505 100%);
+                    position: relative; overflow: hidden;
                 }
-                
-                /* =========================================================
-                   CONTENEDOR CENTRAL DE TRABAJO
-                   ========================================================= */
-                .focus-container { 
-                    flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; 
-                    justify-content: flex-start; padding: 0; padding-bottom: 2rem;
-                    position: relative; z-index: 10; margin-top: -1rem; width: 100%; box-sizing: border-box;
-                }
-
-                .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 4rem; animation: fadeIn 0.5s ease-out;}
-                .btn-go-kanban { background: white; color: black; margin-top: 1rem; text-decoration: none; padding: 14px 30px; border-radius: 12px; font-size: 1rem; font-weight: 900; transition: transform 0.2s; box-shadow: 0 10px 30px rgba(255,255,255,0.1);}
-                .btn-go-kanban:hover { transform: translateY(-3px); }
-                
-                /* EL MONOLITO DE CRISTAL (Panel Principal) */
-                .task-glass-panel {
-                    width: 100%; max-width: 680px; margin-top: 0;
-                    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-                    border: 1px solid rgba(255,255,255,0.08); border-radius: 24px;
-                    padding: 2.5rem; display: none; flex-direction: column; align-items: center;
-                    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-                    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-                    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-                    position: relative; z-index: 50; 
-                    transition: all 0.5s ease; box-sizing: border-box;
-                }
-                
-                /* =========================================================
-                   ZEN MODE ANIMATIONS (Inmersión Absoluta)
-                   ========================================================= */
-                .ph-view-header, .task-selector-box, .rhythm-selector {
-                    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-                    max-height: 200px; opacity: 1; transform-origin: top center; overflow: hidden;
-                }
-                .workspace-focus.zen-active .ph-view-header {
-                    opacity: 0; max-height: 0; margin-bottom: 0; transform: scale(0.95); padding: 0;
-                }
-                .workspace-focus.zen-active .task-selector-box {
-                    opacity: 0; max-height: 0; margin-bottom: 0; transform: scale(0.95); pointer-events: none;
-                }
-                .workspace-focus.zen-active .rhythm-selector {
-                    opacity: 0; max-height: 0; margin-bottom: 0; transform: scale(0.95); pointer-events: none;
-                }
-                .workspace-focus.zen-active .task-glass-panel {
-                    border-color: rgba(0, 230, 118, 0.3);
-                    box-shadow: 0 30px 80px rgba(0, 230, 118, 0.05), inset 0 1px 0 rgba(255,255,255,0.05);
-                }
-
-                /* SELECTOR OMNIPRESENTE LUXURY */
-                .task-selector-box { width: 100%; margin-bottom: 2.5rem; position: relative; z-index: 9999; }
-                .task-selector-box label { display:block; font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:900; text-align:center;}
-                .omni-selector { 
-                    width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(224, 64, 251, 0.3); color: white; 
-                    padding: 16px 45px 16px 20px; border-radius: 12px; font-family: var(--font-main); font-size: 1.05rem; 
-                    outline: none; cursor: pointer; appearance: none; font-weight: 800;
-                    text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.3s;
-                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 9999; box-sizing: border-box;
-                }
-                .omni-selector:focus, .omni-selector:hover { border-color: var(--accent-blue); box-shadow: inset 0 0 10px rgba(0, 176, 255, 0.1), 0 10px 20px rgba(0,176,255,0.3); background: rgba(0,0,0,0.8); }
-                .omni-selector option { background: #111; color: white; padding: 10px; font-family: var(--font-mono); font-size:0.95rem;}
-                .omni-selector optgroup { font-family: var(--font-main); font-weight:900; color: var(--accent-blue); background: #000; font-style: normal; padding:8px 0;}
-                .task-selector-box::after {
-                    content: '▼'; position: absolute; right: 20px; bottom: 18px;
-                    color: var(--accent-purple); font-size: 0.8rem; pointer-events: none; z-index: 10000;
-                }
-
-                /* TITULO Y BADGES */
-                .task-header { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 2rem; gap: 15px;}
-                .task-title-group { display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%;}
-                .task-title { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.2; text-align: center; font-weight:900; word-break: break-word;}
-                .btn-help-tip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; font-weight: bold; flex-shrink:0; font-size: 0.9rem;}
-                .btn-help-tip:hover { background: var(--accent-blue); color: black; border-color: var(--accent-blue); transform: scale(1.1);}
-
-                .task-meta-row { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap:wrap;}
-                .task-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-mono);}
-                .badge-tangible { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
-                .badge-intangible { background: rgba(224, 64, 251, 0.1); color: var(--accent-purple); border: 1px solid rgba(224, 64, 251, 0.3); }
-                
-                .btn-direct { background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: #ccc; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-size: 0.8rem; font-weight:bold;}
-                .btn-direct:hover { background: rgba(255,255,255,0.1); border-color: white; color: white; transform: translateY(-2px);}
-
-                .focus-tip { font-size: 0.9rem; color: var(--accent-blue); font-style: normal; background: rgba(0, 176, 255, 0.05); padding: 15px 20px; border-radius: 12px; border-left: 4px solid var(--accent-blue); display: none; width: 100%; text-align: center; margin-bottom: 2rem; line-height: 1.5; font-weight: bold; animation: fadeIn 0.3s ease-out; box-sizing: border-box;}
-
-                /* SELECTOR DE RITMO */
-                .rhythm-selector { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 30px; border: 1px solid #333; margin-bottom: 2rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
-                .btn-rhythm { background: transparent; border: none; color: #888; padding: 10px 24px; border-radius: 24px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; font-weight:bold;}
-                .btn-rhythm:hover { color: white; background: rgba(255,255,255,0.05);}
-                .btn-rhythm.active { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.4); box-shadow: 0 0 20px rgba(0,230,118,0.15);}
 
                 /* =========================================================
-                   TIMER SVG & TOMATO (RESPONSIVE FIX)
+                   MOBILE TOP BAR (DRY V8.0)
                    ========================================================= */
-                .timer-wrapper { position: relative; width: 100%; max-width: 300px; aspect-ratio: 1 / 1; display: flex; justify-content: center; align-items: center; z-index: 2; margin: 0 auto 2rem auto;}
-                .timer-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));}
-                .timer-circle-bg { fill: rgba(0,0,0,0.3); stroke: rgba(255,255,255,0.05); stroke-width: 8; }
-                .timer-circle-progress { fill: none; stroke: var(--accent-green); stroke-width: 8; stroke-dasharray: 942; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; stroke-linecap: round; filter: drop-shadow(0 0 15px rgba(0,230,118,0.6));}
+                .mobile-top-bar {
+                    display: none; justify-content: space-between; align-items: center; padding: 15px 20px;
+                    background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05);
+                    backdrop-filter: blur(10px); position: absolute; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box;
+                }
+                .mob-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
+                .mob-project-select { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--accent-blue); padding: 5px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; outline: none; max-width: 150px; }
+                .mob-user { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: var(--accent-purple); color: white; border-radius: 50%; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+
+                /* TOP NAV FOCUS (Desktop/iPad) */
+                .top-nav-focus { position: absolute; top: 0; left: 0; width: 100%; padding: 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; flex-wrap: wrap; gap: 15px; box-sizing: border-box;}
                 
-                .timer-container { position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 10;}
+                .omni-container { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.6); padding: 8px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); display: none;}
+                .omni-label { color: var(--accent-blue); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+                .omni-selector { background: transparent; border: none; border-bottom: 1px dashed rgba(255,255,255,0.3); color: white; padding: 5px 0; font-family: var(--font-mono); font-size: 0.9rem; outline: none; cursor: pointer; max-width: 350px; text-overflow: ellipsis; transition: all 0.2s;}
+                .omni-selector:hover { border-color: var(--accent-blue); }
+                .omni-selector option { background: #111; color: white; }
+
+                .empty-state { text-align: center; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 1rem; z-index: 5;}
                 
-                .pomodoro-icon { font-size: 2.8rem; margin-bottom: 5px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); transition: all 0.3s;}
-                .pomodoro-icon.ticking { animation: tickTock 1s infinite alternate ease-in-out; filter: drop-shadow(0 0 30px rgba(255, 82, 82, 1)); }
+                /* TASK CONTEXT */
+                .task-context { text-align: center; margin-bottom: 2rem; z-index: 2; animation: fadeIn 0.5s ease-out; width: 100%; padding: 0 1rem; box-sizing: border-box;}
+                .task-badge { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.3); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: inline-block; font-family: var(--font-mono);}
+                .task-title { font-size: 2.2rem; color: white; margin: 0 auto; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); max-width: 600px; line-height: 1.2; word-break: break-word;}
+                .task-role { color: #888; font-size: 1rem; margin-top: 10px; font-family: var(--font-mono); display: flex; align-items: center; justify-content: center; gap: 10px;}
+
+                .rhythm-selector { display: flex; gap: 10px; margin-bottom: 2rem; z-index: 2; flex-wrap: wrap; justify-content: center;}
+                .btn-rhythm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #aaa; padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;}
+                .btn-rhythm.active { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border-color: var(--accent-green); font-weight: bold;}
+
+                /* TIMER SVG */
+                .timer-wrapper { position: relative; width: 320px; height: 320px; display: flex; justify-content: center; align-items: center; z-index: 2; margin-bottom: 2rem;}
+                .timer-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+                .timer-circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8; }
+                .timer-circle-progress { fill: none; stroke: var(--accent-green); stroke-width: 8; stroke-dasharray: 942; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; stroke-linecap: round; }
                 
-                .time-display { font-size: 4.5rem; font-weight: 900; font-family: var(--font-mono); color: white; letter-spacing: -3px; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.8);}
-                .time-display span { font-size: 2.5rem; color: #444; vertical-align: baseline; padding: 0 4px;}
-                .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 900; margin-top: 10px; text-transform: uppercase; letter-spacing: 4px; opacity:0.9;}
+                .timer-container { position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+                .time-display { font-size: 5rem; font-weight: 800; font-family: var(--font-mono); color: white; letter-spacing: -2px; z-index: 3; line-height: 1;}
+                .time-display span { font-size: 2rem; color: #555; }
+                .time-label { color: var(--accent-green); font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px;}
 
                 /* CONTROLS */
-                .controls { display: flex; gap: 2rem; z-index: 10; align-items: center; justify-content: center; margin-top: 1rem; padding-bottom: 1rem;}
-                .btn-circle { width: 80px; height: 80px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2rem; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-                .btn-play { background: white; color: black; }
-                .btn-play:hover { transform: scale(1.1); background: #f0f0f0; box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);}
-                .btn-pause { background: rgba(0,0,0,0.8); color: white; border: 2px solid #555; backdrop-filter: blur(5px);}
-                .btn-pause:hover { background: rgba(255,255,255,0.1); border-color: white;}
-                .btn-stop { background: rgba(255, 82, 82, 0.1); color: var(--accent-red); border: 2px solid var(--accent-red); display: none; }
-                .btn-stop:hover { background: var(--accent-red); color: white; box-shadow: 0 10px 40px rgba(255, 82, 82, 0.5); transform: scale(1.1);}
+                .controls { display: flex; gap: 1.5rem; z-index: 2; align-items: center; justify-content: center;}
+                .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; transition: transform 0.2s, background 0.3s; }
+                .btn-play { background: white; color: black; box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2); }
+                .btn-play:hover { transform: scale(1.1); background: #eee; }
+                .btn-pause { background: #333; color: white; }
+                .btn-pause:hover { background: #444; }
+                .btn-stop { background: var(--accent-red); color: white; display: none; }
+                .btn-stop:hover { background: #ff1744; box-shadow: 0 10px 20px rgba(255, 82, 82, 0.3); }
+                
+                .btn-direct { background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: #ccc; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; margin-top: 2rem;}
+                .btn-direct:hover { background: rgba(255,255,255,0.05); border-color: white; color: white; }
 
-                .report-task-box { background: rgba(0, 176, 255, 0.1); border-left: 4px solid var(--accent-blue); color: white; font-weight: 900; padding: 15px; border-radius: 8px; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.3;}
+                .daily-yield { position: absolute; bottom: 2rem; display: flex; gap: 2rem; background: rgba(0,0,0,0.6); padding: 1rem 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); z-index: 10; backdrop-filter: blur(10px);}
+                .yield-stat { display: flex; flex-direction: column; align-items: center; }
+                .yield-val { font-size: 1.2rem; font-weight: bold; color: white; font-family: var(--font-mono);}
+                .yield-lbl { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px;}
 
-                .glow-bg { position: fixed; width: 800px; height: 800px; background: radial-gradient(circle, rgba(224, 64, 251, 0.05) 0%, transparent 60%); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; opacity: 0; transition: opacity 1s, background 1s; pointer-events: none;}
+                /* MODAL DE REPORTE */
+                .report-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+                .report-card { background: var(--bg-panel); border: 1px solid var(--glass-border); padding: 3rem; border-radius: var(--border-radius-lg); width: 100%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box;}
+                .report-card h2 { color: white; margin-top: 0; font-size: 1.8rem; }
+                .form-group { margin-bottom: 1.5rem; text-align: left; }
+                .form-group label { display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
+                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 1rem; transition: border-color 0.2s; box-sizing: border-box;}
+                .form-control:focus { border-color: var(--accent-green); outline: none; box-shadow: 0 0 10px rgba(0, 230, 118, 0.1);}
+
+                .glow-bg { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 230, 118, 0.08) 0%, transparent 70%); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; opacity: 0; transition: opacity 1s, background 1s; pointer-events: none;}
                 .glow-bg.running { opacity: 1; animation: pulseGlow 4s infinite alternate; }
                 
                 @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5;} 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1;} }
-                @keyframes tickTock { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.15) rotate(5deg); } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* RESPONSIVE MOBILE FIXES */
+                /* =========================================================
+                   RESPONSIVE MOBILE (FIELD APP)
+                   ========================================================= */
                 @media (max-width: 768px) {
-                    .workspace-focus { padding: 90px 1rem 120px 1rem; } 
-                    .focus-container { padding: 0; }
-                    .task-glass-panel { padding: 2rem 1.5rem; border-radius: 20px;}
-                    .empty-state h2 { font-size: 1.8rem; }
+                    .focus-workspace { padding-bottom: 70px; } /* Evita pisar BottomNav */
                     
-                    .task-selector-box { margin-bottom: 2rem; }
-                    .omni-selector { padding: 14px 15px; font-size: 0.95rem; border-radius: 12px;}
+                    /* Oculta barra nativa focus y muestra Top Bar Universal */
+                    .top-nav-focus { display: none !important; }
+                    .mobile-top-bar { display: flex; }
                     
-                    .task-title { font-size: 1.6rem; }
-                    .timer-wrapper { max-width: 240px; margin: 1.5rem auto; }
-                    .time-display { font-size: 3.8rem; }
-                    .btn-circle { width: 70px; height: 70px; font-size: 1.6rem; }
+                    .omni-container { 
+                        display: flex !important; /* Fuerza mostrarlo pero relocalizado */
+                        position: absolute; 
+                        top: 80px; 
+                        left: 50%; 
+                        transform: translateX(-50%);
+                        width: 90%; 
+                        justify-content: center;
+                    }
+                    .omni-label { display: none; } /* Mucho texto para movil */
+
+                    .timer-wrapper { width: 250px; height: 250px; }
+                    .time-display { font-size: 3.5rem; }
+                    .task-title { font-size: 1.5rem; }
+                    
+                    .daily-yield { bottom: 90px; padding: 0.8rem 1.5rem; gap: 1rem; width: 90%; justify-content: space-around;}
+                    .report-card { padding: 2rem 1.5rem; width: 95%; max-width: 100%;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/focus')}
 
-                <main class="workspace-focus" id="focusWorkspace">
+                <main class="focus-workspace">
                     <div class="glow-bg" id="glowBg"></div>
                     
-                    <div id="headerWrapper" style="position:relative; z-index:100; width: 100%;">
-                        ${PageHeader.getHtml(headerConfig)}
-                    </div>
-
-                    <div class="focus-container">
+                    <header class="mobile-top-bar">
+                        <a href="/v5/" data-link class="mob-brand">🗼</a>
                         
-                        <div class="empty-state" id="emptyState">
-                            <div style="font-size: 5rem; margin-bottom: 0; line-height:1; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.5));">☕</div>
-                            <h2 style="color:white; margin:0; font-weight:900;">Escritorio Limpio.</h2>
-                            <p style="max-width: 400px; line-height:1.5;">La mente está despejada. Ve al Kanban, haz PULL de un entregable pendiente y vuelve aquí para entrar en Flow.</p>
-                            <a href="/v5/project" data-link class="btn-go-kanban">Ir al Kanban (Mercado de Tareas)</a>
+                        <select class="mob-project-select" id="mobProjectSelect">
+                            ${userProjects.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')}
+                        </select>
+
+                        <a href="/v5/profile" data-link class="mob-user" title="Mi Perfil">
+                            ${state.globalUsers.find(u => u.id === activeUserId)?.name.charAt(0).toUpperCase() || '?'}
+                        </a>
+                    </header>
+
+                    <div class="top-nav-focus">
+                        <div style="color: #555; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;">KERNEL // FLOW STATE</div>
+                    </div>
+
+                    <div class="omni-container" id="omniContainer">
+                        <span class="omni-label">▶ Selecciona Entregable:</span>
+                        <select id="omniSelector" class="omni-selector"></select>
+                    </div>
+
+                    <div class="empty-state" id="emptyState">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">☕</div>
+                        <h2 style="color: white; font-size: 2rem; margin: 0;">Nada en tu escritorio.</h2>
+                        <p style="color: var(--text-muted);">Ve al Kanban, haz PULL de una tarea teórica y vuelve aquí para entrar en Flow.</p>
+                        <a href="/v5/project" data-link style="background: white; color: black; margin-top: 1rem; text-decoration: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; transition: transform 0.2s;">Ir al Kanban</a>
+                    </div>
+
+                    <div id="workState" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                        
+                        <div class="task-context">
+                            <div class="task-badge" id="taskType">--</div>
+                            <h1 class="task-title" id="taskName">Cargando Entregable...</h1>
+                            <div class="task-role">Silla actual: <span id="taskRole" style="color: #fff; font-weight: bold; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.1);">--</span></div>
                         </div>
 
-                        <div id="workState" class="task-glass-panel">
-                            
-                            <div class="task-selector-box" id="omniContainer">
-                                <label>🎯 Entregable Activo (Workspace)</label>
-                                <select id="omniSelector" class="omni-selector" title="Selecciona la tarea a ejecutar">
-                                    <option value="" disabled selected>Cargando tareas...</option>
-                                </select>
-                            </div>
-                            
-                            <div class="task-header">
-                                <div class="task-title-group">
-                                    <h1 class="task-title" id="taskName">Cargando...</h1>
-                                    <button class="btn-help-tip" id="btnShowTip" title="Inspiración y Ayuda">?</button>
-                                </div>
+                        <div class="rhythm-selector">
+                            <button class="btn-rhythm active" data-rhythm="stopwatch" title="Cronómetro libre">♾️ Libre</button>
+                            <button class="btn-rhythm" data-rhythm="pomodoro_25" title="25m Trabajo / 5m Descanso">🍅 Sprint (25m)</button>
+                            <button class="btn-rhythm" data-rhythm="pomodoro_50" title="50m Trabajo / 10m Descanso">🌊 Flow (50m)</button>
+                        </div>
 
-                                <div class="focus-tip" id="focusTip"></div>
-
-                                <div class="task-meta-row">
-                                    <div class="task-badge" id="taskType">--</div>
-                                    <button class="btn-direct" id="btnDirectReport" title="Saltarse el reloj y reportar horas estimadas.">📝 Ingreso Manual Rápido</button>
-                                </div>
+                        <div class="timer-wrapper">
+                            <svg class="timer-svg" viewBox="0 0 320 320">
+                                <circle class="timer-circle-bg" cx="160" cy="160" r="150"></circle>
+                                <circle class="timer-circle-progress" id="timerProgress" cx="160" cy="160" r="150"></circle>
+                            </svg>
+                            <div class="timer-container">
+                                <div class="time-display" id="timeDisplay">00<span>:</span>00<span>:</span>00</div>
+                                <div class="time-label" id="timeLabel">FOCUS</div>
                             </div>
+                        </div>
 
-                            <div class="rhythm-selector">
-                                <button class="btn-rhythm active" data-rhythm="stopwatch" title="Cronómetro progresivo infinito">♾️ Flujo Libre</button>
-                                <button class="btn-rhythm" data-rhythm="pomodoro_25" title="25m Trabajo / 5m Descanso">🍅 Sprint (25m)</button>
-                                <button class="btn-rhythm" data-rhythm="pomodoro_50" title="50m Trabajo / 10m Descanso">🌊 Deep Work (50m)</button>
-                            </div>
+                        <div class="controls">
+                            <button class="btn-circle btn-pause" id="btnPause" title="Pausar Reloj" style="display: none;">⏸</button>
+                            <button class="btn-circle btn-play" id="btnPlay" title="Iniciar Deep Work">▶</button>
+                            <button class="btn-circle btn-stop" id="btnStop" title="Terminar y Reportar">⏹</button>
+                        </div>
+                        
+                        <button class="btn-direct" id="btnDirectReport">📝 Ingresar horas manuales</button>
+                    </div>
 
-                            <div class="timer-wrapper">
-                                <svg class="timer-svg" viewBox="0 0 320 320">
-                                    <circle class="timer-circle-bg" cx="160" cy="160" r="150"></circle>
-                                    <circle class="timer-circle-progress" id="timerProgress" cx="160" cy="160" r="150"></circle>
-                                </svg>
-                                <div class="timer-container">
-                                    <div class="pomodoro-icon" id="pomodoroIcon">🍅</div>
-                                    <div class="time-display" id="timeDisplay">00<span>:</span>00</div>
-                                    <div class="time-label" id="timeLabel">FOCUS</div>
-                                </div>
-                            </div>
-
-                            <div class="controls">
-                                <button class="btn-circle btn-pause" id="btnPause" title="Pausar Reloj" style="display: none;">⏸</button>
-                                <button class="btn-circle btn-play" id="btnPlay" title="Iniciar Inmersión">▶</button>
-                                <button class="btn-circle btn-stop" id="btnStop" title="Terminar y Sellar PoW">⏹</button>
-                            </div>
+                    <div class="daily-yield" id="dailyYield" style="display:none;">
+                        <div class="yield-stat">
+                            <span class="yield-val" id="dyHours" style="color: var(--accent-blue);">0.0h</span>
+                            <span class="yield-lbl">Hoy</span>
+                        </div>
+                        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+                        <div class="yield-stat">
+                            <span class="yield-val" id="dySlices" style="color: var(--accent-green);">0</span>
+                            <span class="yield-lbl">Slices (Est.)</span>
                         </div>
                     </div>
 
-                    <div class="modal-overlay" id="reportModal">
-                        <div class="modal-content" style="border-top-color:var(--accent-blue);">
-                            <h2 style="color: white; margin-top: 0; font-size: 1.8rem; font-weight:900; letter-spacing:-1px;">Sellar Entregable</h2>
-                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height:1.5;">Certifica tu Prueba de Trabajo (PoW). El auditor validará estas horas para emitir tus Slices.</p>
-                            
-                            <div id="reportTaskName" class="report-task-box">🎯 Cargando Entregable...</div>
+                    <div class="report-modal" id="reportModal">
+                        <div class="report-card">
+                            <h2>Consolidar Esfuerzo (PoW)</h2>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Envía el <i>Proof of Work</i> para que el Auditor valide la inyección en el Ledger.</p>
                             
                             <div class="form-group">
-                                <label style="color: var(--accent-green);">Tiempo Real Invertido (Horas / Fracciones)</label>
-                                <input type="number" step="0.1" id="inpRealHours" class="form-control" value="0.0" style="color:var(--accent-green); font-size:1.2rem; font-weight:900;">
-                                <div style="font-size:0.75rem; color:#888; margin-top:6px; font-family:var(--font-mono);">Ejemplo: 1.5 = 1h 30m | 0.25 = 15m</div>
+                                <label style="color: var(--accent-blue);">Tiempo Real Invertido (Horas ej: 1.5, 0.25)</label>
+                                <input type="number" step="0.1" id="inpRealHours" class="form-control" value="0.0">
                             </div>
                             
                             <div class="form-group">
-                                <label>Enlace al Entregable Final</label>
-                                <input type="text" id="inpProof" class="form-control" placeholder="URL de Figma, GitHub, Notion...">
+                                <label>Enlace al Entregable (Figma, GitHub, Docs...)</label>
+                                <input type="text" id="inpProof" class="form-control" placeholder="https://...">
                             </div>
 
                             <div class="form-group">
-                                <label>Notas de Traspaso (Opcional)</label>
-                                <textarea id="inpComment" class="form-control" rows="2" placeholder="Contexto para el receptor o el auditor..."></textarea>
+                                <label>Comentarios para el Auditor (Opcional)</label>
+                                <textarea id="inpComment" class="form-control" rows="2" placeholder="Notas sobre el desarrollo..."></textarea>
                             </div>
 
-                            <div style="display: flex; justify-content: space-between; margin-top: 2rem; gap: 15px;">
-                                <button class="btn-outline" id="btnCancelReport" style="flex: 1;">Cancelar</button>
-                                <button class="btn-primary" id="btnSubmitReport" style="flex: 2;">📤 Enviar a validar</button>
+                            <div style="display: flex; justify-content: space-between; margin-top: 2rem; gap: 10px;">
+                                <button class="btn" id="btnCancelReport" style="background: transparent; border: 1px solid var(--glass-border); color: white; padding: 12px 20px; border-radius: 8px; cursor: pointer; flex: 1;">Cancelar</button>
+                                <button class="btn" id="btnSubmitReport" style="background: var(--accent-blue); color: black; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 2; transition: transform 0.2s;">📤 Firmar Trabajo</button>
                             </div>
                         </div>
                     </div>
@@ -299,159 +257,150 @@ export default class FocusView {
 
     executeViewScript() {
         Sidebar.initListeners();
-        PageHeader.execute(); 
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
+        
+        // --- MOBILE TOP BAR LOGIC ---
+        let activeProjectId = localStorage.getItem('tt_active_project') || (state.projects.length > 0 ? state.projects[state.projects.length - 1].id : null);
+        const mobSelect = document.getElementById('mobProjectSelect');
+        if (mobSelect && activeProjectId) {
+            mobSelect.value = activeProjectId;
+            mobSelect.addEventListener('change', (e) => {
+                localStorage.setItem('tt_active_project', e.target.value);
+                window.location.reload(); 
+            });
+        }
 
         this.dom = {
-            workspace: document.getElementById('focusWorkspace'),
             emptyState: document.getElementById('emptyState'),
             workState: document.getElementById('workState'),
             taskName: document.getElementById('taskName'),
+            taskRole: document.getElementById('taskRole'),
             taskType: document.getElementById('taskType'),
-            focusTip: document.getElementById('focusTip'),
-            btnShowTip: document.getElementById('btnShowTip'),
             timeDisplay: document.getElementById('timeDisplay'),
             timeLabel: document.getElementById('timeLabel'),
             timerProgress: document.getElementById('timerProgress'),
-            pomodoroIcon: document.getElementById('pomodoroIcon'),
             glowBg: document.getElementById('glowBg'),
             btnPlay: document.getElementById('btnPlay'),
             btnPause: document.getElementById('btnPause'),
             btnStop: document.getElementById('btnStop'),
             btnDirectReport: document.getElementById('btnDirectReport'),
             modal: document.getElementById('reportModal'),
-            reportTaskName: document.getElementById('reportTaskName'), 
             inpRealHours: document.getElementById('inpRealHours'),
             inpProof: document.getElementById('inpProof'),
             inpComment: document.getElementById('inpComment'),
             btnSubmit: document.getElementById('btnSubmitReport'),
             btnCancel: document.getElementById('btnCancelReport'),
             omniContainer: document.getElementById('omniContainer'),
-            omniSelector: document.getElementById('omniSelector')
+            omniSelector: document.getElementById('omniSelector'),
+            dailyYield: document.getElementById('dailyYield'),
+            dyHours: document.getElementById('dyHours'),
+            dySlices: document.getElementById('dySlices')
         };
 
+        // 1. RECOPILAR TODAS LAS TAREAS DE TODOS LOS PROYECTOS (OMNI-RED)
         let allMyTasks = [];
         
         state.projects.forEach(p => {
-            const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
-            let tasks = tasksSource.filter(tx => tx.status === 'pinged' && tx.assigneeId === activeUserId);
-            
-            if(tasks.length === 0 && state.session.role === 'ecosystem-owner') {
-                tasks = tasksSource.filter(tx => tx.status === 'pinged');
-            }
-            
-            tasks.forEach(tx => {
-                const roleFrom = p.roles.find(r => r.id === tx.from);
+            if (p.transactions) {
+                let tasks = p.transactions.filter(tx => tx.status === 'pinged' && tx.assigneeId === activeUserId);
                 
-                let resolvedName = tx.entregable || tx.template;
-                if (!resolvedName && tx.flowId) {
-                    const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
-                    if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
+                // Fallback para Owner si no tiene tareas propias
+                if(tasks.length === 0 && state.session.role === 'ecosystem-owner' && p.id === state.projects[state.projects.length-1].id) {
+                    tasks = p.transactions.filter(tx => tx.status === 'pinged');
                 }
-
-                allMyTasks.push({ 
-                    ...tx, 
-                    projectId: p.id, 
-                    projectName: p.nombre, 
-                    roleName: roleFrom ? roleFrom.name : 'Nodo',
-                    displayName: resolvedName || 'Work Order Anónima'
+                
+                tasks.forEach(tx => {
+                    allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre });
                 });
-            });
+            }
         });
 
+        // Ordenar alfabéticamente
         allMyTasks.sort((a, b) => a.projectName.localeCompare(b.projectName));
 
         if (allMyTasks.length === 0) {
             this.dom.emptyState.style.display = 'flex';
         } else {
             this.dom.workState.style.display = 'flex';
+            this.dom.dailyYield.style.display = 'flex';
             
-            let currentProjectName = '';
-            let selectHtml = `<option value="" disabled>🎯 SELECCIONA EL ENTREGABLE...</option>`;
-            
-            allMyTasks.forEach(t => {
-                if (t.projectName !== currentProjectName) {
-                    if (currentProjectName !== '') selectHtml += `</optgroup>`;
-                    selectHtml += `<optgroup label="🏰 ${t.projectName.toUpperCase()}">`;
-                    currentProjectName = t.projectName;
+            // Si hay tareas y estamos en un proyecto específico por localStorage, intentamos poner una de ese proyecto primero
+            if(activeProjectId) {
+                const projTasks = allMyTasks.filter(t => t.projectId === activeProjectId);
+                if (projTasks.length > 0) {
+                    this.activeTx = projTasks[0];
+                } else {
+                    this.activeTx = allMyTasks[0];
                 }
-                selectHtml += `<option value="${t.id || t.hash}">${t.roleName}: ${t.displayName}</option>`;
-            });
-            if (currentProjectName !== '') selectHtml += `</optgroup>`;
-            
-            this.dom.omniSelector.innerHTML = selectHtml;
-
-            const cachedTxHash = localStorage.getItem('tt_active_pomodoro_tx');
-            if (cachedTxHash && allMyTasks.find(t => (t.id || t.hash) === cachedTxHash)) {
-                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === cachedTxHash);
-                this.dom.omniSelector.value = this.activeTx.id || this.activeTx.hash;
             } else {
                 this.activeTx = allMyTasks[0];
-                this.dom.omniSelector.value = this.activeTx.id || this.activeTx.hash;
             }
-
-            const activeHash = this.activeTx.id || this.activeTx.hash;
-            const cachedTime = localStorage.getItem(`tt_focus_${activeHash}_elapsed`);
-            const cachedStart = localStorage.getItem(`tt_focus_${activeHash}_start`);
-            const cachedRunning = localStorage.getItem(`tt_focus_${activeHash}_running`);
-            const cachedMode = localStorage.getItem(`tt_focus_${activeHash}_mode`);
-
-            if (cachedMode) {
-                this.mode = cachedMode;
-                document.querySelectorAll('.btn-rhythm').forEach(b => {
-                    b.classList.remove('active');
-                    if (b.dataset.rhythm === cachedMode) b.classList.add('active');
-                });
-            }
-
-            if (cachedTime) this.secondsElapsed = parseInt(cachedTime, 10);
             
-            if (cachedRunning === 'true' && cachedStart) {
-                const now = Date.now();
-                const diffSeconds = Math.floor((now - parseInt(cachedStart, 10)) / 1000);
-                this.secondsElapsed += diffSeconds;
-                this.setupTaskData();
-                this.startTimer(); 
-            } else {
-                this.setupTaskData();
-                this.updateDisplay();
+            this.dom.omniContainer.style.display = 'flex';
+            
+            // Evitamos añadir style inline a omniContainer si estamos en móvil para que mande el CSS de la Media Query
+            if (window.innerWidth <= 768) {
+                this.dom.omniContainer.style.display = 'flex'; 
             }
 
+            this.dom.omniSelector.innerHTML = allMyTasks.map((t) => 
+                `<option value="${t.hash}" data-pid="${t.projectId}" ${t.hash===this.activeTx.hash?'selected':''}>${t.entregable} (${t.projectName})</option>`
+            ).join('');
+            
+            const cachedTime = localStorage.getItem(`tt_focus_${this.activeTx.hash}`);
+            if (cachedTime) this.secondsElapsed = parseInt(cachedTime, 10);
+
+            this.setupTaskData(state);
             this.setupTimerControls();
+            this.calculateGlobalDailyYield(state, activeUserId);
+            this.updateDisplay();
 
             this.dom.omniSelector.addEventListener('change', (e) => {
                 this.pauseTimer();
-                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === e.target.value);
-                const aHash = this.activeTx.id || this.activeTx.hash;
-                const cache = localStorage.getItem(`tt_focus_${aHash}_elapsed`);
+                this.activeTx = allMyTasks.find(t => t.hash === e.target.value);
+                const cache = localStorage.getItem(`tt_focus_${this.activeTx.hash}`);
                 this.secondsElapsed = cache ? parseInt(cache, 10) : 0;
-                this.setupTaskData();
+                this.setupTaskData(state);
                 this.updateDisplay();
             });
         }
     }
 
-    setupTaskData() {
-        if (!this.activeTx) return;
-        this.dom.taskName.innerText = this.activeTx.displayName;
+    setupTaskData(state) {
+        const project = state.projects.find(p => p.id === this.activeTx.projectId);
         
-        if(this.activeTx.tipo === 'tangible') {
-            this.dom.taskType.innerText = '🟢 Tangible';
-            this.dom.taskType.className = 'task-badge badge-tangible';
-        } else {
-            this.dom.taskType.innerText = '🟣 Intangible';
-            this.dom.taskType.className = 'task-badge badge-intangible';
+        this.dom.taskName.innerText = this.activeTx.entregable;
+        this.dom.taskType.innerText = `[${this.activeTx.tipo}] PoW Requerido`;
+        
+        const roleFrom = project.roles.find(r => r.id === this.activeTx.from);
+        if (roleFrom) {
+            this.dom.taskRole.innerText = `${roleFrom.levelId} - ${roleFrom.name}`;
+            const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
+            this.dom.taskRole.style.color = colors[roleFrom.levelId] || 'white';
         }
+    }
 
-        if(this.dom.btnShowTip) {
-            this.dom.btnShowTip.addEventListener('click', () => {
-                this.currentTipIndex = (this.currentTipIndex + 1) % this.focusTips.length;
-                this.dom.focusTip.innerText = this.focusTips[this.currentTipIndex];
-                this.dom.focusTip.style.display = 'block';
-            });
-        }
+    calculateGlobalDailyYield(state, userId) {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        
+        let todayHours = 0;
+        let todaySlices = 0;
+
+        state.projects.forEach(p => {
+            if (p.ledger) {
+                const userBlocks = p.ledger.filter(l => l.userId === userId && l.timestamp >= today.getTime());
+                userBlocks.forEach(b => {
+                    todayHours += b.horas || 0;
+                    todaySlices += b.valorCongelado || 0;
+                });
+            }
+        });
+
+        this.dom.dyHours.innerText = todayHours.toFixed(1) + 'h';
+        this.dom.dySlices.innerText = Math.round(todaySlices).toLocaleString();
     }
 
     setupTimerControls() {
@@ -468,11 +417,8 @@ export default class FocusView {
                 if (this.isRunning) this.pauseTimer();
                 document.querySelectorAll('.btn-rhythm').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
-                
                 this.mode = e.target.getAttribute('data-rhythm');
-                const activeHash = this.activeTx.id || this.activeTx.hash;
-                localStorage.setItem(`tt_focus_${activeHash}_mode`, this.mode);
-
+                
                 if (this.mode === 'pomodoro_25') this.targetSeconds = 25 * 60;
                 else if (this.mode === 'pomodoro_50') this.targetSeconds = 50 * 60;
                 else this.targetSeconds = 0;
@@ -484,79 +430,48 @@ export default class FocusView {
     }
 
     startTimer() {
-        if (this.isRunning || !this.activeTx) return;
+        if (this.isRunning) return;
         this.isRunning = true;
-        this.startTime = Date.now();
-        
         this.dom.btnPlay.style.display = 'none';
         this.dom.btnDirectReport.style.display = 'none'; 
         this.dom.btnPause.style.display = 'flex';
         this.dom.btnStop.style.display = 'flex';
-        
         this.dom.glowBg.classList.add('running');
-        this.dom.pomodoroIcon.classList.add('ticking');
-
-        this.dom.workspace.classList.add('zen-active');
-
-        const activeHash = this.activeTx.id || this.activeTx.hash;
-        localStorage.setItem('tt_active_pomodoro_tx', activeHash);
-        localStorage.setItem(`tt_focus_${activeHash}_running`, 'true');
 
         this.timerInterval = setInterval(() => {
-            const now = Date.now();
-            const tickDiff = Math.floor((now - this.startTime) / 1000);
-            this.startTime = now; 
-
             if (this.mode === 'stopwatch') {
-                this.secondsElapsed += tickDiff;
+                this.secondsElapsed++;
             } else {
-                if (this.targetSeconds > 0) this.targetSeconds -= tickDiff;
+                if (this.targetSeconds > 0) this.targetSeconds--;
                 if (this.targetSeconds <= 0) {
                     this.pauseTimer();
-                    this.targetSeconds = 0;
-                    alert("🔔 ¡Sesión completada! Es hora de un descanso. Reporta el progreso para asegurar tu Proof of Work.");
-                    this.openReportModal(true);
+                    alert("¡Sesión completada! Es hora de un descanso. ¿Reportamos el progreso?");
                 }
             }
             
-            localStorage.setItem(`tt_focus_${activeHash}_elapsed`, this.secondsElapsed);
-            localStorage.setItem(`tt_focus_${activeHash}_start`, now);
+            localStorage.setItem(`tt_focus_${this.activeTx.hash}`, this.mode === 'stopwatch' ? this.secondsElapsed : (this.activeTx.horas*3600 - this.targetSeconds));
             
             this.updateDisplay();
-            this.dispatchNavSyncEvent(); 
         }, 1000);
     }
 
     pauseTimer() {
-        if (!this.activeTx) return;
         this.isRunning = false;
         clearInterval(this.timerInterval);
-        
         this.dom.btnPlay.style.display = 'flex';
         this.dom.btnPause.style.display = 'none';
-        
         this.dom.glowBg.classList.remove('running');
-        this.dom.pomodoroIcon.classList.remove('ticking');
-        
-        this.dom.workspace.classList.remove('zen-active');
-
-        const activeHash = this.activeTx.id || this.activeTx.hash;
-        localStorage.setItem(`tt_focus_${activeHash}_running`, 'false');
-        localStorage.removeItem('tt_active_pomodoro_tx');
-        this.dispatchNavSyncEvent();
     }
 
     openReportModal(fromTimer) {
         this.pauseTimer();
         
-        this.dom.reportTaskName.innerText = `🎯 ${this.activeTx.displayName}`;
-
         if (fromTimer) {
             let workedSecs = this.mode === 'stopwatch' ? this.secondsElapsed : ((this.mode === 'pomodoro_25' ? 25*60 : 50*60) - this.targetSeconds);
             const hoursCalc = (workedSecs / 3600).toFixed(2);
             this.dom.inpRealHours.value = hoursCalc > 0.01 ? hoursCalc : 0.1; 
         } else {
-            this.dom.inpRealHours.value = this.activeTx.horas || this.activeTx.estimatedHours || 1.0; 
+            this.dom.inpRealHours.value = this.activeTx.horas || 1.0; 
         }
 
         this.dom.modal.style.display = 'flex';
@@ -566,32 +481,17 @@ export default class FocusView {
         const finalHours = parseFloat(this.dom.inpRealHours.value) || 0;
         if (finalHours <= 0) return alert("⚠️ Debes introducir un tiempo válido (ej. 0.5, 1.2, etc.)");
         
-        const activeHash = this.activeTx.id || this.activeTx.hash;
-
-        const state = store.getState();
-        const p = state.projects.find(x => x.id === this.activeTx.projectId);
-        const isV10 = p.work_orders && p.work_orders.some(w => w.id === activeHash);
-
-        const actionType = isV10 ? 'REPORT_WORK_ORDER' : 'REPORT_TRANSACTION';
-        const payloadKey = isV10 ? 'orderId' : 'txHash';
-
         store.dispatch({
-            type: actionType,
+            type: 'REPORT_TRANSACTION',
             payload: {
                 projectId: this.activeTx.projectId,
-                [payloadKey]: activeHash,
+                txHash: this.activeTx.hash,
                 realHours: finalHours, 
                 proofLink: this.dom.inpProof.value,
                 comentario: this.dom.inpComment.value
             }
         }).then(() => {
-            localStorage.removeItem(`tt_focus_${activeHash}_elapsed`);
-            localStorage.removeItem(`tt_focus_${activeHash}_start`);
-            localStorage.removeItem(`tt_focus_${activeHash}_running`);
-            localStorage.removeItem('tt_active_pomodoro_tx');
-            this.dispatchNavSyncEvent();
-            
-            localStorage.setItem('tt_active_project', this.activeTx.projectId);
+            localStorage.removeItem(`tt_focus_${this.activeTx.hash}`);
             window.location.href = '/v5/project';
         });
     }
@@ -615,15 +515,11 @@ export default class FocusView {
             const dashoffset = 942 - (942 * percent);
             this.dom.timerProgress.style.strokeDashoffset = dashoffset;
             this.dom.timerProgress.style.stroke = 'var(--accent-green)';
-            this.dom.timeLabel.innerText = "SPRINT ACTIVO";
+            this.dom.timeLabel.innerText = "SPRINT";
         } else {
             this.dom.timerProgress.style.strokeDashoffset = 0;
-            this.dom.timerProgress.style.stroke = 'rgba(255,255,255,0.1)';
+            this.dom.timerProgress.style.stroke = 'rgba(255,255,255,0.2)';
             this.dom.timeLabel.innerText = "DEEP WORK";
         }
-    }
-
-    dispatchNavSyncEvent() {
-        window.dispatchEvent(new Event('pomodoro_tick'));
     }
 }
