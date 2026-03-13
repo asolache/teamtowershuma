@@ -21,7 +21,7 @@ class Router {
         this.handleRoute();
     }
 
-    async handleRoute() {
+async handleRoute() {
         let path = window.location.pathname;
         const basePath = '/v8';
         if (path.startsWith(basePath)) path = path.slice(basePath.length);
@@ -31,17 +31,26 @@ class Router {
         const viewFileName = routes[path] || 'HomeView';
 
         try {
-            const modulePath = `/v8/js/views/${viewFileName}.js`;
+            // CACHE BUSTING DINÁMICO: 
+            // Añadimos el timestamp actual para que el navegador NUNCA cachee las vistas durante el desarrollo.
+            // Para producción, cambiaremos Date.now() por una constante global como '8.0.1'.
+            const cacheBuster = Date.now(); 
+            const modulePath = `/v8/js/views/${viewFileName}.js?v=${cacheBuster}`;
+            
             const { default: View } = await import(modulePath);
             const view = new View();
+            
             this.appContainer.innerHTML = await view.getHtml();
-            if (typeof view.executeViewScript === 'function') view.executeViewScript();
+            
+            if (typeof view.executeViewScript === 'function') {
+                view.executeViewScript();
+            }
             window.scrollTo(0, 0);
+
         } catch (error) {
             console.error(`💥 Router V8 Error [${viewFileName}]:`, error);
         }
     }
-}
 
 const appRouter = new Router();
 document.addEventListener('DOMContentLoaded', () => appRouter.handleRoute());
