@@ -61,10 +61,15 @@ export const PageHeader = {
             </nav>
         ` : '';
 
+        // --- LÓGICA DE PESTAÑAS (BOTONERA VS SELECT MÓVIL) ---
         let tabsHtml = '';
+        let mobSelectHtml = '';
+        
         if (config.tabs && config.tabs.length > 0) {
+            const isManyTabs = config.tabs.length > 3; // Regla: Más de 3 pestañas = Select en móvil
+            
             tabsHtml = `
-                <div class="ph-tabs-container" id="phTabsContainer">
+                <div class="ph-tabs-container ${isManyTabs ? 'hide-tabs-on-mobile' : ''}" id="phTabsContainer">
                     ${config.tabs.map(t => `
                         <button class="ph-tab-btn ${t.active ? 'active' : ''}" data-tab="${t.id}">
                             ${t.label} ${t.badge ? `<span class="ph-tab-badge" id="badge-${t.id}">${t.badge}</span>` : ''}
@@ -72,6 +77,18 @@ export const PageHeader = {
                     `).join('')}
                 </div>
             `;
+
+            if (isManyTabs) {
+                mobSelectHtml = `
+                    <div class="ph-mob-tabs-wrapper">
+                        <select class="ph-mob-tabs-select" id="phMobTabsSelect">
+                            ${config.tabs.map(t => `
+                                <option value="${t.id}" ${t.active ? 'selected' : ''}>${t.label.replace(/<[^>]*>?/gm, '')}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                `;
+            }
         }
 
         const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
@@ -79,7 +96,6 @@ export const PageHeader = {
             ? `<a href="/v7/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` 
             : '';
 
-        // --- ESTRUCTURA BLINDADA DEL TÍTULO Y EL TAG ---
         const archetypeBadgeHtml = config.subtitle ? `
             <span class="ph-badge-startup">
                 ${config.subtitle}
@@ -136,58 +152,49 @@ export const PageHeader = {
                 .ph-pomodoro-alert { animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8)); flex-shrink: 0;}
                 @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 
-                /* =======================================================
-                   FLEXBOX NUCLEAR PARA EL TÍTULO Y EL TAG VERDE
-                   ======================================================= */
+                /* --- NUEVO BLINDAJE DE TITULO Y TAG --- */
                 .ph-view-header { 
                     margin-bottom: 2rem; display: flex; justify-content: space-between; 
                     align-items: flex-start; gap: 20px; flex-wrap: wrap; width: 100%;
                 }
                 
-                .ph-view-header-title-group {
-                    flex: 1 1 auto; 
-                    min-width: 0; /* Previene que desborde el contenedor padre */
-                }
-                
-                .ph-view-header h1 { 
-                    display: flex;
-                    flex-wrap: wrap; /* EL SECRETO: Permite que el tag baje de línea si no hay espacio */
-                    align-items: center;
-                    gap: 12px; /* Espacio entre el texto y el tag */
+                .ph-main-title { 
+                    display: flex; flex-wrap: wrap; align-items: center; gap: 12px; 
                     font-size: 2.2rem; color: white; margin: 0; 
-                    letter-spacing: -1px; font-weight: 900; line-height: 1.3;
+                    letter-spacing: -1px; font-weight: 900; line-height: 1.2;
                 }
                 
-                .ph-title-text {
-                    overflow-wrap: break-word; /* Si la palabra "TeamTowers" es muy larga, la rompe antes de salirse */
-                    word-break: break-word;
-                    max-width: 100%;
-                }
+                .ph-title-text { overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
                 
                 .ph-badge-startup {
-                    background: rgba(0, 230, 118, 0.1);
-                    color: var(--accent-green);
-                    border: 1px solid rgba(0, 230, 118, 0.3);
-                    padding: 4px 12px;
-                    border-radius: 20px;
-                    font-family: var(--font-mono);
-                    font-size: 0.85rem;
-                    font-weight: 900;
-                    letter-spacing: 1px;
-                    text-transform: uppercase;
-                    white-space: nowrap; /* NUNCA se rompe el tag por la mitad */
-                    flex-shrink: 0; /* NUNCA se aplasta el tag */
-                    display: inline-flex;
+                    background: rgba(0, 230, 118, 0.1); color: var(--accent-green);
+                    border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 12px;
+                    border-radius: 20px; font-family: var(--font-mono); font-size: 0.85rem;
+                    font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+                    white-space: nowrap; flex-shrink: 0; display: inline-flex;
                 }
 
                 .ph-view-header p { color: var(--text-muted); font-size: 1rem; margin-top: 8px; line-height: 1.4; max-width: 700px; }
-                
                 .ph-header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; margin-top: 5px; }
 
+                /* --- TABS ESTÁNDAR --- */
                 .ph-tabs-container { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none; flex-shrink: 0;}
                 .ph-tabs-container::-webkit-scrollbar { display: none; }
                 .ph-tab-btn { flex: 1; padding: 10px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
                 .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+                /* --- TABS SELECT MÓVIL (DELUXE) --- */
+                .ph-mob-tabs-wrapper { display: none; width: 100%; margin-bottom: 1.5rem; }
+                .ph-mob-tabs-select {
+                    appearance: none;
+                    background: linear-gradient(145deg, rgba(25, 25, 30, 0.9), rgba(10, 10, 15, 0.95)) no-repeat right 15px top 50% / 12px auto;
+                    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e040fb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+                    border: 1px solid var(--accent-purple); color: white;
+                    padding: 14px 40px 14px 20px; border-radius: 12px; font-family: var(--font-main); 
+                    font-size: 1rem; font-weight: 800; outline: none; width: 100%; cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;
+                }
+                .ph-mob-tabs-select:focus { border-color: white; box-shadow: 0 0 15px rgba(224,64,251,0.3); }
 
                 /* --- BLINDAJE MÓVIL ABSOLUTO (<768px) --- */
                 @media (max-width: 768px) {
@@ -200,23 +207,23 @@ export const PageHeader = {
                     .ph-utility-nav { display: none !important; }
                     
                     .ph-view-header { 
-                        margin-top: 85px !important; /* Espacio exacto bajo la barra fija */
-                        flex-direction: column; 
-                        align-items: flex-start; 
-                        gap: 12px;
-                        margin-bottom: 1.5rem;
-                        width: 100%;
+                        margin-top: 85px !important; 
+                        flex-direction: column; align-items: flex-start; 
+                        gap: 12px; margin-bottom: 1.5rem; width: 100%;
                     }
                     
-                    /* Título móvil adaptado */
-                    .ph-view-header h1 { font-size: 1.5rem; gap: 8px; }
-                    .ph-badge-startup { font-size: 0.65rem; padding: 2px 8px; }
+                    /* EL TRUCO DEL TÍTULO: Forzamos columna para que el tag baje siempre */
+                    .ph-main-title { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 1.6rem; }
+                    .ph-badge-startup { font-size: 0.65rem; padding: 3px 8px; }
 
                     .ph-header-actions { width: 100%; justify-content: flex-start; margin-top: 0; }
                     .ph-mob-project-select { max-width: 130px; font-size: 0.75rem; padding-right:25px;}
                     .ph-mob-user { width: 32px; height: 32px; font-size: 0.85rem; }
                     
-                    .ph-tabs-container { justify-content: flex-start; margin-bottom: 1.5rem; }
+                    /* LÓGICA DE TABS MÓVIL */
+                    .hide-tabs-on-mobile { display: none !important; }
+                    .ph-mob-tabs-wrapper { display: block; }
+                    .ph-tabs-container:not(.hide-tabs-on-mobile) { justify-content: flex-start; margin-bottom: 1.5rem; }
                     .ph-tab-btn { flex: 0 0 auto; padding: 8px 15px; font-size: 0.8rem;}
                 }
             </style>
@@ -255,8 +262,8 @@ export const PageHeader = {
             </header>
 
             <div class="ph-view-header">
-                <div class="ph-view-header-title-group">
-                    <h1>
+                <div style="flex: 1 1 auto; min-width: 0;">
+                    <h1 class="ph-main-title">
                         <span class="ph-title-text">${config.title}</span>
                         ${archetypeBadgeHtml}
                     </h1>
@@ -268,6 +275,7 @@ export const PageHeader = {
             </div>
 
             ${tabsHtml}
+            ${mobSelectHtml}
         `;
     },
 
@@ -287,7 +295,7 @@ export const PageHeader = {
             });
         }
 
-        // Lógica Menú Desplegable God-Level
+        // Lógica Dropdown Usuario
         const avatarToggle = document.getElementById('phUserAvatarToggle');
         const userDropdown = document.getElementById('phUserDropdown');
         
@@ -296,17 +304,10 @@ export const PageHeader = {
                 e.stopPropagation();
                 userDropdown.classList.toggle('open');
             });
-
             document.addEventListener('click', (e) => {
                 if (!avatarToggle.contains(e.target) && !userDropdown.contains(e.target)) {
                     userDropdown.classList.remove('open');
                 }
-            });
-            
-            userDropdown.querySelectorAll('.ph-dd-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    userDropdown.classList.remove('open');
-                });
             });
         }
 
@@ -314,21 +315,43 @@ export const PageHeader = {
         const btnLogout = document.getElementById('phBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
-                store.dispatch({ type: 'LOGOUT_USER' }).then(() => {
-                    window.location.href = '/v7/';
+                store.dispatch({ type: 'LOGOUT_USER' }).then(() => { window.location.href = '/v7/'; });
+            });
+        }
+
+        // --- LÓGICA DE TABS (BOTONES) ---
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        const mobTabsSelect = document.getElementById('phMobTabsSelect');
+
+        if (tabBtns.length > 0) {
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Actualizar botones
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Sincronizar select móvil si existe
+                    if (mobTabsSelect) mobTabsSelect.value = btn.dataset.tab;
+
+                    // Despachar evento
+                    window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: btn.dataset.tab } }));
                 });
             });
         }
 
-        // Lógica de Tabs Universal
-        const tabBtns = document.querySelectorAll('.ph-tab-btn');
-        if (tabBtns.length > 0) {
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: btn.dataset.tab } }));
+        // --- LÓGICA DE TABS (SELECT MÓVIL DELUXE) ---
+        if (mobTabsSelect) {
+            mobTabsSelect.addEventListener('change', (e) => {
+                const selectedTabId = e.target.value;
+                
+                // Sincronizar botones desktop ocultos
+                tabBtns.forEach(b => {
+                    if (b.dataset.tab === selectedTabId) b.classList.add('active');
+                    else b.classList.remove('active');
                 });
+
+                // Despachar evento
+                window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: selectedTabId } }));
             });
         }
     }
