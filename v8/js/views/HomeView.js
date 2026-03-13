@@ -17,7 +17,6 @@ export default class HomeView {
         }
 
         const config = state.config;
-        const totalAgents = state.agents ? state.agents.length : 0;
 
         const headerConfig = {
             title: config.ecosystemName || "Agentic Network",
@@ -61,8 +60,8 @@ export default class HomeView {
 
                     <div id="view-agentes" class="tab-content ${this.currentTab === 'agentes' ? 'active' : ''}">
                         <div class="glass-panel">
-                            <h2 style="color: var(--accent-purple);">Enjambre IA Desplegado</h2>
-                            <p style="color: #aaa; margin-bottom: 2rem;">Los siguientes agentes están operando de forma autónoma en el background, esperando tus Work Orders en el Kanban.</p>
+                            <h2 style="color: var(--accent-purple); margin-top:0; border:none;">Enjambre IA Desplegado</h2>
+                            <p style="color: #aaa; margin-bottom: 2rem;">Los siguientes agentes están operando de forma autónoma en el background, esperando tus Work Orders.</p>
                             
                             <div style="display: flex; flex-direction: column; gap: 15px;">
                                 ${state.agents ? state.agents.map(a => `
@@ -102,7 +101,7 @@ export default class HomeView {
     }
 
     executeViewScript() {
-        if (!store.getState().session.activeUserId) return;
+        if (!store.getState().session.activeUserId || store.getState().session.role === 'guest') return;
 
         Sidebar.initListeners();
         PageHeader.execute();
