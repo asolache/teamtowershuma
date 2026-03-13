@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TEAMTOWERS OS - GLOBAL DESIGN SYSTEM (V8 FULL EQUIP)
+   TEAMTOWERS OS - GLOBAL DESIGN SYSTEM (V8 FULL EQUIP PURGADO)
    Arquitectura Modular: Glassmorphism, Bottom-Safe, Agentic UI
    ========================================================================== */
 
@@ -90,23 +90,19 @@ body {
 .side-link.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); }
 
 /* --- 5. TABS & COMPONENTES DEL HEADER --- */
-
-/* La Barra Superior con el Avatar */
 .ph-global-top-bar {
     display: flex; justify-content: space-between; align-items: center; 
     padding: 12px 20px; background: rgba(255,255,255,0.02); 
     border: 1px solid var(--glass-border); border-radius: 16px;
-    margin-bottom: 2rem; flex-shrink: 0; /* EVITA QUE SE APLASTE */
+    margin-bottom: 2rem; flex-shrink: 0;
     backdrop-filter: blur(10px);
 }
-
-.ph-view-header { flex-shrink: 0; margin-bottom: 1.5rem; } /* EVITA QUE SE APLASTE */
-
+.ph-view-header { flex-shrink: 0; margin-bottom: 1.5rem; }
 .ph-tabs-container { 
     display: flex; background: rgba(0,0,0,0.4); padding: 6px; 
     border-radius: 14px; border: 1px solid var(--glass-border); 
     gap: 4px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;
-    flex-shrink: 0; /* EVITA QUE SE APLASTE AL CAMBIAR PESTAÑA */
+    flex-shrink: 0;
 }
 .ph-tabs-container::-webkit-scrollbar { display: none; }
 .ph-tab-btn { 
@@ -160,41 +156,8 @@ body {
         z-index: 1000; background: rgba(10, 10, 14, 0.95); margin-bottom: 0;
     }
     
-    /* El workspace deja espacio arriba (Header) y abajo (BottomNav) */
+    /* ESTE ES EL ESCUDO QUE SALVA LA PÁGINA (AQUÍ ESTABA EL ERROR DEL 20px) */
     .workspace { padding: 90px 1.5rem 110px 1.5rem !important; }
-    .glass-panel { padding: 1.5rem; border-radius: var(--border-radius-md); }
-}
-/* --- 6. BOTTOM NAV (MOBILE) --- */
-.bottom-nav { 
-    display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
-    background: rgba(10, 10, 14, 0.98); backdrop-filter: blur(20px);
-    border-top: 1px solid var(--glass-border); z-index: 9999; 
-    padding-bottom: env(safe-area-inset-bottom);
-}
-.bn-menu { display: flex; justify-content: space-around; align-items: center; height: 75px; }
-.bn-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 0.65rem; font-weight: 900; color: var(--text-muted); }
-.bn-item.active { color: white; }
-
-/* --- 7. COMPONENTES UI LUXURY --- */
-.glass-panel {
-    background: linear-gradient(145deg, rgba(25, 25, 30, 0.9), rgba(10, 10, 15, 0.95));
-    border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg);
-    padding: 2.5rem; box-shadow: var(--shadow-lux); backdrop-filter: blur(20px);
-    margin-bottom: 2rem;
-}
-.btn-primary { 
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); 
-    color: white; border: none; padding: 0 24px; border-radius: 12px; 
-    font-weight: 900; height: 45px; cursor: pointer; display: inline-flex; 
-    align-items: center; justify-content: center; gap: 8px; transition: 0.3s;
-    font-family: var(--font-main);
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1); }
-
-/* --- 8. RESPONSIVE BOTTOM-SAFE --- */
-@media (max-width: 768px) {
-    .sidebar { display: none !important; }
-    .bottom-nav { display: block; }
-    .workspace { padding: 20px 1.5rem 110px 1.5rem !important; }
+    
     .glass-panel { padding: 1.5rem; border-radius: var(--border-radius-md); }
 }
