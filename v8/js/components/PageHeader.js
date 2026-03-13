@@ -1,4 +1,4 @@
-// v7/js/components/PageHeader.js
+// js/components/PageHeader.js
 import { store } from '../core/store.js';
 
 export const PageHeader = {
@@ -53,21 +53,21 @@ export const PageHeader = {
             projectOptionsHtml += `</optgroup>`;
         }
 
-        const showAuxLinks = currentPath.endsWith('/v7/') || currentPath.endsWith('/') || !config.tabs;
+        // --- ENLACES AUXILIARES ---
+        const isBaseRoute = currentPath.endsWith('/') || currentPath.endsWith('index.html');
+        const showAuxLinks = isBaseRoute || !config.tabs;
         const auxLinksHtml = showAuxLinks ? `
             <nav class="ph-utility-nav">
-                <a href="/v7/manifesto" data-link class="ph-utility-link">📖 CODEX</a>
-                <a href="/v7/help" data-link class="ph-utility-link">❓ AYUDA</a>
+                <a href="/manifesto" data-link class="ph-utility-link">📖 CODEX</a>
+                <a href="/help" data-link class="ph-utility-link">❓ AYUDA</a>
             </nav>
         ` : '';
 
         // --- LÓGICA DE PESTAÑAS (BOTONERA VS SELECT MÓVIL) ---
         let tabsHtml = '';
         let mobSelectHtml = '';
-        
         if (config.tabs && config.tabs.length > 0) {
-            const isManyTabs = config.tabs.length > 3; // Regla: Más de 3 pestañas = Select en móvil
-            
+            const isManyTabs = config.tabs.length > 3;
             tabsHtml = `
                 <div class="ph-tabs-container ${isManyTabs ? 'hide-tabs-on-mobile' : ''}" id="phTabsContainer">
                     ${config.tabs.map(t => `
@@ -77,7 +77,6 @@ export const PageHeader = {
                     `).join('')}
                 </div>
             `;
-
             if (isManyTabs) {
                 mobSelectHtml = `
                     <div class="ph-mob-tabs-wrapper">
@@ -91,19 +90,35 @@ export const PageHeader = {
             }
         }
 
-        const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
-        const pomodoroAlertHtml = isPomodoroActive 
-            ? `<a href="/v7/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` 
-            : '';
+        // --- LÓGICA DEL MAGIC BUTTON (ACCIONES DELUXE) ---
+        let finalActionsHtml = config.actionHtml || ''; // Fallback a html normal si no hay magicActions
+        
+        if (config.magicActions && config.magicActions.length > 0) {
+            finalActionsHtml = `
+                <div class="magic-action-group">
+                    <select class="magic-select" id="phMagicSelect">
+                        ${config.magicActions.map((a, index) => `
+                            <option value="${a.id}" data-isai="${a.isAi || false}" data-tokens="${a.tokens || 0}" ${index === 0 ? 'selected' : ''}>
+                                ${a.icon || '⚡'} ${a.label}
+                            </option>
+                        `).join('')}
+                    </select>
+                    <button class="btn-magic-exec" id="phMagicBtn">
+                        <span class="magic-btn-icon">✨</span> Ejecutar
+                        <span class="magic-token-badge" id="phMagicTokenBadge" style="display: none;"></span>
+                    </button>
+                </div>
+            `;
+        }
 
-        const archetypeBadgeHtml = config.subtitle ? `
-            <span class="ph-badge-startup">
-                ${config.subtitle}
-            </span>
-        ` : '';
+        const isPomodoroActive = localStorage.getItem('tt_active_pomodoro_tx');
+        const pomodoroAlertHtml = isPomodoroActive ? `<a href="/focus" data-link class="ph-pomodoro-alert" title="Volver al Focus">🍅</a>` : '';
+
+        const archetypeBadgeHtml = config.subtitle ? `<span class="ph-badge-startup">${config.subtitle}</span>` : '';
 
         return `
             <style>
+                /* --- TOP BAR GLOBAL --- */
                 .ph-global-top-bar { 
                     display: flex; justify-content: space-between; align-items: center; 
                     padding: 12px 20px; margin-bottom: 20px;
@@ -116,8 +131,7 @@ export const PageHeader = {
                 .ph-utility-link:hover { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
 
                 .ph-mob-brand { display: none; align-items: center; height: 32px; text-decoration:none; flex-shrink: 0; }
-                .ph-mob-brand img { height: 100%; width: auto; filter: brightness(0) invert(1); }
-
+                
                 .ph-mob-controls-right { display: flex; align-items: center; justify-content: flex-end; gap: 15px; flex: 1; }
 
                 .ph-mob-project-select { 
@@ -127,76 +141,118 @@ export const PageHeader = {
                     padding: 8px 35px 8px 15px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold;
                     outline: none; max-width: 220px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; transition: all 0.3s ease;
                 }
-                .ph-mob-project-select:hover { border-color: var(--accent-blue); background-color: rgba(0, 176, 255, 0.05); }
 
-                .ph-user-container { position: relative; flex-shrink: 0; }
                 .ph-mob-user { 
                     display: flex; align-items: center; justify-content: center; 
                     width: 35px; height: 35px; background: linear-gradient(135deg, var(--accent-purple), #7c4dff); 
                     color: white; border-radius: 50%; font-weight: 900; text-decoration: none; font-size: 0.9rem; 
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; border: 2px solid transparent; transition:0.3s;
-                    flex-shrink: 0;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; flex-shrink: 0;
                 }
-                .ph-mob-user:hover { transform: scale(1.05); border-color:white; }
                 
-                .ph-user-dropdown { position: absolute; top: 50px; right: 0; background: rgba(15,15,20, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; min-width: 220px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 10000; overflow: hidden; }
+                .ph-user-dropdown { position: absolute; top: 50px; right: 0; background: rgba(15,15,20, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; min-width: 220px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 10000; overflow: hidden; }
                 .ph-user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
                 .ph-dd-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.3);}
-                .ph-dd-name { color: white; font-weight: 900; font-size: 1rem; margin-bottom: 3px; display:block;}
-                .ph-dd-id { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.75rem;}
-                .ph-dd-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;}
+                .ph-dd-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
                 .ph-dd-link:hover { background: rgba(255,255,255,0.05); color: white;}
-                .ph-dd-link.danger { color: var(--accent-red); border-top: 1px solid rgba(255,255,255,0.05);}
-                .ph-dd-link.danger:hover { background: rgba(255, 82, 82, 0.1); }
 
-                .ph-pomodoro-alert { animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8)); flex-shrink: 0;}
+                .ph-pomodoro-alert { animation: pulseTomato 1s infinite alternate; filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.8)); }
                 @keyframes pulseTomato { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 
-                /* --- NUEVO BLINDAJE DE TITULO Y TAG --- */
+                /* --- NUEVO SISTEMA DE TÍTULOS (DISEÑO DE BLOQUES, NO FLEX) --- */
                 .ph-view-header { 
-                    margin-bottom: 2rem; display: flex; justify-content: space-between; 
-                    align-items: flex-start; gap: 20px; flex-wrap: wrap; width: 100%;
+                    margin-bottom: 2rem; 
+                    width: 100%;
                 }
                 
-                .ph-main-title { 
-                    display: flex; flex-wrap: wrap; align-items: center; gap: 12px; 
-                    font-size: 2.2rem; color: white; margin: 0; 
-                    letter-spacing: -1px; font-weight: 900; line-height: 1.2;
+                .ph-title-wrapper {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    flex-wrap: wrap; /* En PC se ponen uno al lado del otro si hay espacio */
+                    margin-bottom: 8px;
                 }
                 
-                .ph-title-text { overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
+                .ph-title-text { 
+                    font-size: 2.2rem; 
+                    color: white; 
+                    margin: 0; 
+                    letter-spacing: -1px; 
+                    font-weight: 900; 
+                    line-height: 1.2;
+                    word-wrap: break-word; /* Nunca se sale del div */
+                    overflow-wrap: break-word;
+                }
                 
                 .ph-badge-startup {
                     background: rgba(0, 230, 118, 0.1); color: var(--accent-green);
                     border: 1px solid rgba(0, 230, 118, 0.3); padding: 4px 12px;
                     border-radius: 20px; font-family: var(--font-mono); font-size: 0.85rem;
                     font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
-                    white-space: nowrap; flex-shrink: 0; display: inline-flex;
+                    white-space: nowrap; display: inline-block; /* Bloque sólido */
                 }
 
-                .ph-view-header p { color: var(--text-muted); font-size: 1rem; margin-top: 8px; line-height: 1.4; max-width: 700px; }
-                .ph-header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; margin-top: 5px; }
+                .ph-tagline { color: var(--text-muted); font-size: 1rem; margin-top: 0; margin-bottom: 1.5rem; line-height: 1.4; max-width: 700px; }
 
-                /* --- TABS ESTÁNDAR --- */
-                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none; flex-shrink: 0;}
+                /* --- MAGIC ACTION GROUP (EL SELECTOR DELUXE) --- */
+                .magic-action-group {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    background: rgba(10, 10, 15, 0.6);
+                    padding: 6px;
+                    border-radius: 14px;
+                    border: 1px solid var(--glass-border);
+                }
+
+                .magic-select {
+                    appearance: none;
+                    background: rgba(0,0,0,0.5) no-repeat right 12px top 50% / 10px auto;
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e040fb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                    border: 1px solid rgba(224, 64, 251, 0.3);
+                    color: white;
+                    padding: 10px 35px 10px 15px;
+                    border-radius: 10px;
+                    font-family: var(--font-main);
+                    font-size: 0.9rem;
+                    font-weight: 800;
+                    outline: none;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+                }
+                .magic-select:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224, 64, 251, 0.2); }
+                .magic-select option { background: var(--bg-panel); color: white; }
+
+                .btn-magic-exec {
+                    background: linear-gradient(135deg, var(--accent-purple), #7c4dff);
+                    color: white; border: none; padding: 0 20px; border-radius: 10px;
+                    font-weight: 900; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center;
+                    justify-content: center; gap: 8px; box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);
+                    transition: 0.3s; height: 40px;
+                }
+                .btn-magic-exec:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224, 64, 251, 0.4); filter: brightness(1.1); }
+                
+                .magic-token-badge {
+                    background: rgba(0,0,0,0.5);
+                    color: var(--accent-green);
+                    font-family: var(--font-mono);
+                    font-size: 0.7rem;
+                    padding: 2px 6px;
+                    border-radius: 6px;
+                    border: 1px solid rgba(0, 230, 118, 0.3);
+                }
+
+                /* --- TABS --- */
+                .ph-tabs-container { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none;}
                 .ph-tabs-container::-webkit-scrollbar { display: none; }
                 .ph-tab-btn { flex: 1; padding: 10px 20px; background: transparent; border: none; border-radius: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
                 .ph-tab-btn.active { background: rgba(255,255,255,0.08); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-                /* --- TABS SELECT MÓVIL (DELUXE) --- */
                 .ph-mob-tabs-wrapper { display: none; width: 100%; margin-bottom: 1.5rem; }
-                .ph-mob-tabs-select {
-                    appearance: none;
-                    background: linear-gradient(145deg, rgba(25, 25, 30, 0.9), rgba(10, 10, 15, 0.95)) no-repeat right 15px top 50% / 12px auto;
-                    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e040fb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-                    border: 1px solid var(--accent-purple); color: white;
-                    padding: 14px 40px 14px 20px; border-radius: 12px; font-family: var(--font-main); 
-                    font-size: 1rem; font-weight: 800; outline: none; width: 100%; cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;
-                }
-                .ph-mob-tabs-select:focus { border-color: white; box-shadow: 0 0 15px rgba(224,64,251,0.3); }
+                .ph-mob-tabs-select { appearance: none; background: linear-gradient(145deg, rgba(25, 25, 30, 0.9), rgba(10, 10, 15, 0.95)) no-repeat right 15px top 50% / 12px auto; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e040fb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); border: 1px solid var(--accent-purple); color: white; padding: 14px 40px 14px 20px; border-radius: 12px; font-size: 1rem; font-weight: 800; outline: none; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-                /* --- BLINDAJE MÓVIL ABSOLUTO (<768px) --- */
+                /* --- BLINDAJE MÓVIL TOTAL (<768px) --- */
                 @media (max-width: 768px) {
                     .ph-global-top-bar { 
                         position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
@@ -206,21 +262,39 @@ export const PageHeader = {
                     .ph-mob-brand { display: flex; }
                     .ph-utility-nav { display: none !important; }
                     
+                    /* EL TRUCO DE LOS BLOQUES: Cero Flexbox complejo, solo bloques verticales puros */
                     .ph-view-header { 
-                        margin-top: 85px !important; 
-                        flex-direction: column; align-items: flex-start; 
-                        gap: 12px; margin-bottom: 1.5rem; width: 100%;
+                        display: block; /* Adiós Flexbox aquí en móvil */
+                        margin-top: 85px !important; /* Salva la barra fija superior */
+                        margin-bottom: 1.5rem;
+                        width: 100%;
                     }
                     
-                    /* EL TRUCO DEL TÍTULO: Forzamos columna para que el tag baje siempre */
-                    .ph-main-title { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 1.6rem; }
-                    .ph-badge-startup { font-size: 0.65rem; padding: 3px 8px; }
+                    .ph-title-wrapper {
+                        display: flex;
+                        flex-direction: column; /* Apila el título arriba y el badge abajo SIEMPRE */
+                        align-items: flex-start;
+                        gap: 10px;
+                        margin-bottom: 12px;
+                        width: 100%;
+                    }
 
-                    .ph-header-actions { width: 100%; justify-content: flex-start; margin-top: 0; }
+                    .ph-title-text { 
+                        font-size: 1.8rem; /* Tamaño adaptado a móvil */
+                        line-height: 1.2;
+                        width: 100%; /* Todo el ancho disponible */
+                    }
+                    
+                    .ph-badge-startup { font-size: 0.7rem; padding: 4px 10px; margin-bottom: 4px; }
+                    
+                    /* Magic Select se expande al 100% en móvil para dedo gordo */
+                    .magic-action-group { flex-direction: column; width: 100%; align-items: stretch; margin-top: 15px;}
+                    .magic-select { width: 100%; height: 45px;}
+                    .btn-magic-exec { width: 100%; height: 45px;}
+
                     .ph-mob-project-select { max-width: 130px; font-size: 0.75rem; padding-right:25px;}
                     .ph-mob-user { width: 32px; height: 32px; font-size: 0.85rem; }
                     
-                    /* LÓGICA DE TABS MÓVIL */
                     .hide-tabs-on-mobile { display: none !important; }
                     .ph-mob-tabs-wrapper { display: block; }
                     .ph-tabs-container:not(.hide-tabs-on-mobile) { justify-content: flex-start; margin-bottom: 1.5rem; }
@@ -241,37 +315,32 @@ export const PageHeader = {
                         ${projectOptionsHtml}
                     </select>
                     
-                    <div class="ph-user-container">
+                    <div style="position:relative;">
                         <div class="ph-mob-user" id="phUserAvatarToggle">
                             ${user?.name.charAt(0).toUpperCase() || '?'}
                         </div>
-                        
                         <div class="ph-user-dropdown" id="phUserDropdown">
                             <div class="ph-dd-header">
-                                <span class="ph-dd-name">${user?.name || 'Usuario'}</span>
-                                <span class="ph-dd-id">${user?.id || '@guest'}</span>
+                                <span style="color:white; font-weight:900; display:block;">${user?.name || 'Usuario'}</span>
+                                <span style="color:var(--accent-blue); font-family:var(--font-mono); font-size:0.75rem;">${user?.id || '@guest'}</span>
                             </div>
-                            <a href="/v7/profile" data-link class="ph-dd-link">👤 Mi Identidad / Perfil</a>
-                            <a href="/v7/map" data-link class="ph-dd-link">🕸️ Mapa Ecosistema (VNA)</a>
-                            ${state.session.role === 'ecosystem-owner' ? `<a href="/v7/settings" data-link class="ph-dd-link">⚙️ Consola de Gobernanza</a>` : ''}
-                            <a href="/v7/help" data-link class="ph-dd-link">📖 Manual de Supervivencia</a>
-                            <div class="ph-dd-link danger" id="phBtnLogout" style="cursor:pointer;">🚪 Desconectar Nodo</div>
+                            <a href="/profile" data-link class="ph-dd-link">👤 Mi Identidad / Perfil</a>
+                            <a href="/map" data-link class="ph-dd-link">🕸️ Mapa Ecosistema (VNA)</a>
+                            ${state.session.role === 'ecosystem-owner' ? `<a href="/settings" data-link class="ph-dd-link">⚙️ Consola de Gobernanza</a>` : ''}
+                            <div class="ph-dd-link danger" id="phBtnLogout" style="cursor:pointer; border-top:1px solid rgba(255,255,255,0.05);">🚪 Desconectar Nodo</div>
                         </div>
                     </div>
                 </div>
             </header>
 
             <div class="ph-view-header">
-                <div style="flex: 1 1 auto; min-width: 0;">
-                    <h1 class="ph-main-title">
-                        <span class="ph-title-text">${config.title}</span>
-                        ${archetypeBadgeHtml}
-                    </h1>
-                    ${config.tagline ? `<p>${config.tagline}</p>` : ''}
+                <div class="ph-title-wrapper">
+                    <h1 class="ph-title-text">${config.title}</h1>
+                    ${archetypeBadgeHtml}
                 </div>
-                <div class="ph-header-actions">
-                    ${config.actionHtml || ''}
-                </div>
+                ${config.tagline ? `<p class="ph-tagline">${config.tagline}</p>` : ''}
+                
+                ${finalActionsHtml ? `<div class="ph-header-actions">${finalActionsHtml}</div>` : ''}
             </div>
 
             ${tabsHtml}
@@ -280,25 +349,21 @@ export const PageHeader = {
     },
 
     execute: () => {
-        // Lógica Cambio Proyecto
+        // --- PROYECTO SELECTOR ---
         const globalSelect = document.getElementById('phMobProjectSelect');
         if (globalSelect) {
             globalSelect.addEventListener('change', (e) => {
-                const selectedId = e.target.value;
-                localStorage.setItem('tt_active_project', selectedId);
+                localStorage.setItem('tt_active_project', e.target.value);
                 store.dispatch({
                     type: 'UPDATE_PROJECT_INFO',
-                    payload: { projectId: selectedId, updates: { _lastSwitch: Date.now() } }
-                }).then(() => {
-                    window.location.reload(); 
-                });
+                    payload: { projectId: e.target.value, updates: { _lastSwitch: Date.now() } }
+                }).then(() => window.location.reload());
             });
         }
 
-        // Lógica Dropdown Usuario
+        // --- MENÚ AVATAR ---
         const avatarToggle = document.getElementById('phUserAvatarToggle');
         const userDropdown = document.getElementById('phUserDropdown');
-        
         if (avatarToggle && userDropdown) {
             avatarToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -311,47 +376,61 @@ export const PageHeader = {
             });
         }
 
-        // Lógica Logout
-        const btnLogout = document.getElementById('phBtnLogout');
-        if (btnLogout) {
-            btnLogout.addEventListener('click', () => {
-                store.dispatch({ type: 'LOGOUT_USER' }).then(() => { window.location.href = '/v7/'; });
-            });
-        }
+        document.getElementById('phBtnLogout')?.addEventListener('click', () => {
+            store.dispatch({ type: 'LOGOUT_USER' }).then(() => { window.location.href = '/v7/'; });
+        });
 
-        // --- LÓGICA DE TABS (BOTONES) ---
+        // --- PESTAÑAS ---
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         const mobTabsSelect = document.getElementById('phMobTabsSelect');
 
         if (tabBtns.length > 0) {
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    // Actualizar botones
                     tabBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    
-                    // Sincronizar select móvil si existe
                     if (mobTabsSelect) mobTabsSelect.value = btn.dataset.tab;
-
-                    // Despachar evento
                     window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: btn.dataset.tab } }));
                 });
             });
         }
 
-        // --- LÓGICA DE TABS (SELECT MÓVIL DELUXE) ---
         if (mobTabsSelect) {
             mobTabsSelect.addEventListener('change', (e) => {
-                const selectedTabId = e.target.value;
-                
-                // Sincronizar botones desktop ocultos
                 tabBtns.forEach(b => {
-                    if (b.dataset.tab === selectedTabId) b.classList.add('active');
-                    else b.classList.remove('active');
+                    b.classList.toggle('active', b.dataset.tab === e.target.value);
                 });
+                window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: e.target.value } }));
+            });
+        }
 
-                // Despachar evento
-                window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: selectedTabId } }));
+        // --- LÓGICA DEL MAGIC BUTTON (IA TOKENS) ---
+        const magicSelect = document.getElementById('phMagicSelect');
+        const magicBtn = document.getElementById('phMagicBtn');
+        const magicTokenBadge = document.getElementById('phMagicTokenBadge');
+
+        if (magicSelect && magicBtn && magicTokenBadge) {
+            const updateMagicButton = () => {
+                const selectedOption = magicSelect.options[magicSelect.selectedIndex];
+                const isAi = selectedOption.dataset.isai === 'true';
+                const tokens = selectedOption.dataset.tokens;
+
+                if (isAi && tokens > 0) {
+                    magicTokenBadge.style.display = 'inline-block';
+                    magicTokenBadge.innerHTML = `🪙 ${tokens}`;
+                } else {
+                    magicTokenBadge.style.display = 'none';
+                }
+            };
+
+            // Ejecutar al inicio y cada vez que cambie
+            updateMagicButton();
+            magicSelect.addEventListener('change', updateMagicButton);
+
+            // Emitir evento cuando pulsen "Ejecutar"
+            magicBtn.addEventListener('click', () => {
+                const actionId = magicSelect.value;
+                window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
             });
         }
     }
