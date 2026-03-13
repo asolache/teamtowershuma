@@ -20,7 +20,23 @@ export const PageHeader = {
         }
 
         return `
-            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;">
+            <header class="ph-global-top-bar">
+                <div style="font-weight: 900; color: white; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem; filter: drop-shadow(0 0 10px rgba(0,176,255,0.5));">🗼</span>
+                    <span class="hide-on-mobile">SOS V8 Core</span>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-blue); background: rgba(0, 176, 255, 0.1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(0, 176, 255, 0.2);">
+                        ${user?.id || '@guest'}
+                    </div>
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-purple), #7c4dff); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(224, 64, 251, 0.3); cursor: pointer;">
+                        ${user?.name.charAt(0).toUpperCase() || '?'}
+                    </div>
+                </div>
+            </header>
+
+            <div class="ph-view-header">
                 <div>
                     <h1 style="font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; font-weight: 900;">
                         ${config.title}
@@ -28,13 +44,9 @@ export const PageHeader = {
                     </h1>
                     <p style="color: var(--text-muted); font-size: 1rem; margin-top: 8px;">${config.tagline || ''}</p>
                 </div>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    ${config.actionHtml || ''}
-                    <div style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--accent-purple), #7c4dff); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(224, 64, 251, 0.3);">
-                        ${user?.name.charAt(0).toUpperCase() || '?'}
-                    </div>
-                </div>
+                ${config.actionHtml ? `<div style="margin-top: 10px;">${config.actionHtml}</div>` : ''}
             </div>
+
             ${tabsHtml}
         `;
     },
