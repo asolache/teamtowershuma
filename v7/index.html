@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TeamTowers | Sistema Operativo de Soberanía (SOS)</title>
+    
+    <meta name="description" content="No uses software. Construye tu Exoesqueleto Cognitivo. Diseño VNA, Slicing Pie e Identidad Permaweb.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗼</text></svg>">
+
+    <link rel="stylesheet" href="/v5/css/global.css">
+    
+    <script type="module" src="/v5/js/router.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050507;
+            --accent-blue: #00b0ff;
+            --accent-purple: #e040fb;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+        }
+
+        body, html { margin: 0; padding: 0; background: var(--bg-dark); height: 100%; overflow: hidden; }
+
+        /* CARGADOR DEL KERNEL - INMERSIÓN TOTAL */
+        .kernel-boot {
+            height: 100vh; width: 100vw; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            background: radial-gradient(circle at center, #0a0a12 0%, #000 100%);
+            color: var(--accent-blue); font-family: var(--font-mono);
+        }
+
+        .tower-logo {
+            font-size: 4rem; margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(0, 176, 255, 0.4));
+            animation: towerFloat 3s ease-in-out infinite;
+        }
+
+        .boot-log {
+            font-size: 0.7rem; color: #333; margin-top: 2rem; text-align: center;
+            line-height: 1.6; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .pulse-text {
+            animation: pulse-animation 1.5s infinite;
+            font-size: 0.9rem; font-weight: bold; letter-spacing: 3px;
+        }
+
+        @keyframes towerFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Ocultar loader cuando el App tenga contenido */
+        #app:not(:empty) + .kernel-boot { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="app"></div>
+
+    <div class="kernel-boot">
+        <div class="tower-logo">🗼</div>
+        <p class="pulse-text">INITIALIZING SOS v7.0</p>
+        
+        <div class="boot-log">
+            <div id="log1">NETWORK DESIGN PROTOCOL: OK</div>
+            <div id="log2">SLICING PIE ACCOUNTING: OK</div>
+            <div id="log3">DEEPSEEK COGNITIVE HUB: OK</div>
+            <div id="log4" style="color: var(--accent-purple);">PERMAWEB IDENTITY: SYNCING...</div>
+        </div>
+    </div>
+
+    <noscript>
+        <div style="text-align: center; padding: 50px; color: white; background: #000; height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+            <h1>Soberanía Desactivada</h1>
+            <p>TeamTowers OS requiere JavaScript para operar tu Exoesqueleto Cognitivo.</p>
+        </div>
+    </noscript>
+
+</body>
+</html>
