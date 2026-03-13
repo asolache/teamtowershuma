@@ -68,29 +68,40 @@ export default class HomeView {
 
         return `
             <style>
-                /* ESTILOS EXCLUSIVOS DE HOMEVIEW (NO REPETIR LAYOUT DEL MASTER) */
                 .tab-content { display: none; animation: fadeIn 0.4s ease-out; padding-bottom: 3rem; width: 100%;}
                 .tab-content.active { display: block; }
+
+                /* PANELES LUXURY */
+                .panel { background: rgba(255,255,255,0.015); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); backdrop-filter: blur(10px);}
+                .panel h2 { color: white; font-size: 1.3rem; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; font-weight: 800; letter-spacing: -0.5px;}
+                
+                .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+                .stat-card { background: linear-gradient(145deg, rgba(0,0,0,0.6), rgba(10,10,15,0.8)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px; text-align: center; transition: transform 0.3s; position: relative; overflow: hidden;}
+                .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+                .stat-value { font-size: 3rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 8px;}
+                .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold;}
 
                 .toolbar-lux { display: flex; gap: 15px; margin-bottom: 2.5rem; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); align-items: center; justify-content: space-between; flex-wrap: wrap; backdrop-filter: blur(5px);}
                 
                 .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; }
-                
                 .project-card { 
                     background: linear-gradient(180deg, rgba(25, 25, 30, 0.8) 0%, rgba(15, 15, 20, 0.9) 100%);
                     border: 1px solid rgba(255,255,255,0.08); 
                     border-radius: 20px; padding: 1.8rem; display: flex; flex-direction: column; 
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden; backdrop-filter: blur(15px);
-                    cursor: pointer; text-decoration: none;
+                    cursor: pointer;
                 }
                 .project-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
                 
                 .ledger-table-wrapper { overflow-x: auto; background: #08080a; border: 1px solid #1a1a24; border-radius: 16px; padding: 1.5rem; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);}
                 .ledger-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; font-family: var(--font-mono); font-size: 0.9rem;}
-                
+                .ledger-table th { padding: 1rem; color: var(--accent-blue); border-bottom: 1px solid #222; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem;}
+                .ledger-table td { padding: 1.2rem 1rem; border-bottom: 1px dashed #1a1a24; color: #ddd; }
+                .hash-badge { color: var(--accent-purple); padding: 4px 8px; border-radius: 6px; background: rgba(224,64,251,0.1); border: 1px solid rgba(224,64,251,0.2); font-weight: bold;}
+
                 @media (max-width: 768px) {
-                    .projects-grid { display: flex; flex-direction: column; gap: 15px; }
                     .toolbar-lux { flex-direction: column; align-items: stretch; }
+                    .projects-grid { display: flex; flex-direction: column; gap: 15px; }
                 }
             </style>
 
@@ -117,12 +128,12 @@ export default class HomeView {
                     <div id="view-identidad" class="tab-content ${this.currentTab === 'identidad' ? 'active' : ''}">
                         <div class="panel">
                             <h2>📊 Tablero de Comando Global</h2>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;" id="globalStatsGrid"></div>
+                            <div class="stats-grid" id="globalStatsGrid"></div>
                         </div>
                         <div class="panel">
                             <h2>📜 Misión y System Prompt Global</h2>
                             <p style="font-family: var(--font-mono); color: #ccc; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px dashed #444; line-height: 1.6;">
-                                ${config.globalPrompt || "El Ecosistema aún no tiene un System Prompt definido."}
+                                ${config.globalPrompt || "Definiendo propósito del ecosistema..."}
                             </p>
                         </div>
                     </div>
@@ -131,13 +142,13 @@ export default class HomeView {
                         <div class="panel" style="padding: 1.5rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px;">
                                 <h2 style="margin:0; border:none;">🔎 Explorador de Bloques</h2>
-                                <input type="text" id="scanSearch" class="form-control" placeholder="Buscar Hash o Alias..." style="width:300px;">
+                                <input type="text" id="scanSearch" class="form-control" placeholder="Buscar Hash o Usuario..." style="width:300px;">
                             </div>
                             <div class="ledger-table-wrapper">
                                 <table class="ledger-table">
                                     <thead>
-                                        <tr style="color: var(--accent-blue); text-transform: uppercase; font-size: 0.75rem; border-bottom: 1px solid #222;">
-                                            <th style="padding:10px;">Hash</th><th>Red</th><th>Fecha</th><th>Nodo</th><th>Concepto</th><th style="text-align:right;">Slices</th>
+                                        <tr>
+                                            <th>Hash</th><th>Red</th><th>Fecha</th><th>Nodo</th><th>Concepto</th><th style="text-align:right;">Slices</th>
                                         </tr>
                                     </thead>
                                     <tbody id="scanTableBody"></tbody>
@@ -150,7 +161,7 @@ export default class HomeView {
                         <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 400px; text-align:center;">
                             <div style="font-size: 4rem; margin-bottom: 1.5rem;">🕸️</div>
                             <h2 style="border:none; font-size: 2rem;">Topología Macro-Red</h2>
-                            <p style="max-width: 600px; margin:0 auto; color: #888; font-size: 1.1rem;">En la V12, este lienzo conectará los Ecosistemas mediante el protocolo <code>macroFlows</code> P2P.</p>
+                            <p style="max-width: 600px; margin:0 auto; color: #888; font-size: 1.1rem;">Conexión P2P entre Ecosistemas (Protocolo MacroFlows).</p>
                         </div>
                     </div>
 
@@ -161,9 +172,10 @@ export default class HomeView {
     }
 
     getLandingHtml() { 
-        return `<div class="app-layout" style="justify-content:center; align-items:center;">
+        return `<div class="app-layout" style="justify-content:center; align-items:center; height:100vh;">
                     <div style="text-align:center;">
                         <h1 style="font-size:3.5rem; letter-spacing:-2px;">TeamTowers <span style="color:var(--accent-blue)">SOS</span></h1>
+                        <p style="color:#666; margin-bottom: 2rem;">Social Operating System v12.0</p>
                         <button class="btn-primary" onclick="location.reload()">RECONECTAR KERNEL</button>
                     </div>
                 </div>`; 
@@ -171,7 +183,7 @@ export default class HomeView {
 
     executeViewScript() {
         const state = store.getState();
-        if (!state.session.activeUserId || state.session.activeUserId === 'ecosystem-admin' || state.session.role === 'guest') return;
+        if (!state.session.activeUserId || state.session.role === 'guest') return;
 
         Sidebar.initListeners();
         PageHeader.execute();
@@ -180,7 +192,6 @@ export default class HomeView {
         window.addEventListener('ph-tab-changed', (e) => {
             if (e.detail && e.detail.tabId) {
                 this.currentTab = e.detail.tabId;
-                // Alternar visibilidad de secciones
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 const target = document.getElementById(`view-${this.currentTab}`);
                 if(target) target.classList.add('active');
@@ -198,13 +209,9 @@ export default class HomeView {
     }
 
     setupFilters() {
-        const searchInput = document.getElementById('filterSearch');
-        const sectorSelect = document.getElementById('filterSector');
-        if (!searchInput || !sectorSelect) return;
-
-        const applyFilters = () => {
-            const term = searchInput.value.toLowerCase();
-            const sector = sectorSelect.value;
+        const apply = () => {
+            const term = document.getElementById('filterSearch').value.toLowerCase();
+            const sector = document.getElementById('filterSector').value;
             const filtered = this.allProjects.filter(p => {
                 const matchName = p.nombre.toLowerCase().includes(term);
                 const rawSector = sector.replace('custom_', '');
@@ -213,17 +220,15 @@ export default class HomeView {
             });
             this.renderEcosystemProjects([...filtered].reverse());
         };
-
-        searchInput.addEventListener('input', applyFilters);
-        sectorSelect.addEventListener('change', applyFilters);
+        document.getElementById('filterSearch')?.addEventListener('input', apply);
+        document.getElementById('filterSector')?.addEventListener('change', apply);
     }
 
     renderGlobalStats(state) {
-        let totalProjects = state.projects.length;
-        let totalGlobalSlices = 0;
+        let totalSlices = 0;
         let users = new Set();
         state.projects.forEach(p => {
-            (p.ledger || []).forEach(l => totalGlobalSlices += (l.valorCongelado || 0));
+            (p.ledger || []).forEach(l => totalSlices += (l.valorCongelado || 0));
             (p.usuarios || []).forEach(u => users.add(u.id));
         });
 
@@ -231,11 +236,11 @@ export default class HomeView {
         if(!grid) return;
         grid.innerHTML = `
             <div class="stat-card" style="border-bottom: 3px solid var(--accent-blue);">
-                <div class="stat-value" style="color:var(--accent-blue)">${totalProjects}</div>
+                <div class="stat-value" style="color:var(--accent-blue)">${state.projects.length}</div>
                 <div class="stat-label">REDES ACTIVAS</div>
             </div>
             <div class="stat-card" style="border-bottom: 3px solid var(--accent-green);">
-                <div class="stat-value" style="color:var(--accent-green)">${Math.round(totalGlobalSlices).toLocaleString()}</div>
+                <div class="stat-value" style="color:var(--accent-green)">${Math.round(totalSlices).toLocaleString()}</div>
                 <div class="stat-label">SLICES EMITIDOS</div>
             </div>
             <div class="stat-card" style="border-bottom: 3px solid var(--accent-purple);">
@@ -245,14 +250,14 @@ export default class HomeView {
         `;
     }
 
-    renderEcosystemProjects(projectsToRender) {
+    renderEcosystemProjects(list) {
         const grid = document.getElementById('ecosystemProjectsGrid');
         if(!grid) return;
-        grid.innerHTML = projectsToRender.map(p => `
+        grid.innerHTML = list.map(p => `
             <div class="project-card" onclick="localStorage.setItem('tt_active_project','${p.id}'); window.location.href='/v5/project'">
-                <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-                    <h3 style="margin:0; font-size:1.3rem;">${p.nombre}</h3>
-                    <span style="font-size:0.6rem; color:var(--accent-blue); font-weight:900; border:1px solid; padding:2px 6px; border-radius:4px;">${p.archetype.toUpperCase()}</span>
+                <div style="display:flex; justify-content:space-between; margin-bottom:1rem; align-items:start;">
+                    <h3 style="margin:0; font-size:1.4rem;">${p.nombre}</h3>
+                    <span style="font-size:0.6rem; color:var(--accent-blue); font-weight:900; border:1px solid; padding:2px 6px; border-radius:6px;">${p.archetype.toUpperCase()}</span>
                 </div>
                 <div style="margin-bottom:1.5rem; display:flex; gap:10px;">
                    <span class="tag-pill">#${p.sector}</span>
@@ -277,14 +282,14 @@ export default class HomeView {
 
         const filtered = allLogs.filter(l => l.hash.toLowerCase().includes(query) || l.userId.toLowerCase().includes(query) || l.pName.toLowerCase().includes(query));
 
-        tbody.innerHTML = filtered.slice(0, 50).map(l => `
-            <tr style="border-bottom: 1px solid #1a1a1a;">
-                <td style="padding:15px;"><span class="hash-badge">${l.hash.substring(0,10)}...</span></td>
+        tbody.innerHTML = filtered.slice(0, 20).map(l => `
+            <tr>
+                <td><span class="hash-badge">${l.hash.substring(0,10)}...</span></td>
                 <td style="font-weight:bold; color:var(--accent-blue);">${l.pName}</td>
-                <td style="color:#666;">${new Date(l.timestamp).toLocaleDateString()}</td>
+                <td style="color:#666; font-size:0.8rem;">${new Date(l.timestamp).toLocaleDateString()}</td>
                 <td style="font-weight:bold;">${l.userId}</td>
-                <td style="color:#aaa;">${l.description || 'Validación de Valor'}</td>
-                <td style="text-align:right; font-weight:900; color:var(--accent-green); font-family:var(--font-mono);">+${Math.round(l.valorCongelado)}</td>
+                <td style="color:#aaa;">${l.description || 'Sello de Valor'}</td>
+                <td style="text-align:right; font-weight:900; color:var(--accent-green);">+${Math.round(l.valorCongelado)}</td>
             </tr>
         `).join('');
     }
