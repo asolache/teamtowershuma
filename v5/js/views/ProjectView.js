@@ -8,8 +8,8 @@ export default class ProjectView {
     constructor() {
         document.title = "Tareas | TeamTowers SOS";
         this.activeProjectId = null;
-        this.currentFilter = 'all'; 
-        // Adaptativo: PC ve tablero completo, móvil ve fase por fase
+        this.currentFilter = 'all'; // all, mine, tangible, intangible
+        // Lógica adaptativa: Si es pantalla grande abre Todo (3 columnas), si es móvil abre Oportunidades.
         this.currentTab = window.innerWidth > 768 ? 'all' : 'oportunidades'; 
     }
 
@@ -38,11 +38,11 @@ export default class ProjectView {
             magicActionsHtml = `
                 <div class="magic-action-group">
                     <select id="selKanbanMagic" class="magic-select">
-                        <option value="" disabled selected>⚡ Acción IA / Tablero...</option>
-                        <option value="create_wo">➕ Tarea (WO)</option>
-                        <option value="ai_sprint" disabled>🤖 Sprint IA</option>
+                        <option value="" disabled selected>⚡ Acciones del Tablero...</option>
+                        <option value="create_wo">➕ Inyectar Tarea (Work Order)</option>
+                        <option value="ai_sprint" disabled>🤖 Auto-Sprint IA (V12.x)</option>
                     </select>
-                    <button class="btn-magic-exec" id="btnExecuteKanbanMagic">Ejecutar</button>
+                    <button class="btn-primary" id="btnExecuteKanbanMagic">Ejecutar</button>
                 </div>
             `;
         }
@@ -58,7 +58,7 @@ export default class ProjectView {
                 </div>
             `,
             tabs: [
-                { id: 'all', label: '🗂️ Tablero Completo', active: this.currentTab === 'all', hideOnMobile: true },
+                { id: 'all', label: '🗂️ Tablero Completo', active: this.currentTab === 'all' },
                 { id: 'oportunidades', label: 'Libres', active: this.currentTab === 'oportunidades', badge: '0' },
                 { id: 'en-curso', label: 'En Curso', active: this.currentTab === 'en-curso', badge: '0' },
                 { id: 'contabilizado', label: 'Selladas', active: this.currentTab === 'contabilizado', badge: '0' }
@@ -67,69 +67,164 @@ export default class ProjectView {
 
         return `
             <style>
-                .workspace-kanban { display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100%; box-sizing: border-box; }
-                .kanban-container { width: 100%; height: 100%; display: flex; flex-direction: column; min-height: 0; padding-bottom: 2rem; }
-                .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem; width: 100%; flex-shrink: 0;}
-                
-                /* GRID KANBAN TRELLO STYLE */
-                .kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; flex: 1; min-height: 0; }
-                .kanban-col { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; display: flex; flex-direction: column; height: 100%; overflow: hidden; box-shadow: inset 0 5px 20px rgba(0,0,0,0.3); }
-                .col-header { flex-shrink: 0; padding: 15px; color: white; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); }
-                
-                .col-body {
-                    flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px;
-                    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2);
+                /* Ocultar la pestaña 'all' en móviles */
+                @media (max-width: 768px) {
+                    .ph-tab-btn[data-tab="all"] { display: none !important; }
                 }
-                .col-body::-webkit-scrollbar { width: 8px; }
-                .col-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
-                .col-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
+                .kanban-container { width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing:border-box;}
+
+                /* Controles Secundarios */
+                .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem; width: 100%;}
+                .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
+                .filter-dropdown { background: rgba(0,0,0,0.4); border: 1px dashed #444; color: #aaa; padding: 10px 15px; border-radius: 10px; font-family: inherit; font-size: 0.85rem; font-weight:bold; outline: none; cursor: pointer; transition: all 0.3s;}
+                .filter-dropdown:focus, .filter-dropdown:hover { border-color: var(--accent-blue); color:white;}
+
+                /* Botones Status Específicos Kanban */
+                .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s;}
+                .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 900; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
+
+                /* =========================================================
+                   GRID KANBAN (3 COLUMNAS PC / 1 COLUMNA MÓVIL)
+                   ========================================================= */
+                .kanban-board { 
+                    display: grid; 
+                    grid-template-columns: repeat(3, 1fr); 
+                    gap: 1.5rem; 
+                    width: 100%;
+                    height: 100%;
+                    padding-bottom: 5rem;
+                }
+
+                .kanban-col { 
+                    background: rgba(255,255,255,0.01); 
+                    border: 1px dashed rgba(255,255,255,0.05); 
+                    border-radius: 16px; 
+                    padding: 1rem; 
+                    display: flex; 
+                    flex-direction: column; 
+                    gap: 1.2rem;
+                    min-height: 300px;
+                }
+                
+                /* Modo 1 columna (Cuando no estás en pestaña 'all') */
                 .kanban-board.single-col-mode { grid-template-columns: 1fr; }
-                .kanban-board.single-col-mode .kanban-col { border: none; background: transparent; box-shadow: none; overflow: visible;}
-                .kanban-board.single-col-mode .col-header { display: none; }
-                .kanban-board.single-col-mode .col-body { padding: 0; overflow: visible; }
+                .kanban-board.single-col-mode .kanban-col { border: none; padding: 0; background: transparent; }
+                
+                .col-header { color: white; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 5px; display: flex; justify-content: space-between;}
+
+                /* =========================================================
+                   TARJETAS DE TAREA LUXURY
+                   ========================================================= */
+                .task-card { 
+                    box-sizing: border-box; width: 100%;
+                    background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9)); 
+                    border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; 
+                    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
+                    display: flex; flex-direction: column; gap: 10px; 
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 5px 15px rgba(0,0,0,0.3);
+                }
+                .task-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 25px rgba(0,0,0,0.6);}
+                
+                .task-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+                .task-route { display: flex; gap: 6px; align-items: center; flex-wrap: wrap;}
+                .route-badge { font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; font-family: var(--font-mono); font-weight: 900; border: 1px solid; white-space: nowrap;}
+                
+                .task-title { color: white; font-size: 1.15rem; margin: 0; line-height: 1.3; font-weight: 900; letter-spacing: -0.5px; word-break: break-word;}
+                .task-desc-bubble { font-size: 0.85rem; color: #aaa; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border-left: 2px solid var(--accent-blue); font-style: italic; line-height: 1.4; word-break: break-word;}
+                
+                .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; background: rgba(0,0,0,0.5); padding: 10px 12px; border-radius: 10px; border: 1px solid #222;}
+                
+                /* BOTONES ACCIÓN TARJETA */
+                .task-actions { margin-top: auto; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 8px;}
+                
+                .btn-pull { flex: 1; box-sizing: border-box; background: transparent; border: 1px solid #666; color: white; transition: all 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align:center;}
+                .btn-pull:hover { background: white; color: black; border-color: white;}
+                
+                .btn-push { flex: 1; box-sizing: border-box; background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); transition: all 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align: center;}
+                .btn-push:hover { background: rgba(224, 64, 251, 0.1); border-style: solid;}
+
+                .btn-focus { flex: 1; box-sizing: border-box; background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: 900; transition: all 0.3s; font-size: 0.85rem;}
+                .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
+                
+                .btn-approve { flex: 1; box-sizing: border-box; background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: transform 0.2s; font-size: 0.85rem;}
+                .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
+
+                .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 1.1rem; border: 1px dashed #333; border-radius: 16px; background: rgba(0,0,0,0.3);}
+
+                @media (max-width: 1024px) {
+                    .kanban-board { grid-template-columns: 1fr 1fr; }
+                    .kanban-board > .kanban-col:nth-child(3) { display: none; }
+                }
 
                 @media (max-width: 768px) {
-                    .kanban-board { display: flex; flex-direction: column; gap: 1.2rem; padding-bottom: 2rem; height: auto;}
-                    .kanban-col { border: none; padding: 0; background: transparent; height: auto; box-shadow:none;}
+                    .controls-row { justify-content: stretch; margin-bottom: 1.5rem; }
+                    .filters-container { flex-direction: column; width: 100%; gap: 10px;}
+                    .filter-dropdown { width: 100%; padding: 14px; box-sizing: border-box; }
+                    
+                    /* Fuerza una sola columna sin marcos en móvil */
+                    .kanban-board { grid-template-columns: 1fr !important; padding-bottom: 2rem;}
+                    .kanban-col { border: none !important; padding: 0 !important; background: transparent !important; }
+                    .col-header { display: none !important; }
+                    
+                    .task-actions { flex-direction: column; }
+                    .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; margin: 0; padding: 14px; font-size: 1rem;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/project')}
-                <main class="workspace workspace-kanban ${isOpen ? 'is-open-to-work' : ''}">
+
+                <main class="workspace ${isOpen ? 'is-open-to-work' : ''}">
+                    
                     ${PageHeader.getHtml(headerConfig)}
+
                     <div class="kanban-container">
                         <div class="controls-row">
-                            <select id="filterDropdown" class="form-control" style="width: auto; height: 40px; font-size: 0.85rem; background: rgba(0,0,0,0.5); border-color: #333;">
-                                <option value="all">Filtros: Todas las tareas</option>
-                                <option value="mine">👤 Solo mis tareas</option>
-                                <option value="tangible">🟢 Solo Tangibles</option>
-                                <option value="intangible">🟣 Solo Intangibles</option>
-                            </select>
+                            <div class="filters-container">
+                                <select id="filterDropdown" class="filter-dropdown">
+                                    <option value="all">Filtros: Todas las tareas</option>
+                                    <option value="mine">👤 Solo mis tareas</option>
+                                    <option value="tangible">🟢 Solo Tangibles</option>
+                                    <option value="intangible">🟣 Solo Intangibles</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="kanban-board" id="taskGrid"></div>
+
+                        <div class="kanban-board" id="taskGrid">
+                            </div>
                     </div>
                 </main>
 
                 <div class="modal-overlay" id="createTaskModal">
-                    <div class="modal-content">
-                        <h2 style="color:white; margin-top:0; font-weight:900;">Abrir el Grifo</h2>
-                        <p style="color:#888; font-size:0.9rem; margin-bottom: 1.5rem;">Crea una instancia de tarea desde el mapa VNA.</p>
+                    <div class="modal-content" style="border-top-color:var(--accent-blue);">
+                        <h2 style="color:white; margin-top:0; margin-bottom: 5px; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">Abrir el Grifo</h2>
+                        <p style="color:#aaa; font-size:0.95rem; margin-bottom:2.5rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes diseñadas en el Mapa VNA.</p>
+                        
                         <div class="form-group">
-                            <label>Tubería de Valor (Flow)</label>
-                            <select id="newTaskFlowId" class="form-control"></select>
+                            <label>Tubería de Valor Origen (Flow)</label>
+                            <select id="newTaskFlowId" class="form-control" style="background: rgba(0, 176, 255, 0.05); border-color: var(--accent-blue); font-weight:bold; color:var(--accent-blue);"></select>
                         </div>
+
                         <div class="form-group">
-                            <label>Contexto / Instrucciones</label>
-                            <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Detalles específicos..."></textarea>
+                            <label>Contexto / Instrucciones Especiales</label>
+                            <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Especificaciones, enlaces a repositorios o detalles tácticos..."></textarea>
                         </div>
-                        <div style="display: flex; gap:15px; margin-top: 3rem;">
-                            <button class="btn-outline" id="btnCancelCreateTask" style="flex:1">Cancelar</button>
-                            <button class="btn-primary" id="btnConfirmCreateTask" style="flex:2">🚀 Inyectar</button>
+
+                        <div class="form-group" style="margin-top: 25px; border-top: 1px dashed #333; padding-top: 20px;">
+                            <label style="color:var(--accent-orange);">Asignar Directamente (Opcional)</label>
+                            <select id="newTaskAssignee" class="form-control" style="border-color:#555;">
+                                <option value="">-- Dejar Libre en "Oportunidades" --</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-top: 3rem; gap:15px;">
+                            <button class="btn-outline" style="flex:1;" id="btnCancelCreateTask">Cancelar</button>
+                            <button class="btn-primary" style="flex:2;" id="btnConfirmCreateTask">🚀 Inyectar al Kanban</button>
                         </div>
                     </div>
                 </div>
+                
                 ${BottomNav.getHtml('/project')}
             </div>
         `;
@@ -142,16 +237,25 @@ export default class ProjectView {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         
-        let project = state.projects.find(p => p.id === (localStorage.getItem('tt_active_project') || state.projects[0]?.id));
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
+        
         if (!project) return;
         this.activeProjectId = project.id;
 
-        // V12.5 DRY TABS: Escuchar evento global
-        window.addEventListener('ph-tab-changed', (e) => {
-            if (e.detail && e.detail.tabId) {
-                this.currentTab = e.detail.tabId;
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-            }
+        // TABS LOGIC
+        const tabBtns = document.querySelectorAll('.ph-tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tabId = btn.dataset.tab;
+                if (tabId) {
+                    this.currentTab = tabId;
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                }
+            });
         });
 
         // FILTROS
@@ -165,66 +269,204 @@ export default class ProjectView {
         }
 
         // EVENTO DISPONIBILIDAD
-        document.getElementById('btnToggleAvailability')?.addEventListener('click', async () => {
-            const currentStatus = store.getState().globalUsers.find(u => u.id === activeUserId)?.profile?.isOpenToWork || false;
-            await store.dispatch({
-                type: 'UPDATE_USER_PROFILE',
-                payload: { userId: activeUserId, profile: { isOpenToWork: !currentStatus } }
+        const btnToggleAvailability = document.getElementById('btnToggleAvailability');
+        if (btnToggleAvailability) {
+            btnToggleAvailability.addEventListener('click', async () => {
+                const currentState = store.getState();
+                const userIndex = currentState.globalUsers.findIndex(u => u.id === activeUserId);
+                
+                if (userIndex > -1) {
+                    const currentStatus = currentState.globalUsers[userIndex].profile?.isOpenToWork || false;
+                    const newStatus = !currentStatus;
+                    
+                    await store.dispatch({
+                        type: 'UPDATE_USER_PROFILE',
+                        payload: { userId: activeUserId, profile: { isOpenToWork: newStatus } }
+                    });
+                    
+                    btnToggleAvailability.className = newStatus ? 'btn-status-open' : 'btn-status-closed';
+                    btnToggleAvailability.innerText = newStatus ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
+                    
+                    const workspace = document.querySelector('.workspace');
+                    if (newStatus) workspace.classList.add('is-open-to-work');
+                    else workspace.classList.remove('is-open-to-work');
+                }
             });
-            window.location.reload(); // Recarga para aplicar el destello visual
-        });
+        }
 
         // LÓGICA DE MAGIC ACTIONS
-        document.getElementById('btnExecuteKanbanMagic')?.addEventListener('click', () => {
-            const action = document.getElementById('selKanbanMagic').value;
-            if (action === 'create_wo') {
-                const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-                const flows = activeProject.vna_flows || [];
-                if (flows.length === 0) return alert("Dibuja tuberías en el Mapa VNA primero.");
-                
-                document.getElementById('newTaskFlowId').innerHTML = flows.map(f => `<option value="${f.id}">${f.template}</option>`).join('');
-                document.getElementById('createTaskModal').style.display = 'flex';
-            }
-        });
+        const selMagic = document.getElementById('selKanbanMagic');
+        const btnExecuteMagic = document.getElementById('btnExecuteKanbanMagic');
+        const createModal = document.getElementById('createTaskModal');
 
-        document.getElementById('btnCancelCreateTask')?.addEventListener('click', () => document.getElementById('createTaskModal').style.display = 'none');
-        
-        document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async () => {
-            const flowId = document.getElementById('newTaskFlowId').value;
-            const desc = document.getElementById('newTaskDesc').value.trim();
-            const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
+        if (btnExecuteMagic && selMagic) {
+            btnExecuteMagic.addEventListener('click', () => {
+                const action = selMagic.value;
+                if (action === 'create_wo') {
+                    const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+                    const flows = activeProject.vna_flows || [];
+                    
+                    if (flows.length === 0) {
+                        alert("Debes dibujar Tuberías (Flujos permanentes) en el Mapa VNA antes de poder generar tareas en el Kanban.");
+                        window.location.href = '/v5/map';
+                        return;
+                    }
 
-            await store.dispatch({
-                type: 'SPAWN_WORK_ORDER',
-                payload: { projectId: this.activeProjectId, workOrder: { hash: newHash, flowId, comentario: desc, status: 'theoretical', realHours: 0 } }
+                    let flowOpts = '';
+                    const selFlow = document.getElementById('newTaskFlowId');
+                    flows.forEach(f => {
+                        const rFrom = activeProject.roles.find(r => r.id === f.from);
+                        const rTo = activeProject.roles.find(r => r.id === f.to);
+                        const nameF = rFrom ? rFrom.name : 'Unknown';
+                        const nameT = rTo ? rTo.name : 'Unknown';
+                        flowOpts += `<option value="${f.id}">[${nameF} -> ${nameT}] ${f.template}</option>`;
+                    });
+                    selFlow.innerHTML = flowOpts;
+
+                    let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
+                    (activeProject.usuarios || []).forEach(u => {
+                        const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
+                        userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+                    });
+                    document.getElementById('newTaskAssignee').innerHTML = userOpts;
+
+                    createModal.style.display = 'flex';
+                }
             });
+        }
 
-            document.getElementById('createTaskModal').style.display = 'none';
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-        });
+        const btnCancelCreateTask = document.getElementById('btnCancelCreateTask');
+        if (btnCancelCreateTask) {
+            btnCancelCreateTask.addEventListener('click', () => createModal.style.display = 'none');
+        }
 
-        // ACTIONS LOGIC (Grid delegación)
-        document.getElementById('taskGrid')?.addEventListener('click', async (e) => {
-            const target = e.target.closest('button');
-            if (!target) return;
-            const hash = target.dataset.hash;
-            const isLegacy = target.dataset.legacy === "true";
-            const action = target.dataset.action;
+        const btnConfirmCreateTask = document.getElementById('btnConfirmCreateTask');
+        if (btnConfirmCreateTask) {
+            btnConfirmCreateTask.addEventListener('click', async () => {
+                const selFlow = document.getElementById('newTaskFlowId');
+                const flowId = selFlow.value;
+                const desc = document.getElementById('newTaskDesc').value.trim();
+                const assignee = document.getElementById('newTaskAssignee').value;
+                
+                if(!flowId) return alert("Selecciona un Flujo base.");
 
-            if (target.classList.contains('btn-pull')) {
-                const type = isLegacy ? (action === 'request' ? 'REQUEST_TRANSACTION' : 'PING_TRANSACTION') : (action === 'request' ? 'REQUEST_WORK_ORDER' : 'PING_WORK_ORDER');
-                await store.dispatch({ type, payload: { projectId: this.activeProjectId, [isLegacy ? 'txHash' : 'woHash']: hash, userId: activeUserId } });
+                const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
+
+                await store.dispatch({
+                    type: 'SPAWN_WORK_ORDER',
+                    payload: {
+                        projectId: this.activeProjectId,
+                        workOrder: {
+                            hash: newHash,
+                            flowId: flowId,
+                            comentario: desc,
+                            status: 'theoretical',
+                            realHours: 0
+                        }
+                    }
+                });
+
+                if (assignee !== "") {
+                    await store.dispatch({
+                        type: 'PING_WORK_ORDER',
+                        payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee }
+                    });
+                }
+
+                createModal.style.display = 'none';
                 this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-            }
-            
-            if (target.classList.contains('btn-approve')) {
-                const isConsolidate = action === 'consolidate';
-                const type = isLegacy ? (isConsolidate ? 'APPROVE_TRANSACTION' : 'PING_TRANSACTION') : (isConsolidate ? 'APPROVE_WORK_ORDER' : 'PING_WORK_ORDER');
-                await store.dispatch({ type, payload: { projectId: this.activeProjectId, [isLegacy ? 'txHash' : 'woHash']: hash, userId: target.dataset.userid } });
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-            }
-        });
+                
+                if(selMagic) selMagic.selectedIndex = 0;
+            });
+        }
 
+        // KANBAN ACTIONS LOGIC
+        const taskGrid = document.getElementById('taskGrid');
+        if (taskGrid) {
+            taskGrid.addEventListener('click', async (e) => {
+                const target = e.target.closest('button'); 
+                if (!target) return;
+
+                const currentState = store.getState();
+                const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
+                if (!currProject) return;
+
+                const isLegacyTx = target.dataset.legacy === "true";
+                const txHash = target.dataset.hash;
+
+                const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
+
+                if (target.classList.contains('btn-approve')) {
+                    if (!isPO) return alert("Solo el dueño del proyecto puede aprobar tareas."); // Muro de Cristal
+                    
+                    const action = target.dataset.action;
+                    if (action === 'approve-pull') {
+                        const targetUserId = target.dataset.userid;
+                        const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                        const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
+                        await store.dispatch({ type: actType, payload });
+                        this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                    } 
+                    else if (action === 'consolidate') {
+                        if (confirm('¿Aprobar Proof of Work y generar Slices inmutables?')) {
+                            const actType = isLegacyTx ? 'APPROVE_TRANSACTION' : 'APPROVE_WORK_ORDER';
+                            const payload = isLegacyTx ? { projectId: currProject.id, txHash } : { projectId: currProject.id, woHash: txHash };
+                            await store.dispatch({ type: actType, payload });
+                            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                        }
+                    }
+                    return;
+                }
+
+                if (target.classList.contains('btn-pull')) {
+                    const action = target.dataset.action;
+                    const actType = isLegacyTx 
+                        ? (action === 'request' ? 'REQUEST_TRANSACTION' : 'PING_TRANSACTION')
+                        : (action === 'request' ? 'REQUEST_WORK_ORDER' : 'PING_WORK_ORDER');
+                    
+                    const payload = isLegacyTx 
+                        ? { projectId: currProject.id, txHash, userId: currentState.session.activeUserId }
+                        : { projectId: currProject.id, woHash: txHash, userId: currentState.session.activeUserId };
+
+                    await store.dispatch({ type: actType, payload });
+                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                    return;
+                }
+
+                if (target.classList.contains('btn-push')) {
+                    if (!isPO) return alert("Solo el PO puede forzar la delegación de tareas.");
+
+                    const usersInProject = currProject.usuarios || [];
+                    if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
+                    
+                    let userListStr = "IDs disponibles:\n";
+                    usersInProject.forEach(u => {
+                        const globalData = currentState.globalUsers.find(gu => gu.id === u.id);
+                        userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
+                    });
+
+                    const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:\n\n${userListStr}`);
+                    if (targetUserId) {
+                        const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                        const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId };
+                        await store.dispatch({ type: actType, payload });
+                        this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                    }
+                    return;
+                }
+            });
+        }
+
+        // MÓVIL: Forzar 'oportunidades' si está en 'all' al cargar
+        if (window.innerWidth <= 768 && this.currentTab === 'all') {
+            this.currentTab = 'oportunidades';
+            const opsTab = document.querySelector('.ph-tab-btn[data-tab="oportunidades"]');
+            if (opsTab) {
+                document.querySelectorAll('.ph-tab-btn').forEach(b => b.classList.remove('active'));
+                opsTab.classList.add('active');
+            }
+        }
+        
         this.renderTasks(project);
     }
 
@@ -232,10 +474,12 @@ export default class ProjectView {
         const board = document.getElementById('taskGrid');
         if (!board) return;
         board.innerHTML = '';
-        
+
         const state = store.getState();
-        const activeUserId = state.session.activeUserId;
-        const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
+        const activeUser = state.session.activeUserId;
+        const isPO = project.ownerId === activeUser || state.session.role === 'ecosystem-owner';
+        
+        let counts = { op: 0, cur: 0, con: 0 };
         
         const cols = {
             'oportunidades': { title: 'Libres (Oportunidades)', html: [] },
@@ -248,69 +492,165 @@ export default class ProjectView {
             ...(project.transactions || []).map(tx => ({ ...tx, isWorkOrder: false }))
         ];
 
-        let counts = { op: 0, cur: 0, con: 0 };
-
         allTasks.forEach(tx => {
-            let cat = '';
-            if (tx.status === 'theoretical' || tx.status === 'requested') { cat = 'oportunidades'; counts.op++; }
-            else if (tx.status === 'pinged' || tx.status === 'reported') { cat = 'en-curso'; counts.cur++; }
-            else if (tx.status === 'consolidated' || tx.status === 'approved') { cat = 'contabilizado'; counts.con++; }
+            let tabCategory = '';
+            if (tx.status === 'theoretical' || tx.status === 'requested') { tabCategory = 'oportunidades'; counts.op++; }
+            else if (tx.status === 'pinged' || tx.status === 'reported') { tabCategory = 'en-curso'; counts.cur++; }
+            else if (tx.status === 'consolidated' || tx.status === 'approved') { tabCategory = 'contabilizado'; counts.con++; }
 
-            if (this.currentFilter === 'mine' && tx.assigneeId !== activeUserId) return;
-            // Otros filtros de tangible/intangible aquí...
+            let flowData = null;
+            if (tx.isWorkOrder) {
+                flowData = (project.vna_flows || []).find(f => f.id === tx.flowId) || { tipo: 'tangible', template: 'Tarea Huérfana', estimatedHours: 0 };
+            } else {
+                flowData = tx; 
+            }
 
-            const card = this.createTaskCardHTML(tx, project, isPO, activeUserId);
-            if (cols[cat]) cols[cat].html.push(card);
+            if (this.currentFilter === 'tangible' && flowData.tipo !== 'tangible') return;
+            if (this.currentFilter === 'intangible' && flowData.tipo !== 'intangible') return;
+            
+            if (this.currentFilter === 'mine') {
+                if (tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
+            }
+
+            const cardHTML = this.createTaskCardHTML(tx, flowData, project, state.session, isPO);
+            if (cols[tabCategory]) cols[tabCategory].html.push(cardHTML);
         });
 
-        // Actualizar badges
-        ['oportunidades', 'en-curso', 'contabilizado'].forEach(id => {
-            const b = document.getElementById(`badge-${id}`);
-            if(b) b.innerText = id === 'oportunidades' ? counts.op : (id === 'en-curso' ? counts.cur : counts.con);
-        });
+        // Actualizar Badges en las pestañas
+        const badgeOp = document.getElementById('badge-oportunidades');
+        const badgeCur = document.getElementById('badge-en-curso');
+        const badgeCon = document.getElementById('badge-contabilizado');
+        
+        if(badgeOp) badgeOp.innerText = counts.op;
+        if(badgeCur) badgeCur.innerText = counts.cur;
+        if(badgeCon) badgeCon.innerText = counts.con;
 
+        // RENDERIZADO DEL GRID (3 Columnas PC vs 1 Columna Móvil/Pestaña)
         if (this.currentTab === 'all') {
             board.className = 'kanban-board';
-            board.innerHTML = Object.keys(cols).map(k => `
-                <div class="kanban-col">
-                    <div class="col-header">${cols[k].title} <span>${cols[k].html.length}</span></div>
-                    <div class="col-body">${cols[k].html.join('') || '<div style="text-align:center;color:#444;padding:2rem;">Vacío</div>'}</div>
-                </div>
-            `).join('');
+            let boardHtml = '';
+            
+            Object.keys(cols).forEach(colKey => {
+                const colData = cols[colKey];
+                boardHtml += `
+                    <div class="kanban-col">
+                        <div class="col-header">${colData.title} <span style="color:#666;">${colData.html.length}</span></div>
+                        ${colData.html.length > 0 ? colData.html.join('') : `<div style="text-align:center; padding:2rem; color:#666; font-size:0.85rem;">Fase vacía</div>`}
+                    </div>
+                `;
+            });
+            board.innerHTML = boardHtml;
         } else {
             board.className = 'kanban-board single-col-mode';
-            board.innerHTML = `<div class="col-body">${cols[this.currentTab]?.html.join('') || '<div class="empty-state">No hay tareas</div>'}</div>`;
+            const activeColData = cols[this.currentTab];
+            
+            if (activeColData && activeColData.html.length > 0) {
+                board.innerHTML = activeColData.html.join('');
+            } else {
+                board.innerHTML = `<div class="empty-state">No hay tareas en esta fase.</div>`;
+            }
         }
     }
 
-    createTaskCardHTML(tx, project, isPO, activeUserId) {
+    createTaskCardHTML(tx, flowData, project, session, isPO) {
+        const role = project.roles.find(r => r.id === flowData.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
+        const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?' };
+        
+        const color = this.getColorForLevel(role.levelId);
+        const tipoColor = flowData.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
+        const tipoEmoji = flowData.tipo === 'tangible' ? '🟢' : '🟣';
+        
         const isLegacy = !tx.isWorkOrder;
         const hashAttr = `data-hash="${tx.hash}" data-legacy="${isLegacy}"`;
-        let flowData = tx.isWorkOrder ? (project.vna_flows.find(f => f.id === tx.flowId) || { template: 'Tarea' }) : { template: tx.entregable };
-        
+
         let actionHtml = '';
+        let statusTag = '';
+
         if (tx.status === 'theoretical') {
-            actionHtml = isPO ? `<button class="btn-pull" ${hashAttr}>Hacer PULL</button>` : `<button class="btn-pull" data-action="request" ${hashAttr}>Solicitar</button>`;
-        } else if (tx.status === 'requested') {
-            actionHtml = isPO ? `<button class="btn-approve" ${hashAttr} data-userid="${tx.assigneeId}">Aprobar</button>` : `<div style="font-size:0.7rem;color:orange;">Esperando PO...</div>`;
-        } else if (tx.status === 'pinged') {
-            actionHtml = tx.assigneeId === activeUserId ? `<a href="/v5/focus?hash=${tx.hash}" class="btn-focus" data-link>▶ FOCUS</a>` : `<div style="font-size:0.7rem;color:#888;">Ejecutando...</div>`;
-        } else if (tx.status === 'reported') {
-            actionHtml = isPO ? `<button class="btn-approve" data-action="consolidate" ${hashAttr}>Sellar Ledger</button>` : `<div style="font-size:0.7rem;color:cyan;">Auditoría...</div>`;
-        } else if (tx.status === 'consolidated') {
-            actionHtml = `<div style="color:var(--accent-green);font-weight:900;">SELLADO</div>`;
+            statusTag = `<span style="color:#aaa; font-size:0.7rem; border:1px solid #444; padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px;">LIBRE</span>`;
+            if (isPO) {
+                actionHtml = `
+                    <button class="btn-pull" ${hashAttr} title="Adjudicarme la tarea">📥 Hacer PULL</button>
+                    <button class="btn-push" ${hashAttr} title="Asignar a un miembro de la Colla">👤 Delegar</button>
+                `;
+            } else {
+                actionHtml = `<button class="btn-pull" data-action="request" ${hashAttr}>✋ Solicitar</button>`;
+            }
+        } 
+        else if (tx.status === 'requested') {
+            statusTag = `<span style="color:var(--accent-red); font-size:0.7rem; border:1px solid var(--accent-red); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,82,82,0.1);">SOLICITADO</span>`;
+            const requester = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
+            const reqName = requester ? requester.name : tx.assigneeId;
+            
+            if (isPO) {
+                actionHtml = `
+                    <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; border-left:2px solid var(--accent-red);">
+                        <b>${reqName}</b> quiere ejecutar esto.
+                    </div>
+                    <button class="btn-approve" data-action="approve-pull" ${hashAttr} data-userid="${tx.assigneeId}">✅ Aprobar</button>
+                `;
+            } else {
+                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.8rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando al PO...</div>`;
+            }
+        }
+        else if (tx.status === 'pinged') {
+            statusTag = `<span style="color:var(--accent-orange); font-size:0.7rem; border:1px solid var(--accent-orange); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,171,64,0.1);">EN CURSO</span>`;
+            const isMine = tx.assigneeId === session.activeUserId;
+            if (isMine) {
+                actionHtml = `<a href="/v5/focus?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link>▶ FOCUS / REPORTAR</a>`;
+            } else {
+                const worker = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
+                actionHtml = `<div style="color: #888; font-size: 0.85rem; text-align: center; padding: 12px; background:rgba(0,0,0,0.4); border-radius: 10px; border:1px solid #333;">Ejecutando: <span style="color:white; font-weight:bold;">${worker ? worker.name : tx.assigneeId}</span></div>`;
+            }
+        } 
+        else if (tx.status === 'reported') {
+            statusTag = `<span style="color:var(--accent-blue); font-size:0.7rem; border:1px solid var(--accent-blue); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,176,255,0.1);">AUDITORÍA</span>`;
+            actionHtml = `
+                <div style="font-size: 0.85rem; color: #ccc; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 10px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent-blue);">
+                    <span>Horas Reales: <strong style="color: white; font-family:var(--font-mono); font-size:1rem;">${tx.realHours}h</strong></span>
+                    <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink ? '🔗 Ver Proof' : 'No Link'}</a>
+                </div>
+                ${isPO ? `<button class="btn-approve" data-action="consolidate" ${hashAttr}>✅ Sellar Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px;">Pendiente de firma del PO.</div>`}
+            `;
+        }
+        else if (tx.status === 'consolidated') {
+            statusTag = `<span style="color:var(--accent-green); font-size:0.7rem; border:1px solid var(--accent-green); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,230,118,0.1);">SELLADO</span>`;
+            actionHtml = `
+                <div style="color: var(--accent-green); font-size: 1.2rem; font-weight: 900; font-family: var(--font-mono); text-align: center; padding: 15px; background: rgba(0, 230, 118, 0.05); border-radius: 12px; border: 1px dashed var(--accent-green);">
+                    +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices
+                </div>
+            `;
         }
 
+        const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 20px rgba(255,82,82,0.15);' : '';
+        const titleText = flowData.template || flowData.entregable || 'Work Order';
+        
+        const contextText = tx.comentario || tx.descripcionContexto || flowData.context || '';
+        const contextHtml = contextText ? `<div class="task-desc-bubble">💬 "${contextText}"</div>` : '';
+        const hoursText = flowData.estimatedHours || flowData.horas || 1;
+
         return `
-            <div class="task-card">
+            <div class="task-card" style="${borderStyle}">
                 <div class="task-header">
-                    <span class="route-badge" style="border-color:#444;color:#888;">VNA</span>
-                    <span class="route-badge" style="border-color:var(--accent-blue);color:var(--accent-blue);">${tx.status.toUpperCase()}</span>
+                    <div class="task-route">
+                        <span class="route-badge" style="color: ${color}; border-color: ${color};" title="${role.name}">${role.levelId}</span>
+                        <span style="color: #666; font-size:0.8rem;">&rarr;</span>
+                        <span class="route-badge" style="color: #888; border-color: #444;" title="${receiverRole.name}">${receiverRole.levelId}</span>
+                    </div>
+                    ${statusTag}
                 </div>
-                <h3 class="task-title">${flowData.template || 'Sin título'}</h3>
-                ${tx.comentario ? `<div class="task-desc-bubble">"${tx.comentario}"</div>` : ''}
-                <div class="task-meta-row">⏱ ${tx.realHours || 0}h reales</div>
-                <div class="task-actions">${actionHtml}</div>
+                
+                <h3 class="task-title">${titleText}</h3>
+                ${contextHtml}
+                
+                <div class="task-meta-row">
+                    <span style="font-weight:bold; color:white; font-family:var(--font-mono);">⏱ ${hoursText}h <span style="color:#666; font-weight:normal; font-family:var(--font-main);">Est.</span></span>
+                    <span style="color: ${tipoColor}; font-weight: bold; font-size:0.75rem; letter-spacing:1px;">${tipoEmoji} ${flowData.tipo.toUpperCase()}</span>
+                </div>
+
+                <div class="task-actions">
+                    ${actionHtml}
+                </div>
             </div>
         `;
     }
