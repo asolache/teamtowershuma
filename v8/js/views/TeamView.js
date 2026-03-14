@@ -58,15 +58,14 @@ export default class TeamView {
 
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
-        // Configuración Header Universal V8
         const headerConfig = {
             title: "La Colla",
             subtitle: project.nombre,
-            tagline: "Gestión de Talento, Gobernanza y Asignación de Nodos.",
+            tagline: "Gestión de Talento, Agentes IA y Asignación de Nodos.",
             actionHtml: isPO ? `
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <button class="btn-primary" id="btnOpenMarketplace" style="background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">🔍 Explorar Ecosistema</button>
-                    <button class="btn-primary" id="btnManualAdd">➕ Nuevo Nodo</button>
+                    <button class="btn-primary" id="btnOpenMarketplace" style="background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">🔍 Reclutar Nodos & IA</button>
+                    <button class="btn-primary" id="btnManualAdd">➕ Nuevo Humano</button>
                 </div>
             ` : '',
             tabs: [
@@ -77,14 +76,14 @@ export default class TeamView {
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; height: 100%; box-sizing: border-box; scroll-behavior: smooth;}
+                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
+                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; width: 100%;}
                 
-                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 5rem; }
+                .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
 
                 /* GRID & CARDS (LUXURY COMPACT) */
-                .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+                .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; width: 100%; box-sizing: border-box;}
                 
                 .user-card { 
                     background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9));
@@ -93,35 +92,42 @@ export default class TeamView {
                     display: flex; align-items: center; gap: 15px; 
                     transition: all 0.3s; cursor: pointer; position: relative; 
                     backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 5px 15px rgba(0,0,0,0.3);
+                    box-sizing: border-box; width: 100%;
                 }
                 .user-card:hover { border-color: var(--accent-blue); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 176, 255, 0.15); }
+                .user-card.is-ai { border-color: rgba(224, 64, 251, 0.3); }
+                .user-card.is-ai:hover { border-color: var(--accent-purple); box-shadow: 0 10px 25px rgba(224, 64, 251, 0.15); }
                 
-                .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5);}
-                .user-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+                .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5); position: relative;}
+                .avatar-status { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #111; }
+                .status-online { background: var(--accent-green); }
+                .status-offline { background: #555; }
+
+                .user-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-width: 0;}
                 .user-name { color: white; font-weight: 900; font-size: 1.1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
                 .user-id { color: #888; font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-                .po-badge { background: rgba(255, 171, 64, 0.15); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.4); font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 900; text-transform: uppercase;}
+                .po-badge { background: rgba(255, 171, 64, 0.15); color: var(--accent-orange); border: 1px solid rgba(255, 171, 64, 0.4); font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 900; text-transform: uppercase; white-space: nowrap;}
 
                 /* ASIGNACIÓN DE SILLAS (ROLES) */
-                .roles-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; max-width: 900px; margin: 0 auto;}
+                .roles-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box;}
                 .role-slot { 
                     background: linear-gradient(145deg, rgba(20, 20, 25, 0.6), rgba(10,10,15,0.8)); 
                     border: 1px dashed rgba(255,255,255,0.15); 
                     border-radius: 20px; padding: 1.5rem; 
                     display: flex; justify-content: space-between; align-items: center; gap: 20px; 
-                    transition: all 0.3s;
+                    transition: all 0.3s; width: 100%; box-sizing: border-box; flex-wrap: wrap;
                 }
                 .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.05); }
-                .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1;}
+                .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 250px;}
                 
                 .ai-match-badge { font-size: 0.75rem; color: var(--accent-purple); background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); padding: 6px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); font-weight: bold;}
                 .ai-match-badge:hover { background: rgba(224, 64, 251, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(224, 64, 251, 0.2);}
 
                 /* FORMULARIOS Y BOTONES */
-                .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 12px 15px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 14px 15px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), 0 0 10px rgba(0,176,255,0.2);}
                 .form-control:disabled { opacity: 0.5; cursor: not-allowed; }
-                .form-group { margin-bottom: 15px; }
+                .form-group { margin-bottom: 15px; width: 100%;}
                 .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;}
 
                 .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,176,255,0.2); font-size: 0.95rem;}
@@ -131,7 +137,7 @@ export default class TeamView {
 
                 /* MODAL PERFIL USUARIO */
                 .profile-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 5000; }
-                .profile-modal { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 24px; width: 500px; max-width: 95%; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); border-top: 4px solid var(--accent-blue);}
+                .profile-modal { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 24px; width: 500px; max-width: 95%; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); border-top: 4px solid var(--accent-blue); box-sizing: border-box;}
                 .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; background: rgba(255,255,255,0.01);}
                 .pm-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 2.5rem; border: 3px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); flex-shrink: 0;}
                 .pm-info { z-index: 1; overflow: hidden; flex: 1;}
@@ -164,18 +170,22 @@ export default class TeamView {
                 .marketplace-panel.open { transform: translateX(0); }
                 .mk-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
                 .mk-filters { padding: 1.5rem 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.05); display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
-                .mk-list { flex: 1; overflow-y: auto; padding: 2rem;}
+                .mk-list { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 15px;}
                 
-                .mk-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid #333; padding: 1.2rem; border-radius: 16px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;}
+                .mk-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid #333; padding: 1.2rem; border-radius: 16px; display: flex; flex-direction: column; transition: 0.2s;}
                 .mk-card:hover { border-color: var(--accent-blue); transform: translateX(-5px);}
-                .mk-card-info { display: flex; flex-direction: column; gap: 6px;}
+                .mk-card.ai-card { border-color: rgba(224, 64, 251, 0.3); }
+                .mk-card.ai-card:hover { border-color: var(--accent-purple); box-shadow: 0 10px 25px rgba(224, 64, 251, 0.15); }
+                
+                .mk-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; width: 100%;}
+                .mk-card-info { display: flex; flex-direction: column; gap: 6px; flex: 1;}
                 .mk-card-name { color: white; font-weight: 900; font-size: 1.1rem; display:flex; align-items:center; gap:10px;}
                 .mk-card-geo { font-size: 0.8rem; color: var(--accent-orange); font-family: var(--font-mono); text-transform: uppercase; font-weight:bold;}
                 .mk-card-skills { font-size: 0.75rem; color: #aaa; display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;}
                 .mk-card-skills span { background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);}
                 
-                .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s;}
-                .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); transform: scale(1.05);}
+                .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 15px;}
+                .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); transform: scale(1.02);}
 
                 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -189,7 +199,6 @@ export default class TeamView {
                     
                     .marketplace-panel { width: 100vw; }
                     .mk-filters { grid-template-columns: 1fr; }
-                    .mk-card { flex-direction: column; align-items: stretch; gap: 15px;}
                     .btn-recruit { width: 100%; padding: 12px;}
                     
                     .btn-primary, .btn-outline { width: 100%; margin-bottom: 10px; padding: 14px;}
@@ -202,11 +211,11 @@ export default class TeamView {
                 <main class="workspace">
                     ${PageHeader.getHtml(headerConfig)}
 
-                    <div id="tab-nodos" class="tab-content ${this.currentTab === 'nodos' ? 'active' : ''}">
+                    <div id="tab-nodos" class="tab-content active">
                         <div class="team-grid" id="usersList"></div>
                     </div>
 
-                    <div id="tab-asignaciones" class="tab-content ${this.currentTab === 'asignaciones' ? 'active' : ''}">
+                    <div id="tab-asignaciones" class="tab-content">
                         <div class="roles-grid" id="rolesList"></div>
                     </div>
                 </main>
@@ -215,7 +224,7 @@ export default class TeamView {
                     <div class="mk-header">
                         <div>
                             <h2 style="margin:0; color:white; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px;">Ecosistema Global</h2>
-                            <p style="margin:5px 0 0 0; color:#888; font-size:0.85rem;">Recluta talento para tu red</p>
+                            <p style="margin:5px 0 0 0; color:#888; font-size:0.85rem;">Recluta talento humano y Agentes IA</p>
                         </div>
                         <button id="btnCloseMarketplace" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
                     </div>
@@ -229,7 +238,7 @@ export default class TeamView {
                             </select>
                         </div>
                         <div class="form-group" style="margin:0;">
-                            <input type="text" id="mkSearchCity" class="form-control" placeholder="Ciudad exacta o parcial...">
+                            <input type="text" id="mkSearchCity" class="form-control" placeholder="Ciudad exacta...">
                         </div>
                         <div class="form-group" style="grid-column: 1 / -1; margin:0;">
                             <input type="text" id="mkSearchSkills" class="form-control" placeholder="Filtrar por Skills (Ej: @anxaneta, creator)">
@@ -238,7 +247,7 @@ export default class TeamView {
                     <div class="mk-list" id="mkList"></div>
                 </aside>
 
-                <div class="profile-modal-overlay" id="addUserModal">
+                <div class="modal-overlay" id="addUserModal">
                     <div class="modal-content">
                         <h2 style="color:white; margin-top:0; margin-bottom:1.5rem; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">➕ Nuevo Nodo Externo</h2>
                         <div style="display:flex; gap:15px; flex-wrap:wrap;">
@@ -320,15 +329,15 @@ export default class TeamView {
                             </div>
                             
                             <div style="background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); border-radius: 16px; padding: 20px; margin-bottom: 1.5rem;">
-                                <div style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: 900; margin-bottom: 12px; letter-spacing:1px;">🧠 Identidad y Localización</div>
+                                <div style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: 900; margin-bottom: 12px; letter-spacing:1px;">🧠 Identidad Fractal</div>
                                 <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.6;" id="pmSemanticProfile"></div>
                             </div>
 
                             <div id="govContainer"></div>
                         </div>
                         <div class="pm-footer">
-                            <button class="btn-outline" id="btnCloseProfileModal" style="border:none; color: #888;">Cerrar Expediente</button>
-                            <div style="font-size: 0.85rem; color: var(--accent-green); font-weight:900; font-family:var(--font-mono);">ID Validado ✓</div>
+                            <button class="btn-outline" id="btnCloseProfileModal" style="border:none; color: #888; padding: 10px;">Cerrar Expediente</button>
+                            <div style="font-size: 0.85rem; color: var(--accent-green); font-weight:900; font-family:var(--font-mono);" id="pmValidationTag">ID Validado ✓</div>
                         </div>
                     </div>
                 </div>
@@ -498,31 +507,47 @@ export default class TeamView {
         });
 
         if (candidates.length === 0) {
-            listContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#666;">No se encontró talento que coincida con estos parámetros.</div>`;
+            listContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#666; font-size:0.9rem;">No se encontró talento que coincida.</div>`;
             return;
         }
 
         candidates.forEach(gu => {
-            const geoText = gu.profile?.country ? `📍 ${gu.profile.city || 'Desconocida'}, ${gu.profile.country}` : '🌍 Remoto Global';
+            const isAi = gu.profile?.isAi || false;
+            const geoText = isAi ? '🌐 AGI Node (Vertex / Local)' : (gu.profile?.country ? `📍 ${gu.profile.city || 'Desconocida'}, ${gu.profile.country}` : '🌍 Remoto Global');
             
             let skillsHtml = '';
             if (gu.profile) {
                 const arr = [...(gu.profile.structural_affinity || []), ...(gu.profile.guardian_authority || [])];
-                skillsHtml = arr.slice(0, 3).map(s => `<span>${s}</span>`).join('');
+                skillsHtml = arr.slice(0, 3).map(s => `<span style="${isAi ? 'border-color:var(--accent-purple); color:var(--accent-purple);' : ''}">${s}</span>`).join('');
+            }
+
+            // Calculadora de Arbitraje IA
+            let economyHtml = '';
+            if (isAi) {
+                const apiCost = gu.profile.apiCostPerHour || 0.15;
+                const fmvAprox = 50; 
+                economyHtml = `<div style="font-size:0.75rem; color:var(--accent-green); margin-top:8px; font-family:var(--font-mono); border:1px dashed var(--accent-green); padding:6px; border-radius:6px; text-align:center; background:rgba(0,230,118,0.05);">API Cost: €${apiCost}/h | Ahorro Est: ~€${(fmvAprox - apiCost).toFixed(2)}/h</div>`;
             }
 
             const card = document.createElement('div');
-            card.className = 'mk-card';
+            card.className = `mk-card ${isAi ? 'ai-card' : ''}`;
+
             card.innerHTML = `
-                <div class="mk-card-info">
-                    <div class="mk-card-name">
-                        <div style="width:28px; height:28px; background:#444; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:0.8rem;">${gu.name.charAt(0).toUpperCase()}</div>
-                        ${gu.name} <span style="font-size:0.75rem; color:#666; font-family:monospace;">${gu.id}</span>
+                <div class="mk-card-top">
+                    <div class="mk-card-info">
+                        <div class="mk-card-name">
+                            <div style="width:32px; height:32px; background:${isAi ? 'var(--accent-purple)' : '#444'}; color:${isAi ? 'black' : 'white'}; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1rem; flex-shrink:0;">
+                                ${isAi ? '🤖' : gu.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${gu.name}</span> 
+                            <span style="font-size:0.75rem; color:${isAi ? 'var(--accent-purple)' : '#666'}; font-family:monospace;">${gu.id}</span>
+                        </div>
+                        <div class="mk-card-geo">${geoText}</div>
+                        ${skillsHtml ? `<div class="mk-card-skills">${skillsHtml}</div>` : ''}
                     </div>
-                    <div class="mk-card-geo">${geoText}</div>
-                    ${skillsHtml ? `<div class="mk-card-skills">${skillsHtml}</div>` : ''}
                 </div>
-                <button class="btn-recruit" data-id="${gu.id}">+ Reclutar</button>
+                ${economyHtml}
+                <button class="btn-recruit" data-id="${gu.id}">+ Reclutar Nodo</button>
             `;
 
             card.querySelector('.btn-recruit').addEventListener('click', async () => {
@@ -531,12 +556,11 @@ export default class TeamView {
                     payload: { projectId: this.activeProjectId, userId: gu.id, id: gu.id, name: gu.name, walletOrSocial: gu.walletOrSocial, globalRole: gu.globalRole }
                 });
                 
-                // Add to project users list directly
                 await store.dispatch({
                     type: 'UPDATE_PROJECT_INFO',
                     payload: {
                         projectId: this.activeProjectId,
-                        updates: { usuarios: [{ id: gu.id, permissions: { canCreateWO: false, canApprove: false } }] }
+                        updates: { usuarios: [{ id: gu.id, permissions: { canCreateWO: isAi, canApprove: false } }] }
                     }
                 });
 
@@ -580,8 +604,10 @@ export default class TeamView {
             const fullUser = globalUsers.find(g => g.id === u.id);
             if (!fullUser) return;
 
-            const initial = fullUser.name.charAt(0).toUpperCase();
-            const color = colors[i % colors.length];
+            const isAi = fullUser.profile?.isAi || false;
+            const initial = isAi ? '🤖' : fullUser.name.charAt(0).toUpperCase();
+            const color = isAi ? 'var(--accent-purple)' : colors[i % colors.length];
+            const isOnline = fullUser.profile?.isOpenToWork || isAi; // IAs always online
 
             const harvest = store.calculateHarvest(this.activeProjectId) || [];
             const userHarvest = harvest.find(h => h.userId === fullUser.id);
@@ -595,9 +621,12 @@ export default class TeamView {
             const crownIcon = isPO ? `<span class="po-badge" style="margin-left: 5px;">👑 Owner</span>` : '';
 
             const card = document.createElement('div');
-            card.className = 'user-card';
+            card.className = `user-card ${isAi ? 'is-ai' : ''}`;
             card.innerHTML = `
-                <div class="avatar" style="border-color: ${color}; color: ${color};">${initial}</div>
+                <div class="avatar" style="border-color: ${color}; color: ${color};">
+                    ${initial}
+                    <div class="avatar-status ${isOnline ? 'status-online' : 'status-offline'}"></div>
+                </div>
                 <div class="user-info">
                     <div class="user-name">${fullUser.name} ${crownIcon}</div>
                     <div class="user-id">${fullUser.id}</div>
@@ -622,20 +651,34 @@ export default class TeamView {
                 document.getElementById('pmHours').innerText = totalHours.toFixed(1) + 'h';
 
                 document.getElementById('pmPoBadge').style.display = pOwnerId === fullUser.id ? 'inline-block' : 'none';
+                document.getElementById('pmValidationTag').innerText = isAi ? "🤖 CORE AGENT ✓" : "ID Validado ✓";
 
                 const promptBox = document.getElementById('pmSemanticProfile');
                 if (fullUser.profile) {
-                    const geo = fullUser.profile.country ? `📍 ${fullUser.profile.city || ''}, ${fullUser.profile.country} ${fullUser.profile.zip || ''}` : '🌍 Ubicación no definida';
+                    const geo = isAi ? '🌐 AGI Node (Cloud)' : (fullUser.profile.country ? `📍 ${fullUser.profile.city || ''}, ${fullUser.profile.country} ${fullUser.profile.zip || ''}` : '🌍 Ubicación no definida');
                     
                     let contactInfo = '';
-                    if (fullUser.wallet) contactInfo += `<br><span style="color:#888;">Wallet:</span> ${fullUser.wallet}`;
+                    if (fullUser.wallet) contactInfo += `<br><span style="color:#888;">Wallet:</span> <span style="font-family:monospace; font-size:0.8rem;">${fullUser.wallet}</span>`;
                     if (fullUser.social) contactInfo += `<br><span style="color:#888;">Social:</span> ${fullUser.social}`;
+
+                    // Mostrar las Skills inferidas (SBTs)
+                    let skillsHtml = '';
+                    if (fullUser.profile.sbt_skills && fullUser.profile.sbt_skills.length > 0) {
+                        skillsHtml = `<div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(224,64,251,0.3);">
+                            <div style="color:var(--accent-purple); font-weight:bold; margin-bottom:10px;">🏅 SKILLS VALIDADOS (SBTs):</div>
+                            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                                ${fullUser.profile.sbt_skills.map(s => `<span style="background:rgba(224,64,251,0.1); border:1px solid rgba(224,64,251,0.3); padding:4px 8px; border-radius:6px; font-size:0.75rem;">${s.name} <b style="color:white;">Lvl.${s.level}</b></span>`).join('')}
+                            </div>
+                        </div>`;
+                    }
 
                     promptBox.innerHTML = `
                         <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:8px;">${geo}</span>
+                        <div style="color: #ccc; margin-bottom:10px; font-style:italic;">"${fullUser.profile.vision || ''}"</div>
                         <span style="color: var(--accent-blue);">Estructura Óptima:</span> [${(fullUser.profile.structural_affinity||[]).join(', ')}]<br>
                         <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${(fullUser.profile.guardian_authority||[]).join(', ')}]
                         ${contactInfo}
+                        ${skillsHtml}
                     `;
                 } else {
                     promptBox.innerHTML = '<span style="color: #888;">// Sin Identidad Fractal ni contacto.</span>';
@@ -662,7 +705,7 @@ export default class TeamView {
                                 </label>
                             </div>
 
-                            <button id="btnPromotePO" class="btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%; margin-top: 15px; font-weight:bold;">
+                            <button id="btnPromotePO" class="btn-outline" style="border-color: var(--accent-red); color: var(--accent-red); width: 100%; margin-top: 15px; font-weight:bold; ${isAi ? 'display:none;' : ''}">
                                 👑 Ceder el Castell (Hacer PO)
                             </button>
                         </div>
@@ -688,7 +731,6 @@ export default class TeamView {
                         if(btnPromo) {
                             btnPromo.addEventListener('click', async () => {
                                 if(confirm(`¿Estás seguro de CEDER EL CONTROL TOTAL de la red a ${fullUser.name}? Dejarás de ser el Project Owner.`)) {
-                                    // V8 Parche: Promover a PO modificando el campo ownerId del proyecto
                                     await store.dispatch({
                                         type: 'UPDATE_PROJECT_INFO',
                                         payload: { projectId: this.activeProjectId, updates: { ownerId: fullUser.id } }
@@ -703,7 +745,7 @@ export default class TeamView {
                     govContainer.innerHTML = `
                         <div style="background: rgba(0,0,0,0.3); border: 1px dashed #333; border-radius: 12px; padding: 15px; text-align:center;">
                             <label style="font-size: 0.75rem; color: #888; text-transform:uppercase; margin-bottom: 5px; display:block;">🛡️ Rol en la Red</label>
-                            <span style="color:white; font-weight:bold; font-family:var(--font-mono);">${fullUser.id === pOwnerId ? '👑 LÍDER DE RED (PO)' : '⚔️ NODO OPERATIVO'}</span>
+                            <span style="color:white; font-weight:bold; font-family:var(--font-mono);">${fullUser.id === pOwnerId ? '👑 LÍDER DE RED (PO)' : (isAi ? '🤖 AGENTE AUTÓNOMO' : '⚔️ NODO OPERATIVO')}</span>
                         </div>
                     `;
                 }
@@ -732,7 +774,7 @@ export default class TeamView {
         let optionsHtml = `<option value="">-- Silla Vacía --</option>`;
         projUsers.forEach(u => {
             const fullUser = globalUsers.find(g => g.id === u.id);
-            if(fullUser) optionsHtml += `<option value="${fullUser.id}">${fullUser.name}</option>`;
+            if(fullUser) optionsHtml += `<option value="${fullUser.id}">${fullUser.profile?.isAi ? '🤖 ' : ''}${fullUser.name}</option>`;
         });
 
         roles.forEach(rol => {
@@ -759,7 +801,7 @@ export default class TeamView {
 
             let suggestionHtml = (!isAssigned && bestUser && bestScore > 0) ? `
                 <div class="ai-match-badge" data-roleid="${rol.id}" data-userid="${bestUser.id}">
-                    ✨ IA Match: <strong>${bestUser.name}</strong> (${bestScore}%)
+                    ✨ IA Match: <strong>${bestUser.profile?.isAi ? '🤖' : ''}${bestUser.name}</strong> (${bestScore}%)
                 </div>` : '';
 
             slot.innerHTML = `
@@ -770,7 +812,7 @@ export default class TeamView {
                     </div>
                 </div>
                 <div style="width: 45%; text-align: right; min-width: 220px;">
-                    <select class="form-control user-select" data-roleid="${rol.id}" style="border-color:${isAssigned ? 'var(--accent-green)' : '#444'}; background:${isAssigned ? 'rgba(0, 230, 118, 0.05)' : 'rgba(0,0,0,0.5)'}; font-weight:bold;">
+                    <select class="form-control user-select" data-roleid="${rol.id}" style="border-color:${isAssigned ? 'var(--accent-green)' : '#444'}; background:${isAssigned ? 'rgba(0, 230, 118, 0.05)' : 'rgba(0,0,0,0.5)'}; font-weight:bold; color:${isAssigned ? 'var(--accent-green)' : 'white'};">
                         ${optionsHtml}
                     </select>
                     ${suggestionHtml}
@@ -782,11 +824,18 @@ export default class TeamView {
 
             selectEl.addEventListener('change', async (e) => {
                 if (e.target.value !== "") {
-                    // Parche V8: Crear la asignación modificando el array asignaciones del proyecto
                     const pInfo = store.getState().projects.find(p => p.id === this.activeProjectId);
                     const newAsignaciones = pInfo.asignaciones.filter(a => a.roleId !== rol.id);
                     newAsignaciones.push({ roleId: rol.id, userId: e.target.value, assignedAt: Date.now() });
                     
+                    await store.dispatch({ 
+                        type: 'UPDATE_PROJECT_INFO', 
+                        payload: { projectId: this.activeProjectId, updates: { asignaciones: newAsignaciones } } 
+                    });
+                } else {
+                    // Desasignar
+                    const pInfo = store.getState().projects.find(p => p.id === this.activeProjectId);
+                    const newAsignaciones = pInfo.asignaciones.filter(a => a.roleId !== rol.id);
                     await store.dispatch({ 
                         type: 'UPDATE_PROJECT_INFO', 
                         payload: { projectId: this.activeProjectId, updates: { asignaciones: newAsignaciones } } 
@@ -817,7 +866,7 @@ export default class TeamView {
     }
 
     getColorForLevel(levelId) {
-        const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
+        const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': 'var(--accent-orange)', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-blue)', '@pinya': 'var(--accent-green)' };
         return colors[levelId] || '#ffffff';
     }
 }
