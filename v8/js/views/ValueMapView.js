@@ -20,6 +20,7 @@ export default class ValueMapView {
         this.isSimulating = false;
         this.isHeatmapActive = false;
         this.currentSimIndex = 0;
+        this.currentSimBadge = null; // Para borrar el badge anterior en simulación
 
         this.zoomVis = 1;
         this.zoomEdit = 1;
@@ -42,10 +43,11 @@ export default class ValueMapView {
                 <div class="app-layout">
                     ${Sidebar.getHtml('/map')}
                     <main class="workspace" style="justify-content:center; align-items:center;">
-                        <div class="glass-panel" style="text-align:center;">
-                             <div style="font-size: 5rem; margin-bottom: 1.5rem;">🕸️</div>
-                             <h2 style="color:white; margin-top:0;">Lienzo Vacío</h2>
-                             <a href="/v8/create" data-link class="btn-primary">➕ Inicializar Red</a>
+                        <div class="glass-panel" style="text-align:center; max-width: 500px; margin: 0 auto;">
+                             <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🕸️</div>
+                             <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Lienzo Vacío</h2>
+                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes un Castell activo para dibujar.</p>
+                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/map')}
@@ -122,7 +124,7 @@ export default class ValueMapView {
                 .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 40px rgba(255, 171, 64, 0.6) !important; z-index: 20;}
 
                 /* BADGES Y TOOLTIPS */
-                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s; color: black;}
+                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: black;}
                 .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
                 .tx-badge.ghost { opacity: 0.3; }
 
@@ -194,6 +196,7 @@ export default class ValueMapView {
                 @keyframes dashAnim { to { stroke-dashoffset: -200; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
+                @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
                 /* MOBILE FIXES */
                 @media (max-width: 768px) {
@@ -219,8 +222,6 @@ export default class ValueMapView {
                 <main class="workspace-map">
                     
                     ${PageHeader.getHtml(headerConfig)}
-
-                    <div id="sickAlert" style="display: none; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 15px; border-radius: 12px; font-size: 0.95rem; font-weight: bold; text-align: center; margin-bottom: 1.5rem;">⚠️ DIAGNÓSTICO: Salto estructural excesivo detectado. Los roles deben pasarse el valor escalonadamente.</div>
 
                     <div id="tab-visual" class="tab-content ${this.currentTab === 'visual' ? 'active' : ''}">
                         <div style="display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--glass-border); width: max-content; margin-bottom: 1rem;">
@@ -332,7 +333,7 @@ export default class ValueMapView {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Catálogo de Entregables (Basado en Rol)</label>
+                            <label>Catálogo de Entregables</label>
                             <select id="selTemplate" class="form-control" style="background: rgba(0, 176, 255, 0.05); border-color: var(--accent-blue); color:var(--accent-blue); font-weight:bold;">
                                 <option value="">Cargando ontología...</option>
                             </select>
@@ -466,7 +467,6 @@ export default class ValueMapView {
             inputMult: document.getElementById('inputMult'),
             addNodeModal: document.getElementById('addNodeModal'),
             
-            sickAlert: document.getElementById('sickAlert'),
             tooltip: document.getElementById('txTooltip'),
             
             aiCopilot: document.getElementById('aiCopilot'),
@@ -603,7 +603,6 @@ export default class ValueMapView {
                     newX = Math.max(5, Math.min(newX, 95));
                     newY = Math.max(5, Math.min(newY, 95));
                     
-                    // Solo actualizamos el DOM temporalmente para fluidez
                     this.draggedElement.style.left = `${newX}%`;
                     this.draggedElement.style.top = `${newY}%`;
                     this.drawEdges(); 
@@ -653,7 +652,6 @@ export default class ValueMapView {
                     if (!this.hasMoved) {
                         this.handleNodeClick(this.draggedElement.dataset.id);
                     } else {
-                        // AL SOLTAR: GUARDAR COORDENADAS X/Y EN EL KERNEL
                         const newX = parseFloat(this.draggedElement.style.left);
                         const newY = parseFloat(this.draggedElement.style.top);
                         
@@ -665,7 +663,6 @@ export default class ValueMapView {
                                 updates: { x: newX, y: newY } 
                             }
                         }).then(() => {
-                            // Actualizar el clon del Canvas Visual también
                             const cloneNode = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${this.draggedElement.dataset.id}"]`);
                             if(cloneNode) {
                                 cloneNode.style.left = `${newX}%`;
@@ -688,7 +685,6 @@ export default class ValueMapView {
                     this.dom.inpDesc.value = '';
                     this.dom.inpDesc.focus();
                 } else if (val !== "") {
-                    // Extraer los datos del string JSON que guardamos en las options
                     try {
                         const template = JSON.parse(val);
                         this.dom.inpDesc.value = template.name;
@@ -908,7 +904,7 @@ export default class ValueMapView {
         };
 
         this.dom.canvasVis.addEventListener('mouseover', showTooltip);
-        this.dom.canvasVis.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
+        this.dom.canvasVis.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         
         if (isPO && this.dom.canvasEdit) {
             this.dom.canvasEdit.addEventListener('mouseover', showTooltip);
@@ -943,7 +939,6 @@ export default class ValueMapView {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         if (!p || !p.roles) return;
 
-        // FIX V8: EVITAR DUPLICACIÓN AL REDIBUJAR
         canvasObj.querySelectorAll('.node-wrapper').forEach(n => n.remove());
 
         let activeRoles = p.roles.filter(r => !r.isArchived);
@@ -951,15 +946,17 @@ export default class ValueMapView {
 
         const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
         
-        // Smart Grid Distribution for Initial Layout (If no X/Y saved)
+        // Smart Grid Distribution for Initial Layout (Spread horizontal to avoid line overlaps)
         const getInitialLayout = (level, totalInLevel, currentCount) => {
             const baseLayout = { '@anxaneta': 15, '@aixecador': 35, '@dosos': 55, '@baixos': 75, '@pinya': 90 };
             let y = baseLayout[level] || 50;
             let x = 50;
             if (totalInLevel > 1) {
-                const spacing = 100 / (totalInLevel + 1);
-                x = spacing * (currentCount + 1);
+                const step = 80 / (totalInLevel - 1);
+                x = 10 + (step * currentCount);
             }
+            // Micro-oscilación vertical para que las tuberías no crucen por en medio de otros nodos
+            y += (currentCount % 2 === 0 ? -3 : 3);
             return { x, y };
         };
 
@@ -977,7 +974,6 @@ export default class ValueMapView {
             if (this.selectedRoleId === r.id) nodeDiv.classList.add('selected');
             nodeDiv.dataset.id = r.id;
 
-            // USAR COORDENADAS GUARDADAS O EL CÁLCULO SMART GRID
             let topPos = r.y !== undefined ? r.y : pos.y;
             let leftPos = r.x !== undefined ? r.x : pos.x;
 
@@ -1021,10 +1017,10 @@ export default class ValueMapView {
         if (flows.length === 0) return alert("Dibuja tuberías de valor para simular el flujo.");
 
         this.isSimulating = true;
-        this.dom.sickAlert.style.display = 'none';
         if(this.currentSimIndex === undefined) this.currentSimIndex = 0;
         
         if(this.currentSimIndex === 0) {
+            if(this.currentSimBadge) { this.currentSimBadge.remove(); this.currentSimBadge = null; }
             this.dom.canvasVis.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
             this.drawEdges(); 
         }
@@ -1035,7 +1031,7 @@ export default class ValueMapView {
             if(!this.isSimulating) return;
             if(this.currentSimIndex >= flows.length) {
                 this.stopSimulation();
-                this.triggerAiInsight("✅ Simulación Completada. La red parece estructuralmente sana y sin ciclos muertos.");
+                this.triggerAiInsight("✅ <b>Simulación Completada.</b> El flujo estructural del valor en el Castell ha sido validado sin ciclos rotos.");
                 return;
             }
 
@@ -1057,14 +1053,12 @@ export default class ValueMapView {
                 const level2 = this.levelHierarchy[r2.levelId];
                 if (Math.abs(level1 - level2) > 1) {
                     isSickFlow = true;
-                    this.dom.sickAlert.style.display = 'block';
                     const dom1 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${r1.id}"]`);
                     const dom2 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${r2.id}"]`);
                     if(dom1) dom1.classList.add('sick-node');
                     if(dom2) dom2.classList.add('sick-node');
-                    this.triggerAiInsight(`⚠️ <b>Cuello de botella detectado.</b> El flujo entre ${r1.levelId} y ${r2.levelId} salta demasiados niveles de riesgo.`);
+                    this.triggerAiInsight(`⚠️ <b>Cuello de Botella Detectado:</b> La tubería de ${r1.levelId} a ${r2.levelId} salta demasiados niveles jerárquicos de riesgo. Considere triangular el flujo.`);
                 } else {
-                    this.dom.sickAlert.style.display = 'none';
                     this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('sick-node'));
                 }
             }
@@ -1083,13 +1077,12 @@ export default class ValueMapView {
         this.isHeatmapActive = false;
         this.currentSimIndex = 0;
         clearTimeout(this.simTimeoutId);
-        
-        this.dom.sickAlert.style.display = 'none';
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
         stepEls.forEach(el => el.classList.remove('simulating'));
 
         this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('sick-node'));
+        if(this.currentSimBadge) { this.currentSimBadge.remove(); this.currentSimBadge = null; }
         this.dom.canvasVis.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
 
         this.drawEdges(); 
@@ -1134,6 +1127,11 @@ export default class ValueMapView {
         if(this.dom.pathsVis) this.dom.pathsVis.appendChild(path);
 
         setTimeout(() => {
+            // FIX: Ocultar el badge anterior si existe
+            if (this.currentSimBadge) {
+                this.currentSimBadge.remove();
+            }
+
             const txX = (x1_center + x2_center) / 2;
             const txY = (y1_center + y2_center) / 2;
 
@@ -1155,6 +1153,8 @@ export default class ValueMapView {
 
             const delivName = tx.template || tx.entregable || 'Flow';
             badge.innerHTML = `<div style="color:${strokeColor}; font-weight:900; font-size:0.75rem; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px;">Flujo ${index + 1}</div><div style="font-size:1rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
+            
+            this.currentSimBadge = badge;
             this.dom.canvasVis.appendChild(badge);
         }, 1000); 
     }
@@ -1177,7 +1177,6 @@ export default class ValueMapView {
 
         let html = `<option value="">-- Elige un Blueprint --</option>`;
         
-        // V8: Usamos el AI Prompt / Template si existe o templates genéricos
         const templates = [
             { name: "Entrega Operativa Estándar", estimatedHours: 4, tipo: "tangible" },
             { name: "Auditoría o Revisión", estimatedHours: 2, tipo: "intangible" },
