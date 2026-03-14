@@ -105,7 +105,7 @@ export const PageHeader = {
                         <a href="/v8/manifesto" class="ph-drop-item" data-link>🏛️ El Manifiesto SOS</a>
                         <a href="/v8/help" class="ph-drop-item" data-link>📖 Centro de Ayuda</a>
                         <a href="/v8/tests" class="ph-drop-item" data-link style="color: var(--accent-green);">🟢 Auditoría Kernel</a>
-                        <button class="ph-drop-item danger" id="phBtnLogout">🚪 Desconectar</button>
+                        <button class="ph-drop-item danger" id="phBtnut">🚪 Desconectar</button>
                     </div>
                 </div>
 
@@ -163,11 +163,11 @@ export const PageHeader = {
             });
         }
 
-        const btnLogout = document.getElementById('phBtnLogout');
-        if (btnLogout) {
-            btnLogout.addEventListener('click', () => {
+        const btnut = document.getElementById('phBtnut');
+        if (btnut) {
+            btnut.addEventListener('click', () => {
                 if(confirm('¿Suspender sesión del Nodo Humano? Los agentes seguirán procesando en Local.')) {
-                    store.dispatch({ type: 'LOGOUT_USER' }).then(() => {
+                    store.dispatch({ type: 'UT_USER' }).then(() => {
                         window.location.href = '/v8/';
                     });
                 }
