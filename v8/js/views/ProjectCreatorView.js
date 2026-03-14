@@ -93,7 +93,7 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.5rem; padding: 5px 10px; transition: transform 0.2s; border-radius: 8px;}
                 .btn-del-role:hover { transform: scale(1.1); background: rgba(255,82,82,0.1); }
 
-                .mini-map-container { width: 100%; height: 350px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: 16px; position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.3);}
+                .mini-map-container { width: 100%; height: 400px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: 16px; position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.3);}
                 .mini-node { position: absolute; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.3rem; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5); cursor: help;}
 
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
@@ -281,6 +281,8 @@ export default class ProjectCreatorView {
             txPreviewList: document.getElementById('txPreviewList')
         };
 
+        Sidebar.initListeners();
+
         this.dom.inpAiProvider.addEventListener('change', (e) => {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
         });
@@ -430,14 +432,14 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
-        // LECTURA DEL CEREBRO SEMÁNTICO (VNA & PANTHEON) PARA INYECTAR CONTEXTO
+        // LECTURA DEL CEREBRO SEMÁNTICO A2A (VNA & PANTHEON)
         await KB.init();
         const globalDocs = await KB.getAllDocuments('global');
         const vnaMeta = globalDocs.find(d => d.id === 'meta_vna_core')?.jsonLd?.text || 'Aplica metodología Value Network Analysis.';
         const pantheonMeta = globalDocs.find(d => d.id === 'meta_pantheon_core')?.jsonLd?.text || 'Aplica los 12 arquetipos Pantheon a cada rol.';
 
         const systemPrompt = `
-            Actúa como Master Ecosystem Architect.
+            Actúa como Master Ecosystem Architect (Agent-to-Agent Prompt Compiler).
             Misión: Instanciar una DAO para "${name}" (Arquetipo: "${archetypeText}").
 
             BASE TEÓRICA CRÍTICA (Value Network Analysis):
@@ -446,15 +448,18 @@ export default class ProjectCreatorView {
             MODELO PANTHEON (12 Guardianes):
             ${pantheonMeta}
 
-            INSTRUCCIONES DE DENSIDAD: Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). Genera unas 8-10 transacciones que conecten la red (mezcla tangibles e intangibles). 
-            CRUCIAL: Asigna el ID del guardián del Pantheon adecuado a cada rol en base a su función real. NO asignes "magician" a todos.
+            INSTRUCCIONES DE DENSIDAD Y A2A: 
+            Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). 
+            Genera 6-8 transacciones base. 
+            CRUCIAL: Asigna el ID del guardián adecuado a cada rol en base a su función. NO asignes "magician" a todos.
+            AGENT-TO-AGENT: En la propiedad "ai_prompt", debes escribir INSTRUCCIONES ESPECÍFICAS PARA ESE ROL. Ese campo será leído por la IA que ejecute las Work Orders. El prompt debe ser denso y contextual al proyecto y sus entregables.
             
-            ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido):
+            ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido sin marcadores markdown):
             {
                 "presentacion": "Pitch institucional atractivo...",
                 "tags": ["Sector", "ModeloNegocio"],
                 "roles": [
-                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción base" }
+                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción de calibración para el agente (A2A)..." }
                 ],
                 "transactions": [
                     { "fromLevel": "@origen", "toLevel": "@destino", "tipo": "tangible|intangible", "template": "Sustantivo (Ej: Informe de métricas)", "horas": 4 }
@@ -467,7 +472,7 @@ export default class ProjectCreatorView {
 
             if (provider === 'gemini') {
                 const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Diseñando topología VNA con ${targetModel}...`;
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Compilando red semántica con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -488,7 +493,7 @@ export default class ProjectCreatorView {
                 textResponse = data.choices[0].message.content;
             
             } else if (provider === 'deepseek') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Tejiendo transacciones con DeepSeek...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Tejiendo transacciones A2A con DeepSeek...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
@@ -605,19 +610,36 @@ export default class ProjectCreatorView {
         
         container.style.display = 'block';
 
-        const layout = { '@anxaneta': {x: 50, y: 20}, '@aixecador': {x: 50, y: 40}, '@dosos': {x: 35, y: 60}, '@baixos': {x: 65, y: 60}, '@pinya': {x: 50, y: 80} };
+        // LÓGICA DE DISTRIBUCIÓN AUTOMÁTICA EN MINIMAPA
+        const levelY = { '@anxaneta': 20, '@aixecador': 40, '@dosos': 60, '@baixos': 80, '@pinya': 90 };
         const levelCounts = {};
 
         this.draftRoles.forEach((rol, i) => {
             const level = rol.levelId || '@baixos';
-            levelCounts[level] = (levelCounts[level] || 0) + 1;
-            const pos = { ...(layout[level] || {x:50, y:50}) };
-            if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
+            if (!levelCounts[level]) levelCounts[level] = 0;
+            
+            const totalInLvl = this.draftRoles.filter(r => r.levelId === level).length;
+            
+            // Repartir en X
+            let x = 50;
+            if (totalInLvl > 1) {
+                x = 20 + (60 / (totalInLvl - 1)) * levelCounts[level];
+            }
+            
+            let y = levelY[level] || 50;
+            // Vibración en Y para evitar rectas perfectas tapadas
+            y += (levelCounts[level] % 2 === 0 ? -3 : 3);
+
+            // Guardamos las coordenadas generadas para pasarlas al Kernel al instanciar
+            rol.x = x;
+            rol.y = y;
+
+            levelCounts[level]++;
 
             const el = document.createElement('div');
             el.className = 'mini-node';
             el.dataset.idx = i;
-            el.style.left = `${pos.x}%`; el.style.top = `${pos.y}%`;
+            el.style.left = `${x}%`; el.style.top = `${y}%`;
             el.style.borderColor = this.getColor(level);
             el.innerHTML = this.getIcon(level);
             el.title = rol.name;
@@ -659,7 +681,7 @@ export default class ProjectCreatorView {
                     const nx = -dy / dist, ny = dx / dist;
 
                     let offset = 0;
-                    if (edges.length > 1) offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * 20;
+                    if (edges.length > 1) offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * 15;
 
                     const cx = (x1 + x2) / 2 + nx * offset; const cy = (y1 + y2) / 2 + ny * offset;
 
@@ -697,6 +719,23 @@ export default class ProjectCreatorView {
             type: 'UPDATE_PROJECT_INFO',
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
+
+        // 3. LMS HOOK A2A: Guardar los Prompts específicos de los roles en la Base de Conocimiento local
+        if (this.draftRoles.length > 0) {
+            for (const rol of this.draftRoles) {
+                if (rol.ai_prompt && rol.ai_prompt.length > 10) {
+                    await KB.saveDocument({
+                        id: `onto_${projectId}_${rol.id}`,
+                        type: 'ontology',
+                        projectId: projectId,
+                        sector: this.dom.inpSector.value,
+                        roleTarget: rol.id,
+                        title: `Prompt A2A: ${rol.name} (${projectId})`,
+                        content: rol.ai_prompt
+                    });
+                }
+            }
+        }
 
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
