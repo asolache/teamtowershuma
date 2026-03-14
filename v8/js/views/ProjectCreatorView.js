@@ -1,6 +1,6 @@
 // v8/js/views/ProjectCreatorView.js
 import { store } from '../core/store.js';
-import { KB } from '../core/kb.js'; // Conexión con IndexedDB
+import { KB } from '../core/kb.js'; 
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { BottomNav } from '../components/BottomNav.js';
@@ -13,7 +13,7 @@ export default class ProjectCreatorView {
         this.draftTxs = [];
         this.draftPresentation = ""; 
         this.draftTags = []; 
-        this.sectorsFromKB = {}; // Aquí guardaremos la memoria leída
+        this.sectorsFromKB = {}; 
         
         this.guardians = [
             { id: 'creator', label: '🎨 Creador' }, { id: 'caregiver', label: '❤️ Cuidador' },
@@ -26,7 +26,6 @@ export default class ProjectCreatorView {
     }
 
     async getHtml() {
-        // Inicializamos la KB y pedimos los sectores VIVOS
         await KB.init();
         this.sectorsFromKB = await KB.getAvailableSectors();
 
@@ -40,7 +39,6 @@ export default class ProjectCreatorView {
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
-        // Construir el selector de sectores leyendo desde IndexedDB
         let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V8)">`;
         Object.keys(this.sectorsFromKB).forEach(k => {
             const sectorLabel = this.sectorsFromKB[k].label;
@@ -304,7 +302,6 @@ export default class ProjectCreatorView {
             this.goToStep2();
         });
 
-        // NUEVA LÓGICA DE INYECCIÓN DE KB (LMS)
         this.dom.btnLoadTemplate.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
             
@@ -324,7 +321,6 @@ export default class ProjectCreatorView {
                     const data = sectorData.roles[levelKey];
                     const level = levelKey; 
                     
-                    // Extraemos multiplicadores inferidos (El LMS guardó todo en texto, así que usamos valores base V8 por seguridad)
                     const m = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
                     
                     this.draftRoles.push({
@@ -340,13 +336,8 @@ export default class ProjectCreatorView {
                     if (data.deliverables) {
                         data.deliverables.forEach(deliv => {
                             let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos'));
-                            
                             this.draftTxs.push({
-                                fromLevel: level,
-                                toLevel: toLevel,
-                                tipo: deliv.tipo || 'tangible',
-                                template: deliv.name,
-                                horas: deliv.estimatedHours || 4
+                                fromLevel: level, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4
                             });
                         });
                     }
@@ -371,12 +362,7 @@ export default class ProjectCreatorView {
         this.dom.btnAddCustom.addEventListener('click', () => {
             this.draftRoles.push({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                levelId: '@baixos',
-                name: 'Nueva Actividad',
-                fmv: 40,
-                multiplier: 1.2,
-                guardian: 'everyman',
-                ai_prompt: ''
+                levelId: '@baixos', name: 'Nueva Actividad', fmv: 40, multiplier: 1.2, guardian: 'everyman', ai_prompt: ''
             });
             this.renderDraftRoles();
         });
@@ -433,7 +419,7 @@ export default class ProjectCreatorView {
 
         if (!name) return alert("Debes darle un nombre a la red.");
         if (!vision) return alert("Escribe tu visión en bruto para que el Agente la procese.");
-        if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor. Guárdala en Configuración o ponla aquí.");
+        if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor.");
 
         if (provider === 'deepseek') localStorage.setItem('tt_key_deepseek', apiKey);
         if (provider === 'openai') localStorage.setItem('tt_key_openai', apiKey);
@@ -444,23 +430,31 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
+        // LECTURA DEL CEREBRO SEMÁNTICO (VNA & PANTHEON) PARA INYECTAR CONTEXTO
+        await KB.init();
+        const globalDocs = await KB.getAllDocuments('global');
+        const vnaMeta = globalDocs.find(d => d.id === 'meta_vna_core')?.jsonLd?.text || 'Aplica metodología Value Network Analysis.';
+        const pantheonMeta = globalDocs.find(d => d.id === 'meta_pantheon_core')?.jsonLd?.text || 'Aplica los 12 arquetipos Pantheon a cada rol.';
+
         const systemPrompt = `
-            Actúa como Master Ecosystem Architect, experto en Value Network Analysis (Verna Allee).
+            Actúa como Master Ecosystem Architect.
             Misión: Instanciar una DAO para "${name}" (Arquetipo: "${archetypeText}").
 
-            BASE TEÓRICA CRÍTICA:
-            1. ROLES = ACTIVIDADES: No son Job Titles, son nodos que generan entregables.
-            2. TRANSACCIONES: El valor fluye a través de entregables (SUSTANTIVOS). 
-               - TANGIBLES: Contractuales, productos, código.
-               - INTANGIBLES: Conocimiento, mentoría, favores.
-            3. DENSIDAD: Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). Genera unas 8-10 transacciones que conecten la red.
+            BASE TEÓRICA CRÍTICA (Value Network Analysis):
+            ${vnaMeta}
+
+            MODELO PANTHEON (12 Guardianes):
+            ${pantheonMeta}
+
+            INSTRUCCIONES DE DENSIDAD: Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). Genera unas 8-10 transacciones que conecten la red (mezcla tangibles e intangibles). 
+            CRUCIAL: Asigna el ID del guardián del Pantheon adecuado a cada rol en base a su función real. NO asignes "magician" a todos.
             
             ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido):
             {
                 "presentacion": "Pitch institucional atractivo...",
                 "tags": ["Sector", "ModeloNegocio"],
                 "roles": [
-                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "magician", "ai_prompt": "Instrucción base" }
+                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción base" }
                 ],
                 "transactions": [
                     { "fromLevel": "@origen", "toLevel": "@destino", "tipo": "tangible|intangible", "template": "Sustantivo (Ej: Informe de métricas)", "horas": 4 }
@@ -476,27 +470,18 @@ export default class ProjectCreatorView {
                 if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Diseñando topología VNA con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\nVISIÓN EN BRUTO: ${vision}` }] }]
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nVISIÓN EN BRUTO: ${vision}` }] }] })
                 });
-
                 if (!response.ok) throw new Error("Google Gemini Error");
                 const data = await response.json();
                 textResponse = data.candidates[0].content.parts[0].text;
             
             } else if (provider === 'openai') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Mapeando ecosistema VNA con GPT-4o-mini...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Mapeando ecosistema VNA con GPT-4o...";
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model: "gpt-4o-mini",
-                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }],
-                        response_format: { type: "json_object" }
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
                 });
                 if (!response.ok) throw new Error("OpenAI Error");
                 const data = await response.json();
@@ -505,13 +490,8 @@ export default class ProjectCreatorView {
             } else if (provider === 'deepseek') {
                 if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Tejiendo transacciones con DeepSeek...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model: "deepseek-chat",
-                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }],
-                        response_format: { type: "json_object" }
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
                 });
                 if (!response.ok) throw new Error("DeepSeek Error");
                 const data = await response.json();
@@ -525,27 +505,14 @@ export default class ProjectCreatorView {
 
             const parsedData = JSON.parse(textResponse);
 
-            if (!parsedData.roles) throw new Error("La IA no devolvió roles funcionales.");
-
             this.draftPresentation = parsedData.presentacion || vision;
             this.draftTags = parsedData.tags || [];
-
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                levelId: r.levelId,
-                name: r.name,
-                fmv: r.fmv || 50,
-                multiplier: r.multiplier || 1.0,
-                guardian: r.guardian || 'everyman',
-                ai_prompt: r.ai_prompt || ''
+                levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || ''
             }));
-
             this.draftTxs = (parsedData.transactions || []).map(tx => ({
-                fromLevel: tx.fromLevel,
-                toLevel: tx.toLevel,
-                tipo: tx.tipo,
-                template: tx.template || tx.entregable,
-                horas: tx.horas
+                fromLevel: tx.fromLevel, toLevel: tx.toLevel, tipo: tx.tipo, template: tx.template || tx.entregable, horas: tx.horas
             }));
             
             this.goToStep2();
@@ -563,11 +530,7 @@ export default class ProjectCreatorView {
         const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-indigo)', '@pinya': 'var(--accent-blue)' };
         
         const levels = [
-            { id: '@anxaneta', label: '@anxaneta (Dirección)' },
-            { id: '@aixecador', label: '@aixecador (Táctica)' },
-            { id: '@dosos', label: '@dosos (Auditoría)' },
-            { id: '@baixos', label: '@baixos (Operativa)' },
-            { id: '@pinya', label: '@pinya (Soporte)' }
+            { id: '@anxaneta', label: '@anxaneta (Dirección)' }, { id: '@aixecador', label: '@aixecador (Táctica)' }, { id: '@dosos', label: '@dosos (Auditoría)' }, { id: '@baixos', label: '@baixos (Operativa)' }, { id: '@pinya', label: '@pinya (Soporte)' }
         ];
 
         this.draftRoles.forEach((role, index) => {
@@ -648,7 +611,6 @@ export default class ProjectCreatorView {
         this.draftRoles.forEach((rol, i) => {
             const level = rol.levelId || '@baixos';
             levelCounts[level] = (levelCounts[level] || 0) + 1;
-            
             const pos = { ...(layout[level] || {x:50, y:50}) };
             if (levelCounts[level] > 1) pos.x += (levelCounts[level] - 1) * 20 - 10;
 
@@ -674,7 +636,6 @@ export default class ProjectCreatorView {
             this.draftTxs.forEach((tx, i) => {
                 const fromIdx = this.draftRoles.findIndex(r => r.levelId === tx.fromLevel);
                 const toIdx = this.draftRoles.findIndex(r => r.levelId === tx.toLevel);
-                
                 if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
                     const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
                     if (!pairCounts[key]) pairCounts[key] = [];
@@ -683,7 +644,6 @@ export default class ProjectCreatorView {
             });
 
             const canvRect = container.getBoundingClientRect();
-
             Object.keys(pairCounts).forEach(key => {
                 const edges = pairCounts[key];
                 edges.forEach((edge, multiIdx) => {
@@ -691,36 +651,23 @@ export default class ProjectCreatorView {
                     const dom2 = container.querySelector(`.mini-node[data-idx="${edge.toIdx}"]`);
                     if (!dom1 || !dom2) return;
 
-                    const r1 = dom1.getBoundingClientRect();
-                    const r2 = dom2.getBoundingClientRect();
-
-                    const x1 = r1.left + r1.width/2 - canvRect.left;
-                    const y1 = r1.top + r1.height/2 - canvRect.top;
-                    const x2 = r2.left + r2.width/2 - canvRect.left;
-                    const y2 = r2.top + r2.height/2 - canvRect.top;
-
+                    const r1 = dom1.getBoundingClientRect(); const r2 = dom2.getBoundingClientRect();
+                    const x1 = r1.left + r1.width/2 - canvRect.left; const y1 = r1.top + r1.height/2 - canvRect.top;
+                    const x2 = r2.left + r2.width/2 - canvRect.left; const y2 = r2.top + r2.height/2 - canvRect.top;
                     const dx = x2 - x1, dy = y2 - y1;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     const nx = -dy / dist, ny = dx / dist;
 
                     let offset = 0;
-                    if (edges.length > 1) {
-                        const step = 20; 
-                        offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
-                    }
+                    if (edges.length > 1) offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * 20;
 
-                    const cx = (x1 + x2) / 2 + nx * offset;
-                    const cy = (y1 + y2) / 2 + ny * offset;
+                    const cx = (x1 + x2) / 2 + nx * offset; const cy = (y1 + y2) / 2 + ny * offset;
 
                     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
                     path.setAttribute('marker-end', edge.tx.tipo === 'tangible' ? 'url(#mini-arrow-tangible)' : 'url(#mini-arrow-intangible)');
-                    
-                    path.style.fill = 'none';
-                    path.style.stroke = edge.tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-                    path.style.strokeWidth = '2';
+                    path.style.fill = 'none'; path.style.stroke = edge.tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)'; path.style.strokeWidth = '2';
                     if(edge.tx.tipo === 'intangible') path.style.strokeDasharray = '4,4';
-                    
                     svg.appendChild(path);
                 });
             });
@@ -738,58 +685,35 @@ export default class ProjectCreatorView {
         this.dom.btnLaunch.disabled = true;
         this.dom.btnLaunch.innerText = 'Instanciando Matriz V8...';
 
-        const state = store.getState();
-
         await store.dispatch({ 
             type: 'CREATE_PROJECT', 
             payload: {
-                id: projectId,
-                nombre: this.dom.inpName.value.trim() || 'Nueva Red',
-                sector: this.dom.inpSector.value,
-                prompt: visionText, 
-                archetype: arch, 
-                roles: this.draftRoles,
-                vna_flows: [],
-                work_orders: []
+                id: projectId, nombre: this.dom.inpName.value.trim() || 'Nueva Red', sector: this.dom.inpSector.value,
+                prompt: visionText, archetype: arch, roles: this.draftRoles, vna_flows: [], work_orders: []
             } 
         });
 
         await store.dispatch({
             type: 'UPDATE_PROJECT_INFO',
-            payload: { 
-                projectId: projectId, 
-                updates: { 
-                    presentation: this.draftPresentation,
-                    tags: this.draftTags
-                } 
-            }
+            payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
         const p = store.getState().projects.find(x => x.id === projectId);
-        
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
                 const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
                 const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
-                
                 if (roleFrom && roleTo) {
                     await store.dispatch({
                         type: 'ADD_FLOW',
                         payload: {
                             projectId: projectId,
-                            flow: {
-                                from: roleFrom.id, 
-                                to: roleTo.id,     
-                                estimatedHours: aiTx.horas || 2,
-                                template: aiTx.template || aiTx.entregable || 'Flow',
-                                tipo: aiTx.tipo || 'tangible'
-                            }
+                            flow: { from: roleFrom.id, to: roleTo.id, estimatedHours: aiTx.horas || 2, template: aiTx.template || aiTx.entregable || 'Flow', tipo: aiTx.tipo || 'tangible' }
                         }
                     });
                 }
             }
         }
-
         localStorage.setItem('tt_active_project', projectId);
         window.location.href = '/v8/project';
     }
