@@ -10,6 +10,7 @@ export default class ProjectView {
         this.activeProjectId = null;
         this.currentFilter = 'all'; 
         this.currentTab = 'oportunidades'; 
+        this.isProcessingAi = false; // Bloqueo anti-spam
     }
 
     async getHtml() {
@@ -108,6 +109,7 @@ export default class ProjectView {
                     backdrop-filter: blur(15px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);
                 }
                 .task-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 15px 40px rgba(0,0,0,0.8);}
+                .task-card.ai-processing { border-color: var(--accent-purple); box-shadow: 0 0 30px rgba(224,64,251,0.3); animation: aiPulse 2s infinite; }
                 
                 .task-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
                 .task-route { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;}
@@ -115,7 +117,8 @@ export default class ProjectView {
                 
                 .task-title { color: white; font-size: 1.25rem; margin: 5px 0 0 0; line-height: 1.3; font-weight: 900; letter-spacing: -0.5px; word-break: break-word;}
                 .task-desc-bubble { font-size: 0.85rem; color: #aaa; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent-blue); margin-bottom: 5px; font-style: italic; line-height: 1.5; word-break: break-word;}
-                
+                .task-ai-output { font-size: 0.85rem; color: #ddd; background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 5px; line-height: 1.5; max-height: 150px; overflow-y: auto;}
+
                 .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
                 
                 .task-actions { margin-top: auto; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 10px;}
@@ -129,10 +132,15 @@ export default class ProjectView {
                 .btn-focus { flex: 1; background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); text-align: center; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 900; transition: 0.3s; font-size: 0.9rem;}
                 .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 20px rgba(0,176,255,0.4);}
                 
+                .btn-ai-exec { flex: 1; background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(224, 64, 251, 0.2)); border: 1px solid var(--accent-purple); color: var(--accent-purple); text-align: center; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 900; transition: 0.3s; font-size: 0.9rem; cursor:pointer;}
+                .btn-ai-exec:hover { background: var(--accent-purple); color: white; box-shadow: 0 0 25px rgba(224, 64, 251, 0.5);}
+
                 .btn-approve { flex: 1; background: var(--accent-green); color: black; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.9rem;}
                 .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
 
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 5rem 2rem; color: var(--text-muted); font-size: 1.2rem; border: 1px dashed var(--glass-border); border-radius: 20px; background: rgba(0,0,0,0.3);}
+
+                @keyframes aiPulse { 0% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } 50% { box-shadow: 0 0 40px rgba(224,64,251,0.6); } 100% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } }
 
                 /* MODAL OVERLAY */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
@@ -154,7 +162,7 @@ export default class ProjectView {
                     .task-grid { grid-template-columns: 1fr; gap: 1.2rem; padding-bottom: 2rem; }
                     .task-card { padding: 1.5rem; border-radius: 16px; }
                     .task-actions { flex-direction: column; gap: 10px; }
-                    .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; padding: 14px;}
+                    .btn-pull, .btn-push, .btn-focus, .btn-ai-exec, .btn-approve { width: 100%; padding: 14px;}
                 }
             </style>
 
@@ -236,6 +244,12 @@ export default class ProjectView {
         if (!project) return;
         this.activeProjectId = project.id;
 
+        // -- P2P SWARM SYNC --
+        window.addEventListener('swarm_update', () => {
+            console.log("🔄 Repintando Kanban por actualización del Enjambre P2P.");
+            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+        });
+
         // -- TABS LOGIC V8 GLOBAL EVENT --
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
@@ -266,7 +280,7 @@ export default class ProjectView {
                 const spName = prompt("Nombre del nuevo ciclo de trabajo:", `Sprint ${nextNum}`);
                 if (spName) {
                     await store.dispatch({ type: 'CREATE_SPRINT', payload: { projectId: this.activeProjectId, name: spName } });
-                    window.location.reload(); // Recarga para reconstruir el selector <select>
+                    window.location.reload(); 
                 }
             });
         }
@@ -335,7 +349,7 @@ export default class ProjectView {
                 let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
                 (activeProject.usuarios || []).forEach(u => {
                     const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
-                    userOpts += `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
+                    userOpts += `<option value="${u.id}">${gUser?.profile?.isAi ? '🤖 ' : ''}${gUser ? gUser.name : u.id}</option>`;
                 });
                 document.getElementById('newTaskAssignee').innerHTML = userOpts;
 
@@ -353,8 +367,6 @@ export default class ProjectView {
             if(!flowId) return alert("Selecciona un Flujo base.");
 
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
-            
-            // Coge el sprint activo actual para inyectar la tarea ahí
             const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
 
             await store.dispatch({
@@ -364,7 +376,7 @@ export default class ProjectView {
                     workOrder: {
                         hash: newHash, flowId: flowId, comentario: desc,
                         status: 'theoretical', realHours: 0,
-                        sprintId: currProj.activeSprintId // <--- Enlace crucial
+                        sprintId: currProj.activeSprintId 
                     }
                 }
             });
@@ -385,7 +397,7 @@ export default class ProjectView {
         taskGrid.addEventListener('click', async (e) => {
             const target = e.target.closest('button') || e.target.closest('a'); 
             if (!target || !target.dataset.hash) return;
-            if (target.tagName === 'A') return;
+            if (target.tagName === 'A') return; // Enlaces al Focus Mode Vanilla
 
             const currentState = store.getState();
             const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
@@ -394,6 +406,88 @@ export default class ProjectView {
             const isLegacyTx = target.dataset.legacy === "true";
             const txHash = target.dataset.hash;
             const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
+
+            // --- LÓGICA DE AUTO-EJECUCIÓN DE IA ---
+            if (target.classList.contains('btn-ai-exec')) {
+                if (this.isProcessingAi) return alert("Un Agente ya está trabajando en otra Work Order. Espera.");
+                
+                this.isProcessingAi = true;
+                const card = target.closest('.task-card');
+                card.classList.add('ai-processing');
+                target.innerText = "⏳ Invocando LLM...";
+                
+                const taskRef = (currProject.work_orders || []).find(w => w.hash === txHash);
+                const flowRef = (currProject.vna_flows || []).find(f => f.id === taskRef?.flowId);
+                const estHours = flowRef ? (flowRef.estimatedHours || 2) : 2;
+
+                // Extraemos API Key
+                const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+                let apiKey = '';
+                if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
+                if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
+                if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
+
+                let aiResponseText = "";
+
+                if (!apiKey || apiKey.length < 5) {
+                    // Fallback Dummy si el usuario no ha puesto claves (para que la app no colapse en demo)
+                    await new Promise(r => setTimeout(r, 2000));
+                    aiResponseText = `[Simulación Modo Offline]\nEl Agente IA ha procesado la Work Order basándose en el marco del proyecto. Documento estructurado entregado.`;
+                } else {
+                    // LLAMADA REAL A LA API
+                    const prompt = `
+                        Eres un Agente del ecosistema TeamTowers.
+                        Rol Asignado: ${taskRef?.assigneeId || 'IA Node'}
+                        Tarea: ${flowRef?.template || 'Generar Entregable'}
+                        Contexto del usuario: ${taskRef?.comentario || 'N/A'}
+                        
+                        Por favor, redacta el contenido de este entregable. Sé directo, profesional y claro.
+                    `;
+
+                    try {
+                        if (provider === 'openai') {
+                            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: "Actúas como un trabajador digital eficiente." }, { role: "user", content: prompt }] })
+                            });
+                            const data = await res.json();
+                            aiResponseText = data.choices[0].message.content;
+                        } else if (provider === 'deepseek') {
+                            const res = await fetch('https://api.deepseek.com/chat/completions', {
+                                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: "Trabajador digital experto." }, { role: "user", content: prompt }] })
+                            });
+                            const data = await res.json();
+                            aiResponseText = data.choices[0].message.content;
+                        } else if (provider === 'gemini') {
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                            });
+                            const data = await res.json();
+                            aiResponseText = data.candidates[0].content.parts[0].text;
+                        }
+                    } catch(e) {
+                        aiResponseText = `Error de API: ${e.message}. (Simulando entrega de emergencia)`;
+                    }
+                }
+
+                // Auto-Reporte (La IA entrega el trabajo terminado)
+                await store.dispatch({ 
+                    type: 'REPORT_WORK_ORDER', 
+                    payload: { 
+                        projectId: currProject.id, 
+                        woHash: txHash, 
+                        realHours: estHours, // La IA asume las horas estimadas para cobrar su equity
+                        comentario: aiResponseText, // El output se guarda como comentario/entregable
+                        proofLink: 'Agent_Auto_Report' 
+                    } 
+                });
+
+                this.isProcessingAi = false;
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                return;
+            }
 
             if (target.classList.contains('btn-approve')) {
                 if (!isPO) return alert("Solo el dueño del ecosistema puede aprobar tareas."); 
@@ -460,16 +554,13 @@ export default class ProjectView {
         
         let activeCardsHtml = [];
 
-        // 1. Unificar tareas (Nuevas Work Orders y Legacy Txs)
         let allTasks = [
             ...(project.work_orders || []).map(wo => ({ ...wo, isWorkOrder: true })),
             ...(project.transactions || []).map(tx => ({ ...tx, isWorkOrder: false }))
         ];
 
-        // 2. FILTRAR POR SPRINT ACTIVO
         const activeSprintId = project.activeSprintId;
         allTasks = allTasks.filter(tx => {
-            // Tareas Legacy (sin sprintId) o tareas del sprint activo se muestran
             if (!tx.isWorkOrder) return true; 
             return tx.sprintId === activeSprintId;
         });
@@ -490,7 +581,7 @@ export default class ProjectView {
             if (this.currentFilter === 'mine' && tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
             if (!isPO && this.currentFilter === 'all' && tabCategory !== 'oportunidades' && tx.assigneeId !== activeUser) return;
 
-            activeCardsHtml.push(this.createTaskCardHTML(tx, flowData, project, state.session, isPO));
+            activeCardsHtml.push(this.createTaskCardHTML(tx, flowData, project, state, isPO));
         });
 
         if (activeCardsHtml.length > 0) {
@@ -505,7 +596,7 @@ export default class ProjectView {
         }
     }
 
-    createTaskCardHTML(tx, flowData, project, session, isPO) {
+    createTaskCardHTML(tx, flowData, project, state, isPO) {
         const role = project.roles.find(r => r.id === flowData.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
         const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?' };
         
@@ -518,6 +609,7 @@ export default class ProjectView {
 
         let actionHtml = '';
         let statusTag = '';
+        let aiOutputHtml = '';
 
         if (tx.status === 'theoretical') {
             statusTag = `<span style="color:#aaa; font-size:0.7rem; border:1px solid #444; padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px;">LIBRE</span>`;
@@ -532,7 +624,7 @@ export default class ProjectView {
         } 
         else if (tx.status === 'requested') {
             statusTag = `<span style="color:var(--accent-red); font-size:0.7rem; border:1px solid var(--accent-red); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,82,82,0.1);">SOLICITADO</span>`;
-            const requester = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
+            const requester = state.globalUsers.find(u => u.id === tx.assigneeId);
             const reqName = requester ? requester.name : tx.assigneeId;
             
             if (isPO) {
@@ -548,26 +640,43 @@ export default class ProjectView {
         }
         else if (tx.status === 'pinged') {
             statusTag = `<span style="color:var(--accent-orange); font-size:0.7rem; border:1px solid var(--accent-orange); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,171,64,0.1);">EN CURSO</span>`;
-            const isMine = tx.assigneeId === session.activeUserId;
+            
+            const worker = state.globalUsers.find(u => u.id === tx.assigneeId);
+            const isMine = tx.assigneeId === state.session.activeUserId;
+            const isAssignedToAi = worker?.profile?.isAi || false;
+
             if (isMine) {
                 actionHtml = `<a href="/v8/focus?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link data-hash="${tx.hash}">▶ MODO FOCUS / REPORTAR</a>`;
+            } else if (isAssignedToAi && isPO) {
+                // EL BOTÓN MÁGICO DE AUTO-EJECUCIÓN
+                actionHtml = `<button class="btn-ai-exec" ${hashAttr}>⚡ EJECUTAR IA (${worker.name})</button>`;
             } else {
-                const worker = store.getState().globalUsers.find(u => u.id === tx.assigneeId);
                 actionHtml = `<div style="color: #888; font-size: 0.85rem; text-align: center; padding: 12px; background:rgba(0,0,0,0.4); border-radius: 10px; border:1px solid #333;">Ejecutando: <span style="color:white; font-weight:bold;">${worker ? worker.name : tx.assigneeId}</span></div>`;
             }
         } 
         else if (tx.status === 'reported') {
             statusTag = `<span style="color:var(--accent-blue); font-size:0.7rem; border:1px solid var(--accent-blue); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,176,255,0.1);">AUDITORÍA</span>`;
+            
+            // Si el PoW link es "Agent_Auto_Report", el comentario es el Output de la IA
+            if (tx.proofLink === 'Agent_Auto_Report') {
+                aiOutputHtml = `<div class="task-ai-output"><b>🤖 Output Generado:</b><br>${tx.comentario.replace(/\n/g, '<br>')}</div>`;
+            }
+
             actionHtml = `
                 <div style="font-size: 0.85rem; color: #ccc; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 10px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent-blue);">
-                    <span>Horas Reales: <strong style="color: white; font-family:var(--font-mono); font-size:1rem;">${tx.realHours}h</strong></span>
-                    <a href="${tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink ? '🔗 Ver Proof' : 'No Link'}</a>
+                    <span>Horas Est: <strong style="color: white; font-family:var(--font-mono); font-size:1rem;">${tx.realHours}h</strong></span>
+                    <a href="${tx.proofLink === 'Agent_Auto_Report' ? '#' : tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink === 'Agent_Auto_Report' ? 'Ver Arriba' : '🔗 Ver Proof'}</a>
                 </div>
                 ${isPO ? `<button class="btn-approve" data-action="consolidate" ${hashAttr}>✅ Sellar en Ledger</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px;">Pendiente de firma del PO.</div>`}
             `;
         }
         else if (tx.status === 'consolidated') {
             statusTag = `<span style="color:var(--accent-green); font-size:0.7rem; border:1px solid var(--accent-green); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,230,118,0.1);">SELLADO</span>`;
+            
+            if (tx.proofLink === 'Agent_Auto_Report') {
+                aiOutputHtml = `<div class="task-ai-output" style="max-height:80px; opacity:0.8;"><b>🤖 Output:</b><br>${tx.comentario.replace(/\n/g, '<br>')}</div>`;
+            }
+
             actionHtml = `
                 <div style="color: var(--accent-green); font-size: 1.2rem; font-weight: 900; font-family: var(--font-mono); text-align: center; padding: 15px; background: rgba(0, 230, 118, 0.05); border-radius: 12px; border: 1px dashed var(--accent-green);">
                     +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices
@@ -578,7 +687,10 @@ export default class ProjectView {
         const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 20px rgba(255,82,82,0.15);' : '';
         const titleText = flowData.template || flowData.entregable || 'Work Order';
         
-        const contextText = tx.comentario || tx.descripcionContexto || flowData.context || '';
+        let contextText = tx.comentario || tx.descripcionContexto || flowData.context || '';
+        // Si es reportado por IA, no mostramos el comentario en el bocadillo porque es el output (mostrado en aiOutputHtml)
+        if (tx.proofLink === 'Agent_Auto_Report') contextText = ''; 
+
         const contextHtml = contextText ? `<div class="task-desc-bubble">💬 "${contextText}"</div>` : '';
         const hoursText = flowData.estimatedHours || flowData.horas || 1;
 
@@ -595,6 +707,7 @@ export default class ProjectView {
                 
                 <h3 class="task-title">${titleText}</h3>
                 ${contextHtml}
+                ${aiOutputHtml}
                 
                 <div class="task-meta-row">
                     <span style="font-weight:bold; color:white; font-family:var(--font-mono);">⏱ ${hoursText}h <span style="color:#666; font-weight:normal; font-family:var(--font-main);">Est.</span></span>
