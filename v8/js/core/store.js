@@ -1,14 +1,14 @@
 // v8/js/core/store.js
 // ==========================================================================
-// KERNEL V8.2 - AGENTIC AI STORE & SBT SKILLS ENGINE
-// Motor Local-First con Agentes IA Nativos, SBTs y Auto-Aprendizaje (LMS Hook)
+// KERNEL V8.3 - AGENTIC AI STORE & WEB3 IDENTITY
+// Motor Local-First con Agentes IA, SBTs y Autenticación de Identidad Soberana
 // ==========================================================================
 
 import { KB } from './kb.js';
 
 const initialState = {
     config: {
-        version: '8.2.0',
+        version: '8.3.0',
         ecosystemName: 'TeamTowers Agentic Network',
         globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
         archetype: 'startup',
@@ -37,7 +37,7 @@ const initialState = {
         { id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita valor, sella pactos Slicing Pie y certifica el PoW.", structural_affinity: ["@dosos"] } }
     ],
     projects: [],
-    session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
+    session: { activeUserId: null, role: 'guest' } // Arranque Zero Trust
 };
 
 // Helper: Inferencia Semántica Ligera para SBTs
@@ -56,7 +56,35 @@ async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
 
     switch (action.type) {
+        // ==========================================
+        // MOTOR DE IDENTIDAD (WEB3 / ALIAS)
+        // ==========================================
+        case 'LOGIN_USER': {
+            const rawId = action.payload.userId.trim();
+            const exists = newState.globalUsers.find(u => u.id === rawId || u.wallet === rawId || u.email === rawId);
+            
+            if (exists) {
+                // Recupera Shadow Profile (o perfil activo)
+                newState.session = { activeUserId: exists.id, role: exists.globalRole };
+            } else {
+                // Registro al vuelo (Lazy Registration)
+                const newId = rawId.startsWith('0x') ? rawId : (rawId.startsWith('@') ? rawId : '@' + rawId);
+                const isWallet = newId.startsWith('0x');
+                
+                const newUser = {
+                    id: newId,
+                    name: isWallet ? `${newId.substring(0, 6)}...${newId.substring(newId.length - 4)}` : newId.replace('@', ''),
+                    globalRole: 'network-user',
+                    wallet: isWallet ? newId : '',
+                    profile: { sbt_skills: [], isOpenToWork: true }
+                };
+                newState.globalUsers.push(newUser);
+                newState.session = { activeUserId: newUser.id, role: 'network-user' };
+            }
+            break;
+        }
         case 'LOGOUT_USER': newState.session = { activeUserId: null, role: 'guest' }; break;
+        
         case 'UPDATE_GLOBAL_CONFIG': newState.config = { ...newState.config, ...action.payload }; break;
         case 'ADD_USER': {
             const exists = newState.globalUsers.find(u => u.id === action.payload.id);
@@ -68,6 +96,10 @@ async function asyncReducer(state, action) {
             if (uIdx > -1) newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
             break;
         }
+
+        // ==========================================
+        // PROYECTOS Y MAPA VNA
+        // ==========================================
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
                 const sprintId = 'sp_' + Date.now();
@@ -161,6 +193,10 @@ async function asyncReducer(state, action) {
             }
             break;
         }
+        
+        // ==========================================
+        // KANBAN CORE, FASE 3 Y LMS HOOK
+        // ==========================================
         case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
@@ -243,22 +279,13 @@ async function asyncReducer(state, action) {
                         }
                     }
 
-                    // 3. LMS HOOK (Auto-Aprendizaje Semántico NO-DRY)
-                    // Guardamos la resolución exitosa como una directriz para futuras referencias IA
+                    // 3. LMS HOOK (Auto-Aprendizaje Semántico)
                     const kbDoc = {
-                        id: 'kb_auto_' + Date.now(),
-                        projectId: action.payload.projectId,
-                        type: 'manual',
-                        sector: pWoApp.sector || 'general',
-                        roleTarget: levelId,
-                        title: `Caso de Éxito: ${deliverableName}`,
+                        id: 'kb_auto_' + Date.now(), projectId: action.payload.projectId, type: 'manual',
+                        sector: pWoApp.sector || 'general', roleTarget: levelId, title: `Caso de Éxito: ${deliverableName}`,
                         content: `Resolución validada de Work Order (${wo.realHours}h). \n\nContexto: ${wo.comentario || 'N/A'}\n\nPrueba de Trabajo (PoW): ${wo.proofLink || 'Ejecución Interna'}`
                     };
-                    
-                    // No usamos await dentro del reducer para no bloquear el flujo síncrono del state
-                    // Lo disparamos "al vuelo" a la IndexedDB
                     KB.saveDocument(kbDoc).catch(e => console.error("Fallo al inyectar auto-aprendizaje en LMS", e));
-                    console.log(`[LMS Auto-Sync] Patrón de conocimiento inyectado en IndexedDB: ${deliverableName}`);
                 }
             }
             break;
