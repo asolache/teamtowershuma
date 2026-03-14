@@ -8,8 +8,8 @@ export default class ProjectView {
     constructor() {
         document.title = "Matriz PULL | TeamTowers V8";
         this.activeProjectId = null;
-        this.currentFilter = 'all'; // all, mine, tangible, intangible
-        this.currentTab = 'oportunidades'; // oportunidades, en-curso, contabilizado
+        this.currentFilter = 'all'; 
+        this.currentTab = 'oportunidades'; 
     }
 
     async getHtml() {
@@ -32,9 +32,9 @@ export default class ProjectView {
                     ${Sidebar.getHtml('/project')}
                     <main class="workspace" style="justify-content:center; align-items:center;">
                         <div class="glass-panel" style="text-align:center; max-width: 500px; margin: 0 auto;">
-                             <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1; filter: drop-shadow(0 0 20px rgba(0,176,255,0.3));">📋</div>
-                             <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Radar Vacío</h2>
-                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No hay redes activas para mostrar el Kanban.</p>
+                             <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">📋</div>
+                             <h2 style="color:white; margin-top:0;">Radar Vacío</h2>
+                             <p style="color:var(--text-muted); margin-bottom: 2.5rem;">No hay redes activas para mostrar el Kanban.</p>
                              <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
                         </div>
                     </main>
@@ -47,12 +47,11 @@ export default class ProjectView {
         const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
         const statusBtnText = isOpen ? '🟢 Abierto a Flow' : '🔴 Modo Oculto';
 
-        // --- CONFIGURACIÓN HEADER V8 ---
         const headerConfig = {
             title: "Kanban PULL",
             subtitle: project.nombre,
             tagline: "Mercado interno de tareas. Asume responsabilidad y ejecuta valor.",
-            actionHtml: `<button id="btnToggleAvailability" class="${statusBtnClass}" title="Alternar Estado de Matching">${statusBtnText}</button>`,
+            actionHtml: `<button id="btnToggleAvailability" class="${statusBtnClass}">${statusBtnText}</button>`,
             tabs: [
                 { id: 'oportunidades', label: 'Oportunidades', active: this.currentTab === 'oportunidades' },
                 { id: 'en-curso', label: 'En Curso', active: this.currentTab === 'en-curso' },
@@ -64,21 +63,33 @@ export default class ProjectView {
         };
 
         const canCreateWO = store.canUserCreateWorkOrder(project.id, activeUserId);
+        const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
+
+        // --- RENDER SPRINT SELECTOR ---
+        const sprints = project.sprints || [{id: 'sp_default', name: 'Sprint 1'}];
+        const activeSprintId = project.activeSprintId || sprints[0].id;
+        
+        const sprintOptions = sprints.map(sp => `
+            <option value="${sp.id}" ${sp.id === activeSprintId ? 'selected' : ''}>⏳ ${sp.name}</option>
+        `).join('');
 
         return `
             <style>
-                /* MAGIA VISUAL: Destello si estás disponible */
                 .workspace.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.03); }
-
                 .kanban-container { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; }
 
-                /* ESTADOS DISPONIBILIDAD */
                 .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor:pointer; transition: all 0.2s;}
                 .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
 
-                /* CONTROLES SECUNDARIOS */
-                .controls-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem; width: 100%;}
-                .filters-container { display:flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
+                /* CONTROLES SECUNDARIOS Y SPRINTS */
+                .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; width: 100%; flex-wrap: wrap; gap: 15px;}
+                .sprint-controls { display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border);}
+                .sprint-selector { background: transparent; border: none; color: var(--accent-orange); font-weight: 900; font-family: var(--font-mono); font-size: 1.1rem; padding: 10px; cursor: pointer; outline: none; }
+                .sprint-selector option { background: #111; color: white; }
+                .btn-add-sprint { background: transparent; border: 1px dashed var(--accent-orange); color: var(--accent-orange); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.8rem;}
+                .btn-add-sprint:hover { background: rgba(255, 171, 64, 0.1); }
+
+                .filters-container { display:flex; gap: 15px; flex-wrap: wrap;}
                 .filter-dropdown { background: rgba(10,10,15,0.8); border: 1px solid var(--glass-border); color: white; padding: 10px 20px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight:bold; outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .filter-dropdown:focus { border-color: var(--accent-blue); }
 
@@ -107,7 +118,6 @@ export default class ProjectView {
                 
                 .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
                 
-                /* BOTONES DE ACCIÓN */
                 .task-actions { margin-top: auto; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 10px;}
                 
                 .btn-pull { flex: 1; background: transparent; border: 1px solid #666; color: white; transition: 0.2s; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem;}
@@ -136,14 +146,13 @@ export default class ProjectView {
 
                 /* RESPONSIVE MÓVIL */
                 @media (max-width: 768px) {
-                    .controls-row { justify-content: stretch; margin-bottom: 1.5rem; }
+                    .controls-row { flex-direction: column; align-items: stretch; }
+                    .sprint-controls { justify-content: space-between; }
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
                     .filter-dropdown, .btn-create-task { width: 100%; padding: 14px; }
                     
                     .task-grid { grid-template-columns: 1fr; gap: 1.2rem; padding-bottom: 2rem; }
                     .task-card { padding: 1.5rem; border-radius: 16px; }
-                    .task-title { font-size: 1.15rem; }
-                    .task-meta-row { flex-wrap: wrap; gap: 8px; }
                     .task-actions { flex-direction: column; gap: 10px; }
                     .btn-pull, .btn-push, .btn-focus, .btn-approve { width: 100%; padding: 14px;}
                 }
@@ -158,6 +167,13 @@ export default class ProjectView {
 
                     <div class="kanban-container">
                         <div class="controls-row">
+                            <div class="sprint-controls">
+                                <select id="selActiveSprint" class="sprint-selector">
+                                    ${sprintOptions}
+                                </select>
+                                ${isPO ? `<button class="btn-add-sprint" id="btnCreateSprint" title="Crear un nuevo ciclo temporal">+ Nuevo</button>` : ''}
+                            </div>
+
                             <div class="filters-container">
                                 <select id="filterDropdown" class="filter-dropdown">
                                     <option value="all">Filtros: Todas las tareas</option>
@@ -176,7 +192,7 @@ export default class ProjectView {
                 <div class="modal-overlay" id="createTaskModal">
                     <div class="modal-content">
                         <h2 style="color:white; margin-top:0; margin-bottom: 5px; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">Abrir el Grifo</h2>
-                        <p style="color:#aaa; font-size:0.95rem; margin-bottom:2rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes diseñadas en el Mapa VNA.</p>
+                        <p style="color:#aaa; font-size:0.95rem; margin-bottom:2rem; line-height:1.5;">Instancia una tarea real a partir de las tuberías permanentes del Mapa VNA.</p>
                         
                         <div class="form-group">
                             <label>Tubería de Valor Origen (Flow)</label>
@@ -197,7 +213,7 @@ export default class ProjectView {
 
                         <div style="display: flex; justify-content: space-between; margin-top: 2.5rem; gap:15px;">
                             <button class="btn" style="flex:1; background:transparent; border:1px solid #555; color:white; padding:14px; border-radius:12px; cursor:pointer; font-weight:bold;" id="btnCancelCreateTask">Cancelar</button>
-                            <button class="btn" style="flex:2; background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color:white; font-weight:900; border:none; padding:14px; border-radius:12px; cursor:pointer;" id="btnConfirmCreateTask">🚀 Inyectar al Kanban</button>
+                            <button class="btn" style="flex:2; background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color:white; font-weight:900; border:none; padding:14px; border-radius:12px; cursor:pointer;" id="btnConfirmCreateTask">🚀 Inyectar al Sprint</button>
                         </div>
                     </div>
                 </div>
@@ -229,9 +245,31 @@ export default class ProjectView {
         // -- MAGIC ACTION EVENT --
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'ai_assign') {
-                alert("Orquestador IA activado. Analizando matriz de habilidades y reasignando Oportunidades... (WIP Sprint 4)");
+                alert("Orquestador IA activado. Analizando matriz de habilidades y reasignando Oportunidades del Sprint actual... (WIP)");
             }
         });
+
+        // SPRINT SELECTOR LOGIC
+        const selActiveSprint = document.getElementById('selActiveSprint');
+        if (selActiveSprint) {
+            selActiveSprint.addEventListener('change', async (e) => {
+                await store.dispatch({ type: 'SET_ACTIVE_SPRINT', payload: { projectId: this.activeProjectId, sprintId: e.target.value } });
+                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            });
+        }
+
+        const btnCreateSprint = document.getElementById('btnCreateSprint');
+        if (btnCreateSprint) {
+            btnCreateSprint.addEventListener('click', async () => {
+                const currentP = store.getState().projects.find(p => p.id === this.activeProjectId);
+                const nextNum = (currentP.sprints?.length || 0) + 1;
+                const spName = prompt("Nombre del nuevo ciclo de trabajo:", `Sprint ${nextNum}`);
+                if (spName) {
+                    await store.dispatch({ type: 'CREATE_SPRINT', payload: { projectId: this.activeProjectId, name: spName } });
+                    window.location.reload(); // Recarga para reconstruir el selector <select>
+                }
+            });
+        }
 
         // FILTROS
         const filterDropdown = document.getElementById('filterDropdown');
@@ -315,6 +353,9 @@ export default class ProjectView {
             if(!flowId) return alert("Selecciona un Flujo base.");
 
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
+            
+            // Coge el sprint activo actual para inyectar la tarea ahí
+            const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
 
             await store.dispatch({
                 type: 'SPAWN_WORK_ORDER',
@@ -322,7 +363,8 @@ export default class ProjectView {
                     projectId: this.activeProjectId,
                     workOrder: {
                         hash: newHash, flowId: flowId, comentario: desc,
-                        status: 'theoretical', realHours: 0
+                        status: 'theoretical', realHours: 0,
+                        sprintId: currProj.activeSprintId // <--- Enlace crucial
                     }
                 }
             });
@@ -343,7 +385,7 @@ export default class ProjectView {
         taskGrid.addEventListener('click', async (e) => {
             const target = e.target.closest('button') || e.target.closest('a'); 
             if (!target || !target.dataset.hash) return;
-            if (target.tagName === 'A') return; // Let regular links (like focus mode) work natively
+            if (target.tagName === 'A') return;
 
             const currentState = store.getState();
             const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
@@ -418,10 +460,19 @@ export default class ProjectView {
         
         let activeCardsHtml = [];
 
-        const allTasks = [
+        // 1. Unificar tareas (Nuevas Work Orders y Legacy Txs)
+        let allTasks = [
             ...(project.work_orders || []).map(wo => ({ ...wo, isWorkOrder: true })),
             ...(project.transactions || []).map(tx => ({ ...tx, isWorkOrder: false }))
         ];
+
+        // 2. FILTRAR POR SPRINT ACTIVO
+        const activeSprintId = project.activeSprintId;
+        allTasks = allTasks.filter(tx => {
+            // Tareas Legacy (sin sprintId) o tareas del sprint activo se muestran
+            if (!tx.isWorkOrder) return true; 
+            return tx.sprintId === activeSprintId;
+        });
 
         allTasks.forEach(tx => {
             let tabCategory = '';
@@ -446,9 +497,9 @@ export default class ProjectView {
             grid.innerHTML = activeCardsHtml.join('');
         } else {
             let emptyMsg = "No hay tareas en esta categoría.";
-            if (this.currentTab === 'oportunidades') emptyMsg = "No hay oportunidades libres en el mercado de la red.";
-            if (this.currentTab === 'en-curso') emptyMsg = "No hay ninguna tarea activa en proceso.";
-            if (this.currentTab === 'contabilizado') emptyMsg = "Aún no se han sellado Slices en esta red.";
+            if (this.currentTab === 'oportunidades') emptyMsg = "No hay oportunidades libres en el mercado del Sprint actual.";
+            if (this.currentTab === 'en-curso') emptyMsg = "No hay ninguna tarea activa en proceso en este Sprint.";
+            if (this.currentTab === 'contabilizado') emptyMsg = "Aún no se han sellado Slices en este Sprint.";
             
             grid.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
         }
