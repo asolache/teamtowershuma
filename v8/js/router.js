@@ -15,7 +15,8 @@ const routes = {
     '/focus': 'FocusView',
     '/profile': 'ProfileView',
     '/help': 'HelpView',
-    '/onboarding': 'OnboardingView'
+    '/onboarding': 'OnboardingView',
+    '/lms': 'LmsView' // <-- NUEVA RUTA INYECTADA (Cerebro Semántico)
 };
 
 class Router {
