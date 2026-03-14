@@ -1,6 +1,6 @@
 // v8/js/views/SettingsView.js
 import { store } from '../core/store.js';
-import { KB } from '../core/kb.js'; // El Cerebro Semántico
+import { KB } from '../core/kb.js'; 
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
@@ -8,8 +8,8 @@ import { PageHeader } from '../components/PageHeader.js';
 export default class SettingsView {
     constructor() {
         document.title = "Configuración Ecosistema | TeamTowers V8";
-        this.tab = localStorage.getItem('tt_settings_tab') || 'ecosistema';
-        this.sectorsFromKB = {}; // Aquí guardaremos los sectores vivos del LMS
+        this.tab = localStorage.getItem('tt_settings_tab') || 'stakeholders'; // Default al nuevo mapa
+        this.sectorsFromKB = {}; 
     }
 
     async getHtml() {
@@ -33,10 +33,11 @@ export default class SettingsView {
         }
 
         const headerConfig = {
-            title: "Settings",
-            subtitle: "Kernel V8",
+            title: "Consola V8 (EO)",
+            subtitle: "Ecosystem Owner",
             tagline: "Gobernanza Fractal, Orquestación IA y Control P2P de la Red.",
             tabs: [
+                { id: 'stakeholders', label: '🌌 Stakeholders', active: this.tab === 'stakeholders' },
                 { id: 'ecosistema', label: '🪐 Gobernanza', active: this.tab === 'ecosistema' },
                 { id: 'users', label: '👥 Padrón Global', active: this.tab === 'users' },
                 { id: 'ia', label: '🧠 Motor IA', active: this.tab === 'ia' },
@@ -57,6 +58,15 @@ export default class SettingsView {
                 .panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 24px; padding: 3rem; margin-bottom: 2.5rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); width: 100%; box-sizing: border-box;}
                 .panel h2 { color: white; font-size: 1.5rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; font-weight: 900; letter-spacing: -0.5px;}
                 .panel p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
+
+                /* STAKEHOLDER MAP (MACRO VNA) */
+                .sh-map-container { width: 100%; height: 500px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; border: 1px solid var(--glass-border); border-radius: 16px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 50px rgba(0,0,0,0.8);}
+                
+                .sh-node { position: absolute; background: rgba(20,20,25,0.9); border: 2px solid; border-radius: 16px; padding: 15px 20px; color: white; text-align: center; font-weight: 900; transform: translate(-50%, -50%); z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); min-width: 120px;}
+                .sh-node-icon { font-size: 2rem; margin-bottom: 5px; }
+                .sh-node-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+                .sh-badge { position: absolute; transform: translate(-50%, -50%); z-index: 15; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.8); color: black; text-transform:uppercase;}
 
                 /* FORMS LUXURY */
                 .form-group { margin-bottom: 25px; }
@@ -113,6 +123,55 @@ export default class SettingsView {
                 <main class="workspace-settings">
                     ${PageHeader.getHtml(headerConfig)}
 
+                    <div id="tab-stakeholders" class="tab-content ${this.tab === 'stakeholders' ? 'active' : ''}">
+                        <div class="panel" style="border-color: var(--accent-orange); box-shadow: inset 0 0 50px rgba(255,171,64,0.05);">
+                            <h2 style="color: var(--accent-orange);">🌌 Macro-Red de Stakeholders</h2>
+                            <p>Visión del <i>Ecosystem Owner</i>. El flujo de valor no solo existe dentro de los proyectos, sino en la órbita que los rodea. Esta es la topología del modelo de negocio.</p>
+                            
+                            <div class="sh-map-container" id="stakeholderMap">
+                                <svg id="sh-edges" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
+                                    <defs>
+                                        <marker id="arrow-fiat" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00e676"/></marker>
+                                        <marker id="arrow-slices" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#e040fb"/></marker>
+                                        <marker id="arrow-value" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00b0ff"/></marker>
+                                    </defs>
+                                    </svg>
+                                
+                                <div class="sh-node" id="node-investor" style="top: 20%; left: 50%; border-color: var(--accent-green);">
+                                    <div class="sh-node-icon">🏦</div>
+                                    <div class="sh-node-title" style="color:var(--accent-green);">Inversores</div>
+                                </div>
+                                <div class="sh-node" id="node-eo" style="top: 50%; left: 50%; border-color: var(--accent-orange); background:rgba(255,171,64,0.1); box-shadow: 0 0 30px rgba(255,171,64,0.3);">
+                                    <div class="sh-node-icon">👑</div>
+                                    <div class="sh-node-title" style="color:var(--accent-orange);">Ecosystem Owner</div>
+                                </div>
+                                <div class="sh-node" id="node-team" style="top: 80%; left: 20%; border-color: var(--accent-purple);">
+                                    <div class="sh-node-icon">🤖👥</div>
+                                    <div class="sh-node-title" style="color:var(--accent-purple);">Colla (IAs + Humanos)</div>
+                                </div>
+                                <div class="sh-node" id="node-client" style="top: 80%; left: 80%; border-color: var(--accent-blue);">
+                                    <div class="sh-node-icon">🛍️</div>
+                                    <div class="sh-node-title" style="color:var(--accent-blue);">Clientes (Mercado)</div>
+                                </div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:20px;">
+                                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,230,118,0.3); padding:15px; border-radius:12px;">
+                                    <div style="font-weight:bold; color:var(--accent-green); margin-bottom:5px;">🟢 Fiat / Capital</div>
+                                    <div style="font-size:0.8rem; color:#aaa;">Inversiones y pagos de clientes.</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(224,64,251,0.3); padding:15px; border-radius:12px;">
+                                    <div style="font-weight:bold; color:var(--accent-purple); margin-bottom:5px;">🟣 Slices (Equity)</div>
+                                    <div style="font-size:0.8rem; color:#aaa;">Patrimonio dinámico generado por PoW.</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,176,255,0.3); padding:15px; border-radius:12px;">
+                                    <div style="font-weight:bold; color:var(--accent-blue); margin-bottom:5px;">🔵 Valor (Entregables)</div>
+                                    <div style="font-size:0.8rem; color:#aaa;">Productos o servicios ejecutados por la Colla.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="tab-ecosistema" class="tab-content ${this.tab === 'ecosistema' ? 'active' : ''}">
                         <div class="panel">
                             <h2><span style="font-size: 1.8rem; margin-right:10px;">🪐</span> Identidad y Soberanía</h2>
@@ -158,7 +217,7 @@ export default class SettingsView {
                     <div id="tab-ia" class="tab-content ${this.tab === 'ia' ? 'active' : ''}">
                         <div class="panel" style="border-top: 4px solid var(--accent-purple);">
                             <h2 style="color: var(--accent-purple);">🧠 Orquestador Cognitivo (API Keys)</h2>
-                            <p>Conecta el Kernel V8 con los LLMs externos para dar vida a los botones mágicos (Simulaciones, Pactos Legales, Auto-Asignación).</p>
+                            <p>Conecta el Kernel V8 con los LLMs externos para dar vida a los botones mágicos (Simulaciones, Pactos Legales, Auto-Ejecución).</p>
                             
                             <div class="ai-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
                                 <div class="form-group">
@@ -183,24 +242,6 @@ export default class SettingsView {
 
                             <button class="btn-save" id="btn-save-keys" style="background: linear-gradient(135deg, #7c4dff, #e040fb); margin-top:2rem;">Forjar Llaves Criptográficas</button>
                             <div id="keysFeedback" style="display:none; color: var(--accent-green); margin-top: 15px; font-size: 0.95rem; font-weight: bold; text-align:center;">✅ Llaves ancladas en memoria local.</div>
-                        </div>
-
-                        <div class="panel" style="border-color: #333;">
-                            <h2 style="color: white;">🤖 Enjambre de Agentes (V8 Status)</h2>
-                            <p style="color:#aaa; margin-bottom: 2rem;">El Ecosistema posee agentes especializados listos para ser invocados.</p>
-                            
-                            <div class="agents-grid">
-                                <div class="sector-card" style="border-top-color: var(--accent-purple);">
-                                    <h3 style="color:var(--accent-purple);">Agente Orquestador Legal</h3>
-                                    <p style="font-size:0.9rem; color:#ccc; flex:1; line-height:1.5;">Lee el Ledger y redacta PACTOS DE SOCIOS matemáticos y perfectos.</p>
-                                    <div style="font-size:0.8rem; font-family:var(--font-mono); color:var(--accent-green); margin-top:1rem; border:1px solid rgba(0,230,118,0.3); padding:8px; text-align:center; border-radius:8px; background:rgba(0,230,118,0.05);">Activo en: Kanban / Dashboard</div>
-                                </div>
-                                <div class="sector-card" style="border-top-color: var(--accent-blue);">
-                                    <h3 style="color:var(--accent-blue);">Agente de Red (PM)</h3>
-                                    <p style="font-size:0.9rem; color:#ccc; flex:1; line-height:1.5;">Analiza la Cap Table y sugiere reestructuraciones y auto-asignaciones en base a la matriz de carga.</p>
-                                    <div style="font-size:0.8rem; font-family:var(--font-mono); color:var(--accent-green); margin-top:1rem; border:1px solid rgba(0,230,118,0.3); padding:8px; text-align:center; border-radius:8px; background:rgba(0,230,118,0.05);">Activo en: Kanban / Ledger</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -304,11 +345,90 @@ export default class SettingsView {
             if(target) target.classList.add('active');
 
             if(this.tab === 'ontology') this.renderOntologyGrids();
+            if(this.tab === 'stakeholders') this.renderStakeholderMap();
         });
 
         if(this.tab === 'ontology') this.renderOntologyGrids();
+        if(this.tab === 'stakeholders') this.renderStakeholderMap();
 
         this.bindContentEvents();
+    }
+
+    renderStakeholderMap() {
+        const svg = document.getElementById('sh-edges');
+        const container = document.getElementById('stakeholderMap');
+        if (!svg || !container) return;
+
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrow-fiat" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00e676"/></marker>
+                <marker id="arrow-slices" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#e040fb"/></marker>
+                <marker id="arrow-value" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00b0ff"/></marker>
+            </defs>
+        `;
+
+        // Limpiar badges viejos
+        container.querySelectorAll('.sh-badge').forEach(b => b.remove());
+
+        const nodes = {
+            inv: document.getElementById('node-investor'),
+            eo: document.getElementById('node-eo'),
+            team: document.getElementById('node-team'),
+            cli: document.getElementById('node-client')
+        };
+
+        const drawFlow = (n1, n2, typeColor, marker, offsetMultiplier, label) => {
+            const r1 = n1.getBoundingClientRect();
+            const r2 = n2.getBoundingClientRect();
+            const cRect = container.getBoundingClientRect();
+
+            const x1 = r1.left + r1.width/2 - cRect.left;
+            const y1 = r1.top + r1.height/2 - cRect.top;
+            const x2 = r2.left + r2.width/2 - cRect.left;
+            const y2 = r2.top + r2.height/2 - cRect.top;
+
+            const dx = x2 - x1, dy = y2 - y1;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const nx = -dy / dist, ny = dx / dist;
+
+            const offset = offsetMultiplier * 30; // Separar líneas de ida y vuelta
+            const cx = (x1 + x2) / 2 + nx * offset;
+            const cy = (y1 + y2) / 2 + ny * offset;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+            path.setAttribute('marker-end', `url(#${marker})`);
+            path.style.fill = 'none';
+            path.style.stroke = typeColor;
+            path.style.strokeWidth = '3';
+            if (typeColor === '#e040fb' || typeColor === '#00b0ff') path.style.strokeDasharray = '6,6'; // Intangibles/Slices punteados
+            
+            svg.appendChild(path);
+
+            // Badge Label
+            const badge = document.createElement('div');
+            badge.className = 'sh-badge';
+            badge.style.left = `${(x1 + cx + x2)/3}px`;
+            badge.style.top = `${(y1 + cy + y2)/3}px`;
+            badge.style.backgroundColor = typeColor;
+            badge.innerText = label;
+            container.appendChild(badge);
+        };
+
+        // Redibujar después de un tick para que los nodos tengan dimensiones finales
+        setTimeout(() => {
+            // Flujos de Capital (Verde)
+            drawFlow(nodes.inv, nodes.eo, '#00e676', 'arrow-fiat', -1, 'Capital (€)');
+            drawFlow(nodes.cli, nodes.eo, '#00e676', 'arrow-fiat', 1, 'Ingresos (€)');
+            
+            // Flujos de Slices/SBTs (Morado)
+            drawFlow(nodes.eo, nodes.inv, '#e040fb', 'arrow-slices', -1, 'Equity (Slices)');
+            drawFlow(nodes.eo, nodes.team, '#e040fb', 'arrow-slices', 1, 'Slices / SBTs');
+            
+            // Flujos de Valor Productivo (Azul)
+            drawFlow(nodes.eo, nodes.team, '#00b0ff', 'arrow-value', -1, 'Visión / Directriz');
+            drawFlow(nodes.team, nodes.cli, '#00b0ff', 'arrow-value', -1, 'Entregables (SaaS)');
+        }, 100);
     }
 
     bindContentEvents() {
@@ -412,7 +532,6 @@ export default class SettingsView {
         document.getElementById('btnNuke')?.addEventListener('click', () => {
             if (confirm("🚨 PROTOCOLO OMEGA: Esto borrará TODOS los proyectos y vaciará el Kernel. ¿Estás seguro?")) {
                 localStorage.removeItem('tt_sos_v8_state');
-                // Optional: Podríamos vaciar la IndexedDB también aquí
                 window.location.href = '/v8/';
             }
         });
