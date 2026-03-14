@@ -49,6 +49,9 @@ export const Sidebar = {
                     <a href="/v8/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Slicing Pie Wallet">
                         <span style="margin-right: 12px; font-size: 1.2rem;">⚖️</span> <span>Ledger</span>
                     </a>
+                    <a href="/v8/lms" class="side-link ${currentPath === '/lms' ? 'active' : ''}" data-link title="Cerebro Semántico">
+                        <span style="margin-right: 12px; font-size: 1.2rem;">🧠</span> <span>Cerebro LMS</span>
+                    </a>
                 </div>
             </aside>
         `;
