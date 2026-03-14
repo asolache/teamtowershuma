@@ -1,244 +1,376 @@
-// v8/js/views/TestsView.js
-import { store } from '../core/store.js';
+// v8/js/core/store.js
+// ==========================================================================
+// KERNEL V8 - AGENTIC AI STORE (Fusión Definitiva)
+// Motor de Estado Local-First, Triple Entrada, Gobernanza P2P y Slicing Pie
+// ==========================================================================
 
-// Extracto de Ontología para el test E2E
-const MOCK_ONTOLOGY = {
-    '@anxaneta': { name: 'Growth Hacker', multiplier: 3.0, fmv: 70 },
-    '@aixecador': { name: 'Director Creativo', multiplier: 2.0, fmv: 60 },
-    '@dosos': { name: 'Project Manager', multiplier: 1.5, fmv: 50 },
-    '@baixos': { name: 'Diseñador UI', multiplier: 1.2, fmv: 40 },
-    '@pinya': { name: 'Community Manager', multiplier: 1.0, fmv: 25 }
+const initialState = {
+    config: {
+        version: '8.0.2',
+        ecosystemName: 'TeamTowers Agentic Network',
+        globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
+        archetype: 'startup',
+        projectCreationMode: 'open'
+    },
+    globalUsers: [
+        {
+            id: 'usr_alvaro_001',
+            name: 'Alvaro',
+            globalRole: 'ecosystem-owner',
+            wallet: '0xMasterArchitect...',
+            profile: {
+                vision: "Master Architect V8. Guiando a la IA, no programando para ella.",
+                structural_affinity: ["@anxaneta"],
+                guardian_authority: ["creator", "magician"],
+                isOpenToWork: true
+            }
+        }
+    ],
+    agents: [
+        { id: '@PM_Sprint', role: '@aixecador', fmv: 100, active: true },
+        { id: '@Dev_Store', role: '@dosos', fmv: 80, active: true },
+        { id: '@UX_Weaver', role: '@baixos', fmv: 60, active: true }
+    ],
+    projects: [],
+    session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
 };
 
-export default class TestsView {
-    constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V8";
-    }
+async function asyncReducer(state, action) {
+    let newState = JSON.parse(JSON.stringify(state)); 
 
-    async getHtml() {
-        return `
-            <style>
-                .app-layout { display: flex; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-mono); justify-content: center; align-items: center; }
-                .test-container { width: 100%; max-width: 900px; padding: 2rem; }
-                
-                .matrix-header { text-align: center; margin-bottom: 2rem; }
-                .matrix-header h1 { color: var(--accent-green); font-size: 2.5rem; letter-spacing: 2px; margin: 0; text-transform: uppercase; text-shadow: 0 0 15px rgba(0, 230, 118, 0.4); }
-                .matrix-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
+    switch (action.type) {
+        case 'LOGOUT_USER':
+            newState.session = { activeUserId: null, role: 'guest' };
+            break;
 
-                .log-terminal { 
-                    background: rgba(5, 5, 7, 0.95); border: 1px solid rgba(0, 230, 118, 0.3); 
-                    border-radius: 12px; padding: 1.5rem; height: 400px; overflow-y: auto; 
-                    color: #a0a0a0; font-size: 0.9rem; line-height: 1.6; 
-                    box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 30px rgba(0,230,118,0.05); 
-                    scroll-behavior: smooth;
-                }
-                
-                .test-row { margin-bottom: 10px; display: flex; align-items: flex-start; animation: fadeIn 0.2s ease-in; }
-                .test-icon { margin-right: 12px; font-size: 1.1rem; }
-                .test-msg { flex: 1; color: #ddd; }
-                .test-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: var(--text-muted); margin-left: 10px; white-space: nowrap; font-weight: bold; }
-                
-                .pass-row { border-left: 2px solid var(--accent-green); padding-left: 10px; }
-                .fail-row { border-left: 2px solid var(--accent-red); padding-left: 10px; }
-
-                .action-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-                .score-display { font-size: 2rem; font-weight: 900; color: var(--text-muted); }
-                
-                .btn-enter-matrix { 
-                    background: transparent; border: 2px solid var(--accent-green); color: var(--accent-green); 
-                    padding: 12px 30px; font-family: var(--font-mono); font-weight: bold; font-size: 1.1rem; 
-                    border-radius: 8px; cursor: pointer; transition: 0.3s; opacity: 0; pointer-events: none;
-                    text-transform: uppercase; letter-spacing: 1px; text-decoration: none;
-                }
-                .btn-enter-matrix.visible { opacity: 1; pointer-events: auto; }
-                .btn-enter-matrix.visible:hover { background: var(--accent-green); color: black; box-shadow: 0 0 20px rgba(0,230,118,0.4); }
-
-                @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-                @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-                
-                .cursor { display: inline-block; width: 8px; height: 15px; background: var(--accent-green); animation: pulse 1s infinite; vertical-align: middle; margin-left: 5px;}
-            </style>
-
-            <div class="app-layout">
-                <div class="test-container">
-                    <div class="matrix-header">
-                        <h1>V8 FULL STRESS TEST</h1>
-                        <p>Validando Seguridad RBAC, Topología Fractal y Logística E2E</p>
-                    </div>
-
-                    <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> CARGANDO VECTORES DE ESTRÉS... <span class="cursor"></span></div>
-                    </div>
-
-                    <div class="action-footer">
-                        <div class="score-display" id="testScore">0/0</div>
-                        <a href="/v8/" data-link class="btn-enter-matrix" id="btnEnterOS">ENTRAR AL KERNEL →</a>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    executeViewScript() {
-        const terminal = document.getElementById('terminalLog');
-        const score = document.getElementById('testScore');
-        const btnEnter = document.getElementById('btnEnterOS');
-        
-        let passed = 0; 
-        let total = 0;
-
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-        const assert = async (condition, message, tag) => {
-            total++;
-            const isPass = !!condition;
-            if(isPass) passed++;
+        case 'UPDATE_GLOBAL_CONFIG': 
+            newState.config = { ...newState.config, ...action.payload };
+            break;
             
-            await sleep(250); 
-            
-            const icon = isPass ? '🟢' : '🔴';
-            const rowClass = isPass ? 'pass-row' : 'fail-row';
-            const colorMsg = isPass ? '#c9d1d9' : 'var(--accent-red)';
-            
-            terminal.innerHTML += `
-                <div class="test-row ${rowClass}">
-                    <span class="test-icon">${icon}</span>
-                    <span class="test-msg" style="color: ${colorMsg};">${message}</span>
-                    <span class="test-badge">${tag}</span>
-                </div>
-            `;
-            terminal.scrollTop = terminal.scrollHeight;
-            score.innerText = `${passed}/${total}`;
-            score.style.color = isPass ? (passed === total ? 'var(--accent-green)' : 'var(--text-muted)') : 'var(--accent-red)';
-            
-            if (!isPass) throw new Error(`Test Fallido: [${tag}] ${message}`);
-        };
+        case 'ADD_USER': {
+            const exists = newState.globalUsers.find(u => u.id === action.payload.id);
+            if (!exists) newState.globalUsers.push({ ...action.payload, globalRole: 'network-user' });
+            break;
+        }
 
-        const runTests = async () => {
-            const PID_TEST = 'v8-stress-' + Date.now();
-            const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
-            const dynBobId = '@bob_user_' + Math.floor(Math.random() * 1000);
-            const dynPoId = '@project_owner_' + Math.floor(Math.random() * 1000);
-
-            try {
-                // ==========================================
-                // BLOQUE 1: KERNEL, SESIÓN E IDENTIDAD
-                // ==========================================
-                await assert(store.getState().config.version.startsWith('8'), "Versión del Kernel apunta a V8", "SYS");
-                await assert(store.getState().session.activeUserId === 'usr_alvaro_001', "Master Architect identificado", "AUTH");
-
-                await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
-                await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
-                await store.dispatch({ type: 'ADD_USER', payload: { id: dynPoId, name: 'PO Boss', globalRole: 'network-user' } });
-                await assert(store.getState().globalUsers.find(u => u.id === dynLauraId), "Inyección de Nodos al Padrón Global", "IDENTITY");
-
-                // ==========================================
-                // BLOQUE 2: SEGURIDAD, RBAC Y MUROS DE CRISTAL
-                // ==========================================
-                await store.dispatch({ 
-                    type: 'CREATE_PROJECT', 
-                    payload: { 
-                        id: PID_TEST, nombre: "Matrix Sandbox", ownerId: dynPoId, isPrivate: true, 
-                        roles: [], vna_flows: [], work_orders: [], ledger: [], 
-                        usuarios: [{id: dynPoId, permissions: {canCreateWO: true, canApprove: true}}] 
-                    } 
-                });
-
-                const hasAccessEO = store.canUserViewProject(PID_TEST, 'usr_alvaro_001', 'ecosystem-owner');
-                await assert(hasAccessEO === true, "Ecosystem Owner tiene acceso a redes privadas ajenas", "GOV-MACRO");
-
-                const hasAccessBob = store.canUserViewProject(PID_TEST, dynBobId, 'network-user');
-                await assert(hasAccessBob === false, "Nodo externo sin asignar rebota ante red privada", "PRIVACY");
-
-                await store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { projectCreationMode: 'closed' } });
-                await assert(store.getState().config.projectCreationMode === 'closed', "Bloqueo macro de creación de Castells activo", "GOV-MACRO");
-
-                // Inyectar a Laura pero sin permisos para crear tareas
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { usuarios: [{id: dynLauraId, permissions: {canCreateWO: false}}] } } });
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { governance: { workOrderCreation: 'po_only' } } } });
-                
-                await assert(store.canUserCreateWorkOrder(PID_TEST, dynPoId) === true, "El PO mantiene su autoridad de inyectar tareas", "RBAC");
-                await assert(store.canUserCreateWorkOrder(PID_TEST, dynLauraId) === false, "Nodo Base bloqueado por política de red estricta", "RBAC");
-
-                // ==========================================
-                // BLOQUE 3: TOPOLOGÍA VNA Y LOGÍSTICA E2E
-                // ==========================================
-                const draftRoles = Object.keys(MOCK_ONTOLOGY).map(levelKey => ({
-                    id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, fmv: MOCK_ONTOLOGY[levelKey].fmv, multiplier: MOCK_ONTOLOGY[levelKey].multiplier, isArchived: false
-                }));
-                
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { roles: draftRoles } } });
-                let p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.roles.length === 5, "Instanciación Geométrica: 5 Roles creados en la red", "TOPOLOGY");
-
-                const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
-                const rAix = p.roles.find(r => r.levelId === '@aixecador');
-                const rBaix = p.roles.find(r => r.levelId === '@baixos');
-
-                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_1', from: rAnx.id, to: rAix.id, template: "Estrategia Q1", tipo: "intangible", estimatedHours: 5 } } });
-                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_2', from: rAix.id, to: rBaix.id, template: "Diseño Web", tipo: "tangible", estimatedHours: 10 } } });
-                
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.vna_flows.length === 2, "Mapa VNA: Tuberías de valor trazadas con éxito", "VNA-FLOW");
-
-                // ==========================================
-                // BLOQUE 4: EL CICLO DE VIDA DEL TRABAJO (KANBAN -> FOCUS -> LEDGER)
-                // ==========================================
-                const woHash = 'wo_' + Date.now();
-                await store.dispatch({ type: 'SPAWN_WORK_ORDER', payload: { projectId: PID_TEST, workOrder: { hash: woHash, flowId: 'flow_2', status: 'theoretical', realHours: 0 } } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders.length === 1 && p.work_orders[0].status === 'theoretical', "Kanban: Entregable inyectado al mercado PULL", "KANBAN");
-
-                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynLauraId } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'pinged' && p.work_orders[0].assigneeId === dynLauraId, "Work Order: Tarea reclamada por nodo operativo", "WORKFLOW");
-
-                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8 } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].realHours === 8 && p.work_orders[0].status === 'reported', "Focus Mode: Prueba de Trabajo (PoW) reportada al auditor", "WORKFLOW");
-
-                await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "Auditoría: Trabajo aprobado y cerrado", "AUDIT");
-                await assert(p.ledger.length === 1, "Ledger: Bloque inmutable generado", "LEDGER");
-
-                // Verificamos matemáticas exactas: 8h * fmv(@baixos: 40) * mult(1.2) = 384 Slices
-                const expectedSlices = 8 * 40 * 1.2;
-                await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie: Matemática criptográfica exacta (${expectedSlices} Slices)`, "MATH");
-                
-                const harvest = store.calculateHarvest(PID_TEST);
-                await assert(Array.isArray(harvest) && harvest.length > 0 && harvest[0].slices === expectedSlices, "Motor Económico: Cap Table (Equity) generada correctamente", "ECONOMY");
-
-                const resilience = store.calculateResilience(PID_TEST);
-                await assert(typeof resilience === 'number' && resilience === 100, "IA Analítica: Resiliencia estructural sin cuellos de botella", "HEALTH");
-
-
-                // FINALIZACIÓN EXITOSA
-                await sleep(500);
-                terminal.innerHTML += `
-                    <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15);">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V8 MASTER CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Matriz de Seguridad y el Ciclo End-to-End han respondido sin fisuras. El Kernel está completamente blindado y listo para Fase 1.</p>
-                    </div>
-                `;
-                terminal.scrollTop = terminal.scrollHeight;
-                
-                btnEnter.classList.add('visible');
-
-            } catch (error) {
-                terminal.innerHTML += `
-                    <div style="margin-top: 20px; padding: 20px; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); border-radius: 12px;">
-                        <h3 style="color: var(--accent-red); margin: 0;">💥 KERNEL PANIC</h3>
-                        <p style="color: white; font-size: 0.9rem; margin-top: 10px; font-family: monospace;">${error.message}</p>
-                    </div>
-                `;
-                terminal.scrollTop = terminal.scrollHeight;
+        case 'UPDATE_USER_PROFILE': {
+            const uIdx = newState.globalUsers.findIndex(u => u.id === action.payload.userId);
+            if (uIdx > -1) {
+                newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
             }
-            
-            const cursor = document.querySelector('.cursor');
-            if(cursor) cursor.remove();
-        };
+            break;
+        }
 
-        setTimeout(runTests, 500);
+        case 'INIT_PROJECT_GENESIS':
+        case 'CREATE_PROJECT': {
+            if (!newState.projects.find(p => p.id === action.payload.id)) {
+                newState.projects.push({ 
+                    ...action.payload, 
+                    createdAt: Date.now(),
+                    roles: action.payload.roles || [],
+                    usuarios: action.payload.usuarios || [{ id: newState.session.activeUserId, permissions: { canCreateWO: true, canApprove: true } }],
+                    vna_flows: action.payload.vna_flows || [],
+                    work_orders: action.payload.work_orders || [],
+                    ledger: action.payload.ledger || [],
+                    asignaciones: action.payload.asignaciones || []
+                });
+            }
+            break;
+        }
+
+        case 'UPDATE_PROJECT_INFO': {
+            const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pInfo) {
+                if (action.payload.updates.usuarios) {
+                    action.payload.updates.usuarios.forEach(newU => {
+                        const idx = pInfo.usuarios.findIndex(u => u.id === newU.id);
+                        if (idx > -1) pInfo.usuarios[idx] = { ...pInfo.usuarios[idx], ...newU };
+                        else pInfo.usuarios.push(newU);
+                    });
+                    delete action.payload.updates.usuarios;
+                }
+                Object.assign(pInfo, action.payload.updates);
+            }
+            break;
+        }
+
+        // ==========================================
+        // TOPOLOGÍA VNA Y ROLES (ValueMapView)
+        // ==========================================
+        case 'ADD_ROLE': {
+            const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAddRol) pAddRol.roles.push(action.payload.role);
+            break;
+        }
+        case 'UPDATE_ROLE': {
+            const pUpdRol = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pUpdRol) {
+                const rIdx = pUpdRol.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) Object.assign(pUpdRol.roles[rIdx], action.payload.updates);
+            }
+            break;
+        }
+        case 'TOGGLE_ROLE_ARCHIVE': {
+            const pTog = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pTog) {
+                const rIdx = pTog.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) pTog.roles[rIdx].isArchived = !pTog.roles[rIdx].isArchived;
+            }
+            break;
+        }
+        case 'ADD_FLOW': {
+            const pFlowAdd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowAdd) {
+                if (!pFlowAdd.vna_flows) pFlowAdd.vna_flows = [];
+                pFlowAdd.vna_flows.push({ ...action.payload.flow, id: action.payload.flow.id || ('flow_' + Date.now()) });
+            }
+            break;
+        }
+        case 'UPDATE_FLOW': {
+            const pFlowUpd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowUpd && pFlowUpd.vna_flows) {
+                const fIdx = pFlowUpd.vna_flows.findIndex(f => f.id === action.payload.flowId);
+                if (fIdx > -1) Object.assign(pFlowUpd.vna_flows[fIdx], action.payload.updates);
+            }
+            break;
+        }
+        case 'DELETE_FLOW': {
+            const pFlowDel = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowDel && pFlowDel.vna_flows) {
+                pFlowDel.vna_flows = pFlowDel.vna_flows.filter(f => f.id !== action.payload.flowId);
+            }
+            break;
+        }
+        
+        // ==========================================
+        // KANBAN CORE (WORK ORDERS)
+        // ==========================================
+        case 'SPAWN_WORK_ORDER': {
+            const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoAdd) {
+                if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
+                pWoAdd.work_orders.push({ ...action.payload.workOrder, timestamp: Date.now() });
+            }
+            break;
+        }
+        case 'REQUEST_WORK_ORDER':
+        case 'PING_WORK_ORDER': {
+            const pWoPing = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoPing && pWoPing.work_orders) {
+                const wo = pWoPing.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = action.type === 'REQUEST_WORK_ORDER' ? 'requested' : 'pinged';
+                    wo.assigneeId = action.payload.userId;
+                }
+            }
+            break;
+        }
+        case 'REPORT_WORK_ORDER': {
+            const pWoRep = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoRep && pWoRep.work_orders) {
+                const wo = pWoRep.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'reported'; wo.realHours = action.payload.realHours;
+                    wo.proofLink = action.payload.proofLink; wo.comentario = action.payload.comentario;
+                }
+            }
+            break;
+        }
+        case 'APPROVE_WORK_ORDER': {
+            const pWoApp = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoApp && pWoApp.work_orders) {
+                const wo = pWoApp.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'consolidated';
+                    if (!pWoApp.ledger) pWoApp.ledger = [];
+                    
+                    let flow = (pWoApp.vna_flows || []).find(f => f.id === wo.flowId);
+                    let multiplier = 1; let fmv = 50; let roleId = 'Unknown';
+                    let deliverableName = 'Work Order Instanciada';
+
+                    if (flow) {
+                        roleId = flow.to; deliverableName = flow.template || flow.entregable || 'Entregable';
+                        const role = pWoApp.roles.find(r => r.id === roleId);
+                        if (role) { multiplier = role.multiplier || 1; fmv = role.fmv || 50; }
+                    }
+
+                    const slices = (wo.realHours || 1) * fmv * multiplier;
+                    wo.valorCongelado = slices;
+
+                    pWoApp.ledger.push({
+                        id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId,
+                        horas: wo.realHours || 1, multiplier: multiplier, fmv: fmv,
+                        valorCongelado: slices, timestamp: Date.now(), description: deliverableName
+                    });
+                }
+            }
+            break;
+        }
+
+        // ==========================================
+        // LEDGER & EQUITY (CAPITAL INJECTIONS)
+        // ==========================================
+        case 'ADD_CAPITAL_INJECTION': {
+            const pCap = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pCap) {
+                let multiplier = 2.0; 
+                if (action.payload.assetType === 'cash') multiplier = 4.0;
+                
+                const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                const archFactor = archFactors[pCap.archetype] || 1.0;
+                const valorGenerado = action.payload.amount * multiplier * archFactor;
+
+                if (!pCap.ledger) pCap.ledger = [];
+                
+                pCap.ledger.push({
+                    id: 'ledg_' + Math.random().toString(36).substr(2, 9),
+                    hash: '0xCAP_' + Date.now(),
+                    userId: action.payload.userId, 
+                    roleId: 'CAPITAL_ASSET',
+                    description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
+                    horas: 0, 
+                    valorCongelado: valorGenerado, 
+                    timestamp: Date.now()
+                });
+            }
+            break;
+        }
+    }
+    return newState;
+}
+
+class Store {
+    constructor() {
+        this.storageKey = 'tt_sos_v8_state';
+        this.listeners = [];
+        this.loadState();
+    }
+
+    loadState() {
+        const saved = localStorage.getItem(this.storageKey);
+        if (saved) {
+            try {
+                this.state = JSON.parse(saved);
+                if (!this.state.agents) this.state.agents = initialState.agents;
+                
+                if (this.state.projects) {
+                    this.state.projects = this.state.projects.map(p => ({
+                        ...p,
+                        roles: p.roles || [],
+                        ledger: p.ledger || [],
+                        work_orders: p.work_orders || [],
+                        vna_flows: p.vna_flows || [],
+                        usuarios: p.usuarios || []
+                    }));
+                }
+            } catch (e) {
+                console.error("Store V8: Error local. Reiniciando Génesis.", e);
+                this.state = initialState;
+            }
+        } else {
+            this.state = initialState;
+        }
+    }
+
+    getState() { return this.state; }
+
+    saveState() {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+        this.notifyListeners();
+    }
+
+    async dispatch(action) {
+        console.log(`[Store V8 Mutating] ${action.type}`);
+        this.state = await asyncReducer(this.state, action);
+        this.saveState();
+    }
+
+    subscribe(listener) {
+        this.listeners.push(listener);
+        return () => { this.listeners = this.listeners.filter(l => l !== listener); };
+    }
+    
+    notifyListeners() { this.listeners.forEach(listener => listener()); }
+
+    // =========================================================
+    // MÉTODOS DE GOBERNANZA Y SEGURIDAD (RBAC)
+    // =========================================================
+    
+    canUserViewProject(projectId, userId, globalRole) {
+        if (globalRole === 'ecosystem-owner') return true; 
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return false;
+        if (p.ownerId === userId) return true;
+        if (p.usuarios && p.usuarios.find(u => u.id === userId)) return true;
+        if (p.isPrivate) return false; 
+        return true;
+    }
+
+    canUserCreateWorkOrder(projectId, userId) {
+        const globalUser = this.state.globalUsers.find(u => u.id === userId);
+        if (globalUser && globalUser.globalRole === 'ecosystem-owner') return true;
+        
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return false;
+        
+        if (p.ownerId === userId) return true; // El PO siempre puede
+        
+        const gov = p.governance || { workOrderCreation: 'open' };
+        if (gov.workOrderCreation === 'open') return true;
+        if (gov.workOrderCreation === 'po_only') return false;
+        
+        if (gov.workOrderCreation === 'custom') {
+            const member = p.usuarios?.find(x => x.id === userId);
+            return member?.permissions?.canCreateWO === true;
+        }
+        
+        return false;
+    }
+
+    // =========================================================
+    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA
+    // =========================================================
+
+    calculateResilience(projectId) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p) return 100;
+        
+        const oldStuck = (p.transactions || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        const newStuck = (p.work_orders || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
+        const atascos = oldStuck + newStuck;
+        
+        return Math.round(Math.max(0, 100 - (atascos * 5)));
+    }
+
+    calculateHarvest(projectId, totalValuation = 0) {
+        const p = this.state.projects.find(x => x.id === projectId);
+        if (!p || !p.ledger || p.ledger.length === 0) return [];
+        
+        let capTable = {};
+        let totalSlices = 0;
+        
+        p.ledger.forEach(l => {
+            const key = l.userId || l.roleId || 'unknown';
+            if (!capTable[key]) capTable[key] = { userId: l.userId, roleId: l.roleId, totalValue: 0 };
+            capTable[key].totalValue += l.valorCongelado;
+            totalSlices += l.valorCongelado;
+        });
+        
+        if (totalSlices === 0) return [];
+        
+        return Object.keys(capTable).map(key => {
+            const entry = capTable[key];
+            const percentage = (entry.totalValue / totalSlices);
+            return { 
+                userId: entry.userId, 
+                roleId: entry.roleId, 
+                totalValue: entry.totalValue, 
+                slices: entry.totalValue, 
+                percentage: (percentage * 100).toFixed(2), 
+                financialValue: (percentage * totalValuation) 
+            };
+        }).sort((a, b) => b.totalValue - a.totalValue);
     }
 }
+
+export const store = new Store();
