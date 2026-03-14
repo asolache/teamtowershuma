@@ -8,7 +8,7 @@ export const Sidebar = {
         const arrowIcon = isCollapsed ? '→' : '←';
 
         return `
-            <aside class="sidebar ${collapsedClass}" id="mainSidebar">
+            <aside class="sidebar ${collapsedClass}" id="mainSidebar" style="display: flex; flex-direction: column;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                     
                     <a href="/v8/" data-link style="display: ${isCollapsed ? 'none' : 'flex'}; align-items: center; height: 40px; text-decoration: none;">
@@ -21,7 +21,7 @@ export const Sidebar = {
                     </button>
                 </div>
                 
-                <div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 4px;">
+                <div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 4px; flex: 1;">
                     <div style="font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; padding-left: 10px; display: ${isCollapsed ? 'none' : 'block'};">Global</div>
                     <a href="/v8/" class="side-link ${currentPath === '/' ? 'active' : ''}" data-link title="Centro de Mando">
                         <span style="margin-right: 12px; font-size: 1.2rem;">🌐</span> <span>Mis Redes</span>
@@ -53,6 +53,12 @@ export const Sidebar = {
                         <span style="margin-right: 12px; font-size: 1.2rem;">🧠</span> <span>Cerebro LMS</span>
                     </a>
                 </div>
+
+                <div style="margin-top: auto; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <button id="btnLogout" style="width: 100%; background: rgba(255,82,82,0.1); border: 1px solid rgba(255,82,82,0.3); color: var(--accent-red); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: ${isCollapsed ? 'center' : 'flex-start'}; gap: 10px;" title="Cerrar Sesión">
+                        <span style="font-size: 1.2rem;">🚪</span> <span style="display: ${isCollapsed ? 'none' : 'inline'};">Cerrar Sesión</span>
+                    </button>
+                </div>
             </aside>
         `;
     },
@@ -63,6 +69,12 @@ export const Sidebar = {
             sidebar.classList.toggle('collapsed');
             localStorage.setItem('tt_sidebar_collapsed', sidebar.classList.contains('collapsed') ? 'true' : 'false');
             window.location.reload();
+        });
+
+        // LÓGICA DE CIERRE DE SESIÓN
+        document.getElementById('btnLogout')?.addEventListener('click', async () => {
+            await store.dispatch({ type: 'LOGOUT_USER' });
+            window.location.href = '/v8/'; // Redirige a la pantalla de Login Web3
         });
     }
 };
