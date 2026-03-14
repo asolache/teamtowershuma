@@ -35,32 +35,35 @@ export const PageHeader = {
 
         return `
             <style>
-                .ph-view-header { margin-bottom: 2rem; position: relative; z-index: 1000; }
-                .ph-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px;}
+                /* EL TRUCO: Relative con padding derecho para reservar el espacio del avatar siempre */
+                .ph-view-header { margin-bottom: 2rem; position: relative; z-index: 1000; padding-right: 65px; min-height: 50px;}
                 
-                .ph-titles h1 { color: white; font-size: 2.2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px;}
-                .ph-subtitle-badge { background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); color: var(--accent-green); font-size: 0.7rem; padding: 4px 10px; border-radius: 12px; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
-                .ph-tagline { color: var(--text-muted); font-size: 0.95rem; margin: 0; line-height: 1.5; }
-
-                /* HEADER ACTIONS & USER MENU */
-                .ph-actions-area { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end;}
-                
-                .ph-user-menu { position: relative; }
-                .ph-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid rgba(255,255,255,0.1); user-select: none;}
+                /* POSICIONAMIENTO ABSOLUTO DEL AVATAR (Nunca se moverá de la esquina superior derecha) */
+                .ph-user-menu { position: absolute; top: 0; right: 0; z-index: 10000; }
+                .ph-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.4rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid rgba(255,255,255,0.2); user-select: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
                 .ph-avatar:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); border-color: white;}
                 
-                .ph-dropdown { position: absolute; top: 60px; right: 0; background: rgba(15,15,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; width: 240px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 10000;}
+                /* DROPDOWN MENU */
+                .ph-dropdown { position: absolute; top: 65px; right: 0; background: rgba(15,15,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; width: 240px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 10000;}
                 .ph-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
                 
                 .ph-drop-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4); }
                 .ph-drop-name { color: white; font-weight: 900; font-size: 1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
                 .ph-drop-role { color: var(--accent-orange); font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold;}
                 
-                .ph-drop-item { padding: 12px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; border-bottom: 1px dashed rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; background: transparent; text-align: left; border-left: 2px solid transparent;}
+                .ph-drop-item { padding: 12px 20px; color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: bold; border-bottom: 1px dashed rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; background: transparent; text-align: left; border-left: 2px solid transparent; width: 100%; box-sizing: border-box; cursor: pointer; font-family: inherit;}
                 .ph-drop-item:hover { background: rgba(255,255,255,0.03); color: white; border-left-color: var(--accent-blue); padding-left: 25px;}
                 .ph-drop-item.danger { color: var(--accent-red); border-bottom: none;}
                 .ph-drop-item.danger:hover { border-left-color: var(--accent-red); background: rgba(255, 82, 82, 0.05); color: var(--accent-red);}
 
+                /* TITULOS Y BOTONES DE ACCION */
+                .ph-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px; width: 100%;}
+                .ph-titles h1 { color: white; font-size: 2.2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
+                .ph-subtitle-badge { background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); color: var(--accent-green); font-size: 0.7rem; padding: 4px 10px; border-radius: 12px; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+                .ph-tagline { color: var(--text-muted); font-size: 0.95rem; margin: 0; line-height: 1.5; }
+
+                .ph-actions-area { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-start;}
+                
                 /* MAGIC BUTTONS */
                 .ph-magic-container { display: flex; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); }
                 .ph-magic-btn { background: transparent; border: none; color: white; padding: 10px 15px; font-family: var(--font-main); font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; border-right: 1px solid rgba(255,255,255,0.05); }
@@ -83,11 +86,29 @@ export const PageHeader = {
                     .ph-actions-area { width: 100%; justify-content: space-between;}
                     .ph-magic-container { flex: 1; justify-content: space-between;}
                     .ph-magic-btn { flex: 1; justify-content: center;}
-                    .magic-label { display: none; } /* Ocultar texto en botones mágicos en móvil */
+                    .magic-label { display: none; }
                 }
             </style>
 
             <header class="ph-view-header">
+                
+                <div class="ph-user-menu">
+                    <div class="ph-avatar" id="phAvatarBtn" title="Menú del Ecosistema">${initial}</div>
+                    
+                    <div class="ph-dropdown" id="phDropdownMenu">
+                        <div class="ph-drop-header">
+                            <div class="ph-drop-name">${activeUser ? activeUser.name : 'Desconocido'}</div>
+                            <div class="ph-drop-role">${roleText}</div>
+                        </div>
+                        <a href="/v8/profile" class="ph-drop-item" data-link>👤 Mi Perfil (Ikigai)</a>
+                        <a href="/v8/settings" class="ph-drop-item" data-link>⚙️ Configuración (Keys)</a>
+                        <a href="/v8/manifesto" class="ph-drop-item" data-link>🏛️ El Manifiesto SOS</a>
+                        <a href="/v8/help" class="ph-drop-item" data-link>📖 Centro de Ayuda</a>
+                        <a href="/v8/tests" class="ph-drop-item" data-link style="color: var(--accent-green);">🟢 Auditoría Kernel</a>
+                        <button class="ph-drop-item danger" id="phBtnLogout">🚪 Desconectar</button>
+                    </div>
+                </div>
+
                 <div class="ph-header-top">
                     <div class="ph-titles">
                         <h1>
@@ -100,23 +121,6 @@ export const PageHeader = {
                     <div class="ph-actions-area">
                         ${config.actionHtml || ''}
                         ${magicHtml}
-                        
-                        <div class="ph-user-menu">
-                            <div class="ph-avatar" id="phAvatarBtn" title="Menú del Ecosistema">${initial}</div>
-                            
-                            <div class="ph-dropdown" id="phDropdownMenu">
-                                <div class="ph-drop-header">
-                                    <div class="ph-drop-name">${activeUser ? activeUser.name : 'Desconocido'}</div>
-                                    <div class="ph-drop-role">${roleText}</div>
-                                </div>
-                                <a href="/v8/profile" class="ph-drop-item" data-link>👤 Mi Perfil (Ikigai)</a>
-                                <a href="/v8/settings" class="ph-drop-item" data-link>⚙️ Configuración (API Keys)</a>
-                                <a href="/v8/manifesto" class="ph-drop-item" data-link>🏛️ El Manifiesto SOS</a>
-                                <a href="/v8/help" class="ph-drop-item" data-link>📖 Centro de Ayuda</a>
-                                <a href="/v8/tests" class="ph-drop-item" data-link style="color: var(--accent-green);">🟢 Auditoría del Kernel</a>
-                                <button class="ph-drop-item danger" id="phBtnLogout" style="width:100%;">🚪 Desconectar</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 ${tabsHtml}
@@ -125,22 +129,16 @@ export const PageHeader = {
     },
 
     execute: () => {
-        // 1. TABS EVENT DISPATCHER
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         tabBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const tabId = e.currentTarget.dataset.tab;
-                
-                // Update local UI
                 tabBtns.forEach(b => b.classList.remove('active'));
                 e.currentTarget.classList.add('active');
-                
-                // Dispatch custom event for views to listen
                 window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId } }));
             });
         });
 
-        // 2. MAGIC BUTTONS EVENT DISPATCHER
         const magicBtns = document.querySelectorAll('.ph-magic-btn');
         magicBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -149,7 +147,6 @@ export const PageHeader = {
             });
         });
 
-        // 3. USER DROPDOWN LOGIC
         const avatarBtn = document.getElementById('phAvatarBtn');
         const dropdown = document.getElementById('phDropdownMenu');
         
@@ -159,7 +156,6 @@ export const PageHeader = {
                 dropdown.classList.toggle('open');
             });
             
-            // Cerrar al hacer clic fuera
             document.addEventListener('click', (e) => {
                 if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
                     dropdown.classList.remove('open');
@@ -167,13 +163,13 @@ export const PageHeader = {
             });
         }
 
-        // 4. LOGOUT LOGIC
         const btnLogout = document.getElementById('phBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
                 if(confirm('¿Suspender sesión del Nodo Humano? Los agentes seguirán procesando en Local.')) {
-                    store.dispatch({ type: 'LOGOUT_USER' });
-                    window.location.href = '/v8/';
+                    store.dispatch({ type: 'LOGOUT_USER' }).then(() => {
+                        window.location.href = '/v8/';
+                    });
                 }
             });
         }
