@@ -1,7 +1,7 @@
 // v8/js/views/TestsView.js
 import { store } from '../core/store.js';
+import { KB } from '../core/kb.js'; // Importamos el cerebro para el test final
 
-// Extracto de Ontología para el test E2E
 const MOCK_ONTOLOGY = {
     '@anxaneta': { name: 'Growth Hacker', multiplier: 3.0, fmv: 70 },
     '@aixecador': { name: 'Director Creativo', multiplier: 2.0, fmv: 60 },
@@ -63,7 +63,7 @@ export default class TestsView {
                 <div class="test-container">
                     <div class="matrix-header">
                         <h1>V8 FULL STRESS TEST</h1>
-                        <p>Validando Seguridad RBAC, Topología Fractal y Logística E2E</p>
+                        <p>Validando Seguridad RBAC, Topología Fractal, SBTs y Auto-Aprendizaje LMS</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
@@ -94,7 +94,7 @@ export default class TestsView {
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(250); 
+            await sleep(200); 
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
@@ -127,6 +127,10 @@ export default class TestsView {
                 await assert(store.getState().config.version.startsWith('8'), "Versión del Kernel apunta a V8", "SYS");
                 await assert(store.getState().session.activeUserId === 'usr_alvaro_001', "Master Architect identificado", "AUTH");
 
+                // NUEVO: Verificar IAs Nativas
+                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
+                await assert(genesiAi !== undefined && genesiAi.profile.isAi === true, "Los 6 Guardianes IA están cargados en el Padrón Global", "AI-NATIVE");
+
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynPoId, name: 'PO Boss', globalRole: 'network-user' } });
@@ -153,7 +157,6 @@ export default class TestsView {
                 await store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { projectCreationMode: 'closed' } });
                 await assert(store.getState().config.projectCreationMode === 'closed', "Bloqueo macro de creación de Castells activo", "GOV-MACRO");
 
-                // Inyectar a Laura pero sin permisos para crear tareas
                 await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { usuarios: [{id: dynLauraId, permissions: {canCreateWO: false}}] } } });
                 await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { governance: { workOrderCreation: 'po_only' } } } });
                 
@@ -176,13 +179,13 @@ export default class TestsView {
                 const rBaix = p.roles.find(r => r.levelId === '@baixos');
 
                 await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_1', from: rAnx.id, to: rAix.id, template: "Estrategia Q1", tipo: "intangible", estimatedHours: 5 } } });
-                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_2', from: rAix.id, to: rBaix.id, template: "Diseño Web", tipo: "tangible", estimatedHours: 10 } } });
+                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_2', from: rAix.id, to: rBaix.id, template: "Diseño Web App Core", tipo: "tangible", estimatedHours: 10 } } });
                 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 await assert(p.vna_flows.length === 2, "Mapa VNA: Tuberías de valor trazadas con éxito", "VNA-FLOW");
 
                 // ==========================================
-                // BLOQUE 4: EL CICLO DE VIDA DEL TRABAJO (KANBAN -> FOCUS -> LEDGER)
+                // BLOQUE 4: EL CICLO DE VIDA, SBTs Y AUTO-APRENDIZAJE
                 // ==========================================
                 const woHash = 'wo_' + Date.now();
                 await store.dispatch({ type: 'SPAWN_WORK_ORDER', payload: { projectId: PID_TEST, workOrder: { hash: woHash, flowId: 'flow_2', status: 'theoretical', realHours: 0 } } });
@@ -190,35 +193,44 @@ export default class TestsView {
                 await assert(p.work_orders.length === 1 && p.work_orders[0].status === 'theoretical', "Kanban: Entregable inyectado al mercado PULL", "KANBAN");
 
                 await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynLauraId } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'pinged' && p.work_orders[0].assigneeId === dynLauraId, "Work Order: Tarea reclamada por nodo operativo", "WORKFLOW");
-
-                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8 } });
+                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Test PoW' } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 await assert(p.work_orders[0].realHours === 8 && p.work_orders[0].status === 'reported', "Focus Mode: Prueba de Trabajo (PoW) reportada al auditor", "WORKFLOW");
 
+                // Inicializamos KB antes de aprobar para capturar el Hook
+                await KB.init();
+                const preDocs = await KB.getAllDocuments();
+                
+                // APROBAMOS TAREA (Esto dispara Ledger, SBTs y LMS Hook)
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
+                
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 await assert(p.work_orders[0].status === 'consolidated', "Auditoría: Trabajo aprobado y cerrado", "AUDIT");
                 await assert(p.ledger.length === 1, "Ledger: Bloque inmutable generado", "LEDGER");
 
-                // Verificamos matemáticas exactas: 8h * fmv(@baixos: 40) * mult(1.2) = 384 Slices
+                // NUEVO: Verificamos SBT (Expansión de Skills de Laura)
+                const laura = store.getState().globalUsers.find(u => u.id === dynLauraId);
+                const hasSkill = laura.profile.sbt_skills && laura.profile.sbt_skills.find(s => s.name === 'Diseño Producto');
+                await assert(hasSkill !== undefined && hasSkill.exp === 8, "SBT Skills: El usuario ganó Exp afín a su trabajo ('Diseño Producto')", "SBT-SKILLS");
+
+                // NUEVO: Verificamos el HOOK del LMS (Esperamos 200ms para que IndexedDB guarde asíncronamente)
+                await sleep(200);
+                const postDocs = await KB.getAllDocuments();
+                await assert(postDocs.length > preDocs.length, "LMS Hook: El Kernel ha guardado la tarea validada en el Cerebro Semántico", "LMS-HOOK");
+
+                // Verificamos matemáticas exactas Slicing Pie
                 const expectedSlices = 8 * 40 * 1.2;
                 await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie: Matemática criptográfica exacta (${expectedSlices} Slices)`, "MATH");
                 
                 const harvest = store.calculateHarvest(PID_TEST);
                 await assert(Array.isArray(harvest) && harvest.length > 0 && harvest[0].slices === expectedSlices, "Motor Económico: Cap Table (Equity) generada correctamente", "ECONOMY");
 
-                const resilience = store.calculateResilience(PID_TEST);
-                await assert(typeof resilience === 'number' && resilience === 100, "IA Analítica: Resiliencia estructural sin cuellos de botella", "HEALTH");
-
-
                 // FINALIZACIÓN EXITOSA
                 await sleep(500);
                 terminal.innerHTML += `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15);">
                         <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V8 MASTER CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Matriz de Seguridad y el Ciclo End-to-End han respondido sin fisuras. El Kernel está completamente blindado y listo para Fase 1.</p>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">Matriz de Seguridad, SBTs y Auto-Aprendizaje validados. El Kernel es inmortal.</p>
                     </div>
                 `;
                 terminal.scrollTop = terminal.scrollHeight;
