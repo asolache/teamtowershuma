@@ -1,38 +1,15 @@
 // v8/js/views/SettingsView.js
 import { store } from '../core/store.js';
+import { KB } from '../core/kb.js'; // El Cerebro Semántico
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-
-// ONTOLOGÍA BASE V8 (Inyectada para evitar errores de importación/404 en Netlify)
-const NATIVE_ONTOLOGY = {
-    'startup_tech': {
-        '@anxaneta': { name: 'CEO / Visionario', multiplier: 3.0, fmv: 80, standard_deliverables: [{ name: "Pitch Deck", estimatedHours: 4, tipo: "intangible" }] },
-        '@aixecador': { name: 'CTO / Arquitecto', multiplier: 2.0, fmv: 70, standard_deliverables: [{ name: "Arquitectura V8", estimatedHours: 10, tipo: "tangible" }] },
-        '@dosos': { name: 'Lead Developer', multiplier: 1.5, fmv: 60, standard_deliverables: [{ name: "Core Engine", estimatedHours: 20, tipo: "tangible" }] },
-        '@baixos': { name: 'Desarrollador Base', multiplier: 1.2, fmv: 50, standard_deliverables: [{ name: "Componente UI", estimatedHours: 8, tipo: "tangible" }] },
-        '@pinya': { name: 'Soporte / QA', multiplier: 1.0, fmv: 30, standard_deliverables: [{ name: "Testing Matrix", estimatedHours: 5, tipo: "intangible" }] }
-    },
-    'agencia_marketing': {
-        '@anxaneta': { name: 'Growth Hacker', multiplier: 3.0, fmv: 70, standard_deliverables: [{ name: "Estrategia Q1", estimatedHours: 5, tipo: "intangible" }] },
-        '@aixecador': { name: 'Director Creativo', multiplier: 2.0, fmv: 60, standard_deliverables: [{ name: "Concepto Visual", estimatedHours: 8, tipo: "intangible" }] },
-        '@dosos': { name: 'Project Manager', multiplier: 1.5, fmv: 50, standard_deliverables: [{ name: "Gantt Chart", estimatedHours: 4, tipo: "tangible" }] },
-        '@baixos': { name: 'Copywriter / Designer', multiplier: 1.2, fmv: 40, standard_deliverables: [{ name: "Post RRSS", estimatedHours: 2, tipo: "tangible" }] },
-        '@pinya': { name: 'Community Manager', multiplier: 1.0, fmv: 25, standard_deliverables: [{ name: "Gestión Comunidad", estimatedHours: 10, tipo: "intangible" }] }
-    },
-    'dao_protocol': {
-        '@anxaneta': { name: 'Core Contributor', multiplier: 3.0, fmv: 100, standard_deliverables: [{ name: "Tokenomics", estimatedHours: 15, tipo: "tangible" }] },
-        '@aixecador': { name: 'Protocol Engineer', multiplier: 2.0, fmv: 90, standard_deliverables: [{ name: "Smart Contract", estimatedHours: 25, tipo: "tangible" }] },
-        '@dosos': { name: 'Auditor Seguridad', multiplier: 1.5, fmv: 80, standard_deliverables: [{ name: "Auditoría Código", estimatedHours: 12, tipo: "tangible" }] },
-        '@baixos': { name: 'Bounty Hunter', multiplier: 1.2, fmv: 50, standard_deliverables: [{ name: "PR / Fix Bug", estimatedHours: 6, tipo: "tangible" }] },
-        '@pinya': { name: 'Votante / Curador', multiplier: 1.0, fmv: 20, standard_deliverables: [{ name: "Revisión Propuesta", estimatedHours: 2, tipo: "intangible" }] }
-    }
-};
 
 export default class SettingsView {
     constructor() {
         document.title = "Configuración Ecosistema | TeamTowers V8";
         this.tab = localStorage.getItem('tt_settings_tab') || 'ecosistema';
+        this.sectorsFromKB = {}; // Aquí guardaremos los sectores vivos del LMS
     }
 
     async getHtml() {
@@ -63,7 +40,7 @@ export default class SettingsView {
                 { id: 'ecosistema', label: '🪐 Gobernanza', active: this.tab === 'ecosistema' },
                 { id: 'users', label: '👥 Padrón Global', active: this.tab === 'users' },
                 { id: 'ia', label: '🧠 Motor IA', active: this.tab === 'ia' },
-                { id: 'ontology', label: '🧬 ADN Base', active: this.tab === 'ontology' },
+                { id: 'ontology', label: '🧬 ADN Base (LMS)', active: this.tab === 'ontology' },
                 { id: 'data', label: '💾 Web3 & Datos', active: this.tab === 'data' }
             ]
         };
@@ -111,7 +88,7 @@ export default class SettingsView {
                 .sector-card h3 { margin: 0 0 15px 0; text-transform: uppercase; font-size: 1.3rem; color: white; font-weight: 900; letter-spacing:-0.5px;}
                 .deliv-badge { background: rgba(0,0,0,0.6); border: 1px solid #333; font-size: 0.75rem; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; margin-top: 8px; display: inline-block; font-family: monospace; font-weight:bold;}
 
-                /* TABLA USUARIOS (RESPONSIVE FIX) */
+                /* TABLA USUARIOS */
                 .user-table-wrapper { overflow-x: auto; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid #333; width: 100%;}
                 .user-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; min-width: 600px;}
                 .user-table th { padding: 18px 15px; border-bottom: 1px solid #444; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; font-weight:900;}
@@ -264,8 +241,8 @@ export default class SettingsView {
                                     ${state.globalUsers.map(u => `
                                         <tr>
                                             <td style="font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
-                                            <td style="color: white; font-weight: 900;">${u.name}</td>
-                                            <td style="color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'}; font-weight:bold;">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : 'Ciudadano'}</td>
+                                            <td style="color: white; font-weight: 900;">${u.profile?.isAi ? '🤖 ' : ''}${u.name}</td>
+                                            <td style="color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'}; font-weight:bold;">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : (u.profile?.isAi ? 'IA NATIVA' : 'Ciudadano')}</td>
                                             <td style="color: #666; font-size:0.85rem; font-family: monospace;">${u.walletOrSocial || '---'}</td>
                                         </tr>
                                     `).join('')}
@@ -295,14 +272,15 @@ export default class SettingsView {
                         <div class="panel">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 3rem; flex-wrap: wrap; gap:15px;">
                                 <div>
-                                    <h2 style="margin-bottom:5px;">El ADN Estructural (Plantillas)</h2>
-                                    <p style="margin:0; max-width:600px; font-size:0.9rem;">Estas son las configuraciones teóricas listas para instanciarse en nuevos proyectos V8.</p>
+                                    <h2 style="margin-bottom:5px;">El ADN Estructural (LMS)</h2>
+                                    <p style="margin:0; max-width:600px; font-size:0.9rem;">Estas plantillas de roles y ecosistemas han sido extraídas en tiempo real desde la Base de Conocimiento (IndexedDB).</p>
                                 </div>
-                                <button class="btn-save" id="btn-new-sector" style="background:var(--accent-green); color:black; width:auto;">➕ Crear Plantilla Custom</button>
                             </div>
                             
-                            <h3 style="color: var(--accent-blue); margin-top: 3rem; font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 10px; font-weight:900;">📦 Catálogo Nativo (V8 System)</h3>
-                            <div class="ontology-grid" id="nativeOntologyGrid"></div>
+                            <h3 style="color: var(--accent-blue); margin-top: 3rem; font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 10px; font-weight:900;">📦 Catálogo Inteligente de Ecosistemas</h3>
+                            <div class="ontology-grid" id="nativeOntologyGrid">
+                                <div style="color:#888; grid-column: 1/-1; padding: 2rem; text-align:center;">Extrayendo genoma semántico desde IndexedDB...</div>
+                            </div>
                         </div>
                     </div>
 
@@ -434,29 +412,36 @@ export default class SettingsView {
         document.getElementById('btnNuke')?.addEventListener('click', () => {
             if (confirm("🚨 PROTOCOLO OMEGA: Esto borrará TODOS los proyectos y vaciará el Kernel. ¿Estás seguro?")) {
                 localStorage.removeItem('tt_sos_v8_state');
+                // Optional: Podríamos vaciar la IndexedDB también aquí
                 window.location.href = '/v8/';
             }
         });
-
-        document.getElementById('btn-new-sector')?.addEventListener('click', () => {
-            window.location.href = '/v8/create'; 
-        });
     }
 
-    renderOntologyGrids() {
+    async renderOntologyGrids() {
         const nativeGrid = document.getElementById('nativeOntologyGrid');
         if(!nativeGrid) return;
 
+        // 1. Extraemos los sectores VIVOS de la base de conocimiento
+        await KB.init();
+        this.sectorsFromKB = await KB.getAvailableSectors();
+        const sectorKeys = Object.keys(this.sectorsFromKB);
+
+        if (sectorKeys.length === 0) {
+            nativeGrid.innerHTML = `<div style="grid-column:1/-1; padding:3rem; text-align:center; border:1px dashed #444; border-radius:16px;">El Cerebro Semántico está vacío. Inicia el sistema o usa el LMS para inyectar conocimiento.</div>`;
+            return;
+        }
+
         const renderRoleData = (lvl, data) => {
             let delivsHtml = '';
-            if (data.standard_deliverables && data.standard_deliverables.length > 0) {
-                delivsHtml = data.standard_deliverables.map(d => {
+            if (data.deliverables && data.deliverables.length > 0) {
+                delivsHtml = data.deliverables.map(d => {
                     const tipoColor = d.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
                     return `<div class="deliv-badge" style="color:${tipoColor}; border-color:${tipoColor}; opacity:0.9;">${d.estimatedHours}h | ${d.name}</div>`;
                 }).join(' ');
             }
             return `
-                <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0;">
+                <div style="border-bottom: 1px dashed rgba(255,255,255,0.05); padding: 12px 0;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline; gap:10px;">
                         <span style="font-family:var(--font-mono); font-size:0.75rem; color:#888; font-weight:bold; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">${lvl}</span>
                         <b style="color:white; font-size:0.9rem; text-align:right;">${data.name}</b>
@@ -466,16 +451,15 @@ export default class SettingsView {
             `;
         };
 
-        const nativeKeys = Object.keys(NATIVE_ONTOLOGY);
-        nativeGrid.innerHTML = nativeKeys.map(key => {
-            const rolesObj = NATIVE_ONTOLOGY[key]; 
+        nativeGrid.innerHTML = sectorKeys.map(key => {
+            const sectorData = this.sectorsFromKB[key]; 
             return `
             <div class="sector-card native">
-                <h3 style="color:#00b0ff;">${key.toUpperCase().replace(/_/g, ' ')}</h3>
+                <h3 style="color:#00b0ff;">${sectorData.label.toUpperCase()}</h3>
                 <div style="display: flex; flex-direction: column; gap: 5px; flex:1; opacity:0.8;">
-                    ${Object.entries(rolesObj).map(([lvl, roleData]) => renderRoleData(lvl, roleData)).join('')}
+                    ${Object.entries(sectorData.roles).map(([lvl, roleData]) => renderRoleData(lvl, roleData)).join('')}
                 </div>
-                <button class="btn-save btn-use-template" data-sector="${key}" style="margin-top:2.5rem; background:rgba(255,255,255,0.05); border: 1px dashed #888; color:#ccc; font-size:1rem; box-shadow:none;">🚀 Instanciar Red</button>
+                <button class="btn-save btn-use-template" data-sector="${key}" style="margin-top:2.5rem; background:rgba(0,176,255,0.1); border: 1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.95rem; box-shadow:none;">🚀 Instanciar Red (V8)</button>
             </div>
             `
         }).join('');
