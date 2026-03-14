@@ -28,7 +28,7 @@ export default class ProfileView {
             { id: '@aixecador', label: '🧭 @aixecador (Táctica)' },
             { id: '@dosos', label: '👁️ @dosos (Auditoría/QA)' },
             { id: '@baixos', label: '⚙️ @baixos (Producción)' },
-            { id: 'pinya', label: '🤝 @pinya (Soporte)' }
+            { id: '@pinya', label: '🤝 @pinya (Soporte)' }
         ];
         
         this.currentTab = 'perfil';
@@ -39,13 +39,28 @@ export default class ProfileView {
         const activeUserId = state.session.activeUserId;
         const user = state.globalUsers.find(u => u.id === activeUserId);
 
+        if (!user) {
+            return `
+                <div class="app-layout">
+                    ${Sidebar.getHtml('/profile')}
+                    <main class="workspace" style="display:flex; justify-content:center; align-items:center;">
+                        <div style="text-align:center;">
+                            <h2>No estás conectado</h2>
+                            <a href="/v8/" data-link style="color:var(--accent-blue);">Volver al Home</a>
+                        </div>
+                    </main>
+                    ${BottomNav.getHtml('/profile')}
+                </div>
+            `;
+        }
+
         const isOpen = user?.profile?.isOpenToWork || false;
         const statusBtnClass = isOpen ? 'btn-status-open' : 'btn-status-closed';
         const statusBtnText = isOpen ? '🟢 Abierto a Flujo' : '🔴 Nodo Oculto';
 
         const headerConfig = {
             title: "Mi Identidad",
-            subtitle: user?.name || 'Nodo',
+            subtitle: user.id,
             tagline: "Tu ADN Fractal y Reputación Web3 consolidada en Slices.",
             actionHtml: `<button id="btnToggleAvailability" class="${statusBtnClass}">${statusBtnText}</button>`,
             tabs: [
@@ -73,8 +88,9 @@ export default class ProfileView {
                 /* FORMS LUXURY */
                 .form-group { margin-bottom: 2rem; width: 100%;}
                 .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-                .vision-textarea { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 20px; border-radius: 16px; font-family: inherit; font-size: 1rem; min-height: 140px; resize: vertical; box-sizing: border-box; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); transition: 0.3s;}
-                .vision-textarea:focus { outline: none; border-color: var(--accent-blue); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 0 15px rgba(0,176,255,0.2);}
+                .lux-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; padding: 14px 20px; border-radius: 12px; font-family: inherit; font-size: 1rem; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transition: 0.3s; outline:none;}
+                .lux-input:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), 0 0 15px rgba(0,176,255,0.2);}
+                .vision-textarea { min-height: 140px; resize: vertical; }
 
                 /* TAG GRIDS */
                 .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; width: 100%;}
@@ -127,6 +143,7 @@ export default class ProfileView {
                     .stats-grid, .skills-grid { grid-template-columns: 1fr; }
                     .pm-section-title { flex-direction: column; align-items: flex-start; gap: 10px; }
                     .tag-grid { grid-template-columns: 1fr 1fr; }
+                    .auth-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
                 }
             </style>
 
@@ -138,9 +155,28 @@ export default class ProfileView {
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="tab-perfil" class="tab-content active">
+                        
+                        <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--glass-border); padding: 20px; border-radius: 16px; margin-bottom: 2rem;">
+                            <div style="color: var(--accent-blue); font-weight:bold; margin-bottom: 15px; font-size: 0.9rem; text-transform:uppercase;">Identificadores Clave (Login)</div>
+                            <div class="auth-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Nombre a mostrar</label>
+                                    <input type="text" id="inpName" class="lux-input" value="${user.name}">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>Email de Contacto</label>
+                                    <input type="email" id="inpEmail" class="lux-input" value="${user.email || ''}" placeholder="correo@dominio.com">
+                                </div>
+                                <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+                                    <label style="color:var(--accent-purple);">Wallet Web3 / Arweave Address</label>
+                                    <input type="text" id="inpWallet" class="lux-input" value="${user.wallet || ''}" placeholder="0x... o ar...">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>1. Visión y Skills (Ikigai en Bruto)</label>
-                            <textarea id="inpVision" class="vision-textarea" placeholder="Ej: Desarrollador Full-Stack apasionado por la gobernanza. Busco DAOs donde aportar en código y diseño de incentivos..."></textarea>
+                            <textarea id="inpVision" class="lux-input vision-textarea" placeholder="Ej: Desarrollador Full-Stack apasionado por la gobernanza. Busco DAOs donde aportar en código y diseño de incentivos..."></textarea>
                         </div>
 
                         <div class="form-group">
@@ -229,8 +265,12 @@ export default class ProfileView {
         const state = store.getState();
         this.activeUserId = state.session.activeUserId;
         const user = state.globalUsers.find(u => u.id === this.activeUserId);
+        if (!user) return;
 
         this.dom = {
+            inpName: document.getElementById('inpName'),
+            inpEmail: document.getElementById('inpEmail'),
+            inpWallet: document.getElementById('inpWallet'),
             inpVision: document.getElementById('inpVision'),
             btnSave: document.getElementById('btnSaveProfile'),
             aiSystemPrompt: document.getElementById('aiSystemPrompt'),
@@ -239,7 +279,7 @@ export default class ProfileView {
         };
 
         // CARGA DE DATOS DE USUARIO
-        if (user && user.profile) {
+        if (user.profile) {
             this.dom.inpVision.value = user.profile.vision || '';
             
             (user.profile.structural_affinity || []).forEach(val => {
@@ -275,7 +315,7 @@ export default class ProfileView {
         // MAGIC ACTION EVENT (IKIGAI GENERATION V8)
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'ai_ikigai') {
-                this.saveIdentity(true); // Guardamos silenciosamente primero
+                this.saveIdentity(true); 
                 this.executeMintingProcess();
             }
         });
@@ -307,8 +347,9 @@ export default class ProfileView {
     }
 
     saveIdentity(isMinting = false) {
-        if (this.activeUserId === 'ecosystem-admin') return;
-
+        const name = this.dom.inpName.value.trim();
+        const email = this.dom.inpEmail.value.trim();
+        const wallet = this.dom.inpWallet.value.trim();
         const vision = this.dom.inpVision.value.trim();
         const structural_affinity = Array.from(document.querySelectorAll('input[id^="lvl_"]:checked')).map(el => el.value);
         const guardian_authority = Array.from(document.querySelectorAll('input[id^="g_auth_"]:checked')).map(el => el.value);
@@ -318,6 +359,11 @@ export default class ProfileView {
         const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
         
         if (userIndex > -1) {
+            // Actualizamos datos básicos en el objeto superior
+            currentState.globalUsers[userIndex].name = name;
+            currentState.globalUsers[userIndex].email = email;
+            currentState.globalUsers[userIndex].wallet = wallet;
+
             const existingHash = currentState.globalUsers[userIndex].profile?.permawebHash;
             const existingIkigai = currentState.globalUsers[userIndex].profile?.ikigaiSummary;
             
