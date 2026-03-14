@@ -1,15 +1,16 @@
 // v8/js/core/store.js
 // ==========================================================================
-// KERNEL V8 - AGENTIC AI STORE (Fusión V7 + V8)
+// KERNEL V8 - AGENTIC AI STORE (Fusión Definitiva)
 // Motor de Estado Local-First, Triple Entrada, Gobernanza P2P y Slicing Pie
 // ==========================================================================
 
 const initialState = {
     config: {
-        version: '8.0.1',
+        version: '8.0.2',
         ecosystemName: 'TeamTowers Agentic Network',
         globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
-        archetype: 'startup'
+        archetype: 'startup',
+        projectCreationMode: 'open'
     },
     globalUsers: [
         {
@@ -52,6 +53,14 @@ async function asyncReducer(state, action) {
             break;
         }
 
+        case 'UPDATE_USER_PROFILE': {
+            const uIdx = newState.globalUsers.findIndex(u => u.id === action.payload.userId);
+            if (uIdx > -1) {
+                newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
+            }
+            break;
+        }
+
         case 'INIT_PROJECT_GENESIS':
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
@@ -85,7 +94,9 @@ async function asyncReducer(state, action) {
             break;
         }
 
-        // 🔥 NUEVOS REDUCERS RESTAURADOS (TOPOLOGÍA Y VNA) 🔥
+        // ==========================================
+        // TOPOLOGÍA VNA Y ROLES (ValueMapView)
+        // ==========================================
         case 'ADD_ROLE': {
             const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAddRol) pAddRol.roles.push(action.payload.role);
@@ -131,7 +142,9 @@ async function asyncReducer(state, action) {
             break;
         }
         
-        // KANBAN CORE...
+        // ==========================================
+        // KANBAN CORE (WORK ORDERS)
+        // ==========================================
         case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
@@ -190,6 +203,35 @@ async function asyncReducer(state, action) {
                         valorCongelado: slices, timestamp: Date.now(), description: deliverableName
                     });
                 }
+            }
+            break;
+        }
+
+        // ==========================================
+        // LEDGER & EQUITY (CAPITAL INJECTIONS)
+        // ==========================================
+        case 'ADD_CAPITAL_INJECTION': {
+            const pCap = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pCap) {
+                let multiplier = 2.0; 
+                if (action.payload.assetType === 'cash') multiplier = 4.0;
+                
+                const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                const archFactor = archFactors[pCap.archetype] || 1.0;
+                const valorGenerado = action.payload.amount * multiplier * archFactor;
+
+                if (!pCap.ledger) pCap.ledger = [];
+                
+                pCap.ledger.push({
+                    id: 'ledg_' + Math.random().toString(36).substr(2, 9),
+                    hash: '0xCAP_' + Date.now(),
+                    userId: action.payload.userId, 
+                    roleId: 'CAPITAL_ASSET',
+                    description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
+                    horas: 0, 
+                    valorCongelado: valorGenerado, 
+                    timestamp: Date.now()
+                });
             }
             break;
         }
@@ -264,7 +306,6 @@ class Store {
         return true;
     }
 
-    // EL MÉTODO QUE FALTABA (SOLUCIONA EL ERROR 404/CRASH DEL KANBAN)
     canUserCreateWorkOrder(projectId, userId) {
         const globalUser = this.state.globalUsers.find(u => u.id === userId);
         if (globalUser && globalUser.globalRole === 'ecosystem-owner') return true;
