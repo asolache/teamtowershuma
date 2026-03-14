@@ -1,8 +1,10 @@
 // v8/js/core/store.js
 // ==========================================================================
 // KERNEL V8.2 - AGENTIC AI STORE & SBT SKILLS ENGINE
-// Motor Local-First con Agentes IA Nativos y Extrapolación de Habilidades
+// Motor Local-First con Agentes IA Nativos, SBTs y Auto-Aprendizaje (LMS Hook)
 // ==========================================================================
+
+import { KB } from './kb.js';
 
 const initialState = {
     config: {
@@ -23,34 +25,16 @@ const initialState = {
                 structural_affinity: ["@anxaneta", "@aixecador"],
                 guardian_authority: ["creator", "magician"],
                 isOpenToWork: true,
-                sbt_skills: [] // Fase 3: Inventario de Skills inmutables
+                sbt_skills: []
             }
         },
         // --- LOS 6 GUARDIANES IA (Nativos del Ecosistema) ---
-        {
-            id: '@genesi_ai', name: 'Gènesi (Setup & Visión)', globalRole: 'ai-agent',
-            profile: { isAi: true, apiCostPerHour: 0.25, vision: "Crea redes, mapas VNA y sprints iniciales.", structural_affinity: ["@anxaneta"] }
-        },
-        {
-            id: '@seny_analyst', name: 'Seny (Analista VNA)', globalRole: 'ai-agent',
-            profile: { isAi: true, apiCostPerHour: 0.15, vision: "Experto en topología de red. Detecta cuellos de botella.", structural_affinity: ["@dosos"] }
-        },
-        {
-            id: '@aixecador_pm', name: 'Aixecador (Sprint PM)', globalRole: 'ai-agent',
-            profile: { isAi: true, apiCostPerHour: 0.10, vision: "Actualiza el Kanban en tiempo real y ajusta Work Orders.", structural_affinity: ["@aixecador"] }
-        },
-        {
-            id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent',
-            profile: { isAi: true, apiCostPerHour: 0.05, vision: "Ayuda a humanos a definir su perfil y encontrar tareas afines.", structural_affinity: ["@pinya"] }
-        },
-        {
-            id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent',
-            profile: { isAi: true, apiCostPerHour: 0.40, vision: "Pica código, redacta documentos y ejecuta tareas tangibles.", structural_affinity: ["@baixos"] }
-        },
-        {
-            id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent',
-            profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita valor, sella pactos Slicing Pie y certifica el PoW.", structural_affinity: ["@dosos"] }
-        }
+        { id: '@genesi_ai', name: 'Gènesi (Setup & Visión)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.25, vision: "Crea redes, mapas VNA y sprints iniciales.", structural_affinity: ["@anxaneta"] } },
+        { id: '@seny_analyst', name: 'Seny (Analista VNA)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.15, vision: "Experto en topología de red. Detecta cuellos de botella.", structural_affinity: ["@dosos"] } },
+        { id: '@aixecador_pm', name: 'Aixecador (Sprint PM)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.10, vision: "Actualiza el Kanban en tiempo real y ajusta Work Orders.", structural_affinity: ["@aixecador"] } },
+        { id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.05, vision: "Ayuda a humanos a definir su perfil y encontrar tareas afines.", structural_affinity: ["@pinya"] } },
+        { id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.40, vision: "Pica código, redacta documentos y ejecuta tareas tangibles.", structural_affinity: ["@baixos"] } },
+        { id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita valor, sella pactos Slicing Pie y certifica el PoW.", structural_affinity: ["@dosos"] } }
     ],
     projects: [],
     session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
@@ -72,12 +56,8 @@ async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
 
     switch (action.type) {
-        case 'LOGOUT_USER':
-            newState.session = { activeUserId: null, role: 'guest' };
-            break;
-        case 'UPDATE_GLOBAL_CONFIG': 
-            newState.config = { ...newState.config, ...action.payload };
-            break;
+        case 'LOGOUT_USER': newState.session = { activeUserId: null, role: 'guest' }; break;
+        case 'UPDATE_GLOBAL_CONFIG': newState.config = { ...newState.config, ...action.payload }; break;
         case 'ADD_USER': {
             const exists = newState.globalUsers.find(u => u.id === action.payload.id);
             if (!exists) newState.globalUsers.push({ ...action.payload, globalRole: 'network-user', profile: { sbt_skills: [] } });
@@ -88,10 +68,6 @@ async function asyncReducer(state, action) {
             if (uIdx > -1) newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
             break;
         }
-
-        // ==========================================
-        // PROYECTOS, SPRINTS Y MAPA VNA
-        // ==========================================
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
                 const sprintId = 'sp_' + Date.now();
@@ -99,16 +75,12 @@ async function asyncReducer(state, action) {
                     ...action.payload, 
                     createdAt: Date.now(),
                     roles: action.payload.roles || [],
-                    // Inyectamos a los agentes críticos de SOS automáticamente en la red
                     usuarios: action.payload.usuarios || [
                         { id: newState.session.activeUserId, permissions: { canCreateWO: true, canApprove: true } },
                         { id: '@genesi_ai', permissions: { canCreateWO: true, canApprove: false } },
                         { id: '@aixecador_pm', permissions: { canCreateWO: true, canApprove: false } }
                     ],
-                    vna_flows: action.payload.vna_flows || [],
-                    work_orders: action.payload.work_orders || [],
-                    ledger: action.payload.ledger || [],
-                    asignaciones: action.payload.asignaciones || [],
+                    vna_flows: action.payload.vna_flows || [], work_orders: action.payload.work_orders || [], ledger: action.payload.ledger || [], asignaciones: action.payload.asignaciones || [],
                     sprints: [{ id: sprintId, name: 'Sprint 1', status: 'active', createdAt: Date.now() }],
                     activeSprintId: sprintId
                 });
@@ -189,10 +161,6 @@ async function asyncReducer(state, action) {
             }
             break;
         }
-        
-        // ==========================================
-        // KANBAN CORE Y FASE 3 (EXTRAPOLACIÓN SBT)
-        // ==========================================
         case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
@@ -250,14 +218,14 @@ async function asyncReducer(state, action) {
                     const slices = (wo.realHours || 1) * fmv * multiplier;
                     wo.valorCongelado = slices;
 
-                    // 1. MINE SLICES IN LEDGER
+                    // 1. MINE SLICES IN LEDGER (Cripto-Economía)
                     pWoApp.ledger.push({
                         id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId, sprintId: wo.sprintId,
                         horas: wo.realHours || 1, multiplier: multiplier, fmv: fmv,
                         valorCongelado: slices, timestamp: Date.now(), description: deliverableName
                     });
 
-                    // 2. FASE 3: MINE SOULBOUND TOKENS (SKILLS)
+                    // 2. MINE SOULBOUND TOKENS (Skills)
                     const gUserIndex = newState.globalUsers.findIndex(u => u.id === wo.assigneeId);
                     if (gUserIndex > -1) {
                         let profile = newState.globalUsers[gUserIndex].profile;
@@ -269,17 +237,50 @@ async function asyncReducer(state, action) {
                         const existingSkill = profile.sbt_skills.find(s => s.name === skillName);
                         if (existingSkill) {
                             existingSkill.exp += expGained;
-                            // Curva de Nivel RPG (Raíz cuadrada de la EXP)
-                            existingSkill.level = Math.floor(Math.sqrt(existingSkill.exp)) + 1;
+                            existingSkill.level = Math.floor(Math.sqrt(existingSkill.exp)) + 1; // Curva RPG
                         } else {
                             profile.sbt_skills.push({ name: skillName, exp: expGained, level: 1 });
                         }
                     }
 
-                    // FASE LMS AUTO-UPDATE (Simulación)
-                    // En la vida real aquí haríamos un KB.saveDocument()
-                    console.log(`[LMS Auto-Sync] Nuevo patrón de conocimiento extraído del entregable: ${deliverableName}`);
+                    // 3. LMS HOOK (Auto-Aprendizaje Semántico NO-DRY)
+                    // Guardamos la resolución exitosa como una directriz para futuras referencias IA
+                    const kbDoc = {
+                        id: 'kb_auto_' + Date.now(),
+                        projectId: action.payload.projectId,
+                        type: 'manual',
+                        sector: pWoApp.sector || 'general',
+                        roleTarget: levelId,
+                        title: `Caso de Éxito: ${deliverableName}`,
+                        content: `Resolución validada de Work Order (${wo.realHours}h). \n\nContexto: ${wo.comentario || 'N/A'}\n\nPrueba de Trabajo (PoW): ${wo.proofLink || 'Ejecución Interna'}`
+                    };
+                    
+                    // No usamos await dentro del reducer para no bloquear el flujo síncrono del state
+                    // Lo disparamos "al vuelo" a la IndexedDB
+                    KB.saveDocument(kbDoc).catch(e => console.error("Fallo al inyectar auto-aprendizaje en LMS", e));
+                    console.log(`[LMS Auto-Sync] Patrón de conocimiento inyectado en IndexedDB: ${deliverableName}`);
                 }
+            }
+            break;
+        }
+
+        case 'ADD_CAPITAL_INJECTION': {
+            const pCap = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pCap) {
+                let multiplier = 2.0; 
+                if (action.payload.assetType === 'cash') multiplier = 4.0;
+                const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
+                const archFactor = archFactors[pCap.archetype] || 1.0;
+                const valorGenerado = action.payload.amount * multiplier * archFactor;
+
+                if (!pCap.ledger) pCap.ledger = [];
+                pCap.ledger.push({
+                    id: 'ledg_' + Math.random().toString(36).substr(2, 9),
+                    hash: '0xCAP_' + Date.now(),
+                    userId: action.payload.userId, roleId: 'CAPITAL_ASSET',
+                    description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
+                    horas: 0, valorCongelado: valorGenerado, timestamp: Date.now()
+                });
             }
             break;
         }
@@ -315,7 +316,6 @@ class Store {
                 this.state = JSON.parse(saved);
                 if (!this.state.agents) this.state.agents = initialState.agents;
                 
-                // Aseguramos que los Agentes IA nativos existan en globalUsers
                 initialState.globalUsers.forEach(initialU => {
                     if (initialU.globalRole === 'ai-agent' && !this.state.globalUsers.find(u => u.id === initialU.id)) {
                         this.state.globalUsers.push(initialU);
@@ -330,9 +330,7 @@ class Store {
                         activeSprintId: p.activeSprintId || p.sprints?.[0]?.id || 'sp_default'
                     }));
                 }
-            } catch (e) {
-                this.state = initialState;
-            }
+            } catch (e) { this.state = initialState; }
         } else {
             this.state = initialState;
         }
