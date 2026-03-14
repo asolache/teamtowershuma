@@ -1,5 +1,6 @@
 // v8/js/views/ProjectView.js
 import { store } from '../core/store.js';
+import { KB } from '../core/kb.js'; // INYECCIÓN A2A
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
@@ -407,7 +408,9 @@ export default class ProjectView {
             const txHash = target.dataset.hash;
             const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
 
-            // --- LÓGICA DE AUTO-EJECUCIÓN DE IA ---
+            // =========================================================================
+            // LÓGICA DE AUTO-EJECUCIÓN DE IA (CON CEREBRO A2A)
+            // =========================================================================
             if (target.classList.contains('btn-ai-exec')) {
                 if (this.isProcessingAi) return alert("Un Agente ya está trabajando en otra Work Order. Espera.");
                 
@@ -420,6 +423,12 @@ export default class ProjectView {
                 const flowRef = (currProject.vna_flows || []).find(f => f.id === taskRef?.flowId);
                 const estHours = flowRef ? (flowRef.estimatedHours || 2) : 2;
 
+                // 1. OBTENER EL ROL QUE EJECUTA LA TAREA (Origen del Flujo VNA)
+                const executingRole = currProject.roles.find(r => r.id === flowRef?.from) || { name: 'IA Node', levelId: '@baixos', guardian: 'everyman' };
+                
+                // 2. EXTRAER VISIÓN DEL PROYECTO
+                const projectVision = currProject.presentation || currProject.prompt || "Sin definir";
+
                 // Extraemos API Key
                 const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
                 let apiKey = '';
@@ -430,39 +439,47 @@ export default class ProjectView {
                 let aiResponseText = "";
 
                 if (!apiKey || apiKey.length < 5) {
-                    // Fallback Dummy si el usuario no ha puesto claves (para que la app no colapse en demo)
                     await new Promise(r => setTimeout(r, 2000));
                     aiResponseText = `[Simulación Modo Offline]\nEl Agente IA ha procesado la Work Order basándose en el marco del proyecto. Documento estructurado entregado.`;
                 } else {
-                    // LLAMADA REAL A LA API
-                    const prompt = `
-                        Eres un Agente del ecosistema TeamTowers.
-                        Rol Asignado: ${taskRef?.assigneeId || 'IA Node'}
-                        Tarea: ${flowRef?.template || 'Generar Entregable'}
-                        Contexto del usuario: ${taskRef?.comentario || 'N/A'}
+                    
+                    // 3. 🧠 LLAMADA AL CEREBRO A2A (KB) PARA COMPILAR EL SYSTEM PROMPT
+                    let systemPrompt = "Actúas como un trabajador digital eficiente.";
+                    try {
+                        await KB.init();
+                        systemPrompt = await KB.getAgentContext(currProject.id, executingRole, projectVision);
+                        console.log(`🧠 [A2A] System Prompt Cargado para [${executingRole.name}]:\n`, systemPrompt);
+                    } catch(err) {
+                        console.warn("No se pudo cargar el contexto A2A de la base de datos, usando fallback genérico.", err);
+                    }
+
+                    // 4. PROMPT DE USUARIO (La Tarea en sí)
+                    const userPrompt = `
+                        TAREA A EJECUTAR (Entregable esperado): ${flowRef?.template || 'Generar Entregable'}
+                        CONTEXTO ADICIONAL DEL USUARIO: ${taskRef?.comentario || 'N/A'}
                         
-                        Por favor, redacta el contenido de este entregable. Sé directo, profesional y claro.
+                        Instrucción: Redacta el entregable final cumpliendo con los estándares de tu rol, tu arquetipo guardián, y la visión del proyecto. Sé directo, profesional y claro.
                     `;
 
                     try {
                         if (provider === 'openai') {
                             const res = await fetch('https://api.openai.com/v1/chat/completions', {
                                 method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                                body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: "Actúas como un trabajador digital eficiente." }, { role: "user", content: prompt }] })
+                                body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }] })
                             });
                             const data = await res.json();
                             aiResponseText = data.choices[0].message.content;
                         } else if (provider === 'deepseek') {
                             const res = await fetch('https://api.deepseek.com/chat/completions', {
                                 method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                                body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: "Trabajador digital experto." }, { role: "user", content: prompt }] })
+                                body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }] })
                             });
                             const data = await res.json();
                             aiResponseText = data.choices[0].message.content;
                         } else if (provider === 'gemini') {
                             const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                                body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }] })
                             });
                             const data = await res.json();
                             aiResponseText = data.candidates[0].content.parts[0].text;
@@ -478,8 +495,8 @@ export default class ProjectView {
                     payload: { 
                         projectId: currProject.id, 
                         woHash: txHash, 
-                        realHours: estHours, // La IA asume las horas estimadas para cobrar su equity
-                        comentario: aiResponseText, // El output se guarda como comentario/entregable
+                        realHours: estHours, 
+                        comentario: aiResponseText, 
                         proofLink: 'Agent_Auto_Report' 
                     } 
                 });
