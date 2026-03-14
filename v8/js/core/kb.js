@@ -1,5 +1,5 @@
 // v8/js/core/kb.js
-// Motor de Memoria Profunda (IndexedDB) para el LMS Semántico
+// Motor de Memoria Profunda (IndexedDB) y Compilador A2A (Agent-to-Agent)
 
 // ONTOLOGÍA BASE (Ecosistemas)
 const NATIVE_ONTOLOGY = {
@@ -104,7 +104,7 @@ const NATIVE_ONTOLOGY = {
     }
 };
 
-// META-CONOCIMIENTO (VNA & PANTHEON) PARA ALIMENTAR A LOS AGENTES
+// META-CONOCIMIENTO GLOBAL
 const META_DOCS = [
     {
         id: 'meta_vna_core',
@@ -113,13 +113,12 @@ const META_DOCS = [
         roleTarget: 'Global',
         title: 'Value Network Analysis (VNA) - Core Theory',
         content: `Metodología base: Value Network Analysis de Verna Allee. 
-        Un ecosistema no es una jerarquía, es una red de creación de valor (Value Network). Una 'Value Network' es cualquier conjunto de roles e interacciones donde las personas se involucran en intercambios tangibles e intangibles para lograr un bien económico o social. [cite: 33] 
-        - Roles: Son los agentes activos. Ejecutan funciones y controlan recursos para generar "entregables". Los roles describen cómo las personas contribuyen a una actividad particular. [cite: 170, 172, 176] No deben confundirse con Job Titles.
-        - Transacciones (Tuberías): Ocurre cuando un entregable (deliverable) originado por un rol es transmitido y recibido por otro rol. [cite: 64] 
-        - Tangibles: Intercambios contractuales, ingresos, o productos/servicios esperados y formales que generan retorno financiero (ej. Código, Informes, Dinero). La determinación de si un entregable es tangible o intangible depende de su naturaleza contractual, no física. [cite: 53, 155, 157]
-        - Intangibles: Intercambios informales de conocimiento (ej. información estratégica, know-how técnico) y beneficios/favores que construyen relaciones y mantienen la red funcionando suavemente, pero no son contractuales. [cite: 52, 159, 160, 161, 166] 
-        La economía molecular se basa en el intercambio; las transacciones intangibles son una forma de "trueque" vital para construir relaciones empresariales. [cite: 57, 88, 89] El éxito futuro de una compañía depende de su eficiencia para convertir una forma de valor (tangible o intangible) en otra (Value Conversion). [cite: 14, 92] El Análisis de Impacto y el Análisis de Creación de Valor son cruciales para entender cómo se realiza y crea este valor a través de los activos y roles de la red. [cite: 150, 331, 407]
-        Regla para Agentes IA: Al diseñar o auditar redes, asegura siempre un equilibrio entre flujos tangibles (sostenibilidad económica) y flujos intangibles (resiliencia y conocimiento).`
+        Un ecosistema no es una jerarquía, es una red de creación de valor (Value Network). Una 'Value Network' es cualquier conjunto de roles e interacciones donde las personas se involucran en intercambios tangibles e intangibles para lograr un bien económico o social.
+        - Roles: Son los agentes activos. Ejecutan funciones y controlan recursos para generar "entregables". No deben confundirse con Job Titles.
+        - Transacciones: Ocurre cuando un entregable originado por un rol es transmitido a otro.
+        - Tangibles: Intercambios contractuales, productos formales que generan retorno (ej. Código, Informes).
+        - Intangibles: Intercambios informales de conocimiento y soporte vitales para construir relaciones.
+        Regla A2A: Al diseñar redes, asegura siempre un equilibrio entre flujos tangibles e intangibles.`
     },
     {
         id: 'meta_pantheon_core',
@@ -128,29 +127,15 @@ const META_DOCS = [
         roleTarget: 'Global',
         title: 'Pantheon Work - Los 12 Guardianes',
         content: `Metodología: Pantheon Work (Alineación de equipos mediante Arquetipos).
-        Las organizaciones son ecosistemas complejos. Para gobernarlas, utilizamos el modelo de los 12 Dioses Olímpicos (Guardianes), que representan distintas lógicas de acción y aseguran la estabilidad estructural del sistema. [cite: 651, 657, 659, 740] 
-        Los guardianes no son roles de proyecto (como @anxaneta), son 'Autoridades Intangibles'. Son referentes a los que el grupo reconoce tener "la última palabra" en ciertas palabras clave o dominios de acción. [cite: 743, 753, 754] Aseguran que su área de competencia no sea desatendida.
-        Lógica Trivalente: Los guardianes se agrupan en tres orientaciones dinámicas para mantener el equilibrio: Separar, Mezclar, Relacionar. [cite: 825, 854, 856]
-        Arquetipos principales y palabras clave:
-        1. Zeus (Gobernante): Liderazgo, Poder, Justicia.
-        2. Hera (Cuidador): Compromiso, Familia, Vínculos.
-        3. Poseidón (Explorador): Emociones profundas, Instinto, Fuerza Bruta.
-        4. Demeter (Inocente): Cuidado, Nutrición, Crecimiento.
-        5. Ares/Héroe (Ejecución): Conflicto, Acción, Determinación.
-        6. Atenea (Sabio): Estrategia (práctica), Destreza, Civismo. [cite: 908]
-        7. Apolo (Creador): Análisis, Conocimiento Teórico, Depuración. [cite: 902]
-        8. Artemisa/Amante: Naturaleza, Independencia, Foco.
-        9. Hermes (Mago/Guía): Comunicación, Transgresión, Invención. [cite: 1030, 1033, 1037]
-        10. Hefesto (Trabajador): Forja, Tecnología, Persistencia.
-        11. Afrodita (Seductor): Estética, Belleza, Creatividad. [cite: 895]
-        12. Dionisio (Bufón): Socialización, Celebración, Hedonismo, Invención. [cite: 917]
-        Regla para Agentes IA: Al diseñar una red, no asignes siempre "Magician" o "Creator". Un CEO (@anxaneta) puede ser un Zeus (Ruler) o un Poseidón (Explorador). Un @baixos (Dev) suele ser Hefesto o Apolo. El soporte (@pinya) suele ser Demeter (Caregiver). Usa esta matriz para diversificar la inteligencia colectiva del equipo y mejorar la toma de decisiones. [cite: 751]`
+        Los guardianes no son roles de proyecto, son 'Autoridades Intangibles'. Son referentes a los que el grupo reconoce tener "la última palabra" en ciertos dominios.
+        1. Zeus (Gobernante): Liderazgo, Poder. 2. Hera (Cuidador): Compromiso. 3. Poseidón (Explorador): Instinto. 4. Demeter (Inocente): Nutrición. 5. Ares (Héroe): Ejecución. 6. Atenea (Sabio): Estrategia. 7. Apolo (Creador): Análisis. 8. Artemisa (Amante): Foco. 9. Hermes (Mago): Comunicación. 10. Hefesto (Trabajador): Tecnología. 11. Afrodita (Seductor): Estética. 12. Dionisio (Bufón): Socialización.
+        Regla A2A: Usa esta matriz para diversificar la inteligencia colectiva y ajustar la voz del prompt del agente.`
     }
 ];
 
 export const KB = {
     dbName: 'TeamTowers_LMS_V8',
-    dbVersion: 4, // Actualizada para forzar inyección de Meta-Docs
+    dbVersion: 5, // Incrementado para la actualización A2A
     db: null,
 
     init() {
@@ -181,7 +166,6 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const docs = await this.getAllDocuments();
         
-        // 1. INYECTAR GENOMA ONTOLÓGICO (SECTORES Y ROLES)
         const ontologyDocs = docs.filter(d => d.type === 'ontology');
         if (ontologyDocs.length === 0) {
             console.log("🌱 [KB] Sembrando los 9 Genomas Ontológicos (Ecosistemas)...");
@@ -193,7 +177,7 @@ export const KB = {
                 });
 
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
-                    const contentStr = `Rol: ${roleData.name} (${levelKey}). Multiplicador de riesgo: x${roleData.multiplier}. FMV Base: €${roleData.fmv}/h. \nEntregables esperados: ${roleData.standard_deliverables.map(d => `${d.name} (${d.estimatedHours}h, ${d.tipo})`).join(', ')}.`;
+                    const contentStr = `Rol Genérico: ${roleData.name} (${levelKey}). FMV Base: €${roleData.fmv}/h.`;
                     await this.saveDocument({
                         id: `onto_${sectorKey}_${levelKey.replace('@','')}`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label,
                         roleTarget: levelKey, title: `Arquetipo: ${roleData.name} en ${sectorData.label}`, content: contentStr, deliverables: roleData.standard_deliverables
@@ -202,10 +186,9 @@ export const KB = {
             }
         }
 
-        // 2. INYECTAR META-METODOLOGÍAS (VNA & PANTHEON)
         const methodologyDocs = docs.filter(d => d.type === 'methodology');
         if (methodologyDocs.length === 0) {
-            console.log("🧠 [KB] Sembrando Meta-Conocimiento (VNA & Pantheon) para Agentes IA...");
+            console.log("🧠 [KB] Sembrando Meta-Conocimiento (VNA & Pantheon)...");
             for (const mDoc of META_DOCS) {
                 await this.saveDocument(mDoc);
             }
@@ -273,5 +256,45 @@ export const KB = {
             }
         });
         return sectors;
+    },
+
+    // =========================================================
+    // 🧠 COMPILADOR A2A (AGENT-TO-AGENT) - CORE V8.5
+    // =========================================================
+    // Esta función forja el System Prompt perfecto para un Agente
+    // extrayendo dinámicamente las Leyes (VNA) + Nivel + Contexto Único del Proyecto
+    async getAgentContext(projectId, roleObj, projectVision) {
+        await this.init();
+        const docs = await this.getAllDocuments();
+        
+        // 1. Extraer Leyes Universales (Metodologías)
+        const vnaMeta = docs.find(d => d.id === 'meta_vna_core')?.content || '';
+        const pantheonMeta = docs.find(d => d.id === 'meta_pantheon_core')?.content || '';
+
+        // 2. Extraer Instrucciones Específicas del Rol en ese Proyecto (Si el Epistemólogo las creó)
+        const projectSpecificDocs = docs.filter(d => d.projectId === projectId && d.roleTarget === roleObj.id);
+        const specificContext = projectSpecificDocs.map(d => d.content).join('\n');
+
+        // 3. Ensamblar el Genoma Computacional (El System Prompt)
+        return `
+            Eres un Agente Autónomo operando dentro de TeamTowers V8.
+            
+            [LEYES DE LA FÍSICA DEL ECOSISTEMA]
+            ${vnaMeta}
+            ${pantheonMeta}
+
+            [TU IDENTIDAD EN ESTE CASTELL]
+            Nombre de tu Silla: ${roleObj.name}
+            Nivel Estructural: ${roleObj.levelId}
+            Tu Guardián / Arquetipo: ${roleObj.guardian || 'everyman'}
+            
+            [MISIÓN DEL PROYECTO]
+            ${projectVision}
+
+            [TU CONTEXTO ESPECÍFICO / ENTREGABLES]
+            ${specificContext || 'Ejecuta las Work Orders que se te asignen basándote en tu sentido común y arquetipo.'}
+
+            INSTRUCCIÓN A2A: Al procesar la tarea, asume completamente la voz, responsabilidades y el enfoque filosófico de tu arquetipo guardián.
+        `.replace(/\s+/g, ' ').trim(); 
     }
 };
