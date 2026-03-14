@@ -1,6 +1,6 @@
 // v8/js/core/store.js
 // ==========================================================================
-// KERNEL V8 - AGENTIC AI STORE (Con Motor de Sprints)
+// KERNEL V8 - AGENTIC AI STORE (Motor P2P y Sprints)
 // Motor de Estado Local-First, Triple Entrada, Gobernanza P2P y Slicing Pie
 // ==========================================================================
 
@@ -173,7 +173,7 @@ async function asyncReducer(state, action) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
                 pWoAdd.work_orders.push({ 
                     ...action.payload.workOrder, 
-                    sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId, // Asignar al sprint
+                    sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId, // Asignar al sprint activo
                     timestamp: Date.now() 
                 });
             }
@@ -266,7 +266,31 @@ class Store {
     constructor() {
         this.storageKey = 'tt_sos_v8_state';
         this.listeners = [];
+        
+        // 📡 MOTOR DE SINCRONIZACIÓN P2P (Broadcast Channel API)
+        // Permite que múltiples pestañas/agentes se sincronicen en tiempo real sin servidor.
+        this.swarmChannel = new BroadcastChannel('teamtowers_swarm_v8');
+        this.setupP2P();
+
         this.loadState();
+    }
+
+    setupP2P() {
+        this.swarmChannel.onmessage = (event) => {
+            if (event.data.type === 'STATE_SYNC') {
+                console.log("📡 [Swarm P2P] Ping recibido. Sincronizando Kernel.");
+                try {
+                    const incomingState = JSON.parse(event.data.payload);
+                    this.state = incomingState;
+                    this.notifyListeners();
+                    
+                    // Emitimos un evento global para que las vistas (como Kanban) se repinten
+                    window.dispatchEvent(new Event('swarm_update'));
+                } catch(e) {
+                    console.error("Error P2P:", e);
+                }
+            }
+        };
     }
 
     loadState() {
@@ -301,8 +325,14 @@ class Store {
     getState() { return this.state; }
 
     saveState() {
-        localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+        const stateString = JSON.stringify(this.state);
+        localStorage.setItem(this.storageKey, stateString);
+        
+        // Notificamos a la pestaña actual
         this.notifyListeners();
+        
+        // 📡 EMISIÓN P2P: Notificamos al resto del enjambre
+        this.swarmChannel.postMessage({ type: 'STATE_SYNC', payload: stateString });
     }
 
     async dispatch(action) {
@@ -318,6 +348,9 @@ class Store {
     
     notifyListeners() { this.listeners.forEach(listener => listener()); }
 
+    // =========================================================
+    // MÉTODOS DE GOBERNANZA Y SEGURIDAD (RBAC)
+    // =========================================================
     canUserViewProject(projectId, userId, globalRole) {
         if (globalRole === 'ecosystem-owner') return true; 
         const p = this.state.projects.find(x => x.id === projectId);
@@ -346,6 +379,9 @@ class Store {
         return false;
     }
 
+    // =========================================================
+    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA
+    // =========================================================
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return 100;
