@@ -1,12 +1,12 @@
 // v8/js/core/store.js
 // ==========================================================================
-// KERNEL V8 - AGENTIC AI STORE (Motor P2P y Sprints)
-// Motor de Estado Local-First, Triple Entrada, Gobernanza P2P y Slicing Pie
+// KERNEL V8.2 - AGENTIC AI STORE & SBT SKILLS ENGINE
+// Motor Local-First con Agentes IA Nativos y Extrapolación de Habilidades
 // ==========================================================================
 
 const initialState = {
     config: {
-        version: '8.1.0',
+        version: '8.2.0',
         ecosystemName: 'TeamTowers Agentic Network',
         globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
         archetype: 'startup',
@@ -20,20 +20,53 @@ const initialState = {
             wallet: '0xMasterArchitect...',
             profile: {
                 vision: "Master Architect V8. Guiando a la IA, no programando para ella.",
-                structural_affinity: ["@anxaneta"],
+                structural_affinity: ["@anxaneta", "@aixecador"],
                 guardian_authority: ["creator", "magician"],
-                isOpenToWork: true
+                isOpenToWork: true,
+                sbt_skills: [] // Fase 3: Inventario de Skills inmutables
             }
+        },
+        // --- LOS 6 GUARDIANES IA (Nativos del Ecosistema) ---
+        {
+            id: '@genesi_ai', name: 'Gènesi (Setup & Visión)', globalRole: 'ai-agent',
+            profile: { isAi: true, apiCostPerHour: 0.25, vision: "Crea redes, mapas VNA y sprints iniciales.", structural_affinity: ["@anxaneta"] }
+        },
+        {
+            id: '@seny_analyst', name: 'Seny (Analista VNA)', globalRole: 'ai-agent',
+            profile: { isAi: true, apiCostPerHour: 0.15, vision: "Experto en topología de red. Detecta cuellos de botella.", structural_affinity: ["@dosos"] }
+        },
+        {
+            id: '@aixecador_pm', name: 'Aixecador (Sprint PM)', globalRole: 'ai-agent',
+            profile: { isAi: true, apiCostPerHour: 0.10, vision: "Actualiza el Kanban en tiempo real y ajusta Work Orders.", structural_affinity: ["@aixecador"] }
+        },
+        {
+            id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent',
+            profile: { isAi: true, apiCostPerHour: 0.05, vision: "Ayuda a humanos a definir su perfil y encontrar tareas afines.", structural_affinity: ["@pinya"] }
+        },
+        {
+            id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent',
+            profile: { isAi: true, apiCostPerHour: 0.40, vision: "Pica código, redacta documentos y ejecuta tareas tangibles.", structural_affinity: ["@baixos"] }
+        },
+        {
+            id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent',
+            profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita valor, sella pactos Slicing Pie y certifica el PoW.", structural_affinity: ["@dosos"] }
         }
-    ],
-    agents: [
-        { id: '@PM_Sprint', role: '@aixecador', fmv: 100, active: true },
-        { id: '@Dev_Store', role: '@dosos', fmv: 80, active: true },
-        { id: '@UX_Weaver', role: '@baixos', fmv: 60, active: true }
     ],
     projects: [],
     session: { activeUserId: 'usr_alvaro_001', role: 'ecosystem-owner' }
 };
+
+// Helper: Inferencia Semántica Ligera para SBTs
+function inferSkillCategory(levelId, deliverableName) {
+    const descLower = deliverableName.toLowerCase();
+    if (descLower.includes('código') || descLower.includes('api') || descLower.includes('dev')) return 'Ingeniería Software';
+    if (descLower.includes('diseño') || descLower.includes('ui') || descLower.includes('ux')) return 'Diseño Producto';
+    if (descLower.includes('estrategia') || descLower.includes('modelo')) return 'Visión Estratégica';
+    if (descLower.includes('qa') || descLower.includes('auditor')) return 'Quality Assurance';
+    
+    const levelMap = { '@anxaneta': 'Liderazgo', '@aixecador': 'Management', '@dosos': 'Auditoría', '@baixos': 'Ejecución Técnica', '@pinya': 'Operaciones' };
+    return levelMap[levelId] || 'Contribución General';
+}
 
 async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
@@ -42,26 +75,23 @@ async function asyncReducer(state, action) {
         case 'LOGOUT_USER':
             newState.session = { activeUserId: null, role: 'guest' };
             break;
-
         case 'UPDATE_GLOBAL_CONFIG': 
             newState.config = { ...newState.config, ...action.payload };
             break;
-            
         case 'ADD_USER': {
             const exists = newState.globalUsers.find(u => u.id === action.payload.id);
-            if (!exists) newState.globalUsers.push({ ...action.payload, globalRole: 'network-user' });
+            if (!exists) newState.globalUsers.push({ ...action.payload, globalRole: 'network-user', profile: { sbt_skills: [] } });
             break;
         }
-
         case 'UPDATE_USER_PROFILE': {
             const uIdx = newState.globalUsers.findIndex(u => u.id === action.payload.userId);
-            if (uIdx > -1) {
-                newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
-            }
+            if (uIdx > -1) newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
             break;
         }
 
-        case 'INIT_PROJECT_GENESIS':
+        // ==========================================
+        // PROYECTOS, SPRINTS Y MAPA VNA
+        // ==========================================
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
                 const sprintId = 'sp_' + Date.now();
@@ -69,7 +99,12 @@ async function asyncReducer(state, action) {
                     ...action.payload, 
                     createdAt: Date.now(),
                     roles: action.payload.roles || [],
-                    usuarios: action.payload.usuarios || [{ id: newState.session.activeUserId, permissions: { canCreateWO: true, canApprove: true } }],
+                    // Inyectamos a los agentes críticos de SOS automáticamente en la red
+                    usuarios: action.payload.usuarios || [
+                        { id: newState.session.activeUserId, permissions: { canCreateWO: true, canApprove: true } },
+                        { id: '@genesi_ai', permissions: { canCreateWO: true, canApprove: false } },
+                        { id: '@aixecador_pm', permissions: { canCreateWO: true, canApprove: false } }
+                    ],
                     vna_flows: action.payload.vna_flows || [],
                     work_orders: action.payload.work_orders || [],
                     ledger: action.payload.ledger || [],
@@ -80,7 +115,6 @@ async function asyncReducer(state, action) {
             }
             break;
         }
-
         case 'UPDATE_PROJECT_INFO': {
             const pInfo = newState.projects.find(p => p.id === action.payload.projectId);
             if (pInfo) {
@@ -96,17 +130,13 @@ async function asyncReducer(state, action) {
             }
             break;
         }
-
-        // ==========================================
-        // MOTOR DE SPRINTS V8.1
-        // ==========================================
         case 'CREATE_SPRINT': {
             const pSp = newState.projects.find(p => p.id === action.payload.projectId);
             if (pSp) {
                 const newSprint = { id: 'sp_' + Date.now(), name: action.payload.name, status: 'active', createdAt: Date.now() };
                 if (!pSp.sprints) pSp.sprints = [];
                 pSp.sprints.push(newSprint);
-                pSp.activeSprintId = newSprint.id; // Auto-foco al nuevo sprint
+                pSp.activeSprintId = newSprint.id;
             }
             break;
         }
@@ -115,10 +145,6 @@ async function asyncReducer(state, action) {
             if (pSpAct) pSpAct.activeSprintId = action.payload.sprintId;
             break;
         }
-
-        // ==========================================
-        // TOPOLOGÍA VNA Y ROLES
-        // ==========================================
         case 'ADD_ROLE': {
             const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
             if (pAddRol) pAddRol.roles.push(action.payload.role);
@@ -165,7 +191,7 @@ async function asyncReducer(state, action) {
         }
         
         // ==========================================
-        // KANBAN CORE (WORK ORDERS)
+        // KANBAN CORE Y FASE 3 (EXTRAPOLACIÓN SBT)
         // ==========================================
         case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
@@ -173,7 +199,7 @@ async function asyncReducer(state, action) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
                 pWoAdd.work_orders.push({ 
                     ...action.payload.workOrder, 
-                    sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId, // Asignar al sprint activo
+                    sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId,
                     timestamp: Date.now() 
                 });
             }
@@ -213,48 +239,47 @@ async function asyncReducer(state, action) {
                     let flow = (pWoApp.vna_flows || []).find(f => f.id === wo.flowId);
                     let multiplier = 1; let fmv = 50; let roleId = 'Unknown';
                     let deliverableName = 'Work Order Instanciada';
+                    let levelId = '@baixos';
 
                     if (flow) {
                         roleId = flow.to; deliverableName = flow.template || flow.entregable || 'Entregable';
                         const role = pWoApp.roles.find(r => r.id === roleId);
-                        if (role) { multiplier = role.multiplier || 1; fmv = role.fmv || 50; }
+                        if (role) { multiplier = role.multiplier || 1; fmv = role.fmv || 50; levelId = role.levelId; }
                     }
 
                     const slices = (wo.realHours || 1) * fmv * multiplier;
                     wo.valorCongelado = slices;
 
+                    // 1. MINE SLICES IN LEDGER
                     pWoApp.ledger.push({
                         id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId, sprintId: wo.sprintId,
                         horas: wo.realHours || 1, multiplier: multiplier, fmv: fmv,
                         valorCongelado: slices, timestamp: Date.now(), description: deliverableName
                     });
+
+                    // 2. FASE 3: MINE SOULBOUND TOKENS (SKILLS)
+                    const gUserIndex = newState.globalUsers.findIndex(u => u.id === wo.assigneeId);
+                    if (gUserIndex > -1) {
+                        let profile = newState.globalUsers[gUserIndex].profile;
+                        if (!profile.sbt_skills) profile.sbt_skills = [];
+                        
+                        const skillName = inferSkillCategory(levelId, deliverableName);
+                        const expGained = wo.realHours || 1;
+
+                        const existingSkill = profile.sbt_skills.find(s => s.name === skillName);
+                        if (existingSkill) {
+                            existingSkill.exp += expGained;
+                            // Curva de Nivel RPG (Raíz cuadrada de la EXP)
+                            existingSkill.level = Math.floor(Math.sqrt(existingSkill.exp)) + 1;
+                        } else {
+                            profile.sbt_skills.push({ name: skillName, exp: expGained, level: 1 });
+                        }
+                    }
+
+                    // FASE LMS AUTO-UPDATE (Simulación)
+                    // En la vida real aquí haríamos un KB.saveDocument()
+                    console.log(`[LMS Auto-Sync] Nuevo patrón de conocimiento extraído del entregable: ${deliverableName}`);
                 }
-            }
-            break;
-        }
-
-        case 'ADD_CAPITAL_INJECTION': {
-            const pCap = newState.projects.find(p => p.id === action.payload.projectId);
-            if (pCap) {
-                let multiplier = 2.0; 
-                if (action.payload.assetType === 'cash') multiplier = 4.0;
-                
-                const archFactors = { 'startup': 2.0, 'corporate': 1.0, 'corp': 1.0, 'dao': 1.5 };
-                const archFactor = archFactors[pCap.archetype] || 1.0;
-                const valorGenerado = action.payload.amount * multiplier * archFactor;
-
-                if (!pCap.ledger) pCap.ledger = [];
-                
-                pCap.ledger.push({
-                    id: 'ledg_' + Math.random().toString(36).substr(2, 9),
-                    hash: '0xCAP_' + Date.now(),
-                    userId: action.payload.userId, 
-                    roleId: 'CAPITAL_ASSET',
-                    description: `[Capital: ${action.payload.assetType.toUpperCase()}] ${action.payload.description}`,
-                    horas: 0, 
-                    valorCongelado: valorGenerado, 
-                    timestamp: Date.now()
-                });
             }
             break;
         }
@@ -266,29 +291,19 @@ class Store {
     constructor() {
         this.storageKey = 'tt_sos_v8_state';
         this.listeners = [];
-        
-        // 📡 MOTOR DE SINCRONIZACIÓN P2P (Broadcast Channel API)
-        // Permite que múltiples pestañas/agentes se sincronicen en tiempo real sin servidor.
         this.swarmChannel = new BroadcastChannel('teamtowers_swarm_v8');
         this.setupP2P();
-
         this.loadState();
     }
 
     setupP2P() {
         this.swarmChannel.onmessage = (event) => {
             if (event.data.type === 'STATE_SYNC') {
-                console.log("📡 [Swarm P2P] Ping recibido. Sincronizando Kernel.");
                 try {
-                    const incomingState = JSON.parse(event.data.payload);
-                    this.state = incomingState;
+                    this.state = JSON.parse(event.data.payload);
                     this.notifyListeners();
-                    
-                    // Emitimos un evento global para que las vistas (como Kanban) se repinten
                     window.dispatchEvent(new Event('swarm_update'));
-                } catch(e) {
-                    console.error("Error P2P:", e);
-                }
+                } catch(e) { console.error("Error P2P:", e); }
             }
         };
     }
@@ -300,21 +315,22 @@ class Store {
                 this.state = JSON.parse(saved);
                 if (!this.state.agents) this.state.agents = initialState.agents;
                 
+                // Aseguramos que los Agentes IA nativos existan en globalUsers
+                initialState.globalUsers.forEach(initialU => {
+                    if (initialU.globalRole === 'ai-agent' && !this.state.globalUsers.find(u => u.id === initialU.id)) {
+                        this.state.globalUsers.push(initialU);
+                    }
+                });
+
                 if (this.state.projects) {
                     this.state.projects = this.state.projects.map(p => ({
                         ...p,
-                        roles: p.roles || [],
-                        ledger: p.ledger || [],
-                        work_orders: p.work_orders || [],
-                        vna_flows: p.vna_flows || [],
-                        usuarios: p.usuarios || [],
-                        // AUTO-MIGRACIÓN DE SPRINTS PARA PROYECTOS ANTIGUOS
+                        roles: p.roles || [], ledger: p.ledger || [], work_orders: p.work_orders || [], vna_flows: p.vna_flows || [], usuarios: p.usuarios || [],
                         sprints: p.sprints && p.sprints.length > 0 ? p.sprints : [{ id: 'sp_default', name: 'Sprint 1', status: 'active', createdAt: Date.now() }],
                         activeSprintId: p.activeSprintId || p.sprints?.[0]?.id || 'sp_default'
                     }));
                 }
             } catch (e) {
-                console.error("Store V8: Error local. Reiniciando Génesis.", e);
                 this.state = initialState;
             }
         } else {
@@ -327,16 +343,11 @@ class Store {
     saveState() {
         const stateString = JSON.stringify(this.state);
         localStorage.setItem(this.storageKey, stateString);
-        
-        // Notificamos a la pestaña actual
         this.notifyListeners();
-        
-        // 📡 EMISIÓN P2P: Notificamos al resto del enjambre
         this.swarmChannel.postMessage({ type: 'STATE_SYNC', payload: stateString });
     }
 
     async dispatch(action) {
-        console.log(`[Store V8 Mutating] ${action.type}`);
         this.state = await asyncReducer(this.state, action);
         this.saveState();
     }
@@ -348,9 +359,6 @@ class Store {
     
     notifyListeners() { this.listeners.forEach(listener => listener()); }
 
-    // =========================================================
-    // MÉTODOS DE GOBERNANZA Y SEGURIDAD (RBAC)
-    // =========================================================
     canUserViewProject(projectId, userId, globalRole) {
         if (globalRole === 'ecosystem-owner') return true; 
         const p = this.state.projects.find(x => x.id === projectId);
@@ -363,7 +371,7 @@ class Store {
 
     canUserCreateWorkOrder(projectId, userId) {
         const globalUser = this.state.globalUsers.find(u => u.id === userId);
-        if (globalUser && globalUser.globalRole === 'ecosystem-owner') return true;
+        if (globalUser && (globalUser.globalRole === 'ecosystem-owner' || globalUser.globalRole === 'ai-agent')) return true;
         
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return false;
@@ -379,13 +387,9 @@ class Store {
         return false;
     }
 
-    // =========================================================
-    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA
-    // =========================================================
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return 100;
-        
         const oldStuck = (p.transactions || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
         const newStuck = (p.work_orders || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
         const atascos = oldStuck + newStuck;
@@ -395,19 +399,15 @@ class Store {
     calculateHarvest(projectId, totalValuation = 0) {
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p || !p.ledger || p.ledger.length === 0) return [];
-        
         let capTable = {};
         let totalSlices = 0;
-        
         p.ledger.forEach(l => {
             const key = l.userId || l.roleId || 'unknown';
             if (!capTable[key]) capTable[key] = { userId: l.userId, roleId: l.roleId, totalValue: 0 };
             capTable[key].totalValue += l.valorCongelado;
             totalSlices += l.valorCongelado;
         });
-        
         if (totalSlices === 0) return [];
-        
         return Object.keys(capTable).map(key => {
             const entry = capTable[key];
             const percentage = (entry.totalValue / totalSlices);
