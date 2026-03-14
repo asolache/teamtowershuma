@@ -276,6 +276,11 @@ export default class DashboardView {
         PageHeader.execute();
         
         const state = store.getState();
+        
+        // --- PREVENCIÓN DE ERROR: Si el usuario no tiene acceso, abortamos los listeners ---
+        const hasAccess = store.canUserViewProject(this.activeProjectId, state.session.activeUserId, state.session.role);
+        if (!hasAccess) return;
+
         const project = state.projects.find(p => p.id === this.activeProjectId);
 
         // -- LÓGICA DE TABS V8 --
@@ -311,10 +316,15 @@ export default class DashboardView {
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
         const btnDownload = document.getElementById('btnDownloadPDF');
+        const modalCloseBtn = document.getElementById('aiModalClose');
 
-        document.getElementById('aiModalClose').onclick = () => modal.style.display = 'none';
+        if (modalCloseBtn) {
+            modalCloseBtn.onclick = () => modal.style.display = 'none';
+        }
 
         const runAI = async (type) => {
+            if (!modal) return;
+            
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             let apiKey = '';
             if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
