@@ -163,23 +163,114 @@ export default class HomeView {
 
     getLandingHtml() {
         return `
-            <div class="app-layout" style="justify-content: center; align-items: center; background: radial-gradient(circle at center, #111116 0%, #050505 100%);">
-                <div style="text-align: center;">
-                    <img src="/v8/logoteamtowers.png" alt="TeamTowers" style="max-height: 80px; margin-bottom: 2rem; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <div style="display:none; font-size: 5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 20px rgba(0,176,255,0.5));">🗼</div>
+            <style>
+                .landing-layout { display: flex; height: 100vh; height: 100dvh; background: radial-gradient(circle at center, #111116 0%, #050505 100%); justify-content: center; align-items: center; font-family: system-ui, -apple-system, sans-serif; overflow: hidden; position: relative;}
+                
+                /* DECORACIÓN BACKGROUND */
+                .landing-bg-nodes { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; opacity: 0.3; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0); background-size: 60px 60px; pointer-events: none;}
+                
+                .login-card { background: rgba(15,15,20,0.8); border: 1px solid rgba(255,255,255,0.05); padding: 3rem; border-radius: 24px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 30px 60px rgba(0,0,0,0.8); backdrop-filter: blur(20px); width: 100%; max-width: 450px; z-index: 10; text-align: center; animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);}
+                
+                .logo-container { margin-bottom: 2rem; }
+                .logo-container img { max-height: 50px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));}
+                
+                .login-title { font-size: 1.8rem; color: white; margin: 0 0 10px 0; font-weight: 900; letter-spacing: -0.5px;}
+                .login-subtitle { color: #888; font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.5;}
+
+                /* WEB3 BUTTON */
+                .btn-web3 { width: 100%; background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.4); color: white; padding: 18px; border-radius: 16px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 1.5rem; position: relative; overflow: hidden;}
+                .btn-web3::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); transform: skewX(-20deg); transition: 0.5s;}
+                .btn-web3:hover::before { left: 150%; }
+                .btn-web3:hover { background: rgba(224, 64, 251, 0.2); border-color: var(--accent-purple); box-shadow: 0 0 30px rgba(224, 64, 251, 0.2);}
+
+                /* DIVIDER */
+                .divider { display: flex; align-items: center; text-align: center; color: #555; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin-bottom: 1.5rem; }
+                .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
+                .divider:not(:empty)::before { margin-right: .5em; }
+                .divider:not(:empty)::after { margin-left: .5em; }
+
+                /* SHADOW PROFILE LOGIN */
+                .form-group { text-align: left; margin-bottom: 1.5rem; }
+                .form-group label { display: block; font-size: 0.75rem; color: #aaa; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;}
+                .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box; text-align: center;}
+                .login-input:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 15px rgba(0, 176, 255, 0.1);}
+                
+                .btn-login-std { width: 100%; background: linear-gradient(135deg, var(--accent-blue), #536dfe); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s;}
+                .btn-login-std:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 176, 255, 0.3);}
+
+                @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+            </style>
+
+            <div class="landing-layout">
+                <div class="landing-bg-nodes"></div>
+                <div class="login-card">
+                    <div class="logo-container">
+                        <img src="/v8/logoteamtowers.png" alt="TeamTowers" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; font-size: 4rem; filter: drop-shadow(0 0 10px rgba(0,176,255,0.5));">🗼</div>
+                    </div>
+                    <h1 class="login-title">Kernel V8</h1>
+                    <p class="login-subtitle">Sistema de Orquestación Fractal y Equidad Criptográfica.</p>
+
+                    <button class="btn-web3" id="btnConnectWeb3">
+                        <span style="font-size:1.4rem;">🦊</span> Connect Wallet
+                    </button>
+
+                    <div class="divider">Identity / Shadow Profile</div>
+
+                    <div class="form-group">
+                        <label>ID Master Architect: usr_alvaro_001</label>
+                        <input type="text" id="inpLoginId" class="login-input" placeholder="@usuario o email...">
+                    </div>
+                    <button class="btn-login-std" id="btnConnectId">Conectar Identidad</button>
                     
-                    <h1 style="font-size: 3.5rem; color: white; letter-spacing: -1px; margin-bottom: 0.5rem; font-weight:900;">TeamTowers <span style="color: var(--accent-blue);">V8</span></h1>
-                    <p style="color: var(--text-muted); margin-bottom: 3rem; font-family: var(--font-mono); font-size:1.1rem;">Swarm Operating System (LMS & P2P)</p>
-                    
-                    <button class="btn-primary" onclick="location.reload()" style="margin: 0 auto; padding: 0 40px; height: 55px; font-size:1.1rem; box-shadow: 0 10px 30px rgba(0,176,255,0.3);">CONECTAR NODO AL KERNEL</button>
+                    <div style="margin-top: 2rem; font-size: 0.75rem; color: #555; font-family: monospace;">
+                        Si el ID no existe en el Padrón, se creará un ciudadano nuevo automáticamente (Zero-Trust).
+                    </div>
                 </div>
             </div>
         `;
     }
 
     executeViewScript() {
-        if (!store.getState().session.activeUserId || store.getState().session.role === 'guest') return;
+        const state = store.getState();
+        
+        // --- LOGICA DE LOGIN ---
+        if (!state.session.activeUserId || state.session.role === 'guest') {
+            
+            const btnConnectId = document.getElementById('btnConnectId');
+            const inpLoginId = document.getElementById('inpLoginId');
+            const btnConnectWeb3 = document.getElementById('btnConnectWeb3');
 
+            const handleLogin = async (rawId) => {
+                if (!rawId) return alert("Introduce una Identidad Válida.");
+                
+                await store.dispatch({
+                    type: 'LOGIN_USER',
+                    payload: { userId: rawId }
+                });
+                
+                // Recarga la página: El constructor de App.js detectará la sesión y mostrará el Home completo
+                window.location.reload();
+            };
+
+            if (btnConnectId) {
+                btnConnectId.addEventListener('click', () => handleLogin(inpLoginId.value.trim()));
+                inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleLogin(inpLoginId.value.trim()); });
+            }
+
+            if (btnConnectWeb3) {
+                btnConnectWeb3.addEventListener('click', async () => {
+                    const simWallet = prompt("Simulación Web3: Introduce tu Wallet Address", "0x" + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2, '0')).join(''));
+                    if(simWallet) {
+                        await handleLogin(simWallet);
+                    }
+                });
+            }
+
+            return; // Detenemos aquí porque no hay sesión, no hace falta bindear el resto.
+        }
+
+        // --- LOGICA DEL HOME REGULAR (Ya logueado) ---
         Sidebar.initListeners();
         PageHeader.execute();
 
