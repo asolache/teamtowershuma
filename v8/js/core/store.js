@@ -1,12 +1,12 @@
 // v8/js/core/store.js
 // ==========================================================================
-// KERNEL V8 - AGENTIC AI STORE (Fusión Definitiva)
+// KERNEL V8 - AGENTIC AI STORE (Con Motor de Sprints)
 // Motor de Estado Local-First, Triple Entrada, Gobernanza P2P y Slicing Pie
 // ==========================================================================
 
 const initialState = {
     config: {
-        version: '8.0.2',
+        version: '8.1.0',
         ecosystemName: 'TeamTowers Agentic Network',
         globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
         archetype: 'startup',
@@ -64,6 +64,7 @@ async function asyncReducer(state, action) {
         case 'INIT_PROJECT_GENESIS':
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
+                const sprintId = 'sp_' + Date.now();
                 newState.projects.push({ 
                     ...action.payload, 
                     createdAt: Date.now(),
@@ -72,7 +73,9 @@ async function asyncReducer(state, action) {
                     vna_flows: action.payload.vna_flows || [],
                     work_orders: action.payload.work_orders || [],
                     ledger: action.payload.ledger || [],
-                    asignaciones: action.payload.asignaciones || []
+                    asignaciones: action.payload.asignaciones || [],
+                    sprints: [{ id: sprintId, name: 'Sprint 1', status: 'active', createdAt: Date.now() }],
+                    activeSprintId: sprintId
                 });
             }
             break;
@@ -95,7 +98,26 @@ async function asyncReducer(state, action) {
         }
 
         // ==========================================
-        // TOPOLOGÍA VNA Y ROLES (ValueMapView)
+        // MOTOR DE SPRINTS V8.1
+        // ==========================================
+        case 'CREATE_SPRINT': {
+            const pSp = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pSp) {
+                const newSprint = { id: 'sp_' + Date.now(), name: action.payload.name, status: 'active', createdAt: Date.now() };
+                if (!pSp.sprints) pSp.sprints = [];
+                pSp.sprints.push(newSprint);
+                pSp.activeSprintId = newSprint.id; // Auto-foco al nuevo sprint
+            }
+            break;
+        }
+        case 'SET_ACTIVE_SPRINT': {
+            const pSpAct = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pSpAct) pSpAct.activeSprintId = action.payload.sprintId;
+            break;
+        }
+
+        // ==========================================
+        // TOPOLOGÍA VNA Y ROLES
         // ==========================================
         case 'ADD_ROLE': {
             const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
@@ -149,7 +171,11 @@ async function asyncReducer(state, action) {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
-                pWoAdd.work_orders.push({ ...action.payload.workOrder, timestamp: Date.now() });
+                pWoAdd.work_orders.push({ 
+                    ...action.payload.workOrder, 
+                    sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId, // Asignar al sprint
+                    timestamp: Date.now() 
+                });
             }
             break;
         }
@@ -198,7 +224,7 @@ async function asyncReducer(state, action) {
                     wo.valorCongelado = slices;
 
                     pWoApp.ledger.push({
-                        id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId,
+                        id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId, sprintId: wo.sprintId,
                         horas: wo.realHours || 1, multiplier: multiplier, fmv: fmv,
                         valorCongelado: slices, timestamp: Date.now(), description: deliverableName
                     });
@@ -207,9 +233,6 @@ async function asyncReducer(state, action) {
             break;
         }
 
-        // ==========================================
-        // LEDGER & EQUITY (CAPITAL INJECTIONS)
-        // ==========================================
         case 'ADD_CAPITAL_INJECTION': {
             const pCap = newState.projects.find(p => p.id === action.payload.projectId);
             if (pCap) {
@@ -260,7 +283,10 @@ class Store {
                         ledger: p.ledger || [],
                         work_orders: p.work_orders || [],
                         vna_flows: p.vna_flows || [],
-                        usuarios: p.usuarios || []
+                        usuarios: p.usuarios || [],
+                        // AUTO-MIGRACIÓN DE SPRINTS PARA PROYECTOS ANTIGUOS
+                        sprints: p.sprints && p.sprints.length > 0 ? p.sprints : [{ id: 'sp_default', name: 'Sprint 1', status: 'active', createdAt: Date.now() }],
+                        activeSprintId: p.activeSprintId || p.sprints?.[0]?.id || 'sp_default'
                     }));
                 }
             } catch (e) {
@@ -292,10 +318,6 @@ class Store {
     
     notifyListeners() { this.listeners.forEach(listener => listener()); }
 
-    // =========================================================
-    // MÉTODOS DE GOBERNANZA Y SEGURIDAD (RBAC)
-    // =========================================================
-    
     canUserViewProject(projectId, userId, globalRole) {
         if (globalRole === 'ecosystem-owner') return true; 
         const p = this.state.projects.find(x => x.id === projectId);
@@ -312,24 +334,17 @@ class Store {
         
         const p = this.state.projects.find(x => x.id === projectId);
         if (!p) return false;
-        
-        if (p.ownerId === userId) return true; // El PO siempre puede
+        if (p.ownerId === userId) return true; 
         
         const gov = p.governance || { workOrderCreation: 'open' };
         if (gov.workOrderCreation === 'open') return true;
         if (gov.workOrderCreation === 'po_only') return false;
-        
         if (gov.workOrderCreation === 'custom') {
             const member = p.usuarios?.find(x => x.id === userId);
             return member?.permissions?.canCreateWO === true;
         }
-        
         return false;
     }
-
-    // =========================================================
-    // MÉTODOS DE ANÁLISIS VNA Y ECONOMÍA
-    // =========================================================
 
     calculateResilience(projectId) {
         const p = this.state.projects.find(x => x.id === projectId);
@@ -338,7 +353,6 @@ class Store {
         const oldStuck = (p.transactions || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
         const newStuck = (p.work_orders || []).filter(t => t.status === 'reported' || t.status === 'pinged').length;
         const atascos = oldStuck + newStuck;
-        
         return Math.round(Math.max(0, 100 - (atascos * 5)));
     }
 
@@ -362,12 +376,8 @@ class Store {
             const entry = capTable[key];
             const percentage = (entry.totalValue / totalSlices);
             return { 
-                userId: entry.userId, 
-                roleId: entry.roleId, 
-                totalValue: entry.totalValue, 
-                slices: entry.totalValue, 
-                percentage: (percentage * 100).toFixed(2), 
-                financialValue: (percentage * totalValuation) 
+                userId: entry.userId, roleId: entry.roleId, totalValue: entry.totalValue, 
+                slices: entry.totalValue, percentage: (percentage * 100).toFixed(2), financialValue: (percentage * totalValuation) 
             };
         }).sort((a, b) => b.totalValue - a.totalValue);
     }
