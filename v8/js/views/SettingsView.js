@@ -8,8 +8,9 @@ import { PageHeader } from '../components/PageHeader.js';
 export default class SettingsView {
     constructor() {
         document.title = "Configuración Ecosistema | TeamTowers V8";
-        this.tab = localStorage.getItem('tt_settings_tab') || 'stakeholders'; // Default al nuevo mapa
+        this.tab = localStorage.getItem('tt_settings_tab') || 'stakeholders'; 
         this.sectorsFromKB = {}; 
+        this.resizeObserver = null;
     }
 
     async getHtml() {
@@ -59,16 +60,30 @@ export default class SettingsView {
                 .panel h2 { color: white; font-size: 1.5rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; font-weight: 900; letter-spacing: -0.5px;}
                 .panel p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
 
-                /* STAKEHOLDER MAP (MACRO VNA) */
-                .sh-map-container { width: 100%; height: 500px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 40px 40px; border: 1px solid var(--glass-border); border-radius: 16px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 50px rgba(0,0,0,0.8);}
+                /* ========================================================
+                   MACRO VNA (STAKEHOLDER MAP) - CSS REUTILIZADO DEL ValueMapView
+                   ======================================================== */
+                .sh-map-container { width: 100%; height: 600px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; border: 1px solid var(--glass-border); border-radius: 20px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 100px rgba(0,0,0,0.8);}
+                #sh-edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible;}
                 
-                .sh-node { position: absolute; background: rgba(20,20,25,0.9); border: 2px solid; border-radius: 16px; padding: 15px 20px; color: white; text-align: center; font-weight: 900; transform: translate(-50%, -50%); z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); min-width: 120px;}
-                .sh-node-icon { font-size: 2rem; margin-bottom: 5px; }
-                .sh-node-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+                .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
+                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.5);}
+                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
+                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
 
-                .sh-badge { position: absolute; transform: translate(-50%, -50%); z-index: 15; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.8); color: black; text-transform:uppercase;}
+                .node-wrapper { position: absolute; z-index: 5; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 160px; transition: filter 0.3s;}
+                .node-wrapper:hover { filter: brightness(1.2); z-index: 9;}
+                
+                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.1); color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 90px; height: 90px; box-sizing: border-box;}
+                .node-icon { font-size: 2.2rem; line-height: 1;}
+                .node-desc { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top:5px;}
+                
+                .node-title { margin-top: 12px; font-size: 0.9rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.7); border-radius: 8px; backdrop-filter: blur(5px);}
 
-                /* FORMS LUXURY */
+                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-main); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.8); transition: all 0.3s; color: black; white-space:nowrap;}
+                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.15); filter: brightness(1.2); z-index: 100; border-color: white;}
+
+                /* FORMS & OTHER UI */
                 .form-group { margin-bottom: 25px; }
                 .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
                 .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 16px 20px; border-radius: 12px; font-family: var(--font-mono); font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
@@ -79,7 +94,6 @@ export default class SettingsView {
 
                 .gov-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 20px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-top: 2rem; gap: 20px;}
                 
-                /* DATOS & BACKUPS */
                 .btn-data { width: 100%; padding: 18px; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 1.05rem; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; border: none; margin-bottom: 15px;}
                 .btn-export { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
                 .btn-export:hover { background: rgba(0, 230, 118, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.2);}
@@ -89,24 +103,21 @@ export default class SettingsView {
                 .btn-danger:hover { background: rgba(255, 82, 82, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,82,82,0.2);}
                 #fileInput { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-                /* ONTOLOGÍA Y AGENTES */
                 .ontology-grid, .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; width: 100%;}
-                
                 .sector-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; border-top: 4px solid var(--accent-blue); display:flex; flex-direction:column; backdrop-filter: blur(10px); transition: transform 0.3s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
                 .sector-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 2px 10px rgba(0,0,0,0.5);}
                 .sector-card.native { border-top-color: #555; background: rgba(15,15,20,0.8); border-color: #222;}
                 .sector-card h3 { margin: 0 0 15px 0; text-transform: uppercase; font-size: 1.3rem; color: white; font-weight: 900; letter-spacing:-0.5px;}
                 .deliv-badge { background: rgba(0,0,0,0.6); border: 1px solid #333; font-size: 0.75rem; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; margin-top: 8px; display: inline-block; font-family: monospace; font-weight:bold;}
 
-                /* TABLA USUARIOS */
                 .user-table-wrapper { overflow-x: auto; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid #333; width: 100%;}
                 .user-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; min-width: 600px;}
                 .user-table th { padding: 18px 15px; border-bottom: 1px solid #444; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; font-weight:900;}
                 .user-table td { padding: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); color: #ccc;}
 
+                @keyframes dashAnim { to { stroke-dashoffset: -200; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-                /* RESPONSIVE MOBILE FIXES */
                 @media (max-width: 1024px) { .ontology-grid, .agents-grid { grid-template-columns: 1fr 1fr; } }
                 @media (max-width: 768px) { 
                     .workspace-settings { padding: 90px 1rem 120px 1rem; } 
@@ -114,6 +125,7 @@ export default class SettingsView {
                     .ontology-grid, .agents-grid { grid-template-columns: 1fr; }
                     .ai-grid, .user-form-grid, .location-form-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
                     .gov-card { flex-direction: column; align-items: flex-start; padding: 1.5rem;}
+                    .sh-map-container { height: 400px; }
                 }
             </style>
 
@@ -126,49 +138,22 @@ export default class SettingsView {
                     <div id="tab-stakeholders" class="tab-content ${this.tab === 'stakeholders' ? 'active' : ''}">
                         <div class="panel" style="border-color: var(--accent-orange); box-shadow: inset 0 0 50px rgba(255,171,64,0.05);">
                             <h2 style="color: var(--accent-orange);">🌌 Macro-Red de Stakeholders</h2>
-                            <p>Visión del <i>Ecosystem Owner</i>. El flujo de valor no solo existe dentro de los proyectos, sino en la órbita que los rodea. Esta es la topología del modelo de negocio.</p>
+                            <p>Visión del <i>Ecosystem Owner</i>. El flujo de valor no solo existe dentro de los proyectos, sino en la órbita que los rodea. Topología del modelo de negocio de TeamTowers V8.</p>
                             
-                            <div class="sh-map-container" id="stakeholderMap">
-                                <svg id="sh-edges" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
-                                    <defs>
-                                        <marker id="arrow-fiat" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00e676"/></marker>
-                                        <marker id="arrow-slices" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#e040fb"/></marker>
-                                        <marker id="arrow-value" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00b0ff"/></marker>
-                                    </defs>
-                                    </svg>
-                                
-                                <div class="sh-node" id="node-investor" style="top: 20%; left: 50%; border-color: var(--accent-green);">
-                                    <div class="sh-node-icon">🏦</div>
-                                    <div class="sh-node-title" style="color:var(--accent-green);">Inversores</div>
-                                </div>
-                                <div class="sh-node" id="node-eo" style="top: 50%; left: 50%; border-color: var(--accent-orange); background:rgba(255,171,64,0.1); box-shadow: 0 0 30px rgba(255,171,64,0.3);">
-                                    <div class="sh-node-icon">👑</div>
-                                    <div class="sh-node-title" style="color:var(--accent-orange);">Ecosystem Owner</div>
-                                </div>
-                                <div class="sh-node" id="node-team" style="top: 80%; left: 20%; border-color: var(--accent-purple);">
-                                    <div class="sh-node-icon">🤖👥</div>
-                                    <div class="sh-node-title" style="color:var(--accent-purple);">Colla (IAs + Humanos)</div>
-                                </div>
-                                <div class="sh-node" id="node-client" style="top: 80%; left: 80%; border-color: var(--accent-blue);">
-                                    <div class="sh-node-icon">🛍️</div>
-                                    <div class="sh-node-title" style="color:var(--accent-blue);">Clientes (Mercado)</div>
-                                </div>
+                            <div style="display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--glass-border); width: max-content; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; background:var(--accent-green);"></div> Tangible (Capital/Entregable)</div>
+                                <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; border-bottom:2px dashed var(--accent-purple); background:transparent;"></div> Intangible (Equidad/Feedback)</div>
                             </div>
 
-                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:20px;">
-                                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,230,118,0.3); padding:15px; border-radius:12px;">
-                                    <div style="font-weight:bold; color:var(--accent-green); margin-bottom:5px;">🟢 Fiat / Capital</div>
-                                    <div style="font-size:0.8rem; color:#aaa;">Inversiones y pagos de clientes.</div>
+                            <div class="sh-map-container" id="stakeholderMap">
+                                <svg id="sh-edges">
+                                    <defs>
+                                        <marker id="arrow-tangible-macro" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                        <marker id="arrow-intangible-macro" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                    </defs>
+                                    <g id="sh-paths-group"></g>
+                                </svg>
                                 </div>
-                                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(224,64,251,0.3); padding:15px; border-radius:12px;">
-                                    <div style="font-weight:bold; color:var(--accent-purple); margin-bottom:5px;">🟣 Slices (Equity)</div>
-                                    <div style="font-size:0.8rem; color:#aaa;">Patrimonio dinámico generado por PoW.</div>
-                                </div>
-                                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,176,255,0.3); padding:15px; border-radius:12px;">
-                                    <div style="font-weight:bold; color:var(--accent-blue); margin-bottom:5px;">🔵 Valor (Entregables)</div>
-                                    <div style="font-size:0.8rem; color:#aaa;">Productos o servicios ejecutados por la Colla.</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -345,90 +330,159 @@ export default class SettingsView {
             if(target) target.classList.add('active');
 
             if(this.tab === 'ontology') this.renderOntologyGrids();
-            if(this.tab === 'stakeholders') this.renderStakeholderMap();
+            if(this.tab === 'stakeholders') setTimeout(() => this.renderMacroVNA(), 50);
         });
 
         if(this.tab === 'ontology') this.renderOntologyGrids();
-        if(this.tab === 'stakeholders') this.renderStakeholderMap();
+        if(this.tab === 'stakeholders') setTimeout(() => this.renderMacroVNA(), 100);
 
         this.bindContentEvents();
+
+        // Resize Observer for the Macro Map
+        if (window.ResizeObserver) {
+            const container = document.getElementById('stakeholderMap');
+            if (container) {
+                this.resizeObserver = new ResizeObserver(() => {
+                    if (this.tab === 'stakeholders') this.renderMacroVNA();
+                });
+                this.resizeObserver.observe(container);
+            }
+        }
     }
 
-    renderStakeholderMap() {
-        const svg = document.getElementById('sh-edges');
+    renderMacroVNA() {
         const container = document.getElementById('stakeholderMap');
-        if (!svg || !container) return;
+        const pathsGroup = document.getElementById('sh-paths-group');
+        if (!container || !pathsGroup) return;
 
-        svg.innerHTML = `
-            <defs>
-                <marker id="arrow-fiat" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00e676"/></marker>
-                <marker id="arrow-slices" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#e040fb"/></marker>
-                <marker id="arrow-value" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00b0ff"/></marker>
-            </defs>
-        `;
+        // Limpiar
+        container.querySelectorAll('.node-wrapper, .tx-badge').forEach(e => e.remove());
+        pathsGroup.innerHTML = '';
 
-        // Limpiar badges viejos
-        container.querySelectorAll('.sh-badge').forEach(b => b.remove());
+        // Nodos del Macro-Ecosistema
+        const nodes = [
+            { id: 'inv', label: 'Inversores', desc: 'Capital', icon: '🏦', color: 'var(--accent-green)', x: 20, y: 25 },
+            { id: 'cli', label: 'Mercado', desc: 'Clientes', icon: '🛍️', color: 'var(--accent-blue)', x: 80, y: 25 },
+            { id: 'eo', label: 'Ecosystem Owner', desc: 'Gobernanza', icon: '👑', color: 'var(--accent-orange)', x: 50, y: 50 },
+            { id: 'team', label: 'La Colla', desc: 'IA + Humanos', icon: '🤖', color: 'var(--accent-purple)', x: 50, y: 80 }
+        ];
 
-        const nodes = {
-            inv: document.getElementById('node-investor'),
-            eo: document.getElementById('node-eo'),
-            team: document.getElementById('node-team'),
-            cli: document.getElementById('node-client')
-        };
+        nodes.forEach(n => {
+            const el = document.createElement('div');
+            el.className = 'node-wrapper';
+            el.dataset.id = n.id;
+            el.style.left = `${n.x}%`;
+            el.style.top = `${n.y}%`;
+            el.innerHTML = `
+                <div class="node-circle" style="border-color:${n.color}; box-shadow: 0 0 30px ${n.color}40;">
+                    <div class="node-icon">${n.icon}</div>
+                    <div class="node-desc">${n.desc}</div>
+                </div>
+                <div class="node-title">${n.label}</div>
+            `;
+            container.appendChild(el);
+        });
 
-        const drawFlow = (n1, n2, typeColor, marker, offsetMultiplier, label) => {
-            const r1 = n1.getBoundingClientRect();
-            const r2 = n2.getBoundingClientRect();
-            const cRect = container.getBoundingClientRect();
+        // Transacciones (Flujos Macro)
+        const edges = [
+            { from: 'inv', to: 'eo', tipo: 'tangible', label: 'Inversión' },
+            { from: 'eo', to: 'inv', tipo: 'intangible', label: 'Equity / Confianza' },
+            { from: 'eo', to: 'team', tipo: 'intangible', label: 'Visión & Metas' },
+            { from: 'eo', to: 'team', tipo: 'tangible', label: 'Slices (Pago)' },
+            { from: 'team', to: 'eo', tipo: 'tangible', label: 'Entregables PoW' },
+            { from: 'team', to: 'cli', tipo: 'tangible', label: 'Producto (SaaS)' },
+            { from: 'cli', to: 'team', tipo: 'intangible', label: 'Feedback / Datos' },
+            { from: 'cli', to: 'eo', tipo: 'tangible', label: 'Ingresos (Fiat)' },
+            { from: 'eo', to: 'cli', tipo: 'intangible', label: 'Promesa de Marca' }
+        ];
 
-            const x1 = r1.left + r1.width/2 - cRect.left;
-            const y1 = r1.top + r1.height/2 - cRect.top;
-            const x2 = r2.left + r2.width/2 - cRect.left;
-            const y2 = r2.top + r2.height/2 - cRect.top;
+        // Agrupar para hacer curvas paralelas
+        const pairCounts = {};
+        edges.forEach((tx, i) => {
+            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
+            if (!pairCounts[key]) pairCounts[key] = [];
+            pairCounts[key].push({ tx, index: i });
+        });
 
-            const dx = x2 - x1, dy = y2 - y1;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            const nx = -dy / dist, ny = dx / dist;
-
-            const offset = offsetMultiplier * 30; // Separar líneas de ida y vuelta
-            const cx = (x1 + x2) / 2 + nx * offset;
-            const cy = (y1 + y2) / 2 + ny * offset;
-
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-            path.setAttribute('marker-end', `url(#${marker})`);
-            path.style.fill = 'none';
-            path.style.stroke = typeColor;
-            path.style.strokeWidth = '3';
-            if (typeColor === '#e040fb' || typeColor === '#00b0ff') path.style.strokeDasharray = '6,6'; // Intangibles/Slices punteados
-            
-            svg.appendChild(path);
-
-            // Badge Label
-            const badge = document.createElement('div');
-            badge.className = 'sh-badge';
-            badge.style.left = `${(x1 + cx + x2)/3}px`;
-            badge.style.top = `${(y1 + cy + y2)/3}px`;
-            badge.style.backgroundColor = typeColor;
-            badge.innerText = label;
-            container.appendChild(badge);
-        };
-
-        // Redibujar después de un tick para que los nodos tengan dimensiones finales
+        // Dibujar SVG después del render DOM
         setTimeout(() => {
-            // Flujos de Capital (Verde)
-            drawFlow(nodes.inv, nodes.eo, '#00e676', 'arrow-fiat', -1, 'Capital (€)');
-            drawFlow(nodes.cli, nodes.eo, '#00e676', 'arrow-fiat', 1, 'Ingresos (€)');
-            
-            // Flujos de Slices/SBTs (Morado)
-            drawFlow(nodes.eo, nodes.inv, '#e040fb', 'arrow-slices', -1, 'Equity (Slices)');
-            drawFlow(nodes.eo, nodes.team, '#e040fb', 'arrow-slices', 1, 'Slices / SBTs');
-            
-            // Flujos de Valor Productivo (Azul)
-            drawFlow(nodes.eo, nodes.team, '#00b0ff', 'arrow-value', -1, 'Visión / Directriz');
-            drawFlow(nodes.team, nodes.cli, '#00b0ff', 'arrow-value', -1, 'Entregables (SaaS)');
-        }, 100);
+            Object.keys(pairCounts).forEach(key => {
+                const edgesGroup = pairCounts[key];
+                edgesGroup.forEach((edgeData, multiIdx) => {
+                    this.drawMacroEdge(container, pathsGroup, edgeData.tx, edgeData.index, edgesGroup, multiIdx);
+                });
+            });
+        }, 50);
+    }
+
+    drawMacroEdge(canvas, pathsGroup, tx, index, edgesGroup, multiIdx) {
+        const dom1 = canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
+        const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
+        if (!dom1 || !dom2 || tx.from === tx.to) return;
+
+        const x1_center = dom1.offsetLeft;
+        const y1_center = dom1.offsetTop;
+        const x2_center = dom2.offsetLeft;
+        const y2_center = dom2.offsetTop;
+
+        const dx = x2_center - x1_center;
+        const dy = y2_center - y1_center;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        const trim = 55; // Ajustar a los bordes de los nodos grandes
+        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
+
+        if (dist > trim) {
+            x1 = x1_center + (dx/dist) * trim;
+            y1 = y1_center + (dy/dist) * trim;
+            x2 = x2_center - (dx/dist) * trim;
+            y2 = y2_center - (dy/dist) * trim;
+        }
+
+        const nx = -dy / dist; 
+        const ny = dx / dist;
+        let offset = 0;
+        
+        // Separación DRY de líneas paralelas
+        if (edgesGroup.length > 1) {
+            const step = 40; 
+            if (multiIdx % 2 !== 0) {
+                offset = Math.ceil(multiIdx / 2) * step;
+            } else {
+                offset = -(Math.ceil(multiIdx / 2) * step);
+            }
+            if (tx.from > tx.to) offset = -offset;
+        }
+
+        const cx = (x1_center + x2_center) / 2 + nx * offset;
+        const cy = (y1_center + y2_center) / 2 + ny * offset;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+        
+        let markerId = tx.tipo === 'tangible' ? 'arrow-tangible-macro' : 'arrow-intangible-macro';
+        
+        const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
+        path.setAttribute('class', `edge-line ${lineClass}`);
+        
+        const strokeHex = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+        path.style.stroke = strokeHex;
+        path.setAttribute('marker-end', `url(#${markerId})`);
+        
+        pathsGroup.appendChild(path);
+
+        // Badge en el centro de la curva
+        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+
+        const badge = document.createElement('div');
+        badge.className = 'tx-badge';
+        badge.style.left = `${txX}px`;
+        badge.style.top = `${txY}px`;
+        badge.style.backgroundColor = strokeHex;
+        badge.innerText = tx.label;
+        
+        canvas.appendChild(badge);
     }
 
     bindContentEvents() {
@@ -541,7 +595,6 @@ export default class SettingsView {
         const nativeGrid = document.getElementById('nativeOntologyGrid');
         if(!nativeGrid) return;
 
-        // 1. Extraemos los sectores VIVOS de la base de conocimiento
         await KB.init();
         this.sectorsFromKB = await KB.getAvailableSectors();
         const sectorKeys = Object.keys(this.sectorsFromKB);
