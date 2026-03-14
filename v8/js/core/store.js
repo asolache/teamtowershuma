@@ -42,6 +42,16 @@ async function asyncReducer(state, action) {
             newState.session = { activeUserId: null, role: 'guest' };
             break;
 
+        case 'UPDATE_GLOBAL_CONFIG': 
+            newState.config = { ...newState.config, ...action.payload };
+            break;
+            
+        case 'ADD_USER': {
+            const exists = newState.globalUsers.find(u => u.id === action.payload.id);
+            if (!exists) newState.globalUsers.push({ ...action.payload, globalRole: 'network-user' });
+            break;
+        }
+
         case 'INIT_PROJECT_GENESIS':
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
@@ -74,20 +84,62 @@ async function asyncReducer(state, action) {
             }
             break;
         }
+
+        // 🔥 NUEVOS REDUCERS RESTAURADOS (TOPOLOGÍA Y VNA) 🔥
+        case 'ADD_ROLE': {
+            const pAddRol = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pAddRol) pAddRol.roles.push(action.payload.role);
+            break;
+        }
+        case 'UPDATE_ROLE': {
+            const pUpdRol = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pUpdRol) {
+                const rIdx = pUpdRol.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) Object.assign(pUpdRol.roles[rIdx], action.payload.updates);
+            }
+            break;
+        }
+        case 'TOGGLE_ROLE_ARCHIVE': {
+            const pTog = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pTog) {
+                const rIdx = pTog.roles.findIndex(r => r.id === action.payload.roleId);
+                if (rIdx > -1) pTog.roles[rIdx].isArchived = !pTog.roles[rIdx].isArchived;
+            }
+            break;
+        }
+        case 'ADD_FLOW': {
+            const pFlowAdd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowAdd) {
+                if (!pFlowAdd.vna_flows) pFlowAdd.vna_flows = [];
+                pFlowAdd.vna_flows.push({ ...action.payload.flow, id: action.payload.flow.id || ('flow_' + Date.now()) });
+            }
+            break;
+        }
+        case 'UPDATE_FLOW': {
+            const pFlowUpd = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowUpd && pFlowUpd.vna_flows) {
+                const fIdx = pFlowUpd.vna_flows.findIndex(f => f.id === action.payload.flowId);
+                if (fIdx > -1) Object.assign(pFlowUpd.vna_flows[fIdx], action.payload.updates);
+            }
+            break;
+        }
+        case 'DELETE_FLOW': {
+            const pFlowDel = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pFlowDel && pFlowDel.vna_flows) {
+                pFlowDel.vna_flows = pFlowDel.vna_flows.filter(f => f.id !== action.payload.flowId);
+            }
+            break;
+        }
         
-        // --- EVENTOS PULL (KANBAN) REQUERIDOS POR PROJECT VIEW ---
+        // KANBAN CORE...
         case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
-                pWoAdd.work_orders.push({
-                    ...action.payload.workOrder,
-                    timestamp: Date.now()
-                });
+                pWoAdd.work_orders.push({ ...action.payload.workOrder, timestamp: Date.now() });
             }
             break;
         }
-
         case 'REQUEST_WORK_ORDER':
         case 'PING_WORK_ORDER': {
             const pWoPing = newState.projects.find(p => p.id === action.payload.projectId);
@@ -100,7 +152,17 @@ async function asyncReducer(state, action) {
             }
             break;
         }
-        
+        case 'REPORT_WORK_ORDER': {
+            const pWoRep = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoRep && pWoRep.work_orders) {
+                const wo = pWoRep.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'reported'; wo.realHours = action.payload.realHours;
+                    wo.proofLink = action.payload.proofLink; wo.comentario = action.payload.comentario;
+                }
+            }
+            break;
+        }
         case 'APPROVE_WORK_ORDER': {
             const pWoApp = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoApp && pWoApp.work_orders) {
@@ -110,35 +172,22 @@ async function asyncReducer(state, action) {
                     if (!pWoApp.ledger) pWoApp.ledger = [];
                     
                     let flow = (pWoApp.vna_flows || []).find(f => f.id === wo.flowId);
-                    let multiplier = 1;
-                    let fmv = 50;
-                    let roleId = 'Unknown';
+                    let multiplier = 1; let fmv = 50; let roleId = 'Unknown';
                     let deliverableName = 'Work Order Instanciada';
 
                     if (flow) {
-                        roleId = flow.to;
-                        deliverableName = flow.template || flow.entregable || 'Entregable';
+                        roleId = flow.to; deliverableName = flow.template || flow.entregable || 'Entregable';
                         const role = pWoApp.roles.find(r => r.id === roleId);
-                        if (role) {
-                            multiplier = role.multiplier || 1;
-                            fmv = role.fmv || 50;
-                        }
+                        if (role) { multiplier = role.multiplier || 1; fmv = role.fmv || 50; }
                     }
 
                     const slices = (wo.realHours || 1) * fmv * multiplier;
                     wo.valorCongelado = slices;
 
                     pWoApp.ledger.push({
-                        id: 'blk_' + Date.now(),
-                        hash: wo.hash,
-                        userId: wo.assigneeId,
-                        roleId: roleId,
-                        horas: wo.realHours || 1,
-                        multiplier: multiplier,
-                        fmv: fmv,
-                        valorCongelado: slices,
-                        timestamp: Date.now(),
-                        description: deliverableName
+                        id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId,
+                        horas: wo.realHours || 1, multiplier: multiplier, fmv: fmv,
+                        valorCongelado: slices, timestamp: Date.now(), description: deliverableName
                     });
                 }
             }
