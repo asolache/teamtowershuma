@@ -61,27 +61,31 @@ export default class SettingsView {
                 .panel p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
 
                 /* ========================================================
-                   MACRO VNA (STAKEHOLDER MAP) - CSS REUTILIZADO DEL ValueMapView
+                   MACRO VNA (STAKEHOLDER MAP) - CSS REUTILIZADO DRY
                    ======================================================== */
-                .sh-map-container { width: 100%; height: 600px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; border: 1px solid var(--glass-border); border-radius: 20px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 100px rgba(0,0,0,0.8);}
+                .sh-map-container { width: 100%; height: 650px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; border: 1px solid var(--glass-border); border-radius: 20px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); margin-top: 1rem;}
                 #sh-edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible;}
                 
-                .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
-                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.5);}
-                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
-                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
+                .edge-line { fill: none; stroke-width: 3; opacity: 0.6; transition: all 0.4s; }
+                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.3);}
+                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.3));}
+                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 6; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.3)); stroke-width: 2.5;}
 
-                .node-wrapper { position: absolute; z-index: 5; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 160px; transition: filter 0.3s;}
-                .node-wrapper:hover { filter: brightness(1.2); z-index: 9;}
+                .node-wrapper { position: absolute; z-index: 5; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 160px; transition: all 0.3s; cursor: grab;}
+                .node-wrapper:active { cursor: grabbing; scale: 1.05;}
+                .node-wrapper:hover { z-index: 9;}
                 
-                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.1); color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 90px; height: 90px; box-sizing: border-box;}
-                .node-icon { font-size: 2.2rem; line-height: 1;}
-                .node-desc { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top:5px;}
+                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.08); color: white; box-shadow: 0 15px 35px rgba(0,0,0,0.7); width: 100px; height: 100px; box-sizing: border-box;}
+                .node-wrapper:hover .node-circle { border-color: rgba(255,255,255,0.2); box-shadow: 0 15px 45px rgba(0,0,0,0.9); }
                 
-                .node-title { margin-top: 12px; font-size: 0.9rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.7); border-radius: 8px; backdrop-filter: blur(5px);}
+                .node-icon { font-size: 2.5rem; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+                .node-desc { font-size: 0.65rem; color: #999; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; margin-top:6px;}
+                
+                .node-title { margin-top: 14px; font-size: 0.9rem; font-weight: 900; color: white; text-align: center; text-transform: uppercase; width: 100%; line-height: 1.3; padding: 5px 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box;}
 
-                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-main); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.8); transition: all 0.3s; color: black; white-space:nowrap;}
-                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.15); filter: brightness(1.2); z-index: 100; border-color: white;}
+                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-mono); padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 20px rgba(0,0,0,0.8); transition: all 0.3s; color: black; white-space:nowrap; cursor: pointer; pointer-events: auto;}
+                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.1); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.9); border-color: rgba(255,255,255,0.5);}
+                .tx-badge .tx-order { opacity: 0.7; margin-right: 5px; font-weight: normal; }
 
                 /* FORMS & OTHER UI */
                 .form-group { margin-bottom: 25px; }
@@ -92,40 +96,22 @@ export default class SettingsView {
                 .btn-save { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 12px; font-weight: 900; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0, 176, 255, 0.2); width: 100%; text-transform: uppercase; letter-spacing: 1px;}
                 .btn-save:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
 
-                .gov-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 20px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-top: 2rem; gap: 20px;}
-                
-                .btn-data { width: 100%; padding: 18px; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 1.05rem; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; border: none; margin-bottom: 15px;}
-                .btn-export { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
-                .btn-export:hover { background: rgba(0, 230, 118, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.2);}
-                .btn-import { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 176, 255, 0.3); position: relative; overflow: hidden; }
-                .btn-import:hover { background: rgba(0, 176, 255, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,176,255,0.2);}
-                .btn-danger { background: rgba(255, 82, 82, 0.1); color: var(--accent-red); border: 1px dashed rgba(255, 82, 82, 0.4); margin-top: 3rem;}
-                .btn-danger:hover { background: rgba(255, 82, 82, 0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,82,82,0.2);}
-                #fileInput { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-
                 .ontology-grid, .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; width: 100%;}
                 .sector-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; border-top: 4px solid var(--accent-blue); display:flex; flex-direction:column; backdrop-filter: blur(10px); transition: transform 0.3s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
                 .sector-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 2px 10px rgba(0,0,0,0.5);}
-                .sector-card.native { border-top-color: #555; background: rgba(15,15,20,0.8); border-color: #222;}
-                .sector-card h3 { margin: 0 0 15px 0; text-transform: uppercase; font-size: 1.3rem; color: white; font-weight: 900; letter-spacing:-0.5px;}
                 .deliv-badge { background: rgba(0,0,0,0.6); border: 1px solid #333; font-size: 0.75rem; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; margin-top: 8px; display: inline-block; font-family: monospace; font-weight:bold;}
-
-                .user-table-wrapper { overflow-x: auto; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid #333; width: 100%;}
-                .user-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; min-width: 600px;}
-                .user-table th { padding: 18px 15px; border-bottom: 1px solid #444; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; font-weight:900;}
-                .user-table td { padding: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); color: #ccc;}
 
                 @keyframes dashAnim { to { stroke-dashoffset: -200; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-                @media (max-width: 1024px) { .ontology-grid, .agents-grid { grid-template-columns: 1fr 1fr; } }
                 @media (max-width: 768px) { 
                     .workspace-settings { padding: 90px 1rem 120px 1rem; } 
                     .panel { padding: 1.5rem; border-radius: 20px;}
                     .ontology-grid, .agents-grid { grid-template-columns: 1fr; }
-                    .ai-grid, .user-form-grid, .location-form-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
-                    .gov-card { flex-direction: column; align-items: flex-start; padding: 1.5rem;}
-                    .sh-map-container { height: 400px; }
+                    .sh-map-container { height: 450px; }
+                    .node-circle { width: 80px; height: 80px; }
+                    .node-icon { font-size: 2rem; }
+                    .tx-badge { padding: 5px 10px; font-size: 0.7rem; }
                 }
             </style>
 
@@ -137,10 +123,10 @@ export default class SettingsView {
 
                     <div id="tab-stakeholders" class="tab-content ${this.tab === 'stakeholders' ? 'active' : ''}">
                         <div class="panel" style="border-color: var(--accent-orange); box-shadow: inset 0 0 50px rgba(255,171,64,0.05);">
-                            <h2 style="color: var(--accent-orange);">🌌 Macro-Red de Stakeholders</h2>
-                            <p>Visión del <i>Ecosystem Owner</i>. El flujo de valor no solo existe dentro de los proyectos, sino en la órbita que los rodea. Topología del modelo de negocio de TeamTowers V8.</p>
+                            <h2 style="color: var(--accent-orange);">🌌 Macro-Red de Stakeholders (Modelo de Negocio)</h2>
+                            <p>Visión topológica del Ecosystem Owner. Define cómo fluye el valor tangible e intangible entre los actores clave para mantener el arbitraje y la salud de la red.</p>
                             
-                            <div style="display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--glass-border); width: max-content; margin-bottom: 1rem;">
+                            <div style="display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--glass-border); width: max-content; margin-bottom: 0.5rem;">
                                 <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; background:var(--accent-green);"></div> Tangible (Capital/Entregable)</div>
                                 <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; border-bottom:2px dashed var(--accent-purple); background:transparent;"></div> Intangible (Equidad/Feedback)</div>
                             </div>
@@ -148,8 +134,8 @@ export default class SettingsView {
                             <div class="sh-map-container" id="stakeholderMap">
                                 <svg id="sh-edges">
                                     <defs>
-                                        <marker id="arrow-tangible-macro" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
-                                        <marker id="arrow-intangible-macro" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                        <marker id="arrow-tangible-macro" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto"><polygon points="0 0, 14 5, 0 10" fill="#00e676"/></marker>
+                                        <marker id="arrow-intangible-macro" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto"><polygon points="0 0, 14 5, 0 10" fill="#e040fb"/></marker>
                                     </defs>
                                     <g id="sh-paths-group"></g>
                                 </svg>
@@ -202,7 +188,7 @@ export default class SettingsView {
                     <div id="tab-ia" class="tab-content ${this.tab === 'ia' ? 'active' : ''}">
                         <div class="panel" style="border-top: 4px solid var(--accent-purple);">
                             <h2 style="color: var(--accent-purple);">🧠 Orquestador Cognitivo (API Keys)</h2>
-                            <p>Conecta el Kernel V8 con los LLMs externos para dar vida a los botones mágicos (Simulaciones, Pactos Legales, Auto-Ejecución).</p>
+                            <p>Conecta el Kernel V8 con los LLMs externos para dar vida a los botones mágicos (Simulaciones, Pactos Legales, Auto-Asignación).</p>
                             
                             <div class="ai-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
                                 <div class="form-group">
@@ -232,9 +218,7 @@ export default class SettingsView {
 
                     <div id="tab-users" class="tab-content ${this.tab === 'users' ? 'active' : ''}">
                         <div class="panel" style="border-top: 4px solid var(--accent-blue);">
-                            <h2 style="color: var(--accent-blue);">➕ Alta de Nodos al Padrón</h2>
-                            <p style="margin-top:0;">Permite a estos usuarios ser reclutados posteriormente en cualquier red del sistema.</p>
-                            
+                            <h2 style="color: var(--accent-blue);">➕ Alta de Nodos al Padrón Global</h2>
                             <div style="background: rgba(0,0,0,0.3); padding:2.5rem; border-radius:16px; border: 1px solid var(--glass-border);">
                                 <div class="user-form-grid" style="display: grid; grid-template-columns: 1fr 1.5fr 1.5fr; gap: 20px; align-items: start; margin-bottom: 20px;">
                                     <div class="form-group" style="margin:0;">
@@ -279,8 +263,8 @@ export default class SettingsView {
 
                     <div id="tab-data" class="tab-content ${this.tab === 'data' ? 'active' : ''}">
                         <div class="panel" style="border-color: #333;">
-                            <h2>💾 Control de Memoria Local</h2>
-                            <p>El núcleo de TeamTowers V8 funciona 100% en tu navegador (Local-First). Descarga el JSON con tu imperio o formatea el Kernel.</p>
+                            <h2>💾 Control de Memoria Local (Web3-First)</h2>
+                            <p>El núcleo de TeamTowers V8 funciona 100% en tu navegador. Descarga el JSON con tu imperio o formatea el Kernel.</p>
                             
                             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:2.5rem;">
                                 <button class="btn-data btn-export" id="btnExport" style="flex:1;">⬇️ Descargar Snapshot (.JSON)</button>
@@ -289,23 +273,18 @@ export default class SettingsView {
                                     <input type="file" id="fileInput" accept=".json">
                                 </div>
                             </div>
-
                             <button class="btn-data btn-danger" id="btnNuke">⚠️ DESTRUCCIÓN MUTUA ASEGURADA (Borrar Todo)</button>
                         </div>
                     </div>
 
                     <div id="tab-ontology" class="tab-content ${this.tab === 'ontology' ? 'active' : ''}">
                         <div class="panel">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 3rem; flex-wrap: wrap; gap:15px;">
-                                <div>
-                                    <h2 style="margin-bottom:5px;">El ADN Estructural (LMS)</h2>
-                                    <p style="margin:0; max-width:600px; font-size:0.9rem;">Estas plantillas de roles y ecosistemas han sido extraídas en tiempo real desde la Base de Conocimiento (IndexedDB).</p>
-                                </div>
-                            </div>
+                            <h2 style="margin-bottom:5px;">El ADN Estructural (LMS)</h2>
+                            <p style="margin:0; max-width:600px; font-size:0.9rem;">Plantillas teóricas vivas extraídas del Cerebro Semántico (IndexedDB).</p>
                             
                             <h3 style="color: var(--accent-blue); margin-top: 3rem; font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 10px; font-weight:900;">📦 Catálogo Inteligente de Ecosistemas</h3>
                             <div class="ontology-grid" id="nativeOntologyGrid">
-                                <div style="color:#888; grid-column: 1/-1; padding: 2rem; text-align:center;">Extrayendo genoma semántico desde IndexedDB...</div>
+                                <div style="color:#888; grid-column: 1/-1; padding: 2rem; text-align:center;">Extrayendo genoma semántico...</div>
                             </div>
                         </div>
                     </div>
@@ -338,7 +317,6 @@ export default class SettingsView {
 
         this.bindContentEvents();
 
-        // Resize Observer for the Macro Map
         if (window.ResizeObserver) {
             const container = document.getElementById('stakeholderMap');
             if (container) {
@@ -355,18 +333,33 @@ export default class SettingsView {
         const pathsGroup = document.getElementById('sh-paths-group');
         if (!container || !pathsGroup) return;
 
-        // Limpiar
+        // Limpiar DOM reutilizado
         container.querySelectorAll('.node-wrapper, .tx-badge').forEach(e => e.remove());
         pathsGroup.innerHTML = '';
 
-        // Nodos del Macro-Ecosistema
+        // Nodos Macro Fundacionales (Posiciones Geométricas fijas para el Metamapa)
         const nodes = [
-            { id: 'inv', label: 'Inversores', desc: 'Capital', icon: '🏦', color: 'var(--accent-green)', x: 20, y: 25 },
-            { id: 'cli', label: 'Mercado', desc: 'Clientes', icon: '🛍️', color: 'var(--accent-blue)', x: 80, y: 25 },
-            { id: 'eo', label: 'Ecosystem Owner', desc: 'Gobernanza', icon: '👑', color: 'var(--accent-orange)', x: 50, y: 50 },
-            { id: 'team', label: 'La Colla', desc: 'IA + Humanos', icon: '🤖', color: 'var(--accent-purple)', x: 50, y: 80 }
+            { id: 'inv', label: 'Inversores', desc: 'Capital FIAT', icon: '🏦', color: 'var(--accent-green)', x: 18, y: 25 },
+            { id: 'cli', label: 'Mercado', desc: 'Pago por Valor', icon: '🛍️', color: 'var(--accent-blue)', x: 82, y: 25 },
+            { id: 'eo', label: 'Ecosystem Owner', desc: 'Master Architect', icon: '👑', color: 'var(--accent-orange)', x: 50, y: 50 },
+            { id: 'team', label: 'La Colla', desc: 'IA + Humanos', icon: '🤖👥', color: 'var(--accent-purple)', x: 50, y: 82 }
         ];
 
+        // Transacciones / Flujos Macro (Ordenados por secuencia lógica de negocio)
+        // (1-2: Fund, 3-4: Directriz, 5-6: Ejecución, 7-8: Venta/Ingreso)
+        const edges = [
+            { from: 'inv', to: 'eo', tipo: 'tangible', label: 'Inversión (€)' }, // 1
+            { from: 'eo', to: 'inv', tipo: 'intangible', label: 'Equidad / SBT' }, // 2
+            { from: 'eo', to: 'team', tipo: 'intangible', label: 'Visión & Metas' }, // 3
+            { from: 'eo', to: 'team', tipo: 'tangible', label: 'Slices (Pago PoW)' }, // 4
+            { from: 'team', to: 'eo', tipo: 'tangible', label: 'Entregables (PoW)' }, // 5
+            { from: 'team', to: 'cli', tipo: 'tangible', label: 'Producto / SaaS' }, // 6
+            { from: 'cli', to: 'team', tipo: 'intangible', label: 'Feedback / Datos' }, // 7
+            { from: 'cli', to: 'eo', tipo: 'tangible', label: 'Ingresos (€)' }, // 8
+            { from: 'eo', to: 'cli', tipo: 'intangible', label: 'Promesa de Marca' } // 9
+        ];
+
+        // 1. Render Nodos (DRY Clases CSS)
         nodes.forEach(n => {
             const el = document.createElement('div');
             el.className = 'node-wrapper';
@@ -374,7 +367,7 @@ export default class SettingsView {
             el.style.left = `${n.x}%`;
             el.style.top = `${n.y}%`;
             el.innerHTML = `
-                <div class="node-circle" style="border-color:${n.color}; box-shadow: 0 0 30px ${n.color}40;">
+                <div class="node-circle" style="border-color:${n.color}; box-shadow: 0 0 35px ${n.color}50;">
                     <div class="node-icon">${n.icon}</div>
                     <div class="node-desc">${n.desc}</div>
                 </div>
@@ -383,28 +376,16 @@ export default class SettingsView {
             container.appendChild(el);
         });
 
-        // Transacciones (Flujos Macro)
-        const edges = [
-            { from: 'inv', to: 'eo', tipo: 'tangible', label: 'Inversión' },
-            { from: 'eo', to: 'inv', tipo: 'intangible', label: 'Equity / Confianza' },
-            { from: 'eo', to: 'team', tipo: 'intangible', label: 'Visión & Metas' },
-            { from: 'eo', to: 'team', tipo: 'tangible', label: 'Slices (Pago)' },
-            { from: 'team', to: 'eo', tipo: 'tangible', label: 'Entregables PoW' },
-            { from: 'team', to: 'cli', tipo: 'tangible', label: 'Producto (SaaS)' },
-            { from: 'cli', to: 'team', tipo: 'intangible', label: 'Feedback / Datos' },
-            { from: 'cli', to: 'eo', tipo: 'tangible', label: 'Ingresos (Fiat)' },
-            { from: 'eo', to: 'cli', tipo: 'intangible', label: 'Promesa de Marca' }
-        ];
-
-        // Agrupar para hacer curvas paralelas
+        // 2. Agrupar pares para flujos paralelos anti-colisión
         const pairCounts = {};
         edges.forEach((tx, i) => {
             const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
             if (!pairCounts[key]) pairCounts[key] = [];
-            pairCounts[key].push({ tx, index: i });
+            pairCounts[key].push({ tx, index: i }); // Guardamos el índice secuencial original
         });
 
-        // Dibujar SVG después del render DOM
+        // 3. Render Edges (Curvas Bézier DRY)
+        // Retardo pequeño para asegurar que el DOM de los nodos se ha renderizado y tiene coordenadas
         setTimeout(() => {
             Object.keys(pairCounts).forEach(key => {
                 const edgesGroup = pairCounts[key];
@@ -412,10 +393,10 @@ export default class SettingsView {
                     this.drawMacroEdge(container, pathsGroup, edgeData.tx, edgeData.index, edgesGroup, multiIdx);
                 });
             });
-        }, 50);
+        }, 60);
     }
 
-    drawMacroEdge(canvas, pathsGroup, tx, index, edgesGroup, multiIdx) {
+    drawMacroEdge(canvas, pathsGroup, tx, originalIndex, edgesGroup, multiIdx) {
         const dom1 = canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
@@ -429,7 +410,7 @@ export default class SettingsView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        const trim = 55; // Ajustar a los bordes de los nodos grandes
+        const trim = 65; // Ajuste a los bordes de los nodos grandes
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -443,9 +424,9 @@ export default class SettingsView {
         const ny = dx / dist;
         let offset = 0;
         
-        // Separación DRY de líneas paralelas
+        // Algoritmo Anti-Colisión (Curvas paralelas secantes)
         if (edgesGroup.length > 1) {
-            const step = 40; 
+            const step = 45; // Separación visual entre tuberías paralelas
             if (multiIdx % 2 !== 0) {
                 offset = Math.ceil(multiIdx / 2) * step;
             } else {
@@ -461,7 +442,6 @@ export default class SettingsView {
         path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         
         let markerId = tx.tipo === 'tangible' ? 'arrow-tangible-macro' : 'arrow-intangible-macro';
-        
         const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
         path.setAttribute('class', `edge-line ${lineClass}`);
         
@@ -471,16 +451,39 @@ export default class SettingsView {
         
         pathsGroup.appendChild(path);
 
-        // Badge en el centro de la curva
-        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+        // --- Algoritmo de Posicionamiento Anti-Solapamiento de Badges (Bezier Shifting) ---
+        // En lugar de usar t=0.5 (centro), desplazamos el badge a lo largo de la curva t (0.0 a 1.0)
+        // para escalonar las Work Orders paralelas.
+        let t = 0.5; // Defecto centro
+        if (edgesGroup.length > 1) {
+            // Escalonado DRY basado en el índice dentro del grupo de pares
+            // Múltiples flujos entre A y B se reparten en t=0.35, t=0.5, t=0.65, etc.
+            const totalInGroup = edgesGroup.length;
+            const spreadFactor = 0.3; // Cuánto se alejan del centro (0.3 = repartidos entre 0.35 y 0.65 t)
+            
+            // Calculamos una t desplazada simétricamente respecto al centro 0.5
+            if (totalInGroup > 1) {
+                t = 0.5 + ((multiIdx / (totalInGroup - 1)) - 0.5) * spreadFactor;
+            }
+        }
+
+        // Fórmula paramétrica de curva de Bézier cuadrática (Q) para t
+        // P = (1-t)^2 * P0 + 2*(1-t)*t * Pcenter + t^2 * P1
+        const omt = 1 - t;
+        const omt2 = omt * omt;
+        const t2 = t * t;
+        
+        const txX = omt2 * x1 + 2 * omt * t * cx + t2 * x2;
+        const txY = omt2 * y1 + 2 * omt * t * cy + t2 * y2;
 
         const badge = document.createElement('div');
         badge.className = 'tx-badge';
         badge.style.left = `${txX}px`;
         badge.style.top = `${txY}px`;
         badge.style.backgroundColor = strokeHex;
-        badge.innerText = tx.label;
+        
+        // Numeración secuencial (dry index + 1)
+        badge.innerHTML = `<span class="tx-order">${originalIndex + 1}.</span> ${tx.label}`;
         
         canvas.appendChild(badge);
     }
