@@ -1,7 +1,7 @@
 // v8/js/core/kb.js
 // Motor de Memoria Profunda (IndexedDB) para el LMS Semántico
 
-// ONTOLOGÍA BASE (La Semilla del Conocimiento Expandida)
+// ONTOLOGÍA BASE (Ecosistemas)
 const NATIVE_ONTOLOGY = {
     "tech_saas_platform": {
         label: "💻 Software & SaaS",
@@ -95,7 +95,7 @@ const NATIVE_ONTOLOGY = {
         label: "🌍 ONG & Impacto Social",
         meta: "Agente de Bienes Públicos. Transparencia radical en fondos y empoderamiento de comunidades vulnerables.",
         roles: {
-            "@anxaneta": { name: "Director de Impacto", multiplier: 2.0, fmv: 45, standard_deliverables: [{ name: "Teoría del Cambio", estimatedHours: 15, tipo: "tangible" }, { name: "Aplicación a Grants Internacionales", estimatedHours: 20, tipo: "tangible" }] },
+            "@anxaneta": { name: "Director de Impacto", multiplier: 2.0, fmv: 45, standard_deliverables: [{ name: "Teoría del Cambio", estimatedHours: 15, tipo: "tangible" }, { name: "Aplicación a Grants Internacionales", estimatedHours: 20, tipo: "tangible" }, { name: "Lobbying y Relaciones Institucionales", estimatedHours: 10, tipo: "intangible" }] },
             "@aixecador": { name: "Coordinador de Terreno", multiplier: 1.5, fmv: 35, standard_deliverables: [{ name: "Ruta de Voluntarios", estimatedHours: 10, tipo: "tangible" }, { name: "Plan de Seguridad", estimatedHours: 6, tipo: "tangible" }] },
             "@dosos": { name: "Auditor de Transparencia", multiplier: 1.2, fmv: 35, standard_deliverables: [{ name: "Impact Report (Público)", estimatedHours: 15, tipo: "tangible" }, { name: "Trazabilidad de Fondos", estimatedHours: 10, tipo: "tangible" }] },
             "@baixos": { name: "Especialista Local", multiplier: 1.0, fmv: 30, standard_deliverables: [{ name: "Ejecución de Taller Comunitario", estimatedHours: 12, tipo: "intangible" }, { name: "Despliegue de Infraestructura Local", estimatedHours: 20, tipo: "tangible" }] },
@@ -104,19 +104,60 @@ const NATIVE_ONTOLOGY = {
     }
 };
 
+// META-CONOCIMIENTO (VNA & PANTHEON) PARA ALIMENTAR A LOS AGENTES
+const META_DOCS = [
+    {
+        id: 'meta_vna_core',
+        type: 'methodology',
+        sector: 'global',
+        roleTarget: 'Global',
+        title: 'Value Network Analysis (VNA) - Core Theory',
+        content: `Metodología base: Value Network Analysis de Verna Allee. 
+        Un ecosistema no es una jerarquía, es una red de creación de valor (Value Network). Una 'Value Network' es cualquier conjunto de roles e interacciones donde las personas se involucran en intercambios tangibles e intangibles para lograr un bien económico o social. [cite: 33] 
+        - Roles: Son los agentes activos. Ejecutan funciones y controlan recursos para generar "entregables". Los roles describen cómo las personas contribuyen a una actividad particular. [cite: 170, 172, 176] No deben confundirse con Job Titles.
+        - Transacciones (Tuberías): Ocurre cuando un entregable (deliverable) originado por un rol es transmitido y recibido por otro rol. [cite: 64] 
+        - Tangibles: Intercambios contractuales, ingresos, o productos/servicios esperados y formales que generan retorno financiero (ej. Código, Informes, Dinero). La determinación de si un entregable es tangible o intangible depende de su naturaleza contractual, no física. [cite: 53, 155, 157]
+        - Intangibles: Intercambios informales de conocimiento (ej. información estratégica, know-how técnico) y beneficios/favores que construyen relaciones y mantienen la red funcionando suavemente, pero no son contractuales. [cite: 52, 159, 160, 161, 166] 
+        La economía molecular se basa en el intercambio; las transacciones intangibles son una forma de "trueque" vital para construir relaciones empresariales. [cite: 57, 88, 89] El éxito futuro de una compañía depende de su eficiencia para convertir una forma de valor (tangible o intangible) en otra (Value Conversion). [cite: 14, 92] El Análisis de Impacto y el Análisis de Creación de Valor son cruciales para entender cómo se realiza y crea este valor a través de los activos y roles de la red. [cite: 150, 331, 407]
+        Regla para Agentes IA: Al diseñar o auditar redes, asegura siempre un equilibrio entre flujos tangibles (sostenibilidad económica) y flujos intangibles (resiliencia y conocimiento).`
+    },
+    {
+        id: 'meta_pantheon_core',
+        type: 'methodology',
+        sector: 'global',
+        roleTarget: 'Global',
+        title: 'Pantheon Work - Los 12 Guardianes',
+        content: `Metodología: Pantheon Work (Alineación de equipos mediante Arquetipos).
+        Las organizaciones son ecosistemas complejos. Para gobernarlas, utilizamos el modelo de los 12 Dioses Olímpicos (Guardianes), que representan distintas lógicas de acción y aseguran la estabilidad estructural del sistema. [cite: 651, 657, 659, 740] 
+        Los guardianes no son roles de proyecto (como @anxaneta), son 'Autoridades Intangibles'. Son referentes a los que el grupo reconoce tener "la última palabra" en ciertas palabras clave o dominios de acción. [cite: 743, 753, 754] Aseguran que su área de competencia no sea desatendida.
+        Lógica Trivalente: Los guardianes se agrupan en tres orientaciones dinámicas para mantener el equilibrio: Separar, Mezclar, Relacionar. [cite: 825, 854, 856]
+        Arquetipos principales y palabras clave:
+        1. Zeus (Gobernante): Liderazgo, Poder, Justicia.
+        2. Hera (Cuidador): Compromiso, Familia, Vínculos.
+        3. Poseidón (Explorador): Emociones profundas, Instinto, Fuerza Bruta.
+        4. Demeter (Inocente): Cuidado, Nutrición, Crecimiento.
+        5. Ares/Héroe (Ejecución): Conflicto, Acción, Determinación.
+        6. Atenea (Sabio): Estrategia (práctica), Destreza, Civismo. [cite: 908]
+        7. Apolo (Creador): Análisis, Conocimiento Teórico, Depuración. [cite: 902]
+        8. Artemisa/Amante: Naturaleza, Independencia, Foco.
+        9. Hermes (Mago/Guía): Comunicación, Transgresión, Invención. [cite: 1030, 1033, 1037]
+        10. Hefesto (Trabajador): Forja, Tecnología, Persistencia.
+        11. Afrodita (Seductor): Estética, Belleza, Creatividad. [cite: 895]
+        12. Dionisio (Bufón): Socialización, Celebración, Hedonismo, Invención. [cite: 917]
+        Regla para Agentes IA: Al diseñar una red, no asignes siempre "Magician" o "Creator". Un CEO (@anxaneta) puede ser un Zeus (Ruler) o un Poseidón (Explorador). Un @baixos (Dev) suele ser Hefesto o Apolo. El soporte (@pinya) suele ser Demeter (Caregiver). Usa esta matriz para diversificar la inteligencia colectiva del equipo y mejorar la toma de decisiones. [cite: 751]`
+    }
+];
+
 export const KB = {
     dbName: 'TeamTowers_LMS_V8',
-    dbVersion: 3, // Forzamos actualización de IndexedDB para inyectar los nuevos sectores
+    dbVersion: 4, // Actualizada para forzar inyección de Meta-Docs
     db: null,
 
     init() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, this.dbVersion);
 
-            request.onerror = (e) => {
-                console.error("IndexedDB Error:", e.target.errorCode);
-                reject(e.target.errorCode);
-            };
+            request.onerror = (e) => reject(e.target.errorCode);
 
             request.onsuccess = async (e) => {
                 this.db = e.target.result;
@@ -139,42 +180,35 @@ export const KB = {
 
     async seedDatabaseIfNeeded() {
         const docs = await this.getAllDocuments();
+        
+        // 1. INYECTAR GENOMA ONTOLÓGICO (SECTORES Y ROLES)
         const ontologyDocs = docs.filter(d => d.type === 'ontology');
-
         if (ontologyDocs.length === 0) {
             console.log("🌱 [KB] Sembrando los 9 Genomas Ontológicos (Ecosistemas)...");
             
             for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
-                
-                // Inyectar Metadatos del Sector como Documento "Madre"
                 await this.saveDocument({
-                    id: `onto_${sectorKey}_meta`,
-                    type: 'ontology',
-                    sector: sectorKey,
-                    sectorLabel: sectorData.label,
-                    roleTarget: 'Global',
-                    title: `Meta-Instrucción: ${sectorData.label}`,
-                    content: sectorData.meta,
-                    deliverables: []
+                    id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label,
+                    roleTarget: 'Global', title: `Meta-Instrucción: ${sectorData.label}`, content: sectorData.meta, deliverables: []
                 });
 
-                // Inyectar los Roles del Sector
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
                     const contentStr = `Rol: ${roleData.name} (${levelKey}). Multiplicador de riesgo: x${roleData.multiplier}. FMV Base: €${roleData.fmv}/h. \nEntregables esperados: ${roleData.standard_deliverables.map(d => `${d.name} (${d.estimatedHours}h, ${d.tipo})`).join(', ')}.`;
-
                     await this.saveDocument({
-                        id: `onto_${sectorKey}_${levelKey.replace('@','')}`,
-                        type: 'ontology',
-                        sector: sectorKey,
-                        sectorLabel: sectorData.label,
-                        roleTarget: levelKey,
-                        title: `Arquetipo: ${roleData.name} en ${sectorData.label}`,
-                        content: contentStr,
-                        deliverables: roleData.standard_deliverables
+                        id: `onto_${sectorKey}_${levelKey.replace('@','')}`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label,
+                        roleTarget: levelKey, title: `Arquetipo: ${roleData.name} en ${sectorData.label}`, content: contentStr, deliverables: roleData.standard_deliverables
                     });
                 }
             }
-            console.log("🌳 [KB] Genoma Semántico inyectado exitosamente.");
+        }
+
+        // 2. INYECTAR META-METODOLOGÍAS (VNA & PANTHEON)
+        const methodologyDocs = docs.filter(d => d.type === 'methodology');
+        if (methodologyDocs.length === 0) {
+            console.log("🧠 [KB] Sembrando Meta-Conocimiento (VNA & Pantheon) para Agentes IA...");
+            for (const mDoc of META_DOCS) {
+                await this.saveDocument(mDoc);
+            }
         }
     },
 
@@ -194,10 +228,7 @@ export const KB = {
                     "@context": "https://schema.org",
                     "@type": "TechArticle",
                     "headline": doc.title,
-                    "audience": {
-                        "@type": "Audience",
-                        "audienceType": doc.roleTarget || "All Nodes"
-                    },
+                    "audience": { "@type": "Audience", "audienceType": doc.roleTarget || "All Nodes" },
                     "text": doc.content
                 }
             };
@@ -226,16 +257,13 @@ export const KB = {
         });
     },
 
-    // La función clave para el Creador de Proyectos: extrae los sectores vivos desde la base de datos
     async getAvailableSectors() {
         const docs = await this.getAllDocuments();
         const ontologyDocs = docs.filter(d => d.type === 'ontology');
         
         const sectors = {};
         ontologyDocs.forEach(doc => {
-            if (!sectors[doc.sector]) {
-                sectors[doc.sector] = { label: doc.sectorLabel || doc.sector, roles: {} };
-            }
+            if (!sectors[doc.sector]) sectors[doc.sector] = { label: doc.sectorLabel || doc.sector, roles: {} };
             if (doc.roleTarget !== 'Global') {
                 sectors[doc.sector].roles[doc.roleTarget] = {
                     name: doc.title.split(': ')[1]?.split(' en ')[0] || doc.title,
