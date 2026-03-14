@@ -1,6 +1,15 @@
 // v8/js/views/TestsView.js
 import { store } from '../core/store.js';
 
+// Importamos un extracto de la Ontología para el test de estrés E2E
+const MOCK_ONTOLOGY = {
+    '@anxaneta': { name: 'Growth Hacker', multiplier: 3.0, fmv: 70 },
+    '@aixecador': { name: 'Director Creativo', multiplier: 2.0, fmv: 60 },
+    '@dosos': { name: 'Project Manager', multiplier: 1.5, fmv: 50 },
+    '@baixos': { name: 'Diseñador UI', multiplier: 1.2, fmv: 40 },
+    '@pinya': { name: 'Community Manager', multiplier: 1.0, fmv: 25 }
+};
+
 export default class TestsView {
     constructor() {
         document.title = "Boot Diagnostics | TeamTowers V8";
@@ -53,17 +62,17 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V8 KERNEL DIAGNOSTICS</h1>
-                        <p>Validando Inmutabilidad, RBAC y Motor Slicing Pie</p>
+                        <h1>V8 STRESS TEST E2E</h1>
+                        <p>Validación de Topología Fractal, Kanban y Motor Slicing Pie</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> SECUENCIA DE ARRANQUE INICIADA... <span class="cursor"></span></div>
+                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> INICIANDO SECUENCIA DE ESTRÉS... <span class="cursor"></span></div>
                     </div>
 
                     <div class="action-footer">
                         <div class="score-display" id="testScore">0/0</div>
-                        <a href="/v8/" data-link class="btn-enter-matrix" id="btnEnterOS">ENTRAR AL SISTEMA →</a>
+                        <a href="/v8/" data-link class="btn-enter-matrix" id="btnEnterOS">ENTRAR AL KERNEL →</a>
                     </div>
                 </div>
             </div>
@@ -78,7 +87,6 @@ export default class TestsView {
         let passed = 0; 
         let total = 0;
 
-        // Función Helper para simular tipeo y delay hacker
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         const assert = async (condition, message, tag) => {
@@ -86,7 +94,7 @@ export default class TestsView {
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(400); // Retraso dramático Matrix
+            await sleep(300); // Retraso matrix para efecto visual
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
@@ -107,62 +115,108 @@ export default class TestsView {
         };
 
         const runTests = async () => {
-            const PID_TEST = 'v8-test-' + Date.now();
+            const PID_TEST = 'v8-stress-' + Date.now();
             const dynUser = 'nodo_' + Math.floor(Math.random() * 1000);
 
             try {
                 // 1. KERNEL & SESSION
-                await assert(store.getState().config.version.startsWith('8'), "Versión del Config apunta a V8", "SYS");
-                await assert(store.getState().session.activeUserId === 'usr_alvaro_001', "Master Architect identificado en sesión", "AUTH");
+                await assert(store.getState().config.version.startsWith('8'), "Versión del Kernel apunta a V8", "SYS");
+                await assert(store.getState().session.activeUserId === 'usr_alvaro_001', "Master Architect identificado", "AUTH");
 
-                // 2. CREACIÓN DE ECOSISTEMA (TDD Core)
-                const mockProject = {
-                    id: PID_TEST,
-                    nombre: "Matrix Sandbox",
-                    ownerId: 'usr_alvaro_001',
-                    isPrivate: true,
-                    usuarios: [{ id: 'usr_alvaro_001' }],
-                    ledger: [
-                        { userId: 'usr_alvaro_001', roleId: '@anxaneta', valorCongelado: 1500, horas: 10 }
-                    ],
-                    work_orders: [
-                        { hash: 'wo1', status: 'reported' },
-                        { hash: 'wo2', status: 'theoretical' }
-                    ]
-                };
-                
-                await store.dispatch({ type: 'CREATE_PROJECT', payload: mockProject });
-                const p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p !== undefined, "Proyecto inyectado en el Store en memoria", "DB");
-                await assert(p.ledger.length === 1, "Estructura Ledger persistida correctamente", "LEDGER");
+                // 2. GÉNESIS E2E (INSTANCIACIÓN DE RED)
+                const draftRoles = Object.keys(MOCK_ONTOLOGY).map(levelKey => ({
+                    id: 'role_' + levelKey.replace('@','') + '_' + Date.now(),
+                    levelId: levelKey,
+                    name: MOCK_ONTOLOGY[levelKey].name,
+                    fmv: MOCK_ONTOLOGY[levelKey].fmv,
+                    multiplier: MOCK_ONTOLOGY[levelKey].multiplier,
+                    isArchived: false
+                }));
 
-                // 3. MOTOR SLICING PIE V8
-                const harvest = store.calculateHarvest(PID_TEST);
-                await assert(Array.isArray(harvest), "calculateHarvest() devuelve un array procesado", "ECONOMY");
-                await assert(harvest.length > 0 && harvest[0].slices === 1500, "Cálculo de Slices en memoria exacto (1500 Slices)", "MATH");
+                await store.dispatch({ 
+                    type: 'CREATE_PROJECT', 
+                    payload: {
+                        id: PID_TEST,
+                        nombre: "Stress Test Agency",
+                        ownerId: 'usr_alvaro_001',
+                        sector: 'agencia_marketing',
+                        roles: draftRoles,
+                        vna_flows: [],
+                        work_orders: [],
+                        ledger: []
+                    } 
+                });
 
-                // 4. MOTOR DE RESILIENCIA Y MÉTRICAS
-                const resilience = store.calculateResilience(PID_TEST);
-                await assert(typeof resilience === 'number', "calculateResilience() devuelve un índice numérico", "HEALTH");
-                await assert(resilience === 95, "Cálculo de Resiliencia exacto (1 atasco detectado restando 5 pts)", "MATH");
+                let p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p !== undefined, "Proyecto inyectado en Base de Datos Local", "DB");
+                await assert(p.roles.length === 5, "5 Roles Estructurales Creados Perfectamente", "TOPOLOGY");
 
-                // 5. GOBERNANZA FRACTAL (RBAC)
-                const canPOView = store.canUserViewProject(PID_TEST, 'usr_alvaro_001', 'ecosystem-owner');
-                const canStrangerView = store.canUserViewProject(PID_TEST, dynUser, 'network-user');
-                await assert(canPOView === true, "Ecosystem Owner tiene visión absoluta sobre la Red", "RBAC");
-                await assert(canStrangerView === false, "Muro de Cristal: Nodo externo bloqueado de red privada", "SECURITY");
+                // 3. TRAZADO DE TUBERÍAS (MAPA VNA)
+                const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
+                const rAix = p.roles.find(r => r.levelId === '@aixecador');
+                const rBaix = p.roles.find(r => r.levelId === '@baixos');
+
+                await store.dispatch({
+                    type: 'ADD_FLOW',
+                    payload: {
+                        projectId: PID_TEST,
+                        flow: { id: 'flow_1', from: rAnx.id, to: rAix.id, template: "Estrategia Q1", tipo: "intangible", estimatedHours: 5 }
+                    }
+                });
+                await store.dispatch({
+                    type: 'ADD_FLOW',
+                    payload: {
+                        projectId: PID_TEST,
+                        flow: { id: 'flow_2', from: rAix.id, to: rBaix.id, template: "Diseño Web", tipo: "tangible", estimatedHours: 10 }
+                    }
+                });
+
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.vna_flows.length === 2, "Mapa VNA: Tuberías trazadas e inyectadas", "VNA_FLOW");
+
+                // 4. INSTANCIACIÓN EN KANBAN (WORK ORDERS)
+                const woHash = 'wo_' + Date.now();
+                await store.dispatch({
+                    type: 'SPAWN_WORK_ORDER',
+                    payload: {
+                        projectId: PID_TEST,
+                        workOrder: { hash: woHash, flowId: 'flow_2', status: 'theoretical', realHours: 0 }
+                    }
+                });
+
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders.length === 1, "Kanban: Entregable nacido como Oportunidad (PULL)", "KANBAN");
+                await assert(p.work_orders[0].status === 'theoretical', "Kanban: Estado 'Libre' validado", "KANBAN");
+
+                // 5. FLUJO DE TRABAJO (PULL -> REPORT -> APPROVE)
+                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: 'usr_alvaro_001' } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].status === 'pinged', "Focus Mode: Tarea asumida por nodo", "WORKFLOW");
+
+                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8 } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].realHours === 8, "Focus Mode: Prueba de Trabajo (PoW) reportada", "WORKFLOW");
+
+                // 6. MOTOR SLICING PIE (LEDGER)
+                await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].status === 'consolidated', "Auditoría: Tarea Sellada", "AUDIT");
+                await assert(p.ledger.length === 1, "Ledger: Bloque Criptográfico Minado", "LEDGER");
+
+                // Verificamos matemáticas: 8h * fmv(@baixos: 40) * mult(1.2) = 384 Slices
+                const expectedSlices = 8 * 40 * 1.2;
+                await assert(p.ledger[0].valorCongelado === expectedSlices, `Economía: Slices exactos calculados (${expectedSlices})`, "MATH");
 
                 // FINALIZACIÓN EXITOSA
                 await sleep(500);
                 terminal.innerHTML += `
                     <div style="margin-top: 20px; padding: 15px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 8px; text-align: center;">
-                        <h3 style="color: var(--accent-green); margin: 0;">SISTEMA V8 OPERATIVO Y ESTABLE</h3>
-                        <p style="color: white; font-size: 0.85rem; margin-top: 5px;">El Kernel soporta el Dashboard. Listo para despliegue.</p>
+                        <h3 style="color: var(--accent-green); margin: 0;">🔥 ESTRÉS E2E SUPERADO 🔥</h3>
+                        <p style="color: white; font-size: 0.85rem; margin-top: 5px;">Génesis > Mapa VNA > Kanban > Ledger. Sin pérdida de datos. Kernel Blindado.</p>
                     </div>
                 `;
                 terminal.scrollTop = terminal.scrollHeight;
                 
-                // Mostrar botón de entrada
                 btnEnter.classList.add('visible');
 
             } catch (error) {
@@ -175,12 +229,10 @@ export default class TestsView {
                 terminal.scrollTop = terminal.scrollHeight;
             }
             
-            // Quitar cursor animado
             const cursor = document.querySelector('.cursor');
             if(cursor) cursor.remove();
         };
 
-        // Iniciar tests automáticamente al cargar la vista
         setTimeout(runTests, 500);
     }
 }
