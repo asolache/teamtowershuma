@@ -1,5 +1,6 @@
 // v8/js/views/ProfileView.js
 import { store } from '../core/store.js';
+import { KB } from '../core/kb.js'; 
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js'; 
@@ -278,7 +279,6 @@ export default class ProfileView {
             btnToggleAvailability: document.getElementById('btnToggleAvailability')
         };
 
-        // CARGA DE DATOS DE USUARIO
         if (user.profile) {
             this.dom.inpVision.value = user.profile.vision || '';
             
@@ -304,7 +304,6 @@ export default class ProfileView {
             this.updateSystemPromptDisplay(user.profile.permawebHash, user.profile.ikigaiSummary);
         }
 
-        // TABS LOGIC V8 EVENT SYNC
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -312,7 +311,6 @@ export default class ProfileView {
             if(target) target.classList.add('active');
         });
 
-        // MAGIC ACTION EVENT (IKIGAI GENERATION V8)
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'ai_ikigai') {
                 this.saveIdentity(true); 
@@ -320,7 +318,6 @@ export default class ProfileView {
             }
         });
 
-        // STATUS TOGGLE
         if(this.dom.btnToggleAvailability) {
             this.dom.btnToggleAvailability.addEventListener('click', () => {
                 const currentState = store.getState();
@@ -340,9 +337,7 @@ export default class ProfileView {
             });
         }
 
-        // EVENTOS GUARDADO NORMAL
         this.dom.btnSave.addEventListener('click', () => this.saveIdentity(false));
-
         this.calculateReputationAndStats(state);
     }
 
@@ -359,7 +354,6 @@ export default class ProfileView {
         const userIndex = currentState.globalUsers.findIndex(u => u.id === this.activeUserId);
         
         if (userIndex > -1) {
-            // Actualizamos datos básicos en el objeto superior
             currentState.globalUsers[userIndex].name = name;
             currentState.globalUsers[userIndex].email = email;
             currentState.globalUsers[userIndex].wallet = wallet;
@@ -400,6 +394,11 @@ export default class ProfileView {
         
         this.dom.aiSystemPrompt.innerHTML = `<div style="text-align:center; padding:2rem; animation: pulse 1.5s infinite;"><span style="font-size:2rem;">🧠</span><br><br><span style="color:var(--accent-purple); font-weight:bold;">Analizando matriz y sintetizando Ikigai...</span></div>`;
         
+        // LEER CEREBRO SEMÁNTICO PANTHEON DE LA KB
+        await KB.init();
+        const globalDocs = await KB.getAllDocuments('global');
+        const pantheonMeta = globalDocs.find(d => d.id === 'meta_pantheon_core')?.jsonLd?.text || 'Los 12 Guardianes representan arquetipos de autoridad intangible para el grupo.';
+
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
         let apiKey = '';
         if (savedProvider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek') || '';
@@ -410,13 +409,17 @@ export default class ProfileView {
 
         if (apiKey) {
             const systemPrompt = `
-                Eres el Motor de Matching Semántico de TeamTowers. 
-                Analiza el siguiente perfil y resume en 1 párrafo corto (máximo 40 palabras) la 'Huella Semántica' (Ikigai) de este talento, explicando cómo aporta valor a un Ecosistema. Habla en segunda persona del singular ("Eres un...").
+                Eres el Motor de Matching Semántico de TeamTowers (Ikigai Coach). 
+                
+                MODELO PANTHEON (Tu marco de referencia):
+                ${pantheonMeta}
+
+                Misión: Analiza el siguiente perfil y resume en 1 párrafo corto (máximo 40 palabras) la 'Huella Semántica' (Ikigai) de este talento, explicando cómo aporta valor a un Ecosistema. Habla en segunda persona del singular ("Eres un...").
                 
                 Vision Cruda: "${profile.vision}"
-                Niveles: ${profile.structural_affinity.join(', ')}
-                Autoridad: ${profile.guardian_authority.join(', ')}
-                Crecimiento: ${profile.guardian_growth.join(', ')}
+                Niveles VNA: ${profile.structural_affinity.join(', ')}
+                Autoridad Intangible (Pantheon): ${profile.guardian_authority.join(', ')}
+                Crecimiento Deseado (Pantheon): ${profile.guardian_growth.join(', ')}
             `;
 
             try {
