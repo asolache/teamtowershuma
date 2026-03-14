@@ -15,7 +15,6 @@ export default class DashboardView {
         const activeUserId = state.session.activeUserId;
         const globalRole = state.session.role;
 
-        // Recuperar proyecto activo
         let project = state.projects.find(p => p.id === localStorage.getItem('tt_active_project'));
         if (!project && state.projects.length > 0) {
             project = state.projects[state.projects.length - 1];
@@ -65,6 +64,22 @@ export default class DashboardView {
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
 
+        // --- CÁLCULO DE ARBITRAJE IA (Fase 17) ---
+        let aiGrossValue = 0;
+        let aiCost = 0;
+        
+        (project.ledger || []).forEach(tx => {
+            const user = state.globalUsers.find(u => u.id === tx.userId);
+            if (user && user.profile?.isAi) {
+                const hrs = tx.horas || 1;
+                // Valor de Mercado que hubiera cobrado un humano
+                aiGrossValue += (tx.fmv || 50) * (tx.multiplier || 1) * hrs; 
+                // Coste real de la API
+                aiCost += (user.profile.apiCostPerHour || 0.15) * hrs;
+            }
+        });
+        const aiNetSavings = aiGrossValue - aiCost;
+
         let vacantesHtml = sillasVacias.length === 0 
             ? `<div style="padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 12px; color: var(--accent-green); text-align: center; font-weight: bold;">✅ Arquitectura completa. Sin vacantes estructurales.</div>`
             : sillasVacias.map(r => `
@@ -85,10 +100,10 @@ export default class DashboardView {
             ? project.tags.map(t => `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: #888; border: 1px solid #333; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.5);">#${t}</span>`).join('') 
             : `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: #888; border: 1px solid #333; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.5);">#VNA</span>`;
         
-        // --- HEADER V8 CONFIG (TABS + MAGIC BUTTON) ---
+        // --- HEADER V8 CONFIG ---
         const headerConfig = {
             title: project.nombre,
-            subtitle: project.archetype, // El Header lo pintará en el Badge Verde automáticamente
+            subtitle: project.archetype, 
             tagline: "Centro de Mando del Ecosistema",
             tabs: [
                 { id: 'overview', label: '📊 Resumen Operativo', active: this.currentTab === 'overview' },
@@ -103,7 +118,6 @@ export default class DashboardView {
 
         return `
             <style>
-                /* ANIMACIONES Y MICRO-INTERACCIONES V8 */
                 .workflow-schema { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; margin-bottom: 2rem; }
                 .schema-step { display: flex; flex-direction: column; align-items: center; text-decoration: none; text-align: center; gap: 12px; flex: 1; transition: all 0.3s; filter: grayscale(40%) opacity(0.8); }
                 .schema-step:hover { transform: translateY(-5px); filter: grayscale(0%) opacity(1); }
@@ -122,6 +136,12 @@ export default class DashboardView {
                 .kpi-val { font-size: 2.2rem; font-weight: 900; display: block; margin-bottom: 5px; font-family: var(--font-mono); line-height: 1;}
                 .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
+                /* AI ARBITRAGE PANEL */
+                .ai-arbitrage-panel { background: linear-gradient(135deg, rgba(224, 64, 251, 0.05), rgba(0, 176, 255, 0.05)); border: 1px dashed var(--accent-purple); padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;}
+                .ai-stat-block { display: flex; flex-direction: column; gap: 5px; }
+                .ai-stat-lbl { font-size: 0.75rem; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+                .ai-stat-val { font-size: 1.8rem; font-weight: 900; font-family: var(--font-mono); color: white; }
+
                 .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);}
                 .modal-ia-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow:hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border-top: 4px solid var(--accent-purple);}
                 
@@ -129,6 +149,7 @@ export default class DashboardView {
                     .workflow-schema { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1.5rem; }
                     .schema-arrow { display: none; }
                     .s-icon { width: 60px; height: 60px; font-size: 2rem; border-radius: 16px; margin-bottom: 10px;}
+                    .ai-arbitrage-panel { flex-direction: column; align-items: flex-start; }
                 }
             </style>
 
@@ -139,6 +160,7 @@ export default class DashboardView {
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="tab-overview" class="tab-content ${this.currentTab === 'overview' ? 'active' : ''}">
+                        
                         <div class="glass-panel workflow-schema">
                             <a href="/v8/map" data-link class="schema-step">
                                 <div class="s-icon">🕸️</div>
@@ -161,10 +183,34 @@ export default class DashboardView {
                             </a>
                         </div>
 
-                        <div class="glass-panel" style="padding: 1.5rem 2rem; border-left: 4px solid var(--accent-purple);">
+                        <div class="ai-arbitrage-panel">
+                            <div style="display:flex; align-items:center; gap: 15px;">
+                                <div style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(224, 64, 251, 0.4));">🤖</div>
+                                <div>
+                                    <h3 style="color: var(--accent-purple); margin:0 0 5px 0; font-weight:900;">Arbitraje Cognitivo (IA)</h3>
+                                    <p style="color: #aaa; margin:0; font-size:0.85rem;">Diferencial entre el valor minado por IAs y su coste API real.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap: 2rem; flex-wrap:wrap;">
+                                <div class="ai-stat-block">
+                                    <span class="ai-stat-lbl">Valor Bruto Facturado</span>
+                                    <span class="ai-stat-val">€${aiGrossValue.toFixed(2)}</span>
+                                </div>
+                                <div class="ai-stat-block">
+                                    <span class="ai-stat-lbl" style="color:var(--accent-red);">Coste API Asumido</span>
+                                    <span class="ai-stat-val" style="color:var(--accent-red);">- €${aiCost.toFixed(2)}</span>
+                                </div>
+                                <div class="ai-stat-block" style="padding-left: 1rem; border-left: 1px dashed rgba(255,255,255,0.2);">
+                                    <span class="ai-stat-lbl" style="color:var(--accent-green);">Ahorro Neto (Profit)</span>
+                                    <span class="ai-stat-val" style="color:var(--accent-green);">€${aiNetSavings.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel" style="padding: 1.5rem 2rem; border-left: 4px solid var(--accent-blue); margin-bottom: 2.5rem;">
                             <div style="display:flex; gap: 10px; margin-bottom: 15px; flex-wrap:wrap;">${tagsHtml}</div>
                             <div class="presentation-text collapsed" id="pitchText">${pitchText.replace(/\n/g, '<br>')}</div>
-                            <button id="btnTogglePitch" style="background:none; border:none; color:var(--accent-purple); font-weight:900; cursor:pointer; padding:10px 0 0 0; font-size:0.8rem; text-transform:uppercase;">Expandir Manifiesto ▾</button>
+                            <button id="btnTogglePitch" style="background:none; border:none; color:var(--accent-blue); font-weight:900; cursor:pointer; padding:10px 0 0 0; font-size:0.8rem; text-transform:uppercase;">Expandir Manifiesto ▾</button>
                         </div>
 
                         <section class="kpi-grid">
@@ -182,7 +228,7 @@ export default class DashboardView {
                             </div>
                             <div class="kpi-card" style="border-bottom: 3px solid #888;">
                                 <span class="kpi-val" style="color: white;">${project.usuarios ? project.usuarios.length : 1}</span>
-                                <span class="kpi-lbl">Nodos Humanos</span>
+                                <span class="kpi-lbl">Nodos en Colla</span>
                             </div>
                         </section>
                     </div>
@@ -190,7 +236,7 @@ export default class DashboardView {
                     <div id="tab-market" class="tab-content ${this.currentTab === 'market' ? 'active' : ''}">
                         <div class="glass-panel">
                             <h2 style="color: white; margin-top: 0; font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 900; text-transform: uppercase;">🎯 Mercado Interno (Vacantes)</h2>
-                            <p style="color:#888; font-size:0.85rem; margin-bottom:1.5rem; line-height:1.4;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano asignado.</p>
+                            <p style="color:#888; font-size:0.85rem; margin-bottom:1.5rem; line-height:1.4;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano o IA asignado.</p>
                             <div>${vacantesHtml}</div>
                         </div>
                     </div>
@@ -198,7 +244,8 @@ export default class DashboardView {
                     <div id="tab-settings" class="tab-content ${this.currentTab === 'settings' ? 'active' : ''}">
                          <div class="glass-panel">
                             <h2 style="color: var(--text-muted);">Módulo de Configuración de Red</h2>
-                            <p>Opciones de gobernanza y parámetros de la DAO (En desarrollo Sprint 4).</p>
+                            <p>Opciones de gobernanza y parámetros de la DAO. (Centralizado en la Consola Global V8).</p>
+                            <a href="/v8/settings" data-link class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none;">Ir a Settings Global</a>
                          </div>
                     </div>
 
@@ -254,7 +301,7 @@ export default class DashboardView {
         document.querySelectorAll('.btn-invite').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const roleName = e.target.getAttribute('data-rolename');
-                const email = prompt(`Invitar mercenario para el rol [${roleName}]. Introduce su email o Wallet:`);
+                const email = prompt(`Invitar mercenario o Agente IA para el rol [${roleName}]. Introduce email o Wallet:`);
                 if (email) alert(`Invitación enviada a ${email}. Pendiente de integración P2P.`);
             });
         });
