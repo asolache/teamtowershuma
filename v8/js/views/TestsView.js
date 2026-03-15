@@ -154,12 +154,17 @@ export default class TestsView {
                     id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, fmv: MOCK_ONTOLOGY[levelKey].fmv, multiplier: MOCK_ONTOLOGY[levelKey].multiplier, isArchived: false
                 }));
 
+                // FIX ATÓMICO: Inyectamos la Gobernanza (custom) y los Permisos en el instante mismo de la creación.
                 await store.dispatch({ 
                     type: 'CREATE_PROJECT', 
                     payload: { 
                         id: PID_TEST, nombre: "Matrix Sandbox", ownerId: dynNeoId, isPrivate: true, 
                         roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], 
-                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}, {id: dynLauraId, permissions: {canCreateWO: false}}] 
+                        usuarios: [
+                            {id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}, 
+                            {id: dynLauraId, permissions: {canCreateWO: false}}
+                        ],
+                        governance: { workOrderCreation: 'custom' }
                     } 
                 });
 
@@ -169,6 +174,7 @@ export default class TestsView {
                 const hasAccessBob = store.canUserViewProject(PID_TEST, dynBobId, 'network-user');
                 await assert(hasAccessBob === false, "Privacidad: Muro criptográfico bloquea a entidades externas", "PRIVACY");
                 
+                // Ahora evalúa la política 'custom' directamente comprobando si Laura tiene `canCreateWO: true` (que es false).
                 await assert(store.canUserCreateWorkOrder(PID_TEST, dynLauraId) === false, "RBAC: Nodo operativo bloqueado por política de red estricta", "RBAC");
 
                 // ==========================================
