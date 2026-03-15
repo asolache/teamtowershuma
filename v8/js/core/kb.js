@@ -106,7 +106,7 @@ const GLOBAL_AIS_ONTOLOGY = [
 ];
 
 // 3. EL CATÁLOGO DE MEMES Y SOCs DE ALTA CALIDAD W3C
-const CATALOGO_MEMES = [
+export const CATALOGO_MEMES = [
     // --- CORE OS & ARQUETIPOS ---
     { id: 'meme_os_vna', type: 'meme', category: 'core_os', title: 'OS: Value Network Analysis', content: `Un ecosistema es una red de creación de valor. Convierte activos intangibles en valor negociable. Todo entregable viaja por tuberías y se audita mediante SOCs.`, keywords: ['VNA', 'Value Conversion'], broader: 'root_ecosystem_laws', related: ['meme_os_pantheon'] },
     { id: 'meme_os_pantheon', type: 'meme', category: 'core_os', title: 'OS: Pantheon Work (Guardianes)', content: `Las organizaciones se gobiernan por 'Autoridades Intangibles' (Guardianes). Ej: Zeus (Estructura), Atenea (Estrategia), Hefesto (Forja).`, keywords: ['Arquetipos', 'Guardianes', 'Psicología'], broader: 'root_ecosystem_laws', related: ['meme_os_vna'] },
@@ -165,7 +165,8 @@ export const KB = {
                 await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Ecosistema: ${sectorData.label}`, content: sectorData.meta });
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
                     const contentStr = `Rol: ${roleData.name} (${levelKey}). Guardian: ${roleData.guardian}. FMV Base: €${roleData.fmv}/h.`;
-                    await this.saveNode({ id: `onto_${sectorKey}_${levelKey.replace('@','')}`, type: 'ontology', sector: sectorKey, roleTarget: levelKey, title: `Arquetipo Local: ${roleData.name}`, content: contentStr });
+                    // Añadimos los deliverables a la base de datos para que el motor visual pueda auto-inyectar los skills
+                    await this.saveNode({ id: `onto_${sectorKey}_${levelKey.replace('@','')}`, type: 'ontology', sector: sectorKey, roleTarget: levelKey, title: `Arquetipo Local: ${roleData.name}`, content: contentStr, deliverables: roleData.standard_deliverables });
                 }
             }
             for (const ai of GLOBAL_AIS_ONTOLOGY) {
@@ -189,9 +190,9 @@ export const KB = {
                 jsonLd: {
                     "@context": "https://schema.org", "@type": "DefinedTerm",
                     "name": node.title, "description": node.content, "inDefinedTermSet": "TeamTowers_Ontology",
-                    "keywords": node.keywords ? node.keywords.join(', ') : "",
+                    "keywords": node.keywords ? (Array.isArray(node.keywords) ? node.keywords.join(', ') : node.keywords) : "",
                     "broader": node.broader || null, "relatedLink": node.related || [],
-                    "sprintId": node.sprintId || null // ANCLAJE TEMPORAL (Zero-Noise Memory)
+                    "sprintId": node.sprintId || null // ANCLAJE TEMPORAL PARA ZERO NOISE MEMORY
                 }
             };
             const request = store.put(semanticNode);
@@ -266,27 +267,50 @@ export const KB = {
         const osMemes = allNodes.filter(n => n.type === 'meme' && n.category === 'core_os');
         
         let defaultDna = [];
+        let autoSkills = []; // AQUÍ GUARDAMOS LOS SKILLS NATIVOS QUE EL ROL NECESITA
+        
         if (roleObj.isGlobalAi) {
             defaultDna = allNodes.filter(n => n.type === 'ontology' && n.roleTarget === roleObj.id);
         } else {
             const sectorData = allNodes.find(n => n.id === `onto_${projectId}_meta`) || allNodes.find(n => n.type === 'ontology' && n.id.includes(roleObj.levelId.replace('@','')));
             if(sectorData) {
                 const sectorPrefix = sectorData.sector || 'general';
-                defaultDna = allNodes.filter(n => n.type === 'ontology' && n.roleTarget === roleObj.levelId && (n.sector === sectorPrefix || n.sector === 'global'));
+                const roleOntologyNode = allNodes.find(n => n.type === 'ontology' && n.roleTarget === roleObj.levelId && (n.sector === sectorPrefix || n.sector === 'global'));
+                
+                if (roleOntologyNode) {
+                    defaultDna.push(roleOntologyNode);
+                    
+                    // EL MOTOR DE AUTO-INSTINTO: Extrae las required_skills de los entregables y las convierte en nodos de Skills
+                    if (roleOntologyNode.deliverables) {
+                        roleOntologyNode.deliverables.forEach(d => {
+                            if (d.required_skills) {
+                                d.required_skills.forEach(skillId => {
+                                    const skillNode = CATALOGO_MEMES.find(m => m.id === skillId);
+                                    if (skillNode && !autoSkills.find(s => s.id === skillNode.id)) {
+                                        autoSkills.push({ ...skillNode, isNative: true, title: `🔒 (Nativo) ${skillNode.title}` });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
             }
         }
+        
         const customPrompts = allNodes.filter(n => n.targetId === roleObj.id && n.type === 'prompt_a2a');
         const finalDna = [...defaultDna, ...customPrompts];
 
         const attachedMemes = allNodes.filter(n => n.targetId === roleObj.id && n.type === 'meme');
+        const finalSkillsAndSocs = [...autoSkills, ...attachedMemes];
+
         const memories = allNodes.filter(n => (n.type === 'manual' || n.type === 'memory') && n.roleTarget === roleObj.levelId);
 
         return {
             id: roleObj.id, name: roleObj.name, level: roleObj.levelId, guardian: roleObj.guardian || 'everyman', archetype: archetype, mission: projectVision,
             branches: [
-                { name: "🌐 Core OS & Arquetipo", nodes: osMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content })) },
-                { name: "🧬 ADN (Ontología)", nodes: finalDna.map(p => ({ id: p.id, title: p.title || p.jsonLd?.name, content: p.content })) },
-                { name: "🎒 Skills & SOCs", nodes: attachedMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content })) },
+                { name: "🌐 Core OS & Arquetipo", nodes: osMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content, isNative: true })) },
+                { name: "🧬 ADN (Ontología)", nodes: finalDna.map(p => ({ id: p.id, title: p.title || p.jsonLd?.name, content: p.content, isNative: true, originalNode: p })) },
+                { name: "🎒 Skills & SOCs", nodes: finalSkillsAndSocs.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content, isNative: m.isNative })) },
                 { name: "📚 Memoria LMS", nodes: memories.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content })) }
             ]
         };
