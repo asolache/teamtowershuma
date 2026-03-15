@@ -43,7 +43,7 @@ export default class AgentEditorView {
         const headerConfig = {
             title: "Neuro-Ingeniería",
             subtitle: "Editor A2A",
-            tagline: "Inyecta Memes (ADN, Arquetipos y SOCs) para calibrar el cerebro de la Colla.",
+            tagline: "Filtra, arrastra y crea Memes (ADN, Arquetipos y SOCs) para calibrar el cerebro de la Colla.",
             actionHtml: isPO ? `<div class="status-badge" style="background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🟢 Edición Global Permitida</div>` : `<div class="status-badge" style="background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🔒 Solo Lectura</div>`
         };
 
@@ -67,9 +67,10 @@ export default class AgentEditorView {
                 
                 .main-layout { display: flex; gap: 1.5rem; flex: 1; overflow: hidden; }
                 
+                /* ARMERÍA DE MEMES */
                 .meme-armory { width: 360px; background: linear-gradient(180deg, rgba(20,20,25,0.9) 0%, rgba(10,10,15,0.95) 100%); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);}
                 .armory-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4); }
-                .armory-title { color: white; font-weight: 900; font-size: 1.2rem; margin: 0 0 5px 0; display:flex; align-items:center; gap:8px; }
+                .armory-title { color: white; font-weight: 900; font-size: 1.2rem; margin: 0 0 5px 0; display:flex; align-items:center; justify-content: space-between; gap:8px; }
                 
                 .armory-filter-input { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 0.8rem; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box; }
                 .armory-filter-input:focus { border-color: var(--accent-blue); }
@@ -85,10 +86,13 @@ export default class AgentEditorView {
                 .meme-keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; margin-bottom: 15px;}
                 .keyword-tag { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #aaa; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono);}
                 
-                /* BOTÓN INYECTAR EN LA ARMERÍA */
                 .btn-inject { background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); border-radius: 8px; padding: 8px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: 0.2s; width: 100%; margin-top: auto;}
                 .btn-inject:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4); }
 
+                .btn-create-knowledge { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; transition: 0.2s;}
+                .btn-create-knowledge:hover { background: rgba(224,64,251,0.1); border-style: solid;}
+
+                /* MIND MAP CANVAS */
                 .mindmap-container { flex: 1; position: relative; background: #050508; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 30px 30px; box-shadow: inset 0 0 50px rgba(0,0,0,0.8);}
                 #mindmap-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
                 #mindmap-nodes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;}
@@ -107,10 +111,11 @@ export default class AgentEditorView {
                 .node-leaf .content-box:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(20,20,25,0.9);}
                 .node-leaf .title { color: white; font-weight: 900; font-size: 0.85rem; margin-bottom: 5px; line-height: 1.3;}
                 .node-leaf .desc { color: #aaa; font-size: 0.75rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;}
-                .node-leaf .btn-remove { position: absolute; top: -10px; right: -10px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: bold; cursor: pointer; opacity: 0; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
-                .node-leaf:hover .btn-remove { opacity: 1; }
+                
+                /* BOTÓN DE QUITAR NODO SIEMPRE VISIBLE Y ROJO */
+                .node-leaf .btn-remove { position: absolute; top: -10px; right: -10px; background: var(--accent-red); color: white; border: 2px solid #111; border-radius: 50%; width: 26px; height: 26px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; box-shadow: 0 5px 10px rgba(0,0,0,0.5); z-index: 10;}
+                .node-leaf .btn-remove:hover { transform: scale(1.2); box-shadow: 0 0 15px rgba(255,82,82,0.6); }
 
-                /* GHOST NODE (Sugerencias W3C SKOS) */
                 .node-ghost { opacity: 0.7; filter: grayscale(50%); animation: floatGhost 3s infinite ease-in-out; cursor: pointer;}
                 .node-ghost .content-box { border-style: dashed; border-color: var(--accent-green); border-left-width: 2px;}
                 .node-ghost:hover { opacity: 1; filter: grayscale(0%); transform: scale(1.02); }
@@ -118,6 +123,12 @@ export default class AgentEditorView {
                 .edge-line { fill: none; stroke: #444; stroke-width: 2; transition: stroke 0.3s; }
                 .error-box { background: rgba(255,82,82,0.1); border: 1px solid var(--accent-red); padding: 20px; border-radius: 12px; color: white; margin: auto; text-align: center; max-width: 80%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;}
 
+                /* MODAL NUEVO CONOCIMIENTO */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
+                .modal-content { background: var(--bg-panel); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 16px; width: 500px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box;}
+                .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: 0.2s; box-sizing: border-box; margin-bottom: 15px;}
+                .form-control:focus { border-color: var(--accent-blue); }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes floatGhost { 0% { transform: translate(-50%, -50%) translateY(0px); } 50% { transform: translate(-50%, -50%) translateY(-5px); } 100% { transform: translate(-50%, -50%) translateY(0px); } }
 
                 @media (max-width: 900px) {
@@ -147,7 +158,10 @@ export default class AgentEditorView {
                     <div class="main-layout">
                         <aside class="meme-armory">
                             <div class="armory-header">
-                                <h3 class="armory-title">📚 Catálogo W3C (SKOS)</h3>
+                                <div class="armory-title">
+                                    <span>📚 Catálogo W3C</span>
+                                    ${isPO ? `<button class="btn-create-knowledge" id="btnOpenCreateNode">➕ Crear</button>` : ''}
+                                </div>
                                 <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;">
                                     <input type="text" id="armorySearch" class="armory-filter-input" placeholder="🔍 Buscar SOC, Skill, Ontología...">
                                     <div style="display:flex; gap:8px;">
@@ -182,6 +196,25 @@ export default class AgentEditorView {
                         </section>
                     </div>
                 </main>
+                
+                <div class="modal-overlay" id="createNodeModal">
+                    <div class="modal-content">
+                        <h2 style="color:white; margin-top:0; font-weight:900; letter-spacing:-1px;">Crear Nuevo Conocimiento</h2>
+                        <select id="newNodeType" class="form-control">
+                            <option value="skill">🎒 Skill (Habilidad Transversal)</option>
+                            <option value="soc">✅ SOC (Regla de Auditoría)</option>
+                            <option value="ontology">🧬 ADN (Variante de Rol/Sector)</option>
+                        </select>
+                        <input type="text" id="newNodeTitle" class="form-control" placeholder="Título (Ej: Auditoría ReactJS)">
+                        <textarea id="newNodeContent" class="form-control" rows="4" placeholder="Define las instrucciones o reglas claras..."></textarea>
+                        <input type="text" id="newNodeKeywords" class="form-control" placeholder="Keywords W3C (separadas por comas)">
+                        <div style="display:flex; gap:15px; margin-top:20px;">
+                            <button id="btnCancelNode" class="btn-lux btn-lux-outline" style="flex:1;">Cancelar</button>
+                            <button id="btnSaveNode" class="btn-lux btn-lux-primary" style="flex:2;">Inyectar al Agente</button>
+                        </div>
+                    </div>
+                </div>
+
                 ${BottomNav.getHtml('/agents')}
             </div>
         `;
@@ -206,7 +239,8 @@ export default class AgentEditorView {
             btnCompile: document.getElementById('btnCompile'),
             searchInput: document.getElementById('armorySearch'),
             levelFilter: document.getElementById('armoryLevelFilter'),
-            guardianFilter: document.getElementById('armoryGuardianFilter')
+            guardianFilter: document.getElementById('armoryGuardianFilter'),
+            modalNode: document.getElementById('createNodeModal')
         };
 
         try {
@@ -236,8 +270,7 @@ export default class AgentEditorView {
                 
                 const memeId = btn.getAttribute('data-id');
                 const roleObj = this.getCurrentRoleObject();
-                
-                if (!roleObj) return alert("Selecciona una Inteligencia o Rol en el desplegable central primero.");
+                if (!roleObj) return alert("Selecciona una Inteligencia o Rol en el centro primero.");
 
                 const memeData = this.catalogMemes.find(m => m.id === memeId);
                 if (memeData) {
@@ -264,6 +297,50 @@ export default class AgentEditorView {
                 if(this.selectedRoleId) this.drawEdgesSafe();
             });
 
+            // MODAL LOGIC
+            document.getElementById('btnOpenCreateNode')?.addEventListener('click', () => {
+                if (!this.selectedRoleId) return alert("Selecciona un Agente a la derecha antes de crear y asignarle un nuevo conocimiento.");
+                this.dom.modalNode.style.display = 'flex';
+            });
+            document.getElementById('btnCancelNode')?.addEventListener('click', () => this.dom.modalNode.style.display = 'none');
+            
+            document.getElementById('btnSaveNode')?.addEventListener('click', async () => {
+                const typeVal = document.getElementById('newNodeType').value;
+                const title = document.getElementById('newNodeTitle').value.trim();
+                const content = document.getElementById('newNodeContent').value.trim();
+                const keywords = document.getElementById('newNodeKeywords').value.trim().split(',');
+
+                if (!title || !content) return alert("Título y contenido son obligatorios.");
+
+                const roleObj = this.getCurrentRoleObject();
+                const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+                
+                // Tipo de nodo a nivel de Kernel
+                const nodeType = typeVal === 'ontology' ? 'ontology' : 'meme';
+                const category = typeVal === 'ontology' ? undefined : typeVal;
+
+                const newNode = {
+                    id: 'meme_inst_' + Date.now(),
+                    type: nodeType,
+                    category: category,
+                    title: `Custom: ${title}`,
+                    content: content,
+                    keywords: keywords,
+                    targetId: this.selectedRoleId,
+                    projectId: targetProjectId
+                };
+
+                await KB.saveNode(newNode);
+                this.dom.modalNode.style.display = 'none';
+                
+                // Limpiar inputs
+                document.getElementById('newNodeTitle').value = '';
+                document.getElementById('newNodeContent').value = '';
+                document.getElementById('newNodeKeywords').value = '';
+
+                await this.renderBrainGraphSafe();
+            });
+
             if (this.dom.selRole.options.length > 1) {
                 this.dom.selRole.selectedIndex = 1;
                 this.dom.selRole.dispatchEvent(new Event('change'));
@@ -282,10 +359,7 @@ export default class AgentEditorView {
         if (this.selectedRoleId.startsWith('@')) {
             const globalAi = state.globalUsers.find(u => u.id === this.selectedRoleId);
             if (globalAi && globalAi.profile?.isAi) {
-                return {
-                    id: globalAi.id, name: globalAi.name, levelId: globalAi.id, 
-                    guardian: globalAi.profile.guardian || 'magician', vision: globalAi.profile.vision, isGlobalAi: true
-                };
+                return { id: globalAi.id, name: globalAi.name, levelId: globalAi.id, guardian: globalAi.profile.guardian || 'magician', vision: globalAi.profile.vision, isGlobalAi: true };
             }
         }
         const localRole = project.roles.find(r => r.id === this.selectedRoleId);
@@ -400,6 +474,7 @@ export default class AgentEditorView {
         `;
         this.dom.nodesContainer.appendChild(rootEl);
 
+        // 2. RAMAS Y HOJAS
         const branchX = 45;
         const leafBaseX = 80;
         const startY = 15;
@@ -412,189 +487,3 @@ export default class AgentEditorView {
             bEl.className = 'graph-node node-branch';
             bEl.id = `gn_branch_${bIdx}`;
             bEl.style.left = `${branchX}%`;
-            bEl.style.top = `${bY}%`;
-            bEl.innerHTML = `<div class="circle">${branch.name}</div>`;
-            this.dom.nodesContainer.appendChild(bEl);
-
-            const leaves = branch.nodes || [];
-            if (leaves.length > 0) {
-                const leafSpacing = 16;
-                const totalHeight = (leaves.length - 1) * leafSpacing;
-                let lY = bY - (totalHeight / 2);
-
-                leaves.forEach((leaf, lIdx) => {
-                    const lEl = document.createElement('div');
-                    lEl.className = 'graph-node node-leaf';
-                    lEl.id = `gn_leaf_${bIdx}_${lIdx}`;
-                    lEl.style.left = `${leafBaseX}%`;
-                    lEl.style.top = `${lY}%`;
-                    
-                    const isCustomMeme = bIdx === 1 || bIdx === 2; 
-                    const delBtn = isPO && isCustomMeme ? `<button class="btn-remove" data-id="${leaf.id}" title="Eliminar Conexión">&times;</button>` : '';
-
-                    lEl.innerHTML = `
-                        <div class="content-box">
-                            ${delBtn}
-                            <div class="title">${leaf.title || 'Nodo de Conocimiento'}</div>
-                            <div class="desc">${leaf.content || ''}</div>
-                        </div>
-                    `;
-                    this.dom.nodesContainer.appendChild(lEl);
-                    lY += leafSpacing;
-
-                    if (isPO && isCustomMeme) {
-                        lEl.querySelector('.btn-remove').addEventListener('click', async () => {
-                            if(confirm("¿Desconectar este nodo de la red neuronal del agente?")) {
-                                const db = await KB.init();
-                                const tx = db.transaction(['nodes'], 'readwrite');
-                                tx.objectStore('nodes').delete(leaf.id);
-                                tx.oncomplete = () => this.renderBrainGraphSafe();
-                            }
-                        });
-                    }
-                });
-                
-                // AUTO-SUGERENCIA FRACTAL (Magia W3C)
-                // Si estamos en la rama de Skills & SOCs (bIdx === 2), leemos el ADN (bIdx === 1) y buscamos coincidencias de keywords
-                if (bIdx === 2 && isPO && this.catalogMemes) {
-                    const adnNodes = this.brainGraph.branches[1].nodes || [];
-                    const currentSkillTitles = branch.nodes.map(n => n.title);
-                    
-                    let suggestedMemes = [];
-                    
-                    // Extraer keywords de la Ontología (ADN) y buscar Skills compatibles
-                    adnNodes.forEach(adn => {
-                        const adnText = `${adn.title} ${adn.content}`.toLowerCase();
-                        this.catalogMemes.forEach(m => {
-                            if (m.category === 'skill' || m.category === 'soc') {
-                                const mKeywords = (m.jsonLd?.keywords || '').toLowerCase().split(',');
-                                const hasMatch = mKeywords.some(k => k.trim() && adnText.includes(k.trim()));
-                                if (hasMatch && !currentSkillTitles.includes(m.title) && !suggestedMemes.find(sm => sm.id === m.id)) {
-                                    suggestedMemes.push(m);
-                                }
-                            }
-                        });
-                    });
-
-                    // Mostrar hasta 2 Sugerencias Inteligentes
-                    suggestedMemes.slice(0, 2).forEach((sugMeme, sIdx) => {
-                        const gEl = document.createElement('div');
-                        gEl.className = 'graph-node node-leaf node-ghost';
-                        gEl.id = `gn_ghost_${bIdx}_${sIdx}`;
-                        gEl.style.left = `${leafBaseX}%`;
-                        gEl.style.top = `${lY}%`;
-                        gEl.innerHTML = `
-                            <div class="content-box" title="Recomendado basado en el ADN del Agente">
-                                <div class="title">✨ Auto-Sugerencia: ${sugMeme.title || sugMeme.jsonLd?.name}</div>
-                                <div class="desc" style="color:var(--accent-green);">Clic para Auto-Inyectar en el cerebro.</div>
-                            </div>
-                        `;
-                        this.dom.nodesContainer.appendChild(gEl);
-                        
-                        gEl.addEventListener('click', async () => {
-                            const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
-                            await KB.saveNode({ ...sugMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
-                            await this.renderBrainGraphSafe();
-                        });
-                        
-                        lY += leafSpacing;
-                    });
-                }
-
-            } else {
-                const lEl = document.createElement('div');
-                lEl.className = 'graph-node node-leaf';
-                lEl.id = `gn_leaf_${bIdx}_empty`;
-                lEl.style.left = `${leafBaseX}%`;
-                lEl.style.top = `${bY}%`;
-                lEl.innerHTML = `<div class="content-box" style="border-color:#333; opacity:0.5;"><div class="desc">Rama neuronal vacía.</div></div>`;
-                this.dom.nodesContainer.appendChild(lEl);
-            }
-        });
-
-        requestAnimationFrame(() => {
-            setTimeout(() => this.drawEdgesSafe(), 50);
-        });
-    }
-
-    drawEdgesSafe() {
-        try {
-            this.drawEdges();
-        } catch(e) {
-            console.warn("Fallo leve al repintar enlaces SVG:", e);
-        }
-    }
-
-    drawEdges() {
-        if (!this.brainGraph || !this.dom.edgesGroup) return;
-        this.dom.edgesGroup.innerHTML = '';
-        
-        const containerRect = this.dom.canvas.getBoundingClientRect();
-        const rootEl = document.getElementById('gn_root');
-        if (!rootEl) return;
-
-        const getCenter = (el) => {
-            const rect = el.getBoundingClientRect();
-            return { x: rect.left + rect.width/2 - containerRect.left, y: rect.top + rect.height/2 - containerRect.top };
-        };
-
-        const rootPos = getCenter(rootEl);
-        const isGlobal = rootEl.classList.contains('global-ai');
-        const rootColor = isGlobal ? 'var(--accent-purple)' : 'var(--accent-blue)';
-
-        this.brainGraph.branches.forEach((branch, bIdx) => {
-            const bEl = document.getElementById(`gn_branch_${bIdx}`);
-            if (!bEl) return;
-            const bPos = getCenter(bEl);
-
-            const p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            p1.setAttribute('d', `M ${rootPos.x} ${rootPos.y} C ${(rootPos.x + bPos.x)/2} ${rootPos.y}, ${(rootPos.x + bPos.x)/2} ${bPos.y}, ${bPos.x} ${bPos.y}`);
-            p1.setAttribute('class', 'edge-line');
-            p1.style.stroke = rootColor;
-            p1.style.strokeWidth = '4';
-            this.dom.edgesGroup.appendChild(p1);
-
-            const leavesCount = branch.nodes ? branch.nodes.length : 0;
-            if (leavesCount > 0) {
-                branch.nodes.forEach((leaf, lIdx) => {
-                    const lEl = document.getElementById(`gn_leaf_${bIdx}_${lIdx}`);
-                    if (!lEl) return;
-                    const lPos = getCenter(lEl);
-                    const targetX = lPos.x - (lEl.offsetWidth / 2); 
-                    
-                    const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    p2.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
-                    p2.setAttribute('class', 'edge-line');
-                    this.dom.edgesGroup.appendChild(p2);
-                });
-
-                // Trazar flechas para fantasmas si existen
-                let ghostIdx = 0;
-                while(true) {
-                    const ghostNode = document.getElementById(`gn_ghost_${bIdx}_${ghostIdx}`);
-                    if (!ghostNode) break;
-                    const gPos = getCenter(ghostNode);
-                    const gTargetX = gPos.x - (ghostNode.offsetWidth / 2);
-                    const p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    p3.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + gTargetX)/2} ${bPos.y}, ${(bPos.x + gTargetX)/2} ${gPos.y}, ${gTargetX} ${gPos.y}`);
-                    p3.setAttribute('class', 'edge-line');
-                    p3.style.stroke = 'var(--accent-green)';
-                    p3.style.strokeDasharray = '4,4';
-                    this.dom.edgesGroup.appendChild(p3);
-                    ghostIdx++;
-                }
-            } else {
-                const emptyEl = document.getElementById(`gn_leaf_${bIdx}_empty`);
-                if(emptyEl) {
-                    const lPos = getCenter(emptyEl);
-                    const targetX = lPos.x - (emptyEl.offsetWidth / 2);
-                    const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    p2.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
-                    p2.setAttribute('class', 'edge-line');
-                    p2.style.strokeDasharray = '4,4';
-                    this.dom.edgesGroup.appendChild(p2);
-                }
-            }
-        });
-    }
-}
