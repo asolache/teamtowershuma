@@ -1,99 +1,77 @@
 // v8/js/router.js
+import HomeView from './views/HomeView.js';
+import ProfileView from './views/ProfileView.js';
+import DashboardView from './views/DashboardView.js';
+import ValueMapView from './views/ValueMapView.js';
+import ProjectView from './views/ProjectView.js';
+import ProjectCreatorView from './views/ProjectCreatorView.js';
+import TestsView from './views/TestsView.js';
+import AgentEditorView from './views/AgentEditorView.js'; // 🧠 NUEVO SPRINT 25: Cerebro A2A
 
-const routes = {
-    '/': 'HomeView',
-    '/create': 'ProjectCreatorView',
-    '/dashboard': 'DashboardView',
-    '/project': 'ProjectView',
-    '/map': 'ValueMapView',
-    '/team': 'TeamView',
-    '/ledger': 'LedgerView',
-    '/tests': 'TestsView',
-    '/manifesto': 'ManifestoView',
-    '/network': 'NetworkView',
-    '/settings': 'SettingsView',
-    '/focus': 'FocusView',
-    '/profile': 'ProfileView',
-    '/help': 'HelpView',
-    '/onboarding': 'OnboardingView',
-    '/lms': 'LmsView' // <-- NUEVA RUTA INYECTADA (Cerebro Semántico)
+const navigateTo = url => {
+    history.pushState(null, null, url);
+    router();
 };
 
-class Router {
-    constructor() {
-        this.appContainer = document.getElementById('app');
-        
-        window.addEventListener('popstate', () => this.handleRoute());
-        
-        document.body.addEventListener('click', (e) => {
-            const link = e.target.closest('[data-link]');
-            if (link) {
-                e.preventDefault();
-                this.navigateTo(link.href);
-            }
-        });
+const router = async () => {
+    // Definición del árbol de rutas de TeamTowers V9
+    const routes = [
+        { path: "/v8/", view: HomeView },
+        { path: "/v8/profile", view: ProfileView },
+        { path: "/v8/dashboard", view: DashboardView },
+        { path: "/v8/map", view: ValueMapView },
+        { path: "/v8/project", view: ProjectView },
+        { path: "/v8/create", view: ProjectCreatorView },
+        { path: "/v8/tests", view: TestsView },
+        { path: "/v8/agents", view: AgentEditorView } // Inyección del Editor de Agentes
+    ];
+
+    // Buscar coincidencia exacta con la URL actual
+    const potentialMatches = routes.map(route => {
+        return {
+            route: route,
+            isMatch: location.pathname === route.path || location.pathname === route.path + '/'
+        };
+    });
+
+    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+
+    // Si la ruta no existe (404), redirigimos al Home (Zero-Trust Login)
+    if (!match) {
+        match = {
+            route: routes[0], 
+            isMatch: true
+        };
     }
 
-    navigateTo(url) {
-        window.history.pushState(null, null, url);
-        this.handleRoute();
+    // Instanciar la vista correspondiente
+    const view = new match.route.view();
+
+    // 1. Inyectar el HTML pre-renderizado en el contenedor principal
+    document.querySelector("#app").innerHTML = await view.getHtml();
+    
+    // 2. Ejecutar los listeners y scripts dinámicos (D3, D&D, APIs)
+    if (typeof view.executeViewScript === 'function') {
+        view.executeViewScript();
     }
+};
 
-    async handleRoute() {
-        // ESCUDO DE MAYÚSCULAS: Convierte "/Dashboard" en "/dashboard"
-        let path = window.location.pathname.toLowerCase(); 
-        
-        // MIGRACIÓN A V8: El motor ahora sabe que vive en la v8
-        const basePath = '/v8';
-        if (path.startsWith(basePath)) path = path.slice(basePath.length);
-        if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
-        if (path === '' || path === '/') path = '/';
+// Escuchar navegación por historial (Botón Atrás/Adelante del navegador)
+window.addEventListener("popstate", router);
 
-        const viewFileName = routes[path] || 'HomeView';
-
-        try {
-            // CACHE BUSTING V8: Evitamos que el navegador se trague archivos viejos
-            const cacheBuster = Date.now();
-            const modulePath = `/v8/js/views/${viewFileName}.js?v=${cacheBuster}`;
-            
-            // FIX ANTIFALLOS: Importación en dos pasos
-            const module = await import(modulePath);
-            const View = module.default;
-            const view = new View();
-            
-            this.appContainer.innerHTML = await view.getHtml();
-            
-            if (typeof view.executeViewScript === 'function') {
-                view.executeViewScript();
-            }
-
-            window.scrollTo(0, 0);
-
-        } catch (error) {
-            console.error(`💥 Router V8 Error cargando [${viewFileName}]:`, error);
-            this.renderError(viewFileName, error);
+// Interceptar clics en enlaces internos (SPA behavior)
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", e => {
+        // Soporte para clics directos en el enlace o en elementos hijos (iconos/spans) dentro del enlace
+        if (e.target.matches("[data-link]")) {
+            e.preventDefault();
+            navigateTo(e.target.href);
+        } else if (e.target.closest("[data-link]")) {
+            e.preventDefault();
+            navigateTo(e.target.closest("[data-link]").href);
         }
-    }
+    });
 
-    renderError(viewName, error) {
-        this.appContainer.innerHTML = `
-            <div style="padding: 4rem 2rem; text-align: center; max-width: 600px; margin: 0 auto; font-family: monospace;">
-                <h1 style="color: #ff5252; font-size: 5rem; margin-bottom: 1rem;">404</h1>
-                <h2 style="color: white; margin-bottom: 1rem;">Módulo "${viewName}" no hallado</h2>
-                <p style="color: #888; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; word-break: break-all; line-height: 1.5;">
-                    El archivo <b>/v8/js/views/${viewName}.js</b> falló al cargar.<br><br>
-                    <span style="color: #ff5252;">${error.message}</span>
-                </p>
-                <a href="/v8/" data-link style="color: #00b0ff; text-decoration: none; font-weight: bold; border: 1px solid #00b0ff; padding: 10px 20px; border-radius: 8px;">REBOOT SYSTEM V8</a>
-            </div>
-        `;
-    }
-}
-
-const appRouter = new Router();
-
-document.addEventListener('DOMContentLoaded', () => {
-    appRouter.handleRoute();
+    // Arrancar el router por primera vez
+    router();
 });
-
-export const navigateTo = (url) => appRouter.navigateTo(url);
