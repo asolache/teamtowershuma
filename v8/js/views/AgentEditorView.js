@@ -31,7 +31,6 @@ export default class AgentEditorView {
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🧠</div>
                              <h2 style="color:white; margin-top:0;">Ecosistema Vacío</h2>
                              <p style="color:var(--text-muted); margin-bottom: 2.5rem;">Instancia una red para empezar a editar el cerebro de sus agentes.</p>
-                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Crear Proyecto</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/agents')}
@@ -44,17 +43,17 @@ export default class AgentEditorView {
         const headerConfig = {
             title: "Neuro-Ingeniería",
             subtitle: "Editor A2A",
-            tagline: "Filtra y arrastra Memes (ADN, Arquetipos y Skills) para calibrar el cerebro de la Colla.",
+            tagline: "Inyecta Memes (ADN, Arquetipos y SOCs) para calibrar el cerebro de la Colla.",
             actionHtml: isPO ? `<div class="status-badge" style="background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🟢 Edición Global Permitida</div>` : `<div class="status-badge" style="background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🔒 Solo Lectura</div>`
         };
 
         const projectRoleOptions = project.roles.filter(r => !r.isArchived).map(r => `
-            <option value="${r.id}">[Local] ${r.levelId} - ${r.name}</option>
+            <option value="${r.id}">[Local: ${project.nombre.substring(0,10)}] ${r.levelId} - ${r.name}</option>
         `).join('');
 
         const coreAIs = state.globalUsers.filter(u => u.profile?.isAi);
         const coreAiOptions = coreAIs.map(ai => `
-            <option value="${ai.id}">🤖 [Core] ${ai.name}</option>
+            <option value="${ai.id}">🤖 [Core Global] ${ai.name}</option>
         `).join('');
 
         return `
@@ -68,7 +67,6 @@ export default class AgentEditorView {
                 
                 .main-layout { display: flex; gap: 1.5rem; flex: 1; overflow: hidden; }
                 
-                /* ARMERÍA DE MEMES */
                 .meme-armory { width: 360px; background: linear-gradient(180deg, rgba(20,20,25,0.9) 0%, rgba(10,10,15,0.95) 100%); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);}
                 .armory-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4); }
                 .armory-title { color: white; font-weight: 900; font-size: 1.2rem; margin: 0 0 5px 0; display:flex; align-items:center; gap:8px; }
@@ -79,15 +77,18 @@ export default class AgentEditorView {
                 .armory-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; display: flex; flex-direction: column;}
                 .taxonomy-group-title { font-size: 0.75rem; color: var(--accent-blue); text-transform: uppercase; font-weight: 900; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(0,176,255,0.3); padding-bottom: 5px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
                 
-                .meme-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; cursor: grab; transition: all 0.2s; position: relative; margin-bottom: 10px;}
-                .meme-card:hover { background: rgba(255,255,255,0.06); border-color: var(--accent-purple); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(224,64,251,0.2);}
-                .meme-card:active { cursor: grabbing; }
+                .meme-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; transition: all 0.2s; position: relative; margin-bottom: 10px; display: flex; flex-direction: column;}
+                .meme-card:hover { background: rgba(255,255,255,0.06); border-color: var(--accent-purple); box-shadow: 0 5px 15px rgba(224,64,251,0.2);}
+                
                 .meme-category { font-size: 0.65rem; color: #888; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 5px; display: block;}
                 .meme-title { color: white; font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; line-height: 1.2;}
-                .meme-keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;}
+                .meme-keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; margin-bottom: 15px;}
                 .keyword-tag { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #aaa; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono);}
+                
+                /* BOTÓN INYECTAR EN LA ARMERÍA */
+                .btn-inject { background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); border-radius: 8px; padding: 8px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: 0.2s; width: 100%; margin-top: auto;}
+                .btn-inject:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4); }
 
-                /* MIND MAP CANVAS */
                 .mindmap-container { flex: 1; position: relative; background: #050508; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 30px 30px; box-shadow: inset 0 0 50px rgba(0,0,0,0.8);}
                 #mindmap-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
                 #mindmap-nodes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;}
@@ -102,29 +103,22 @@ export default class AgentEditorView {
                 .node-branch .circle { width: auto; padding: 10px 20px; background: rgba(20,20,25,0.95); border: 2px solid #555; border-radius: 12px; color: white; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); backdrop-filter: blur(5px);}
                 
                 .node-leaf { width: 240px; align-items: flex-start; }
-                .node-leaf .content-box { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid var(--accent-purple); padding: 15px; border-radius: 12px; backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; width: 100%; box-sizing: border-box; cursor: pointer;}
+                .node-leaf .content-box { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid var(--accent-purple); padding: 15px; border-radius: 12px; backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; width: 100%; box-sizing: border-box;}
                 .node-leaf .content-box:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(20,20,25,0.9);}
                 .node-leaf .title { color: white; font-weight: 900; font-size: 0.85rem; margin-bottom: 5px; line-height: 1.3;}
                 .node-leaf .desc { color: #aaa; font-size: 0.75rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;}
                 .node-leaf .btn-remove { position: absolute; top: -10px; right: -10px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: bold; cursor: pointer; opacity: 0; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
                 .node-leaf:hover .btn-remove { opacity: 1; }
 
-                /* DROP ZONE */
-                .drop-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,176,255,0.1); border: 4px dashed var(--accent-blue); z-index: 100; display: none; justify-content: center; align-items: center; border-radius: 20px; pointer-events: none;}
-                .drop-overlay.active { display: flex; animation: pulseDrop 1.5s infinite;}
-                .drop-msg { background: var(--accent-blue); color: black; padding: 15px 30px; border-radius: 30px; font-weight: 900; font-size: 1.2rem; box-shadow: 0 10px 30px rgba(0,176,255,0.5);}
-
-                .node-ghost { opacity: 0.6; filter: grayscale(80%); animation: floatGhost 3s infinite ease-in-out; cursor: pointer;}
-                .node-ghost .content-box { border-style: dashed; border-color: var(--accent-green); }
-                .node-ghost:hover { opacity: 1; filter: grayscale(0%); }
+                /* GHOST NODE (Sugerencias W3C SKOS) */
+                .node-ghost { opacity: 0.7; filter: grayscale(50%); animation: floatGhost 3s infinite ease-in-out; cursor: pointer;}
+                .node-ghost .content-box { border-style: dashed; border-color: var(--accent-green); border-left-width: 2px;}
+                .node-ghost:hover { opacity: 1; filter: grayscale(0%); transform: scale(1.02); }
 
                 .edge-line { fill: none; stroke: #444; stroke-width: 2; transition: stroke 0.3s; }
-
-                /* MANEJO DE ERRORES */
                 .error-box { background: rgba(255,82,82,0.1); border: 1px solid var(--accent-red); padding: 20px; border-radius: 12px; color: white; margin: auto; text-align: center; max-width: 80%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;}
 
-                @keyframes pulseDrop { 0% { background: rgba(0,176,255,0.05); } 50% { background: rgba(0,176,255,0.15); } 100% { background: rgba(0,176,255,0.05); } }
-                @keyframes floatGhost { 0% { transform: translate(-50%, -50%) translateY(0px); } 50% { transform: translate(-50%, -50%) translateY(-10px); } 100% { transform: translate(-50%, -50%) translateY(0px); } }
+                @keyframes floatGhost { 0% { transform: translate(-50%, -50%) translateY(0px); } 50% { transform: translate(-50%, -50%) translateY(-5px); } 100% { transform: translate(-50%, -50%) translateY(0px); } }
 
                 @media (max-width: 900px) {
                     .main-layout { flex-direction: column; }
@@ -155,7 +149,7 @@ export default class AgentEditorView {
                             <div class="armory-header">
                                 <h3 class="armory-title">📚 Catálogo W3C (SKOS)</h3>
                                 <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;">
-                                    <input type="text" id="armorySearch" class="armory-filter-input" placeholder="🔍 Buscar por nombre o keyword...">
+                                    <input type="text" id="armorySearch" class="armory-filter-input" placeholder="🔍 Buscar SOC, Skill, Ontología...">
                                     <div style="display:flex; gap:8px;">
                                         <select id="armoryLevelFilter" class="armory-filter-input" style="flex:1;">
                                             <option value="">Nivel (Todos)</option>
@@ -185,10 +179,6 @@ export default class AgentEditorView {
                         <section class="mindmap-container" id="mindmapCanvas">
                             <svg id="mindmap-svg"><g id="edges-group"></g></svg>
                             <div id="mindmap-nodes"></div>
-                            
-                            <div class="drop-overlay" id="dropZone">
-                                <div class="drop-msg">📥 SOLTAR PARA INYECTAR CONOCIMIENTO</div>
-                            </div>
                         </section>
                     </div>
                 </main>
@@ -212,7 +202,6 @@ export default class AgentEditorView {
             catalogList: document.getElementById('memeCatalogList'),
             nodesContainer: document.getElementById('mindmap-nodes'),
             edgesGroup: document.getElementById('edges-group'),
-            dropZone: document.getElementById('dropZone'),
             canvas: document.getElementById('mindmapCanvas'),
             btnCompile: document.getElementById('btnCompile'),
             searchInput: document.getElementById('armorySearch'),
@@ -224,12 +213,10 @@ export default class AgentEditorView {
             await KB.init();
             await this.loadArmory();
 
-            // Listeners de Filtros
             this.dom.searchInput.addEventListener('input', () => this.filterAndRenderArmory());
             this.dom.levelFilter.addEventListener('change', () => this.filterAndRenderArmory());
             this.dom.guardianFilter.addEventListener('change', () => this.filterAndRenderArmory());
 
-            // Selector de Agente
             this.dom.selRole.addEventListener('change', async (e) => {
                 this.selectedRoleId = e.target.value;
                 if (this.selectedRoleId) {
@@ -242,7 +229,27 @@ export default class AgentEditorView {
                 }
             });
 
-            this.initDragAndDrop();
+            // GESTIÓN DEL CLICK EN EL BOTÓN INYECTAR
+            this.dom.catalogList.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.btn-inject');
+                if (!btn) return;
+                
+                const memeId = btn.getAttribute('data-id');
+                const roleObj = this.getCurrentRoleObject();
+                
+                if (!roleObj) return alert("Selecciona una Inteligencia o Rol en el desplegable central primero.");
+
+                const memeData = this.catalogMemes.find(m => m.id === memeId);
+                if (memeData) {
+                    btn.innerText = "⏳";
+                    const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+                    const newNode = { ...memeData, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId };
+                    
+                    await KB.saveNode(newNode);
+                    await this.renderBrainGraphSafe();
+                    btn.innerText = "➕ Inyectar";
+                }
+            });
 
             this.dom.btnCompile.addEventListener('click', async () => {
                 const roleObj = this.getCurrentRoleObject();
@@ -253,14 +260,11 @@ export default class AgentEditorView {
                 alert("🧠 SYSTEM PROMPT COMPILADO:\n\n" + prompt);
             });
 
-            // Repintar flechas seguras
             window.addEventListener('resize', () => {
                 if(this.selectedRoleId) this.drawEdgesSafe();
             });
 
-            // Disparar autoselección si hay opciones
             if (this.dom.selRole.options.length > 1) {
-                // El índice 1 será el primer optgroup -> primera opción
                 this.dom.selRole.selectedIndex = 1;
                 this.dom.selRole.dispatchEvent(new Event('change'));
             }
@@ -273,7 +277,6 @@ export default class AgentEditorView {
     getCurrentRoleObject() {
         const state = store.getState();
         const project = state.projects.find(p => p.id === this.activeProjectId);
-        
         if (!this.selectedRoleId) return null;
 
         if (this.selectedRoleId.startsWith('@')) {
@@ -285,7 +288,6 @@ export default class AgentEditorView {
                 };
             }
         }
-        
         const localRole = project.roles.find(r => r.id === this.selectedRoleId);
         if (localRole) return { ...localRole, isGlobalAi: false };
         return null;
@@ -323,6 +325,7 @@ export default class AgentEditorView {
         const taxonomyGroups = {
             'Core OS (Leyes Sistémicas)': filteredMemes.filter(m => m.type === 'meme' && m.category === 'core_os'),
             'ADN (Arquetipos Ontológicos)': filteredMemes.filter(m => m.type === 'ontology'),
+            'SOCs (Checklists & Reglas)': filteredMemes.filter(m => m.type === 'meme' && m.category === 'soc'),
             'Skills (Frameworks & Técnicas)': filteredMemes.filter(m => m.type === 'meme' && m.category === 'skill')
         };
 
@@ -330,7 +333,7 @@ export default class AgentEditorView {
         for (const [groupName, items] of Object.entries(taxonomyGroups)) {
             if (items.length === 0) continue;
             
-            const groupIcon = groupName.includes('Core OS') ? '🌐' : (groupName.includes('ADN') ? '🧬' : '🎒');
+            const groupIcon = groupName.includes('Core OS') ? '🌐' : (groupName.includes('ADN') ? '🧬' : (groupName.includes('SOCs') ? '✅' : '🎒'));
             html += `<div class="taxonomy-group-title">${groupIcon} ${groupName} <span style="margin-left:auto; background:rgba(0,176,255,0.2); padding:2px 8px; border-radius:10px; color:white;">${items.length}</span></div>`;
             
             html += items.map(meme => {
@@ -339,11 +342,12 @@ export default class AgentEditorView {
                 const keywords = (meme.jsonLd?.keywords || '').split(',').filter(k => k.trim()).slice(0, 3);
                 
                 return `
-                <div class="meme-card" draggable="true" data-id="${meme.id}" title="${meme.content.replace(/"/g, '&quot;')}">
+                <div class="meme-card" title="${meme.content.replace(/"/g, '&quot;')}">
                     <span class="meme-category">${categoryLabel}</span>
                     <div class="meme-title">${title}</div>
                     <div class="meme-desc" style="font-size:0.75rem; color:#888; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${meme.content}</div>
                     ${keywords.length > 0 ? `<div class="meme-keywords">${keywords.map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')}</div>` : ''}
+                    <button class="btn-inject" data-id="${meme.id}">➕ Inyectar</button>
                 </div>
                 `;
             }).join('');
@@ -352,46 +356,6 @@ export default class AgentEditorView {
         this.dom.catalogList.innerHTML = html;
     }
 
-    initDragAndDrop() {
-        const isPO = store.getState().projects.find(p => p.id === this.activeProjectId)?.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
-        if (!isPO) return; 
-
-        this.dom.catalogList.addEventListener('dragstart', (e) => {
-            const card = e.target.closest('.meme-card');
-            if (!card) return;
-            const memeId = card.getAttribute('data-id');
-            const memeData = this.catalogMemes.find(m => m.id === memeId);
-            if (memeData) {
-                e.dataTransfer.setData('application/json', JSON.stringify(memeData));
-                this.dom.dropZone.classList.add('active');
-            }
-        });
-
-        this.dom.catalogList.addEventListener('dragend', () => this.dom.dropZone.classList.remove('active'));
-        this.dom.canvas.addEventListener('dragover', (e) => e.preventDefault());
-
-        this.dom.canvas.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            this.dom.dropZone.classList.remove('active');
-            
-            const roleObj = this.getCurrentRoleObject();
-            if (!roleObj) return alert("Selecciona una Inteligencia o Rol primero.");
-
-            try {
-                const memeData = JSON.parse(e.dataTransfer.getData('application/json'));
-                const injectionProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
-                const newNode = { ...memeData, id: 'meme_inst_' + Date.now(), targetId: roleObj.id, projectId: injectionProjectId };
-                
-                await KB.saveNode(newNode);
-                await this.renderBrainGraphSafe(); 
-
-            } catch(err) {
-                console.error("Error en Drop:", err);
-            }
-        });
-    }
-
-    // Wrapper seguro para evitar que un fallo silencioso deje el lienzo en blanco
     async renderBrainGraphSafe() {
         try {
             await this.renderBrainGraph();
@@ -418,7 +382,6 @@ export default class AgentEditorView {
         const archetype = project ? project.archetype : 'startup';
         
         this.brainGraph = await KB.getAgentBrainGraph(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt || '', archetype);
-        
         if (!this.brainGraph) throw new Error("El compilador KB no pudo construir el árbol neuronal.");
 
         this.dom.nodesContainer.innerHTML = '';
@@ -437,7 +400,6 @@ export default class AgentEditorView {
         `;
         this.dom.nodesContainer.appendChild(rootEl);
 
-        // 2. RAMAS Y HOJAS
         const branchX = 45;
         const leafBaseX = 80;
         const startY = 15;
@@ -454,8 +416,8 @@ export default class AgentEditorView {
             bEl.innerHTML = `<div class="circle">${branch.name}</div>`;
             this.dom.nodesContainer.appendChild(bEl);
 
-            const leaves = branch.nodes;
-            if (leaves && leaves.length > 0) {
+            const leaves = branch.nodes || [];
+            if (leaves.length > 0) {
                 const leafSpacing = 16;
                 const totalHeight = (leaves.length - 1) * leafSpacing;
                 let lY = bY - (totalHeight / 2);
@@ -490,41 +452,55 @@ export default class AgentEditorView {
                             }
                         });
                     }
-
-                    // -- SUGERENCIAS W3C (SKOS) --
-                    if (this.catalogMemes) {
-                        const originalMeme = this.catalogMemes.find(m => m.title === leaf.title || m.jsonLd?.name === leaf.title);
-                        if (originalMeme && originalMeme.jsonLd?.relatedLink && originalMeme.jsonLd.relatedLink.length > 0 && isPO) {
-                            const relatedId = originalMeme.jsonLd.relatedLink[0];
-                            const relatedMeme = this.catalogMemes.find(m => m.id === relatedId);
-                            
-                            const alreadyHasIt = this.brainGraph.branches.some(b => b.nodes && b.nodes.find(n => n.title === relatedMeme?.title || n.title === relatedMeme?.jsonLd?.name));
-                            
-                            if (relatedMeme && !alreadyHasIt) {
-                                const gEl = document.createElement('div');
-                                gEl.className = 'graph-node node-leaf node-ghost';
-                                gEl.id = `gn_ghost_${bIdx}_${lIdx}`;
-                                gEl.style.left = `${leafBaseX}%`;
-                                gEl.style.top = `${lY}%`;
-                                gEl.innerHTML = `
-                                    <div class="content-box" title="Sugerencia SKOS: Concepto Relacionado">
-                                        <div class="title">✨ Sugerencia W3C: ${relatedMeme.title || relatedMeme.jsonLd?.name}</div>
-                                        <div class="desc" style="color:var(--accent-green);">Clic para Inyectar conexión neuronal.</div>
-                                    </div>
-                                `;
-                                this.dom.nodesContainer.appendChild(gEl);
-                                
-                                gEl.addEventListener('click', async () => {
-                                    const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
-                                    await KB.saveNode({ ...relatedMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
-                                    await this.renderBrainGraphSafe();
-                                });
-                                
-                                lY += leafSpacing;
-                            }
-                        }
-                    }
                 });
+                
+                // AUTO-SUGERENCIA FRACTAL (Magia W3C)
+                // Si estamos en la rama de Skills & SOCs (bIdx === 2), leemos el ADN (bIdx === 1) y buscamos coincidencias de keywords
+                if (bIdx === 2 && isPO && this.catalogMemes) {
+                    const adnNodes = this.brainGraph.branches[1].nodes || [];
+                    const currentSkillTitles = branch.nodes.map(n => n.title);
+                    
+                    let suggestedMemes = [];
+                    
+                    // Extraer keywords de la Ontología (ADN) y buscar Skills compatibles
+                    adnNodes.forEach(adn => {
+                        const adnText = `${adn.title} ${adn.content}`.toLowerCase();
+                        this.catalogMemes.forEach(m => {
+                            if (m.category === 'skill' || m.category === 'soc') {
+                                const mKeywords = (m.jsonLd?.keywords || '').toLowerCase().split(',');
+                                const hasMatch = mKeywords.some(k => k.trim() && adnText.includes(k.trim()));
+                                if (hasMatch && !currentSkillTitles.includes(m.title) && !suggestedMemes.find(sm => sm.id === m.id)) {
+                                    suggestedMemes.push(m);
+                                }
+                            }
+                        });
+                    });
+
+                    // Mostrar hasta 2 Sugerencias Inteligentes
+                    suggestedMemes.slice(0, 2).forEach((sugMeme, sIdx) => {
+                        const gEl = document.createElement('div');
+                        gEl.className = 'graph-node node-leaf node-ghost';
+                        gEl.id = `gn_ghost_${bIdx}_${sIdx}`;
+                        gEl.style.left = `${leafBaseX}%`;
+                        gEl.style.top = `${lY}%`;
+                        gEl.innerHTML = `
+                            <div class="content-box" title="Recomendado basado en el ADN del Agente">
+                                <div class="title">✨ Auto-Sugerencia: ${sugMeme.title || sugMeme.jsonLd?.name}</div>
+                                <div class="desc" style="color:var(--accent-green);">Clic para Auto-Inyectar en el cerebro.</div>
+                            </div>
+                        `;
+                        this.dom.nodesContainer.appendChild(gEl);
+                        
+                        gEl.addEventListener('click', async () => {
+                            const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+                            await KB.saveNode({ ...sugMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
+                            await this.renderBrainGraphSafe();
+                        });
+                        
+                        lY += leafSpacing;
+                    });
+                }
+
             } else {
                 const lEl = document.createElement('div');
                 lEl.className = 'graph-node node-leaf';
@@ -536,7 +512,6 @@ export default class AgentEditorView {
             }
         });
 
-        // Asegurar que el DOM se pintó antes de lanzar SVG
         requestAnimationFrame(() => {
             setTimeout(() => this.drawEdgesSafe(), 50);
         });
@@ -591,19 +566,23 @@ export default class AgentEditorView {
                     p2.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
                     p2.setAttribute('class', 'edge-line');
                     this.dom.edgesGroup.appendChild(p2);
-
-                    const ghostNode = document.getElementById(`gn_ghost_${bIdx}_${lIdx}`);
-                    if (ghostNode) {
-                        const gPos = getCenter(ghostNode);
-                        const gTargetX = gPos.x - (ghostNode.offsetWidth / 2);
-                        const p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        p3.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + gTargetX)/2} ${bPos.y}, ${(bPos.x + gTargetX)/2} ${gPos.y}, ${gTargetX} ${gPos.y}`);
-                        p3.setAttribute('class', 'edge-line');
-                        p3.style.stroke = 'var(--accent-green)';
-                        p3.style.strokeDasharray = '4,4';
-                        this.dom.edgesGroup.appendChild(p3);
-                    }
                 });
+
+                // Trazar flechas para fantasmas si existen
+                let ghostIdx = 0;
+                while(true) {
+                    const ghostNode = document.getElementById(`gn_ghost_${bIdx}_${ghostIdx}`);
+                    if (!ghostNode) break;
+                    const gPos = getCenter(ghostNode);
+                    const gTargetX = gPos.x - (ghostNode.offsetWidth / 2);
+                    const p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    p3.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + gTargetX)/2} ${bPos.y}, ${(bPos.x + gTargetX)/2} ${gPos.y}, ${gTargetX} ${gPos.y}`);
+                    p3.setAttribute('class', 'edge-line');
+                    p3.style.stroke = 'var(--accent-green)';
+                    p3.style.strokeDasharray = '4,4';
+                    this.dom.edgesGroup.appendChild(p3);
+                    ghostIdx++;
+                }
             } else {
                 const emptyEl = document.getElementById(`gn_leaf_${bIdx}_empty`);
                 if(emptyEl) {
