@@ -726,7 +726,7 @@ export default class ProjectCreatorView {
     getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
     getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 
-    async finalizeProject() {
+   async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
         const arch = this.dom.inpArchetype.value; 
@@ -747,47 +747,61 @@ export default class ProjectCreatorView {
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
-        // LMS HOOK A2A: Guardar los Prompts específicos de los roles en la Base de Conocimiento local
+        // 1. Guardar Prompts IA personalizados
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
                 if (rol.ai_prompt && rol.ai_prompt.length > 10) {
-                    await KB.saveDocument({
-                        id: `onto_${projectId}_${rol.id}`,
-                        type: 'ontology',
-                        projectId: projectId,
-                        sector: this.dom.inpSector.value,
-                        roleTarget: rol.id,
-                        title: `Prompt A2A: ${rol.name} (${projectId})`,
-                        content: rol.ai_prompt
+                    await KB.saveNode({
+                        id: `prompt_${projectId}_${rol.id}`, type: 'prompt_a2a',
+                        projectId: projectId, targetId: rol.id, roleTarget: rol.levelId,
+                        title: `Prompt A2A: ${rol.name}`, content: rol.ai_prompt
                     });
                 }
             }
         }
 
+        // 2. Generar Flows (Tuberías) y AUTO-SPAWNEAR Work Orders en el Sprint 1 (Kickoff)
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
                 const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
                 const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
+                
                 if (roleFrom && roleTo) {
+                    const flowId = 'flow_' + Math.random().toString(36).substr(2, 9);
+                    
+                    // A) Creamos la tubería base
                     await store.dispatch({
                         type: 'ADD_FLOW',
                         payload: {
                             projectId: projectId,
                             flow: { 
-                                from: roleFrom.id, 
-                                to: roleTo.id, 
-                                estimatedHours: aiTx.horas || 2, 
-                                template: aiTx.template || aiTx.entregable || 'Flow', 
+                                id: flowId, from: roleFrom.id, to: roleTo.id, estimatedHours: aiTx.horas || 4, 
+                                template: aiTx.template || aiTx.entregable || 'Entregable Core', 
                                 tipo: aiTx.tipo || 'tangible',
-                                soc_checklist: aiTx.soc_checklist || [],
-                                resources: aiTx.resources || []
+                                soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
+                            }
+                        }
+                    });
+
+                    // B) KICKOFF AUTOMÁTICO: Instanciamos la tubería como una Tarea real en el Kanban
+                    const woHash = 'wo_kickoff_' + Math.random().toString(36).substr(2, 9);
+                    await store.dispatch({
+                        type: 'SPAWN_WORK_ORDER',
+                        payload: {
+                            projectId: projectId,
+                            workOrder: {
+                                hash: woHash, flowId: flowId, status: 'theoretical', realHours: 0,
+                                sprintId: p.activeSprintId,
+                                comentario: 'Generado automáticamente por el Setup Base.',
+                                soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
                             }
                         }
                     });
                 }
             }
         }
+        
         localStorage.setItem('tt_active_project', projectId);
         window.location.href = '/v8/project';
     }
