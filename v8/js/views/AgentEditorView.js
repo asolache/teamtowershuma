@@ -43,12 +43,19 @@ export default class AgentEditorView {
         const headerConfig = {
             title: "Neuro-Ingeniería",
             subtitle: "Editor A2A",
-            tagline: "Arrastra Memes (Unidades de Conocimiento) para calibrar el System Prompt de cada Agente.",
-            actionHtml: isPO ? `<div class="status-badge" style="background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🟢 Edición Permitida</div>` : `<div class="status-badge" style="background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🔒 Solo Lectura</div>`
+            tagline: "Arrastra Memes (Unidades de Conocimiento) para calibrar el System Prompt de la Colla y los Nodos.",
+            actionHtml: isPO ? `<div class="status-badge" style="background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🟢 Edición Global Permitida</div>` : `<div class="status-badge" style="background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🔒 Solo Lectura</div>`
         };
 
-        const roleOptions = project.roles.filter(r => !r.isArchived).map(r => `
-            <option value="${r.id}">${r.levelId} - ${r.name}</option>
+        // 1. Opciones de Nodos Locales del Proyecto
+        const projectRoleOptions = project.roles.filter(r => !r.isArchived).map(r => `
+            <option value="${r.id}">[Local] ${r.levelId} - ${r.name}</option>
+        `).join('');
+
+        // 2. Opciones de la Colla IA Global
+        const coreAIs = state.globalUsers.filter(u => u.profile?.isAi);
+        const coreAiOptions = coreAIs.map(ai => `
+            <option value="${ai.id}">🤖 [Core] ${ai.name}</option>
         `).join('');
 
         return `
@@ -58,6 +65,7 @@ export default class AgentEditorView {
                 
                 .controls-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 1.5rem; backdrop-filter: blur(10px);}
                 .role-selector { background: rgba(10,10,15,0.9); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 12px; font-family: var(--font-mono); font-size: 1rem; font-weight:bold; outline: none; cursor: pointer; box-shadow: 0 0 15px rgba(0,176,255,0.2);}
+                optgroup { font-family: var(--font-main); font-weight: bold; color: var(--accent-purple); background: #050508; }
                 
                 .main-layout { display: flex; gap: 1.5rem; flex: 1; overflow: hidden; }
                 
@@ -88,8 +96,10 @@ export default class AgentEditorView {
                 .graph-node { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
                 
                 .node-root .circle { width: 100px; height: 100px; background: rgba(10,10,15,0.9); border: 3px solid var(--accent-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; box-shadow: 0 0 40px rgba(0,176,255,0.3); backdrop-filter: blur(10px);}
-                .node-root .title { margin-top: 15px; background: rgba(0,0,0,0.8); padding: 8px 15px; border-radius: 12px; color: white; font-weight: 900; font-size: 1rem; border: 1px solid var(--accent-blue); text-transform: uppercase; letter-spacing: 1px;}
-                
+                .node-root.global-ai .circle { border-color: var(--accent-purple); box-shadow: 0 0 40px rgba(224,64,251,0.3); }
+                .node-root .title { margin-top: 15px; background: rgba(0,0,0,0.8); padding: 8px 15px; border-radius: 12px; color: white; font-weight: 900; font-size: 1rem; border: 1px solid var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; text-align:center;}
+                .node-root.global-ai .title { border-color: var(--accent-purple); }
+
                 .node-branch .circle { width: auto; padding: 10px 20px; background: rgba(20,20,25,0.95); border: 2px solid #555; border-radius: 12px; color: white; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); backdrop-filter: blur(5px);}
                 
                 .node-leaf { width: 220px; align-items: flex-start; }
@@ -129,8 +139,13 @@ export default class AgentEditorView {
 
                     <div class="controls-bar">
                         <select id="selRole" class="role-selector">
-                            <option value="">-- Selecciona un Agente / Rol --</option>
-                            ${roleOptions}
+                            <option value="">-- Selecciona una Inteligencia --</option>
+                            <optgroup label="La Colla (IAs Globales)">
+                                ${coreAiOptions}
+                            </optgroup>
+                            <optgroup label="Nodos del Proyecto">
+                                ${projectRoleOptions}
+                            </optgroup>
                         </select>
                         <button id="btnCompile" class="btn-primary" style="display:none; padding:10px 20px; font-size:0.9rem;">👁️ Previsualizar Prompt (Flatten)</button>
                     </div>
@@ -139,7 +154,7 @@ export default class AgentEditorView {
                         <aside class="meme-armory">
                             <div class="armory-header">
                                 <h3 class="armory-title">📚 Catálogo W3C (SKOS)</h3>
-                                <p class="armory-subtitle">Arrastra Memes al cerebro del agente.</p>
+                                <p class="armory-subtitle">Arrastra Memes al cerebro de la IA.</p>
                             </div>
                             <div class="armory-list" id="memeCatalogList">
                                 <div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">Cargando taxonomía semántica...</div>
@@ -186,7 +201,7 @@ export default class AgentEditorView {
         // 1. Cargar Armería W3C
         await this.loadArmory();
 
-        // 2. Escuchar Selector de Rol
+        // 2. Escuchar Selector de Rol/Agente
         this.dom.selRole.addEventListener('change', async (e) => {
             this.selectedRoleId = e.target.value;
             if (this.selectedRoleId) {
@@ -199,19 +214,18 @@ export default class AgentEditorView {
             }
         });
 
-        // Autoseleccionar el primero si existe
-        if (this.dom.selRole.options.length > 1) {
-            this.dom.selRole.selectedIndex = 1;
-            this.dom.selRole.dispatchEvent(new Event('change'));
-        }
-
         // 3. Lógica de Drag & Drop
         this.initDragAndDrop();
 
         // 4. Previsualizador
         this.dom.btnCompile.addEventListener('click', async () => {
-            const roleObj = project.roles.find(r => r.id === this.selectedRoleId);
-            const prompt = await KB.getAgentContextFlattened(project.id, roleObj, project.presentation || project.prompt);
+            const roleObj = this.getCurrentRoleObject();
+            if (!roleObj) return;
+
+            // Si es un agente global, leemos de toda su memoria ('global'). Si es local, del proyecto activo.
+            const queryProjectId = roleObj.isGlobalAi ? 'global' : project.id;
+            
+            const prompt = await KB.getAgentContextFlattened(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt);
             alert("🧠 SYSTEM PROMPT COMPILADO:\n\n" + prompt);
         });
 
@@ -221,8 +235,35 @@ export default class AgentEditorView {
         });
     }
 
+    // Helper para saber si estamos editando un AI global o un nodo local
+    getCurrentRoleObject() {
+        const state = store.getState();
+        const project = state.projects.find(p => p.id === this.activeProjectId);
+        
+        // Comprobamos si es de la Colla (empieza por @ y existe en globalUsers)
+        if (this.selectedRoleId && this.selectedRoleId.startsWith('@')) {
+            const globalAi = state.globalUsers.find(u => u.id === this.selectedRoleId);
+            if (globalAi && globalAi.profile?.isAi) {
+                return {
+                    id: globalAi.id,
+                    name: globalAi.name,
+                    levelId: globalAi.id, 
+                    guardian: globalAi.profile.guardian || 'magician',
+                    vision: globalAi.profile.vision,
+                    isGlobalAi: true
+                };
+            }
+        }
+        
+        // Si no, es un rol local del proyecto
+        const localRole = project.roles.find(r => r.id === this.selectedRoleId);
+        if (localRole) {
+            return { ...localRole, isGlobalAi: false };
+        }
+        return null;
+    }
+
     async loadArmory() {
-        // Obtenemos TODOS los nodos globales del Kernel (Core OS, Skills, Ontologías/ADN)
         const allNodes = await KB.getAllNodes();
         this.catalogMemes = allNodes.filter(n => n.targetId === 'global' || !n.targetId);
 
@@ -231,7 +272,6 @@ export default class AgentEditorView {
             return;
         }
 
-        // CLASIFICADOR TAXONÓMICO W3C
         const taxonomyGroups = {
             'Core OS (Leyes Sistémicas)': this.catalogMemes.filter(m => m.type === 'meme' && m.category === 'core_os'),
             'ADN (Arquetipos Ontológicos)': this.catalogMemes.filter(m => m.type === 'ontology'),
@@ -244,12 +284,10 @@ export default class AgentEditorView {
         for (const [groupName, items] of Object.entries(taxonomyGroups)) {
             if (items.length === 0) continue;
             
-            // Título de la Carpeta SKOS
             const groupIcon = groupName.includes('Core OS') ? '🌐' : (groupName.includes('ADN') ? '🧬' : '🎒');
             html += `<div class="taxonomy-group-title">${groupIcon} ${groupName}</div>`;
             
             html += items.map(meme => {
-                // Recuperamos jerarquía semántica
                 const categoryLabel = meme.broader ? meme.broader.replace('root_', '').replace(/_/g, ' ') : (meme.category || meme.type);
                 const title = meme.title || meme.jsonLd?.name || 'Meme sin título';
                 const keywords = (meme.jsonLd?.keywords || '').split(',').filter(k => k.trim()).slice(0, 3);
@@ -290,26 +328,27 @@ export default class AgentEditorView {
             this.dom.dropZone.classList.remove('active');
         });
 
-        this.dom.canvas.addEventListener('dragover', (e) => {
-            e.preventDefault(); 
-        });
+        this.dom.canvas.addEventListener('dragover', (e) => { e.preventDefault(); });
 
         this.dom.canvas.addEventListener('drop', async (e) => {
             e.preventDefault();
             this.dom.dropZone.classList.remove('active');
             
-            if (!this.selectedRoleId) return alert("Selecciona un Agente primero.");
+            const roleObj = this.getCurrentRoleObject();
+            if (!roleObj) return alert("Selecciona un Agente primero.");
 
             try {
                 const memeData = JSON.parse(e.dataTransfer.getData('application/json'));
                 
-                // INYECCIÓN FRACTAL: 
-                // Guardamos una copia exacta del Nodo (Meme/Ontology) vinculada a este Agente
+                // INYECCIÓN: Si es una IA Global, inyectamos el meme en toda la red (projectId: 'global')
+                // Si es un nodo local, solo se inyecta para este proyecto.
+                const injectionProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+
                 const newNode = {
                     ...memeData,
                     id: 'meme_inst_' + Date.now(),
-                    targetId: this.selectedRoleId, 
-                    projectId: this.activeProjectId 
+                    targetId: roleObj.id, 
+                    projectId: injectionProjectId 
                 };
                 
                 await KB.saveNode(newNode);
@@ -324,26 +363,28 @@ export default class AgentEditorView {
     async renderBrainGraph() {
         const state = store.getState();
         const project = state.projects.find(p => p.id === this.activeProjectId);
-        const roleObj = project.roles.find(r => r.id === this.selectedRoleId);
+        const roleObj = this.getCurrentRoleObject();
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
 
         if (!roleObj) return;
 
-        this.brainGraph = await KB.getAgentBrainGraph(project.id, roleObj, project.presentation || project.prompt);
+        // Si es global, el contexto viene de toda la matriz.
+        const queryProjectId = roleObj.isGlobalAi ? 'global' : project.id;
+        this.brainGraph = await KB.getAgentBrainGraph(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt);
         
         this.dom.nodesContainer.innerHTML = '';
         this.dom.edgesGroup.innerHTML = '';
 
         // 1. NODO RAÍZ
-        const rootIcon = { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[roleObj.levelId] || '🤖';
+        const rootIcon = roleObj.isGlobalAi ? '🤖' : ({ '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[roleObj.levelId] || '💻');
         const rootEl = document.createElement('div');
-        rootEl.className = 'graph-node node-root';
+        rootEl.className = `graph-node node-root ${roleObj.isGlobalAi ? 'global-ai' : ''}`;
         rootEl.id = 'gn_root';
         rootEl.style.left = '15%';
         rootEl.style.top = '50%';
         rootEl.innerHTML = `
             <div class="circle">${rootIcon}</div>
-            <div class="title" title="${roleObj.name}">${roleObj.name.substring(0, 15)}...</div>
+            <div class="title" title="${roleObj.name}">${roleObj.name.substring(0, 18)}</div>
         `;
         this.dom.nodesContainer.appendChild(rootEl);
 
@@ -356,7 +397,6 @@ export default class AgentEditorView {
         this.brainGraph.branches.forEach((branch, bIdx) => {
             const bY = startY + (bIdx * yStep);
             
-            // Dibujar Rama
             const bEl = document.createElement('div');
             bEl.className = 'graph-node node-branch';
             bEl.id = `gn_branch_${bIdx}`;
@@ -365,7 +405,6 @@ export default class AgentEditorView {
             bEl.innerHTML = `<div class="circle">${branch.name}</div>`;
             this.dom.nodesContainer.appendChild(bEl);
 
-            // Dibujar Hojas
             const leaves = branch.nodes;
             if (leaves.length > 0) {
                 const leafSpacing = 16;
@@ -379,7 +418,6 @@ export default class AgentEditorView {
                     lEl.style.left = `${leafBaseX}%`;
                     lEl.style.top = `${lY}%`;
                     
-                    // Permitimos borrar cualquier conocimiento inyectado (bIdx 1 o 2)
                     const isCustomMeme = bIdx === 1 || bIdx === 2; 
                     const delBtn = isPO && isCustomMeme ? `<button class="btn-remove" data-id="${leaf.id}" title="Eliminar Conexión">&times;</button>` : '';
 
@@ -410,7 +448,6 @@ export default class AgentEditorView {
                         const relatedId = originalMeme.jsonLd.relatedLink[0];
                         const relatedMeme = this.catalogMemes.find(m => m.id === relatedId);
                         
-                        // Verifica si el agente ya tiene el meme inyectado en alguna rama
                         const alreadyHasIt = this.brainGraph.branches.some(b => b.nodes.find(n => n.title === relatedMeme?.title || n.title === relatedMeme?.jsonLd?.name));
                         
                         if (relatedMeme && !alreadyHasIt) {
@@ -428,7 +465,8 @@ export default class AgentEditorView {
                             this.dom.nodesContainer.appendChild(gEl);
                             
                             gEl.addEventListener('click', async () => {
-                                await KB.saveNode({ ...relatedMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: this.activeProjectId });
+                                const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+                                await KB.saveNode({ ...relatedMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
                                 await this.renderBrainGraph();
                             });
                             
@@ -464,6 +502,8 @@ export default class AgentEditorView {
         };
 
         const rootPos = getCenter(rootEl);
+        const isGlobal = rootEl.classList.contains('global-ai');
+        const rootColor = isGlobal ? 'var(--accent-purple)' : 'var(--accent-blue)';
 
         this.brainGraph.branches.forEach((branch, bIdx) => {
             const bEl = document.getElementById(`gn_branch_${bIdx}`);
@@ -473,7 +513,7 @@ export default class AgentEditorView {
             const p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             p1.setAttribute('d', `M ${rootPos.x} ${rootPos.y} C ${(rootPos.x + bPos.x)/2} ${rootPos.y}, ${(rootPos.x + bPos.x)/2} ${bPos.y}, ${bPos.x} ${bPos.y}`);
             p1.setAttribute('class', 'edge-line');
-            p1.style.stroke = 'var(--accent-blue)';
+            p1.style.stroke = rootColor;
             p1.style.strokeWidth = '4';
             this.dom.edgesGroup.appendChild(p1);
 
@@ -490,7 +530,6 @@ export default class AgentEditorView {
                     p2.setAttribute('class', 'edge-line');
                     this.dom.edgesGroup.appendChild(p2);
 
-                    // Flecha fantasma
                     const ghostNode = document.getElementById(`gn_ghost_${bIdx}_${lIdx}`);
                     if (ghostNode) {
                         const gPos = getCenter(ghostNode);
