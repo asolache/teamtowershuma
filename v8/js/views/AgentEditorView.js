@@ -62,16 +62,19 @@ export default class AgentEditorView {
                 .main-layout { display: flex; gap: 1.5rem; flex: 1; overflow: hidden; }
                 
                 /* ARMERÍA DE MEMES (Sidebar Izquierdo) */
-                .meme-armory { width: 320px; background: linear-gradient(180deg, rgba(20,20,25,0.9) 0%, rgba(10,10,15,0.95) 100%); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);}
+                .meme-armory { width: 340px; background: linear-gradient(180deg, rgba(20,20,25,0.9) 0%, rgba(10,10,15,0.95) 100%); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);}
                 .armory-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4); }
                 .armory-title { color: white; font-weight: 900; font-size: 1.2rem; margin: 0 0 5px 0; display:flex; align-items:center; gap:8px; }
                 .armory-subtitle { color: #888; font-size: 0.8rem; margin: 0; }
-                .armory-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px;}
+                .armory-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; display: flex; flex-direction: column;}
                 
-                .meme-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; cursor: grab; transition: all 0.2s; position: relative;}
+                /* TAXONOMÍA W3C */
+                .taxonomy-group-title { font-size: 0.75rem; color: var(--accent-blue); text-transform: uppercase; font-weight: 900; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(0,176,255,0.3); padding-bottom: 5px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
+                
+                .meme-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; cursor: grab; transition: all 0.2s; position: relative; margin-bottom: 10px;}
                 .meme-card:hover { background: rgba(255,255,255,0.06); border-color: var(--accent-purple); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(224,64,251,0.2);}
                 .meme-card:active { cursor: grabbing; }
-                .meme-category { font-size: 0.65rem; color: var(--accent-purple); text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 5px; display: block;}
+                .meme-category { font-size: 0.65rem; color: #888; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 5px; display: block;}
                 .meme-title { color: white; font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; line-height: 1.2;}
                 .meme-keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;}
                 .keyword-tag { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #aaa; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono);}
@@ -135,11 +138,11 @@ export default class AgentEditorView {
                     <div class="main-layout">
                         <aside class="meme-armory">
                             <div class="armory-header">
-                                <h3 class="armory-title">📚 Catálogo W3C</h3>
+                                <h3 class="armory-title">📚 Catálogo W3C (SKOS)</h3>
                                 <p class="armory-subtitle">Arrastra Memes al cerebro del agente.</p>
                             </div>
                             <div class="armory-list" id="memeCatalogList">
-                                <div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">Cargando taxonomía...</div>
+                                <div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">Cargando taxonomía semántica...</div>
                             </div>
                         </aside>
 
@@ -148,7 +151,7 @@ export default class AgentEditorView {
                             <div id="mindmap-nodes"></div>
                             
                             <div class="drop-overlay" id="dropZone">
-                                <div class="drop-msg">📥 SOLTAR PARA INYECTAR MEME</div>
+                                <div class="drop-msg">📥 SOLTAR PARA INYECTAR CONOCIMIENTO</div>
                             </div>
                         </section>
                     </div>
@@ -180,7 +183,7 @@ export default class AgentEditorView {
 
         await KB.init();
         
-        // 1. Cargar Armería
+        // 1. Cargar Armería W3C
         await this.loadArmory();
 
         // 2. Escuchar Selector de Rol
@@ -219,29 +222,58 @@ export default class AgentEditorView {
     }
 
     async loadArmory() {
-        // Obtenemos solo los memes globales (los que no están atados a un ID específico)
-        const allMemes = await KB.getAllNodes({ type: 'meme' });
-        this.catalogMemes = allMemes.filter(m => m.targetId === 'global' || !m.targetId);
+        // Obtenemos TODOS los nodos globales del Kernel (Core OS, Skills, Ontologías/ADN)
+        const allNodes = await KB.getAllNodes();
+        this.catalogMemes = allNodes.filter(n => n.targetId === 'global' || !n.targetId);
 
         if (this.catalogMemes.length === 0) {
             this.dom.catalogList.innerHTML = `<div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">El catálogo está vacío. Ejecuta los Tests para sembrar la base de datos.</div>`;
             return;
         }
 
-        this.dom.catalogList.innerHTML = this.catalogMemes.map(meme => `
-            <div class="meme-card" draggable="true" data-id="${meme.id}">
-                <span class="meme-category">${meme.broader ? meme.broader.replace('root_', '').replace('_', ' ') : meme.category}</span>
-                <div class="meme-title">${meme.title || meme.jsonLd?.name}</div>
-                <div class="meme-keywords">
-                    ${(meme.jsonLd?.keywords || '').split(',').filter(k => k.trim()).slice(0,3).map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')}
+        // CLASIFICADOR TAXONÓMICO W3C
+        const taxonomyGroups = {
+            'Core OS (Leyes Sistémicas)': this.catalogMemes.filter(m => m.type === 'meme' && m.category === 'core_os'),
+            'ADN (Arquetipos Ontológicos)': this.catalogMemes.filter(m => m.type === 'ontology'),
+            'Skills (Frameworks & Técnicas)': this.catalogMemes.filter(m => m.type === 'meme' && m.category === 'skill'),
+            'Otros (Uncategorized)': this.catalogMemes.filter(m => m.type !== 'ontology' && !(m.type === 'meme' && (m.category === 'core_os' || m.category === 'skill')))
+        };
+
+        let html = '';
+        
+        for (const [groupName, items] of Object.entries(taxonomyGroups)) {
+            if (items.length === 0) continue;
+            
+            // Título de la Carpeta SKOS
+            const groupIcon = groupName.includes('Core OS') ? '🌐' : (groupName.includes('ADN') ? '🧬' : '🎒');
+            html += `<div class="taxonomy-group-title">${groupIcon} ${groupName}</div>`;
+            
+            html += items.map(meme => {
+                // Recuperamos jerarquía semántica
+                const categoryLabel = meme.broader ? meme.broader.replace('root_', '').replace(/_/g, ' ') : (meme.category || meme.type);
+                const title = meme.title || meme.jsonLd?.name || 'Meme sin título';
+                const keywords = (meme.jsonLd?.keywords || '').split(',').filter(k => k.trim()).slice(0, 3);
+                
+                return `
+                <div class="meme-card" draggable="true" data-id="${meme.id}">
+                    <span class="meme-category">${categoryLabel}</span>
+                    <div class="meme-title">${title}</div>
+                    ${keywords.length > 0 ? `
+                    <div class="meme-keywords">
+                        ${keywords.map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')}
+                    </div>
+                    ` : ''}
                 </div>
-            </div>
-        `).join('');
+                `;
+            }).join('');
+        }
+
+        this.dom.catalogList.innerHTML = html;
     }
 
     initDragAndDrop() {
         const isPO = store.getState().projects.find(p => p.id === this.activeProjectId)?.ownerId === store.getState().session.activeUserId || store.getState().session.role === 'ecosystem-owner';
-        if (!isPO) return; // Si es solo lectura, no activamos D&D
+        if (!isPO) return; 
 
         this.dom.catalogList.addEventListener('dragstart', (e) => {
             const card = e.target.closest('.meme-card');
@@ -259,7 +291,7 @@ export default class AgentEditorView {
         });
 
         this.dom.canvas.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Necesario para permitir el drop
+            e.preventDefault(); 
         });
 
         this.dom.canvas.addEventListener('drop', async (e) => {
@@ -271,16 +303,17 @@ export default class AgentEditorView {
             try {
                 const memeData = JSON.parse(e.dataTransfer.getData('application/json'));
                 
-                // INYECCIÓN: Guardamos una copia del Meme vinculada a este Agente
+                // INYECCIÓN FRACTAL: 
+                // Guardamos una copia exacta del Nodo (Meme/Ontology) vinculada a este Agente
                 const newNode = {
                     ...memeData,
                     id: 'meme_inst_' + Date.now(),
-                    targetId: this.selectedRoleId, // Anclamos al Rol
-                    projectId: this.activeProjectId // Anclamos al Proyecto
+                    targetId: this.selectedRoleId, 
+                    projectId: this.activeProjectId 
                 };
                 
                 await KB.saveNode(newNode);
-                await this.renderBrainGraph(); // Recargamos el mapa mental
+                await this.renderBrainGraph(); 
 
             } catch(err) {
                 console.error("Error en Drop:", err);
@@ -296,13 +329,12 @@ export default class AgentEditorView {
 
         if (!roleObj) return;
 
-        // Llamamos al Compilador de Grafo del Kernel
         this.brainGraph = await KB.getAgentBrainGraph(project.id, roleObj, project.presentation || project.prompt);
         
         this.dom.nodesContainer.innerHTML = '';
         this.dom.edgesGroup.innerHTML = '';
 
-        // 1. NODO RAÍZ (El Agente)
+        // 1. NODO RAÍZ
         const rootIcon = { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[roleObj.levelId] || '🤖';
         const rootEl = document.createElement('div');
         rootEl.className = 'graph-node node-root';
@@ -315,7 +347,7 @@ export default class AgentEditorView {
         `;
         this.dom.nodesContainer.appendChild(rootEl);
 
-        // 2. RAMAS Y HOJAS (Iteramos sobre las 4 categorías que devuelve KB)
+        // 2. RAMAS Y HOJAS
         const branchX = 45;
         const leafBaseX = 80;
         const startY = 15;
@@ -333,10 +365,10 @@ export default class AgentEditorView {
             bEl.innerHTML = `<div class="circle">${branch.name}</div>`;
             this.dom.nodesContainer.appendChild(bEl);
 
-            // Dibujar Hojas de esa Rama
+            // Dibujar Hojas
             const leaves = branch.nodes;
             if (leaves.length > 0) {
-                const leafSpacing = 15;
+                const leafSpacing = 16;
                 const totalHeight = (leaves.length - 1) * leafSpacing;
                 let lY = bY - (totalHeight / 2);
 
@@ -347,25 +379,23 @@ export default class AgentEditorView {
                     lEl.style.left = `${leafBaseX}%`;
                     lEl.style.top = `${lY}%`;
                     
-                    // Botón eliminar solo si es un Skill (Rama 2) y si eres el PO
-                    const isCustomSkill = bIdx === 2; 
-                    const delBtn = isPO && isCustomSkill ? `<button class="btn-remove" data-id="${leaf.id}" title="Eliminar Meme">&times;</button>` : '';
+                    // Permitimos borrar cualquier conocimiento inyectado (bIdx 1 o 2)
+                    const isCustomMeme = bIdx === 1 || bIdx === 2; 
+                    const delBtn = isPO && isCustomMeme ? `<button class="btn-remove" data-id="${leaf.id}" title="Eliminar Conexión">&times;</button>` : '';
 
                     lEl.innerHTML = `
                         <div class="content-box">
                             ${delBtn}
-                            <div class="title">${leaf.title || 'Meme Genérico'}</div>
+                            <div class="title">${leaf.title || 'Nodo de Conocimiento'}</div>
                             <div class="desc">${leaf.content}</div>
                         </div>
                     `;
                     this.dom.nodesContainer.appendChild(lEl);
                     lY += leafSpacing;
 
-                    // Evento Eliminar
-                    if (isPO && isCustomSkill) {
+                    if (isPO && isCustomMeme) {
                         lEl.querySelector('.btn-remove').addEventListener('click', async () => {
-                            if(confirm("¿Desconectar este Meme de la red neuronal del agente?")) {
-                                // Hack rápido para eliminar usando la misma transacción (En prod usaríamos una función KB.deleteNode)
+                            if(confirm("¿Desconectar este nodo de la red neuronal del agente?")) {
                                 const db = await KB.init();
                                 const tx = db.transaction(['nodes'], 'readwrite');
                                 tx.objectStore('nodes').delete(leaf.id);
@@ -375,25 +405,23 @@ export default class AgentEditorView {
                     }
 
                     // -- SUGERENCIAS W3C (SKOS) --
-                    // Si el meme tiene 'relatedLink' en su jsonLd original y estamos en la rama de Skills
-                    // (Buscamos la info cruda en el catalogMemes usando el título para simular la relación SKOS)
-                    const originalMeme = this.catalogMemes.find(m => m.title === leaf.title);
+                    const originalMeme = this.catalogMemes.find(m => m.title === leaf.title || m.jsonLd?.name === leaf.title);
                     if (originalMeme && originalMeme.jsonLd?.relatedLink && originalMeme.jsonLd.relatedLink.length > 0 && isPO) {
                         const relatedId = originalMeme.jsonLd.relatedLink[0];
                         const relatedMeme = this.catalogMemes.find(m => m.id === relatedId);
                         
-                        // Verificar que no lo tenga ya inyectado
-                        const hasIt = this.brainGraph.branches[2].nodes.find(n => n.title === relatedMeme?.title);
+                        // Verifica si el agente ya tiene el meme inyectado en alguna rama
+                        const alreadyHasIt = this.brainGraph.branches.some(b => b.nodes.find(n => n.title === relatedMeme?.title || n.title === relatedMeme?.jsonLd?.name));
                         
-                        if (relatedMeme && !hasIt) {
+                        if (relatedMeme && !alreadyHasIt) {
                             const gEl = document.createElement('div');
                             gEl.className = 'graph-node node-leaf node-ghost';
                             gEl.id = `gn_ghost_${bIdx}_${lIdx}`;
                             gEl.style.left = `${leafBaseX}%`;
                             gEl.style.top = `${lY}%`;
                             gEl.innerHTML = `
-                                <div class="content-box" title="Sugerencia de Ontología W3C: Meme Relacionado">
-                                    <div class="title">✨ Sugerencia: ${relatedMeme.title}</div>
+                                <div class="content-box" title="Sugerencia SKOS: Concepto Relacionado">
+                                    <div class="title">✨ Sugerencia W3C: ${relatedMeme.title || relatedMeme.jsonLd?.name}</div>
                                     <div class="desc" style="color:var(--accent-green);">Clic para Inyectar conexión neuronal.</div>
                                 </div>
                             `;
@@ -409,7 +437,6 @@ export default class AgentEditorView {
                     }
                 });
             } else {
-                // Hoja Vacía placeholder
                 const lEl = document.createElement('div');
                 lEl.className = 'graph-node node-leaf';
                 lEl.id = `gn_leaf_${bIdx}_empty`;
@@ -420,7 +447,6 @@ export default class AgentEditorView {
             }
         });
 
-        // Dibujamos las conexiones SVG
         setTimeout(() => this.drawEdges(), 50);
     }
 
@@ -444,7 +470,6 @@ export default class AgentEditorView {
             if (!bEl) return;
             const bPos = getCenter(bEl);
 
-            // Raíz -> Rama (Líneas principales)
             const p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             p1.setAttribute('d', `M ${rootPos.x} ${rootPos.y} C ${(rootPos.x + bPos.x)/2} ${rootPos.y}, ${(rootPos.x + bPos.x)/2} ${bPos.y}, ${bPos.x} ${bPos.y}`);
             p1.setAttribute('class', 'edge-line');
@@ -452,20 +477,31 @@ export default class AgentEditorView {
             p1.style.strokeWidth = '4';
             this.dom.edgesGroup.appendChild(p1);
 
-            // Rama -> Hojas
             const leavesCount = branch.nodes.length;
             if (leavesCount > 0) {
                 branch.nodes.forEach((leaf, lIdx) => {
                     const lEl = document.getElementById(`gn_leaf_${bIdx}_${lIdx}`);
                     if (!lEl) return;
                     const lPos = getCenter(lEl);
-                    // Conexión al borde izquierdo de la caja
                     const targetX = lPos.x - (lEl.offsetWidth / 2); 
                     
                     const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     p2.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
                     p2.setAttribute('class', 'edge-line');
                     this.dom.edgesGroup.appendChild(p2);
+
+                    // Flecha fantasma
+                    const ghostNode = document.getElementById(`gn_ghost_${bIdx}_${lIdx}`);
+                    if (ghostNode) {
+                        const gPos = getCenter(ghostNode);
+                        const gTargetX = gPos.x - (ghostNode.offsetWidth / 2);
+                        const p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        p3.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + gTargetX)/2} ${bPos.y}, ${(bPos.x + gTargetX)/2} ${gPos.y}, ${gTargetX} ${gPos.y}`);
+                        p3.setAttribute('class', 'edge-line');
+                        p3.style.stroke = 'var(--accent-green)';
+                        p3.style.strokeDasharray = '4,4';
+                        this.dom.edgesGroup.appendChild(p3);
+                    }
                 });
             } else {
                 const emptyEl = document.getElementById(`gn_leaf_${bIdx}_empty`);
@@ -478,19 +514,6 @@ export default class AgentEditorView {
                     p2.style.strokeDasharray = '4,4';
                     this.dom.edgesGroup.appendChild(p2);
                 }
-            }
-
-            // Ramas Fantasma W3C
-            const ghostNode = document.getElementById(`gn_ghost_${bIdx}_0`) || document.getElementById(`gn_ghost_${bIdx}_1`);
-            if (ghostNode) {
-                const lPos = getCenter(ghostNode);
-                const targetX = lPos.x - (ghostNode.offsetWidth / 2);
-                const p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                p3.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
-                p3.setAttribute('class', 'edge-line');
-                p3.style.stroke = 'var(--accent-green)';
-                p3.style.strokeDasharray = '4,4';
-                this.dom.edgesGroup.appendChild(p3);
             }
         });
     }
