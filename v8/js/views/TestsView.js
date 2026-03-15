@@ -62,7 +62,7 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V9 TDD DIAGNOSTICS (Fase Verde)</h1>
+                        <h1>V11 TDD DIAGNOSTICS (Fase Verde)</h1>
                         <p>Validando Memética, Recetas (SOP), Checklist (SOCs) y Auditoría IA</p>
                     </div>
 
@@ -94,7 +94,7 @@ export default class TestsView {
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(100); // Un poco más rápido para no desesperar
+            await sleep(100); 
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
@@ -131,7 +131,7 @@ export default class TestsView {
                 // ==========================================
                 // BLOQUE 1: KERNEL, ZERO-TRUST E IDENTIDAD
                 // ==========================================
-                await assert(store.getState().config.version.startsWith('9'), "Motor A2A y Memética SOP activados (V9)", "SYS");
+                await assert(store.getState().config.version.startsWith('9'), "Motor A2A y Memética SOP activados (V11)", "SYS");
                 await assert(store.getState().session.activeUserId === null, "Arranque Zero-Trust (Desconectado)", "AUTH");
 
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
@@ -278,7 +278,7 @@ export default class TestsView {
                 await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V9 KERNEL CERTIFIED 🔥</h2>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V11 KERNEL CERTIFIED 🔥</h2>
                         <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Matriz de A2A, Identidad Web3, Slicing Pie y Auditoría Fractal (SOCs) responden con tolerancia cero a fallos.</p>
                     </div>
                 `);
