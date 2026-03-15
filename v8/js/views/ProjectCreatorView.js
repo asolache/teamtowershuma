@@ -7,7 +7,7 @@ import { BottomNav } from '../components/BottomNav.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciar Red | TeamTowers V8";
+        document.title = "Instanciar Red | TeamTowers V9";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
@@ -140,8 +140,8 @@ export default class ProjectCreatorView {
 
                         <div id="step1">
                             <div class="wizard-header">
-                                <h1>Instanciar Castell V8</h1>
-                                <p>Genera una red neuronal de valor extrayendo el ADN del Knowledge Base.</p>
+                                <h1>Instanciar Castell V9</h1>
+                                <p>Genera una red neuronal de valor y SOPs extrayendo el ADN del Knowledge Base.</p>
                             </div>
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 2rem;">
@@ -339,7 +339,8 @@ export default class ProjectCreatorView {
                         data.deliverables.forEach(deliv => {
                             let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos'));
                             this.draftTxs.push({
-                                fromLevel: level, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4
+                                fromLevel: level, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4,
+                                soc_checklist: [], resources: []
                             });
                         });
                     }
@@ -387,11 +388,19 @@ export default class ProjectCreatorView {
 
             const listHtml = this.draftTxs.map((tx, i) => `
                 <div class="tx-preview-item">
-                    <span>
+                    <div style="flex:1;">
                         <span style="color:${tx.tipo==='intangible'?'var(--accent-purple)':'var(--accent-green)'}; font-weight:bold; font-family:var(--font-mono);">[${i+1}]</span> 
                         <span style="color:#888;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
-                    </span>
-                    <span style="color:white; font-weight:bold; font-size:0.95rem;">${tx.template || tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></span>
+                        <div style="color:white; font-weight:bold; font-size:0.95rem; margin-top:5px;">${tx.template || tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></div>
+                    </div>
+                    ${tx.soc_checklist && tx.soc_checklist.length > 0 ? `
+                        <div style="flex:1; background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; border:1px solid #444;">
+                            <strong style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:5px;">SOCs (Indicadores de Calidad):</strong>
+                            <ul style="margin:0; padding-left:15px; font-size:0.8rem; color:#ccc;">
+                                ${tx.soc_checklist.map(soc => `<li>${soc.text}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
                 </div>
             `).join('');
             
@@ -451,8 +460,9 @@ export default class ProjectCreatorView {
             INSTRUCCIONES DE DENSIDAD Y A2A: 
             Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). 
             Genera 6-8 transacciones base. 
-            CRUCIAL: Asigna el ID del guardián adecuado a cada rol en base a su función. NO asignes "magician" a todos.
-            AGENT-TO-AGENT: En la propiedad "ai_prompt", debes escribir INSTRUCCIONES ESPECÍFICAS PARA ESE ROL. Ese campo será leído por la IA que ejecute las Work Orders. El prompt debe ser denso y contextual al proyecto y sus entregables.
+            CRUCIAL: Asigna el ID del guardián adecuado a cada rol.
+            AGENT-TO-AGENT: En "ai_prompt", escribe instrucciones específicas para calibrar a la IA que ejecutará ese rol en el futuro.
+            LA RECETA (SOP & SOCs): Cada transacción (Tubería) debe contener una matriz "soc_checklist" con 2-3 frases (indicadores de conducta o calidad) que el receptor deberá auditar antes de aceptar la entrega.
             
             ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido sin marcadores markdown):
             {
@@ -462,7 +472,18 @@ export default class ProjectCreatorView {
                     { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción de calibración para el agente (A2A)..." }
                 ],
                 "transactions": [
-                    { "fromLevel": "@origen", "toLevel": "@destino", "tipo": "tangible|intangible", "template": "Sustantivo (Ej: Informe de métricas)", "horas": 4 }
+                    { 
+                        "fromLevel": "@origen", 
+                        "toLevel": "@destino", 
+                        "tipo": "tangible|intangible", 
+                        "template": "Sustantivo (Ej: Informe de métricas)", 
+                        "horas": 4,
+                        "resources": ["Herramienta A", "Permiso B"],
+                        "soc_checklist": [
+                            { "text": "El código pasa los linters" },
+                            { "text": "Los datos están actualizados a fecha de hoy" }
+                        ]
+                    }
                 ]
             }
         `;
@@ -516,8 +537,16 @@ export default class ProjectCreatorView {
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || ''
             }));
+            
             this.draftTxs = (parsedData.transactions || []).map(tx => ({
-                fromLevel: tx.fromLevel, toLevel: tx.toLevel, tipo: tx.tipo, template: tx.template || tx.entregable, horas: tx.horas
+                fromLevel: tx.fromLevel, 
+                toLevel: tx.toLevel, 
+                tipo: tx.tipo, 
+                template: tx.template || tx.entregable, 
+                horas: tx.horas,
+                // Garantizamos que los SOCs vengan formateados para el UI futuro
+                soc_checklist: (tx.soc_checklist || []).map((soc, i) => ({ id: `soc_${i}_${Date.now()}`, text: soc.text, isChecked: false })),
+                resources: tx.resources || []
             }));
             
             this.goToStep2();
@@ -627,10 +656,8 @@ export default class ProjectCreatorView {
             }
             
             let y = levelY[level] || 50;
-            // Vibración en Y para evitar rectas perfectas tapadas
             y += (levelCounts[level] % 2 === 0 ? -3 : 3);
 
-            // Guardamos las coordenadas generadas para pasarlas al Kernel al instanciar
             rol.x = x;
             rol.y = y;
 
@@ -705,7 +732,7 @@ export default class ProjectCreatorView {
         const arch = this.dom.inpArchetype.value; 
         
         this.dom.btnLaunch.disabled = true;
-        this.dom.btnLaunch.innerText = 'Instanciando Matriz V8...';
+        this.dom.btnLaunch.innerText = 'Instanciando Matriz V9...';
 
         await store.dispatch({ 
             type: 'CREATE_PROJECT', 
@@ -720,7 +747,7 @@ export default class ProjectCreatorView {
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
-        // 3. LMS HOOK A2A: Guardar los Prompts específicos de los roles en la Base de Conocimiento local
+        // LMS HOOK A2A: Guardar los Prompts específicos de los roles en la Base de Conocimiento local
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
                 if (rol.ai_prompt && rol.ai_prompt.length > 10) {
@@ -747,7 +774,15 @@ export default class ProjectCreatorView {
                         type: 'ADD_FLOW',
                         payload: {
                             projectId: projectId,
-                            flow: { from: roleFrom.id, to: roleTo.id, estimatedHours: aiTx.horas || 2, template: aiTx.template || aiTx.entregable || 'Flow', tipo: aiTx.tipo || 'tangible' }
+                            flow: { 
+                                from: roleFrom.id, 
+                                to: roleTo.id, 
+                                estimatedHours: aiTx.horas || 2, 
+                                template: aiTx.template || aiTx.entregable || 'Flow', 
+                                tipo: aiTx.tipo || 'tangible',
+                                soc_checklist: aiTx.soc_checklist || [],
+                                resources: aiTx.resources || []
+                            }
                         }
                     });
                 }
