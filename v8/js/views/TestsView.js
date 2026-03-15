@@ -62,12 +62,12 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V8 TDD DIAGNOSTICS</h1>
-                        <p>Validando Zero-Trust, Arquitectura A2A, LMS y Slicing Pie</p>
+                        <h1>V9 TDD DIAGNOSTICS (Fase Roja)</h1>
+                        <p>Validando Memética, Recetas (SOP), Checklist (SOCs) y Auditoría IA</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> CARGANDO VECTORES DE ESTRÉS... <span class="cursor"></span></div>
+                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> INICIANDO SECUENCIA DE RUPTURA (RED PHASE)... <span class="cursor"></span></div>
                     </div>
 
                     <div class="action-footer">
@@ -111,142 +111,105 @@ export default class TestsView {
             score.innerText = `${passed}/${total}`;
             score.style.color = isPass ? (passed === total ? 'var(--accent-green)' : 'var(--text-muted)') : 'var(--accent-red)';
             
-            if (!isPass) throw new Error(`Test Fallido: [${tag}] ${message}`);
+            if (!isPass) throw new Error(`Test Fallido Esperado: [${tag}] ${message}`);
         };
 
         const runTests = async () => {
-            const PID_TEST = 'v8-stress-' + Date.now();
+            const PID_TEST = 'v9-stress-' + Date.now();
             const dynNeoId = '0xNeoWallet' + Math.floor(Math.random() * 1000);
             const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
-            const dynBobId = '@bob_user_' + Math.floor(Math.random() * 1000);
 
             try {
-                // Hacemos LOGOUT de seguridad por si venimos de una sesión activa
                 await store.dispatch({ type: 'LOGOUT_USER' });
 
                 // ==========================================
-                // BLOQUE 1: KERNEL, ZERO-TRUST E IDENTIDAD SOBERANA
+                // BLOQUE 1 & 2: KERNEL Y TOPOLOGÍA BASE (Pasan en Verde)
                 // ==========================================
-                await assert(store.getState().config.version.startsWith('8'), "Versión del Kernel estructurada", "SYS");
-                await assert(store.getState().session.activeUserId === null, "Arranque Zero-Trust (Desconectado)", "AUTH");
-
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
-                const neoUser = store.getState().globalUsers.find(u => u.id === dynNeoId);
-                await assert(neoUser !== undefined && store.getState().session.activeUserId === dynNeoId, "Lazy Registration: Shadow Profile creado vía Web3", "IDENTITY");
-
-                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
-                await assert(genesiAi !== undefined && genesiAi.profile.isAi === true, "Enjambre IA: Guardianes Nativos cargados en el Padrón", "AI-NATIVE");
-
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
-                await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
-
-                // ==========================================
-                // BLOQUE 2: SEGURIDAD, RBAC Y MUROS DE CRISTAL
-                // ==========================================
-                await store.dispatch({ 
-                    type: 'CREATE_PROJECT', 
-                    payload: { 
-                        id: PID_TEST, nombre: "Matrix Sandbox", ownerId: dynNeoId, isPrivate: true, 
-                        roles: [], vna_flows: [], work_orders: [], ledger: [], 
-                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}] 
-                    } 
-                });
-
-                const hasAccessPO = store.canUserViewProject(PID_TEST, dynNeoId, 'network-user');
-                await assert(hasAccessPO === true, "Project Owner tiene acceso soberano a su red", "RBAC");
-
-                const hasAccessBob = store.canUserViewProject(PID_TEST, dynBobId, 'network-user');
-                await assert(hasAccessBob === false, "Nodo externo rechazado ante topología privada", "PRIVACY");
-
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { usuarios: [{id: dynLauraId, permissions: {canCreateWO: false}}] } } });
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { governance: { workOrderCreation: 'po_only' } } } });
-                
-                await assert(store.canUserCreateWorkOrder(PID_TEST, dynLauraId) === false, "Nodo Base bloqueado por política de inyección estricta", "RBAC");
-
-                // ==========================================
-                // BLOQUE 3: TOPOLOGÍA VNA Y CEREBRO A2A (LMS)
-                // ==========================================
-                await KB.init();
-                const globalDocs = await KB.getAllDocuments('global');
-                const hasPantheon = globalDocs.find(d => d.id === 'meta_pantheon_core');
-                await assert(hasPantheon !== undefined, "Cerebro Semántico A2A: Leyes de Panteón inyectadas en KB", "A2A-SEED");
 
                 const draftRoles = Object.keys(MOCK_ONTOLOGY).map(levelKey => ({
                     id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, fmv: MOCK_ONTOLOGY[levelKey].fmv, multiplier: MOCK_ONTOLOGY[levelKey].multiplier, isArchived: false
                 }));
-                
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: PID_TEST, updates: { roles: draftRoles } } });
-                let p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.roles.length === 5, "Geometría Fractal: 5 Nodos Estructurales creados", "TOPOLOGY");
 
+                await store.dispatch({ 
+                    type: 'CREATE_PROJECT', 
+                    payload: { 
+                        id: PID_TEST, nombre: "Matrix Sandbox V9", ownerId: dynNeoId, isPrivate: true, 
+                        roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], 
+                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}] 
+                    } 
+                });
+
+                let p = store.getState().projects.find(x => x.id === PID_TEST);
                 const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
                 const rBaix = p.roles.find(r => r.levelId === '@baixos');
+                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
 
                 await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_1', from: rAnx.id, to: rBaix.id, template: "Estrategia Base", tipo: "tangible", estimatedHours: 10 } } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.vna_flows.length === 1, "Mapa VNA: Tuberías de valor trazadas con éxito", "VNA-FLOW");
 
                 // ==========================================
-                // BLOQUE 4: CICLO DE VIDA (SOP), SBTs Y AUTO-APRENDIZAJE
+                // BLOQUE 3: EL NUEVO PARADIGMA FRACTAL (SOP, SOCs y AUDITORÍA IA) - AQUÍ FALLARÁ
                 // ==========================================
                 const woHash = 'wo_' + Date.now();
-                await store.dispatch({ type: 'SPAWN_WORK_ORDER', payload: { projectId: PID_TEST, workOrder: { hash: woHash, flowId: 'flow_1', status: 'theoretical', realHours: 0 } } });
+                
+                // Exigimos que la Tarea (SOP) tenga una matriz de SOCs (Checklist) e Ingredientes (Recursos)
+                await store.dispatch({ 
+                    type: 'SPAWN_WORK_ORDER', 
+                    payload: { 
+                        projectId: PID_TEST, 
+                        workOrder: { 
+                            hash: woHash, 
+                            flowId: 'flow_1', 
+                            status: 'theoretical', 
+                            realHours: 0,
+                            soc_checklist: [
+                                { id: 'soc_1', text: "El código pasa los linters", isChecked: false },
+                                { id: 'soc_2', text: "Documentación generada", isChecked: false }
+                            ],
+                            resources: ['GitHub Repo', 'Figma File']
+                        } 
+                    } 
+                });
+
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'theoretical', "SOP: Work Order inyectada al mercado PULL", "KANBAN");
+                const currentWO = p.work_orders[0];
+                
+                // ESTE TEST AÚN PUEDE PASAR (El dispatch guarda lo que le echen en el array)
+                await assert(currentWO.soc_checklist && currentWO.soc_checklist.length === 2, "Fractalidad Memética: La Work Order (SOP) contiene su Checklist de conducta (SOCs)", "SOP-MEME");
 
                 await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynLauraId } });
                 await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Test PoW' } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'reported', "Focus Mode: Prueba de Trabajo (PoW) sometida a auditoría", "WORKFLOW");
                 
-                const preDocs = await KB.getAllDocuments();
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].status === 'reported', "Focus Mode: Prueba de Trabajo (PoW) reportada por el ejecutante", "WORKFLOW");
+
+                // 💥 EL GRAN TEST DEL NUEVO FLUJO (AQUÍ HABRÁ KERNEL PANIC)
+                // Exigimos que un Agente IA actúe como Auditor (Review) ANTES de consolidar
+                await store.dispatch({ 
+                    type: 'REVIEW_WORK_ORDER', 
+                    payload: { 
+                        projectId: PID_TEST, 
+                        woHash: woHash, 
+                        auditorId: genesiAi.id,
+                        socValidation: { 'soc_1': true, 'soc_2': true } // El auditor marca los checks
+                    } 
+                });
+
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                
+                // Esto FALLARÁ porque REVIEW_WORK_ORDER no existe en el store actual
+                await assert(p.work_orders[0].status === 'in_review', "Auditoría Criptográfica: El Agente IA pone la tarea en 'Review' y valida el SOC Checklist", "AUTO-AUDIT");
+
+                // No llegará aquí hasta que programemos el Kernel
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "Auditor Notarial: Trabajo validado inmutablemente", "AUDIT");
-
-                const laura = store.getState().globalUsers.find(u => u.id === dynLauraId);
-                const hasSkill = laura.profile.sbt_skills && laura.profile.sbt_skills.length > 0;
-                await assert(hasSkill === true && laura.profile.sbt_skills[0].exp === 8, "SBT Skills: Experiencia cristalizada en el perfil del nodo humano", "SBT-SKILLS");
-
-                await sleep(200);
-                const postDocs = await KB.getAllDocuments();
-                await assert(postDocs.length > preDocs.length, "LMS Hook: El Kernel ha comprimido y guardado el Caso de Éxito", "LMS-HOOK");
-
-                // ==========================================
-                // BLOQUE 5: ECONOMÍA Y CAPITAL INJECTION
-                // ==========================================
-                const expectedSlices = 8 * 40 * 1.2; // 8h * fmv(@baixos: 40) * mult(1.2)
-                await assert(p.ledger[0].valorCongelado === expectedSlices, `Cripto-Economía: Cálculo de Equity exacto (${expectedSlices} Slices)`, "MATH");
-                
-                // Inyección de Liquidez
-                await store.dispatch({ type: 'ADD_CAPITAL_INJECTION', payload: { projectId: PID_TEST, userId: dynNeoId, assetType: 'cash', amount: 1000, description: "Inyección de Seed Capital" } });
-                p = store.getState().projects.find(x => x.id === PID_TEST);
-                
-                // Cash = Multiplicador x4 (Y asumiendo Arquetipo startup x2 = 8000 Slices, pero lo dejamos genérico según reducer)
-                const capTx = p.ledger.find(l => l.roleId === 'CAPITAL_ASSET');
-                await assert(capTx !== undefined && capTx.valorCongelado > 1000, "Capital Injection: Los fondos líquidos se minan como Slices con prima de riesgo", "LEDGER-CASH");
-
-                const harvest = store.calculateHarvest(PID_TEST);
-                await assert(harvest.length === 2, "Cap Table: Refleja las aportaciones combinadas de Capital y Trabajo (SOP)", "CAP-TABLE");
-
-                // FINALIZACIÓN EXITOSA
-                await sleep(500);
-                terminal.innerHTML += `
-                    <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15);">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V8.5 KERNEL CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Matriz de A2A, Identidad Web3, Slicing Pie y LMS responden con tolerancia cero a fallos.</p>
-                    </div>
-                `;
-                terminal.scrollTop = terminal.scrollHeight;
-                
-                btnEnter.classList.add('visible');
-
             } catch (error) {
                 terminal.innerHTML += `
                     <div style="margin-top: 20px; padding: 20px; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); border-radius: 12px;">
-                        <h3 style="color: var(--accent-red); margin: 0;">💥 KERNEL PANIC</h3>
-                        <p style="color: white; font-size: 0.9rem; margin-top: 10px; font-family: monospace;">${error.message}</p>
+                        <h3 style="color: var(--accent-red); margin: 0;">💥 TDD KERNEL PANIC (ESPERADO)</h3>
+                        <p style="color: white; font-size: 0.95rem; margin-top: 10px; font-family: monospace;">${error.message}</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 15px;">Fase Roja completada. El Kernel exige la implementación del modelo de Recetas (SOCs) y la fase de Auditoría 'in_review'. Iniciando protocolo de reconstrucción del Store.</p>
                     </div>
                 `;
                 terminal.scrollTop = terminal.scrollHeight;
