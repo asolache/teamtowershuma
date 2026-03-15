@@ -31,6 +31,7 @@ export default class AgentEditorView {
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🧠</div>
                              <h2 style="color:white; margin-top:0;">Ecosistema Vacío</h2>
                              <p style="color:var(--text-muted); margin-bottom: 2.5rem;">Instancia una red para empezar a editar el cerebro de sus agentes.</p>
+                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Crear Proyecto</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/agents')}
@@ -67,19 +68,15 @@ export default class AgentEditorView {
                 
                 .main-layout { display: flex; gap: 1.5rem; flex: 1; overflow: hidden; }
                 
-                /* ARMERÍA DE MEMES (Sidebar Izquierdo) */
+                /* ARMERÍA DE MEMES */
                 .meme-armory { width: 360px; background: linear-gradient(180deg, rgba(20,20,25,0.9) 0%, rgba(10,10,15,0.95) 100%); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);}
                 .armory-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4); }
                 .armory-title { color: white; font-weight: 900; font-size: 1.2rem; margin: 0 0 5px 0; display:flex; align-items:center; gap:8px; }
-                .armory-subtitle { color: #888; font-size: 0.8rem; margin: 0; }
                 
-                /* FILTROS ARMERÍA */
                 .armory-filter-input { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 0.8rem; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box; }
                 .armory-filter-input:focus { border-color: var(--accent-blue); }
                 
                 .armory-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; display: flex; flex-direction: column;}
-                
-                /* TAXONOMÍA W3C */
                 .taxonomy-group-title { font-size: 0.75rem; color: var(--accent-blue); text-transform: uppercase; font-weight: 900; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(0,176,255,0.3); padding-bottom: 5px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
                 
                 .meme-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; cursor: grab; transition: all 0.2s; position: relative; margin-bottom: 10px;}
@@ -90,12 +87,11 @@ export default class AgentEditorView {
                 .meme-keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;}
                 .keyword-tag { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #aaa; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono);}
 
-                /* MIND MAP CANVAS (Lienzo Central) */
+                /* MIND MAP CANVAS */
                 .mindmap-container { flex: 1; position: relative; background: #050508; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 30px 30px; box-shadow: inset 0 0 50px rgba(0,0,0,0.8);}
                 #mindmap-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
                 #mindmap-nodes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;}
                 
-                /* NODOS DEL GRAFO */
                 .graph-node { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
                 
                 .node-root .circle { width: 100px; height: 100px; background: rgba(10,10,15,0.9); border: 3px solid var(--accent-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; box-shadow: 0 0 40px rgba(0,176,255,0.3); backdrop-filter: blur(10px);}
@@ -113,17 +109,19 @@ export default class AgentEditorView {
                 .node-leaf .btn-remove { position: absolute; top: -10px; right: -10px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: bold; cursor: pointer; opacity: 0; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
                 .node-leaf:hover .btn-remove { opacity: 1; }
 
-                /* DROP ZONE OVERLAY */
+                /* DROP ZONE */
                 .drop-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,176,255,0.1); border: 4px dashed var(--accent-blue); z-index: 100; display: none; justify-content: center; align-items: center; border-radius: 20px; pointer-events: none;}
                 .drop-overlay.active { display: flex; animation: pulseDrop 1.5s infinite;}
                 .drop-msg { background: var(--accent-blue); color: black; padding: 15px 30px; border-radius: 30px; font-weight: 900; font-size: 1.2rem; box-shadow: 0 10px 30px rgba(0,176,255,0.5);}
 
-                /* GHOST NODE (Sugerencias W3C SKOS) */
                 .node-ghost { opacity: 0.6; filter: grayscale(80%); animation: floatGhost 3s infinite ease-in-out; cursor: pointer;}
                 .node-ghost .content-box { border-style: dashed; border-color: var(--accent-green); }
                 .node-ghost:hover { opacity: 1; filter: grayscale(0%); }
 
                 .edge-line { fill: none; stroke: #444; stroke-width: 2; transition: stroke 0.3s; }
+
+                /* MANEJO DE ERRORES */
+                .error-box { background: rgba(255,82,82,0.1); border: 1px solid var(--accent-red); padding: 20px; border-radius: 12px; color: white; margin: auto; text-align: center; max-width: 80%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;}
 
                 @keyframes pulseDrop { 0% { background: rgba(0,176,255,0.05); } 50% { background: rgba(0,176,255,0.15); } 100% { background: rgba(0,176,255,0.05); } }
                 @keyframes floatGhost { 0% { transform: translate(-50%, -50%) translateY(0px); } 50% { transform: translate(-50%, -50%) translateY(-10px); } 100% { transform: translate(-50%, -50%) translateY(0px); } }
@@ -149,7 +147,7 @@ export default class AgentEditorView {
                                 ${projectRoleOptions}
                             </optgroup>
                         </select>
-                        <button id="btnCompile" class="btn-primary" style="display:none; padding:10px 20px; font-size:0.9rem;">👁️ Previsualizar Prompt (Flatten)</button>
+                        <button id="btnCompile" class="btn-primary" style="display:none; padding:10px 20px; font-size:0.9rem;">👁️ Previsualizar Prompt</button>
                     </div>
 
                     <div class="main-layout">
@@ -157,10 +155,10 @@ export default class AgentEditorView {
                             <div class="armory-header">
                                 <h3 class="armory-title">📚 Catálogo W3C (SKOS)</h3>
                                 <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;">
-                                    <input type="text" id="armorySearch" class="armory-filter-input" placeholder="🔍 Buscar por nombre, skill, keyword...">
+                                    <input type="text" id="armorySearch" class="armory-filter-input" placeholder="🔍 Buscar por nombre o keyword...">
                                     <div style="display:flex; gap:8px;">
                                         <select id="armoryLevelFilter" class="armory-filter-input" style="flex:1;">
-                                            <option value="">Nivel VNA (Todos)</option>
+                                            <option value="">Nivel (Todos)</option>
                                             <option value="@anxaneta">👑 @anxaneta</option>
                                             <option value="@aixecador">🧭 @aixecador</option>
                                             <option value="@dosos">👁️ @dosos</option>
@@ -175,17 +173,12 @@ export default class AgentEditorView {
                                             <option value="hero">⚔️ Hero</option>
                                             <option value="magician">✨ Magician</option>
                                             <option value="caregiver">❤️ Caregiver</option>
-                                            <option value="explorer">🧭 Explorer</option>
-                                            <option value="everyman">🤝 Everyman</option>
-                                            <option value="lover">🔥 Lover</option>
-                                            <option value="jester">🃏 Jester</option>
-                                            <option value="innocent">🕊️ Innocent</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="armory-list" id="memeCatalogList">
-                                <div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">Cargando taxonomía semántica...</div>
+                                <div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">Cargando taxonomía...</div>
                             </div>
                         </aside>
 
@@ -227,52 +220,63 @@ export default class AgentEditorView {
             guardianFilter: document.getElementById('armoryGuardianFilter')
         };
 
-        await KB.init();
-        
-        // 1. Cargar Armería W3C
-        await this.loadArmory();
+        try {
+            await KB.init();
+            await this.loadArmory();
 
-        // Listeners de Filtros
-        this.dom.searchInput.addEventListener('input', () => this.filterAndRenderArmory());
-        this.dom.levelFilter.addEventListener('change', () => this.filterAndRenderArmory());
-        this.dom.guardianFilter.addEventListener('change', () => this.filterAndRenderArmory());
+            // Listeners de Filtros
+            this.dom.searchInput.addEventListener('input', () => this.filterAndRenderArmory());
+            this.dom.levelFilter.addEventListener('change', () => this.filterAndRenderArmory());
+            this.dom.guardianFilter.addEventListener('change', () => this.filterAndRenderArmory());
 
-        // 2. Escuchar Selector de Rol/Agente
-        this.dom.selRole.addEventListener('change', async (e) => {
-            this.selectedRoleId = e.target.value;
-            if (this.selectedRoleId) {
-                this.dom.btnCompile.style.display = 'block';
-                await this.renderBrainGraph();
-            } else {
-                this.dom.btnCompile.style.display = 'none';
-                this.dom.nodesContainer.innerHTML = '';
-                this.dom.edgesGroup.innerHTML = '';
+            // Selector de Agente
+            this.dom.selRole.addEventListener('change', async (e) => {
+                this.selectedRoleId = e.target.value;
+                if (this.selectedRoleId) {
+                    this.dom.btnCompile.style.display = 'block';
+                    await this.renderBrainGraphSafe();
+                } else {
+                    this.dom.btnCompile.style.display = 'none';
+                    this.dom.nodesContainer.innerHTML = '';
+                    this.dom.edgesGroup.innerHTML = '';
+                }
+            });
+
+            this.initDragAndDrop();
+
+            this.dom.btnCompile.addEventListener('click', async () => {
+                const roleObj = this.getCurrentRoleObject();
+                if (!roleObj) return;
+                const queryProjectId = roleObj.isGlobalAi ? 'global' : project.id;
+                const archetype = project ? project.archetype : 'startup';
+                const prompt = await KB.getAgentContextFlattened(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt, archetype);
+                alert("🧠 SYSTEM PROMPT COMPILADO:\n\n" + prompt);
+            });
+
+            // Repintar flechas seguras
+            window.addEventListener('resize', () => {
+                if(this.selectedRoleId) this.drawEdgesSafe();
+            });
+
+            // Disparar autoselección si hay opciones
+            if (this.dom.selRole.options.length > 1) {
+                // El índice 1 será el primer optgroup -> primera opción
+                this.dom.selRole.selectedIndex = 1;
+                this.dom.selRole.dispatchEvent(new Event('change'));
             }
-        });
 
-        // 3. Lógica de Drag & Drop
-        this.initDragAndDrop();
-
-        // 4. Previsualizador
-        this.dom.btnCompile.addEventListener('click', async () => {
-            const roleObj = this.getCurrentRoleObject();
-            if (!roleObj) return;
-
-            const queryProjectId = roleObj.isGlobalAi ? 'global' : project.id;
-            const prompt = await KB.getAgentContextFlattened(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt);
-            alert("🧠 SYSTEM PROMPT COMPILADO:\n\n" + prompt);
-        });
-
-        window.addEventListener('resize', () => {
-            if(this.selectedRoleId) this.drawEdges();
-        });
+        } catch(e) {
+            console.error("Fallo general en AgentEditorView:", e);
+        }
     }
 
     getCurrentRoleObject() {
         const state = store.getState();
         const project = state.projects.find(p => p.id === this.activeProjectId);
         
-        if (this.selectedRoleId && this.selectedRoleId.startsWith('@')) {
+        if (!this.selectedRoleId) return null;
+
+        if (this.selectedRoleId.startsWith('@')) {
             const globalAi = state.globalUsers.find(u => u.id === this.selectedRoleId);
             if (globalAi && globalAi.profile?.isAi) {
                 return {
@@ -294,8 +298,8 @@ export default class AgentEditorView {
     }
 
     filterAndRenderArmory() {
-        if (this.catalogMemes.length === 0) {
-            this.dom.catalogList.innerHTML = `<div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">El catálogo está vacío. Ejecuta los Tests para sembrar la base de datos.</div>`;
+        if (!this.catalogMemes || this.catalogMemes.length === 0) {
+            this.dom.catalogList.innerHTML = `<div style="text-align:center; color:#666; font-size:0.8rem; margin-top:2rem;">El catálogo está vacío.</div>`;
             return;
         }
 
@@ -306,26 +310,20 @@ export default class AgentEditorView {
         const filteredMemes = this.catalogMemes.filter(m => {
             const searchStr = `${m.title || m.jsonLd?.name} ${m.content} ${m.jsonLd?.keywords || ''} ${m.category || m.type}`.toLowerCase();
             const matchesText = searchStr.includes(searchTerm);
-            
-            // Filtro por Nivel VNA (Busca la etiqueta en el contenido)
             const matchesLevel = levelFilter ? searchStr.includes(levelFilter) : true;
-            
-            // Filtro por Guardian (Busca la palabra clave en el contenido)
             const matchesGuardian = guardianFilter ? searchStr.includes(guardianFilter) : true;
-
             return matchesText && matchesLevel && matchesGuardian;
         });
 
         if (filteredMemes.length === 0) {
-            this.dom.catalogList.innerHTML = `<div style="text-align:center; color:#888; font-size:0.85rem; margin-top:2rem; padding: 20px;">No se encontraron ADNs o Skills que coincidan con la búsqueda.</div>`;
+            this.dom.catalogList.innerHTML = `<div style="text-align:center; color:#888; font-size:0.85rem; margin-top:2rem;">No hay ADNs o Skills que coincidan.</div>`;
             return;
         }
 
         const taxonomyGroups = {
             'Core OS (Leyes Sistémicas)': filteredMemes.filter(m => m.type === 'meme' && m.category === 'core_os'),
             'ADN (Arquetipos Ontológicos)': filteredMemes.filter(m => m.type === 'ontology'),
-            'Skills (Frameworks & Técnicas)': filteredMemes.filter(m => m.type === 'meme' && m.category === 'skill'),
-            'Otros (Uncategorized)': filteredMemes.filter(m => m.type !== 'ontology' && !(m.type === 'meme' && (m.category === 'core_os' || m.category === 'skill')))
+            'Skills (Frameworks & Técnicas)': filteredMemes.filter(m => m.type === 'meme' && m.category === 'skill')
         };
 
         let html = '';
@@ -345,11 +343,7 @@ export default class AgentEditorView {
                     <span class="meme-category">${categoryLabel}</span>
                     <div class="meme-title">${title}</div>
                     <div class="meme-desc" style="font-size:0.75rem; color:#888; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${meme.content}</div>
-                    ${keywords.length > 0 ? `
-                    <div class="meme-keywords">
-                        ${keywords.map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')}
-                    </div>
-                    ` : ''}
+                    ${keywords.length > 0 ? `<div class="meme-keywords">${keywords.map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')}</div>` : ''}
                 </div>
                 `;
             }).join('');
@@ -373,11 +367,8 @@ export default class AgentEditorView {
             }
         });
 
-        this.dom.catalogList.addEventListener('dragend', () => {
-            this.dom.dropZone.classList.remove('active');
-        });
-
-        this.dom.canvas.addEventListener('dragover', (e) => { e.preventDefault(); });
+        this.dom.catalogList.addEventListener('dragend', () => this.dom.dropZone.classList.remove('active'));
+        this.dom.canvas.addEventListener('dragover', (e) => e.preventDefault());
 
         this.dom.canvas.addEventListener('drop', async (e) => {
             e.preventDefault();
@@ -388,17 +379,31 @@ export default class AgentEditorView {
 
             try {
                 const memeData = JSON.parse(e.dataTransfer.getData('application/json'));
-                
                 const injectionProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
                 const newNode = { ...memeData, id: 'meme_inst_' + Date.now(), targetId: roleObj.id, projectId: injectionProjectId };
                 
                 await KB.saveNode(newNode);
-                await this.renderBrainGraph(); 
+                await this.renderBrainGraphSafe(); 
 
             } catch(err) {
                 console.error("Error en Drop:", err);
             }
         });
+    }
+
+    // Wrapper seguro para evitar que un fallo silencioso deje el lienzo en blanco
+    async renderBrainGraphSafe() {
+        try {
+            await this.renderBrainGraph();
+        } catch (error) {
+            console.error("Error crítico renderizando el mapa neuronal:", error);
+            this.dom.nodesContainer.innerHTML = `
+                <div class="error-box">
+                    <h3 style="margin:0 0 10px 0;">💥 Error de Inyección Fractal</h3>
+                    <p style="font-family:monospace; font-size:0.8rem;">${error.message}</p>
+                </div>
+            `;
+        }
     }
 
     async renderBrainGraph() {
@@ -407,11 +412,15 @@ export default class AgentEditorView {
         const roleObj = this.getCurrentRoleObject();
         const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
 
-        if (!roleObj) return;
+        if (!roleObj) throw new Error("Objeto de Rol/Agente no encontrado en el estado actual.");
 
         const queryProjectId = roleObj.isGlobalAi ? 'global' : project.id;
-        this.brainGraph = await KB.getAgentBrainGraph(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt);
+        const archetype = project ? project.archetype : 'startup';
         
+        this.brainGraph = await KB.getAgentBrainGraph(queryProjectId, roleObj, roleObj.vision || project.presentation || project.prompt || '', archetype);
+        
+        if (!this.brainGraph) throw new Error("El compilador KB no pudo construir el árbol neuronal.");
+
         this.dom.nodesContainer.innerHTML = '';
         this.dom.edgesGroup.innerHTML = '';
 
@@ -446,7 +455,7 @@ export default class AgentEditorView {
             this.dom.nodesContainer.appendChild(bEl);
 
             const leaves = branch.nodes;
-            if (leaves.length > 0) {
+            if (leaves && leaves.length > 0) {
                 const leafSpacing = 16;
                 const totalHeight = (leaves.length - 1) * leafSpacing;
                 let lY = bY - (totalHeight / 2);
@@ -465,7 +474,7 @@ export default class AgentEditorView {
                         <div class="content-box">
                             ${delBtn}
                             <div class="title">${leaf.title || 'Nodo de Conocimiento'}</div>
-                            <div class="desc">${leaf.content}</div>
+                            <div class="desc">${leaf.content || ''}</div>
                         </div>
                     `;
                     this.dom.nodesContainer.appendChild(lEl);
@@ -477,40 +486,42 @@ export default class AgentEditorView {
                                 const db = await KB.init();
                                 const tx = db.transaction(['nodes'], 'readwrite');
                                 tx.objectStore('nodes').delete(leaf.id);
-                                tx.oncomplete = () => this.renderBrainGraph();
+                                tx.oncomplete = () => this.renderBrainGraphSafe();
                             }
                         });
                     }
 
                     // -- SUGERENCIAS W3C (SKOS) --
-                    const originalMeme = this.catalogMemes.find(m => m.title === leaf.title || m.jsonLd?.name === leaf.title);
-                    if (originalMeme && originalMeme.jsonLd?.relatedLink && originalMeme.jsonLd.relatedLink.length > 0 && isPO) {
-                        const relatedId = originalMeme.jsonLd.relatedLink[0];
-                        const relatedMeme = this.catalogMemes.find(m => m.id === relatedId);
-                        
-                        const alreadyHasIt = this.brainGraph.branches.some(b => b.nodes.find(n => n.title === relatedMeme?.title || n.title === relatedMeme?.jsonLd?.name));
-                        
-                        if (relatedMeme && !alreadyHasIt) {
-                            const gEl = document.createElement('div');
-                            gEl.className = 'graph-node node-leaf node-ghost';
-                            gEl.id = `gn_ghost_${bIdx}_${lIdx}`;
-                            gEl.style.left = `${leafBaseX}%`;
-                            gEl.style.top = `${lY}%`;
-                            gEl.innerHTML = `
-                                <div class="content-box" title="Sugerencia SKOS: Concepto Relacionado">
-                                    <div class="title">✨ Sugerencia W3C: ${relatedMeme.title || relatedMeme.jsonLd?.name}</div>
-                                    <div class="desc" style="color:var(--accent-green);">Clic para Inyectar conexión neuronal.</div>
-                                </div>
-                            `;
-                            this.dom.nodesContainer.appendChild(gEl);
+                    if (this.catalogMemes) {
+                        const originalMeme = this.catalogMemes.find(m => m.title === leaf.title || m.jsonLd?.name === leaf.title);
+                        if (originalMeme && originalMeme.jsonLd?.relatedLink && originalMeme.jsonLd.relatedLink.length > 0 && isPO) {
+                            const relatedId = originalMeme.jsonLd.relatedLink[0];
+                            const relatedMeme = this.catalogMemes.find(m => m.id === relatedId);
                             
-                            gEl.addEventListener('click', async () => {
-                                const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
-                                await KB.saveNode({ ...relatedMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
-                                await this.renderBrainGraph();
-                            });
+                            const alreadyHasIt = this.brainGraph.branches.some(b => b.nodes && b.nodes.find(n => n.title === relatedMeme?.title || n.title === relatedMeme?.jsonLd?.name));
                             
-                            lY += leafSpacing;
+                            if (relatedMeme && !alreadyHasIt) {
+                                const gEl = document.createElement('div');
+                                gEl.className = 'graph-node node-leaf node-ghost';
+                                gEl.id = `gn_ghost_${bIdx}_${lIdx}`;
+                                gEl.style.left = `${leafBaseX}%`;
+                                gEl.style.top = `${lY}%`;
+                                gEl.innerHTML = `
+                                    <div class="content-box" title="Sugerencia SKOS: Concepto Relacionado">
+                                        <div class="title">✨ Sugerencia W3C: ${relatedMeme.title || relatedMeme.jsonLd?.name}</div>
+                                        <div class="desc" style="color:var(--accent-green);">Clic para Inyectar conexión neuronal.</div>
+                                    </div>
+                                `;
+                                this.dom.nodesContainer.appendChild(gEl);
+                                
+                                gEl.addEventListener('click', async () => {
+                                    const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+                                    await KB.saveNode({ ...relatedMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
+                                    await this.renderBrainGraphSafe();
+                                });
+                                
+                                lY += leafSpacing;
+                            }
                         }
                     }
                 });
@@ -525,7 +536,18 @@ export default class AgentEditorView {
             }
         });
 
-        setTimeout(() => this.drawEdges(), 50);
+        // Asegurar que el DOM se pintó antes de lanzar SVG
+        requestAnimationFrame(() => {
+            setTimeout(() => this.drawEdgesSafe(), 50);
+        });
+    }
+
+    drawEdgesSafe() {
+        try {
+            this.drawEdges();
+        } catch(e) {
+            console.warn("Fallo leve al repintar enlaces SVG:", e);
+        }
     }
 
     drawEdges() {
@@ -557,7 +579,7 @@ export default class AgentEditorView {
             p1.style.strokeWidth = '4';
             this.dom.edgesGroup.appendChild(p1);
 
-            const leavesCount = branch.nodes.length;
+            const leavesCount = branch.nodes ? branch.nodes.length : 0;
             if (leavesCount > 0) {
                 branch.nodes.forEach((leaf, lIdx) => {
                     const lEl = document.getElementById(`gn_leaf_${bIdx}_${lIdx}`);
