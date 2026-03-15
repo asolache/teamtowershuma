@@ -8,7 +8,7 @@ import { KB } from './kb.js';
 
 const initialState = {
     config: {
-        version: '9.0.0',
+        version: '9.0.0', // <-- VERSIÓN KERNEL V9
         ecosystemName: 'TeamTowers Agentic Network',
         globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
         archetype: 'startup',
@@ -183,7 +183,6 @@ async function asyncReducer(state, action) {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
-                // La WO se inyecta con su array "resources" y "soc_checklist" (Ingredientes de la Receta)
                 pWoAdd.work_orders.push({ 
                     ...action.payload.workOrder, 
                     sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId,
@@ -223,7 +222,6 @@ async function asyncReducer(state, action) {
                     wo.status = 'in_review';
                     wo.auditorId = action.payload.auditorId;
                     
-                    // El Agente Auditor cruza los checks de los SOCs (Checklist)
                     if (action.payload.socValidation && wo.soc_checklist) {
                         wo.soc_checklist = wo.soc_checklist.map(soc => ({
                             ...soc,
@@ -239,11 +237,10 @@ async function asyncReducer(state, action) {
             if (pWoApp && pWoApp.work_orders) {
                 const wo = pWoApp.work_orders.find(t => t.hash === action.payload.woHash);
                 if (wo) {
-                    // Validamos que todos los SOCs estén aprobados antes del sello
                     const allSocsPassed = wo.soc_checklist ? wo.soc_checklist.every(soc => soc.isChecked) : true;
                     if(!allSocsPassed) {
                         console.warn("Auditoría Rechazada: No se han cumplido todos los SOCs requeridos para el sello notarial.");
-                        wo.status = 'reported'; // Lo devuelve atrás
+                        wo.status = 'reported'; 
                         break;
                     }
 
@@ -349,6 +346,15 @@ class Store {
         if (saved) {
             try {
                 this.state = JSON.parse(saved);
+                
+                // --- KERNEL MIGRATION PATCH ---
+                // Forzamos la actualización de la versión del config desde el initialState para evitar 
+                // que el localStorage mantenga la red anclada en una versión anterior (V8.3 -> V9)
+                if (this.state.config && this.state.config.version !== initialState.config.version) {
+                    console.log(`[KERNEL] Migrando State de v${this.state.config.version} a v${initialState.config.version}`);
+                    this.state.config.version = initialState.config.version;
+                }
+
                 if (!this.state.agents) this.state.agents = initialState.agents;
                 
                 initialState.globalUsers.forEach(initialU => {
