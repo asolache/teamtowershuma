@@ -28,13 +28,13 @@ const initialState = {
                 sbt_skills: []
             }
         },
-        // --- LOS 6 GUARDIANES IA (Nativos del Ecosistema) ---
-        { id: '@genesi_ai', name: 'Gènesi (Setup & Visión)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.25, vision: "Crea redes, mapas VNA y sprints iniciales.", structural_affinity: ["@anxaneta"] } },
-        { id: '@seny_analyst', name: 'Seny (Analista VNA)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.15, vision: "Experto en topología de red y conversión de valor.", structural_affinity: ["@dosos"] } },
-        { id: '@aixecador_pm', name: 'Aixecador (Sprint PM)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.10, vision: "Actualiza el Kanban en tiempo real y ajusta Work Orders.", structural_affinity: ["@aixecador"] } },
-        { id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.05, vision: "Sintetiza perfiles usando arquetipos del Panteón.", structural_affinity: ["@pinya"] } },
-        { id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.40, vision: "Ejecuta las recetas (SOP) paso a paso.", structural_affinity: ["@baixos"] } },
-        { id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita SOCs, valida el PoW y genera el hash de confianza en el Ledger.", structural_affinity: ["@dosos"] } }
+        // --- LOS 6 GUARDIANES IA (La Colla Nativa del Ecosistema) ---
+        { id: '@cap_de_colla', name: 'Cap de Colla (Orquestador)', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', apiCostPerHour: 0.30, vision: "Monta los equipos para cada castell. Orquesta a los demás agentes, asigna tareas y vela por la sintonía general del ecosistema.", structural_affinity: ["@anxaneta", "@aixecador"] } },
+        { id: '@genesi_ai', name: 'Gènesi (Creador de Proyectos)', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', apiCostPerHour: 0.25, vision: "Posee todos los SOPs y SOCs de todos los sectores. Genera redes neuronales de valor y topologías adaptadas a cada arquetipo de empresa.", structural_affinity: ["@anxaneta"] } },
+        { id: '@notari_ledger', name: 'Notari (Auditor de SOCs)', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', apiCostPerHour: 0.20, vision: "Autoconfigurable para evaluar SOCs y la coherencia entre la request y el entregable. Garantiza auditorías ciegas y sella el Ledger.", structural_affinity: ["@dosos"] } },
+        { id: '@seny_analyst', name: 'Seny (Analista de Red)', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', apiCostPerHour: 0.15, vision: "Experto en topología VNA, cuellos de botella y optimización de conversión de valor intangible a tangible.", structural_affinity: ["@dosos"] } },
+        { id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver', apiCostPerHour: 0.05, vision: "Sintetiza perfiles usando arquetipos del Panteón y asiste en el desarrollo cognitivo de los nodos humanos.", structural_affinity: ["@pinya"] } },
+        { id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero', apiCostPerHour: 0.40, vision: "Fuerza bruta. Ejecuta las recetas (SOP) paso a paso, iterando hasta cumplir el objetivo.", structural_affinity: ["@baixos"] } }
     ],
     projects: [],
     session: { activeUserId: null, role: 'guest' } // Arranque Zero Trust
@@ -358,8 +358,14 @@ class Store {
                 if (!this.state.agents) this.state.agents = initialState.agents;
                 
                 initialState.globalUsers.forEach(initialU => {
-                    if (initialU.globalRole === 'ai-agent' && !this.state.globalUsers.find(u => u.id === initialU.id)) {
+                    // Verificamos por ID para inyectar/actualizar correctamente la nueva configuración de la Colla
+                    const existingUIdx = this.state.globalUsers.findIndex(u => u.id === initialU.id);
+                    if (existingUIdx === -1 && initialU.globalRole === 'ai-agent') {
                         this.state.globalUsers.push(initialU);
+                    } else if (existingUIdx > -1 && initialU.globalRole === 'ai-agent') {
+                        // Actualizamos el perfil de la IA si ya existía pero cambió (Ej: Nuevo Guardian o Visión)
+                        this.state.globalUsers[existingUIdx].profile = { ...this.state.globalUsers[existingUIdx].profile, ...initialU.profile };
+                        this.state.globalUsers[existingUIdx].name = initialU.name;
                     }
                 });
 
