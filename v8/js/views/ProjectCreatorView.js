@@ -39,7 +39,7 @@ export default class ProjectCreatorView {
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
-        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V8)">`;
+        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V9)">`;
         Object.keys(this.sectorsFromKB).forEach(k => {
             const sectorLabel = this.sectorsFromKB[k].label;
             sectorOptions += `<option value="${k}" ${preselectedSector === k ? 'selected' : ''}>${sectorLabel}</option>`;
@@ -331,7 +331,7 @@ export default class ProjectCreatorView {
                         name: data.name || level,
                         fmv: 50,
                         multiplier: m[level] || 1.0,
-                        guardian: 'everyman',
+                        guardian: data.guardian || 'everyman',
                         ai_prompt: data.content || '' 
                     });
 
@@ -370,7 +370,8 @@ export default class ProjectCreatorView {
             this.renderDraftRoles();
         });
 
-        this.dom.btnLaunch.addEventListener('click', () => this.);
+        // SOLUCIÓN AL REFERENCE ERROR: Se reemplaza () => this. por () => this.finalizeProject()
+        this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
     goToStep2() {
@@ -441,11 +442,10 @@ export default class ProjectCreatorView {
         this.dom.loading.style.display = 'flex';
         this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
 
-        // LECTURA DEL CEREBRO SEMÁNTICO A2A (VNA & PANTHEON)
         await KB.init();
-        const globalDocs = await KB.getAllDocuments('global');
-        const vnaMeta = globalDocs.find(d => d.id === 'meta_vna_core')?.jsonLd?.text || 'Aplica metodología Value Network Analysis.';
-        const pantheonMeta = globalDocs.find(d => d.id === 'meta_pantheon_core')?.jsonLd?.text || 'Aplica los 12 arquetipos Pantheon a cada rol.';
+        const globalDocs = await KB.getAllNodes({projectId: 'global'});
+        const vnaMeta = globalDocs.find(d => d.id === 'meme_os_vna')?.content || 'Aplica metodología Value Network Analysis.';
+        const pantheonMeta = globalDocs.find(d => d.id === 'meme_os_pantheon')?.content || 'Aplica los 12 arquetipos Pantheon a cada rol.';
 
         const systemPrompt = `
             Actúa como Master Ecosystem Architect (Agent-to-Agent Prompt Compiler).
@@ -544,7 +544,6 @@ export default class ProjectCreatorView {
                 tipo: tx.tipo, 
                 template: tx.template || tx.entregable, 
                 horas: tx.horas,
-                // Garantizamos que los SOCs vengan formateados para el UI futuro
                 soc_checklist: (tx.soc_checklist || []).map((soc, i) => ({ id: `soc_${i}_${Date.now()}`, text: soc.text, isChecked: false })),
                 resources: tx.resources || []
             }));
@@ -639,7 +638,6 @@ export default class ProjectCreatorView {
         
         container.style.display = 'block';
 
-        // LÓGICA DE DISTRIBUCIÓN AUTOMÁTICA EN MINIMAPA
         const levelY = { '@anxaneta': 20, '@aixecador': 40, '@dosos': 60, '@baixos': 80, '@pinya': 90 };
         const levelCounts = {};
 
@@ -649,7 +647,6 @@ export default class ProjectCreatorView {
             
             const totalInLvl = this.draftRoles.filter(r => r.levelId === level).length;
             
-            // Repartir en X
             let x = 50;
             if (totalInLvl > 1) {
                 x = 20 + (60 / (totalInLvl - 1)) * levelCounts[level];
@@ -726,7 +723,7 @@ export default class ProjectCreatorView {
     getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
     getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 
- async finalizeProject() {
+    async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
         const arch = this.dom.inpArchetype.value; 
