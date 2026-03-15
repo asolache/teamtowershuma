@@ -75,9 +75,6 @@ export default class ProjectCreatorView {
                 .ai-loading span { font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0,176,255,0.5); }
                 .ai-loading p { color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-size: 1.2rem;}
 
-                .educational-legend { background: rgba(0, 176, 255, 0.05); border: 1px solid rgba(0, 176, 255, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 2rem; font-size: 0.8rem; color: #ccc; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-                .legend-item { display: flex; align-items: flex-start; gap: 8px; font-weight: bold;}
-
                 .role-draft-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
                 .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 15px; transition: transform 0.2s;}
                 .role-draft-item:hover { background: rgba(255,255,255,0.04); border-color: #444; }
@@ -113,8 +110,6 @@ export default class ProjectCreatorView {
                 .btn-lux-outline { background: transparent; border: 1px solid #555; color: white;}
                 .btn-lux-outline:hover { border-color: white; background: rgba(255,255,255,0.05);}
 
-                @keyframes pulse { 0% { opacity: 0.6; transform: scale(0.98);} 50% { opacity: 1; transform: scale(1.02);} 100% { opacity: 0.6; transform: scale(0.98);} }
-
                 @media (max-width: 768px) {
                     .wizard-workspace { padding: 80px 1rem 2rem 1rem; }
                     .wizard-card { padding: 1.5rem; border-radius: 16px; }
@@ -123,8 +118,6 @@ export default class ProjectCreatorView {
                     .btn-del-role { align-self: stretch; background: rgba(255, 82, 82, 0.1); border-radius: 8px; padding: 10px; margin-top: 5px; width: 100%; border: 1px solid rgba(255,82,82,0.3);}
                     .actions-row { flex-direction: column; }
                     .actions-row .btn-lux { width: 100%; justify-content: center; }
-                    .tx-preview-item { flex-direction: column; align-items: flex-start; gap: 8px; }
-                    .ai-grid { grid-template-columns: 1fr; }
                 }
             </style>
 
@@ -228,14 +221,6 @@ export default class ProjectCreatorView {
                             
                             <div id="txPreviewList" class="tx-preview-list"></div>
 
-                            <div class="educational-legend">
-                                <div class="legend-item"><span style="color:var(--accent-red);">👑 @anxaneta:</span> Visión (x3)</div>
-                                <div class="legend-item"><span style="color:#ff4081;">🧭 @aixecador:</span> Táctica (x2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-purple);">👁️ @dosos:</span> Auditoría (x1.5)</div>
-                                <div class="legend-item"><span style="color:var(--accent-indigo);">⚙️ @baixos:</span> Producción (x1.2)</div>
-                                <div class="legend-item"><span style="color:var(--accent-blue);">🤝 @pinya:</span> Soporte (x1)</div>
-                            </div>
-
                             <div class="role-draft-list" id="draftRolesContainer"></div>
                             
                             <button class="btn-lux btn-lux-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">➕ Instanciar Silla Adicional</button>
@@ -335,12 +320,14 @@ export default class ProjectCreatorView {
                         ai_prompt: data.content || '' 
                     });
 
+                    // INYECCIÓN DE SKILLS EN KICKOFF OFFLINE
                     if (data.deliverables) {
                         data.deliverables.forEach(deliv => {
                             let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos'));
                             this.draftTxs.push({
                                 fromLevel: level, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4,
-                                soc_checklist: [], resources: []
+                                soc_checklist: [], resources: [],
+                                required_skills: deliv.required_skills || []
                             });
                         });
                     }
@@ -370,7 +357,6 @@ export default class ProjectCreatorView {
             this.renderDraftRoles();
         });
 
-        // SOLUCIÓN AL REFERENCE ERROR: Se reemplaza () => this. por () => this.finalizeProject()
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
@@ -447,6 +433,7 @@ export default class ProjectCreatorView {
         const vnaMeta = globalDocs.find(d => d.id === 'meme_os_vna')?.content || 'Aplica metodología Value Network Analysis.';
         const pantheonMeta = globalDocs.find(d => d.id === 'meme_os_pantheon')?.content || 'Aplica los 12 arquetipos Pantheon a cada rol.';
 
+        // PROMPT CON REQUIRED_SKILLS PARA A2A
         const systemPrompt = `
             Actúa como Master Ecosystem Architect (Agent-to-Agent Prompt Compiler).
             Misión: Instanciar una DAO para "${name}" (Arquetipo: "${archetypeText}").
@@ -461,15 +448,14 @@ export default class ProjectCreatorView {
             Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). 
             Genera 6-8 transacciones base. 
             CRUCIAL: Asigna el ID del guardián adecuado a cada rol.
-            AGENT-TO-AGENT: En "ai_prompt", escribe instrucciones específicas para calibrar a la IA que ejecutará ese rol en el futuro.
             LA RECETA (SOP & SOCs): Cada transacción (Tubería) debe contener una matriz "soc_checklist" con 2-3 frases (indicadores de conducta o calidad) que el receptor deberá auditar antes de aceptar la entrega.
             
             ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido sin marcadores markdown):
             {
-                "presentacion": "Pitch institucional atractivo...",
+                "presentacion": "Pitch institucional...",
                 "tags": ["Sector", "ModeloNegocio"],
                 "roles": [
-                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción de calibración para el agente (A2A)..." }
+                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción de calibración (A2A)..." }
                 ],
                 "transactions": [
                     { 
@@ -478,10 +464,10 @@ export default class ProjectCreatorView {
                         "tipo": "tangible|intangible", 
                         "template": "Sustantivo (Ej: Informe de métricas)", 
                         "horas": 4,
-                        "resources": ["Herramienta A", "Permiso B"],
+                        "resources": ["Herramienta A"],
+                        "required_skills": ["meme_skill_copywriting"],
                         "soc_checklist": [
-                            { "text": "El código pasa los linters" },
-                            { "text": "Los datos están actualizados a fecha de hoy" }
+                            { "text": "El código pasa los linters" }
                         ]
                     }
                 ]
@@ -545,7 +531,8 @@ export default class ProjectCreatorView {
                 template: tx.template || tx.entregable, 
                 horas: tx.horas,
                 soc_checklist: (tx.soc_checklist || []).map((soc, i) => ({ id: `soc_${i}_${Date.now()}`, text: soc.text, isChecked: false })),
-                resources: tx.resources || []
+                resources: tx.resources || [],
+                required_skills: tx.required_skills || []
             }));
             
             this.goToStep2();
@@ -744,7 +731,6 @@ export default class ProjectCreatorView {
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
-        // 1. Guardar Prompts IA personalizados
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
                 if (rol.ai_prompt && rol.ai_prompt.length > 10) {
@@ -757,7 +743,6 @@ export default class ProjectCreatorView {
             }
         }
 
-        // 2. Generar Flows (Tuberías) y AUTO-SPAWNEAR Work Orders en el Sprint 1 (Kickoff)
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
@@ -768,7 +753,7 @@ export default class ProjectCreatorView {
                     const flowId = 'flow_' + Math.random().toString(36).substr(2, 9);
                     const templateName = aiTx.template || aiTx.entregable || 'Entregable Core';
                     
-                    // A) Creamos la tubería base
+                    // A) Creamos la tubería base con anclaje competencial
                     await store.dispatch({
                         type: 'ADD_FLOW',
                         payload: {
@@ -777,7 +762,9 @@ export default class ProjectCreatorView {
                                 id: flowId, from: roleFrom.id, to: roleTo.id, estimatedHours: aiTx.horas || 4, 
                                 template: templateName, 
                                 tipo: aiTx.tipo || 'tangible',
-                                soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
+                                soc_checklist: aiTx.soc_checklist || [], 
+                                resources: aiTx.resources || [],
+                                required_skills: aiTx.required_skills || [] 
                             }
                         }
                     });
@@ -790,7 +777,7 @@ export default class ProjectCreatorView {
                         kickoffComment += ` | Valida la calidad según los estándares nativos de tu Rol antes de reportar.`;
                     }
 
-                    // B) KICKOFF AUTOMÁTICO: Instanciamos la tubería como una Tarea real en el Kanban
+                    // B) KICKOFF AUTOMÁTICO
                     const woHash = 'wo_kickoff_' + Math.random().toString(36).substr(2, 9);
                     await store.dispatch({
                         type: 'SPAWN_WORK_ORDER',
@@ -799,8 +786,9 @@ export default class ProjectCreatorView {
                             workOrder: {
                                 hash: woHash, flowId: flowId, status: 'theoretical', realHours: 0,
                                 sprintId: p.activeSprintId,
-                                comentario: kickoffComment, // <-- AQUÍ INYECTAMOS EL CONTEXTO RICO
-                                soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
+                                comentario: kickoffComment,
+                                soc_checklist: aiTx.soc_checklist || [], 
+                                resources: aiTx.resources || []
                             }
                         }
                     });
