@@ -106,7 +106,6 @@ export const NATIVE_ONTOLOGY = {
 
 // 2. EL CATÁLOGO DE MEMES W3C (Incluyendo Arquetipos de Proyecto)
 const CATALOGO_MEMES = [
-    // --- MEMES DE CORE OS ---
     {
         id: 'meme_os_vna', type: 'meme', category: 'core_os', title: 'OS: Value Network Analysis',
         content: `Un ecosistema es una red de creación de valor. Convierte activos intangibles (conocimiento, reputación) en valor negociable. Los entregables viajan por tuberías y se auditan mediante SOCs.`,
@@ -117,7 +116,6 @@ const CATALOGO_MEMES = [
         content: `Las organizaciones requieren 'Autoridades Intangibles'. Guardianes: Zeus (Estructura), Hera (Cuidado), Poseidón (Exploración), Demeter (Acogida), Ares (Acción), Atenea (Estrategia), Apolo (Análisis), Artemisa (Foco), Hermes (Transición), Hefesto (Forja), Afrodita (Estética), Dionisio (Socialización).`,
         keywords: ['Arquetipos', 'Guardianes', 'Psicología'], broader: 'root_ecosystem_laws', related: ['meme_os_vna']
     },
-    // --- MEMES DE ARQUETIPO ORGANIZACIONAL ---
     {
         id: 'meme_arch_startup', type: 'meme', category: 'core_os', title: 'Arquetipo: 🚀 Startup (Agilidad)',
         content: `Mentalidad "Move Fast, Break Things". Prioriza el Time-to-Market, la iteración rápida (Lean) y la supervivencia financiera. Las SOPs deben ser pragmáticas, no burocráticas.`,
@@ -133,7 +131,6 @@ const CATALOGO_MEMES = [
         content: `Ecosistema cooperativo Slicing Pie. Valoramos la "Força, Equilibri, Valor i Seny". Todo trabajo es transparente y se capitaliza equitativamente mediante Ledger de triple entrada. Nadie manda, la red orquesta.`,
         keywords: ['Slicing Pie', 'Cooperativismo', 'Transparencia'], broader: 'root_organizational_design', related: []
     },
-    // --- MEMES DE SKILLS ---
     {
         id: 'meme_skill_tdd', type: 'meme', category: 'skill', title: 'Skill: Test-Driven Development (TDD)',
         content: `Eres un fundamentalista del TDD. Ciclo estricto: RED (falla) -> GREEN (pasa) -> REFACTOR (optimiza).`,
@@ -147,7 +144,7 @@ const CATALOGO_MEMES = [
 ];
 
 export const KB = {
-    dbName: 'TeamTowers_LMS_V10', // V10: Matriz de Competencias Activa
+    dbName: 'TeamTowers_LMS_V10', 
     dbVersion: 1,
     db: null,
 
@@ -259,18 +256,12 @@ export const KB = {
         return sectors;
     },
 
-    // ============================================================================
-    // MOTOR DE AUDITORÍA COMPETENCIAL (SCAFFOLDING IA)
-    // Analiza las carencias del equipo humano y asigna IAs Nativas para tapar huecos.
-    // ============================================================================
     auditEcosystemCompetencies(projectData, globalUsers) {
         const gapReport = { missingLevels: [], missingGuardians: [], aiAgentsToInject: [] };
         
-        // 1. Qué competencias requiere el diseño del Castell
         const requiredLevels = projectData.roles.map(r => r.levelId);
         const requiredGuardians = projectData.roles.map(r => r.guardian || 'everyman');
 
-        // 2. Qué competencias cubren los Humanos actuales en la Colla
         const humanMembers = projectData.usuarios.filter(u => !u.id.startsWith('@'));
         const coveredLevels = [];
         const coveredGuardians = [];
@@ -281,7 +272,6 @@ export const KB = {
             if (globalProfile.guardian_authority) coveredGuardians.push(...globalProfile.guardian_authority);
         });
 
-        // 3. Identificar Gaps (Zonas de Desarrollo Próximo no cubiertas)
         requiredLevels.forEach(reqLvl => {
             if (!coveredLevels.includes(reqLvl) && !gapReport.missingLevels.includes(reqLvl)) {
                 gapReport.missingLevels.push(reqLvl);
@@ -293,11 +283,10 @@ export const KB = {
             }
         });
 
-        // 4. Mapeo de Agentes Nativos para tapar las fugas de competencia
         const AI_MAPPING = {
             '@anxaneta': '@genesi_ai',
             '@aixecador': '@aixecador_pm',
-            '@dosos': '@notari_ledger', // O @seny_analyst dependiendo del contexto
+            '@dosos': '@notari_ledger', 
             '@baixos': '@forca_worker',
             '@pinya': '@dharma_coach'
         };
@@ -305,14 +294,12 @@ export const KB = {
         gapReport.missingLevels.forEach(missingLvl => {
             const aiToInject = AI_MAPPING[missingLvl];
             if (aiToInject && !gapReport.aiAgentsToInject.includes(aiToInject)) {
-                // Verificar que no esté ya en el proyecto
                 if (!projectData.usuarios.find(u => u.id === aiToInject)) {
                     gapReport.aiAgentsToInject.push(aiToInject);
                 }
             }
         });
 
-        // Siempre garantizamos que el orquestador esté presente
         if (!projectData.usuarios.find(u => u.id === '@cap_de_colla')) {
             gapReport.aiAgentsToInject.push('@cap_de_colla');
         }
@@ -320,13 +307,10 @@ export const KB = {
         return gapReport;
     },
 
-    async getAgentBrainGraph(projectId, roleObj, projectVision) {
+    // AÑADIMOS EL PARÁMETRO 'archetype' PARA DESBLOQUEAR EL KERNEL Y EVITAR EL REFERENCE ERROR
+    async getAgentBrainGraph(projectId, roleObj, projectVision, archetype = 'startup') {
         await this.init();
         const allNodes = await this.getAllNodes({ projectId });
-        
-        // Extraemos el arquetipo de proyecto para inyectarlo en el OS (Startup, DAO, etc)
-        const projData = store.getState().projects.find(p => p.id === projectId);
-        const projArchetype = projData ? projData.archetype : 'startup';
         
         const osMemes = allNodes.filter(n => n.type === 'meme' && n.category === 'core_os');
         const specificPrompts = allNodes.filter(n => n.targetId === roleObj.id && (n.type === 'prompt_a2a' || n.type === 'ontology'));
@@ -336,7 +320,7 @@ export const KB = {
         return {
             id: roleObj.id, name: roleObj.name, level: roleObj.levelId,
             guardian: roleObj.guardian || 'everyman',
-            archetype: projArchetype,
+            archetype: archetype,
             mission: projectVision,
             branches: [
                 { name: "🌐 Core OS & Arquetipo", nodes: osMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content })) },
@@ -347,8 +331,8 @@ export const KB = {
         };
     },
 
-    async getAgentContextFlattened(projectId, roleObj, projectVision) {
-        const tree = await this.getAgentBrainGraph(projectId, roleObj, projectVision);
+    async getAgentContextFlattened(projectId, roleObj, projectVision, archetype = 'startup') {
+        const tree = await this.getAgentBrainGraph(projectId, roleObj, projectVision, archetype);
         
         let flatContext = `
             Eres un Agente Autónomo operando en TeamTowers V9.
