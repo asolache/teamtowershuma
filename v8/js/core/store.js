@@ -1,14 +1,14 @@
 // v8/js/core/store.js
 // ==========================================================================
-// KERNEL V8.3 - AGENTIC AI STORE & WEB3 IDENTITY
-// Motor Local-First con Agentes IA, SBTs y Autenticación de Identidad Soberana
+// KERNEL V9.0 - AGENTIC AI STORE & WEB3 IDENTITY
+// Motor Local-First con Memética SOP/SOCs, VNA y Auditoría Fractal
 // ==========================================================================
 
 import { KB } from './kb.js';
 
 const initialState = {
     config: {
-        version: '8.3.0',
+        version: '9.0.0',
         ecosystemName: 'TeamTowers Agentic Network',
         globalPrompt: 'Eres un Nodo Orquestador de una Colla Híbrida (Humanos + IA).',
         archetype: 'startup',
@@ -21,7 +21,7 @@ const initialState = {
             globalRole: 'ecosystem-owner',
             wallet: '0xMasterArchitect...',
             profile: {
-                vision: "Master Architect V8. Guiando a la IA, no programando para ella.",
+                vision: "Master Architect V9. Guiando a la IA mediante Memes y Fractales.",
                 structural_affinity: ["@anxaneta", "@aixecador"],
                 guardian_authority: ["creator", "magician"],
                 isOpenToWork: true,
@@ -30,17 +30,16 @@ const initialState = {
         },
         // --- LOS 6 GUARDIANES IA (Nativos del Ecosistema) ---
         { id: '@genesi_ai', name: 'Gènesi (Setup & Visión)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.25, vision: "Crea redes, mapas VNA y sprints iniciales.", structural_affinity: ["@anxaneta"] } },
-        { id: '@seny_analyst', name: 'Seny (Analista VNA)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.15, vision: "Experto en topología de red. Detecta cuellos de botella.", structural_affinity: ["@dosos"] } },
+        { id: '@seny_analyst', name: 'Seny (Analista VNA)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.15, vision: "Experto en topología de red y conversión de valor.", structural_affinity: ["@dosos"] } },
         { id: '@aixecador_pm', name: 'Aixecador (Sprint PM)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.10, vision: "Actualiza el Kanban en tiempo real y ajusta Work Orders.", structural_affinity: ["@aixecador"] } },
-        { id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.05, vision: "Ayuda a humanos a definir su perfil y encontrar tareas afines.", structural_affinity: ["@pinya"] } },
-        { id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.40, vision: "Pica código, redacta documentos y ejecuta tareas tangibles.", structural_affinity: ["@baixos"] } },
-        { id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita valor, sella pactos Slicing Pie y certifica el PoW.", structural_affinity: ["@dosos"] } }
+        { id: '@dharma_coach', name: 'Dharma (Ikigai Coach)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.05, vision: "Sintetiza perfiles usando arquetipos del Panteón.", structural_affinity: ["@pinya"] } },
+        { id: '@forca_worker', name: 'Força (Deep Work Exec)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.40, vision: "Ejecuta las recetas (SOP) paso a paso.", structural_affinity: ["@baixos"] } },
+        { id: '@notari_ledger', name: 'Notari (Legal & Ledger)', globalRole: 'ai-agent', profile: { isAi: true, apiCostPerHour: 0.20, vision: "Audita SOCs, valida el PoW y genera el hash de confianza en el Ledger.", structural_affinity: ["@dosos"] } }
     ],
     projects: [],
     session: { activeUserId: null, role: 'guest' } // Arranque Zero Trust
 };
 
-// Helper: Inferencia Semántica Ligera para SBTs
 function inferSkillCategory(levelId, deliverableName) {
     const descLower = deliverableName.toLowerCase();
     if (descLower.includes('código') || descLower.includes('api') || descLower.includes('dev')) return 'Ingeniería Software';
@@ -56,27 +55,17 @@ async function asyncReducer(state, action) {
     let newState = JSON.parse(JSON.stringify(state)); 
 
     switch (action.type) {
-        // ==========================================
-        // MOTOR DE IDENTIDAD (WEB3 / ALIAS)
-        // ==========================================
         case 'LOGIN_USER': {
             const rawId = action.payload.userId.trim();
             const exists = newState.globalUsers.find(u => u.id === rawId || u.wallet === rawId || u.email === rawId);
-            
             if (exists) {
-                // Recupera Shadow Profile (o perfil activo)
                 newState.session = { activeUserId: exists.id, role: exists.globalRole };
             } else {
-                // Registro al vuelo (Lazy Registration)
                 const newId = rawId.startsWith('0x') ? rawId : (rawId.startsWith('@') ? rawId : '@' + rawId);
                 const isWallet = newId.startsWith('0x');
-                
                 const newUser = {
-                    id: newId,
-                    name: isWallet ? `${newId.substring(0, 6)}...${newId.substring(newId.length - 4)}` : newId.replace('@', ''),
-                    globalRole: 'network-user',
-                    wallet: isWallet ? newId : '',
-                    profile: { sbt_skills: [], isOpenToWork: true }
+                    id: newId, name: isWallet ? `${newId.substring(0, 6)}...${newId.substring(newId.length - 4)}` : newId.replace('@', ''),
+                    globalRole: 'network-user', wallet: isWallet ? newId : '', profile: { sbt_skills: [], isOpenToWork: true }
                 };
                 newState.globalUsers.push(newUser);
                 newState.session = { activeUserId: newUser.id, role: 'network-user' };
@@ -84,7 +73,6 @@ async function asyncReducer(state, action) {
             break;
         }
         case 'LOGOUT_USER': newState.session = { activeUserId: null, role: 'guest' }; break;
-        
         case 'UPDATE_GLOBAL_CONFIG': newState.config = { ...newState.config, ...action.payload }; break;
         case 'ADD_USER': {
             const exists = newState.globalUsers.find(u => u.id === action.payload.id);
@@ -96,17 +84,11 @@ async function asyncReducer(state, action) {
             if (uIdx > -1) newState.globalUsers[uIdx].profile = { ...newState.globalUsers[uIdx].profile, ...action.payload.profile, lastUpdated: Date.now() };
             break;
         }
-
-        // ==========================================
-        // PROYECTOS Y MAPA VNA
-        // ==========================================
         case 'CREATE_PROJECT': {
             if (!newState.projects.find(p => p.id === action.payload.id)) {
                 const sprintId = 'sp_' + Date.now();
                 newState.projects.push({ 
-                    ...action.payload, 
-                    createdAt: Date.now(),
-                    roles: action.payload.roles || [],
+                    ...action.payload, createdAt: Date.now(), roles: action.payload.roles || [],
                     usuarios: action.payload.usuarios || [
                         { id: newState.session.activeUserId, permissions: { canCreateWO: true, canApprove: true } },
                         { id: '@genesi_ai', permissions: { canCreateWO: true, canApprove: false } },
@@ -195,12 +177,13 @@ async function asyncReducer(state, action) {
         }
         
         // ==========================================
-        // KANBAN CORE, FASE 3 Y LMS HOOK
+        // KANBAN CORE: SOP, SOCs y AUDITORÍA
         // ==========================================
         case 'SPAWN_WORK_ORDER': {
             const pWoAdd = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoAdd) {
                 if (!pWoAdd.work_orders) pWoAdd.work_orders = [];
+                // La WO se inyecta con su array "resources" y "soc_checklist" (Ingredientes de la Receta)
                 pWoAdd.work_orders.push({ 
                     ...action.payload.workOrder, 
                     sprintId: action.payload.workOrder.sprintId || pWoAdd.activeSprintId,
@@ -232,11 +215,38 @@ async function asyncReducer(state, action) {
             }
             break;
         }
+        case 'REVIEW_WORK_ORDER': {
+            const pWoRev = newState.projects.find(p => p.id === action.payload.projectId);
+            if (pWoRev && pWoRev.work_orders) {
+                const wo = pWoRev.work_orders.find(t => t.hash === action.payload.woHash);
+                if (wo) {
+                    wo.status = 'in_review';
+                    wo.auditorId = action.payload.auditorId;
+                    
+                    // El Agente Auditor cruza los checks de los SOCs (Checklist)
+                    if (action.payload.socValidation && wo.soc_checklist) {
+                        wo.soc_checklist = wo.soc_checklist.map(soc => ({
+                            ...soc,
+                            isChecked: action.payload.socValidation[soc.id] !== undefined ? action.payload.socValidation[soc.id] : soc.isChecked
+                        }));
+                    }
+                }
+            }
+            break;
+        }
         case 'APPROVE_WORK_ORDER': {
             const pWoApp = newState.projects.find(p => p.id === action.payload.projectId);
             if (pWoApp && pWoApp.work_orders) {
                 const wo = pWoApp.work_orders.find(t => t.hash === action.payload.woHash);
                 if (wo) {
+                    // Validamos que todos los SOCs estén aprobados antes del sello
+                    const allSocsPassed = wo.soc_checklist ? wo.soc_checklist.every(soc => soc.isChecked) : true;
+                    if(!allSocsPassed) {
+                        console.warn("Auditoría Rechazada: No se han cumplido todos los SOCs requeridos para el sello notarial.");
+                        wo.status = 'reported'; // Lo devuelve atrás
+                        break;
+                    }
+
                     wo.status = 'consolidated';
                     if (!pWoApp.ledger) pWoApp.ledger = [];
                     
@@ -254,14 +264,13 @@ async function asyncReducer(state, action) {
                     const slices = (wo.realHours || 1) * fmv * multiplier;
                     wo.valorCongelado = slices;
 
-                    // 1. MINE SLICES IN LEDGER (Cripto-Economía)
                     pWoApp.ledger.push({
                         id: 'blk_' + Date.now(), hash: wo.hash, userId: wo.assigneeId, roleId: roleId, sprintId: wo.sprintId,
                         horas: wo.realHours || 1, multiplier: multiplier, fmv: fmv,
-                        valorCongelado: slices, timestamp: Date.now(), description: deliverableName
+                        valorCongelado: slices, timestamp: Date.now(), description: deliverableName,
+                        auditorId: wo.auditorId || 'PO_Direct'
                     });
 
-                    // 2. MINE SOULBOUND TOKENS (Skills)
                     const gUserIndex = newState.globalUsers.findIndex(u => u.id === wo.assigneeId);
                     if (gUserIndex > -1) {
                         let profile = newState.globalUsers[gUserIndex].profile;
@@ -273,17 +282,16 @@ async function asyncReducer(state, action) {
                         const existingSkill = profile.sbt_skills.find(s => s.name === skillName);
                         if (existingSkill) {
                             existingSkill.exp += expGained;
-                            existingSkill.level = Math.floor(Math.sqrt(existingSkill.exp)) + 1; // Curva RPG
+                            existingSkill.level = Math.floor(Math.sqrt(existingSkill.exp)) + 1;
                         } else {
                             profile.sbt_skills.push({ name: skillName, exp: expGained, level: 1 });
                         }
                     }
 
-                    // 3. LMS HOOK (Auto-Aprendizaje Semántico)
                     const kbDoc = {
                         id: 'kb_auto_' + Date.now(), projectId: action.payload.projectId, type: 'manual',
-                        sector: pWoApp.sector || 'general', roleTarget: levelId, title: `Caso de Éxito: ${deliverableName}`,
-                        content: `Resolución validada de Work Order (${wo.realHours}h). \n\nContexto: ${wo.comentario || 'N/A'}\n\nPrueba de Trabajo (PoW): ${wo.proofLink || 'Ejecución Interna'}`
+                        sector: pWoApp.sector || 'general', roleTarget: levelId, title: `Caso de Éxito SOP: ${deliverableName}`,
+                        content: `Resolución validada de SOP (${wo.realHours}h). \n\nContexto: ${wo.comentario || 'N/A'}\n\nPrueba de Trabajo (PoW): ${wo.proofLink || 'Ejecución Interna'}`
                     };
                     KB.saveDocument(kbDoc).catch(e => console.error("Fallo al inyectar auto-aprendizaje en LMS", e));
                 }
