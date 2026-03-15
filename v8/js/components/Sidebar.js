@@ -13,7 +13,7 @@ export const Sidebar = {
                     
                     <a href="/v8/" data-link style="display: ${isCollapsed ? 'none' : 'flex'}; align-items: center; height: 40px; text-decoration: none;">
                         <img src="/v8/logoteamtowers.png" alt="TeamTowers" style="max-height: 35px; max-width: 140px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <span style="display:none; color: white; font-weight: 900; margin-left: 10px; font-family: var(--font-mono); letter-spacing: -0.5px; font-size:1.5rem;">SOS v8</span>
+                        <span style="display:none; color: white; font-weight: 900; margin-left: 10px; font-family: var(--font-mono); letter-spacing: -0.5px; font-size:1.5rem;">SOS v9</span>
                     </a>
 
                     <button id="btnToggleSidebar" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; padding: 6px 10px; cursor: pointer; width: ${isCollapsed ? '100%' : 'auto'}; transition: 0.2s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);">
@@ -49,8 +49,9 @@ export const Sidebar = {
                     <a href="/v8/ledger" class="side-link ${currentPath === '/ledger' ? 'active' : ''}" data-link title="Slicing Pie Wallet">
                         <span style="margin-right: 12px; font-size: 1.2rem;">⚖️</span> <span>Ledger</span>
                     </a>
-                    <a href="/v8/lms" class="side-link ${currentPath === '/lms' ? 'active' : ''}" data-link title="Cerebro Semántico">
-                        <span style="margin-right: 12px; font-size: 1.2rem;">🧠</span> <span>Cerebro LMS</span>
+                    
+                    <a href="/v8/agents" class="side-link ${currentPath === '/agents' ? 'active' : ''}" data-link title="Neuro-Ingeniería">
+                        <span style="margin-right: 12px; font-size: 1.2rem;">🧠</span> <span>Cerebro A2A</span>
                     </a>
                 </div>
 
