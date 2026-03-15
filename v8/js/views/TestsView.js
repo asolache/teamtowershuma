@@ -12,7 +12,7 @@ const MOCK_ONTOLOGY = {
 
 export default class TestsView {
     constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V8";
+        document.title = "Boot Diagnostics | TeamTowers V9";
     }
 
     async getHtml() {
@@ -62,12 +62,12 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V9 TDD DIAGNOSTICS (Fase Roja)</h1>
+                        <h1>V9 TDD DIAGNOSTICS (Fase Verde)</h1>
                         <p>Validando Memética, Recetas (SOP), Checklist (SOCs) y Auditoría IA</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> INICIANDO SECUENCIA DE RUPTURA (RED PHASE)... <span class="cursor"></span></div>
+                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> CARGANDO VECTORES DE ESTRÉS... <span class="cursor"></span></div>
                     </div>
 
                     <div class="action-footer">
@@ -89,45 +89,67 @@ export default class TestsView {
 
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+        // Refactor del renderizado para evitar Forced Synchronous Layout
         const assert = async (condition, message, tag) => {
             total++;
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(200); 
+            await sleep(150); 
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
             const colorMsg = isPass ? '#c9d1d9' : 'var(--accent-red)';
             
-            terminal.innerHTML += `
+            const htmlToInject = `
                 <div class="test-row ${rowClass}">
                     <span class="test-icon">${icon}</span>
                     <span class="test-msg" style="color: ${colorMsg};">${message}</span>
                     <span class="test-badge">${tag}</span>
                 </div>
             `;
+            
+            terminal.insertAdjacentHTML('beforeend', htmlToInject);
+            
+            // Permitimos que el navegador pinte antes de calcular alturas
+            await new Promise(r => requestAnimationFrame(r));
+            
             terminal.scrollTop = terminal.scrollHeight;
             score.innerText = `${passed}/${total}`;
             score.style.color = isPass ? (passed === total ? 'var(--accent-green)' : 'var(--text-muted)') : 'var(--accent-red)';
             
-            if (!isPass) throw new Error(`Test Fallido Esperado: [${tag}] ${message}`);
+            if (!isPass) throw new Error(`Test Fallido: [${tag}] ${message}`);
         };
 
         const runTests = async () => {
             const PID_TEST = 'v9-stress-' + Date.now();
             const dynNeoId = '0xNeoWallet' + Math.floor(Math.random() * 1000);
             const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
+            const dynBobId = '@bob_user_' + Math.floor(Math.random() * 1000);
 
             try {
+                // Limpieza absoluta
                 await store.dispatch({ type: 'LOGOUT_USER' });
 
                 // ==========================================
-                // BLOQUE 1 & 2: KERNEL Y TOPOLOGÍA BASE (Pasan en Verde)
+                // BLOQUE 1: KERNEL, ZERO-TRUST E IDENTIDAD
                 // ==========================================
-                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
-                await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
+                await assert(store.getState().config.version.startsWith('9'), "Motor A2A y Memética SOP activados (V9)", "SYS");
+                await assert(store.getState().session.activeUserId === null, "Arranque Zero-Trust (Desconectado)", "AUTH");
 
+                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
+                const neoUser = store.getState().globalUsers.find(u => u.id === dynNeoId);
+                await assert(neoUser !== undefined && store.getState().session.activeUserId === dynNeoId, "Lazy Registration: Shadow Profile creado al vuelo", "IDENTITY");
+
+                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
+                await assert(genesiAi !== undefined && genesiAi.profile.isAi === true, "Enjambre IA: Guardianes inyectados en la red neuronal", "AI-NATIVE");
+
+                await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
+                await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
+
+                // ==========================================
+                // BLOQUE 2: SEGURIDAD, RBAC Y MUROS DE CRISTAL
+                // ==========================================
                 const draftRoles = Object.keys(MOCK_ONTOLOGY).map(levelKey => ({
                     id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, fmv: MOCK_ONTOLOGY[levelKey].fmv, multiplier: MOCK_ONTOLOGY[levelKey].multiplier, isArchived: false
                 }));
@@ -135,34 +157,46 @@ export default class TestsView {
                 await store.dispatch({ 
                     type: 'CREATE_PROJECT', 
                     payload: { 
-                        id: PID_TEST, nombre: "Matrix Sandbox V9", ownerId: dynNeoId, isPrivate: true, 
+                        id: PID_TEST, nombre: "Matrix Sandbox", ownerId: dynNeoId, isPrivate: true, 
                         roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], 
-                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}] 
+                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}, {id: dynLauraId, permissions: {canCreateWO: false}}] 
                     } 
                 });
+
+                const hasAccessPO = store.canUserViewProject(PID_TEST, dynNeoId, 'network-user');
+                await assert(hasAccessPO === true, "Gobernanza: Project Owner domina su ecosistema", "RBAC");
+
+                const hasAccessBob = store.canUserViewProject(PID_TEST, dynBobId, 'network-user');
+                await assert(hasAccessBob === false, "Privacidad: Muro criptográfico bloquea a entidades externas", "PRIVACY");
+                
+                await assert(store.canUserCreateWorkOrder(PID_TEST, dynLauraId) === false, "RBAC: Nodo operativo bloqueado por política de red estricta", "RBAC");
+
+                // ==========================================
+                // BLOQUE 3: TOPOLOGÍA VNA Y CEREBRO A2A (LMS)
+                // ==========================================
+                await KB.init();
+                const globalDocs = await KB.getAllDocuments('global');
+                const hasPantheon = globalDocs.find(d => d.id === 'meta_pantheon_core');
+                await assert(hasPantheon !== undefined, "Cerebro Semántico A2A: Leyes de VNA y Pantheon compiladas", "A2A-SEED");
 
                 let p = store.getState().projects.find(x => x.id === PID_TEST);
                 const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
                 const rBaix = p.roles.find(r => r.levelId === '@baixos');
-                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
 
                 await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_1', from: rAnx.id, to: rBaix.id, template: "Estrategia Base", tipo: "tangible", estimatedHours: 10 } } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.vna_flows.length === 1, "Mapa VNA: Rutas de transferencia de valor creadas", "VNA-FLOW");
 
                 // ==========================================
-                // BLOQUE 3: EL NUEVO PARADIGMA FRACTAL (SOP, SOCs y AUDITORÍA IA) - AQUÍ FALLARÁ
+                // BLOQUE 4: CICLO DE VIDA DE LA RECETA (SOP -> SOC -> AUDITORÍA)
                 // ==========================================
                 const woHash = 'wo_' + Date.now();
-                
-                // Exigimos que la Tarea (SOP) tenga una matriz de SOCs (Checklist) e Ingredientes (Recursos)
                 await store.dispatch({ 
                     type: 'SPAWN_WORK_ORDER', 
                     payload: { 
                         projectId: PID_TEST, 
                         workOrder: { 
-                            hash: woHash, 
-                            flowId: 'flow_1', 
-                            status: 'theoretical', 
-                            realHours: 0,
+                            hash: woHash, flowId: 'flow_1', status: 'theoretical', realHours: 0,
                             soc_checklist: [
                                 { id: 'soc_1', text: "El código pasa los linters", isChecked: false },
                                 { id: 'soc_2', text: "Documentación generada", isChecked: false }
@@ -174,44 +208,73 @@ export default class TestsView {
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 const currentWO = p.work_orders[0];
-                
-                // ESTE TEST AÚN PUEDE PASAR (El dispatch guarda lo que le echen en el array)
-                await assert(currentWO.soc_checklist && currentWO.soc_checklist.length === 2, "Fractalidad Memética: La Work Order (SOP) contiene su Checklist de conducta (SOCs)", "SOP-MEME");
+                await assert(currentWO.soc_checklist && currentWO.soc_checklist.length === 2, "Fractalidad Memética: La Receta (SOP) contiene su Checklist de conducta (SOCs)", "SOP-MEME");
 
                 await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynLauraId } });
                 await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Test PoW' } });
-                
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'reported', "Focus Mode: Prueba de Trabajo (PoW) reportada por el ejecutante", "WORKFLOW");
+                await assert(p.work_orders[0].status === 'reported', "Ejecución: Prueba de Trabajo (PoW) reportada a la matriz", "WORKFLOW");
 
-                // 💥 EL GRAN TEST DEL NUEVO FLUJO (AQUÍ HABRÁ KERNEL PANIC)
-                // Exigimos que un Agente IA actúe como Auditor (Review) ANTES de consolidar
+                // Fase de Auditoría (Review)
                 await store.dispatch({ 
                     type: 'REVIEW_WORK_ORDER', 
                     payload: { 
-                        projectId: PID_TEST, 
-                        woHash: woHash, 
-                        auditorId: genesiAi.id,
-                        socValidation: { 'soc_1': true, 'soc_2': true } // El auditor marca los checks
+                        projectId: PID_TEST, woHash: woHash, auditorId: genesiAi.id,
+                        socValidation: { 'soc_1': true, 'soc_2': true } 
                     } 
                 });
-
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                
-                // Esto FALLARÁ porque REVIEW_WORK_ORDER no existe en el store actual
-                await assert(p.work_orders[0].status === 'in_review', "Auditoría Criptográfica: El Agente IA pone la tarea en 'Review' y valida el SOC Checklist", "AUTO-AUDIT");
+                await assert(p.work_orders[0].status === 'in_review' && p.work_orders[0].soc_checklist[0].isChecked === true, "Auditoría Criptográfica: Agente Validador marca los SOCs como completados", "AUTO-AUDIT");
 
-                // No llegará aquí hasta que programemos el Kernel
+                const preDocs = await KB.getAllDocuments();
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].status === 'consolidated', "Notaría Digital: SOP validada y sellada inmutablemente", "LEDGER");
+
+                const laura = store.getState().globalUsers.find(u => u.id === dynLauraId);
+                const hasSkill = laura.profile.sbt_skills && laura.profile.sbt_skills.length > 0;
+                await assert(hasSkill === true && laura.profile.sbt_skills[0].exp === 8, "Reputación SBT: Experiencia cristalizada en el perfil del nodo", "SBT-SKILLS");
+
+                await sleep(100);
+                const postDocs = await KB.getAllDocuments();
+                await assert(postDocs.length > preDocs.length, "LMS Auto-Aprendizaje: El Kernel extrajo un caso de éxito validado a su BD semántica", "LMS-HOOK");
+
+                // ==========================================
+                // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
+                // ==========================================
+                const expectedSlices = 8 * 40 * 1.2; // 8h * fmv(@baixos: 40) * mult(1.2)
+                await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie: Ecuación de Equidad resuelta sin fisuras (${expectedSlices} Slices)`, "MATH");
                 
-            } catch (error) {
-                terminal.innerHTML += `
-                    <div style="margin-top: 20px; padding: 20px; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); border-radius: 12px;">
-                        <h3 style="color: var(--accent-red); margin: 0;">💥 TDD KERNEL PANIC (ESPERADO)</h3>
-                        <p style="color: white; font-size: 0.95rem; margin-top: 10px; font-family: monospace;">${error.message}</p>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 15px;">Fase Roja completada. El Kernel exige la implementación del modelo de Recetas (SOCs) y la fase de Auditoría 'in_review'. Iniciando protocolo de reconstrucción del Store.</p>
+                await store.dispatch({ type: 'ADD_CAPITAL_INJECTION', payload: { projectId: PID_TEST, userId: dynNeoId, assetType: 'cash', amount: 1000, description: "Inyección de Seed Capital" } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                const capTx = p.ledger.find(l => l.roleId === 'CAPITAL_ASSET');
+                await assert(capTx !== undefined && capTx.valorCongelado > 1000, "Ledger Cash: Multiplicador de riesgo de Capital aplicado al FIAT entrante", "LEDGER-CASH");
+
+                const harvest = store.calculateHarvest(PID_TEST);
+                await assert(harvest.length === 2, "Cap Table: Convergencia de aportaciones (SOPs Laborales + Capital Líquido)", "CAP-TABLE");
+
+                // FINALIZACIÓN EXITOSA (FASE VERDE)
+                await sleep(500);
+                terminal.insertAdjacentHTML('beforeend', `
+                    <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V9 KERNEL CERTIFIED 🔥</h2>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Matriz de A2A, Identidad Web3, Slicing Pie y Auditoría Fractal (SOCs) responden con tolerancia cero a fallos.</p>
                     </div>
-                `;
+                `);
+                
+                await new Promise(r => requestAnimationFrame(r));
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                btnEnter.classList.add('visible');
+
+            } catch (error) {
+                terminal.insertAdjacentHTML('beforeend', `
+                    <div style="margin-top: 20px; padding: 20px; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); border-radius: 12px;">
+                        <h3 style="color: var(--accent-red); margin: 0;">💥 KERNEL PANIC</h3>
+                        <p style="color: white; font-size: 0.9rem; margin-top: 10px; font-family: monospace;">${error.message}</p>
+                    </div>
+                `);
+                await new Promise(r => requestAnimationFrame(r));
                 terminal.scrollTop = terminal.scrollHeight;
             }
             
@@ -219,6 +282,6 @@ export default class TestsView {
             if(cursor) cursor.remove();
         };
 
-        setTimeout(runTests, 500);
+        setTimeout(runTests, 400);
     }
 }
