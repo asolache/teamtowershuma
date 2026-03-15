@@ -370,7 +370,7 @@ export default class ProjectCreatorView {
             this.renderDraftRoles();
         });
 
-        this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
+        this.dom.btnLaunch.addEventListener('click', () => this.);
     }
 
     goToStep2() {
@@ -726,7 +726,7 @@ export default class ProjectCreatorView {
     getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
     getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 
-   async finalizeProject() {
+ async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim();
         const arch = this.dom.inpArchetype.value; 
@@ -769,6 +769,7 @@ export default class ProjectCreatorView {
                 
                 if (roleFrom && roleTo) {
                     const flowId = 'flow_' + Math.random().toString(36).substr(2, 9);
+                    const templateName = aiTx.template || aiTx.entregable || 'Entregable Core';
                     
                     // A) Creamos la tubería base
                     await store.dispatch({
@@ -777,12 +778,20 @@ export default class ProjectCreatorView {
                             projectId: projectId,
                             flow: { 
                                 id: flowId, from: roleFrom.id, to: roleTo.id, estimatedHours: aiTx.horas || 4, 
-                                template: aiTx.template || aiTx.entregable || 'Entregable Core', 
+                                template: templateName, 
                                 tipo: aiTx.tipo || 'tangible',
                                 soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
                             }
                         }
                     });
+
+                    // CONSTRUCCIÓN DEL SOP/SOC PARA EL KANBAN
+                    let kickoffComment = `SOP: Ejecutar [${templateName}].`;
+                    if (aiTx.soc_checklist && aiTx.soc_checklist.length > 0) {
+                        kickoffComment += ` | SOCs: ` + aiTx.soc_checklist.map(s => `✔️ ${s.text}`).join(' ');
+                    } else {
+                        kickoffComment += ` | Valida la calidad según los estándares nativos de tu Rol antes de reportar.`;
+                    }
 
                     // B) KICKOFF AUTOMÁTICO: Instanciamos la tubería como una Tarea real en el Kanban
                     const woHash = 'wo_kickoff_' + Math.random().toString(36).substr(2, 9);
@@ -793,7 +802,7 @@ export default class ProjectCreatorView {
                             workOrder: {
                                 hash: woHash, flowId: flowId, status: 'theoretical', realHours: 0,
                                 sprintId: p.activeSprintId,
-                                comentario: 'Generado automáticamente por el Setup Base.',
+                                comentario: kickoffComment, // <-- AQUÍ INYECTAMOS EL CONTEXTO RICO
                                 soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
                             }
                         }
