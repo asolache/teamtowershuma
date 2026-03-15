@@ -12,8 +12,8 @@ export default class PaperView {
         
         // Estado del Pomodoro
         this.timer = null;
-        this.timeLeft = 25 * 60; // 25 minutos
-        this.isWorking = true; // true = Work, false = Break
+        this.timeLeft = 25 * 60; 
+        this.isWorking = true; 
         this.timerRunning = false;
     }
 
@@ -40,7 +40,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Flow Workspace (Paper)",
             subtitle: project.nombre,
-            tagline: "El lienzo hipertextual. Menciona con @Roles o #Skills para conectar la red.",
+            tagline: "Terminal hipertextual. Habla con @cap_de_colla para orquestar Work Orders y SOCs en tiempo real.",
             actionHtml: `<div class="status-badge" style="background: rgba(224,64,251, 0.1); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🧠 Cap de Colla Activo</div>`
         };
 
@@ -69,7 +69,6 @@ export default class PaperView {
                 .log-panel { flex: 1; background: #050508; border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; position: relative;}
                 .log-feed { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;}
                 
-                /* ESTILOS DE BLOQUES DE TEXTO */
                 .log-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; line-height: 1.5; color: #ddd; font-size: 0.95rem; animation: fadeIn 0.3s ease-out;}
                 .log-block.system { border-left: 3px solid #555; font-style: italic; color: #888; background: transparent; padding: 10px 15px;}
                 .log-block.ai-msg { border-left: 4px solid var(--accent-purple); background: linear-gradient(90deg, rgba(224,64,251,0.05) 0%, transparent 100%);}
@@ -91,7 +90,6 @@ export default class PaperView {
                 .btn-send { background: var(--accent-purple); color: black; border: none; width: 50px; height: 50px; border-radius: 12px; font-size: 1.5rem; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-weight: bold;}
                 .btn-send:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(224,64,251,0.4);}
 
-                /* INDICADOR DE ESCRITURA IA */
                 .typing-indicator { display: none; padding: 10px 20px; color: var(--accent-purple); font-weight: bold; font-style: italic; font-size: 0.85rem; background: rgba(0,0,0,0.5); align-items: center; gap: 10px;}
                 .typing-dots::after { content: '...'; animation: typing 1.5s infinite;}
 
@@ -132,15 +130,14 @@ export default class PaperView {
                         </aside>
 
                         <section class="log-panel">
-                            <div class="log-feed" id="logFeed">
-                                </div>
+                            <div class="log-feed" id="logFeed"></div>
                             
                             <div class="typing-indicator" id="typingIndicator">
-                                🤖 @cap_de_colla está pensando <span class="typing-dots"></span>
+                                🤖 Analizando flujos de valor y dependencias <span class="typing-dots"></span>
                             </div>
 
                             <div class="input-area">
-                                <textarea id="paperInput" class="paper-input" placeholder="Escribe al @cap_de_colla o registra un log en el proyecto... (Shift + Enter para nueva línea)"></textarea>
+                                <textarea id="paperInput" class="paper-input" placeholder="Ej: @cap_de_colla instánciame la Work Order del Frontend de @baixos..."></textarea>
                                 <button class="btn-send" id="btnSendPaper">➤</button>
                             </div>
                         </section>
@@ -161,11 +158,8 @@ export default class PaperView {
         if (!project) return;
         this.activeProjectId = project.id;
         
-        // Inicializamos los logs del proyecto si no existen
         if (!project.logs) {
-            project.logs = [
-                { id: 'log_0', text: "Bienvenido al Paper. El ecosistema está listo para la instanciación de conocimiento.", sender: "system", timestamp: Date.now() }
-            ];
+            project.logs = [{ id: 'log_0', text: "Bienvenido al Paper. El ecosistema está listo para la instanciación de conocimiento y tareas.", sender: "system", timestamp: Date.now() }];
             await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: project.id, updates: { logs: project.logs } } });
         }
 
@@ -184,7 +178,6 @@ export default class PaperView {
         this.initPomodoro();
         this.renderLogs(project.logs);
 
-        // Input Logic
         this.dom.btnSend.addEventListener('click', () => this.handleUserSubmit());
         this.dom.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -192,32 +185,12 @@ export default class PaperView {
                 this.handleUserSubmit();
             }
         });
-        
-        // Listener para los enlaces hipertextuales
-        this.dom.logFeed.addEventListener('click', (e) => {
-            if (e.target.classList.contains('entity-link')) {
-                alert(`Entity Link Detectado: ${e.target.dataset.id}\n(En el próximo Sprint, esto abrirá el perfil del Agente o Usuario).`);
-            }
-            if (e.target.classList.contains('knowledge-link')) {
-                alert(`Knowledge Link Detectado: ${e.target.dataset.id}\n(En el próximo Sprint, esto abrirá la base de datos W3C del.icio.us).`);
-            }
-        });
     }
 
-    // ==========================================
-    // EL MOTOR HIPERTEXTUAL (PARSER)
-    // ==========================================
     parseHypertext(text) {
-        // Escapa HTML básico para evitar XSS
         let safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        
-        // Parsea @Entidades
         safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span class="entity-link" data-id="@$1">@$1</span>');
-        
-        // Parsea #Skills / Knowledge
         safeText = safeText.replace(/#([a-zA-Z0-9_]+)/g, '<span class="knowledge-link" data-id="#$1">#$1</span>');
-        
-        // Convierte saltos de línea a <br>
         return safeText.replace(/\n/g, '<br>');
     }
 
@@ -229,14 +202,12 @@ export default class PaperView {
 
         logs.forEach(log => {
             const el = document.createElement('div');
-            
             if (log.sender === 'system') {
                 el.className = 'log-block system';
                 el.innerHTML = this.parseHypertext(log.text);
             } else {
                 const isAI = log.sender === '@cap_de_colla' || log.sender.startsWith('@');
                 el.className = `log-block ${isAI ? 'ai-msg' : ''}`;
-                
                 const timeStr = new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 const icon = isAI ? '🤖' : '👤';
                 const displayName = log.sender === activeUserId ? me : log.sender;
@@ -251,8 +222,6 @@ export default class PaperView {
             }
             this.dom.logFeed.appendChild(el);
         });
-
-        // Scroll al fondo
         this.dom.logFeed.scrollTop = this.dom.logFeed.scrollHeight;
     }
 
@@ -263,7 +232,6 @@ export default class PaperView {
         const state = store.getState();
         const project = state.projects.find(p => p.id === this.activeProjectId);
         
-        // 1. Guardar log del usuario
         const newLog = { id: 'log_' + Date.now(), text: text, sender: state.session.activeUserId, timestamp: Date.now() };
         const updatedLogs = [...(project.logs || []), newLog];
         
@@ -271,41 +239,104 @@ export default class PaperView {
         this.dom.input.value = '';
         this.renderLogs(updatedLogs);
 
-        // 2. Si menciona al Cap de Colla, desencadenamos la IA
-        if (text.toLowerCase().includes('@cap_de_colla')) {
-            this.triggerCapDeCollaAI(text, updatedLogs);
+        // Disparo de IA si se menciona a cualquier agente global
+        if (text.includes('@')) {
+            this.triggerAgenticAction(text, updatedLogs, project);
         }
     }
 
-    async triggerCapDeCollaAI(userMessage, currentLogs) {
+    // ==========================================
+    // ACTION PARSER TRANSACTIVO (NLP a REDUX)
+    // ==========================================
+    async triggerAgenticAction(userMessage, currentLogs, project) {
         this.dom.typingIndicator.style.display = 'flex';
         this.dom.logFeed.scrollTop = this.dom.logFeed.scrollHeight;
 
-        const state = store.getState();
-        const project = state.projects.find(p => p.id === this.activeProjectId);
-        
-        // MOCK DE IA (Para el Sprint 26. En el Sprint 27 conectaremos el Prompt Real de Creador Dinámico)
-        setTimeout(async () => {
+        const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+        let apiKey = localStorage.getItem(`tt_key_${provider}`) || '';
+
+        if (!apiKey && provider !== 'custom') {
             this.dom.typingIndicator.style.display = 'none';
+            this.addSystemLog("⚠️ Error: Configura una API Key en el menú de Creación de Proyecto para usar comandos de IA.");
+            return;
+        }
+
+        // 1. Extraer Contexto Crítico del Ecosistema para 100% SOC Compliance
+        const activeFlows = project.vna_flows.map(f => ({ id: f.id, from: f.from, to: f.to, template: f.template, skills: f.required_skills }));
+        const activeRoles = project.roles.map(r => ({ id: r.id, levelId: r.levelId, name: r.name }));
+        
+        const systemPrompt = `
+            Eres @cap_de_colla, el Orquestador del ecosistema TeamTowers V9. Tu objetivo es 100% SOC Compliance.
+            NO alucines roles ni flujos. Analiza la petición del usuario y compárala con el estado actual del proyecto.
+
+            ESTADO DEL PROYECTO (ID: ${project.id}):
+            Sprints Activo: ${project.activeSprintId}
+            Roles Existentes: ${JSON.stringify(activeRoles)}
+            Tuberías de Valor (Flows): ${JSON.stringify(activeFlows)}
+
+            INSTRUCCIONES:
+            1. Entiende el comando del usuario.
+            2. Si te pide asignar una tarea o "Work Order", busca el "flow.id" en el estado que coincida.
+            3. Devuelve SIEMPRE un objeto JSON estricto con dos claves: "reply" y "actions".
             
-            // Lógica de simulación contextual:
-            let aiResponse = "He registrado tu apunte en el ecosistema. ";
+            FORMATO JSON OBLIGATORIO:
+            {
+                "reply": "Tu respuesta en lenguaje natural, usando @ para roles y # para skills.",
+                "actions": [
+                    {
+                        "type": "SPAWN_WORK_ORDER",
+                        "payload": {
+                            "projectId": "${project.id}",
+                            "workOrder": {
+                                "hash": "wo_auto_...",
+                                "flowId": "ID_DEL_FLOW_AQUI",
+                                "status": "theoretical",
+                                "comentario": "SOP: ... | SOCs: ..."
+                            }
+                        }
+                    }
+                ]
+            }
+            Si no hay acción que ejecutar en el store, deja "actions" como un array vacío [].
+        `;
+
+        try {
+            let textResponse = "";
+            const payload = { model: provider === 'openai' ? 'gpt-4o-mini' : 'deepseek-chat', messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userMessage }], response_format: { type: "json_object" }};
+            const endpoint = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.deepseek.com/chat/completions';
+
+            const response = await fetch(endpoint, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                body: JSON.stringify(payload)
+            });
             
-            if (userMessage.toLowerCase().includes('backend') || userMessage.toLowerCase().includes('database')) {
-                aiResponse = "Detecto que mencionas infraestructura de backend. Revisando nuestro mapa VNA, @dosos debería auditar la escalabilidad usando el #meme_soc_code_quality. ¿Quieres que prepare un SOP para ello?";
-            } else if (userMessage.toLowerCase().includes('ayuda') || userMessage.toLowerCase().includes('bloqueo')) {
-                aiResponse = "Veo que necesitas soporte. He hecho *ping* a @forca_worker para que revise tus últimas Work Orders en el Kanban.";
-            } else {
-                aiResponse += "Como tu @cap_de_colla, vigilaré las tuberías. Menciona un #Skill si necesitas que cargue una base de conocimiento específica.";
+            if (!response.ok) throw new Error("API Error");
+            const data = await response.json();
+            textResponse = data.choices[0].message.content;
+
+            const parsedResponse = JSON.parse(textResponse.replace(/```json/gi, '').replace(/```/g, '').trim());
+
+            // 2. Despachar Acciones Reales al Store (Magia 100% SOC)
+            if (parsedResponse.actions && parsedResponse.actions.length > 0) {
+                for (const action of parsedResponse.actions) {
+                    await store.dispatch(action); // <--- TRANSACCIÓN DIRECTA AL KERNEL
+                }
+                this.addSystemLog(`⚡ Transacción ejecutada exitosamente: ${parsedResponse.actions.length} acciones despachadas al Kanban/Ledger.`);
             }
 
-            const aiLog = { id: 'log_' + Date.now(), text: aiResponse, sender: '@cap_de_colla', timestamp: Date.now() };
-            const finalLogs = [...currentLogs, aiLog];
+            // 3. Imprimir la respuesta de la IA en el Log
+            const aiLog = { id: 'log_' + Date.now(), text: parsedResponse.reply, sender: '@cap_de_colla', timestamp: Date.now() };
+            const finalLogs = [...store.getState().projects.find(p => p.id === this.activeProjectId).logs, aiLog];
             
             await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: project.id, updates: { logs: finalLogs } } });
             this.renderLogs(finalLogs);
 
-        }, 2000); // 2 segundos de "pensamiento"
+        } catch (error) {
+            console.error("Error en Action Parser:", error);
+            this.addSystemLog("⚠️ @cap_de_colla encontró una anomalía al procesar el JSON transaccional. Comprueba la API.");
+        } finally {
+            this.dom.typingIndicator.style.display = 'none';
+        }
     }
 
     // ==========================================
@@ -350,8 +381,7 @@ export default class PaperView {
         this.timeLeft = this.isWorking ? 25 * 60 : 5 * 60;
         this.updateTimerDisplay();
         
-        // Notificación automática al log
-        const msg = this.isWorking ? "🏁 Tiempo de Enfoque iniciado. @forca_worker está listo." : "☕ Ciclo completado. Fase de descanso (Seny).";
+        const msg = this.isWorking ? "🏁 Tiempo de Enfoque iniciado. @forca_worker está listo." : "☕ Ciclo completado. Fase de descanso estructurado (Seny).";
         this.addSystemLog(msg);
     }
 
