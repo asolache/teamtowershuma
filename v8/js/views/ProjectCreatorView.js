@@ -13,6 +13,7 @@ export default class ProjectCreatorView {
         this.draftTxs = [];
         this.draftPresentation = ""; 
         this.draftTags = []; 
+        this.draftNewMemes = []; // NUEVO: Para almacenar el conocimiento sintetizado por la IA
         this.sectorsFromKB = {}; 
         
         this.guardians = [
@@ -96,7 +97,7 @@ export default class ProjectCreatorView {
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
                 
-                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 350px; overflow-y: auto;}
+                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;}
                 .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 10px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
 
@@ -162,7 +163,7 @@ export default class ProjectCreatorView {
 
                             <div class="form-group">
                                 <label>Input Cognitivo (Visión Bruta para la IA)</label>
-                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe brevemente la idea. El Orquestador IA deducirá los roles necesarios y trazará las tuberías de valor..."></textarea>
+                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la idea. El Orquestador trazará las tuberías de valor y SINTETIZARÁ nuevos Skills W3C si faltan en el catálogo..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
@@ -286,6 +287,7 @@ export default class ProjectCreatorView {
             this.draftTxs = [];
             this.draftPresentation = this.dom.inpVision.value.trim(); 
             this.draftTags = [];
+            this.draftNewMemes = [];
             this.goToStep2();
         });
 
@@ -298,6 +300,7 @@ export default class ProjectCreatorView {
             this.draftRoles = [];
             this.draftTxs = []; 
             this.draftTags = [sectorVal, this.dom.inpArchetype.value];
+            this.draftNewMemes = [];
             
             this.draftPresentation = this.dom.inpVision.value.trim() || `Red instanciada con genoma LMS: ${sectorData ? sectorData.label : 'Vacío'}.`;
             
@@ -307,7 +310,6 @@ export default class ProjectCreatorView {
                 roleKeys.forEach(levelKey => {
                     const data = sectorData.roles[levelKey];
                     const level = levelKey; 
-                    
                     const m = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
                     
                     this.draftRoles.push({
@@ -320,7 +322,6 @@ export default class ProjectCreatorView {
                         ai_prompt: data.content || '' 
                     });
 
-                    // INYECCIÓN DE SKILLS EN KICKOFF OFFLINE
                     if (data.deliverables) {
                         data.deliverables.forEach(deliv => {
                             let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos'));
@@ -373,6 +374,16 @@ export default class ProjectCreatorView {
             
             const tagsHtml = this.draftTags.length > 0 ? `<div style="margin-bottom:15px;">${this.draftTags.map(t => `<span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:0.75rem; margin-right:8px; font-family:var(--font-mono);">#${t}</span>`).join('')}</div>` : '';
 
+            // Renderizar los Nuevos Memes generados por la IA para que el usuario sepa que el sistema aprendió algo nuevo
+            const newMemesHtml = this.draftNewMemes && this.draftNewMemes.length > 0 ? `
+                <div style="background: rgba(224,64,251,0.1); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <strong style="color: var(--accent-purple); font-size: 0.9rem; text-transform:uppercase; display:block; margin-bottom:8px;">🧠 Conocimiento W3C Sintetizado (La red aprende):</strong>
+                    <ul style="margin:0; padding-left:15px; font-size:0.8rem; color:#ccc;">
+                        ${this.draftNewMemes.map(m => `<li><strong>${m.title}</strong>: ${m.content.substring(0,80)}...</li>`).join('')}
+                    </ul>
+                </div>
+            ` : '';
+
             const listHtml = this.draftTxs.map((tx, i) => `
                 <div class="tx-preview-item">
                     <div style="flex:1;">
@@ -397,6 +408,7 @@ export default class ProjectCreatorView {
                     <strong style="color: white; font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">📖 Misión Instanciada:</strong>
                     <span style="color:#ccc; font-style:italic; line-height:1.5;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
                 </div>
+                ${newMemesHtml}
                 ${listHtml}
                 <div style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--accent-orange); font-weight:bold; background:rgba(255,171,64,0.1); padding:10px; border-radius:8px;">Podrás editar la topología visualmente en el Mapa VNA después de instanciar.</div>
             `;
@@ -433,9 +445,11 @@ export default class ProjectCreatorView {
         const vnaMeta = globalDocs.find(d => d.id === 'meme_os_vna')?.content || 'Aplica metodología Value Network Analysis.';
         const pantheonMeta = globalDocs.find(d => d.id === 'meme_os_pantheon')?.content || 'Aplica los 12 arquetipos Pantheon a cada rol.';
 
-        // PROMPT CON REQUIRED_SKILLS PARA A2A
+        // =========================================================
+        // SYSTEM PROMPT DELUXE: W3C KNOWLEDGE ARCHITECT Y TRÍADA
+        // =========================================================
         const systemPrompt = `
-            Actúa como Master Ecosystem Architect (Agent-to-Agent Prompt Compiler).
+            Actúa como Master Ecosystem Architect y W3C Knowledge Architect.
             Misión: Instanciar una DAO para "${name}" (Arquetipo: "${archetypeText}").
 
             BASE TEÓRICA CRÍTICA (Value Network Analysis):
@@ -446,14 +460,25 @@ export default class ProjectCreatorView {
 
             INSTRUCCIONES DE DENSIDAD Y A2A: 
             Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). 
-            Genera 6-8 transacciones base. 
-            CRUCIAL: Asigna el ID del guardián adecuado a cada rol.
-            LA RECETA (SOP & SOCs): Cada transacción (Tubería) debe contener una matriz "soc_checklist" con 2-3 frases (indicadores de conducta o calidad) que el receptor deberá auditar antes de aceptar la entrega.
+            Genera 5-7 transacciones base (SOPs). 
+            
+            LA REGLA DE LA TRÍADA (Anclaje Competencial):
+            Cada transacción (SOP) debe tener un array "required_skills" con al menos 3 IDs:
+            1. El ID del Skill Tangible (ej. meme_skill_lvl_baixos, meme_skill_lvl_anxaneta...)
+            2. El ID del Skill Intangible del Guardián asignado (ej. meme_skill_pan_hephaestus, meme_skill_pan_sage...)
+            3. Un Skill Técnico o SOC Específico para el entregable. Si este skill específico no es común, ¡INVÉNTALO y defínelo en el array "new_memes"!
+
+            CREACIÓN DE CONOCIMIENTO (new_memes):
+            Tu tarea más importante es engrosar la base de datos W3C de la red. Cualquier Skill técnico (ej: meme_skill_python, meme_skill_seo) o Regla de Auditoría (meme_soc_api_response) que uses en "required_skills" y no sea los genéricos de nivel/pantheon, debes declararlo detalladamente en el array "new_memes".
             
             ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido sin marcadores markdown):
             {
                 "presentacion": "Pitch institucional...",
                 "tags": ["Sector", "ModeloNegocio"],
+                "new_memes": [
+                    { "id": "meme_skill_python", "category": "skill", "title": "Skill: Python Avanzado", "content": "Dominio de Python y FastAPI...", "keywords": ["Python", "Backend"] },
+                    { "id": "meme_soc_api", "category": "soc", "title": "SOC: API RESTful", "content": "AUDITORÍA: La API devuelve códigos 2xx correctos...", "keywords": ["API", "Backend"] }
+                ],
                 "roles": [
                     { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción de calibración (A2A)..." }
                 ],
@@ -464,8 +489,7 @@ export default class ProjectCreatorView {
                         "tipo": "tangible|intangible", 
                         "template": "Sustantivo (Ej: Informe de métricas)", 
                         "horas": 4,
-                        "resources": ["Herramienta A"],
-                        "required_skills": ["meme_skill_copywriting"],
+                        "required_skills": ["meme_skill_lvl_baixos", "meme_skill_pan_hephaestus", "meme_skill_python", "meme_soc_api"],
                         "soc_checklist": [
                             { "text": "El código pasa los linters" }
                         ]
@@ -479,7 +503,7 @@ export default class ProjectCreatorView {
 
             if (provider === 'gemini') {
                 const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Compilando red semántica con ${targetModel}...`;
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Sintetizando Conocimiento y Topología con ${targetModel}...`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -490,7 +514,7 @@ export default class ProjectCreatorView {
                 textResponse = data.candidates[0].content.parts[0].text;
             
             } else if (provider === 'openai') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Mapeando ecosistema VNA con GPT-4o...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Sintetizando Conocimiento y Topología con GPT-4o...";
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
@@ -500,7 +524,7 @@ export default class ProjectCreatorView {
                 textResponse = data.choices[0].message.content;
             
             } else if (provider === 'deepseek') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Tejiendo transacciones A2A con DeepSeek...";
+                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Sintetizando Conocimiento A2A con DeepSeek...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
@@ -519,6 +543,8 @@ export default class ProjectCreatorView {
 
             this.draftPresentation = parsedData.presentacion || vision;
             this.draftTags = parsedData.tags || [];
+            this.draftNewMemes = parsedData.new_memes || []; // Recuperamos los memes sintetizados
+            
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
                 levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || ''
@@ -731,6 +757,7 @@ export default class ProjectCreatorView {
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
+        // 1. Guardar Prompts IA personalizados
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
                 if (rol.ai_prompt && rol.ai_prompt.length > 10) {
@@ -743,6 +770,23 @@ export default class ProjectCreatorView {
             }
         }
 
+        // 2. INYECTAR EL NUEVO CONOCIMIENTO EN EL KERNEL GLOBAL (El Ecosistema Aprende)
+        if (this.draftNewMemes && this.draftNewMemes.length > 0) {
+            for (const meme of this.draftNewMemes) {
+                await KB.saveNode({
+                    id: meme.id,
+                    type: 'meme',
+                    category: meme.category || 'skill',
+                    title: meme.title,
+                    content: meme.content,
+                    keywords: meme.keywords || [],
+                    projectId: 'global', // Lo hacemos global para que sirva a futuros proyectos
+                    targetId: 'global'
+                });
+            }
+        }
+
+        // 3. Generar Flows (Tuberías) y AUTO-SPAWNEAR Work Orders en el Sprint 1 (Kickoff)
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
