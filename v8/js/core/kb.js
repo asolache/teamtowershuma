@@ -1,8 +1,7 @@
 // v8/js/core/kb.js
-// Motor de Memoria Profunda (IndexedDB) y Compilador A2A (Agent-to-Agent)
+// Motor de Memoria Profunda (IndexedDB) y Compilador de Grafos Meméticos W3C (A2A)
 
-// ONTOLOGÍA BASE (Ecosistemas)
-const NATIVE_ONTOLOGY = {
+export const NATIVE_ONTOLOGY = {
     "tech_saas_platform": {
         label: "💻 Software & SaaS",
         meta: "Agente Project Manager de Software. Gestiona el SDLC, prioriza el backlog y vigila la deuda técnica.",
@@ -104,38 +103,55 @@ const NATIVE_ONTOLOGY = {
     }
 };
 
-// META-CONOCIMIENTO GLOBAL
-const META_DOCS = [
+// ============================================================================
+// EL CATÁLOGO DE MEMES (W3C / SKOS Semantic Taxonomy)
+// ============================================================================
+const CATALOGO_MEMES = [
     {
-        id: 'meta_vna_core',
-        type: 'methodology',
-        sector: 'global',
-        roleTarget: 'Global',
-        title: 'Value Network Analysis (VNA) - Core Theory',
-        content: `Metodología base: Value Network Analysis de Verna Allee. 
-        Un ecosistema no es una jerarquía, es una red de creación de valor (Value Network). Una 'Value Network' es cualquier conjunto de roles e interacciones donde las personas se involucran en intercambios tangibles e intangibles para lograr un bien económico o social.
-        - Roles: Son los agentes activos. Ejecutan funciones y controlan recursos para generar "entregables". No deben confundirse con Job Titles.
-        - Transacciones: Ocurre cuando un entregable originado por un rol es transmitido a otro.
-        - Tangibles: Intercambios contractuales, productos formales que generan retorno (ej. Código, Informes).
-        - Intangibles: Intercambios informales de conocimiento y soporte vitales para construir relaciones.
-        Regla A2A: Al diseñar redes, asegura siempre un equilibrio entre flujos tangibles e intangibles.`
+        id: 'meme_os_vna',
+        type: 'meme',
+        category: 'core_os',
+        title: 'OS: Value Network Analysis',
+        content: `Metodología base: Value Network Analysis de Verna Allee. Un ecosistema no es una jerarquía, es una red de creación de valor (Value Network). El desafío es: ¿Cómo convertimos activos intangibles como el conocimiento humano, estructuras internas, reputación y relaciones en formas negociables de valor? Toda actividad se traduce en entregables tangibles o intangibles que viajan por tuberías, los cuales deben auditarse mediante SOCs antes de consolidar el valor.`,
+        keywords: ['VNA', 'Value Conversion', 'Intangibles', 'SOP', 'Tokenomics', 'Redes de Valor', 'Verna Allee'],
+        broader: 'root_ecosystem_laws',
+        related: ['meme_os_pantheon']
     },
     {
-        id: 'meta_pantheon_core',
-        type: 'methodology',
-        sector: 'global',
-        roleTarget: 'Global',
-        title: 'Pantheon Work - Los 12 Guardianes',
-        content: `Metodología: Pantheon Work (Alineación de equipos mediante Arquetipos).
-        Los guardianes no son roles de proyecto, son 'Autoridades Intangibles'. Son referentes a los que el grupo reconoce tener "la última palabra" en ciertos dominios.
-        1. Zeus (Gobernante): Liderazgo, Poder. 2. Hera (Cuidador): Compromiso. 3. Poseidón (Explorador): Instinto. 4. Demeter (Inocente): Nutrición. 5. Ares (Héroe): Ejecución. 6. Atenea (Sabio): Estrategia. 7. Apolo (Creador): Análisis. 8. Artemisa (Amante): Foco. 9. Hermes (Mago): Comunicación. 10. Hefesto (Trabajador): Tecnología. 11. Afrodita (Seductor): Estética. 12. Dionisio (Bufón): Socialización.
-        Regla A2A: Usa esta matriz para diversificar la inteligencia colectiva y ajustar la voz del prompt del agente.`
+        id: 'meme_os_pantheon',
+        type: 'meme',
+        category: 'core_os',
+        title: 'OS: Pantheon Work (Guardianes)',
+        content: `Metodología: Pantheon Work (Intervening for Cultural Change de Neville & Dalmau). Las organizaciones se gobiernan reconociendo "Autoridades Intangibles" basadas en la dimensión arquetípica de las divinidades griegas (James Hillman, Ginette Paris). Este reconocimiento fortalece el alma y hace al sistema mentalmente más resiliente (Proclo, Pseudo Dionisio). Arquetipos: Zeus (Gobernante), Hera (Cuidador), Poseidón (Explorador), Demeter (Inocente), Ares (Héroe), Atenea (Sabio), Apolo (Creador), Artemisa (Amante), Hermes (Mago), Hefesto (Trabajador), Afrodita (Seductor), Dionisio (Bufón).`,
+        keywords: ['Arquetipos', 'Cultura Organizacional', 'Guardianes', 'Psicología', 'Liderazgo Intangible', 'Resiliencia Mental', 'James Hillman'],
+        broader: 'root_ecosystem_laws',
+        related: ['meme_os_vna']
+    },
+    {
+        id: 'meme_skill_tdd',
+        type: 'meme',
+        category: 'skill',
+        title: 'Skill: Test-Driven Development (TDD)',
+        content: `Eres un fundamentalista del TDD. Ciclo estricto: RED (escribe el test que falla) -> GREEN (escribe el código mínimo para pasar) -> REFACTOR (optimiza). La auditoría de código es implacable y nunca se sacrifica cobertura por velocidad.`,
+        keywords: ['TDD', 'Unit Testing', 'Clean Code', 'Auditoría', 'Refactoring', 'Desarrollo de Software'],
+        broader: 'root_engineering',
+        related: ['meme_skill_clean_architecture']
+    },
+    {
+        id: 'meme_skill_copywriting',
+        type: 'meme',
+        category: 'skill',
+        title: 'Skill: Copywriting Persuasivo',
+        content: `Dominas la psicología del consumidor. Usas frameworks como AIDA (Atención, Interés, Deseo, Acción) y PAS (Problema, Agitación, Solución). Produces textos directos, emocionales y orientados a la conversión.`,
+        keywords: ['Copywriting', 'AIDA', 'PAS', 'Conversión', 'Psicología del Consumidor', 'Marketing', 'Storytelling'],
+        broader: 'root_growth_marketing',
+        related: ['meme_skill_seo']
     }
 ];
 
 export const KB = {
-    dbName: 'TeamTowers_LMS_V8',
-    dbVersion: 5, // Incrementado para la actualización A2A
+    dbName: 'TeamTowers_LMS_V9',
+    dbVersion: 2, // Iteración de la arquitectura de Grafo Memético W3C
     db: null,
 
     init() {
@@ -152,149 +168,202 @@ export const KB = {
 
             request.onupgradeneeded = (e) => {
                 const db = e.target.result;
-                if (!db.objectStoreNames.contains('documents')) {
-                    const store = db.createObjectStore('documents', { keyPath: 'id' });
-                    store.createIndex('roleTarget', 'roleTarget', { unique: false });
-                    store.createIndex('projectId', 'projectId', { unique: false });
-                    store.createIndex('sector', 'sector', { unique: false });
+                // Tabla unificada de Nodos de Conocimiento (Memes, SOPs, Ontology)
+                if (!db.objectStoreNames.contains('nodes')) {
+                    const store = db.createObjectStore('nodes', { keyPath: 'id' });
                     store.createIndex('type', 'type', { unique: false }); 
+                    store.createIndex('projectId', 'projectId', { unique: false });
+                    store.createIndex('targetId', 'targetId', { unique: false }); // ID del Rol o Agente al que está anclado
                 }
             };
         });
     },
 
     async seedDatabaseIfNeeded() {
-        const docs = await this.getAllDocuments();
+        const nodes = await this.getAllNodes();
         
-        const ontologyDocs = docs.filter(d => d.type === 'ontology');
-        if (ontologyDocs.length === 0) {
-            console.log("🌱 [KB] Sembrando los 9 Genomas Ontológicos (Ecosistemas)...");
-            
-            for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
-                await this.saveDocument({
-                    id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label,
-                    roleTarget: 'Global', title: `Meta-Instrucción: ${sectorData.label}`, content: sectorData.meta, deliverables: []
-                });
+        // 1. Sembrar Memes Globales
+        const memes = nodes.filter(n => n.type === 'meme');
+        if (memes.length === 0) {
+            console.log("🧬 [KB] Sembrando Catálogo de Memes Base (W3C/SKOS)...");
+            for (const meme of CATALOGO_MEMES) {
+                await this.saveNode(meme);
+            }
+        }
 
+        // 2. Sembrar Ontología
+        const ontology = nodes.filter(n => n.type === 'ontology');
+        if (ontology.length === 0) {
+            console.log("🌱 [KB] Sembrando Genomas Ontológicos...");
+            for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
-                    const contentStr = `Rol Genérico: ${roleData.name} (${levelKey}). FMV Base: €${roleData.fmv}/h.`;
-                    await this.saveDocument({
-                        id: `onto_${sectorKey}_${levelKey.replace('@','')}`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label,
-                        roleTarget: levelKey, title: `Arquetipo: ${roleData.name} en ${sectorData.label}`, content: contentStr, deliverables: roleData.standard_deliverables
+                    await this.saveNode({
+                        id: `onto_${sectorKey}_${levelKey.replace('@','')}`, 
+                        type: 'ontology', 
+                        sector: sectorKey, 
+                        title: `Arquetipo: ${roleData.name}`, 
+                        content: `Nivel: ${levelKey}. Responsable de ejecutar SOPs y garantizar el flujo de valor.`
                     });
                 }
             }
         }
-
-        const methodologyDocs = docs.filter(d => d.type === 'methodology');
-        if (methodologyDocs.length === 0) {
-            console.log("🧠 [KB] Sembrando Meta-Conocimiento (VNA & Pantheon)...");
-            for (const mDoc of META_DOCS) {
-                await this.saveDocument(mDoc);
-            }
-        }
     },
 
+    // ALIAS PARA RETROCOMPATIBILIDAD (Evita que store.js falle en LMS Hook)
     async saveDocument(doc) {
+        return this.saveNode(doc);
+    },
+
+    async getAllDocuments(projectId = null) {
+        return this.getAllNodes({ projectId });
+    },
+
+    async saveNode(node) {
         if (!this.db) await this.init();
         return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['documents'], 'readwrite');
-            const store = transaction.objectStore('documents');
+            const transaction = this.db.transaction(['nodes'], 'readwrite');
+            const store = transaction.objectStore('nodes');
             
-            const semanticDoc = {
-                ...doc,
-                id: doc.id || 'doc_' + Date.now(),
+            // Integración de Estándares W3C (Schema.org / SKOS)
+            const semanticNode = {
+                ...node,
+                id: node.id || 'node_' + Date.now(),
                 lastUpdated: Date.now(),
-                projectId: doc.projectId || 'global',
-                type: doc.type || 'manual',
+                projectId: node.projectId || 'global',
+                targetId: node.targetId || 'global', // 'global' significa catálogo libre
+                type: node.type || 'custom',
                 jsonLd: {
                     "@context": "https://schema.org",
-                    "@type": "TechArticle",
-                    "headline": doc.title,
-                    "audience": { "@type": "Audience", "audienceType": doc.roleTarget || "All Nodes" },
-                    "text": doc.content
+                    "@type": "DefinedTerm", // Estándar W3C
+                    "name": node.title,
+                    "description": node.content,
+                    "inDefinedTermSet": "TeamTowers_Ontology",
+                    "keywords": node.keywords ? node.keywords.join(', ') : "",
+                    "broader": node.broader || null,
+                    "relatedLink": node.related || []
                 }
             };
 
-            const request = store.put(semanticDoc);
-            request.onsuccess = () => resolve(semanticDoc);
+            const request = store.put(semanticNode);
+            request.onsuccess = () => resolve(semanticNode);
             request.onerror = (e) => reject(e.target.error);
         });
     },
 
-    async getAllDocuments(projectId = null) {
+    async getAllNodes(filters = {}) {
         if (!this.db) await this.init();
         return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['documents'], 'readonly');
-            const store = transaction.objectStore('documents');
+            const transaction = this.db.transaction(['nodes'], 'readonly');
+            const store = transaction.objectStore('nodes');
             const request = store.getAll();
 
             request.onsuccess = () => {
-                let docs = request.result || [];
-                if (projectId && projectId !== 'global') {
-                    docs = docs.filter(d => d.projectId === projectId || d.projectId === 'global');
-                }
-                resolve(docs);
+                let nodes = request.result || [];
+                
+                if (filters.projectId) nodes = nodes.filter(n => n.projectId === filters.projectId || n.projectId === 'global');
+                if (filters.type) nodes = nodes.filter(n => n.type === filters.type);
+                if (filters.targetId) nodes = nodes.filter(n => n.targetId === filters.targetId || n.targetId === 'global');
+                
+                resolve(nodes);
             };
             request.onerror = (e) => reject(e.target.error);
         });
     },
 
     async getAvailableSectors() {
-        const docs = await this.getAllDocuments();
-        const ontologyDocs = docs.filter(d => d.type === 'ontology');
-        
+        const nodes = await this.getAllNodes({ type: 'ontology' });
         const sectors = {};
-        ontologyDocs.forEach(doc => {
-            if (!sectors[doc.sector]) sectors[doc.sector] = { label: doc.sectorLabel || doc.sector, roles: {} };
-            if (doc.roleTarget !== 'Global') {
-                sectors[doc.sector].roles[doc.roleTarget] = {
-                    name: doc.title.split(': ')[1]?.split(' en ')[0] || doc.title,
-                    content: doc.content,
-                    deliverables: doc.deliverables || []
+        
+        // Mapeo retrocompatible para la UI de creación
+        Object.entries(NATIVE_ONTOLOGY).forEach(([sectorKey, sectorData]) => {
+            sectors[sectorKey] = { label: sectorData.label, roles: {} };
+            Object.entries(sectorData.roles).forEach(([levelKey, roleData]) => {
+                sectors[sectorKey].roles[levelKey] = {
+                    name: roleData.name,
+                    content: `Rol Genérico: ${roleData.name} (${levelKey}). FMV Base: €${roleData.fmv}/h.`,
+                    deliverables: roleData.standard_deliverables || []
                 };
-            }
+            });
         });
         return sectors;
     },
 
-    // =========================================================
-    // 🧠 COMPILADOR A2A (AGENT-TO-AGENT) - CORE V8.5
-    // =========================================================
-    // Esta función forja el System Prompt perfecto para un Agente
-    // extrayendo dinámicamente las Leyes (VNA) + Nivel + Contexto Único del Proyecto
-    async getAgentContext(projectId, roleObj, projectVision) {
+    // ============================================================================
+    // GENERADOR DE GRAFO (MIND MAP) PARA EL EDITOR DE AGENTES
+    // ============================================================================
+    async getAgentBrainGraph(projectId, roleObj, projectVision) {
         await this.init();
-        const docs = await this.getAllDocuments();
+        const allNodes = await this.getAllNodes({ projectId });
         
-        // 1. Extraer Leyes Universales (Metodologías)
-        const vnaMeta = docs.find(d => d.id === 'meta_vna_core')?.content || '';
-        const pantheonMeta = docs.find(d => d.id === 'meta_pantheon_core')?.content || '';
+        // 1. RAMA RAÍZ: El OS (Sistemas Operativos Globales)
+        const osMemes = allNodes.filter(n => n.type === 'meme' && n.category === 'core_os');
+        
+        // 2. RAMA ARQUETÍPICA: Configuración específica del creador para este rol (prompt_a2a u ontology)
+        const specificPrompts = allNodes.filter(n => n.targetId === roleObj.id && (n.type === 'prompt_a2a' || n.type === 'ontology'));
+        
+        // 3. RAMA SKILLS: Memes adicionales anclados manualmente por el Arquitecto a este Rol
+        const attachedMemes = allNodes.filter(n => n.targetId === roleObj.id && n.type === 'meme');
 
-        // 2. Extraer Instrucciones Específicas del Rol en ese Proyecto (Si el Epistemólogo las creó)
-        const projectSpecificDocs = docs.filter(d => d.projectId === projectId && d.roleTarget === roleObj.id);
-        const specificContext = projectSpecificDocs.map(d => d.content).join('\n');
+        // 4. RAMA MEMORIA: Casos de éxito previos (LMS) donde este rol fue el protagonista (manual/memory)
+        const memories = allNodes.filter(n => (n.type === 'manual' || n.type === 'memory') && n.roleTarget === roleObj.levelId);
 
-        // 3. Ensamblar el Genoma Computacional (El System Prompt)
-        return `
-            Eres un Agente Autónomo operando dentro de TeamTowers V8.
-            
-            [LEYES DE LA FÍSICA DEL ECOSISTEMA]
-            ${vnaMeta}
-            ${pantheonMeta}
+        // Construimos la estructura de Árbol para el Mind Map
+        const brainTree = {
+            id: roleObj.id,
+            name: roleObj.name,
+            level: roleObj.levelId,
+            guardian: roleObj.guardian || 'everyman',
+            mission: projectVision,
+            branches: [
+                {
+                    name: "🌐 Core OS (Leyes Físicas)",
+                    nodes: osMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content }))
+                },
+                {
+                    name: "🧬 ADN (Instrucciones A2A)",
+                    nodes: specificPrompts.map(p => ({ id: p.id, title: p.title || p.jsonLd?.name, content: p.content }))
+                },
+                {
+                    name: "🎒 Skills (Memes Inyectados)",
+                    nodes: attachedMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content }))
+                },
+                {
+                    name: "📚 Memoria Episódica (LMS)",
+                    nodes: memories.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content }))
+                }
+            ]
+        };
 
-            [TU IDENTIDAD EN ESTE CASTELL]
-            Nombre de tu Silla: ${roleObj.name}
-            Nivel Estructural: ${roleObj.levelId}
-            Tu Guardián / Arquetipo: ${roleObj.guardian || 'everyman'}
-            
-            [MISIÓN DEL PROYECTO]
-            ${projectVision}
+        return brainTree;
+    },
 
-            [TU CONTEXTO ESPECÍFICO / ENTREGABLES]
-            ${specificContext || 'Ejecuta las Work Orders que se te asignen basándote en tu sentido común y arquetipo.'}
+    // Compilador final (Aplasta el árbol en texto para enviarlo a OpenAI/DeepSeek)
+    async getAgentContextFlattened(projectId, roleObj, projectVision) {
+        const tree = await this.getAgentBrainGraph(projectId, roleObj, projectVision);
+        
+        let flatContext = `
+            Eres un Agente Autónomo operando dentro de TeamTowers V9.
+            Misión Global del Proyecto: ${tree.mission}
+            Tu Rol: ${tree.name} (${tree.level})
+            Tu Guardián (Alma): ${tree.guardian}
 
-            INSTRUCCIÓN A2A: Al procesar la tarea, asume completamente la voz, responsabilidades y el enfoque filosófico de tu arquetipo guardián.
-        `.replace(/\s+/g, ' ').trim(); 
+            [SISTEMA OPERATIVO BASE]
+            ${tree.branches[0].nodes.map(n => n.content).join('\n\n')}
+
+            [TUS INSTRUCCIONES ESPECÍFICAS]
+            ${tree.branches[1].nodes.map(n => n.content).join('\n\n')}
+
+            [TUS SKILLS / MEMES ACTIVOS]
+            ${tree.branches[2].nodes.map(n => n.content).join('\n\n')}
+
+            [TU MEMORIA DE ÉXITOS PASADOS]
+            ${tree.branches[3].nodes.map(n => n.content).join('\n\n')}
+        `;
+        return flatContext.replace(/\s+/g, ' ').trim();
+    },
+
+    // Alias necesario para ProjectView.js (Auto-Ejecución)
+    async getAgentContext(projectId, roleObj, projectVision) {
+        return this.getAgentContextFlattened(projectId, roleObj, projectVision);
     }
 };
