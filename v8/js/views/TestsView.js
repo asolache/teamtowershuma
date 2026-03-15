@@ -3,11 +3,11 @@ import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 
 const MOCK_ONTOLOGY = {
-    '@anxaneta': { name: 'Growth Hacker', multiplier: 3.0, fmv: 70 },
-    '@aixecador': { name: 'Director Creativo', multiplier: 2.0, fmv: 60 },
-    '@dosos': { name: 'Project Manager', multiplier: 1.5, fmv: 50 },
-    '@baixos': { name: 'Diseñador UI', multiplier: 1.2, fmv: 40 },
-    '@pinya': { name: 'Community Manager', multiplier: 1.0, fmv: 25 }
+    '@anxaneta': { name: 'Growth Hacker', multiplier: 3.0, fmv: 70, guardian: 'explorer' },
+    '@aixecador': { name: 'Director Creativo', multiplier: 2.0, fmv: 60, guardian: 'creator' },
+    '@dosos': { name: 'Project Manager', multiplier: 1.5, fmv: 50, guardian: 'ruler' },
+    '@baixos': { name: 'Diseñador UI', multiplier: 1.2, fmv: 40, guardian: 'lover' },
+    '@pinya': { name: 'Community Manager', multiplier: 1.0, fmv: 25, guardian: 'caregiver' }
 };
 
 export default class TestsView {
@@ -89,13 +89,12 @@ export default class TestsView {
 
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        // Refactor del renderizado para evitar Forced Synchronous Layout
         const assert = async (condition, message, tag) => {
             total++;
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(150); 
+            await sleep(100); // Un poco más rápido para no desesperar
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
@@ -111,7 +110,6 @@ export default class TestsView {
             
             terminal.insertAdjacentHTML('beforeend', htmlToInject);
             
-            // Permitimos que el navegador pinte antes de calcular alturas
             await new Promise(r => requestAnimationFrame(r));
             
             terminal.scrollTop = terminal.scrollHeight;
@@ -128,7 +126,6 @@ export default class TestsView {
             const dynBobId = '@bob_user_' + Math.floor(Math.random() * 1000);
 
             try {
-                // Limpieza absoluta
                 await store.dispatch({ type: 'LOGOUT_USER' });
 
                 // ==========================================
@@ -144,6 +141,9 @@ export default class TestsView {
                 const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
                 await assert(genesiAi !== undefined && genesiAi.profile.isAi === true, "Enjambre IA: Guardianes inyectados en la red neuronal", "AI-NATIVE");
 
+                const mestreEscola = store.getState().globalUsers.find(u => u.id === '@mestre_escola');
+                await assert(mestreEscola !== undefined, "Talent Tree: Mestre d'Escola está activo gobernando las competencias", "AI-NATIVE");
+
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
 
@@ -151,15 +151,17 @@ export default class TestsView {
                 // BLOQUE 2: SEGURIDAD, RBAC Y MUROS DE CRISTAL
                 // ==========================================
                 const draftRoles = Object.keys(MOCK_ONTOLOGY).map(levelKey => ({
-                    id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, fmv: MOCK_ONTOLOGY[levelKey].fmv, multiplier: MOCK_ONTOLOGY[levelKey].multiplier, isArchived: false
+                    id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), 
+                    levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, 
+                    fmv: MOCK_ONTOLOGY[levelKey].fmv, multiplier: MOCK_ONTOLOGY[levelKey].multiplier, 
+                    guardian: MOCK_ONTOLOGY[levelKey].guardian, isArchived: false
                 }));
 
-                // FIX ATÓMICO: Inyectamos la Gobernanza (custom) y los Permisos en el instante mismo de la creación.
                 await store.dispatch({ 
                     type: 'CREATE_PROJECT', 
                     payload: { 
                         id: PID_TEST, nombre: "Matrix Sandbox", ownerId: dynNeoId, isPrivate: true, 
-                        roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], 
+                        roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], logs: [], 
                         usuarios: [
                             {id: dynNeoId, permissions: {canCreateWO: true, canApprove: true}}, 
                             {id: dynLauraId, permissions: {canCreateWO: false}}
@@ -174,7 +176,6 @@ export default class TestsView {
                 const hasAccessBob = store.canUserViewProject(PID_TEST, dynBobId, 'network-user');
                 await assert(hasAccessBob === false, "Privacidad: Muro criptográfico bloquea a entidades externas", "PRIVACY");
                 
-                // Ahora evalúa la política 'custom' directamente comprobando si Laura tiene `canCreateWO: true` (que es false).
                 await assert(store.canUserCreateWorkOrder(PID_TEST, dynLauraId) === false, "RBAC: Nodo operativo bloqueado por política de red estricta", "RBAC");
 
                 // ==========================================
@@ -182,16 +183,27 @@ export default class TestsView {
                 // ==========================================
                 await KB.init();
                 const globalDocs = await KB.getAllDocuments('global');
-                const hasPantheon = globalDocs.find(d => d.id === 'meta_pantheon_core');
+                const hasPantheon = globalDocs.find(d => d.id === 'meme_os_pantheon');
                 await assert(hasPantheon !== undefined, "Cerebro Semántico A2A: Leyes de VNA y Pantheon compiladas", "A2A-SEED");
 
                 let p = store.getState().projects.find(x => x.id === PID_TEST);
                 const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
                 const rBaix = p.roles.find(r => r.levelId === '@baixos');
 
-                await store.dispatch({ type: 'ADD_FLOW', payload: { projectId: PID_TEST, flow: { id: 'flow_1', from: rAnx.id, to: rBaix.id, template: "Estrategia Base", tipo: "tangible", estimatedHours: 10 } } });
+                // Inyección de un Flow con Required Skills
+                await store.dispatch({ 
+                    type: 'ADD_FLOW', 
+                    payload: { 
+                        projectId: PID_TEST, 
+                        flow: { 
+                            id: 'flow_1', from: rAnx.id, to: rBaix.id, template: "Estrategia Base", tipo: "tangible", estimatedHours: 10,
+                            required_skills: ['meme_skill_core_tdd', 'meme_soc_code_quality'] 
+                        } 
+                    } 
+                });
+                
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.vna_flows.length === 1, "Mapa VNA: Rutas de transferencia de valor creadas", "VNA-FLOW");
+                await assert(p.vna_flows.length === 1 && p.vna_flows[0].required_skills.length === 2, "Mapa VNA: Rutas de valor ancladas a la Tríada de Competencias", "VNA-SKILLS");
 
                 // ==========================================
                 // BLOQUE 4: CICLO DE VIDA DE LA RECETA (SOP -> SOC -> AUDITORÍA)
@@ -207,7 +219,7 @@ export default class TestsView {
                                 { id: 'soc_1', text: "El código pasa los linters", isChecked: false },
                                 { id: 'soc_2', text: "Documentación generada", isChecked: false }
                             ],
-                            resources: ['GitHub Repo', 'Figma File']
+                            resources: ['GitHub Repo']
                         } 
                     } 
                 });
@@ -245,6 +257,9 @@ export default class TestsView {
                 const postDocs = await KB.getAllDocuments();
                 await assert(postDocs.length > preDocs.length, "LMS Auto-Aprendizaje: El Kernel extrajo un caso de éxito validado a su BD semántica", "LMS-HOOK");
 
+                // Verificamos que el Paper Log esté registrando
+                await assert(p.logs && p.logs.length > 0, "Paper Workspace: El Sistema Operativo guarda eventos en el log hipertextual.", "PAPER-LOG");
+
                 // ==========================================
                 // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
                 // ==========================================
@@ -260,7 +275,7 @@ export default class TestsView {
                 await assert(harvest.length === 2, "Cap Table: Convergencia de aportaciones (SOPs Laborales + Capital Líquido)", "CAP-TABLE");
 
                 // FINALIZACIÓN EXITOSA (FASE VERDE)
-                await sleep(500);
+                await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
                         <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V9 KERNEL CERTIFIED 🔥</h2>
