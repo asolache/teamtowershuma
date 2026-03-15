@@ -6,7 +6,8 @@ import ValueMapView from './views/ValueMapView.js';
 import ProjectView from './views/ProjectView.js';
 import ProjectCreatorView from './views/ProjectCreatorView.js';
 import TestsView from './views/TestsView.js';
-import AgentEditorView from './views/AgentEditorView.js'; // 🧠 NUEVO SPRINT 25: Cerebro A2A
+import AgentEditorView from './views/AgentEditorView.js'; 
+import PaperView from './views/PaperView.js'; // 📝 NUEVO SPRINT 26: El Flow Workspace
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -23,7 +24,8 @@ const router = async () => {
         { path: "/v8/project", view: ProjectView },
         { path: "/v8/create", view: ProjectCreatorView },
         { path: "/v8/tests", view: TestsView },
-        { path: "/v8/agents", view: AgentEditorView } // Inyección del Editor de Agentes
+        { path: "/v8/agents", view: AgentEditorView },
+        { path: "/v8/paper", view: PaperView } // Inyección del Paper (Workspace)
     ];
 
     // Buscar coincidencia exacta con la URL actual
