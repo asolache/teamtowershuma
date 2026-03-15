@@ -487,3 +487,187 @@ export default class AgentEditorView {
             bEl.className = 'graph-node node-branch';
             bEl.id = `gn_branch_${bIdx}`;
             bEl.style.left = `${branchX}%`;
+            bEl.style.top = `${bY}%`;
+            bEl.innerHTML = `<div class="circle">${branch.name}</div>`;
+            this.dom.nodesContainer.appendChild(bEl);
+
+            const leaves = branch.nodes || [];
+            if (leaves.length > 0) {
+                const leafSpacing = 16;
+                const totalHeight = (leaves.length - 1) * leafSpacing;
+                let lY = bY - (totalHeight / 2);
+
+                leaves.forEach((leaf, lIdx) => {
+                    const lEl = document.createElement('div');
+                    lEl.className = 'graph-node node-leaf';
+                    lEl.id = `gn_leaf_${bIdx}_${lIdx}`;
+                    lEl.style.left = `${leafBaseX}%`;
+                    lEl.style.top = `${lY}%`;
+                    
+                    // Mostrar siempre el botón de borrado en nodos inyectados manualmente
+                    const isCustomMeme = bIdx === 1 || bIdx === 2; 
+                    const delBtn = isPO && isCustomMeme && leaf.id.startsWith('meme_inst') ? `<button class="btn-remove" data-id="${leaf.id}" title="Eliminar Nódulo">❌</button>` : '';
+
+                    lEl.innerHTML = `
+                        <div class="content-box">
+                            ${delBtn}
+                            <div class="title">${leaf.title || 'Nodo de Conocimiento'}</div>
+                            <div class="desc">${leaf.content || ''}</div>
+                        </div>
+                    `;
+                    this.dom.nodesContainer.appendChild(lEl);
+                    lY += leafSpacing;
+
+                    if (isPO && isCustomMeme && leaf.id.startsWith('meme_inst')) {
+                        lEl.querySelector('.btn-remove').addEventListener('click', async () => {
+                            if(confirm("¿Seguro que quieres extirpar este conocimiento de la IA?")) {
+                                const db = await KB.init();
+                                const tx = db.transaction(['nodes'], 'readwrite');
+                                tx.objectStore('nodes').delete(leaf.id);
+                                tx.oncomplete = () => this.renderBrainGraphSafe();
+                            }
+                        });
+                    }
+                });
+                
+                // AUTO-SUGERENCIA FRACTAL (Magia W3C)
+                // Leemos el ADN y mostramos Skills compatibles
+                if (bIdx === 2 && isPO && this.catalogMemes) {
+                    const adnNodes = this.brainGraph.branches[1].nodes || [];
+                    const currentSkillTitles = branch.nodes.map(n => n.title);
+                    
+                    let suggestedMemes = [];
+                    
+                    adnNodes.forEach(adn => {
+                        const adnText = `${adn.title} ${adn.content}`.toLowerCase();
+                        this.catalogMemes.forEach(m => {
+                            if (m.category === 'skill' || m.category === 'soc') {
+                                const mKeywords = (m.jsonLd?.keywords || '').toLowerCase().split(',');
+                                const hasMatch = mKeywords.some(k => k.trim() && adnText.includes(k.trim()));
+                                if (hasMatch && !currentSkillTitles.includes(m.title) && !suggestedMemes.find(sm => sm.id === m.id)) {
+                                    suggestedMemes.push(m);
+                                }
+                            }
+                        });
+                    });
+
+                    suggestedMemes.slice(0, 2).forEach((sugMeme, sIdx) => {
+                        const gEl = document.createElement('div');
+                        gEl.className = 'graph-node node-leaf node-ghost';
+                        gEl.id = `gn_ghost_${bIdx}_${sIdx}`;
+                        gEl.style.left = `${leafBaseX}%`;
+                        gEl.style.top = `${lY}%`;
+                        gEl.innerHTML = `
+                            <div class="content-box" title="Recomendado basado en el ADN del Agente">
+                                <div class="title">✨ Sugerencia W3C: ${sugMeme.title || sugMeme.jsonLd?.name}</div>
+                                <div class="desc" style="color:var(--accent-green);">Clic para Inyectar en el cerebro.</div>
+                            </div>
+                        `;
+                        this.dom.nodesContainer.appendChild(gEl);
+                        
+                        gEl.addEventListener('click', async () => {
+                            const targetProjectId = roleObj.isGlobalAi ? 'global' : this.activeProjectId;
+                            await KB.saveNode({ ...sugMeme, id: 'meme_inst_' + Date.now(), targetId: this.selectedRoleId, projectId: targetProjectId });
+                            await this.renderBrainGraphSafe();
+                        });
+                        
+                        lY += leafSpacing;
+                    });
+                }
+
+            } else {
+                const lEl = document.createElement('div');
+                lEl.className = 'graph-node node-leaf';
+                lEl.id = `gn_leaf_${bIdx}_empty`;
+                lEl.style.left = `${leafBaseX}%`;
+                lEl.style.top = `${bY}%`;
+                lEl.innerHTML = `<div class="content-box" style="border-color:#333; opacity:0.5;"><div class="desc">Rama neuronal vacía.</div></div>`;
+                this.dom.nodesContainer.appendChild(lEl);
+            }
+        });
+
+        requestAnimationFrame(() => {
+            setTimeout(() => this.drawEdgesSafe(), 50);
+        });
+    }
+
+    drawEdgesSafe() {
+        try {
+            this.drawEdges();
+        } catch(e) {
+            console.warn("Fallo leve al repintar enlaces SVG:", e);
+        }
+    }
+
+    drawEdges() {
+        if (!this.brainGraph || !this.dom.edgesGroup) return;
+        this.dom.edgesGroup.innerHTML = '';
+        
+        const containerRect = this.dom.canvas.getBoundingClientRect();
+        const rootEl = document.getElementById('gn_root');
+        if (!rootEl) return;
+
+        const getCenter = (el) => {
+            const rect = el.getBoundingClientRect();
+            return { x: rect.left + rect.width/2 - containerRect.left, y: rect.top + rect.height/2 - containerRect.top };
+        };
+
+        const rootPos = getCenter(rootEl);
+        const isGlobal = rootEl.classList.contains('global-ai');
+        const rootColor = isGlobal ? 'var(--accent-purple)' : 'var(--accent-blue)';
+
+        this.brainGraph.branches.forEach((branch, bIdx) => {
+            const bEl = document.getElementById(`gn_branch_${bIdx}`);
+            if (!bEl) return;
+            const bPos = getCenter(bEl);
+
+            const p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            p1.setAttribute('d', `M ${rootPos.x} ${rootPos.y} C ${(rootPos.x + bPos.x)/2} ${rootPos.y}, ${(rootPos.x + bPos.x)/2} ${bPos.y}, ${bPos.x} ${bPos.y}`);
+            p1.setAttribute('class', 'edge-line');
+            p1.style.stroke = rootColor;
+            p1.style.strokeWidth = '4';
+            this.dom.edgesGroup.appendChild(p1);
+
+            const leavesCount = branch.nodes ? branch.nodes.length : 0;
+            if (leavesCount > 0) {
+                branch.nodes.forEach((leaf, lIdx) => {
+                    const lEl = document.getElementById(`gn_leaf_${bIdx}_${lIdx}`);
+                    if (!lEl) return;
+                    const lPos = getCenter(lEl);
+                    const targetX = lPos.x - (lEl.offsetWidth / 2); 
+                    
+                    const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    p2.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
+                    p2.setAttribute('class', 'edge-line');
+                    this.dom.edgesGroup.appendChild(p2);
+                });
+
+                let ghostIdx = 0;
+                while(true) {
+                    const ghostNode = document.getElementById(`gn_ghost_${bIdx}_${ghostIdx}`);
+                    if (!ghostNode) break;
+                    const gPos = getCenter(ghostNode);
+                    const gTargetX = gPos.x - (ghostNode.offsetWidth / 2);
+                    const p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    p3.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + gTargetX)/2} ${bPos.y}, ${(bPos.x + gTargetX)/2} ${gPos.y}, ${gTargetX} ${gPos.y}`);
+                    p3.setAttribute('class', 'edge-line');
+                    p3.style.stroke = 'var(--accent-green)';
+                    p3.style.strokeDasharray = '4,4';
+                    this.dom.edgesGroup.appendChild(p3);
+                    ghostIdx++;
+                }
+            } else {
+                const emptyEl = document.getElementById(`gn_leaf_${bIdx}_empty`);
+                if(emptyEl) {
+                    const lPos = getCenter(emptyEl);
+                    const targetX = lPos.x - (emptyEl.offsetWidth / 2);
+                    const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    p2.setAttribute('d', `M ${bPos.x} ${bPos.y} C ${(bPos.x + targetX)/2} ${bPos.y}, ${(bPos.x + targetX)/2} ${lPos.y}, ${targetX} ${lPos.y}`);
+                    p2.setAttribute('class', 'edge-line');
+                    p2.style.strokeDasharray = '4,4';
+                    this.dom.edgesGroup.appendChild(p2);
+                }
+            }
+        });
+    }
+}
