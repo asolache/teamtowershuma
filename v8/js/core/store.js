@@ -19,6 +19,8 @@ const initialState = {
         { id: '@forca_worker', name: 'Força Worker', email: 'forca@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero' } },
         // 🧠 El Guardián del Árbol de Habilidades (Instanciado)
         { id: '@mestre_escola', name: 'Mestre d\'Escola', email: 'mestre@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage' } }
+        // 👑 TU LLAVE MAESTRA DE ADMIN
+        { id: '@alvaro', name: 'Alvaro (Master Architect)', email: 'asolache@gmail.com', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
     ],
     projects: []
 };
