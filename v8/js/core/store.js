@@ -25,7 +25,18 @@ const initialState = {
 
 class Store {
     constructor() {
-        this.state = JSON.parse(JSON.stringify(initialState));
+        // 🔥 FIX CRÍTICO: Leer el disco duro primero para evitar la Amnesia del Kernel
+        const savedState = localStorage.getItem('tt_v9_kernel_state');
+        
+        if (savedState) {
+            this.state = JSON.parse(savedState);
+            // Comprobación de seguridad por si el state guardado está muy desactualizado
+            if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
+            if (!this.state.projects) this.state.projects = [];
+        } else {
+            this.state = JSON.parse(JSON.stringify(initialState));
+        }
+        
         this.listeners = [];
     }
 
@@ -40,6 +51,10 @@ class Store {
 
     async dispatch(action) {
         this.state = this._reducer(this.state, action);
+        
+        // 🔥 FIX CRÍTICO: Escribir en el disco duro después de cada acción
+        localStorage.setItem('tt_v9_kernel_state', JSON.stringify(this.state));
+        
         this.listeners.forEach(listener => listener(this.state));
         return this.state;
     }
