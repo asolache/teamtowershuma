@@ -68,29 +68,19 @@ export default class HomeView {
             <style>
                 .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
                 .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; width: 100%;}
-                
                 .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
-
                 .glass-panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: blur(15px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box;}
-
                 .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,176,255,0.2); font-size: 0.95rem; text-decoration:none;}
                 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
-
                 .agent-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(224, 64, 251, 0.3); border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; transition:0.3s; margin-bottom:15px;}
                 .agent-card:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(224, 64, 251, 0.05);}
                 .agent-info { flex: 1; }
                 .agent-name { font-weight: 900; color: white; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; margin-bottom: 5px;}
                 .agent-id { color: var(--accent-purple); font-family: var(--font-mono); font-size: 0.85rem; font-weight:bold;}
                 .agent-vision { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-top: 8px; font-style:italic;}
-
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-                @media (max-width: 768px) {
-                    .workspace { padding: 90px 1rem 120px 1rem; }
-                    .agent-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-                    .agent-card > div:last-child { width: 100%; text-align: left !important; }
-                }
+                @media (max-width: 768px) { .workspace { padding: 90px 1rem 120px 1rem; } .agent-card { flex-direction: column; align-items: flex-start; gap: 15px; } .agent-card > div:last-child { width: 100%; text-align: left !important; } }
             </style>
 
             <div class="app-layout">
@@ -166,7 +156,6 @@ export default class HomeView {
                 .tt-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; font-family: var(--font-mono); }
                 .btn-wallet { width: 100%; padding: 16px; border-radius: 16px; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; margin-bottom: 15px;}
                 .btn-wallet:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
-                .btn-walletconnect { border-color: rgba(59, 153, 252, 0.5); background: rgba(59, 153, 252, 0.05); color: #3b99fc; }
                 .divider { display: flex; align-items: center; text-align: center; color: #555; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin: 1.5rem 0; }
                 .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
                 .divider:not(:empty)::before { margin-right: .5em; }
@@ -188,11 +177,10 @@ export default class HomeView {
                     <p class="tt-subtitle">Zero-Trust Cognitive OS</p>
                     
                     <div id="connectState">
-                        <button class="btn-wallet btn-walletconnect" id="btnOpenWC">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C16.1421 4.5 19.5 7.85786 19.5 12C19.5 16.1421 16.1421 19.5 12 19.5C7.85786 19.5 4.5 16.1421 4.5 12C4.5 7.85786 7.85786 4.5 12 4.5ZM12 7.5C9.51472 7.5 7.5 9.51472 7.5 12C7.5 14.4853 9.51472 16.5 12 16.5C14.4853 16.5 16.5 14.4853 16.5 12C16.5 9.51472 14.4853 7.5 12 7.5Z" fill="#3b99fc"/></svg>
-                            Conectar WalletConnect
+                        <button class="btn-wallet" id="btnConnectInjected">
+                            🦊 Conectar Browser Wallet
+                            <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>
                         </button>
-                        <button class="btn-wallet" id="btnConnectInjected">🦊 Conectar Browser Wallet</button>
                         
                         <div class="divider">Fallback Local</div>
                         <div class="form-group">
@@ -214,7 +202,7 @@ export default class HomeView {
         `;
     }
 
-  executeViewScript() {
+    executeViewScript() {
         const state = store.getState();
         
         // ==========================================
@@ -225,7 +213,6 @@ export default class HomeView {
                 connectState: document.getElementById('connectState'),
                 signState: document.getElementById('signState'),
                 btnConnectInjected: document.getElementById('btnConnectInjected'),
-                btnOpenWC: document.getElementById('btnOpenWC'),
                 displayAddress: document.getElementById('displayAddress'),
                 btnSignMessage: document.getElementById('btnSignMessage'),
                 btnDisconnect: document.getElementById('btnDisconnect'),
@@ -234,7 +221,6 @@ export default class HomeView {
                 signTextMsg: document.getElementById('signTextMsg')
             };
 
-            // Referencias globales para Ethers
             let web3Signer = null;
             let currentAddress = null;
             let ethersModule = null; 
@@ -245,21 +231,25 @@ export default class HomeView {
                 window.location.reload(); 
             };
 
-            // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, Rabby, Brave)
+            // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, TrustWallet)
             if (dom.btnConnectInjected) {
                 dom.btnConnectInjected.addEventListener('click', async () => {
-                    if (typeof window.ethereum !== 'undefined') {
+                    const providerObj = window.ethereum || window.trustwallet;
+                    
+                    if (typeof providerObj !== 'undefined') {
                         try {
+                            const originalHTML = dom.btnConnectInjected.innerHTML;
                             dom.btnConnectInjected.innerText = '⏳ Cargando Motor Criptográfico...';
+                            
                             if (!ethersModule) {
                                 ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
                             }
                             const { ethers } = ethersModule;
 
                             dom.btnConnectInjected.innerText = '🦊 Solicitando Permisos...';
-                            await window.ethereum.request({ method: 'eth_requestAccounts' });
+                            await providerObj.request({ method: 'eth_requestAccounts' });
                             
-                            const provider = new ethers.BrowserProvider(window.ethereum);
+                            const provider = new ethers.BrowserProvider(providerObj);
                             web3Signer = await provider.getSigner();
                             currentAddress = await web3Signer.getAddress();
                             
@@ -267,10 +257,12 @@ export default class HomeView {
                             dom.displayAddress.innerText = shortAddr;
                             dom.connectState.style.display = 'none';
                             dom.signState.style.display = 'flex';
+                            
+                            dom.btnConnectInjected.innerHTML = originalHTML;
                         } catch (err) {
                             console.error("Error Web3:", err);
-                            alert("Conexión rechazada. Si el CDN está bloqueado, usa el Fallback Local.");
-                            dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
+                            alert("Conexión rechazada. Si el CDN está bloqueado por SES, usa el Fallback Local.");
+                            dom.btnConnectInjected.innerHTML = `🦊 Conectar Browser Wallet <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>`;
                         }
                     } else {
                         alert("No se ha detectado ninguna Wallet en tu navegador.");
@@ -278,14 +270,7 @@ export default class HomeView {
                 });
             }
 
-            // 2. WALLETCONNECT V2 (Deshabilitado por Arquitectura Vanilla)
-            if (dom.btnOpenWC) {
-                dom.btnOpenWC.addEventListener('click', () => {
-                    alert("⚠️ Decisión Arquitectónica: WalletConnect V2 requiere un empaquetador (Webpack/Vite) para resolver sus dependencias sin romper las políticas CORS/MIME del navegador. \n\nPara mantener la pureza Local-First (Vanilla JS), utiliza la extensión de navegador (Browser Wallet).");
-                });
-            }
-
-            // 3. FIRMA CRIPTOGRÁFICA (SIWE)
+            // 2. FIRMA CRIPTOGRÁFICA (SIWE)
             if (dom.btnSignMessage) {
                 dom.btnSignMessage.addEventListener('click', async () => {
                     if (!web3Signer || !currentAddress || !ethersModule) return;
@@ -322,7 +307,6 @@ export default class HomeView {
             if (dom.btnDisconnect) {
                 dom.btnDisconnect.addEventListener('click', () => {
                     web3Signer = null; currentAddress = null;
-                    dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
                     dom.signState.style.display = 'none';
                     dom.connectState.style.display = 'block';
                 });
@@ -334,155 +318,13 @@ export default class HomeView {
                 dom.inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(dom.inpLoginId.value.trim()); });
             }
 
-            return; 
+            return; // Detiene la ejecución aquí si no hay sesión.
         }
 
         // ==========================================
         // LÓGICA DEL HOME REGULAR (Ya logueado)
         // ==========================================
-        import { Sidebar } from '../components/Sidebar.js';
-        import { PageHeader } from '../components/PageHeader.js';
-        
-        Sidebar.initListeners();
-        PageHeader.execute();
-
-        window.addEventListener('ph-tab-changed', (e) => {
-            this.currentTab = e.detail.tabId;
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            const target = document.getElementById(`view-${this.currentTab}`);
-            if(target) target.classList.add('active');
-        });
-    }
-
-            // 2. INVOCAR WALLETCONNECT V2 (📱 QR / Móvil)
-            if (dom.btnOpenWC) {
-                dom.btnOpenWC.addEventListener('click', async () => {
-                    try {
-                        const originalText = dom.btnOpenWC.innerHTML;
-                        dom.btnOpenWC.innerText = '⏳ Iniciando AppKit...';
-
-                        if (!ethersModule) ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
-                        const wcModule = await import('https://cdn.jsdelivr.net/npm/@web3modal/ethers6@4.1.11/+esm');
-                        
-                        const { createWeb3Modal, defaultConfig } = wcModule;
-                        const { ethers } = ethersModule;
-
-                        const projectId = 'd6fb850aaa96f842dd0a9857dd71f293';
-
-                        const mainnet = {
-                            chainId: 1,
-                            name: 'Ethereum',
-                            currency: 'ETH',
-                            explorerUrl: 'https://etherscan.io',
-                            rpcUrl: 'https://cloudflare-eth.com'
-                        };
-
-                        const metadata = {
-                            name: 'TeamTowers V9',
-                            description: 'Zero-Trust Cognitive OS',
-                            url: window.location.origin,
-                            icons: ['https://avatars.githubusercontent.com/u/37784886']
-                        };
-
-                        const ethersConfig = defaultConfig({
-                            metadata,
-                            enableEIP6963: true,
-                            enableInjected: true,
-                            enableCoinbase: true,
-                        });
-
-                        const modal = createWeb3Modal({
-                            ethersConfig,
-                            chains: [mainnet],
-                            projectId,
-                            enableAnalytics: false,
-                            themeMode: 'dark',
-                            themeVariables: { '--w3m-accent': '#3b99fc' }
-                        });
-
-                        dom.btnOpenWC.innerHTML = originalText;
-                        modal.open();
-
-                        modal.subscribeProvider(async (state) => {
-                            if (state.isConnected && state.provider) {
-                                modal.close();
-                                const provider = new ethers.BrowserProvider(state.provider);
-                                web3Signer = await provider.getSigner();
-                                currentAddress = await web3Signer.getAddress();
-                                
-                                const shortAddr = `${currentAddress.substring(0, 6)}...${currentAddress.substring(currentAddress.length - 4)}`;
-                                dom.displayAddress.innerText = shortAddr;
-                                dom.connectState.style.display = 'none';
-                                dom.signState.style.display = 'flex';
-                            }
-                        });
-
-                    } catch (err) {
-                        console.error("Error WalletConnect:", err);
-                        alert("Error cargando WalletConnect. El entorno SES podría estar bloqueando el CDN.");
-                        dom.btnOpenWC.innerHTML = `
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C16.1421 4.5 19.5 7.85786 19.5 12C19.5 16.1421 16.1421 19.5 12 19.5C7.85786 19.5 4.5 16.1421 4.5 12C4.5 7.85786 7.85786 4.5 12 4.5ZM12 7.5C9.51472 7.5 7.5 9.51472 7.5 12C7.5 14.4853 9.51472 16.5 12 16.5C14.4853 16.5 16.5 14.4853 16.5 12C16.5 9.51472 14.4853 7.5 12 7.5Z" fill="#3b99fc"/></svg>
-                            Conectar WalletConnect
-                        `;
-                    }
-                });
-            }
-
-            // 3. FIRMA CRIPTOGRÁFICA (SIWE)
-            if (dom.btnSignMessage) {
-                dom.btnSignMessage.addEventListener('click', async () => {
-                    if (!web3Signer || !currentAddress || !ethersModule) return;
-                    const { ethers } = ethersModule;
-
-                    dom.btnSignMessage.innerText = '⏳ Esperando Firma...';
-                    dom.btnSignMessage.style.opacity = '0.7';
-
-                    const nonce = Date.now().toString(16);
-                    const domain = window.location.host;
-                    const message = `Welcome to TeamTowers V9!\n\nClick to sign in and accept the TeamTowers Terms of Service.\nThis request will not trigger a blockchain transaction or cost any gas fees.\n\nURI: https://${domain}\nWallet: ${currentAddress}\nNonce: ${nonce}`;
-
-                    try {
-                        const signature = await web3Signer.signMessage(message);
-                        const recoveredAddress = ethers.verifyMessage(message, signature);
-                        
-                        if (recoveredAddress.toLowerCase() === currentAddress.toLowerCase()) {
-                            dom.signTextMsg.innerText = "✅ Criptografía verificada. Entrando a la Matriz...";
-                            dom.signTextMsg.style.color = "var(--accent-green)";
-                            setTimeout(() => doLogin(currentAddress), 1000);
-                        } else {
-                            throw new Error("La dirección recuperada no coincide.");
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        dom.btnSignMessage.innerText = '✍️ Reintentar Firma';
-                        dom.btnSignMessage.style.opacity = '1';
-                        alert("Firma rechazada o fallida. Operación cancelada.");
-                    }
-                });
-            }
-
-            // Cancelar
-            if (dom.btnDisconnect) {
-                dom.btnDisconnect.addEventListener('click', () => {
-                    web3Signer = null; currentAddress = null;
-                    dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
-                    dom.signState.style.display = 'none';
-                    dom.connectState.style.display = 'block';
-                });
-            }
-
-            // Flujo Manual (Fallback Admin Seguro)
-            if (dom.btnConnectId) {
-                dom.btnConnectId.addEventListener('click', () => doLogin(dom.inpLoginId.value.trim()));
-                dom.inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(dom.inpLoginId.value.trim()); });
-            }
-
-            return; 
-        }
-
-        // ==========================================
-        // LÓGICA DEL HOME REGULAR (Ya logueado)
-        // ==========================================
+        // Aquí no hay imports. Las dependencias ya están cargadas arriba del archivo.
         Sidebar.initListeners();
         PageHeader.execute();
 
