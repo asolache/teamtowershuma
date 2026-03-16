@@ -3,7 +3,7 @@ import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { navigateTo } from '../router.js';
+
 export default class HomeView {
     constructor() {
         document.title = "Centro de Mando | SOS V9";
