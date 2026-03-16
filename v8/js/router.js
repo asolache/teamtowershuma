@@ -7,7 +7,8 @@ import ProjectView from './views/ProjectView.js';
 import ProjectCreatorView from './views/ProjectCreatorView.js';
 import TestsView from './views/TestsView.js';
 import AgentEditorView from './views/AgentEditorView.js'; 
-import PaperView from './views/PaperView.js'; // 📝 NUEVO SPRINT 26: El Flow Workspace
+import PaperView from './views/PaperView.js'; 
+import SettingsView from './views/SettingsView.js'; // ⚙️ NUEVO SPRINT 30: Notaría y Configuración
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -25,7 +26,8 @@ const router = async () => {
         { path: "/v8/create", view: ProjectCreatorView },
         { path: "/v8/tests", view: TestsView },
         { path: "/v8/agents", view: AgentEditorView },
-        { path: "/v8/paper", view: PaperView } // Inyección del Paper (Workspace)
+        { path: "/v8/paper", view: PaperView },
+        { path: "/v8/settings", view: SettingsView } // ⚙️ Inyección de la vista de Configuración
     ];
 
     // Buscar coincidencia exacta con la URL actual
