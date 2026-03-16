@@ -252,10 +252,14 @@ export default class HomeView {
             let ethersModule = null; 
             let pendingUserId = null;
 
+            // 🔥 FIX: NAVEGACIÓN SPA PARA NO BORRAR LA MEMORIA AL LOGUEAR
             const doLogin = async (userId) => {
                 if (!userId) return alert("Identidad no válida.");
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
-                window.location.reload(); 
+                
+                // Navegación sin recarga dura
+                history.pushState(null, null, '/v8/dashboard');
+                window.dispatchEvent(new Event('popstate'));
             };
 
             // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, TrustWallet)
