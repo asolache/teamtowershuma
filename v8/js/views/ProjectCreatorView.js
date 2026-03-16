@@ -13,7 +13,7 @@ export default class ProjectCreatorView {
         this.draftTxs = [];
         this.draftPresentation = ""; 
         this.draftTags = []; 
-        this.draftNewMemes = []; // NUEVO: Para almacenar el conocimiento sintetizado por la IA
+        this.draftNewMemes = []; 
         this.sectorsFromKB = {}; 
         
         this.guardians = [
@@ -76,6 +76,11 @@ export default class ProjectCreatorView {
                 .ai-loading span { font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0,176,255,0.5); }
                 .ai-loading p { color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-size: 1.2rem;}
 
+                /* TDD ERROR PANEL */
+                .tdd-error-panel { display: none; background: rgba(255,82,82,0.1); border: 1px solid var(--accent-red); border-radius: 12px; padding: 20px; margin-bottom: 2rem; animation: slideDown 0.3s ease-out;}
+                .tdd-error-title { color: var(--accent-red); font-weight: 900; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+                .tdd-error-list { margin: 0; padding-left: 20px; color: white; font-family: var(--font-mono); font-size: 0.85rem;}
+
                 .role-draft-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
                 .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 15px; transition: transform 0.2s;}
                 .role-draft-item:hover { background: rgba(255,255,255,0.04); border-color: #444; }
@@ -98,8 +103,9 @@ export default class ProjectCreatorView {
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
                 
                 .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;}
-                .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 10px 0; border-bottom: 1px dashed #222; display: flex; justify-content: space-between; align-items: center; gap: 10px;}
+                .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 15px 10px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
+                .phase-badge { align-self: flex-start; background: rgba(0,176,255,0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--accent-blue);}
 
                 .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
                 
@@ -110,6 +116,10 @@ export default class ProjectCreatorView {
                 .btn-lux-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,230,118,0.4);}
                 .btn-lux-outline { background: transparent; border: 1px solid #555; color: white;}
                 .btn-lux-outline:hover { border-color: white; background: rgba(255,255,255,0.05);}
+                
+                .btn-lux:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+                @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
                 @media (max-width: 768px) {
                     .wizard-workspace { padding: 80px 1rem 2rem 1rem; }
@@ -163,7 +173,7 @@ export default class ProjectCreatorView {
 
                             <div class="form-group">
                                 <label>Input Cognitivo (Visión Bruta para la IA)</label>
-                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la idea. El Orquestador trazará las tuberías de valor y SINTETIZARÁ nuevos Skills W3C si faltan en el catálogo..."></textarea>
+                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la idea. El Orquestador trazará las tuberías de valor en 5 fases (Kickoff -> Harvest) asegurando la certificación TDD..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
@@ -191,31 +201,37 @@ export default class ProjectCreatorView {
                                 </div>
                             </details>
 
+                            <div class="tdd-error-panel" id="tddErrorPanel">
+                                <h3 class="tdd-error-title">⛔ Auditoría Cognitiva Fallida</h3>
+                                <ul class="tdd-error-list" id="tddErrorList"></ul>
+                                <div style="margin-top: 10px; font-size: 0.8rem; color: #888;">Por seguridad de la red, la inyección del JSON ha sido bloqueada. Adapta la visión o intenta regenerar.</div>
+                            </div>
+
                             <div class="actions-row">
                                 <button class="btn-lux btn-lux-outline" id="btnStartBlank">📄 Lienzo en Blanco</button>
                                 <button class="btn-lux btn-lux-outline" id="btnLoadTemplate">🏗️ Inyectar Genoma (Offline)</button>
-                                <button class="btn-lux btn-lux-primary" id="btnGenerateAI">🧠 Diseñar Topología con IA</button>
+                                <button class="btn-lux btn-lux-primary" id="btnGenerateAI">🧠 Diseñar Topología TDD</button>
                             </div>
                         </div>
 
                         <div id="aiLoading" class="ai-loading">
                             <span>🪐</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Mapeando Ecosistema VNA...</div>
+                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Generando VNA de 5 Fases y ejecutando TDD interno...</div>
                         </div>
 
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 2rem;">
-                                <h1>Validación de Arquitectura</h1>
-                                <p>Ajusta los nodos o revisa el mapa visual antes de inyectarlo en el Kernel.</p>
+                                <h1>Validación de Arquitectura (DAG)</h1>
+                                <p>Revisa el mapeo de valor secuencial (5 Eras) antes de inyectarlo en el Kernel.</p>
                             </div>
 
                             <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
 
                             <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de las tuberías y el Pitch">
                                 <div>
-                                    <div style="font-size: 0.85rem; color: var(--accent-green); font-weight: 900; text-transform: uppercase; margin-bottom: 5px;">⚡ Tuberías V8 y Pitch Generados</div>
-                                    <div style="color: var(--text-muted); font-size: 0.9rem;">El Orquestador ha trazado <strong id="txCount" style="color: white; font-size: 1.2rem; font-family: monospace;">0</strong> flujos base (Clic para previsualizar).</div>
+                                    <div style="font-size: 0.85rem; color: var(--accent-green); font-weight: 900; text-transform: uppercase; margin-bottom: 5px;">⚡ Tuberías VNA Certificadas</div>
+                                    <div style="color: var(--text-muted); font-size: 0.9rem;">Se han validado <strong id="txCount" style="color: white; font-size: 1.2rem; font-family: monospace;">0</strong> SOPs secuenciales (Clic para ver).</div>
                                 </div>
                                 <div style="font-size: 1.8rem; opacity: 0.5;">&darr;</div>
                             </div>
@@ -228,7 +244,7 @@ export default class ProjectCreatorView {
 
                             <div class="actions-row" style="border-top: 1px solid var(--glass-border); padding-top: 2rem;">
                                 <button class="btn-lux btn-lux-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn-lux btn-lux-success" id="btnLaunch">🚀 Inyectar Red en el Kernel</button>
+                                <button class="btn-lux btn-lux-success" id="btnLaunch" disabled>🚀 Inyectar Red (Pendiente Certificación)</button>
                             </div>
                         </div>
 
@@ -264,7 +280,9 @@ export default class ProjectCreatorView {
             customEndpointBox: document.getElementById('customEndpointBox'),
             aiTxFeedback: document.getElementById('aiTxFeedback'),
             txCount: document.getElementById('txCount'),
-            txPreviewList: document.getElementById('txPreviewList')
+            txPreviewList: document.getElementById('txPreviewList'),
+            tddErrorPanel: document.getElementById('tddErrorPanel'),
+            tddErrorList: document.getElementById('tddErrorList')
         };
 
         Sidebar.initListeners();
@@ -283,11 +301,9 @@ export default class ProjectCreatorView {
 
         this.dom.btnStartBlank.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
-            this.draftRoles = [];
-            this.draftTxs = [];
-            this.draftPresentation = this.dom.inpVision.value.trim(); 
-            this.draftTags = [];
-            this.draftNewMemes = [];
+            this.resetDrafts();
+            this.dom.btnLaunch.disabled = false; 
+            this.dom.btnLaunch.innerText = '🚀 Inyectar Red en el Kernel';
             this.goToStep2();
         });
 
@@ -297,46 +313,36 @@ export default class ProjectCreatorView {
             const sectorVal = this.dom.inpSector.value; 
             let sectorData = this.sectorsFromKB[sectorVal];
 
-            this.draftRoles = [];
-            this.draftTxs = []; 
+            this.resetDrafts();
             this.draftTags = [sectorVal, this.dom.inpArchetype.value];
-            this.draftNewMemes = [];
-            
             this.draftPresentation = this.dom.inpVision.value.trim() || `Red instanciada con genoma LMS: ${sectorData ? sectorData.label : 'Vacío'}.`;
             
             if (sectorData && sectorData.roles) {
                 const roleKeys = Object.keys(sectorData.roles);
-
                 roleKeys.forEach(levelKey => {
                     const data = sectorData.roles[levelKey];
-                    const level = levelKey; 
                     const m = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
                     
                     this.draftRoles.push({
                         id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                        levelId: level,
-                        name: data.name || level,
-                        fmv: 50,
-                        multiplier: m[level] || 1.0,
-                        guardian: data.guardian || 'everyman',
-                        ai_prompt: data.content || '' 
+                        levelId: levelKey, name: data.name || levelKey, fmv: 50, multiplier: m[levelKey] || 1.0,
+                        guardian: data.guardian || 'everyman', ai_prompt: data.content || '' 
                     });
 
                     if (data.deliverables) {
-                        data.deliverables.forEach(deliv => {
-                            let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (level === '@baixos' ? '@dosos' : (level === '@dosos' ? '@anxaneta' : '@baixos'));
+                        data.deliverables.forEach((deliv, idx) => {
+                            let toLevel = deliv.to && deliv.to !== '?' ? deliv.to : (levelKey === '@baixos' ? '@dosos' : (levelKey === '@dosos' ? '@anxaneta' : '@baixos'));
                             this.draftTxs.push({
-                                fromLevel: level, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4,
-                                soc_checklist: [], resources: [],
-                                required_skills: deliv.required_skills || []
+                                id: `tx_base_${levelKey}_${idx}`, phase: "Kickoff", step_order: idx + 1, depends_on: [],
+                                fromLevel: levelKey, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4,
+                                soc_checklist: [{text:"Cumple calidad estándar W3C"}], resources: [], required_skills: deliv.required_skills || []
                             });
                         });
                     }
                 });
-            } else {
-                alert("Error cargando plantilla. Empieza en blanco o usa la IA.");
-                return;
             }
+            this.dom.btnLaunch.disabled = false;
+            this.dom.btnLaunch.innerText = '🚀 Inyectar Red en el Kernel';
             this.goToStep2();
         });
 
@@ -361,63 +367,50 @@ export default class ProjectCreatorView {
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
-    goToStep2() {
-        this.dom.step1.style.display = 'none';
-        this.dom.loading.style.display = 'none';
-        this.dom.step2.style.display = 'block';
-        this.dom.dot1.classList.remove('active');
-        this.dom.dot2.classList.add('active');
-        
-        if (this.draftTxs.length > 0 || this.draftPresentation.length > 0) {
-            this.dom.aiTxFeedback.style.display = 'flex';
-            this.dom.txCount.innerText = this.draftTxs.length;
-            
-            const tagsHtml = this.draftTags.length > 0 ? `<div style="margin-bottom:15px;">${this.draftTags.map(t => `<span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:0.75rem; margin-right:8px; font-family:var(--font-mono);">#${t}</span>`).join('')}</div>` : '';
+    resetDrafts() {
+        this.draftRoles = []; this.draftTxs = []; this.draftTags = []; this.draftNewMemes = []; this.draftPresentation = "";
+        this.dom.tddErrorPanel.style.display = 'none';
+    }
 
-            // Renderizar los Nuevos Memes generados por la IA para que el usuario sepa que el sistema aprendió algo nuevo
-            const newMemesHtml = this.draftNewMemes && this.draftNewMemes.length > 0 ? `
-                <div style="background: rgba(224,64,251,0.1); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                    <strong style="color: var(--accent-purple); font-size: 0.9rem; text-transform:uppercase; display:block; margin-bottom:8px;">🧠 Conocimiento W3C Sintetizado (La red aprende):</strong>
-                    <ul style="margin:0; padding-left:15px; font-size:0.8rem; color:#ccc;">
-                        ${this.draftNewMemes.map(m => `<li><strong>${m.title}</strong>: ${m.content.substring(0,80)}...</li>`).join('')}
-                    </ul>
-                </div>
-            ` : '';
+    // =========================================================================
+    // TDD COGNITIVO: Auditoría de la Alucinación de la IA (Caja de Arena)
+    // =========================================================================
+    runCognitiveTDD(parsedData) {
+        let errors = [];
 
-            const listHtml = this.draftTxs.map((tx, i) => `
-                <div class="tx-preview-item">
-                    <div style="flex:1;">
-                        <span style="color:${tx.tipo==='intangible'?'var(--accent-purple)':'var(--accent-green)'}; font-weight:bold; font-family:var(--font-mono);">[${i+1}]</span> 
-                        <span style="color:#888;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
-                        <div style="color:white; font-weight:bold; font-size:0.95rem; margin-top:5px;">${tx.template || tx.entregable} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></div>
-                    </div>
-                    ${tx.soc_checklist && tx.soc_checklist.length > 0 ? `
-                        <div style="flex:1; background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; border:1px solid #444;">
-                            <strong style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:5px;">SOCs (Indicadores de Calidad):</strong>
-                            <ul style="margin:0; padding-left:15px; font-size:0.8rem; color:#ccc;">
-                                ${tx.soc_checklist.map(soc => `<li>${soc.text}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-            
-            this.dom.txPreviewList.innerHTML = `
-                ${tagsHtml}
-                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border-left: 3px solid var(--accent-blue); margin-bottom: 20px;">
-                    <strong style="color: white; font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">📖 Misión Instanciada:</strong>
-                    <span style="color:#ccc; font-style:italic; line-height:1.5;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
-                </div>
-                ${newMemesHtml}
-                ${listHtml}
-                <div style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--accent-orange); font-weight:bold; background:rgba(255,171,64,0.1); padding:10px; border-radius:8px;">Podrás editar la topología visualmente en el Mapa VNA después de instanciar.</div>
-            `;
-        } else {
-            this.dom.aiTxFeedback.style.display = 'none';
-            this.dom.txPreviewList.style.display = 'none';
+        // 1. ¿Hay 5 Fases?
+        const expectedPhases = ['Kickoff', 'Growth', 'Scale', 'Harvest', 'Cierre'];
+        const generatedPhases = [...new Set(parsedData.transactions.map(t => t.phase))];
+        const missingPhases = expectedPhases.filter(p => !generatedPhases.includes(p));
+        if (missingPhases.length > 0) {
+            errors.push(`Fallo Estructural: Faltan las eras de Verna Allee (${missingPhases.join(', ')}).`);
         }
-        
-        this.renderDraftRoles();
+
+        // 2. Dependencias y Camino Crítico (DAG)
+        const allTxIds = parsedData.transactions.map(t => t.id);
+        parsedData.transactions.forEach(tx => {
+            if (!tx.id) errors.push(`Transacción sin ID detectada (Template: ${tx.template}).`);
+            if (tx.phase !== 'Kickoff' && (!tx.depends_on || tx.depends_on.length === 0)) {
+                errors.push(`Camino Crítico Roto: El SOP [${tx.template}] en la fase ${tx.phase} no tiene dependencias (SOP huérfano).`);
+            }
+            if (tx.depends_on) {
+                tx.depends_on.forEach(depId => {
+                    if (!allTxIds.includes(depId)) errors.push(`Alucinación DAG: El SOP [${tx.template}] depende del ID [${depId}] que no existe.`);
+                });
+            }
+            
+            // 3. Regla de la Tríada de Skills
+            if (!tx.required_skills || tx.required_skills.length < 3) {
+                errors.push(`Tríada Rota: El SOP [${tx.template}] tiene menos de 3 skills asignados.`);
+            }
+
+            // 4. Regla de SOCs Claros
+            if (!tx.soc_checklist || tx.soc_checklist.length === 0) {
+                errors.push(`TDD Ausente: El SOP [${tx.template}] no tiene matriz SOC (Criterios de auditoría nulos).`);
+            }
+        });
+
+        return errors;
     }
 
     async generateWithAI() {
@@ -438,61 +431,59 @@ export default class ProjectCreatorView {
 
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
-        this.dom.loadingMsg.innerText = `Conectando con ${provider.toUpperCase()}...`;
+        this.dom.loadingMsg.innerText = `Sintetizando Red 5-Phases con ${provider.toUpperCase()}...`;
+        this.dom.tddErrorPanel.style.display = 'none';
 
         await KB.init();
-        const globalDocs = await KB.getAllNodes({projectId: 'global'});
-        const vnaMeta = globalDocs.find(d => d.id === 'meme_os_vna')?.content || 'Aplica metodología Value Network Analysis.';
-        const pantheonMeta = globalDocs.find(d => d.id === 'meme_os_pantheon')?.content || 'Aplica los 12 arquetipos Pantheon a cada rol.';
 
         // =========================================================
-        // SYSTEM PROMPT DELUXE: W3C KNOWLEDGE ARCHITECT Y TRÍADA
+        // SYSTEM PROMPT DELUXE: DAG & 5 FASES VERNA ALLEE
         // =========================================================
         const systemPrompt = `
-            Actúa como Master Ecosystem Architect y W3C Knowledge Architect.
-            Misión: Instanciar una DAO para "${name}" (Arquetipo: "${archetypeText}").
+            Actúa como Master Ecosystem Architect. Diseña una red neuronal de valor (VNA) para un proyecto llamado "${name}" (Arquetipo: "${archetypeText}").
 
-            BASE TEÓRICA CRÍTICA (Value Network Analysis):
-            ${vnaMeta}
+            INSTRUCCIONES CRÍTICAS DE ESTRUCTURA (TDD COMPLIANCE):
+            1. FASES (ERAS): El ecosistema DEBE tener transacciones (SOPs) divididas exactamente en estas 5 fases: "Kickoff", "Growth", "Scale", "Harvest", "Cierre".
+            2. FLUJO ORDENADO (DAG): Cada SOP debe tener un "id" único (ej: "tx_1"). Los SOPs de fases posteriores DEBEN tener un array "depends_on" con los IDs de los SOPs que deben completarse antes. (El Kickoff puede tener depends_on vacío).
+            3. TRÍADA DE SKILLS: Cada SOP debe tener "required_skills" con al menos 3 IDs W3C. Si usas skills nuevos (ej: "meme_skill_python"), decláralos en el array "new_memes".
+            4. SOCs: Cada SOP requiere un "soc_checklist" medible para evitar mermas.
 
-            MODELO PANTHEON (12 Guardianes):
-            ${pantheonMeta}
-
-            INSTRUCCIONES DE DENSIDAD Y A2A: 
-            Crea roles distribuidos en: @anxaneta (Visión), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte). 
-            Genera 5-7 transacciones base (SOPs). 
-            
-            LA REGLA DE LA TRÍADA (Anclaje Competencial):
-            Cada transacción (SOP) debe tener un array "required_skills" con al menos 3 IDs:
-            1. El ID del Skill Tangible (ej. meme_skill_lvl_baixos, meme_skill_lvl_anxaneta...)
-            2. El ID del Skill Intangible del Guardián asignado (ej. meme_skill_pan_hephaestus, meme_skill_pan_sage...)
-            3. Un Skill Técnico o SOC Específico para el entregable. Si este skill específico no es común, ¡INVÉNTALO y defínelo en el array "new_memes"!
-
-            CREACIÓN DE CONOCIMIENTO (new_memes):
-            Tu tarea más importante es engrosar la base de datos W3C de la red. Cualquier Skill técnico (ej: meme_skill_python, meme_skill_seo) o Regla de Auditoría (meme_soc_api_response) que uses en "required_skills" y no sea los genéricos de nivel/pantheon, debes declararlo detalladamente en el array "new_memes".
-            
             ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido sin marcadores markdown):
             {
-                "presentacion": "Pitch institucional...",
-                "tags": ["Sector", "ModeloNegocio"],
+                "presentacion": "Pitch de la misión...",
+                "tags": ["Sector"],
                 "new_memes": [
-                    { "id": "meme_skill_python", "category": "skill", "title": "Skill: Python Avanzado", "content": "Dominio de Python y FastAPI...", "keywords": ["Python", "Backend"] },
-                    { "id": "meme_soc_api", "category": "soc", "title": "SOC: API RESTful", "content": "AUDITORÍA: La API devuelve códigos 2xx correctos...", "keywords": ["API", "Backend"] }
+                    { "id": "meme_skill_custom1", "category": "skill", "title": "Skill: ...", "content": "..." }
                 ],
                 "roles": [
-                    { "levelId": "@nivel", "name": "Nombre Actividad", "fmv": 60, "multiplier": 2.0, "guardian": "id_del_guardian", "ai_prompt": "Instrucción de calibración (A2A)..." }
+                    { "levelId": "@baixos", "name": "Ingeniero", "fmv": 60, "multiplier": 1.2, "guardian": "hephaestus" }
                 ],
                 "transactions": [
                     { 
-                        "fromLevel": "@origen", 
-                        "toLevel": "@destino", 
-                        "tipo": "tangible|intangible", 
-                        "template": "Sustantivo (Ej: Informe de métricas)", 
-                        "horas": 4,
-                        "required_skills": ["meme_skill_lvl_baixos", "meme_skill_pan_hephaestus", "meme_skill_python", "meme_soc_api"],
-                        "soc_checklist": [
-                            { "text": "El código pasa los linters" }
-                        ]
+                        "id": "tx_1",
+                        "phase": "Kickoff",
+                        "step_order": 1,
+                        "depends_on": [],
+                        "fromLevel": "@anxaneta", 
+                        "toLevel": "@baixos", 
+                        "tipo": "tangible", 
+                        "template": "Diseño Core", 
+                        "horas": 8,
+                        "required_skills": ["meme_skill_lvl_anxaneta", "meme_skill_pan_creator", "meme_skill_custom1"],
+                        "soc_checklist": [{ "text": "Aprobación de V1" }]
+                    },
+                    { 
+                        "id": "tx_2",
+                        "phase": "Growth",
+                        "step_order": 2,
+                        "depends_on": ["tx_1"],
+                        "fromLevel": "@baixos", 
+                        "toLevel": "@dosos", 
+                        "tipo": "tangible", 
+                        "template": "Campaña Adquisición", 
+                        "horas": 12,
+                        "required_skills": ["meme_skill_lvl_baixos", "meme_skill_pan_hero", "meme_skill_custom1"],
+                        "soc_checklist": [{ "text": "ROAS > 2" }]
                     }
                 ]
             }
@@ -503,18 +494,14 @@ export default class ProjectCreatorView {
 
             if (provider === 'gemini') {
                 const targetModel = 'gemini-1.5-flash';
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = `Sintetizando Conocimiento y Topología con ${targetModel}...`;
-
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nVISIÓN EN BRUTO: ${vision}` }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nVISIÓN: ${vision}` }] }] })
                 });
                 if (!response.ok) throw new Error("Google Gemini Error");
                 const data = await response.json();
                 textResponse = data.candidates[0].content.parts[0].text;
-            
             } else if (provider === 'openai') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Sintetizando Conocimiento y Topología con GPT-4o...";
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
@@ -522,9 +509,7 @@ export default class ProjectCreatorView {
                 if (!response.ok) throw new Error("OpenAI Error");
                 const data = await response.json();
                 textResponse = data.choices[0].message.content;
-            
             } else if (provider === 'deepseek') {
-                if(this.dom.loadingSubMsg) this.dom.loadingSubMsg.innerText = "Sintetizando Conocimiento A2A con DeepSeek...";
                 const response = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
@@ -541,9 +526,24 @@ export default class ProjectCreatorView {
 
             const parsedData = JSON.parse(textResponse);
 
+            // ===============================================
+            // EJECUCIÓN TDD LOCAL (Filtro de Alucinaciones)
+            // ===============================================
+            const tddErrors = this.runCognitiveTDD(parsedData);
+            
+            if (tddErrors.length > 0) {
+                // Si falla el TDD, bloqueamos la inyección y mostramos el error.
+                this.dom.tddErrorPanel.style.display = 'block';
+                this.dom.tddErrorList.innerHTML = tddErrors.map(e => `<li>${e}</li>`).join('');
+                this.dom.loading.style.display = 'none';
+                this.dom.step1.style.display = 'block';
+                return;
+            }
+
+            // Si pasa el TDD 100%, mapeamos y avanzamos
             this.draftPresentation = parsedData.presentacion || vision;
             this.draftTags = parsedData.tags || [];
-            this.draftNewMemes = parsedData.new_memes || []; // Recuperamos los memes sintetizados
+            this.draftNewMemes = parsedData.new_memes || []; 
             
             this.draftRoles = parsedData.roles.map(r => ({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
@@ -551,6 +551,10 @@ export default class ProjectCreatorView {
             }));
             
             this.draftTxs = (parsedData.transactions || []).map(tx => ({
+                id: tx.id,
+                phase: tx.phase || 'Kickoff',
+                step_order: tx.step_order || 1,
+                depends_on: tx.depends_on || [],
                 fromLevel: tx.fromLevel, 
                 toLevel: tx.toLevel, 
                 tipo: tx.tipo, 
@@ -561,14 +565,89 @@ export default class ProjectCreatorView {
                 required_skills: tx.required_skills || []
             }));
             
+            this.dom.btnLaunch.disabled = false;
+            this.dom.btnLaunch.innerText = '🚀 Inyectar Red VNA (100% SOC)';
             this.goToStep2();
 
         } catch (error) {
             console.error("💥 Fallo Motor Cognitivo:", error);
-            alert(`Fallo en el Motor Cognitivo.\nRevisa tu API Key o usa la plantilla en blanco.`);
+            alert(`Fallo en el parseo del Motor Cognitivo. Revisa la consola.`);
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
         }
+    }
+
+    goToStep2() {
+        this.dom.step1.style.display = 'none';
+        this.dom.loading.style.display = 'none';
+        this.dom.step2.style.display = 'block';
+        this.dom.dot1.classList.remove('active');
+        this.dom.dot2.classList.add('active');
+        
+        if (this.draftTxs.length > 0 || this.draftPresentation.length > 0) {
+            this.dom.aiTxFeedback.style.display = 'flex';
+            this.dom.txCount.innerText = this.draftTxs.length;
+            
+            const tagsHtml = this.draftTags.length > 0 ? `<div style="margin-bottom:15px;">${this.draftTags.map(t => `<span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:0.75rem; margin-right:8px; font-family:var(--font-mono);">#${t}</span>`).join('')}</div>` : '';
+
+            const newMemesHtml = this.draftNewMemes && this.draftNewMemes.length > 0 ? `
+                <div style="background: rgba(224,64,251,0.1); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <strong style="color: var(--accent-purple); font-size: 0.9rem; text-transform:uppercase; display:block; margin-bottom:8px;">🧠 Memética W3C Sintetizada:</strong>
+                    <ul style="margin:0; padding-left:15px; font-size:0.8rem; color:#ccc;">
+                        ${this.draftNewMemes.map(m => `<li><strong>${m.title}</strong>: ${m.content.substring(0,60)}...</li>`).join('')}
+                    </ul>
+                </div>
+            ` : '';
+
+            // Renderizado Agrupado por Fases
+            const phases = ['Kickoff', 'Growth', 'Scale', 'Harvest', 'Cierre'];
+            let listHtml = '';
+            
+            phases.forEach(p => {
+                const txsInPhase = this.draftTxs.filter(t => t.phase === p).sort((a,b) => a.step_order - b.step_order);
+                if (txsInPhase.length > 0) {
+                    listHtml += `<div style="margin-top: 15px; border-bottom: 2px solid #333; padding-bottom: 5px; color: white; font-weight: 900; font-size: 1.1rem; text-transform: uppercase;">🌐 ERA: ${p}</div>`;
+                    
+                    listHtml += txsInPhase.map((tx) => {
+                        const deps = tx.depends_on.length > 0 ? `<span style="color:#888; font-size:0.7rem; font-family:var(--font-mono); margin-left:10px;">↪ Depende de: [${tx.depends_on.join(', ')}]</span>` : '';
+                        
+                        return `
+                        <div class="tx-preview-item">
+                            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                                <div style="flex:1;">
+                                    <span style="color:${tx.tipo==='intangible'?'var(--accent-purple)':'var(--accent-green)'}; font-weight:bold; font-family:var(--font-mono);">[ID: ${tx.id}]</span> 
+                                    <span style="color:#aaa; font-size:0.8rem;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
+                                    <div style="color:white; font-weight:bold; font-size:1rem; margin-top:5px;">${tx.template} <span style="color:var(--accent-blue); font-family:var(--font-mono);">(${tx.horas}h)</span></div>
+                                    ${deps}
+                                </div>
+                            </div>
+                            <div style="width:100%; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; border-left:2px solid #555;">
+                                <strong style="color:#888; font-size:0.7rem; display:block; margin-bottom:5px;">✅ MATRIZ SOCs:</strong>
+                                <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#bbb;">
+                                    ${tx.soc_checklist.map(soc => `<li>${soc.text}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `}).join('');
+                }
+            });
+            
+            this.dom.txPreviewList.innerHTML = `
+                ${tagsHtml}
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border-left: 3px solid var(--accent-blue); margin-bottom: 20px;">
+                    <strong style="color: white; font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px;">📖 Misión Instanciada:</strong>
+                    <span style="color:#ccc; font-style:italic; line-height:1.5;">${this.draftPresentation.replace(/\n/g, '<br>')}</span>
+                </div>
+                ${newMemesHtml}
+                ${listHtml}
+                <div style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--accent-orange); font-weight:bold; background:rgba(255,171,64,0.1); padding:10px; border-radius:8px;">El DAG ha superado la validación TDD Local al 100%. Listo para inyectar.</div>
+            `;
+        } else {
+            this.dom.aiTxFeedback.style.display = 'none';
+            this.dom.txPreviewList.style.display = 'none';
+        }
+        
+        this.renderDraftRoles();
     }
 
     renderDraftRoles() {
@@ -742,7 +821,7 @@ export default class ProjectCreatorView {
         const arch = this.dom.inpArchetype.value; 
         
         this.dom.btnLaunch.disabled = true;
-        this.dom.btnLaunch.innerText = 'Instanciando Matriz V9...';
+        this.dom.btnLaunch.innerText = 'Instanciando Matriz VNA...';
 
         await store.dispatch({ 
             type: 'CREATE_PROJECT', 
@@ -757,7 +836,6 @@ export default class ProjectCreatorView {
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
-        // 1. Guardar Prompts IA personalizados
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
                 if (rol.ai_prompt && rol.ai_prompt.length > 10) {
@@ -770,23 +848,16 @@ export default class ProjectCreatorView {
             }
         }
 
-        // 2. INYECTAR EL NUEVO CONOCIMIENTO EN EL KERNEL GLOBAL (El Ecosistema Aprende)
         if (this.draftNewMemes && this.draftNewMemes.length > 0) {
             for (const meme of this.draftNewMemes) {
                 await KB.saveNode({
-                    id: meme.id,
-                    type: 'meme',
-                    category: meme.category || 'skill',
-                    title: meme.title,
-                    content: meme.content,
-                    keywords: meme.keywords || [],
-                    projectId: 'global', // Lo hacemos global para que sirva a futuros proyectos
-                    targetId: 'global'
+                    id: meme.id, type: 'meme', category: meme.category || 'skill',
+                    title: meme.title, content: meme.content, keywords: meme.keywords || [],
+                    projectId: 'global', targetId: 'global'
                 });
             }
         }
 
-        // 3. Generar Flows (Tuberías) y AUTO-SPAWNEAR Work Orders en el Sprint 1 (Kickoff)
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
@@ -794,48 +865,39 @@ export default class ProjectCreatorView {
                 const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
                 
                 if (roleFrom && roleTo) {
-                    const flowId = 'flow_' + Math.random().toString(36).substr(2, 9);
-                    const templateName = aiTx.template || aiTx.entregable || 'Entregable Core';
+                    const flowId = 'flow_' + aiTx.id; // Anclamos el ID generado por la IA
+                    const templateName = aiTx.template || 'Entregable Core';
                     
-                    // A) Creamos la tubería base con anclaje competencial
                     await store.dispatch({
                         type: 'ADD_FLOW',
                         payload: {
                             projectId: projectId,
                             flow: { 
                                 id: flowId, from: roleFrom.id, to: roleTo.id, estimatedHours: aiTx.horas || 4, 
-                                template: templateName, 
-                                tipo: aiTx.tipo || 'tangible',
-                                soc_checklist: aiTx.soc_checklist || [], 
-                                resources: aiTx.resources || [],
-                                required_skills: aiTx.required_skills || [] 
+                                template: templateName, tipo: aiTx.tipo || 'tangible', phase: aiTx.phase, step_order: aiTx.step_order, depends_on: aiTx.depends_on,
+                                soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || [], required_skills: aiTx.required_skills || [] 
                             }
                         }
                     });
 
-                    // CONSTRUCCIÓN DEL SOP/SOC PARA EL KANBAN
-                    let kickoffComment = `SOP: Ejecutar [${templateName}].`;
-                    if (aiTx.soc_checklist && aiTx.soc_checklist.length > 0) {
-                        kickoffComment += ` | SOCs: ` + aiTx.soc_checklist.map(s => `✔️ ${s.text}`).join(' ');
-                    } else {
-                        kickoffComment += ` | Valida la calidad según los estándares nativos de tu Rol antes de reportar.`;
+                    // Instanciamos en el Kanban SOLO las tareas del KICKOFF (Las demás esperan su turno en el DAG)
+                    if (aiTx.phase === 'Kickoff' || aiTx.depends_on.length === 0) {
+                        let kickoffComment = `SOP: Ejecutar [${templateName}].`;
+                        if (aiTx.soc_checklist && aiTx.soc_checklist.length > 0) kickoffComment += ` | SOCs: ` + aiTx.soc_checklist.map(s => `✔️ ${s.text}`).join(' ');
+
+                        const woHash = 'wo_kickoff_' + Math.random().toString(36).substr(2, 9);
+                        await store.dispatch({
+                            type: 'SPAWN_WORK_ORDER',
+                            payload: {
+                                projectId: projectId,
+                                workOrder: {
+                                    hash: woHash, flowId: flowId, status: 'theoretical', realHours: 0,
+                                    sprintId: p.activeSprintId, comentario: kickoffComment,
+                                    soc_checklist: aiTx.soc_checklist || [], resources: aiTx.resources || []
+                                }
+                            }
+                        });
                     }
-
-                    // B) KICKOFF AUTOMÁTICO
-                    const woHash = 'wo_kickoff_' + Math.random().toString(36).substr(2, 9);
-                    await store.dispatch({
-                        type: 'SPAWN_WORK_ORDER',
-                        payload: {
-                            projectId: projectId,
-                            workOrder: {
-                                hash: woHash, flowId: flowId, status: 'theoretical', realHours: 0,
-                                sprintId: p.activeSprintId,
-                                comentario: kickoffComment,
-                                soc_checklist: aiTx.soc_checklist || [], 
-                                resources: aiTx.resources || []
-                            }
-                        }
-                    });
                 }
             }
         }
