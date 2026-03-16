@@ -49,15 +49,24 @@ class Store {
         let proj, wo;
 
         switch (action.type) {
+            case 'REGISTER_USER': // 🔥 NUEVO: Onboarding Cypherpunk
+                if (!newState.globalUsers.find(u => u.id === action.payload.id)) {
+                    newState.globalUsers.push(action.payload);
+                }
+                break;
             case 'LOGIN_USER':
                 newState.session.activeUserId = action.payload.userId;
                 // Shadow Profile si no existe (Lazy Registration)
-                if (!newState.globalUsers.find(u => u.id === action.payload.userId)) {
+                const existingUser = newState.globalUsers.find(u => u.id === action.payload.userId);
+                if (!existingUser) {
                     newState.globalUsers.push({ id: action.payload.userId, name: 'Anónimo', globalRole: 'network-user', profile: { sbt_skills: [] } });
                 }
+                // Actualizamos el rol de la sesión basado en el Padrón
+                newState.session.role = existingUser ? existingUser.globalRole : 'network-user';
                 break;
             case 'LOGOUT_USER':
                 newState.session.activeUserId = null;
+                newState.session.role = 'guest';
                 break;
             case 'ADD_USER':
                 if (!newState.globalUsers.find(u => u.id === action.payload.id)) {
@@ -118,7 +127,7 @@ class Store {
                     if (flow && role) {
                         let baseSlices = wo.realHours * role.fmv * role.multiplier;
                         
-                        // Lógica de Merma: -10% por cada SOC fallido (Ejemplo)
+                        // Lógica de Merma: -10% por cada SOC fallido
                         let mermaPercent = 0;
                         if (wo.soc_checklist && wo.soc_checklist.length > 0) {
                             const failedSocs = wo.soc_checklist.filter(s => !s.isChecked).length;
@@ -134,7 +143,7 @@ class Store {
                         });
                     }
 
-                    // 2. Experiencia (XP) SBT para el Árbol de Habilidades (Mestre d'Escola)
+                    // 2. Experiencia (XP) SBT para el Árbol de Habilidades
                     const user = newState.globalUsers.find(u => u.id === wo.workerId);
                     if (user && user.profile) {
                         if (!user.profile.sbt_skills) user.profile.sbt_skills = [];
@@ -145,7 +154,6 @@ class Store {
             case 'ADD_CAPITAL_INJECTION':
                 proj = newState.projects.find(p => p.id === action.payload.projectId);
                 if (proj) {
-                    // El multiplicador estándar de capital en Slicing Pie suele ser 4x
                     const capitalMultiplier = 4.0;
                     proj.ledger.push({
                         id: 'tx_cap_' + Date.now(), type: 'CAPITAL',
