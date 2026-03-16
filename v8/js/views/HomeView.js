@@ -142,9 +142,6 @@ export default class HomeView {
     }
 
     // ==========================================
-    // LOGIN PANTALLA WEB3 (ZERO-TRUST REAL)
-    // ==========================================
-   // ==========================================
     // LOGIN PANTALLA WEB3 & 2FA (ZERO-TRUST REAL)
     // ==========================================
     getLandingHtml() {
@@ -229,7 +226,7 @@ export default class HomeView {
         const state = store.getState();
         
         // ==========================================
-        // LÓGICA DE LOGIN WEB3 (LAZY LOADING)
+        // LÓGICA DE LOGIN (WEB3 & 2FA MANUAL)
         // ==========================================
         if (!state.session.activeUserId || state.session.role === 'guest') {
             const dom = {
@@ -241,12 +238,19 @@ export default class HomeView {
                 btnDisconnect: document.getElementById('btnDisconnect'),
                 btnConnectId: document.getElementById('btnConnectId'),
                 inpLoginId: document.getElementById('inpLoginId'),
-                signTextMsg: document.getElementById('signTextMsg')
+                signTextMsg: document.getElementById('signTextMsg'),
+                // DOM 2FA
+                stepManual: document.getElementById('stepManual'),
+                step2fa: document.getElementById('step2fa'),
+                inp2faCode: document.getElementById('inp2faCode'),
+                btnVerify2fa: document.getElementById('btnVerify2fa'),
+                btnCancel2fa: document.getElementById('btnCancel2fa')
             };
 
             let web3Signer = null;
             let currentAddress = null;
             let ethersModule = null; 
+            let pendingUserId = null; // Para el 2FA
 
             const doLogin = async (userId) => {
                 if (!userId) return alert("Identidad no válida.");
@@ -264,6 +268,7 @@ export default class HomeView {
                             const originalHTML = dom.btnConnectInjected.innerHTML;
                             dom.btnConnectInjected.innerText = '⏳ Cargando Motor Criptográfico...';
                             
+                            // Carga dinámica de Ethers.js para no romper entornos SES
                             if (!ethersModule) {
                                 ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
                             }
@@ -326,7 +331,7 @@ export default class HomeView {
                 });
             }
 
-            // Cancelar
+            // Cancelar Firma Web3
             if (dom.btnDisconnect) {
                 dom.btnDisconnect.addEventListener('click', () => {
                     web3Signer = null; currentAddress = null;
@@ -335,19 +340,61 @@ export default class HomeView {
                 });
             }
 
-            // Flujo Manual (Fallback Admin Seguro)
+            // 3. FLUJO MANUAL (Paso 1: Solicitar Acceso con Alias)
             if (dom.btnConnectId) {
-                dom.btnConnectId.addEventListener('click', () => doLogin(dom.inpLoginId.value.trim()));
-                dom.inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(dom.inpLoginId.value.trim()); });
+                dom.btnConnectId.addEventListener('click', () => {
+                    const userId = dom.inpLoginId.value.trim();
+                    if (!userId) return alert("Introduce una Identidad.");
+                    
+                    // Pasamos a la pantalla del 2FA
+                    pendingUserId = userId;
+                    dom.stepManual.style.display = 'none';
+                    dom.btnConnectInjected.style.display = 'none'; // Ocultamos el botón Web3 para enfoque total
+                    dom.step2fa.style.display = 'block';
+                    dom.inp2faCode.focus();
+                });
             }
 
-            return; // Detiene la ejecución aquí si no hay sesión.
+            // FLUJO MANUAL (Paso 2: Verificar PIN 2FA)
+            if (dom.btnVerify2fa) {
+                const verify2fa = () => {
+                    const code = dom.inp2faCode.value.trim();
+                    // El PIN por defecto de la Matriz es 202626
+                    const masterPin = localStorage.getItem('tt_2fa_pin') || '202626';
+
+                    if (code === masterPin) {
+                        doLogin(pendingUserId);
+                    } else {
+                        alert("❌ Código Authenticator Incorrecto. Acceso denegado.");
+                        dom.inp2faCode.value = '';
+                        dom.inp2faCode.focus();
+                    }
+                };
+
+                dom.btnVerify2fa.addEventListener('click', verify2fa);
+                dom.inp2faCode.addEventListener('keypress', (e) => { if(e.key === 'Enter') verify2fa(); });
+            }
+
+            // Cancelar 2FA y volver atrás
+            if (dom.btnCancel2fa) {
+                dom.btnCancel2fa.addEventListener('click', () => {
+                    pendingUserId = null;
+                    dom.step2fa.style.display = 'none';
+                    dom.stepManual.style.display = 'block';
+                    dom.btnConnectInjected.style.display = 'flex';
+                    dom.inp2faCode.value = '';
+                });
+            }
+
+            return; // Detenemos la ejecución aquí si no hay sesión.
         }
 
         // ==========================================
         // LÓGICA DEL HOME REGULAR (Ya logueado)
         // ==========================================
-        // Aquí no hay imports. Las dependencias ya están cargadas arriba del archivo.
+        import { Sidebar } from '../components/Sidebar.js';
+        import { PageHeader } from '../components/PageHeader.js';
+        
         Sidebar.initListeners();
         PageHeader.execute();
 
