@@ -1,6 +1,7 @@
 // v8/js/views/ProjectCreatorView.js
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js'; 
+import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 NUEVO: Conexión al Cerebro Central
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { BottomNav } from '../components/BottomNav.js';
@@ -62,7 +63,6 @@ export default class ProjectCreatorView {
                 .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: all 0.3s; }
                 .dot.active { background: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue); transform: scale(1.3); }
 
-                /* FORMS LUXURY */
                 .form-group { margin-bottom: 20px; }
                 .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; }
                 .lux-input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); box-sizing: border-box;}
@@ -76,7 +76,6 @@ export default class ProjectCreatorView {
                 .ai-loading span { font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0,176,255,0.5); }
                 .ai-loading p { color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-size: 1.2rem;}
 
-                /* TDD ERROR PANEL */
                 .tdd-error-panel { display: none; background: rgba(255,82,82,0.1); border: 1px solid var(--accent-red); border-radius: 12px; padding: 20px; margin-bottom: 2rem; animation: slideDown 0.3s ease-out;}
                 .tdd-error-title { color: var(--accent-red); font-weight: 900; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
                 .tdd-error-list { margin: 0; padding-left: 20px; color: white; font-family: var(--font-mono); font-size: 0.85rem;}
@@ -372,13 +371,9 @@ export default class ProjectCreatorView {
         this.dom.tddErrorPanel.style.display = 'none';
     }
 
-    // =========================================================================
-    // TDD COGNITIVO: Auditoría de la Alucinación de la IA (Caja de Arena)
-    // =========================================================================
     runCognitiveTDD(parsedData) {
         let errors = [];
 
-        // 1. ¿Hay 5 Fases?
         const expectedPhases = ['Kickoff', 'Growth', 'Scale', 'Harvest', 'Cierre'];
         const generatedPhases = [...new Set(parsedData.transactions.map(t => t.phase))];
         const missingPhases = expectedPhases.filter(p => !generatedPhases.includes(p));
@@ -386,7 +381,6 @@ export default class ProjectCreatorView {
             errors.push(`Fallo Estructural: Faltan las eras de Verna Allee (${missingPhases.join(', ')}).`);
         }
 
-        // 2. Dependencias y Camino Crítico (DAG)
         const allTxIds = parsedData.transactions.map(t => t.id);
         parsedData.transactions.forEach(tx => {
             if (!tx.id) errors.push(`Transacción sin ID detectada (Template: ${tx.template}).`);
@@ -399,20 +393,28 @@ export default class ProjectCreatorView {
                 });
             }
             
-            // 3. Regla de la Tríada de Skills
             if (!tx.required_skills || tx.required_skills.length < 3) {
                 errors.push(`Tríada Rota: El SOP [${tx.template}] tiene menos de 3 skills asignados.`);
             }
 
-            // 4. Regla de SOCs Claros
             if (!tx.soc_checklist || tx.soc_checklist.length === 0) {
                 errors.push(`TDD Ausente: El SOP [${tx.template}] no tiene matriz SOC (Criterios de auditoría nulos).`);
             }
         });
 
+        if (parsedData.transactions.length < 15) {
+            errors.push(`VNA Insuficiente: La IA solo ha mapeado ${parsedData.transactions.length} transacciones. Se requieren al menos 15 para modelar un ecosistema real.`);
+        }
+
+        const hasIntangible = parsedData.transactions.some(t => t.tipo === 'intangible');
+        if (!hasIntangible) {
+            errors.push(`VNA Incompleto: No se han detectado transacciones 'intangible'. El modelo de valor exige flujos de conocimiento o feedback.`);
+        }
+
         return errors;
     }
 
+    // 🔥 EL NUEVO METODO AMPUTADO Y CONECTADO AL ORQUESTADOR
     async generateWithAI() {
         const name = this.dom.inpName.value.trim();
         const vision = this.dom.inpVision.value.trim();
@@ -431,108 +433,19 @@ export default class ProjectCreatorView {
 
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
-        this.dom.loadingMsg.innerText = `Sintetizando Red 5-Phases con ${provider.toUpperCase()}...`;
+        this.dom.loadingMsg.innerText = `Sintetizando Red VNA Fractal con ${provider.toUpperCase()}...`;
         this.dom.tddErrorPanel.style.display = 'none';
 
-        await KB.init();
-
-        // =========================================================
-        // SYSTEM PROMPT DELUXE: DAG & 5 FASES VERNA ALLEE
-        // =========================================================
-        const systemPrompt = `
-            Actúa como Master Ecosystem Architect. Diseña una red neuronal de valor (VNA) para un proyecto llamado "${name}" (Arquetipo: "${archetypeText}").
-
-            INSTRUCCIONES CRÍTICAS DE ESTRUCTURA (TDD COMPLIANCE):
-            1. FASES (ERAS): El ecosistema DEBE tener transacciones (SOPs) divididas exactamente en estas 5 fases: "Kickoff", "Growth", "Scale", "Harvest", "Cierre".
-            2. FLUJO ORDENADO (DAG): Cada SOP debe tener un "id" único (ej: "tx_1"). Los SOPs de fases posteriores DEBEN tener un array "depends_on" con los IDs de los SOPs que deben completarse antes. (El Kickoff puede tener depends_on vacío).
-            3. TRÍADA DE SKILLS: Cada SOP debe tener "required_skills" con al menos 3 IDs W3C. Si usas skills nuevos (ej: "meme_skill_python"), decláralos en el array "new_memes".
-            4. SOCs: Cada SOP requiere un "soc_checklist" medible para evitar mermas.
-
-            ESTRUCTURA OBLIGATORIA (Devuelve SOLO JSON Válido sin marcadores markdown):
-            {
-                "presentacion": "Pitch de la misión...",
-                "tags": ["Sector"],
-                "new_memes": [
-                    { "id": "meme_skill_custom1", "category": "skill", "title": "Skill: ...", "content": "..." }
-                ],
-                "roles": [
-                    { "levelId": "@baixos", "name": "Ingeniero", "fmv": 60, "multiplier": 1.2, "guardian": "hephaestus" }
-                ],
-                "transactions": [
-                    { 
-                        "id": "tx_1",
-                        "phase": "Kickoff",
-                        "step_order": 1,
-                        "depends_on": [],
-                        "fromLevel": "@anxaneta", 
-                        "toLevel": "@baixos", 
-                        "tipo": "tangible", 
-                        "template": "Diseño Core", 
-                        "horas": 8,
-                        "required_skills": ["meme_skill_lvl_anxaneta", "meme_skill_pan_creator", "meme_skill_custom1"],
-                        "soc_checklist": [{ "text": "Aprobación de V1" }]
-                    },
-                    { 
-                        "id": "tx_2",
-                        "phase": "Growth",
-                        "step_order": 2,
-                        "depends_on": ["tx_1"],
-                        "fromLevel": "@baixos", 
-                        "toLevel": "@dosos", 
-                        "tipo": "tangible", 
-                        "template": "Campaña Adquisición", 
-                        "horas": 12,
-                        "required_skills": ["meme_skill_lvl_baixos", "meme_skill_pan_hero", "meme_skill_custom1"],
-                        "soc_checklist": [{ "text": "ROAS > 2" }]
-                    }
-                ]
-            }
-        `;
-
         try {
-            let textResponse = "";
+            await KB.init();
 
-            if (provider === 'gemini') {
-                const targetModel = 'gemini-1.5-flash';
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nVISIÓN: ${vision}` }] }] })
-                });
-                if (!response.ok) throw new Error("Google Gemini Error");
-                const data = await response.json();
-                textResponse = data.candidates[0].content.parts[0].text;
-            } else if (provider === 'openai') {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
-                });
-                if (!response.ok) throw new Error("OpenAI Error");
-                const data = await response.json();
-                textResponse = data.choices[0].message.content;
-            } else if (provider === 'deepseek') {
-                const response = await fetch('https://api.deepseek.com/chat/completions', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: vision }], response_format: { type: "json_object" } })
-                });
-                if (!response.ok) throw new Error("DeepSeek Error");
-                const data = await response.json();
-                textResponse = data.choices[0].message.content;
-            }
+            // 1. Delegamos TODO el trabajo duro al nuevo Cerebro Central (Orchestrator.js)
+            const parsedData = await Orchestrator.designEcosystemVNA(name, archetypeText, vision, provider, apiKey);
 
-            textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const firstBrace = textResponse.indexOf('{');
-            const lastBrace = textResponse.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) textResponse = textResponse.substring(firstBrace, lastBrace + 1);
-
-            const parsedData = JSON.parse(textResponse);
-
-            // ===============================================
-            // EJECUCIÓN TDD LOCAL (Filtro de Alucinaciones)
-            // ===============================================
+            // 2. La Vista solo se encarga de aplicar las reglas TDD visuales
             const tddErrors = this.runCognitiveTDD(parsedData);
             
             if (tddErrors.length > 0) {
-                // Si falla el TDD, bloqueamos la inyección y mostramos el error.
                 this.dom.tddErrorPanel.style.display = 'block';
                 this.dom.tddErrorList.innerHTML = tddErrors.map(e => `<li>${e}</li>`).join('');
                 this.dom.loading.style.display = 'none';
@@ -540,7 +453,7 @@ export default class ProjectCreatorView {
                 return;
             }
 
-            // Si pasa el TDD 100%, mapeamos y avanzamos
+            // 3. Mapeo a memoria RAM de la vista (Drafts)
             this.draftPresentation = parsedData.presentacion || vision;
             this.draftTags = parsedData.tags || [];
             this.draftNewMemes = parsedData.new_memes || []; 
@@ -570,8 +483,8 @@ export default class ProjectCreatorView {
             this.goToStep2();
 
         } catch (error) {
-            console.error("💥 Fallo Motor Cognitivo:", error);
-            alert(`Fallo en el parseo del Motor Cognitivo. Revisa la consola.`);
+            console.error("💥 Fallo Orquestador:", error);
+            alert(`Fallo en la comunicación con el Orquestador o API: ${error.message}`);
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
         }
@@ -599,7 +512,6 @@ export default class ProjectCreatorView {
                 </div>
             ` : '';
 
-            // Renderizado Agrupado por Fases
             const phases = ['Kickoff', 'Growth', 'Scale', 'Harvest', 'Cierre'];
             let listHtml = '';
             
