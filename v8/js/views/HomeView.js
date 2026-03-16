@@ -3,6 +3,8 @@ import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
+// Importamos Ethers.js dinámicamente desde ESM para no requerir Webpack/Vite
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm';
 
 export default class HomeView {
     constructor() {
@@ -14,12 +16,16 @@ export default class HomeView {
     async getHtml() {
         const state = store.getState();
         
-        // 1. SI NO ESTÁS LOGUEADO -> PANTALLA DE LOGIN ZERO-TRUST
+        // ==========================================
+        // 1. PANTALLA DE LOGIN ZERO-TRUST (NO LOGUEADO)
+        // ==========================================
         if (!state.session.activeUserId || state.session.role === 'guest') {
             return this.getLandingHtml();
         }
 
-        // 2. SI ESTÁS LOGUEADO -> CENTRO DE MANDO COMPLETO
+        // ==========================================
+        // 2. CENTRO DE MANDO COMPLETO (LOGUEADO)
+        // ==========================================
         const config = state.config;
 
         const headerConfig = {
@@ -154,7 +160,7 @@ export default class HomeView {
                                             </div>
                                         </div>
                                     </div>
-                                `).join('') : '<div style="color:#666;">No hay agentes registrados en la matriz V8. Inicializa el Kernel.</div>'}
+                                `).join('') : '<div style="color:#666;">No hay agentes registrados en la matriz V9. Inicializa el Kernel.</div>'}
                             </div>
                         </div>
                     </div>
@@ -166,83 +172,37 @@ export default class HomeView {
     }
 
     // ==========================================
-    // LOGIN PANTALLA WEB3 (ZERO-TRUST)
+    // LOGIN PANTALLA WEB3 (ZERO-TRUST REAL)
     // ==========================================
     getLandingHtml() {
         return `
             <style>
-                .login-layout { 
-                    display: flex; height: 100dvh; overflow: hidden; 
-                    background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050508 100%); 
-                    font-family: var(--font-main); justify-content: center; align-items: center; 
-                    color: white; position: relative;
-                }
-
-                .grid-bg {
-                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                    background-image: 
-                        linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px);
-                    background-size: 40px 40px;
-                    z-index: 1; pointer-events: none;
-                    transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);
-                    animation: gridMove 10s linear infinite;
-                }
-
+                .login-layout { display: flex; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050508 100%); font-family: var(--font-main); justify-content: center; align-items: center; color: white; position: relative;}
+                .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: 1; pointer-events: none; transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px); animation: gridMove 10s linear infinite;}
                 @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } }
-
-                .login-card { 
-                    background: rgba(10, 10, 15, 0.85); border: 1px solid var(--glass-border); 
-                    border-radius: 24px; width: 100%; max-width: 450px; padding: 3rem 2rem; 
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); 
-                    backdrop-filter: blur(20px); z-index: 10; text-align: center;
-                }
-
+                
+                .login-card { background: rgba(10, 10, 15, 0.85); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 450px; padding: 3rem 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); backdrop-filter: blur(20px); z-index: 10; text-align: center;}
                 .tt-logo { font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 176, 255, 0.5); }
                 .tt-title { font-size: 2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -1px; }
                 .tt-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; font-family: var(--font-mono); }
 
-                /* BOTONES WEB3 */
-                .btn-wallet {
-                    width: 100%; padding: 16px; border-radius: 16px; font-weight: bold; font-size: 1.1rem;
-                    display: flex; justify-content: center; align-items: center; gap: 12px;
-                    cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1);
-                    background: rgba(255,255,255,0.03); color: white; margin-bottom: 15px;
-                }
+                .btn-wallet { width: 100%; padding: 16px; border-radius: 16px; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; margin-bottom: 15px;}
                 .btn-wallet:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
-                
                 .btn-walletconnect { border-color: rgba(59, 153, 252, 0.5); background: rgba(59, 153, 252, 0.05); color: #3b99fc; }
-                .btn-walletconnect:hover { background: rgba(59, 153, 252, 0.15); border-color: #3b99fc; box-shadow: 0 5px 20px rgba(59, 153, 252, 0.3); }
-
+                
                 .divider { display: flex; align-items: center; text-align: center; color: #555; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin: 1.5rem 0; }
                 .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
                 .divider:not(:empty)::before { margin-right: .5em; }
                 .divider:not(:empty)::after { margin-left: .5em; }
 
-                /* FALLBACK LOGIN MANUAL */
                 .form-group { text-align: left; margin-bottom: 1.5rem; }
                 .form-group label { display: block; font-size: 0.75rem; color: #aaa; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;}
                 .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box; text-align: center;}
-                .login-input:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 15px rgba(0, 176, 255, 0.1);}
-                
                 .btn-login-std { width: 100%; background: linear-gradient(135deg, var(--accent-blue), #536dfe); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s;}
-                .btn-login-std:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 176, 255, 0.3);}
 
-                /* ESTADO CONECTADO (FIRMA) */
                 .connected-state { display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
                 .wallet-address-box { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 20px; border-radius: 30px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
                 .btn-sign { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 15px rgba(224,64,251,0.3); }
-                .btn-sign:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(224,64,251,0.5); filter: brightness(1.1); }
-
-                /* MODAL WALLETCONNECT (MOCK) */
-                .wc-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 100; animation: fadeIn 0.2s ease-out; }
-                .wc-modal { background: white; border-radius: 24px; width: 90%; max-width: 400px; padding: 2rem; text-align: center; color: black; font-family: -apple-system, sans-serif; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
-                .wc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-                .wc-logo-text { color: #3b99fc; font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
-                .wc-close { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
-                .wc-qr-box { background: #f4f5f7; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #e4e7eb; }
-                .mock-qr { width: 100%; aspect-ratio: 1/1; background: repeating-linear-gradient(45deg, #000 0, #000 10px, transparent 10px, transparent 20px), repeating-linear-gradient(-45deg, #000 0, #000 10px, transparent 10px, transparent 20px); border-radius: 10px; opacity: 0.8;}
-                .wc-footer-text { color: #666; font-size: 0.9rem; font-weight: 500; }
 
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
             </style>
@@ -257,41 +217,28 @@ export default class HomeView {
                     <div id="connectState">
                         <button class="btn-wallet btn-walletconnect" id="btnOpenWC">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C16.1421 4.5 19.5 7.85786 19.5 12C19.5 16.1421 16.1421 19.5 12 19.5C7.85786 19.5 4.5 16.1421 4.5 12C4.5 7.85786 7.85786 4.5 12 4.5ZM12 7.5C9.51472 7.5 7.5 9.51472 7.5 12C7.5 14.4853 9.51472 16.5 12 16.5C14.4853 16.5 16.5 14.4853 16.5 12C16.5 9.51472 14.4853 7.5 12 7.5Z" fill="#3b99fc"/></svg>
-                            Conectar WalletConnect
+                            WalletConnect (Próximamente)
                         </button>
-                        <button class="btn-wallet" id="btnBypass">
+                        <button class="btn-wallet" id="btnConnectInjected">
                             🦊 Conectar Browser Wallet
                         </button>
                         
-                        <div class="divider">Firma Manual (Admin)</div>
-
+                        <div class="divider">Fallback Local</div>
                         <div class="form-group">
-                            <label>Identificador de Red</label>
                             <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="@alvaro">
                         </div>
-                        <button class="btn-login-std" id="btnConnectId">Inicializar Matriz</button>
+                        <button class="btn-login-std" id="btnConnectId">Forzar Entrada Manual</button>
                     </div>
 
                     <div id="signState" class="connected-state">
                         <div class="wallet-address-box" title="Wallet conectada">
                             🟢 <span id="displayAddress">0x...</span>
                         </div>
-                        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">El protocolo requiere tu firma para verificar la propiedad de la llave privada. Sin coste de Gas.</p>
-                        <button class="btn-sign" id="btnSignMessage">✍️ Firmar Acceso</button>
-                        <button style="background:transparent; border:none; color:#888; font-size:0.8rem; margin-top:15px; cursor:pointer;" id="btnDisconnect">Desconectar</button>
-                    </div>
-                </div>
-
-                <div class="wc-modal-overlay" id="wcModal">
-                    <div class="wc-modal">
-                        <div class="wc-header">
-                            <div class="wc-logo-text">WalletConnect</div>
-                            <button class="wc-close" id="btnCloseWC">&times;</button>
-                        </div>
-                        <div class="wc-qr-box">
-                            <div class="mock-qr" id="qrClickable" style="cursor:pointer;" title="Click para simular escaneo desde móvil"></div>
-                        </div>
-                        <div class="wc-footer-text">Escanea el QR con TrustWallet o MetaMask.<br><span style="font-size:0.75rem; color:#aaa; display:block; margin-top:5px;">(Haz click en el QR para simular el escaneo)</span></div>
+                        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 20px;" id="signTextMsg">
+                            El protocolo requiere tu firma criptográfica para verificar que posees la llave privada. (0 Gas fee)
+                        </p>
+                        <button class="btn-sign" id="btnSignMessage">✍️ Firmar Acceso (EIP-4361)</button>
+                        <button style="background:transparent; border:none; color:#888; font-size:0.8rem; margin-top:15px; cursor:pointer;" id="btnDisconnect">Cancelar</button>
                     </div>
                 </div>
             </div>
@@ -301,69 +248,133 @@ export default class HomeView {
     executeViewScript() {
         const state = store.getState();
         
-        // --- LOGICA DE LOGIN (Si no hay sesión) ---
+        // ==========================================
+        // LÓGICA DE LOGIN WEB3 (SIWE & Ethers.js)
+        // ==========================================
         if (!state.session.activeUserId || state.session.role === 'guest') {
             const dom = {
                 connectState: document.getElementById('connectState'),
                 signState: document.getElementById('signState'),
+                btnConnectInjected: document.getElementById('btnConnectInjected'),
                 btnOpenWC: document.getElementById('btnOpenWC'),
-                btnBypass: document.getElementById('btnBypass'),
-                wcModal: document.getElementById('wcModal'),
-                btnCloseWC: document.getElementById('btnCloseWC'),
-                qrClickable: document.getElementById('qrClickable'),
                 displayAddress: document.getElementById('displayAddress'),
                 btnSignMessage: document.getElementById('btnSignMessage'),
                 btnDisconnect: document.getElementById('btnDisconnect'),
                 btnConnectId: document.getElementById('btnConnectId'),
-                inpLoginId: document.getElementById('inpLoginId')
+                inpLoginId: document.getElementById('inpLoginId'),
+                signTextMsg: document.getElementById('signTextMsg')
             };
+
+            let web3Signer = null;
+            let currentAddress = null;
 
             const doLogin = async (userId) => {
-                if (!userId) return alert("Introduce una Identidad Válida.");
+                if (!userId) return alert("Identidad no válida.");
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
-                window.location.reload(); // Recarga para levantar el Home Completo
+                window.location.reload(); 
             };
 
-            // Flujo WalletConnect / Browser Wallet
-            const showSignature = (address) => {
-                this.mockWalletAddress = address || this.mockWalletAddress;
-                const shortAddr = `${this.mockWalletAddress.substring(0, 6)}...${this.mockWalletAddress.substring(this.mockWalletAddress.length - 4)}`;
-                dom.displayAddress.innerText = shortAddr;
-                dom.connectState.style.display = 'none';
-                dom.signState.style.display = 'flex';
-            };
+            // 1. INVOCAR A LA WALLET INYECTADA (Ethers.js v6)
+            if (dom.btnConnectInjected) {
+                dom.btnConnectInjected.addEventListener('click', async () => {
+                    if (typeof window.ethereum !== 'undefined') {
+                        try {
+                            dom.btnConnectInjected.innerText = '⏳ Conectando...';
+                            // Pedimos permiso a MetaMask/TrustWallet
+                            await window.ethereum.request({ method: 'eth_requestAccounts' });
+                            
+                            // Instanciamos Ethers.js Provider
+                            const provider = new ethers.BrowserProvider(window.ethereum);
+                            web3Signer = await provider.getSigner();
+                            currentAddress = await web3Signer.getAddress();
+                            
+                            // Actualizamos UI
+                            const shortAddr = `${currentAddress.substring(0, 6)}...${currentAddress.substring(currentAddress.length - 4)}`;
+                            dom.displayAddress.innerText = shortAddr;
+                            dom.connectState.style.display = 'none';
+                            dom.signState.style.display = 'flex';
 
-            if (dom.btnOpenWC) dom.btnOpenWC.addEventListener('click', () => dom.wcModal.style.display = 'flex');
-            if (dom.btnCloseWC) dom.btnCloseWC.addEventListener('click', () => dom.wcModal.style.display = 'none');
-            
-            if (dom.qrClickable) dom.qrClickable.addEventListener('click', () => {
-                dom.wcModal.style.display = 'none';
-                showSignature();
-            });
+                        } catch (err) {
+                            console.error(err);
+                            alert("Conexión rechazada por la wallet.");
+                            dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
+                        }
+                    } else {
+                        alert("No se ha detectado ninguna Wallet en tu navegador (Instala MetaMask, Rabby o Brave Wallet).");
+                    }
+                });
+            }
 
-            if (dom.btnBypass) dom.btnBypass.addEventListener('click', () => showSignature());
+            // Placeholder para WalletConnect Cloud futuro
+            if (dom.btnOpenWC) {
+                dom.btnOpenWC.addEventListener('click', () => {
+                    alert("Para activar el QR de WalletConnect V2 se requiere compilar un ProjectID en la configuración del servidor. Usa 'Browser Wallet' por ahora.");
+                });
+            }
 
-            if (dom.btnSignMessage) dom.btnSignMessage.addEventListener('click', () => {
-                dom.btnSignMessage.innerText = '⏳ Firmando...';
-                dom.btnSignMessage.style.opacity = '0.7';
-                setTimeout(() => doLogin(this.mockWalletAddress), 1000);
-            });
+            // 2. FIRMA CRIPTOGRÁFICA (SIWE)
+            if (dom.btnSignMessage) {
+                dom.btnSignMessage.addEventListener('click', async () => {
+                    if (!web3Signer || !currentAddress) return;
 
-            if (dom.btnDisconnect) dom.btnDisconnect.addEventListener('click', () => {
-                dom.signState.style.display = 'none';
-                dom.connectState.style.display = 'block';
-            });
+                    dom.btnSignMessage.innerText = '⏳ Esperando Firma...';
+                    dom.btnSignMessage.style.opacity = '0.7';
 
-            // Flujo Manual (Fallback)
+                    // Generamos un Nonce basado en el timestamp para evitar ataques de repetición
+                    const nonce = Date.now().toString(16);
+                    const domain = window.location.host;
+                    
+                    // Formato EIP-4361 simplificado
+                    const message = `Welcome to TeamTowers V9!\n\nClick to sign in and accept the TeamTowers Terms of Service.\nThis request will not trigger a blockchain transaction or cost any gas fees.\n\nURI: https://${domain}\nWallet: ${currentAddress}\nNonce: ${nonce}`;
+
+                    try {
+                        // El usuario firma el mensaje en su Wallet (Aparece el popup de MetaMask)
+                        const signature = await web3Signer.signMessage(message);
+                        
+                        // AUDITORÍA INTERNA: Verificamos matemáticamente que la firma es válida
+                        const recoveredAddress = ethers.verifyMessage(message, signature);
+                        
+                        if (recoveredAddress.toLowerCase() === currentAddress.toLowerCase()) {
+                            dom.signTextMsg.innerText = "✅ Criptografía verificada. Entrando a la Matriz...";
+                            dom.signTextMsg.style.color = "var(--accent-green)";
+                            
+                            setTimeout(() => doLogin(currentAddress), 1000);
+                        } else {
+                            throw new Error("La dirección recuperada no coincide.");
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        dom.btnSignMessage.innerText = '✍️ Reintentar Firma';
+                        dom.btnSignMessage.style.opacity = '1';
+                        alert("Firma rechazada o fallida. Operación cancelada.");
+                    }
+                });
+            }
+
+            // Cancelar
+            if (dom.btnDisconnect) {
+                dom.btnDisconnect.addEventListener('click', () => {
+                    web3Signer = null;
+                    currentAddress = null;
+                    dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
+                    dom.signState.style.display = 'none';
+                    dom.connectState.style.display = 'block';
+                });
+            }
+
+            // Flujo Manual (Fallback Admin)
             if (dom.btnConnectId) {
                 dom.btnConnectId.addEventListener('click', () => doLogin(dom.inpLoginId.value.trim()));
                 dom.inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(dom.inpLoginId.value.trim()); });
             }
 
-            return; // Detenemos aquí porque no hay sesión
+            return; // Fin del bloque de Login.
         }
 
-        // --- LOGICA DEL HOME REGULAR (Ya logueado) ---
+        // ==========================================
+        // LÓGICA DEL HOME REGULAR (Ya logueado)
+        // ==========================================
         Sidebar.initListeners();
         PageHeader.execute();
 
