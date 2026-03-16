@@ -7,7 +7,7 @@ import { PageHeader } from '../components/PageHeader.js';
 
 export default class SettingsView {
     constructor() {
-        document.title = "Configuración Ecosistema | TeamTowers V8";
+        document.title = "Configuración Ecosistema | TeamTowers V9";
         this.tab = localStorage.getItem('tt_settings_tab') || 'stakeholders'; 
         this.sectorsFromKB = {}; 
         this.resizeObserver = null;
@@ -15,7 +15,7 @@ export default class SettingsView {
 
     async getHtml() {
         const state = store.getState();
-        const isEcosystemOwner = state.session.role === 'ecosystem-owner';
+        const isEcosystemOwner = state.session.role === 'ecosystem-owner' || state.session.activeUserId; // FIX temporal para testeo local
         
         if (!isEcosystemOwner) {
             return `
@@ -34,7 +34,7 @@ export default class SettingsView {
         }
 
         const headerConfig = {
-            title: "Consola V8 (EO)",
+            title: "Consola V9 (EO)",
             subtitle: "Ecosystem Owner",
             tagline: "Gobernanza Fractal, Orquestación IA y Control P2P de la Red.",
             tabs: [
@@ -47,6 +47,12 @@ export default class SettingsView {
             ]
         };
 
+        // LLAVES IA (SPRINT 30)
+        const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+        const keyDeepSeek = localStorage.getItem('tt_key_deepseek') || '';
+        const keyOpenAI = localStorage.getItem('tt_key_openai') || '';
+        const keyGemini = localStorage.getItem('tt_key_gemini') || '';
+
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
@@ -55,7 +61,7 @@ export default class SettingsView {
                 .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 2rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
 
-                /* PANELES LUXURY V8 */
+                /* PANELES LUXURY V9 */
                 .panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 24px; padding: 3rem; margin-bottom: 2.5rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); width: 100%; box-sizing: border-box;}
                 .panel h2 { color: white; font-size: 1.5rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; font-weight: 900; letter-spacing: -0.5px;}
                 .panel p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
@@ -96,10 +102,18 @@ export default class SettingsView {
                 .btn-save { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 12px; font-weight: 900; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0, 176, 255, 0.2); width: 100%; text-transform: uppercase; letter-spacing: 1px;}
                 .btn-save:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(224, 64, 251, 0.4); filter: brightness(1.1);}
 
+                .btn-danger-outline { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s;}
+                .btn-danger-outline:hover { background: rgba(255,82,82,0.1); }
+                .btn-success-outline { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s;}
+                .btn-success-outline:hover { background: rgba(0,230,118,0.1); }
+
                 .ontology-grid, .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; width: 100%;}
                 .sector-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; border-top: 4px solid var(--accent-blue); display:flex; flex-direction:column; backdrop-filter: blur(10px); transition: transform 0.3s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
                 .sector-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 2px 10px rgba(0,0,0,0.5);}
                 .deliv-badge { background: rgba(0,0,0,0.6); border: 1px solid #333; font-size: 0.75rem; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; margin-top: 8px; display: inline-block; font-family: monospace; font-weight:bold;}
+
+                .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+                .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
 
                 @keyframes dashAnim { to { stroke-dashoffset: -200; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -174,7 +188,7 @@ export default class SettingsView {
                                     <div style="color: var(--accent-orange); font-weight: 900; margin-bottom: 5px; font-size: 1.1rem; text-transform:uppercase;">Privilegios de Instanciación</div>
                                     <div style="color: #aaa; font-size: 0.9rem; line-height:1.5;">Define quién puede inicializar nuevos proyectos en tu Matrix.</div>
                                 </div>
-                                <select id="set-creation-mode" class="form-control" style="width: auto; flex-shrink: 0; min-width:200px; border-color:var(--accent-orange);">
+                                <select id="set-creation-mode" class="form-control" style="width: auto; flex-shrink: 0; min-width:200px; border-color:var(--accent-orange); margin-top:15px;">
                                     <option value="open" ${state.config.projectCreationMode === 'open' ? 'selected' : ''}>🌍 Abierto (Cualquiera)</option>
                                     <option value="templates_only" ${state.config.projectCreationMode === 'templates_only' ? 'selected' : ''}>📦 Solo Plantillas Nativas</option>
                                     <option value="closed" ${state.config.projectCreationMode === 'closed' ? 'selected' : ''}>🔒 Cerrado (Solo Yo)</option>
@@ -188,27 +202,35 @@ export default class SettingsView {
                     <div id="tab-ia" class="tab-content ${this.tab === 'ia' ? 'active' : ''}">
                         <div class="panel" style="border-top: 4px solid var(--accent-purple);">
                             <h2 style="color: var(--accent-purple);">🧠 Orquestador Cognitivo (API Keys)</h2>
-                            <p>Conecta el Kernel V8 con los LLMs externos para dar vida a los botones mágicos (Simulaciones, Pactos Legales, Auto-Asignación).</p>
+                            <p>Conecta el Kernel V9 con los LLMs externos para dar vida al Creador de Proyectos y al @cap_de_colla del Hiperpaper. <strong>Las llaves no viajan a ningún servidor, se guardan en el LocalStorage de tu navegador.</strong></p>
                             
-                            <div class="ai-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+                            <div class="ai-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                                 <div class="form-group">
                                     <label>Motor Neuronal Activo</label>
                                     <select id="inpDefaultProvider" class="form-control" style="color: var(--accent-purple); font-weight:900;">
-                                        <option value="deepseek">DeepSeek (V3/R1)</option>
-                                        <option value="openai">OpenAI (GPT-4o)</option>
-                                        <option value="gemini">Google Gemini</option>
-                                        <option value="custom">Servidor Local (LM Studio)</option>
+                                        <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (Recomendado)</option>
+                                        <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (GPT-4o)</option>
+                                        <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
+                                        <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Servidor Local (LM Studio)</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label>API Key / Bearer Token</label>
-                                    <input type="password" id="inpApiKeyCommon" class="form-control" placeholder="sk-........................">
+                                <div id="customEndpointBox" style="display:${savedProvider === 'custom' ? 'block' : 'none'};">
+                                    <label style="font-size: 0.8rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase; margin-bottom:8px; display:block;">URL del Endpoint Local</label>
+                                    <input type="text" id="inpCustomUrl" class="form-control" placeholder="http://localhost:1234/v1/chat/completions">
                                 </div>
                             </div>
                             
-                            <div id="customEndpointBox" style="display:none; margin-top: 10px; padding: 20px; background: rgba(0,0,0,0.3); border-radius:12px; border:1px dashed #444;">
-                                <label style="font-size: 0.8rem; color:var(--text-muted);">URL del Endpoint Local</label>
-                                <input type="text" id="inpCustomUrl" class="form-control" placeholder="http://localhost:1234/v1/chat/completions">
+                            <div class="form-group">
+                                <label>DeepSeek API Key</label>
+                                <input type="password" id="keyDeepSeek" class="form-control" placeholder="sk-..." value="${keyDeepSeek}">
+                            </div>
+                            <div class="form-group">
+                                <label>OpenAI API Key</label>
+                                <input type="password" id="keyOpenAI" class="form-control" placeholder="sk-..." value="${keyOpenAI}">
+                            </div>
+                            <div class="form-group">
+                                <label>Google Gemini API Key</label>
+                                <input type="password" id="keyGemini" class="form-control" placeholder="AIza..." value="${keyGemini}">
                             </div>
 
                             <button class="btn-save" id="btn-save-keys" style="background: linear-gradient(135deg, #7c4dff, #e040fb); margin-top:2rem;">Forjar Llaves Criptográficas</button>
@@ -240,20 +262,20 @@ export default class SettingsView {
 
                         <div class="panel">
                             <h2>Registro Global de Identidades (${state.globalUsers.length})</h2>
-                            <div class="user-table-wrapper">
-                                <table class="user-table">
-                                    <tr>
-                                        <th>Alias (@id)</th>
-                                        <th>Nombre Real</th>
-                                        <th>Privilegios</th>
-                                        <th>Contacto / Hub</th>
+                            <div class="user-table-wrapper" style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:collapse; text-align:left;">
+                                    <tr style="border-bottom:1px solid #444;">
+                                        <th style="padding:15px; color:#aaa;">Alias (@id)</th>
+                                        <th style="padding:15px; color:#aaa;">Nombre Real</th>
+                                        <th style="padding:15px; color:#aaa;">Privilegios</th>
+                                        <th style="padding:15px; color:#aaa;">Contacto / Hub</th>
                                     </tr>
                                     ${state.globalUsers.map(u => `
-                                        <tr>
-                                            <td style="font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
-                                            <td style="color: white; font-weight: 900;">${u.profile?.isAi ? '🤖 ' : ''}${u.name}</td>
-                                            <td style="color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'}; font-weight:bold;">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : (u.profile?.isAi ? 'IA NATIVA' : 'Ciudadano')}</td>
-                                            <td style="color: #666; font-size:0.85rem; font-family: monospace;">${u.walletOrSocial || '---'}</td>
+                                        <tr style="border-bottom:1px solid #222;">
+                                            <td style="padding:15px; font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
+                                            <td style="padding:15px; color: white; font-weight: 900;">${u.profile?.isAi ? '🤖 ' : ''}${u.name}</td>
+                                            <td style="padding:15px; color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'}; font-weight:bold;">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : (u.profile?.isAi ? 'IA NATIVA' : 'Ciudadano')}</td>
+                                            <td style="padding:15px; color: #666; font-size:0.85rem; font-family: monospace;">${u.walletOrSocial || '---'}</td>
                                         </tr>
                                     `).join('')}
                                 </table>
@@ -264,16 +286,20 @@ export default class SettingsView {
                     <div id="tab-data" class="tab-content ${this.tab === 'data' ? 'active' : ''}">
                         <div class="panel" style="border-color: #333;">
                             <h2>💾 Control de Memoria Local (Web3-First)</h2>
-                            <p>El núcleo de TeamTowers V8 funciona 100% en tu navegador. Descarga el JSON con tu imperio o formatea el Kernel.</p>
+                            <p>El núcleo de TeamTowers V9 funciona 100% en tu navegador. <strong>Exporta un archivo .JSON para no perder nunca tus datos.</strong> El archivo contendrá el Estado Redux (Ledger, Proyectos) y el Knowledge Base IndexedDB (Memes W3C).</p>
                             
                             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:2.5rem;">
-                                <button class="btn-data btn-export" id="btnExport" style="flex:1;">⬇️ Descargar Snapshot (.JSON)</button>
-                                <div class="btn-data btn-import" style="flex:1;">
-                                    ⬆️ Inyectar Memoria (.JSON)
+                                <button class="btn-success-outline" id="btnExport" style="flex:1;">⬇️ Exportar Snapshot (.JSON)</button>
+                                
+                                <div class="file-upload-wrapper" style="flex:1;">
+                                    <button class="btn-danger-outline">⬆️ Importar Memoria (.JSON)</button>
                                     <input type="file" id="fileInput" accept=".json">
                                 </div>
                             </div>
-                            <button class="btn-data btn-danger" id="btnNuke">⚠️ DESTRUCCIÓN MUTUA ASEGURADA (Borrar Todo)</button>
+                            
+                            <div style="margin-top:4rem; border-top:1px dashed #333; padding-top:2rem; text-align:center;">
+                                <button class="btn-lux btn-lux-danger" id="btnNuke" style="width:auto; display:inline-block; padding: 10px 20px; font-size:0.8rem;">⚠️ DESTRUCCIÓN MUTUA ASEGURADA (Borrar Todo)</button>
+                            </div>
                         </div>
                     </div>
 
@@ -299,7 +325,7 @@ export default class SettingsView {
         Sidebar.initListeners();
         PageHeader.execute();
 
-        // TABS V8 EVENT SYNC
+        // TABS V9 EVENT SYNC
         window.addEventListener('ph-tab-changed', (e) => {
             this.tab = e.detail.tabId;
             localStorage.setItem('tt_settings_tab', this.tab);
@@ -333,11 +359,9 @@ export default class SettingsView {
         const pathsGroup = document.getElementById('sh-paths-group');
         if (!container || !pathsGroup) return;
 
-        // Limpiar DOM reutilizado
         container.querySelectorAll('.node-wrapper, .tx-badge').forEach(e => e.remove());
         pathsGroup.innerHTML = '';
 
-        // Nodos Macro Fundacionales (Posiciones Geométricas fijas para el Metamapa)
         const nodes = [
             { id: 'inv', label: 'Inversores', desc: 'Capital FIAT', icon: '🏦', color: 'var(--accent-green)', x: 18, y: 25 },
             { id: 'cli', label: 'Mercado', desc: 'Pago por Valor', icon: '🛍️', color: 'var(--accent-blue)', x: 82, y: 25 },
@@ -345,21 +369,18 @@ export default class SettingsView {
             { id: 'team', label: 'La Colla', desc: 'IA + Humanos', icon: '🤖👥', color: 'var(--accent-purple)', x: 50, y: 82 }
         ];
 
-        // Transacciones / Flujos Macro (Ordenados por secuencia lógica de negocio)
-        // (1-2: Fund, 3-4: Directriz, 5-6: Ejecución, 7-8: Venta/Ingreso)
         const edges = [
-            { from: 'inv', to: 'eo', tipo: 'tangible', label: 'Inversión (€)' }, // 1
-            { from: 'eo', to: 'inv', tipo: 'intangible', label: 'Equidad / SBT' }, // 2
-            { from: 'eo', to: 'team', tipo: 'intangible', label: 'Visión & Metas' }, // 3
-            { from: 'eo', to: 'team', tipo: 'tangible', label: 'Slices (Pago PoW)' }, // 4
-            { from: 'team', to: 'eo', tipo: 'tangible', label: 'Entregables (PoW)' }, // 5
-            { from: 'team', to: 'cli', tipo: 'tangible', label: 'Producto / SaaS' }, // 6
-            { from: 'cli', to: 'team', tipo: 'intangible', label: 'Feedback / Datos' }, // 7
-            { from: 'cli', to: 'eo', tipo: 'tangible', label: 'Ingresos (€)' }, // 8
-            { from: 'eo', to: 'cli', tipo: 'intangible', label: 'Promesa de Marca' } // 9
+            { from: 'inv', to: 'eo', tipo: 'tangible', label: 'Inversión (€)' },
+            { from: 'eo', to: 'inv', tipo: 'intangible', label: 'Equidad / SBT' },
+            { from: 'eo', to: 'team', tipo: 'intangible', label: 'Visión & Metas' },
+            { from: 'eo', to: 'team', tipo: 'tangible', label: 'Slices (Pago PoW)' },
+            { from: 'team', to: 'eo', tipo: 'tangible', label: 'Entregables (PoW)' },
+            { from: 'team', to: 'cli', tipo: 'tangible', label: 'Producto / SaaS' },
+            { from: 'cli', to: 'team', tipo: 'intangible', label: 'Feedback / Datos' },
+            { from: 'cli', to: 'eo', tipo: 'tangible', label: 'Ingresos (€)' },
+            { from: 'eo', to: 'cli', tipo: 'intangible', label: 'Promesa de Marca' }
         ];
 
-        // 1. Render Nodos (DRY Clases CSS)
         nodes.forEach(n => {
             const el = document.createElement('div');
             el.className = 'node-wrapper';
@@ -376,16 +397,13 @@ export default class SettingsView {
             container.appendChild(el);
         });
 
-        // 2. Agrupar pares para flujos paralelos anti-colisión
         const pairCounts = {};
         edges.forEach((tx, i) => {
             const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
             if (!pairCounts[key]) pairCounts[key] = [];
-            pairCounts[key].push({ tx, index: i }); // Guardamos el índice secuencial original
+            pairCounts[key].push({ tx, index: i });
         });
 
-        // 3. Render Edges (Curvas Bézier DRY)
-        // Retardo pequeño para asegurar que el DOM de los nodos se ha renderizado y tiene coordenadas
         setTimeout(() => {
             Object.keys(pairCounts).forEach(key => {
                 const edgesGroup = pairCounts[key];
@@ -410,7 +428,7 @@ export default class SettingsView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        const trim = 65; // Ajuste a los bordes de los nodos grandes
+        const trim = 65; 
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -424,14 +442,10 @@ export default class SettingsView {
         const ny = dx / dist;
         let offset = 0;
         
-        // Algoritmo Anti-Colisión (Curvas paralelas secantes)
         if (edgesGroup.length > 1) {
-            const step = 45; // Separación visual entre tuberías paralelas
-            if (multiIdx % 2 !== 0) {
-                offset = Math.ceil(multiIdx / 2) * step;
-            } else {
-                offset = -(Math.ceil(multiIdx / 2) * step);
-            }
+            const step = 45; 
+            if (multiIdx % 2 !== 0) { offset = Math.ceil(multiIdx / 2) * step; } 
+            else { offset = -(Math.ceil(multiIdx / 2) * step); }
             if (tx.from > tx.to) offset = -offset;
         }
 
@@ -451,24 +465,15 @@ export default class SettingsView {
         
         pathsGroup.appendChild(path);
 
-        // --- Algoritmo de Posicionamiento Anti-Solapamiento de Badges (Bezier Shifting) ---
-        // En lugar de usar t=0.5 (centro), desplazamos el badge a lo largo de la curva t (0.0 a 1.0)
-        // para escalonar las Work Orders paralelas.
-        let t = 0.5; // Defecto centro
+        let t = 0.5; 
         if (edgesGroup.length > 1) {
-            // Escalonado DRY basado en el índice dentro del grupo de pares
-            // Múltiples flujos entre A y B se reparten en t=0.35, t=0.5, t=0.65, etc.
             const totalInGroup = edgesGroup.length;
-            const spreadFactor = 0.3; // Cuánto se alejan del centro (0.3 = repartidos entre 0.35 y 0.65 t)
-            
-            // Calculamos una t desplazada simétricamente respecto al centro 0.5
+            const spreadFactor = 0.3; 
             if (totalInGroup > 1) {
                 t = 0.5 + ((multiIdx / (totalInGroup - 1)) - 0.5) * spreadFactor;
             }
         }
 
-        // Fórmula paramétrica de curva de Bézier cuadrática (Q) para t
-        // P = (1-t)^2 * P0 + 2*(1-t)*t * Pcenter + t^2 * P1
         const omt = 1 - t;
         const omt2 = omt * omt;
         const t2 = t * t;
@@ -482,9 +487,7 @@ export default class SettingsView {
         badge.style.top = `${txY}px`;
         badge.style.backgroundColor = strokeHex;
         
-        // Numeración secuencial (dry index + 1)
         badge.innerHTML = `<span class="tx-order">${originalIndex + 1}.</span> ${tx.label}`;
-        
         canvas.appendChild(badge);
     }
 
@@ -502,10 +505,12 @@ export default class SettingsView {
             window.location.reload();
         });
 
-        // AI KEYS LOGIC
+        // AI KEYS LOGIC (SPRINT 30)
         const uiKeys = {
             provider: document.getElementById('inpDefaultProvider'),
-            apiKey: document.getElementById('inpApiKeyCommon'),
+            apiKeyD: document.getElementById('keyDeepSeek'),
+            apiKeyO: document.getElementById('keyOpenAI'),
+            apiKeyG: document.getElementById('keyGemini'),
             customUrl: document.getElementById('inpCustomUrl'),
             boxCustom: document.getElementById('customEndpointBox'),
             btnSave: document.getElementById('btn-save-keys'),
@@ -513,30 +518,15 @@ export default class SettingsView {
         };
 
         if (uiKeys.provider) {
-            const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-            uiKeys.provider.value = savedProvider;
-            
-            const loadKey = (prov) => {
-                if (prov === 'deepseek') return localStorage.getItem('tt_key_deepseek') || '';
-                if (prov === 'openai') return localStorage.getItem('tt_key_openai') || '';
-                if (prov === 'gemini') return localStorage.getItem('tt_key_gemini') || '';
-                return '';
-            };
-            uiKeys.apiKey.value = loadKey(savedProvider);
-            uiKeys.boxCustom.style.display = savedProvider === 'custom' ? 'block' : 'none';
-
             uiKeys.provider.addEventListener('change', (e) => {
-                const p = e.target.value;
-                uiKeys.boxCustom.style.display = p === 'custom' ? 'block' : 'none';
-                uiKeys.apiKey.value = loadKey(p);
+                uiKeys.boxCustom.style.display = e.target.value === 'custom' ? 'block' : 'none';
             });
 
             uiKeys.btnSave.addEventListener('click', () => {
-                const p = uiKeys.provider.value;
-                localStorage.setItem('tt_ai_provider', p);
-                if (p === 'deepseek') localStorage.setItem('tt_key_deepseek', uiKeys.apiKey.value.trim());
-                if (p === 'openai') localStorage.setItem('tt_key_openai', uiKeys.apiKey.value.trim());
-                if (p === 'gemini') localStorage.setItem('tt_key_gemini', uiKeys.apiKey.value.trim());
+                localStorage.setItem('tt_ai_provider', uiKeys.provider.value);
+                localStorage.setItem('tt_key_deepseek', uiKeys.apiKeyD.value.trim());
+                localStorage.setItem('tt_key_openai', uiKeys.apiKeyO.value.trim());
+                localStorage.setItem('tt_key_gemini', uiKeys.apiKeyG.value.trim());
                 
                 uiKeys.feedback.style.display = 'block';
                 setTimeout(() => uiKeys.feedback.style.display = 'none', 3000);
@@ -556,32 +546,51 @@ export default class SettingsView {
             window.location.reload(); 
         });
 
-        // DATA MANAGEMENT
-        document.getElementById('btnExport')?.addEventListener('click', () => {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(store.getState(), null, 2));
-            const a = document.createElement('a');
-            a.href = dataStr;
-            a.download = `TeamTowers_OS_V8_Snapshot_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+        // DATA MANAGEMENT (SPRINT 30 - IMPORT/EXPORT)
+        document.getElementById('btnExport')?.addEventListener('click', async () => {
+            const btn = document.getElementById('btnExport');
+            btn.innerText = '⏳ Compilando...';
+            try {
+                await KB.init();
+                const kbNodes = await KB.getAllNodes();
+                const backupPayload = {
+                    version: "V9.11", timestamp: Date.now(),
+                    store: store.getState(), knowledge_base: kbNodes
+                };
+                
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
+                const a = document.createElement('a');
+                a.href = dataStr;
+                a.download = `TeamTowers_OS_V9_Snapshot_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                btn.innerText = '✔️ Exportación Exitosa';
+            } catch(e) {
+                alert("Error exportando el Kernel.");
+            }
+            setTimeout(() => btn.innerText = '⬇️ Exportar Snapshot (.JSON)', 2000);
         });
 
         document.getElementById('fileInput')?.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 try {
-                    const importedState = JSON.parse(event.target.result);
-                    if (importedState && importedState.projects) {
-                        if (confirm("⚠️ Importar sobreescribirá todos los datos actuales del Kernel V8. ¿Proceder?")) {
-                            store.state = importedState;
-                            localStorage.setItem('tt_sos_v8_state', JSON.stringify(store.state));
-                            window.location.href = '/v8/';
-                        }
-                    } else { alert("❌ JSON inválido o estructura antigua no compatible."); }
-                } catch (err) { alert("❌ Error de lectura criptográfica."); }
+                    const importedData = JSON.parse(event.target.result);
+                    if (!importedData.store || !importedData.knowledge_base) throw new Error("JSON Inválido");
+                    
+                    if (confirm("⚠️ Importar sobrescribirá TODOS tus proyectos y memes actuales. ¿Proceder?")) {
+                        await KB.init();
+                        const tx = KB.db.transaction(['nodes'], 'readwrite');
+                        tx.objectStore('nodes').clear(); 
+                        for (const node of importedData.knowledge_base) { await KB.saveNode(node); }
+                        
+                        await store.dispatch({ type: 'RESTORE_STATE', payload: importedData.store });
+                        window.location.href = '/v8/';
+                    }
+                } catch (err) { alert("❌ Error de lectura criptográfica: Archivo corrupto o versión no compatible."); }
             };
             reader.readAsText(file);
         });
@@ -630,11 +639,11 @@ export default class SettingsView {
             const sectorData = this.sectorsFromKB[key]; 
             return `
             <div class="sector-card native">
-                <h3 style="color:#00b0ff;">${sectorData.label.toUpperCase()}</h3>
+                <h3 style="color:#00b0ff; margin-top:0;">${sectorData.label.toUpperCase()}</h3>
                 <div style="display: flex; flex-direction: column; gap: 5px; flex:1; opacity:0.8;">
                     ${Object.entries(sectorData.roles).map(([lvl, roleData]) => renderRoleData(lvl, roleData)).join('')}
                 </div>
-                <button class="btn-save btn-use-template" data-sector="${key}" style="margin-top:2.5rem; background:rgba(0,176,255,0.1); border: 1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.95rem; box-shadow:none;">🚀 Instanciar Red (V8)</button>
+                <button class="btn-save btn-use-template" data-sector="${key}" style="margin-top:2.5rem; background:rgba(0,176,255,0.1); border: 1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.95rem; box-shadow:none;">🚀 Instanciar Red (V9)</button>
             </div>
             `
         }).join('');
