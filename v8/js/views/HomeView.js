@@ -239,4 +239,139 @@ export default class HomeView {
                 .wc-modal { background: white; border-radius: 24px; width: 90%; max-width: 400px; padding: 2rem; text-align: center; color: black; font-family: -apple-system, sans-serif; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
                 .wc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
                 .wc-logo-text { color: #3b99fc; font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
-                .wc-close { background: transparent; border: none; font-size: 1.5
+                .wc-close { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+                .wc-qr-box { background: #f4f5f7; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #e4e7eb; }
+                .mock-qr { width: 100%; aspect-ratio: 1/1; background: repeating-linear-gradient(45deg, #000 0, #000 10px, transparent 10px, transparent 20px), repeating-linear-gradient(-45deg, #000 0, #000 10px, transparent 10px, transparent 20px); border-radius: 10px; opacity: 0.8;}
+                .wc-footer-text { color: #666; font-size: 0.9rem; font-weight: 500; }
+
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            </style>
+
+            <div class="login-layout">
+                <div class="grid-bg"></div>
+                <div class="login-card">
+                    <div class="tt-logo">🏯</div>
+                    <h1 class="tt-title">Kernel V9</h1>
+                    <p class="tt-subtitle">Zero-Trust Cognitive OS</p>
+
+                    <div id="connectState">
+                        <button class="btn-wallet btn-walletconnect" id="btnOpenWC">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C16.1421 4.5 19.5 7.85786 19.5 12C19.5 16.1421 16.1421 19.5 12 19.5C7.85786 19.5 4.5 16.1421 4.5 12C4.5 7.85786 7.85786 4.5 12 4.5ZM12 7.5C9.51472 7.5 7.5 9.51472 7.5 12C7.5 14.4853 9.51472 16.5 12 16.5C14.4853 16.5 16.5 14.4853 16.5 12C16.5 9.51472 14.4853 7.5 12 7.5Z" fill="#3b99fc"/></svg>
+                            Conectar WalletConnect
+                        </button>
+                        <button class="btn-wallet" id="btnBypass">
+                            🦊 Conectar Browser Wallet
+                        </button>
+                        
+                        <div class="divider">Firma Manual (Admin)</div>
+
+                        <div class="form-group">
+                            <label>Identificador de Red</label>
+                            <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="@alvaro">
+                        </div>
+                        <button class="btn-login-std" id="btnConnectId">Inicializar Matriz</button>
+                    </div>
+
+                    <div id="signState" class="connected-state">
+                        <div class="wallet-address-box" title="Wallet conectada">
+                            🟢 <span id="displayAddress">0x...</span>
+                        </div>
+                        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">El protocolo requiere tu firma para verificar la propiedad de la llave privada. Sin coste de Gas.</p>
+                        <button class="btn-sign" id="btnSignMessage">✍️ Firmar Acceso</button>
+                        <button style="background:transparent; border:none; color:#888; font-size:0.8rem; margin-top:15px; cursor:pointer;" id="btnDisconnect">Desconectar</button>
+                    </div>
+                </div>
+
+                <div class="wc-modal-overlay" id="wcModal">
+                    <div class="wc-modal">
+                        <div class="wc-header">
+                            <div class="wc-logo-text">WalletConnect</div>
+                            <button class="wc-close" id="btnCloseWC">&times;</button>
+                        </div>
+                        <div class="wc-qr-box">
+                            <div class="mock-qr" id="qrClickable" style="cursor:pointer;" title="Click para simular escaneo desde móvil"></div>
+                        </div>
+                        <div class="wc-footer-text">Escanea el QR con TrustWallet o MetaMask.<br><span style="font-size:0.75rem; color:#aaa; display:block; margin-top:5px;">(Haz click en el QR para simular el escaneo)</span></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    executeViewScript() {
+        const state = store.getState();
+        
+        // --- LOGICA DE LOGIN (Si no hay sesión) ---
+        if (!state.session.activeUserId || state.session.role === 'guest') {
+            const dom = {
+                connectState: document.getElementById('connectState'),
+                signState: document.getElementById('signState'),
+                btnOpenWC: document.getElementById('btnOpenWC'),
+                btnBypass: document.getElementById('btnBypass'),
+                wcModal: document.getElementById('wcModal'),
+                btnCloseWC: document.getElementById('btnCloseWC'),
+                qrClickable: document.getElementById('qrClickable'),
+                displayAddress: document.getElementById('displayAddress'),
+                btnSignMessage: document.getElementById('btnSignMessage'),
+                btnDisconnect: document.getElementById('btnDisconnect'),
+                btnConnectId: document.getElementById('btnConnectId'),
+                inpLoginId: document.getElementById('inpLoginId')
+            };
+
+            const doLogin = async (userId) => {
+                if (!userId) return alert("Introduce una Identidad Válida.");
+                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
+                window.location.reload(); // Recarga para levantar el Home Completo
+            };
+
+            // Flujo WalletConnect / Browser Wallet
+            const showSignature = (address) => {
+                this.mockWalletAddress = address || this.mockWalletAddress;
+                const shortAddr = `${this.mockWalletAddress.substring(0, 6)}...${this.mockWalletAddress.substring(this.mockWalletAddress.length - 4)}`;
+                dom.displayAddress.innerText = shortAddr;
+                dom.connectState.style.display = 'none';
+                dom.signState.style.display = 'flex';
+            };
+
+            if (dom.btnOpenWC) dom.btnOpenWC.addEventListener('click', () => dom.wcModal.style.display = 'flex');
+            if (dom.btnCloseWC) dom.btnCloseWC.addEventListener('click', () => dom.wcModal.style.display = 'none');
+            
+            if (dom.qrClickable) dom.qrClickable.addEventListener('click', () => {
+                dom.wcModal.style.display = 'none';
+                showSignature();
+            });
+
+            if (dom.btnBypass) dom.btnBypass.addEventListener('click', () => showSignature());
+
+            if (dom.btnSignMessage) dom.btnSignMessage.addEventListener('click', () => {
+                dom.btnSignMessage.innerText = '⏳ Firmando...';
+                dom.btnSignMessage.style.opacity = '0.7';
+                setTimeout(() => doLogin(this.mockWalletAddress), 1000);
+            });
+
+            if (dom.btnDisconnect) dom.btnDisconnect.addEventListener('click', () => {
+                dom.signState.style.display = 'none';
+                dom.connectState.style.display = 'block';
+            });
+
+            // Flujo Manual (Fallback)
+            if (dom.btnConnectId) {
+                dom.btnConnectId.addEventListener('click', () => doLogin(dom.inpLoginId.value.trim()));
+                dom.inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(dom.inpLoginId.value.trim()); });
+            }
+
+            return; // Detenemos aquí porque no hay sesión
+        }
+
+        // --- LOGICA DEL HOME REGULAR (Ya logueado) ---
+        Sidebar.initListeners();
+        PageHeader.execute();
+
+        window.addEventListener('ph-tab-changed', (e) => {
+            this.currentTab = e.detail.tabId;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const target = document.getElementById(`view-${this.currentTab}`);
+            if(target) target.classList.add('active');
+        });
+    }
+}
