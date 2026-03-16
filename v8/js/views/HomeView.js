@@ -214,7 +214,7 @@ export default class HomeView {
         `;
     }
 
-    executeViewScript() {
+  executeViewScript() {
         const state = store.getState();
         
         // ==========================================
@@ -234,7 +234,7 @@ export default class HomeView {
                 signTextMsg: document.getElementById('signTextMsg')
             };
 
-            // Referencias globales para Ethers y Web3Modal
+            // Referencias globales para Ethers
             let web3Signer = null;
             let currentAddress = null;
             let ethersModule = null; 
@@ -245,7 +245,7 @@ export default class HomeView {
                 window.location.reload(); 
             };
 
-            // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, Rabby)
+            // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, Rabby, Brave)
             if (dom.btnConnectInjected) {
                 dom.btnConnectInjected.addEventListener('click', async () => {
                     if (typeof window.ethereum !== 'undefined') {
@@ -269,7 +269,7 @@ export default class HomeView {
                             dom.signState.style.display = 'flex';
                         } catch (err) {
                             console.error("Error Web3:", err);
-                            alert("Conexión rechazada o el CDN está bloqueado. Usa el Fallback Local.");
+                            alert("Conexión rechazada. Si el CDN está bloqueado, usa el Fallback Local.");
                             dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
                         }
                     } else {
@@ -277,6 +277,82 @@ export default class HomeView {
                     }
                 });
             }
+
+            // 2. WALLETCONNECT V2 (Deshabilitado por Arquitectura Vanilla)
+            if (dom.btnOpenWC) {
+                dom.btnOpenWC.addEventListener('click', () => {
+                    alert("⚠️ Decisión Arquitectónica: WalletConnect V2 requiere un empaquetador (Webpack/Vite) para resolver sus dependencias sin romper las políticas CORS/MIME del navegador. \n\nPara mantener la pureza Local-First (Vanilla JS), utiliza la extensión de navegador (Browser Wallet).");
+                });
+            }
+
+            // 3. FIRMA CRIPTOGRÁFICA (SIWE)
+            if (dom.btnSignMessage) {
+                dom.btnSignMessage.addEventListener('click', async () => {
+                    if (!web3Signer || !currentAddress || !ethersModule) return;
+                    const { ethers } = ethersModule;
+
+                    dom.btnSignMessage.innerText = '⏳ Esperando Firma...';
+                    dom.btnSignMessage.style.opacity = '0.7';
+
+                    const nonce = Date.now().toString(16);
+                    const domain = window.location.host;
+                    const message = `Welcome to TeamTowers V9!\n\nClick to sign in and accept the TeamTowers Terms of Service.\nThis request will not trigger a blockchain transaction or cost any gas fees.\n\nURI: https://${domain}\nWallet: ${currentAddress}\nNonce: ${nonce}`;
+
+                    try {
+                        const signature = await web3Signer.signMessage(message);
+                        const recoveredAddress = ethers.verifyMessage(message, signature);
+                        
+                        if (recoveredAddress.toLowerCase() === currentAddress.toLowerCase()) {
+                            dom.signTextMsg.innerText = "✅ Criptografía verificada. Entrando a la Matriz...";
+                            dom.signTextMsg.style.color = "var(--accent-green)";
+                            setTimeout(() => doLogin(currentAddress), 1000);
+                        } else {
+                            throw new Error("La dirección recuperada no coincide.");
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        dom.btnSignMessage.innerText = '✍️ Reintentar Firma';
+                        dom.btnSignMessage.style.opacity = '1';
+                        alert("Firma rechazada o fallida. Operación cancelada.");
+                    }
+                });
+            }
+
+            // Cancelar
+            if (dom.btnDisconnect) {
+                dom.btnDisconnect.addEventListener('click', () => {
+                    web3Signer = null; currentAddress = null;
+                    dom.btnConnectInjected.innerHTML = '🦊 Conectar Browser Wallet';
+                    dom.signState.style.display = 'none';
+                    dom.connectState.style.display = 'block';
+                });
+            }
+
+            // Flujo Manual (Fallback Admin Seguro)
+            if (dom.btnConnectId) {
+                dom.btnConnectId.addEventListener('click', () => doLogin(dom.inpLoginId.value.trim()));
+                dom.inpLoginId.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(dom.inpLoginId.value.trim()); });
+            }
+
+            return; 
+        }
+
+        // ==========================================
+        // LÓGICA DEL HOME REGULAR (Ya logueado)
+        // ==========================================
+        import { Sidebar } from '../components/Sidebar.js';
+        import { PageHeader } from '../components/PageHeader.js';
+        
+        Sidebar.initListeners();
+        PageHeader.execute();
+
+        window.addEventListener('ph-tab-changed', (e) => {
+            this.currentTab = e.detail.tabId;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const target = document.getElementById(`view-${this.currentTab}`);
+            if(target) target.classList.add('active');
+        });
+    }
 
             // 2. INVOCAR WALLETCONNECT V2 (📱 QR / Móvil)
             if (dom.btnOpenWC) {
