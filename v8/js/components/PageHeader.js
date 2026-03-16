@@ -4,9 +4,13 @@ import { store } from '../core/store.js';
 export const PageHeader = {
     getHtml: (config) => {
         const state = store.getState();
-        const activeUser = state.globalUsers.find(u => u.id === state.session.activeUserId);
-        const initial = activeUser ? activeUser.name.charAt(0).toUpperCase() : 'A';
-        const roleText = state.session.role === 'ecosystem-owner' ? '👑 Owner' : '⚔️ Nodo';
+        const activeUserId = state.session?.activeUserId;
+        const activeUser = activeUserId ? state.globalUsers.find(u => u.id === activeUserId) : null;
+        
+        // Protecciones contra undefined (Zero-Trust rendering)
+        const initial = activeUser && activeUser.name ? activeUser.name.charAt(0).toUpperCase() : 'A';
+        const userName = activeUser && activeUser.name ? activeUser.name : 'Desconocido';
+        const roleText = state.session?.role === 'ecosystem-owner' ? '👑 Owner' : '⚔️ Nodo';
 
         // TABS GENERATOR
         let tabsHtml = '';
@@ -35,10 +39,9 @@ export const PageHeader = {
 
         return `
             <style>
-                /* EL TRUCO: Relative con padding derecho para reservar el espacio del avatar siempre */
                 .ph-view-header { margin-bottom: 2rem; position: relative; z-index: 1000; padding-right: 65px; min-height: 50px;}
                 
-                /* POSICIONAMIENTO ABSOLUTO DEL AVATAR (Nunca se moverá de la esquina superior derecha) */
+                /* AVATAR MENU */
                 .ph-user-menu { position: absolute; top: 0; right: 0; z-index: 10000; }
                 .ph-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.4rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid rgba(255,255,255,0.2); user-select: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
                 .ph-avatar:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); border-color: white;}
@@ -56,12 +59,11 @@ export const PageHeader = {
                 .ph-drop-item.danger { color: var(--accent-red); border-bottom: none;}
                 .ph-drop-item.danger:hover { border-left-color: var(--accent-red); background: rgba(255, 82, 82, 0.05); color: var(--accent-red);}
 
-                /* TITULOS Y BOTONES DE ACCION */
+                /* TITULOS Y BOTONES */
                 .ph-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px; width: 100%;}
                 .ph-titles h1 { color: white; font-size: 2.2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
                 .ph-subtitle-badge { background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); color: var(--accent-green); font-size: 0.7rem; padding: 4px 10px; border-radius: 12px; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
                 .ph-tagline { color: var(--text-muted); font-size: 0.95rem; margin: 0; line-height: 1.5; }
-
                 .ph-actions-area { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-start;}
                 
                 /* MAGIC BUTTONS */
@@ -97,7 +99,7 @@ export const PageHeader = {
                     
                     <div class="ph-dropdown" id="phDropdownMenu">
                         <div class="ph-drop-header">
-                            <div class="ph-drop-name">${activeUser ? activeUser.name : 'Desconocido'}</div>
+                            <div class="ph-drop-name">${userName}</div>
                             <div class="ph-drop-role">${roleText}</div>
                         </div>
                         <a href="/v8/profile" class="ph-drop-item" data-link>👤 Mi Perfil (Ikigai)</a>
@@ -105,17 +107,17 @@ export const PageHeader = {
                         <a href="/v8/manifesto" class="ph-drop-item" data-link>🏛️ El Manifiesto SOS</a>
                         <a href="/v8/help" class="ph-drop-item" data-link>📖 Centro de Ayuda</a>
                         <a href="/v8/tests" class="ph-drop-item" data-link style="color: var(--accent-green);">🟢 Auditoría Kernel</a>
-                        <button class="ph-drop-item danger" id="phBtnut">🚪 Desconectar</button>
+                        <button class="ph-drop-item danger" id="phBtnLogout">🚪 Desconectar</button>
                     </div>
                 </div>
 
                 <div class="ph-header-top">
                     <div class="ph-titles">
                         <h1>
-                            ${config.title}
+                            ${config.title || 'Sin Título'}
                             ${config.subtitle ? `<span class="ph-subtitle-badge">${config.subtitle}</span>` : ''}
                         </h1>
-                        <p class="ph-tagline">${config.tagline}</p>
+                        <p class="ph-tagline">${config.tagline || ''}</p>
                     </div>
                     
                     <div class="ph-actions-area">
@@ -129,6 +131,7 @@ export const PageHeader = {
     },
 
     execute: () => {
+        // TABS LISTENER
         const tabBtns = document.querySelectorAll('.ph-tab-btn');
         tabBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -139,6 +142,7 @@ export const PageHeader = {
             });
         });
 
+        // MAGIC BUTTONS LISTENER
         const magicBtns = document.querySelectorAll('.ph-magic-btn');
         magicBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -147,6 +151,7 @@ export const PageHeader = {
             });
         });
 
+        // DROPDOWN MENU LISTENER
         const avatarBtn = document.getElementById('phAvatarBtn');
         const dropdown = document.getElementById('phDropdownMenu');
         
@@ -163,11 +168,14 @@ export const PageHeader = {
             });
         }
 
-        const btnut = document.getElementById('phBtnut');
-        if (btnut) {
-            btnut.addEventListener('click', () => {
+        // LOGOUT LISTENER (Arreglado el Type y la ID)
+        const btnLogout = document.getElementById('phBtnLogout');
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
                 if(confirm('¿Suspender sesión del Nodo Humano? Los agentes seguirán procesando en Local.')) {
-                    store.dispatch({ type: 'UT_USER' }).then(() => {
+                    // Despachamos al store la orden correcta
+                    store.dispatch({ type: 'LOGOUT_USER' }).then(() => {
+                        // Navegamos al index forzando una recarga de estado
                         window.location.href = '/v8/';
                     });
                 }
