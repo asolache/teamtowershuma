@@ -28,7 +28,7 @@ class OrchestratorCore {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                 body: JSON.stringify({ 
-                    model: "gpt-4o-mini", 
+                    model: "gpt-4o", 
                     messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
                     response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
                 })
