@@ -285,7 +285,6 @@ export default class HomeView {
                         const originalText = dom.btnOpenWC.innerHTML;
                         dom.btnOpenWC.innerText = '⏳ Iniciando AppKit...';
 
-                        // Carga Dinámica de Ethers y Web3Modal
                         if (!ethersModule) ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
                         const wcModule = await import('https://cdn.jsdelivr.net/npm/@web3modal/ethers6@4.1.11/+esm');
                         
@@ -316,7 +315,6 @@ export default class HomeView {
                             enableCoinbase: true,
                         });
 
-                        // Instanciamos el Modal Oficial
                         const modal = createWeb3Modal({
                             ethersConfig,
                             chains: [mainnet],
@@ -329,7 +327,6 @@ export default class HomeView {
                         dom.btnOpenWC.innerHTML = originalText;
                         modal.open();
 
-                        // Escuchamos la conexión exitosa
                         modal.subscribeProvider(async (state) => {
                             if (state.isConnected && state.provider) {
                                 modal.close();
@@ -347,7 +344,10 @@ export default class HomeView {
                     } catch (err) {
                         console.error("Error WalletConnect:", err);
                         alert("Error cargando WalletConnect. El entorno SES podría estar bloqueando el CDN.");
-                        dom.btnOpenWC.innerHTML = 'Conectar WalletConnect';
+                        dom.btnOpenWC.innerHTML = `
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C16.1421 4.5 19.5 7.85786 19.5 12C19.5 16.1421 16.1421 19.5 12 19.5C7.85786 19.5 4.5 16.1421 4.5 12C4.5 7.85786 7.85786 4.5 12 4.5ZM12 7.5C9.51472 7.5 7.5 9.51472 7.5 12C7.5 14.4853 9.51472 16.5 12 16.5C14.4853 16.5 16.5 14.4853 16.5 12C16.5 9.51472 14.4853 7.5 12 7.5Z" fill="#3b99fc"/></svg>
+                            Conectar WalletConnect
+                        `;
                     }
                 });
             }
@@ -407,9 +407,6 @@ export default class HomeView {
         // ==========================================
         // LÓGICA DEL HOME REGULAR (Ya logueado)
         // ==========================================
-        import { Sidebar } from '../components/Sidebar.js';
-        import { PageHeader } from '../components/PageHeader.js';
-        
         Sidebar.initListeners();
         PageHeader.execute();
 
