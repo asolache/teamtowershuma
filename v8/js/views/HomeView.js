@@ -253,27 +253,27 @@ export default class HomeView {
             let pendingUserId = null;
 
             // 🔥 FIX: NAVEGACIÓN BLINDADA (TIEMPO DE GUARDADO DE 150ms)
-           // 🔥 FIX: ESCUDO ANTI-FANTASMAS Y NAVEGACIÓN
-            const doLogin = async (userId) => {
-                if (!userId) return alert("Identidad no válida.");
-                
-                // 1. Verificamos si el usuario realmente existe en la memoria
-                const currentState = store.getState();
-                const userExists = currentState.globalUsers.find(u => u.id === userId);
-                
-                if (!userExists) {
-                    alert(`🛑 ACCESO DENEGADO: La identidad "${userId}" no existe en el Padrón Global.\n\nEl navegador está leyendo una caché antigua donde no existes. Por favor, limpia la memoria (Application -> Clear site data) o verifica tu store.js.`);
-                    return; // Detenemos el código aquí para que no haya bucle.
-                }
+          // 🔥 FIX: ESCUDO ANTI-FANTASMAS Y NAVEGACIÓN SPA NATIVA
+         const doLogin = async (userId) => {
+             if (!userId) return alert("Identidad no válida.");
 
-                // 2. Si existes, procedemos al Login
-                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
-                
-                // 3. Viajamos al Dashboard
-                setTimeout(() => {
-                    window.location.href = '/v8/dashboard';
-                }, 150);
-            };
+             // 1. Verificamos si el usuario realmente existe en la memoria
+             const currentState = store.getState();
+             const userExists = currentState.globalUsers.find(u => u.id === userId);
+
+             if (!userExists) {
+                 alert(`🛑 ACCESO DENEGADO: La identidad "${userId}" no existe en el Padrón Global.\n\nEl navegador está leyendo una caché antigua donde no existes. Por favor, limpia la memoria o verifica tu store.js.`);
+                 return; 
+             }
+
+             // 2. Despachamos el login a Redux (que lo guardará en LocalStorage)
+             await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
+
+             // 3. Viajamos al Dashboard usando el Router nativo de la V9 (No reload, no href)
+             setTimeout(() => {
+                 navigateTo('/v8/dashboard');
+             }, 100);
+         };
 
             // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, TrustWallet)
             if (dom.btnConnectInjected) {
