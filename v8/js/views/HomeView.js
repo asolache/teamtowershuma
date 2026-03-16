@@ -144,31 +144,40 @@ export default class HomeView {
     // ==========================================
     // LOGIN PANTALLA WEB3 (ZERO-TRUST REAL)
     // ==========================================
+   // ==========================================
+    // LOGIN PANTALLA WEB3 & 2FA (ZERO-TRUST REAL)
+    // ==========================================
     getLandingHtml() {
         return `
             <style>
                 .login-layout { display: flex; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050508 100%); font-family: var(--font-main); justify-content: center; align-items: center; color: white; position: relative;}
                 .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: 1; pointer-events: none; transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px); animation: gridMove 10s linear infinite;}
                 @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } }
+                
                 .login-card { background: rgba(10, 10, 15, 0.85); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 450px; padding: 3rem 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); backdrop-filter: blur(20px); z-index: 10; text-align: center;}
                 .tt-logo { font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 176, 255, 0.5); }
                 .tt-title { font-size: 2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -1px; }
                 .tt-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; font-family: var(--font-mono); }
+                
                 .btn-wallet { width: 100%; padding: 16px; border-radius: 16px; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; margin-bottom: 15px;}
                 .btn-wallet:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+                
                 .divider { display: flex; align-items: center; text-align: center; color: #555; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin: 1.5rem 0; }
                 .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
                 .divider:not(:empty)::before { margin-right: .5em; }
                 .divider:not(:empty)::after { margin-left: .5em; }
+                
                 .form-group { text-align: left; margin-bottom: 1.5rem; }
-                .form-group label { display: block; font-size: 0.75rem; color: #aaa; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;}
                 .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box; text-align: center;}
                 .btn-login-std { width: 100%; background: linear-gradient(135deg, var(--accent-blue), #536dfe); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s;}
+                
                 .connected-state { display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
                 .wallet-address-box { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 20px; border-radius: 30px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
                 .btn-sign { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 15px rgba(224,64,251,0.3); }
+                
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
             </style>
+
             <div class="login-layout">
                 <div class="grid-bg"></div>
                 <div class="login-card">
@@ -182,11 +191,25 @@ export default class HomeView {
                             <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>
                         </button>
                         
-                        <div class="divider">Fallback Local</div>
-                        <div class="form-group">
-                            <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="usr_alvaro_001">
+                        <div id="stepManual">
+                            <div class="divider">Fallback Local</div>
+                            <div class="form-group">
+                                <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="usr_alvaro_001">
+                            </div>
+                            <button class="btn-login-std" id="btnConnectId">Solicitar Acceso</button>
                         </div>
-                        <button class="btn-login-std" id="btnConnectId">Forzar Entrada Manual</button>
+
+                        <div id="step2fa" style="display:none; animation: fadeIn 0.4s ease-out;">
+                            <div class="divider">Verificación 2FA</div>
+                            <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; line-height:1.4;">
+                                El protocolo requiere el código Authenticator (PIN Maestro) para verificar tu identidad.
+                            </p>
+                            <div class="form-group">
+                                <input type="password" id="inp2faCode" class="login-input" placeholder="• • • • • •" maxlength="6" style="letter-spacing: 12px; font-size: 1.8rem; font-weight:900;">
+                            </div>
+                            <button class="btn-login-std" id="btnVerify2fa" style="background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));">Desbloquear Kernel</button>
+                            <button style="background:transparent; border:none; color:#888; font-size:0.8rem; margin-top:15px; cursor:pointer;" id="btnCancel2fa">Volver</button>
+                        </div>
                     </div>
 
                     <div id="signState" class="connected-state">
