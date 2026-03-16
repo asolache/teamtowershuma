@@ -191,7 +191,7 @@ export default class HomeView {
                         <div id="stepManual">
                             <div class="divider">Fallback Local</div>
                             <div class="form-group">
-                                <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="usr_alvaro_001">
+                                <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="@alvaro">
                             </div>
                             <button class="btn-login-std" id="btnConnectId">Solicitar Acceso</button>
                         </div>
@@ -252,14 +252,18 @@ export default class HomeView {
             let ethersModule = null; 
             let pendingUserId = null;
 
-            // 🔥 FIX: NAVEGACIÓN SPA PARA NO BORRAR LA MEMORIA AL LOGUEAR
+            // 🔥 FIX: NAVEGACIÓN BLINDADA (TIEMPO DE GUARDADO DE 150ms)
             const doLogin = async (userId) => {
                 if (!userId) return alert("Identidad no válida.");
+                
+                // 1. Guardamos la sesión en el estado global (Redux/LocalStorage)
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
                 
-                // Navegación sin recarga dura
-                history.pushState(null, null, '/v8/dashboard');
-                window.dispatchEvent(new Event('popstate'));
+                // 2. Esperamos 150ms para que el guardado asíncrono termine y no haya rebote
+                setTimeout(() => {
+                    // 3. Viajamos al Dashboard usando href para forzar al Router a leer el estado fresco
+                    window.location.href = '/v8/dashboard';
+                }, 150);
             };
 
             // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, TrustWallet)
@@ -272,7 +276,7 @@ export default class HomeView {
                             const originalHTML = dom.btnConnectInjected.innerHTML;
                             dom.btnConnectInjected.innerText = '⏳ Cargando Motor Criptográfico...';
                             
-                            // Carga dinámica para que SES no bloquee el archivo entero
+                            // Carga dinámica para que SES no bloquee el archivo
                             if (!ethersModule) {
                                 ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
                             }
@@ -293,7 +297,7 @@ export default class HomeView {
                             dom.btnConnectInjected.innerHTML = originalHTML;
                         } catch (err) {
                             console.error("Error Web3:", err);
-                            alert("Conexión rechazada. Si el CDN está bloqueado, usa el Fallback Local.");
+                            alert("Conexión rechazada. Usa el Fallback Local.");
                             dom.btnConnectInjected.innerHTML = `🦊 Conectar Browser Wallet <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>`;
                         }
                     } else {
