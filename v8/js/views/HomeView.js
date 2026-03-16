@@ -250,7 +250,7 @@ export default class HomeView {
             let web3Signer = null;
             let currentAddress = null;
             let ethersModule = null; 
-            let pendingUserId = null; // Para el 2FA
+            let pendingUserId = null;
 
             const doLogin = async (userId) => {
                 if (!userId) return alert("Identidad no válida.");
@@ -268,7 +268,7 @@ export default class HomeView {
                             const originalHTML = dom.btnConnectInjected.innerHTML;
                             dom.btnConnectInjected.innerText = '⏳ Cargando Motor Criptográfico...';
                             
-                            // Carga dinámica de Ethers.js para no romper entornos SES
+                            // Carga dinámica para que SES no bloquee el archivo entero
                             if (!ethersModule) {
                                 ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
                             }
@@ -289,7 +289,7 @@ export default class HomeView {
                             dom.btnConnectInjected.innerHTML = originalHTML;
                         } catch (err) {
                             console.error("Error Web3:", err);
-                            alert("Conexión rechazada. Si el CDN está bloqueado por SES, usa el Fallback Local.");
+                            alert("Conexión rechazada. Si el CDN está bloqueado, usa el Fallback Local.");
                             dom.btnConnectInjected.innerHTML = `🦊 Conectar Browser Wallet <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>`;
                         }
                     } else {
@@ -349,7 +349,7 @@ export default class HomeView {
                     // Pasamos a la pantalla del 2FA
                     pendingUserId = userId;
                     dom.stepManual.style.display = 'none';
-                    dom.btnConnectInjected.style.display = 'none'; // Ocultamos el botón Web3 para enfoque total
+                    dom.btnConnectInjected.style.display = 'none'; 
                     dom.step2fa.style.display = 'block';
                     dom.inp2faCode.focus();
                 });
@@ -386,15 +386,12 @@ export default class HomeView {
                 });
             }
 
-            return; // Detenemos la ejecución aquí si no hay sesión.
+            return; // Fin del bloque Login.
         }
 
         // ==========================================
         // LÓGICA DEL HOME REGULAR (Ya logueado)
         // ==========================================
-        import { Sidebar } from '../components/Sidebar.js';
-        import { PageHeader } from '../components/PageHeader.js';
-        
         Sidebar.initListeners();
         PageHeader.execute();
 
