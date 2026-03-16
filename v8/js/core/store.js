@@ -18,7 +18,7 @@ const initialState = {
         { id: '@dharma_coach', name: 'Dharma Coach', email: 'dharma@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver' } },
         { id: '@forca_worker', name: 'Força Worker', email: 'forca@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero' } },
         { id: '@mestre_escola', name: 'Mestre d\'Escola', email: 'mestre@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage' } },
-        { id: 'usr_alvaro_001', name: 'Alvaro (Master Architect)', email: 'alvaro@teamtowers.ai', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
+        { id: '@alvaro', name: 'Alvaro (Master Architect)', email: 'alvaro@teamtowers.ai', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
     ],
     projects: []
 };
