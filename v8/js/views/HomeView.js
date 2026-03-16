@@ -253,27 +253,43 @@ export default class HomeView {
             let pendingUserId = null;
 
             // 🔥 FIX: NAVEGACIÓN BLINDADA (TIEMPO DE GUARDADO DE 150ms)
-          // 🔥 FIX: ESCUDO ANTI-FANTASMAS Y NAVEGACIÓN SPA NATIVA
-         const doLogin = async (userId) => {
-             if (!userId) return alert("Identidad no válida.");
+        // 🔥 NAVEGACIÓN SPA Y ONBOARDING PERMISSIONLESS
+            const doLogin = async (userId) => {
+                if (!userId) return alert("Identidad no válida.");
+                
+                const currentState = store.getState();
+                const userExists = currentState.globalUsers.find(u => u.id === userId);
+                
+                let targetUrl = '/v8/dashboard'; // Por defecto, si existe, va al dashboard
 
-             // 1. Verificamos si el usuario realmente existe en la memoria
-             const currentState = store.getState();
-             const userExists = currentState.globalUsers.find(u => u.id === userId);
+                // 1. Si el usuario NO existe, lo registramos en la Matriz
+                if (!userExists) {
+                    console.log("Nueva identidad detectada. Forjando perfil base...");
+                    
+                    const newUser = {
+                        id: userId,
+                        name: 'Nuevo Ciudadano',
+                        email: '',
+                        globalRole: 'citizen',
+                        profile: { sbt_skills: [], vision: 'Recién llegado a la Matriz V9' }
+                    };
 
-             if (!userExists) {
-                 alert(`🛑 ACCESO DENEGADO: La identidad "${userId}" no existe en el Padrón Global.\n\nEl navegador está leyendo una caché antigua donde no existes. Por favor, limpia la memoria o verifica tu store.js.`);
-                 return; 
-             }
+                    // Despachamos la creación del usuario (asegúrate de que tu store lo soporte)
+                    await store.dispatch({ type: 'REGISTER_USER', payload: newUser });
+                    
+                    // Como es nuevo, lo mandamos directo a configurar su perfil
+                    targetUrl = '/v8/profile'; 
+                }
 
-             // 2. Despachamos el login a Redux (que lo guardará en LocalStorage)
-             await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
-
-             // 3. Viajamos al Dashboard usando el Router nativo de la V9 (No reload, no href)
-             setTimeout(() => {
-                 navigateTo('/v8/dashboard');
-             }, 100);
-         };
+                // 2. Ejecutamos el Login
+                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
+                
+                // 3. Salto SPA Nativo (Sin recargar y sin depender de exports del router)
+                setTimeout(() => {
+                    history.pushState(null, null, targetUrl);
+                    window.dispatchEvent(new CustomEvent('popstate'));
+                }, 150);
+            };
 
             // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, TrustWallet)
             if (dom.btnConnectInjected) {
