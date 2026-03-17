@@ -6,433 +6,256 @@ import { PageHeader } from '../components/PageHeader.js';
 
 export default class HomeView {
     constructor() {
-        document.title = "Centro de Mando | SOS V9";
-        this.currentTab = 'redes'; 
+        document.title = "Matriz Global | TeamTowers V13";
     }
 
     async getHtml() {
         const state = store.getState();
-        
+        const activeUserId = state.session.activeUserId;
+        const globalRole = state.session.role;
+
+        // Filtrar proyectos accesibles
+        const userProjects = state.projects.filter(p => 
+            globalRole === 'ecosystem-owner' || 
+            p.ownerId === activeUserId || 
+            (p.usuarios && p.usuarios.find(u => u.id === activeUserId))
+        );
+
         // ==========================================
-        // 1. PANTALLA DE LOGIN ZERO-TRUST (NO LOGUEADO)
+        // CÁLCULOS DE TELEMETRÍA GLOBAL
         // ==========================================
-        if (!state.session.activeUserId || state.session.role === 'guest') {
-            return this.getLandingHtml();
+        let globalCost = 0;
+        let globalTokens = 0;
+        let globalAiSlices = 0;
+        let providerStats = {
+            deepseek: { cost: 0, tokens: 0, calls: 0 },
+            openai: { cost: 0, tokens: 0, calls: 0 },
+            gemini: { cost: 0, tokens: 0, calls: 0 }
+        };
+
+        userProjects.forEach(p => {
+            // Slices Minados por IA
+            (p.ledger || []).forEach(tx => {
+                const user = state.globalUsers.find(u => u.id === tx.userId);
+                if (user && user.profile?.isAi) {
+                    globalAiSlices += (tx.fmv || 50) * (tx.multiplier || 1) * (tx.horas || 1); 
+                }
+            });
+
+            // Gasto de Tokens
+            (p.telemetry || []).forEach(t => {
+                globalCost += t.costInDollars || 0;
+                const tks = (t.tokens?.total_tokens || t.tokens?.prompt_tokens + t.tokens?.completion_tokens) || 0;
+                globalTokens += tks;
+
+                if (providerStats[t.engine]) {
+                    providerStats[t.engine].cost += t.costInDollars || 0;
+                    providerStats[t.engine].tokens += tks;
+                    providerStats[t.engine].calls += 1;
+                }
+            });
+        });
+
+        const globalREC = globalCost > 0 ? (globalAiSlices / globalCost) : 0;
+
+        // Generador de Tarjetas de Proyecto
+        let projectsHtml = '';
+        if (userProjects.length === 0) {
+            projectsHtml = `
+                <div style="text-align:center; padding: 4rem; background: rgba(0,0,0,0.3); border: 1px dashed var(--glass-border); border-radius: 20px; grid-column: 1 / -1;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem; filter: drop-shadow(0 0 20px rgba(0,176,255,0.4));">🌌</div>
+                    <h3 style="color:white; margin:0; font-weight:900; font-size:1.5rem;">El vacío cuántico</h3>
+                    <p style="color:#888; margin-top:10px;">No estás conectado a ningún Castell (Red VNA).</p>
+                    <a href="/v8/create" data-link class="btn-primary" style="display:inline-block; margin-top:20px; text-decoration:none;">➕ Instanciar Nueva Red</a>
+                </div>
+            `;
+        } else {
+            projectsHtml = userProjects.map(p => {
+                const rolesCount = p.roles ? p.roles.filter(r=>!r.isArchived).length : 0;
+                const flowsCount = p.vna_flows ? p.vna_flows.length : (p.transactions ? p.transactions.length : 0);
+                const isOwner = p.ownerId === activeUserId;
+                
+                return `
+                    <div class="project-card" data-id="${p.id}">
+                        <div class="project-header">
+                            <h3 class="project-title">${p.nombre}</h3>
+                            ${isOwner ? `<span class="badge-owner">OWNER</span>` : `<span class="badge-member">NODO</span>`}
+                        </div>
+                        <div class="project-arch">${p.archetype || 'Red VNA'}</div>
+                        
+                        <div class="project-metrics">
+                            <div class="metric"><span class="icon">🪑</span> <b>${rolesCount}</b> Sillas</div>
+                            <div class="metric"><span class="icon">🕸️</span> <b>${flowsCount}</b> Tuberías</div>
+                            <div class="metric"><span class="icon">👥</span> <b>${p.usuarios ? p.usuarios.length : 1}</b> Nodos</div>
+                        </div>
+                        
+                        <div class="project-footer">
+                            <button class="btn-enter" data-id="${p.id}">Acceder al Kernel &rarr;</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        // ==========================================
-        // 2. CENTRO DE MANDO COMPLETO (LOGUEADO)
-        // ==========================================
-        const config = state.config;
-
         const headerConfig = {
-            title: config.ecosystemName || "Agentic Network",
-            subtitle: "V9 CORE",
-            tagline: "Panel de control P2P. Supervisa el flujo de valor entre humanos e IA.",
-            tabs: [
-                { id: 'redes', label: '🪐 Nodos y Redes', active: this.currentTab === 'redes' },
-                { id: 'agentes', label: '🤖 Enjambre IA', active: this.currentTab === 'agentes' }
+            title: "Matriz Global",
+            subtitle: "Telemetría",
+            tagline: "Monitorización de Arbitraje Cognitivo y gestión de Ecosistemas.",
+            magicActions: [
+                { id: 'new_net', label: 'Nueva Red', icon: '➕', isAi: false }
             ]
         };
 
-        const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-        let apiKey = '';
-        if (savedProvider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek') || '';
-        if (savedProvider === 'openai') apiKey = localStorage.getItem('tt_key_openai') || '';
-        if (savedProvider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini') || '';
-        
-        const hasKey = apiKey.length > 5;
-        let onboardingHtml = '';
-
-        if (!hasKey) {
-            onboardingHtml = `
-                <div style="background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(0, 176, 255, 0.05)); border: 1px dashed var(--accent-purple); padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 15px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
-                    <div style="display:flex; align-items:center; gap: 15px;">
-                        <span style="font-size:2.5rem; filter: drop-shadow(0 0 10px rgba(224, 64, 251, 0.5));">🤖</span>
-                        <div>
-                            <h3 style="margin:0; color:white; font-size:1.3rem;">¡Bienvenido, Master Architect!</h3>
-                            <p style="margin:5px 0 0 0; color:#ccc; font-size:0.95rem; line-height:1.5;">Soy @genesi_ai. Para que el Enjambre pueda orquestar redes, generar código y redactar pactos Slicing Pie, necesitamos conexión a la Matrix.</p>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:15px; margin-top:10px;">
-                        <a href="/v8/settings" data-link style="background:var(--accent-purple); color:white; padding:10px 20px; border-radius:10px; font-weight:bold; text-decoration:none; font-size:0.9rem; transition:0.2s;">🔑 Configurar API Key (LLM)</a>
-                        <a href="/v8/help" data-link style="background:transparent; border:1px solid #555; color:white; padding:10px 20px; border-radius:10px; font-weight:bold; text-decoration:none; font-size:0.9rem;">Leer Documentación</a>
-                    </div>
-                </div>
-            `;
-        }
-
-        const aiAgents = state.globalUsers.filter(u => u.globalRole === 'ai-agent');
-
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
-                .workspace { display: block; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; height: 100%; box-sizing: border-box; scroll-behavior: smooth; width: 100%;}
-                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
-                .tab-content.active { display: block; }
-                .glass-panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: blur(15px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box;}
-                .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,176,255,0.2); font-size: 0.95rem; text-decoration:none;}
-                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
-                .agent-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(224, 64, 251, 0.3); border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; transition:0.3s; margin-bottom:15px;}
-                .agent-card:hover { border-color: var(--accent-purple); transform: translateX(5px); background: rgba(224, 64, 251, 0.05);}
-                .agent-info { flex: 1; }
-                .agent-name { font-weight: 900; color: white; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; margin-bottom: 5px;}
-                .agent-id { color: var(--accent-purple); font-family: var(--font-mono); font-size: 0.85rem; font-weight:bold;}
-                .agent-vision { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-top: 8px; font-style:italic;}
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-                @media (max-width: 768px) { .workspace { padding: 90px 1rem 120px 1rem; } .agent-card { flex-direction: column; align-items: flex-start; gap: 15px; } .agent-card > div:last-child { width: 100%; text-align: left !important; } }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
+                .workspace-home { flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; box-sizing: border-box;}
+                
+                /* TELEMETRY WIDGETS */
+                .telemetry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;}
+                .tel-card { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);}
+                .tel-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--glass-border); }
+                .tel-card.c-purple::before { background: var(--accent-purple); box-shadow: 0 0 15px var(--accent-purple); }
+                .tel-card.c-green::before { background: var(--accent-green); box-shadow: 0 0 15px var(--accent-green); }
+                .tel-card.c-red::before { background: var(--accent-red); box-shadow: 0 0 15px var(--accent-red); }
+                .tel-card.c-blue::before { background: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue); }
+                
+                .tel-label { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; display:flex; align-items:center; gap:8px;}
+                .tel-value { font-size: 2.2rem; color: white; font-weight: 900; font-family: var(--font-mono); line-height: 1;}
+                .tel-sub { font-size: 0.8rem; color: #666; margin-top: 8px;}
+
+                /* ENGINE COMPARISON BARS */
+                .engine-comparison { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem; margin-bottom: 3rem;}
+                .engine-header { color: white; font-weight: 900; margin-bottom: 1.5rem; font-size: 1.2rem; display:flex; align-items:center; gap:10px;}
+                .engine-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px;}
+                .engine-name { width: 100px; color: #aaa; font-weight: bold; font-size: 0.9rem; text-transform: uppercase;}
+                .engine-bar-track { flex: 1; background: rgba(255,255,255,0.05); height: 12px; border-radius: 6px; overflow: hidden; position: relative;}
+                .engine-bar-fill { height: 100%; border-radius: 6px; }
+                .engine-stats { width: 150px; text-align: right; color: white; font-family: var(--font-mono); font-size: 0.9rem; font-weight: bold;}
+                
+                /* PROJECT GRID */
+                .projects-section-title { color: white; font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:space-between;}
+                .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; padding-bottom: 4rem;}
+                
+                .project-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; transition: all 0.3s; cursor: default; backdrop-filter: blur(10px);}
+                .project-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(0,176,255,0.3); transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.5);}
+                
+                .project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;}
+                .project-title { color: white; font-size: 1.3rem; font-weight: 900; margin: 0; line-height: 1.2; word-break: break-word; flex:1;}
+                .badge-owner { background: rgba(0,230,118,0.1); color: var(--accent-green); border: 1px solid rgba(0,230,118,0.3); font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-family: var(--font-mono); letter-spacing: 1px;}
+                .badge-member { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-family: var(--font-mono); letter-spacing: 1px;}
+                
+                .project-arch { color: var(--accent-purple); font-size: 0.8rem; text-transform: uppercase; font-weight: bold; margin-bottom: 1.5rem; letter-spacing: 1px;}
+                
+                .project-metrics { display: flex; gap: 15px; margin-bottom: 1.5rem; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border: 1px solid #222;}
+                .metric { color: #aaa; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; flex:1; justify-content:center;}
+                .metric b { color: white; font-family: var(--font-mono); font-size: 1rem;}
+                
+                .project-footer { margin-top: auto; display:flex;}
+                .btn-enter { width: 100%; background: transparent; border: 1px solid #555; color: white; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size:0.9rem;}
+                .project-card:hover .btn-enter { background: var(--accent-blue); color: black; border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.4);}
+
+                @media (max-width: 768px) {
+                    .workspace-home { padding: 90px 1rem 120px 1rem; }
+                    .telemetry-grid { grid-template-columns: 1fr; }
+                    .engine-row { flex-direction: column; align-items: flex-start; gap: 5px;}
+                    .engine-bar-track { width: 100%; }
+                    .engine-stats { text-align: left; }
+                }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/')}
-                <main class="workspace">
+
+                <main class="workspace-home">
                     ${PageHeader.getHtml(headerConfig)}
-                    <div id="view-redes" class="tab-content ${this.currentTab === 'redes' ? 'active' : ''}">
-                        ${onboardingHtml}
-                        <div class="glass-panel" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2.5rem; margin-bottom: 2rem; flex-wrap:wrap; gap:15px;">
-                            <div>
-                                <h2 style="margin:0; font-size:1.2rem; color:white;">Redes Activas</h2>
-                                <p style="color:var(--text-muted); margin:0; font-size:0.9rem;">Ecosistemas bajo tu gobernanza.</p>
-                            </div>
-                            <a href="/v8/create" data-link class="btn-primary">➕ Inicializar Red</a>
+
+                    <div class="telemetry-grid">
+                        <div class="tel-card c-purple">
+                            <div class="tel-label"><span>🧠</span> Ratio (REC) Global</div>
+                            <div class="tel-value">${globalREC > 0 ? globalREC.toFixed(0) + 'x' : '0'}</div>
+                            <div class="tel-sub">Retorno de Eficiencia Cognitiva</div>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
-                            ${state.projects.map(p => `
-                                <div class="glass-panel" style="padding: 2rem; cursor: pointer; transition: 0.3s;" onclick="localStorage.setItem('tt_active_project', '${p.id}'); window.location.href='/v8/dashboard'">
-                                    <h3 style="margin: 0 0 10px 0; font-size: 1.4rem; color: white;">${p.nombre}</h3>
-                                    <div style="color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 1.5rem; text-transform:uppercase;">${p.archetype || 'Startup'}</div>
-                                    <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.85rem; color:#aaa;">
-                                        <span>Nodos: <b style="color:white;">${(p.usuarios||[]).length}</b></span>
-                                        <span>Tubos VNA: <b style="color:white;">${(p.vna_flows||[]).length}</b></span>
-                                    </div>
-                                    <div style="border-top: 1px dashed var(--glass-border); padding-top: 15px; display: flex; justify-content: space-between; font-weight: bold; color: var(--accent-green);">
-                                        <span>ENTRAR AL RADAR</span>
-                                        <span>→</span>
-                                    </div>
-                                </div>
-                            `).join('') || '<div style="color:var(--text-muted); grid-column: 1/-1; text-align:center; padding:3rem; border:1px dashed #333; border-radius:16px;">No hay redes inicializadas. Crea tu primer Castell.</div>'}
+                        <div class="tel-card c-green">
+                            <div class="tel-label"><span>💎</span> Arbitraje (Slicing Pie)</div>
+                            <div class="tel-value">€${Math.round(globalAiSlices).toLocaleString()}</div>
+                            <div class="tel-sub">Valor humano minado por IA</div>
+                        </div>
+                        <div class="tel-card c-red">
+                            <div class="tel-label"><span>💸</span> Gasto API Consolidado</div>
+                            <div class="tel-value">$${globalCost.toFixed(3)}</div>
+                            <div class="tel-sub">Coste estructural computacional</div>
+                        </div>
+                        <div class="tel-card c-blue">
+                            <div class="tel-label"><span>⚡</span> Tokens Ingeridos</div>
+                            <div class="tel-value">${(globalTokens / 1000).toFixed(1)}k</div>
+                            <div class="tel-sub">Total Input + Output</div>
                         </div>
                     </div>
-                    <div id="view-agentes" class="tab-content ${this.currentTab === 'agentes' ? 'active' : ''}">
-                        <div class="glass-panel" style="padding: 3rem;">
-                            <h2 style="color: var(--accent-purple); margin-top:0; font-size:1.8rem; letter-spacing:-1px;">Enjambre IA Desplegado</h2>
-                            <p style="color: #aaa; margin-bottom: 2rem; font-size:1.05rem;">Estos son los Agentes Nativos del Ecosistema. Reclútalos en tus redes desde el menú "La Colla" para delegar Work Orders.</p>
-                            <div style="display: flex; flex-direction: column;">
-                                ${aiAgents.length > 0 ? aiAgents.map(a => `
-                                    <div class="agent-card">
-                                        <div class="agent-info">
-                                            <div class="agent-name"><span style="color: var(--accent-green); font-size: 0.6rem; text-shadow:0 0 10px var(--accent-green);">🟢 (ONLINE)</span> ${a.name}</div>
-                                            <div class="agent-id">${a.id}</div>
-                                            <div class="agent-vision">"${a.profile?.vision || 'Operador de IA'}"</div>
-                                        </div>
-                                        <div style="text-align: right; font-family: var(--font-mono); color: #888; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; border: 1px solid #333;">
-                                            <div style="font-size:0.7rem; text-transform:uppercase; margin-bottom:4px;">Afinidad Base:</div>
-                                            <span style="color:white; font-weight:bold;">${(a.profile?.structural_affinity || ['@baixos'])[0]}</span>
-                                            <div style="margin-top:8px; border-top:1px dashed #444; padding-top:8px;">Coste API: <span style="color:var(--accent-green); font-weight:bold;">€${a.profile?.apiCostPerHour || 0.15}/h</span></div>
-                                        </div>
-                                    </div>
-                                `).join('') : '<div style="color:#666;">No hay agentes registrados en la matriz V9. Inicializa el Kernel.</div>'}
+
+                    <div class="engine-comparison">
+                        <div class="engine-header">🔋 Desempeño por Motor LLM (Inversión)</div>
+                        
+                        <div class="engine-row">
+                            <div class="engine-name" style="color:var(--accent-blue);">DeepSeek</div>
+                            <div class="engine-bar-track">
+                                <div class="engine-bar-fill" style="width: ${globalCost > 0 ? (providerStats.deepseek.cost / globalCost)*100 : 0}%; background:var(--accent-blue);"></div>
                             </div>
+                            <div class="engine-stats">$${providerStats.deepseek.cost.toFixed(3)} <span style="color:#666;">(${providerStats.deepseek.calls} txs)</span></div>
+                        </div>
+
+                        <div class="engine-row">
+                            <div class="engine-name" style="color:var(--accent-green);">OpenAI</div>
+                            <div class="engine-bar-track">
+                                <div class="engine-bar-fill" style="width: ${globalCost > 0 ? (providerStats.openai.cost / globalCost)*100 : 0}%; background:var(--accent-green);"></div>
+                            </div>
+                            <div class="engine-stats">$${providerStats.openai.cost.toFixed(3)} <span style="color:#666;">(${providerStats.openai.calls} txs)</span></div>
+                        </div>
+
+                        <div class="engine-row">
+                            <div class="engine-name" style="color:var(--accent-orange);">Gemini</div>
+                            <div class="engine-bar-track">
+                                <div class="engine-bar-fill" style="width: ${globalCost > 0 ? (providerStats.gemini.cost / globalCost)*100 : 0}%; background:var(--accent-orange);"></div>
+                            </div>
+                            <div class="engine-stats">$${providerStats.gemini.cost.toFixed(3)} <span style="color:#666;">(${providerStats.gemini.calls} txs)</span></div>
                         </div>
                     </div>
+
+                    <div class="projects-section-title">
+                        <span>Castells Activos</span>
+                    </div>
+                    
+                    <div class="projects-grid">
+                        ${projectsHtml}
+                    </div>
+
                 </main>
+
                 ${BottomNav.getHtml('/')}
             </div>
         `;
     }
 
-    // ==========================================
-    // LOGIN PANTALLA WEB3 & 2FA (ZERO-TRUST REAL)
-    // ==========================================
-    getLandingHtml() {
-        return `
-            <style>
-                .login-layout { display: flex; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050508 100%); font-family: var(--font-main); justify-content: center; align-items: center; color: white; position: relative;}
-                .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 176, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 176, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: 1; pointer-events: none; transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px); animation: gridMove 10s linear infinite;}
-                @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } }
-                
-                .login-card { background: rgba(10, 10, 15, 0.85); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 450px; padding: 3rem 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05); backdrop-filter: blur(20px); z-index: 10; text-align: center;}
-                .tt-logo { font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 176, 255, 0.5); }
-                .tt-title { font-size: 2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -1px; }
-                .tt-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; font-family: var(--font-mono); }
-                
-                .btn-wallet { width: 100%; padding: 16px; border-radius: 16px; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; margin-bottom: 15px;}
-                .btn-wallet:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
-                
-                .divider { display: flex; align-items: center; text-align: center; color: #555; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin: 1.5rem 0; }
-                .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
-                .divider:not(:empty)::before { margin-right: .5em; }
-                .divider:not(:empty)::after { margin-left: .5em; }
-                
-                .form-group { text-align: left; margin-bottom: 1.5rem; }
-                .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box; text-align: center;}
-                .btn-login-std { width: 100%; background: linear-gradient(135deg, var(--accent-blue), #536dfe); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s;}
-                
-                .connected-state { display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
-                .wallet-address-box { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 20px; border-radius: 30px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-                .btn-sign { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 15px rgba(224,64,251,0.3); }
-                
-                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            </style>
-
-            <div class="login-layout">
-                <div class="grid-bg"></div>
-                <div class="login-card">
-                    <div class="tt-logo">🏯</div>
-                    <h1 class="tt-title">Kernel V9</h1>
-                    <p class="tt-subtitle">Zero-Trust Cognitive OS</p>
-                    
-                    <div id="connectState">
-                        <button class="btn-wallet" id="btnConnectInjected">
-                            🦊 Conectar Browser Wallet
-                            <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>
-                        </button>
-                        
-                        <div id="stepManual">
-                            <div class="divider">Fallback Local</div>
-                            <div class="form-group">
-                                <input type="text" id="inpLoginId" class="login-input" placeholder="@alvaro o 0xWallet..." value="@alvaro">
-                            </div>
-                            <button class="btn-login-std" id="btnConnectId">Solicitar Acceso</button>
-                        </div>
-
-                        <div id="step2fa" style="display:none; animation: fadeIn 0.4s ease-out;">
-                            <div class="divider">Verificación 2FA</div>
-                            <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; line-height:1.4;">
-                                El protocolo requiere el código Authenticator (PIN Maestro) para verificar tu identidad.
-                            </p>
-                            <div class="form-group">
-                                <input type="password" id="inp2faCode" class="login-input" placeholder="• • • • • •" maxlength="6" style="letter-spacing: 12px; font-size: 1.8rem; font-weight:900;">
-                            </div>
-                            <button class="btn-login-std" id="btnVerify2fa" style="background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));">Desbloquear Kernel</button>
-                            <button style="background:transparent; border:none; color:#888; font-size:0.8rem; margin-top:15px; cursor:pointer;" id="btnCancel2fa">Volver</button>
-                        </div>
-                    </div>
-
-                    <div id="signState" class="connected-state">
-                        <div class="wallet-address-box" title="Wallet conectada">🟢 <span id="displayAddress">0x...</span></div>
-                        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 20px;" id="signTextMsg">
-                            El protocolo requiere tu firma criptográfica para verificar que posees la llave privada. (0 Gas fee)
-                        </p>
-                        <button class="btn-sign" id="btnSignMessage">✍️ Firmar Acceso (EIP-4361)</button>
-                        <button style="background:transparent; border:none; color:#888; font-size:0.8rem; margin-top:15px; cursor:pointer;" id="btnDisconnect">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
     executeViewScript() {
-        const state = store.getState();
-        
-        // ==========================================
-        // LÓGICA DE LOGIN (WEB3 & 2FA MANUAL)
-        // ==========================================
-        if (!state.session.activeUserId || state.session.role === 'guest') {
-            const dom = {
-                connectState: document.getElementById('connectState'),
-                signState: document.getElementById('signState'),
-                btnConnectInjected: document.getElementById('btnConnectInjected'),
-                displayAddress: document.getElementById('displayAddress'),
-                btnSignMessage: document.getElementById('btnSignMessage'),
-                btnDisconnect: document.getElementById('btnDisconnect'),
-                btnConnectId: document.getElementById('btnConnectId'),
-                inpLoginId: document.getElementById('inpLoginId'),
-                signTextMsg: document.getElementById('signTextMsg'),
-                // DOM 2FA
-                stepManual: document.getElementById('stepManual'),
-                step2fa: document.getElementById('step2fa'),
-                inp2faCode: document.getElementById('inp2faCode'),
-                btnVerify2fa: document.getElementById('btnVerify2fa'),
-                btnCancel2fa: document.getElementById('btnCancel2fa')
-            };
-
-            let web3Signer = null;
-            let currentAddress = null;
-            let ethersModule = null; 
-            let pendingUserId = null;
-
-            // 🔥 FIX: NAVEGACIÓN BLINDADA (TIEMPO DE GUARDADO DE 150ms)
-        // 🔥 NAVEGACIÓN SPA Y ONBOARDING PERMISSIONLESS
-            const doLogin = async (userId) => {
-                if (!userId) return alert("Identidad no válida.");
-                
-                const currentState = store.getState();
-                const userExists = currentState.globalUsers.find(u => u.id === userId);
-                
-                let targetUrl = '/v8/dashboard'; // Por defecto, si existe, va al dashboard
-
-                // 1. Si el usuario NO existe, lo registramos en la Matriz
-                if (!userExists) {
-                    console.log("Nueva identidad detectada. Forjando perfil base...");
-                    
-                    const newUser = {
-                        id: userId,
-                        name: 'Nuevo Ciudadano',
-                        email: '',
-                        globalRole: 'citizen',
-                        profile: { sbt_skills: [], vision: 'Recién llegado a la Matriz V9' }
-                    };
-
-                    // Despachamos la creación del usuario (asegúrate de que tu store lo soporte)
-                    await store.dispatch({ type: 'REGISTER_USER', payload: newUser });
-                    
-                    // Como es nuevo, lo mandamos directo a configurar su perfil
-                    targetUrl = '/v8/profile'; 
-                }
-
-                // 2. Ejecutamos el Login
-                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: userId } });
-                
-                // 3. Salto SPA Nativo (Sin recargar y sin depender de exports del router)
-                setTimeout(() => {
-                    history.pushState(null, null, targetUrl);
-                    window.dispatchEvent(new CustomEvent('popstate'));
-                }, 150);
-            };
-
-            // 1. INVOCAR BROWSER WALLET (🦊 MetaMask, TrustWallet)
-            if (dom.btnConnectInjected) {
-                dom.btnConnectInjected.addEventListener('click', async () => {
-                    const providerObj = window.ethereum || window.trustwallet;
-                    
-                    if (typeof providerObj !== 'undefined') {
-                        try {
-                            const originalHTML = dom.btnConnectInjected.innerHTML;
-                            dom.btnConnectInjected.innerText = '⏳ Cargando Motor Criptográfico...';
-                            
-                            // Carga dinámica para que SES no bloquee el archivo
-                            if (!ethersModule) {
-                                ethersModule = await import('https://cdn.jsdelivr.net/npm/ethers@6.11.1/+esm');
-                            }
-                            const { ethers } = ethersModule;
-
-                            dom.btnConnectInjected.innerText = '🦊 Solicitando Permisos...';
-                            await providerObj.request({ method: 'eth_requestAccounts' });
-                            
-                            const provider = new ethers.BrowserProvider(providerObj);
-                            web3Signer = await provider.getSigner();
-                            currentAddress = await web3Signer.getAddress();
-                            
-                            const shortAddr = `${currentAddress.substring(0, 6)}...${currentAddress.substring(currentAddress.length - 4)}`;
-                            dom.displayAddress.innerText = shortAddr;
-                            dom.connectState.style.display = 'none';
-                            dom.signState.style.display = 'flex';
-                            
-                            dom.btnConnectInjected.innerHTML = originalHTML;
-                        } catch (err) {
-                            console.error("Error Web3:", err);
-                            alert("Conexión rechazada. Usa el Fallback Local.");
-                            dom.btnConnectInjected.innerHTML = `🦊 Conectar Browser Wallet <div style="font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase;">MetaMask / TrustWallet</div>`;
-                        }
-                    } else {
-                        alert("No se ha detectado ninguna Wallet en tu navegador.");
-                    }
-                });
-            }
-
-            // 2. FIRMA CRIPTOGRÁFICA (SIWE)
-            if (dom.btnSignMessage) {
-                dom.btnSignMessage.addEventListener('click', async () => {
-                    if (!web3Signer || !currentAddress || !ethersModule) return;
-                    const { ethers } = ethersModule;
-
-                    dom.btnSignMessage.innerText = '⏳ Esperando Firma...';
-                    dom.btnSignMessage.style.opacity = '0.7';
-
-                    const nonce = Date.now().toString(16);
-                    const domain = window.location.host;
-                    const message = `Welcome to TeamTowers V9!\n\nClick to sign in and accept the TeamTowers Terms of Service.\nThis request will not trigger a blockchain transaction or cost any gas fees.\n\nURI: https://${domain}\nWallet: ${currentAddress}\nNonce: ${nonce}`;
-
-                    try {
-                        const signature = await web3Signer.signMessage(message);
-                        const recoveredAddress = ethers.verifyMessage(message, signature);
-                        
-                        if (recoveredAddress.toLowerCase() === currentAddress.toLowerCase()) {
-                            dom.signTextMsg.innerText = "✅ Criptografía verificada. Entrando a la Matriz...";
-                            dom.signTextMsg.style.color = "var(--accent-green)";
-                            setTimeout(() => doLogin(currentAddress), 1000);
-                        } else {
-                            throw new Error("La dirección recuperada no coincide.");
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        dom.btnSignMessage.innerText = '✍️ Reintentar Firma';
-                        dom.btnSignMessage.style.opacity = '1';
-                        alert("Firma rechazada o fallida. Operación cancelada.");
-                    }
-                });
-            }
-
-            // Cancelar Firma Web3
-            if (dom.btnDisconnect) {
-                dom.btnDisconnect.addEventListener('click', () => {
-                    web3Signer = null; currentAddress = null;
-                    dom.signState.style.display = 'none';
-                    dom.connectState.style.display = 'block';
-                });
-            }
-
-            // 3. FLUJO MANUAL (Paso 1: Solicitar Acceso con Alias)
-            if (dom.btnConnectId) {
-                dom.btnConnectId.addEventListener('click', () => {
-                    const userId = dom.inpLoginId.value.trim();
-                    if (!userId) return alert("Introduce una Identidad.");
-                    
-                    // Pasamos a la pantalla del 2FA
-                    pendingUserId = userId;
-                    dom.stepManual.style.display = 'none';
-                    dom.btnConnectInjected.style.display = 'none'; 
-                    dom.step2fa.style.display = 'block';
-                    dom.inp2faCode.focus();
-                });
-            }
-
-            // FLUJO MANUAL (Paso 2: Verificar PIN 2FA)
-            if (dom.btnVerify2fa) {
-                const verify2fa = () => {
-                    const code = dom.inp2faCode.value.trim();
-                    // El PIN por defecto de la Matriz es 202626
-                    const masterPin = localStorage.getItem('tt_2fa_pin') || '202626';
-
-                    if (code === masterPin) {
-                        doLogin(pendingUserId);
-                    } else {
-                        alert("❌ Código Authenticator Incorrecto. Acceso denegado.");
-                        dom.inp2faCode.value = '';
-                        dom.inp2faCode.focus();
-                    }
-                };
-
-                dom.btnVerify2fa.addEventListener('click', verify2fa);
-                dom.inp2faCode.addEventListener('keypress', (e) => { if(e.key === 'Enter') verify2fa(); });
-            }
-
-            // Cancelar 2FA y volver atrás
-            if (dom.btnCancel2fa) {
-                dom.btnCancel2fa.addEventListener('click', () => {
-                    pendingUserId = null;
-                    dom.step2fa.style.display = 'none';
-                    dom.stepManual.style.display = 'block';
-                    dom.btnConnectInjected.style.display = 'flex';
-                    dom.inp2faCode.value = '';
-                });
-            }
-
-            return; // Fin del bloque Login.
-        }
-
-        // ==========================================
-        // LÓGICA DEL HOME REGULAR (Ya logueado)
-        // ==========================================
         Sidebar.initListeners();
         PageHeader.execute();
 
-        window.addEventListener('ph-tab-changed', (e) => {
-            this.currentTab = e.detail.tabId;
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            const target = document.getElementById(`view-${this.currentTab}`);
-            if(target) target.classList.add('active');
+        // Magic Button (Instanciar Red)
+        window.addEventListener('ph-magic-action', (e) => {
+            if (e.detail.actionId === 'new_net') {
+                window.location.href = '/v8/create';
+            }
+        });
+
+        // Navegación rápida al Dashboard de un Proyecto Específico
+        document.querySelectorAll('.btn-enter').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const projectId = e.target.getAttribute('data-id');
+                if (projectId) {
+                    localStorage.setItem('tt_active_project', projectId);
+                    window.location.href = '/v8/dashboard';
+                }
+            });
         });
     }
 }
