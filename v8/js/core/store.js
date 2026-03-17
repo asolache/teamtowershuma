@@ -1,9 +1,9 @@
 // v8/js/core/store.js
-// Motor de Estado Global Inmutable (Redux Pattern) - V11 Kernel
+// Motor de Estado Global Inmutable (Redux Pattern) - V12 Fractal
 
 const initialState = {
     config: {
-        version: '9.11.0-A2A',
+        version: '12.0.0-Fractal',
         theme: 'dark'
     },
     session: {
@@ -25,12 +25,10 @@ const initialState = {
 
 class Store {
     constructor() {
-        // 🔥 FIX CRÍTICO: Leer el disco duro primero para evitar la Amnesia del Kernel
         const savedState = localStorage.getItem('tt_v9_kernel_state');
         
         if (savedState) {
             this.state = JSON.parse(savedState);
-            // Comprobación de seguridad por si el state guardado está muy desactualizado
             if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
             if (!this.state.projects) this.state.projects = [];
         } else {
@@ -40,9 +38,7 @@ class Store {
         this.listeners = [];
     }
 
-    getState() {
-        return this.state;
-    }
+    getState() { return this.state; }
 
     subscribe(listener) {
         this.listeners.push(listener);
@@ -51,10 +47,7 @@ class Store {
 
     async dispatch(action) {
         this.state = this._reducer(this.state, action);
-        
-        // 🔥 FIX CRÍTICO: Escribir en el disco duro después de cada acción
         localStorage.setItem('tt_v9_kernel_state', JSON.stringify(this.state));
-        
         this.listeners.forEach(listener => listener(this.state));
         return this.state;
     }
@@ -64,19 +57,17 @@ class Store {
         let proj, wo;
 
         switch (action.type) {
-            case 'REGISTER_USER': // 🔥 NUEVO: Onboarding Cypherpunk
+            case 'REGISTER_USER':
                 if (!newState.globalUsers.find(u => u.id === action.payload.id)) {
                     newState.globalUsers.push(action.payload);
                 }
                 break;
             case 'LOGIN_USER':
                 newState.session.activeUserId = action.payload.userId;
-                // Shadow Profile si no existe (Lazy Registration)
                 const existingUser = newState.globalUsers.find(u => u.id === action.payload.userId);
                 if (!existingUser) {
                     newState.globalUsers.push({ id: action.payload.userId, name: 'Anónimo', globalRole: 'network-user', profile: { sbt_skills: [] } });
                 }
-                // Actualizamos el rol de la sesión basado en el Padrón
                 newState.session.role = existingUser ? existingUser.globalRole : 'network-user';
                 break;
             case 'LOGOUT_USER':
@@ -89,7 +80,8 @@ class Store {
                 }
                 break;
             case 'CREATE_PROJECT':
-                newState.projects.push({ ...action.payload, activeSprintId: 'sprint_1', logs: [] });
+                // 🔥 NUEVO: El array de telemetría nace con el proyecto
+                newState.projects.push({ ...action.payload, activeSprintId: 'sprint_1', logs: [], telemetry: [] });
                 break;
             case 'UPDATE_PROJECT_INFO':
                 proj = newState.projects.find(p => p.id === action.payload.projectId);
@@ -133,20 +125,16 @@ class Store {
                 wo = proj?.work_orders.find(w => w.hash === action.payload.woHash);
                 if (proj && wo) {
                     wo.status = 'consolidated';
-                    
-                    // 1. Cálculo de Slicing Pie (con Merma preparatoria)
                     const flow = proj.vna_flows.find(f => f.id === wo.flowId);
                     const role = proj.roles.find(r => r.id === flow.to);
                     let finalSlices = 0;
                     
                     if (flow && role) {
                         let baseSlices = wo.realHours * role.fmv * role.multiplier;
-                        
-                        // Lógica de Merma: -10% por cada SOC fallido
                         let mermaPercent = 0;
                         if (wo.soc_checklist && wo.soc_checklist.length > 0) {
                             const failedSocs = wo.soc_checklist.filter(s => !s.isChecked).length;
-                            mermaPercent = (failedSocs / wo.soc_checklist.length) * 0.5; // Máximo 50% de merma
+                            mermaPercent = (failedSocs / wo.soc_checklist.length) * 0.5; 
                         }
                         finalSlices = baseSlices * (1 - mermaPercent);
                         
@@ -158,7 +146,6 @@ class Store {
                         });
                     }
 
-                    // 2. Experiencia (XP) SBT para el Árbol de Habilidades
                     const user = newState.globalUsers.find(u => u.id === wo.workerId);
                     if (user && user.profile) {
                         if (!user.profile.sbt_skills) user.profile.sbt_skills = [];
@@ -180,13 +167,27 @@ class Store {
                     });
                 }
                 break;
+            case 'LOG_TELEMETRY': // 🔥 NUEVO: Sensor de Telemetría A2A
+                proj = newState.projects.find(p => p.id === action.payload.projectId);
+                if (proj) {
+                    if (!proj.telemetry) proj.telemetry = [];
+                    proj.telemetry.push({
+                        id: 'tel_' + Date.now(),
+                        date: Date.now(),
+                        agentId: action.payload.agentId,
+                        engine: action.payload.engine,
+                        actionType: action.payload.actionType, // ej: "SOP_EXECUTION" o "VNA_CREATION"
+                        tokens: action.payload.tokens,
+                        costInDollars: action.payload.costInDollars,
+                        recRatio: action.payload.recRatio, // Ratio Eficiencia Cognitiva
+                        latencyMs: action.payload.latencyMs
+                    });
+                }
+                break;
         }
         return newState;
     }
 
-    // ==========================================
-    // MÉTODOS DE CONSULTA Y GOBERNANZA (RBAC)
-    // ==========================================
     canUserViewProject(projectId, userId, globalRole) {
         if (globalRole === 'ecosystem-owner') return true;
         const p = this.state.projects.find(x => x.id === projectId);
