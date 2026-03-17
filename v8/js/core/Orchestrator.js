@@ -13,14 +13,10 @@ const LLM_PRICING = {
 
 class OrchestratorCore {
     constructor() {
-        this.version = "13.0-Usenet";
+        this.version = "13.5-Resilience";
         this.isListening = false;
     }
 
-    /**
-     * 🔥 NUEVO (SPRINT 35): Iniciar el Daemon de Escucha
-     * Se suscribe a Redux para detectar Pings a los agentes IA en tiempo real.
-     */
     initUsenetDaemon() {
         if (this.isListening) return;
         this.isListening = true;
@@ -30,29 +26,23 @@ class OrchestratorCore {
         store.subscribe((state) => {
             if (!state.projects || state.projects.length === 0) return;
             
-            // Revisar todos los proyectos buscando logs no leídos por agentes IA
             state.projects.forEach(project => {
                 if (!project.logs) return;
                 
                 project.logs.forEach(log => {
-                    // Si el log tiene menciones y NO ha sido respondido o leído por los IAs involucrados
                     if (log.mentions && log.mentions.length > 0) {
                         log.mentions.forEach(async (mentionId) => {
                             const isRead = log.readBy && log.readBy.includes(mentionId);
-                            if (isRead) return; // Ya fue procesado
+                            if (isRead) return; 
 
                             const targetNode = state.globalUsers.find(u => u.id === mentionId);
                             
-                            // Si el mencionado es un Agente IA, el Daemon lo despierta
                             if (targetNode && targetNode.profile && targetNode.profile.isAi) {
-                                
-                                // 1. Marcar como leído inmediatamente para evitar bucles infinitos
                                 store.dispatch({
                                     type: 'MARK_LOG_READ',
                                     payload: { projectId: project.id, logId: log.id, userId: targetNode.id }
                                 });
 
-                                // 2. Procesar respuesta en background
                                 console.log(`⚡ [Usenet Daemon] Despertando agente ${targetNode.id} para responder a log ${log.id}`);
                                 await this.autoRespondUsenet(project, log, targetNode);
                             }
@@ -64,128 +54,142 @@ class OrchestratorCore {
     }
 
     // ==========================================
-    // CAPA 1: GATEWAY NEURONAL (API Agnostic + Sensores de Coste)
+    // CAPA 1: GATEWAY NEURONAL (Auto-Retries + Temperature)
     // ==========================================
-    async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object" }) {
+    async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
         if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para el Orquestador.");
         
-        let textResponse = "";
-        let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
-        const startTime = Date.now();
+        let attempt = 0;
+        let lastError = null;
 
-        if (provider === 'gemini') {
-            const targetModel = 'gemini-1.5-flash';
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }],
-                    generationConfig: responseFormat === "json_object" ? { responseMimeType: "application/json" } : {}
-                })
-            });
-            if (!response.ok) throw new Error(`Google Gemini Error: ${response.statusText}`);
-            const data = await response.json();
-            textResponse = data.candidates[0].content.parts[0].text;
-            
-            // Sensor Gemini
-            if (data.usageMetadata) {
-                tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0;
-                tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0;
-                tokenUsage.total_tokens = data.usageMetadata.totalTokenCount || 0;
+        while (attempt <= maxRetries) {
+            try {
+                let textResponse = "";
+                let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+                const startTime = Date.now();
+
+                if (provider === 'gemini') {
+                    const targetModel = 'gemini-1.5-flash';
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }],
+                            generationConfig: { 
+                                temperature: temperature,
+                                responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain"
+                            }
+                        })
+                    });
+                    if (!response.ok) throw new Error(`Google Gemini Error: ${response.statusText}`);
+                    const data = await response.json();
+                    textResponse = data.candidates[0].content.parts[0].text;
+                    
+                    if (data.usageMetadata) {
+                        tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0;
+                        tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0;
+                        tokenUsage.total_tokens = data.usageMetadata.totalTokenCount || 0;
+                    }
+                
+                } else if (provider === 'openai' || provider === 'deepseek') {
+                    const endpoint = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.deepseek.com/chat/completions';
+                    const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
+                    
+                    const response = await fetch(endpoint, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({ 
+                            model: modelName, 
+                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
+                            temperature: temperature,
+                            response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
+                        })
+                    });
+                    if (!response.ok) throw new Error(`${provider.toUpperCase()} Error: ${response.statusText}`);
+                    const data = await response.json();
+                    textResponse = data.choices[0].message.content;
+                    if (data.usage) tokenUsage = data.usage;
+                }
+
+                const latencyMs = Date.now() - startTime;
+
+                let parsedContent = textResponse;
+                if (responseFormat === "json_object") {
+                    let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+                    const firstBrace = cleanText.indexOf('{');
+                    const lastBrace = cleanText.lastIndexOf('}');
+                    if (firstBrace !== -1 && lastBrace !== -1) {
+                        cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+                    }
+                    // Validamos que el JSON no esté roto. Si lo está, saltará al catch y reintentará.
+                    parsedContent = JSON.parse(cleanText);
+                }
+
+                return { content: parsedContent, telemetry: { provider, tokens: tokenUsage, latencyMs } };
+
+            } catch (error) {
+                lastError = error;
+                attempt++;
+                console.warn(`⚠️ [Orquestador] Fallo en intento ${attempt}/${maxRetries + 1}. Reintentando en 1s... Error:`, error.message);
+                await new Promise(r => setTimeout(r, 1000)); // Esperar 1s antes del retry
             }
-        
-        } else if (provider === 'openai') {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify({ 
-                    model: "gpt-4o", 
-                    messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
-                    response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
-                })
-            });
-            if (!response.ok) throw new Error(`OpenAI Error: ${response.statusText}`);
-            const data = await response.json();
-            textResponse = data.choices[0].message.content;
-            
-            // Sensor OpenAI
-            if (data.usage) tokenUsage = data.usage;
-        
-        } else if (provider === 'deepseek') {
-            const response = await fetch('https://api.deepseek.com/chat/completions', {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify({ 
-                    model: "deepseek-chat", 
-                    messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
-                    response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
-                })
-            });
-            if (!response.ok) throw new Error(`DeepSeek Error: ${response.statusText}`);
-            const data = await response.json();
-            textResponse = data.choices[0].message.content;
-            
-            // Sensor DeepSeek
-            if (data.usage) tokenUsage = data.usage;
-            
-        } else {
-            throw new Error(`Proveedor IA desconocido: ${provider}`);
         }
-
-        const latencyMs = Date.now() - startTime;
-
-        let parsedContent = textResponse;
-        if (responseFormat === "json_object") {
-            let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const firstBrace = cleanText.indexOf('{');
-            const lastBrace = cleanText.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) {
-                cleanText = cleanText.substring(firstBrace, lastBrace + 1);
-            }
-            parsedContent = JSON.parse(cleanText);
-        }
-
-        return {
-            content: parsedContent,
-            telemetry: { provider, tokens: tokenUsage, latencyMs }
-        };
+        
+        throw new Error(`Fallo tras ${maxRetries + 1} intentos. Último error: ${lastError.message}`);
     }
 
     // ==========================================
-    // CAPA 2: DISEÑADOR VNA
+    // CAPA 2: DISEÑADOR VNA (Prompt Ingeniería Militar)
     // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
         const systemPrompt = `
-            Actúa como un Ingeniero de Procesos y Master Ecosystem Architect, experto mundial en Value Network Analysis (VNA) y Slicing Pie. 
-            Diseña una red neuronal de valor exhaustiva para el proyecto "${projectName}" (Arquetipo: "${archetypeText}").
+Eres el Master Ecosystem Architect de TeamTowers V13. Tu única función es diseñar arquitecturas VNA (Value Network Analysis) devolviendo EXCLUSIVAMENTE un objeto JSON válido y estricto. Cero charla. Cero markdown.
 
-            MINDSET DEL ARQUITECTO (ESTRICTO):
-            Eres una máquina analítica de topologías de valor. Extrapola ABSOLUTAMENTE TODAS las actividades clave, modelando rigurosamente los intercambios de valor entre nodos (roles).
+MANDAMIENTOS DE ARQUITECTURA (TDD):
+1. DEBES crear un MÍNIMO de 12 transacciones (tuberías de valor).
+2. Las transacciones DEBEN distribuirse lógicamente en 5 ERAS secuenciales: "Kickoff", "Growth", "Scale", "Harvest", "Cierre".
+3. Lógica DAG estricta: Las transacciones de "Kickoff" NO tienen "depends_on" (array vacío []). Cualquier transacción en "Growth" o posterior DEBE tener en su "depends_on" el ID ("tx_N") de una transacción anterior.
+4. Tipo de Valor: Al menos el 30% de las transacciones deben ser "intangible" (Mentoria, auditoría, soporte). El resto "tangible" (código, diseño, entregable).
+5. Tríada de Skills: Cada transacción DEBE tener exactamente 3 IDs de skills en "required_skills".
+6. Auditoría SOC: Cada transacción DEBE incluir al menos 2 validaciones en "soc_checklist" que respondan a la pregunta: "¿Cómo audito matemáticamente este entregable?".
 
-            INSTRUCCIONES CRÍTICAS (TDD COMPLIANCE):
-            1. FASES (ERAS): "Kickoff", "Growth", "Scale", "Harvest", "Cierre".
-            2. DENSIDAD (REGLA DE ORO): MÍNIMO DE 15 TRANSACCIONES. Incluye flujos "intangibles" (conocimiento, mentoría, aprobaciones) y transacciones INTERNAS cruzadas entre roles.
-            3. DAG: Cada SOP debe tener un "id" único. Fases posteriores requieren "depends_on" con los IDs previos.
-            4. TRÍADA DE SKILLS: Cada SOP debe tener "required_skills" con al menos 3 IDs. Declara los nuevos en "new_memes".
-            5. SOCs ESTRICTOS: Cada SOP requiere un "soc_checklist" con al menos 2 criterios binarios medibles.
+ESTRUCTURA JSON EXACTA REQUERIDA (FEW-SHOT EXAMPLE):
+{
+  "presentacion": "El manifiesto del proyecto...",
+  "tags": ["Tech", "Blockchain"],
+  "new_memes": [
+    { "id": "meme_skill_react", "category": "skill", "title": "React JS", "content": "Dominio de componentes funcionales" }
+  ],
+  "roles": [
+    { "levelId": "@anxaneta", "name": "Arquitecto Visionario", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "Eres el líder..." },
+    { "levelId": "@baixos", "name": "Ingeniero Core", "fmv": 50, "multiplier": 1.2, "guardian": "hephaestus", "ai_prompt": "Eres un dev..." }
+  ],
+  "transactions": [
+    { 
+      "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [],
+      "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", 
+      "template": "Definición de Arquitectura Base", "horas": 5,
+      "required_skills": ["meme_skill_react", "meme_sys_arch", "meme_comms"],
+      "soc_checklist": [{ "text": "El diagrama de arquitectura cubre todos los endpoints" }, { "text": "Base de datos normalizada en 3NF" }]
+    },
+    { 
+      "id": "tx_2", "phase": "Growth", "step_order": 2, "depends_on": ["tx_1"],
+      "fromLevel": "@baixos", "toLevel": "@anxaneta", "tipo": "tangible", 
+      "template": "Despliegue de Backend MVP", "horas": 20,
+      "required_skills": ["meme_skill_react", "meme_soc_clean_code", "meme_tdd"],
+      "soc_checklist": [{ "text": "El código pasa los lint tests" }, { "text": "Cero dependencias circulares" }]
+    }
+  ]
+}
 
-            ESTRUCTURA OBLIGATORIA (Solo JSON):
-            {
-                "presentacion": "Pitch profundo...",
-                "tags": ["Sector"],
-                "new_memes": [{ "id": "meme_skill_custom", "category": "skill", "title": "Skill", "content": "..." }],
-                "roles": [{ "levelId": "@baixos", "name": "Ingeniero", "fmv": 60, "multiplier": 1.2, "guardian": "hephaestus" }],
-                "transactions": [
-                    { 
-                        "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [],
-                        "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", 
-                        "template": "Arquitectura DB", "horas": 15,
-                        "required_skills": ["meme_skill_lvl_anxaneta", "meme_skill_pan_creator", "meme_skill_custom"],
-                        "soc_checklist": [{ "text": "Esquema documentado" }]
-                    }
-                ]
-            }
-        `;
+REGLA DE ORO: Utiliza roles estándar ("@anxaneta", "@aixecador", "@dosos", "@baixos", "@pinya") en "levelId", "fromLevel" y "toLevel". NUNCA te inventes levelIds.
+`;
 
         const result = await this.callLLM({
-            provider, apiKey, systemPrompt, userPrompt: vision, responseFormat: "json_object"
+            provider, 
+            apiKey, 
+            systemPrompt, 
+            userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, 
+            responseFormat: "json_object",
+            temperature: 0.1 // 🔥 Razón Fría: Máximo determinismo para no romper el TDD
         });
 
         return result.content; 
@@ -198,7 +202,6 @@ class OrchestratorCore {
         await KB.init();
         const state = store.getState();
         const project = state.projects.find(p => p.id === projectId);
-        
         if (!project) throw new Error("Proyecto no encontrado en el Kernel.");
 
         const forgedAgents = [];
@@ -222,7 +225,7 @@ class OrchestratorCore {
             `;
 
             const result = await this.callLLM({
-                provider, apiKey, systemPrompt, userPrompt, responseFormat: "text"
+                provider, apiKey, systemPrompt, userPrompt, responseFormat: "text", temperature: 0.4
             });
 
             const promptNode = await KB.saveNode({
@@ -231,7 +234,6 @@ class OrchestratorCore {
                 title: `Prompt A2A Forjado: ${role.name}`, content: result.content
             });
 
-            // Telemetría de Forja
             const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
             const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
                                   ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
@@ -240,9 +242,7 @@ class OrchestratorCore {
                 type: 'LOG_TELEMETRY',
                 payload: {
                     projectId: projectId, agentId: '@genesi_ai', engine: provider, actionType: 'FORGE_IDENTITY',
-                    tokens: result.telemetry.tokens, costInDollars: costInDollars,
-                    recRatio: 0, 
-                    latencyMs: result.telemetry.latencyMs
+                    tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs
                 }
             });
 
@@ -257,18 +257,15 @@ class OrchestratorCore {
     // ==========================================
     async autoRespondUsenet(project, incomingLog, agentNode) {
         try {
-            // 1. Identificar el motor configurado para este agente, o usar el por defecto
             let provider = agentNode.profile?.preferredEngine || localStorage.getItem('tt_ai_provider') || 'deepseek';
             let apiKey = localStorage.getItem(`tt_key_${provider}`);
             
-            // Fallback al motor principal si el del agente no tiene llave
             if (!apiKey) {
                 provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
                 apiKey = localStorage.getItem(`tt_key_${provider}`);
             }
             if (!apiKey) return console.warn(`[Usenet Daemon] Abortado: No hay API Key para ${provider}.`);
 
-            // 2. Extraer contexto (Work Order asociada si existe y el hilo de la conversación)
             let contextStr = `Ecosistema: ${project.nombre}\nPropósito: ${project.presentation || 'N/A'}\n\n`;
             
             if (incomingLog.relatedTxHash) {
@@ -279,7 +276,6 @@ class OrchestratorCore {
                 }
             }
 
-            // Hilo de la Usenet (los últimos 5 mensajes relacionados)
             const thread = project.logs.filter(l => l.relatedTxHash === incomingLog.relatedTxHash).slice(-5);
             contextStr += `HILO DE USENET RECIENTE:\n`;
             thread.forEach(l => {
@@ -287,7 +283,6 @@ class OrchestratorCore {
                 contextStr += `[${author}]: ${l.content}\n`;
             });
 
-            // 3. Forjar el Alma (System Prompt)
             const systemPrompt = `
                 Eres ${agentNode.name} (${agentNode.id}), un nodo operativo en la red TeamTowers V13.
                 Tu arquetipo base es ${agentNode.profile?.guardian || 'desconocido'}.
@@ -297,15 +292,14 @@ class OrchestratorCore {
                 
                 Misión: Acaban de hacerte un 'Ping' (te han mencionado con @). 
                 Responde al último mensaje de forma breve, profesional y accionable. Si es una auditoría de código, da feedback directo. Si es una petición, confirma recepción.
-                Firma tu respuesta. Usa formato texto plano. NO uses JSON.
+                Firma tu respuesta. Usa formato texto plano o HTML básico (puedes usar listas <ul>, <b>). NO uses formato JSON. NUNCA respondas con bloques de markdown \`\`\`.
             `;
 
-            // 4. Llamada Neuronal
             const result = await this.callLLM({
-                provider, apiKey, systemPrompt, userPrompt: `Responde al ping en el hilo.`, responseFormat: "text"
+                provider, apiKey, systemPrompt, userPrompt: `Responde al ping de ${incomingLog.authorId}.`, responseFormat: "text",
+                temperature: 0.7 // 🔥 Razón Caliente: Creatividad y empatía para conversar en la Usenet
             });
 
-            // 5. Publicar Respuesta en el Ledger
             await store.dispatch({
                 type: 'ADD_LOG_ENTRY',
                 payload: {
@@ -316,13 +310,12 @@ class OrchestratorCore {
                         authorId: agentNode.id,
                         relatedTxHash: incomingLog.relatedTxHash,
                         content: result.content,
-                        mentions: [incomingLog.authorId], // Hacemos ping de vuelta al autor original
+                        mentions: [incomingLog.authorId], 
                         readBy: []
                     }
                 }
             });
 
-            // 6. Registrar Coste
             const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
             const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
                                   ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
