@@ -7,15 +7,15 @@ import { PageHeader } from '../components/PageHeader.js';
 
 export default class SettingsView {
     constructor() {
-        document.title = "Configuración Ecosistema | TeamTowers V9";
-        this.tab = localStorage.getItem('tt_settings_tab') || 'stakeholders'; 
+        document.title = "Consola V9 | TeamTowers";
+        this.tab = localStorage.getItem('tt_settings_tab') || 'ia'; 
         this.sectorsFromKB = {}; 
         this.resizeObserver = null;
     }
 
     async getHtml() {
         const state = store.getState();
-        const isEcosystemOwner = state.session.role === 'ecosystem-owner' || state.session.activeUserId; // FIX temporal para testeo local
+        const isEcosystemOwner = state.session.role === 'ecosystem-owner' || state.session.activeUserId; 
         
         if (!isEcosystemOwner) {
             return `
@@ -34,24 +34,25 @@ export default class SettingsView {
         }
 
         const headerConfig = {
-            title: "Consola V9 (EO)",
+            title: "Hub de Gobernanza V9",
             subtitle: "Ecosystem Owner",
-            tagline: "Gobernanza Fractal, Orquestación IA y Control P2P de la Red.",
+            tagline: "Central de Orquestación: Gestiona motores LLM, recluta Agentes y administra el genoma de la Matriz.",
             tabs: [
-                { id: 'stakeholders', label: '🌌 Stakeholders', active: this.tab === 'stakeholders' },
-                { id: 'ecosistema', label: '🪐 Gobernanza', active: this.tab === 'ecosistema' },
-                { id: 'users', label: '👥 Padrón Global', active: this.tab === 'users' },
-                { id: 'ia', label: '🧠 Motor IA', active: this.tab === 'ia' },
+                { id: 'ia', label: '🧠 Motores LLM', active: this.tab === 'ia' },
+                { id: 'agents', label: '🤖 Agentes & Padrón', active: this.tab === 'agents' },
                 { id: 'ontology', label: '🧬 ADN Base (LMS)', active: this.tab === 'ontology' },
+                { id: 'stakeholders', label: '🌌 Macro-VNA', active: this.tab === 'stakeholders' },
                 { id: 'data', label: '💾 Web3 & Datos', active: this.tab === 'data' }
             ]
         };
 
-        // LLAVES IA (SPRINT 30)
+        // LLAVES IA
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
         const keyDeepSeek = localStorage.getItem('tt_key_deepseek') || '';
         const keyOpenAI = localStorage.getItem('tt_key_openai') || '';
         const keyGemini = localStorage.getItem('tt_key_gemini') || '';
+        const customUrl = localStorage.getItem('tt_custom_url') || '';
+        const customKey = localStorage.getItem('tt_custom_key') || '';
 
         return `
             <style>
@@ -66,37 +67,18 @@ export default class SettingsView {
                 .panel h2 { color: white; font-size: 1.5rem; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; font-weight: 900; letter-spacing: -0.5px;}
                 .panel p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
 
-                /* ========================================================
-                   MACRO VNA (STAKEHOLDER MAP) - CSS REUTILIZADO DRY
-                   ======================================================== */
-                .sh-map-container { width: 100%; height: 650px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; border: 1px solid var(--glass-border); border-radius: 20px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); margin-top: 1rem;}
-                #sh-edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible;}
-                
-                .edge-line { fill: none; stroke-width: 3; opacity: 0.6; transition: all 0.4s; }
-                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.3);}
-                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.3));}
-                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 6; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.3)); stroke-width: 2.5;}
-
-                .node-wrapper { position: absolute; z-index: 5; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 160px; transition: all 0.3s; cursor: grab;}
-                .node-wrapper:active { cursor: grabbing; scale: 1.05;}
-                .node-wrapper:hover { z-index: 9;}
-                
-                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.08); color: white; box-shadow: 0 15px 35px rgba(0,0,0,0.7); width: 100px; height: 100px; box-sizing: border-box;}
-                .node-wrapper:hover .node-circle { border-color: rgba(255,255,255,0.2); box-shadow: 0 15px 45px rgba(0,0,0,0.9); }
-                
-                .node-icon { font-size: 2.5rem; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
-                .node-desc { font-size: 0.65rem; color: #999; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; margin-top:6px;}
-                
-                .node-title { margin-top: 14px; font-size: 0.9rem; font-weight: 900; color: white; text-align: center; text-transform: uppercase; width: 100%; line-height: 1.3; padding: 5px 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box;}
-
-                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.75rem; font-weight: 900; font-family: var(--font-mono); padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 20px rgba(0,0,0,0.8); transition: all 0.3s; color: black; white-space:nowrap; cursor: pointer; pointer-events: auto;}
-                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.1); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.9); border-color: rgba(255,255,255,0.5);}
-                .tx-badge .tx-order { opacity: 0.7; margin-right: 5px; font-weight: normal; }
+                /* ENGINE CARDS */
+                .engine-card { display: flex; align-items: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 16px; margin-bottom: 15px; transition: 0.3s;}
+                .engine-card:hover { border-color: #555; background: rgba(255,255,255,0.02); }
+                .engine-icon { font-size: 2.5rem; width: 60px; text-align: center; }
+                .engine-info { flex: 1; }
+                .engine-info h3 { margin: 0 0 5px 0; color: white; font-size: 1.2rem; }
+                .engine-info p { margin: 0; color: #888; font-size: 0.85rem; }
 
                 /* FORMS & OTHER UI */
-                .form-group { margin-bottom: 25px; }
+                .form-group { margin-bottom: 20px; }
                 .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
-                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 16px 20px; border-radius: 12px; font-family: var(--font-mono); font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: var(--font-mono); font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.2), inset 0 2px 5px rgba(0,0,0,0.5);}
                 
                 .btn-save { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 12px; font-weight: 900; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0, 176, 255, 0.2); width: 100%; text-transform: uppercase; letter-spacing: 1px;}
@@ -107,7 +89,7 @@ export default class SettingsView {
                 .btn-success-outline { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s;}
                 .btn-success-outline:hover { background: rgba(0,230,118,0.1); }
 
-                .ontology-grid, .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; width: 100%;}
+                .ontology-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; width: 100%;}
                 .sector-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; border-top: 4px solid var(--accent-blue); display:flex; flex-direction:column; backdrop-filter: blur(10px); transition: transform 0.3s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
                 .sector-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 2px 10px rgba(0,0,0,0.5);}
                 .deliv-badge { background: rgba(0,0,0,0.6); border: 1px solid #333; font-size: 0.75rem; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; margin-top: 8px; display: inline-block; font-family: monospace; font-weight:bold;}
@@ -115,17 +97,25 @@ export default class SettingsView {
                 .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
                 .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
 
+                /* MACRO VNA STYLES */
+                .sh-map-container { width: 100%; height: 500px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; border: 1px solid var(--glass-border); border-radius: 20px; position: relative; overflow: hidden; background-color: rgba(5,5,8,0.9); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); margin-top: 1rem;}
+                #sh-edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible;}
+                .edge-line { fill: none; stroke-width: 3; opacity: 0.6; transition: all 0.4s; }
+                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.3);}
+                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.3));}
+                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 6; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.3)); stroke-width: 2.5;}
+                .node-wrapper { position: absolute; z-index: 5; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 160px; transition: all 0.3s; cursor: grab;}
+                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.08); color: white; box-shadow: 0 15px 35px rgba(0,0,0,0.7); width: 80px; height: 80px; box-sizing: border-box;}
+                .node-icon { font-size: 2rem; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+                .node-title { margin-top: 10px; font-size: 0.8rem; font-weight: 900; color: white; text-align: center; text-transform: uppercase; width: 100%; line-height: 1.3; padding: 5px 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none; background: rgba(0,0,0,0.6); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box;}
+
                 @keyframes dashAnim { to { stroke-dashoffset: -200; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
                 @media (max-width: 768px) { 
                     .workspace-settings { padding: 90px 1rem 120px 1rem; } 
                     .panel { padding: 1.5rem; border-radius: 20px;}
-                    .ontology-grid, .agents-grid { grid-template-columns: 1fr; }
-                    .sh-map-container { height: 450px; }
-                    .node-circle { width: 80px; height: 80px; }
-                    .node-icon { font-size: 2rem; }
-                    .tx-badge { padding: 5px 10px; font-size: 0.7rem; }
+                    .ontology-grid { grid-template-columns: 1fr; }
                 }
             </style>
 
@@ -135,14 +125,137 @@ export default class SettingsView {
                 <main class="workspace-settings">
                     ${PageHeader.getHtml(headerConfig)}
 
+                    <div id="tab-ia" class="tab-content ${this.tab === 'ia' ? 'active' : ''}">
+                        <div class="panel" style="border-top: 4px solid var(--accent-purple);">
+                            <h2 style="color: var(--accent-purple);">🧠 Orquestadores Cognitivos (API Hub)</h2>
+                            <p>Conecta el Kernel V9 con los LLMs externos. El Orquestador usará estos motores para generar topologías VNA o auditar código. <strong>Las llaves se guardan encriptadas en tu LocalStorage, Zero-Trust.</strong></p>
+                            
+                            <div class="form-group" style="background: rgba(224,64,251,0.05); padding: 20px; border-radius: 12px; border: 1px dashed var(--accent-purple);">
+                                <label style="color: var(--accent-purple);">Motor Activo Principal</label>
+                                <select id="inpDefaultProvider" class="form-control" style="font-weight:900; border-color: var(--accent-purple);">
+                                    <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini 1.5 (Recomendado para VNA Masivos)</option>
+                                    <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (Recomendado para Código)</option>
+                                    <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI GPT-4o (Lógica de Negocio)</option>
+                                    <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Custom Endpoint (Local Server)</option>
+                                </select>
+                            </div>
+
+                            <div class="engine-card">
+                                <div class="engine-icon">⚡</div>
+                                <div class="engine-info">
+                                    <h3>Google Gemini</h3>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="password" id="keyGemini" class="form-control" placeholder="AIzaSy..." value="${keyGemini}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="engine-card">
+                                <div class="engine-icon">🧠</div>
+                                <div class="engine-info">
+                                    <h3>OpenAI</h3>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="password" id="keyOpenAI" class="form-control" placeholder="sk-proj-..." value="${keyOpenAI}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="engine-card">
+                                <div class="engine-icon">🐳</div>
+                                <div class="engine-info">
+                                    <h3>DeepSeek</h3>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="password" id="keyDeepSeek" class="form-control" placeholder="sk-..." value="${keyDeepSeek}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="engine-card" id="customEndpointBox" style="display:${savedProvider === 'custom' ? 'flex' : 'none'}; border-style: dashed;">
+                                <div class="engine-icon">🖧</div>
+                                <div class="engine-info">
+                                    <h3>Custom Endpoint</h3>
+                                    <div style="display:flex; gap:10px; margin-top:5px;">
+                                        <input type="text" id="inpCustomUrl" class="form-control" placeholder="http://localhost:1234/v1" value="${customUrl}">
+                                        <input type="password" id="inpCustomKey" class="form-control" placeholder="Bearer Token" value="${customKey}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn-save" id="btn-save-keys" style="margin-top:2rem;">Forjar Llaves Criptográficas</button>
+                            <div id="keysFeedback" style="display:none; color: var(--accent-green); margin-top: 15px; font-size: 0.95rem; font-weight: bold; text-align:center;">✅ Llaves ancladas en memoria local.</div>
+                        </div>
+                    </div>
+
+                    <div id="tab-agents" class="tab-content ${this.tab === 'agents' ? 'active' : ''}">
+                        <div class="panel" style="border-top: 4px solid var(--accent-blue);">
+                            <h2 style="color: var(--accent-blue);">➕ Reclutar Agente o Humano</h2>
+                            <p>Da de alta un nuevo Nodo (IA o Humano) en el Padrón Global de la Matriz para asignarle roles y SOPs en tus ecosistemas.</p>
+                            
+                            <div style="background: rgba(0,0,0,0.3); padding:2rem; border-radius:16px; border: 1px solid var(--glass-border); margin-bottom: 2rem;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: start;">
+                                    <div class="form-group" style="margin:0;">
+                                        <label>Alias (@id)</label>
+                                        <input type="text" id="new-user-id" class="form-control" placeholder="Ej: @dev_ninja">
+                                    </div>
+                                    <div class="form-group" style="margin:0;">
+                                        <label>Nombre Público</label>
+                                        <input type="text" id="new-user-name" class="form-control" placeholder="Ninja Coder AI">
+                                    </div>
+                                    <div class="form-group" style="margin:0;">
+                                        <label>Tipo de Nodo</label>
+                                        <select id="new-user-type" class="form-control">
+                                            <option value="ai">🤖 Agente Autónomo (IA)</option>
+                                            <option value="human">👤 Operador Humano</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group" style="margin-top:20px;">
+                                    <label>System Prompt (Alma del Agente) / Wallet (Humanos)</label>
+                                    <textarea id="new-user-contact" class="form-control" style="min-height: 80px; resize:vertical;" placeholder="Si es IA: Escribe su prompt base. Si es humano: Email o Wallet 0x..."></textarea>
+                                </div>
+                                <button id="btn-create-user" class="btn-save" style="margin-top: 15px;">Inyectar al Padrón Global</button>
+                            </div>
+
+                            <h3 style="color: white; border-bottom: 1px solid #333; padding-bottom: 10px;">Registro Global (${state.globalUsers.length} Nodos Activos)</h3>
+                            <div style="overflow-x:auto; max-height: 400px; overflow-y:auto;">
+                                <table style="width:100%; border-collapse:collapse; text-align:left;">
+                                    <tr style="border-bottom:1px solid #444; position: sticky; top: 0; background: rgba(10,10,15,0.95);">
+                                        <th style="padding:15px; color:#aaa;">Alias</th>
+                                        <th style="padding:15px; color:#aaa;">Nombre</th>
+                                        <th style="padding:15px; color:#aaa;">Privilegios</th>
+                                    </tr>
+                                    ${state.globalUsers.map(u => `
+                                        <tr style="border-bottom:1px solid #222;">
+                                            <td style="padding:15px; font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
+                                            <td style="padding:15px; color: white; font-weight: 900;">${u.profile?.isAi ? '🤖 ' : ''}${u.name}</td>
+                                            <td style="padding:15px; color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'}; font-weight:bold;">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : (u.profile?.isAi ? 'IA NATIVA' : 'Ciudadano')}</td>
+                                        </tr>
+                                    `).join('')}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-ontology" class="tab-content ${this.tab === 'ontology' ? 'active' : ''}">
+                        <div class="panel">
+                            <h2>🧬 Catálogo Fractal de Ecosistemas (LMS)</h2>
+                            <p>El Orquestador lee estos genomas estructurales para instanciar nuevas redes. Los roles contienen referencias a <b>Flujos de Metodología VNA</b>, no simples descripciones de texto.</p>
+                            
+                            <div class="ontology-grid" id="nativeOntologyGrid">
+                                <div style="color:#888; grid-column: 1/-1; padding: 2rem; text-align:center;">Extrayendo genoma semántico...</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="tab-stakeholders" class="tab-content ${this.tab === 'stakeholders' ? 'active' : ''}">
                         <div class="panel" style="border-color: var(--accent-orange); box-shadow: inset 0 0 50px rgba(255,171,64,0.05);">
-                            <h2 style="color: var(--accent-orange);">🌌 Macro-Red de Stakeholders (Modelo de Negocio)</h2>
-                            <p>Visión topológica del Ecosystem Owner. Define cómo fluye el valor tangible e intangible entre los actores clave para mantener el arbitraje y la salud de la red.</p>
+                            <h2 style="color: var(--accent-orange);">🌌 Macro-Red de Stakeholders</h2>
+                            <p>Visión topológica. Define cómo fluye el valor tangible e intangible en el nivel más alto de la corporación/red.</p>
                             
                             <div style="display: flex; gap: 15px; font-size: 0.8rem; font-weight:bold; color: #aaa; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--glass-border); width: max-content; margin-bottom: 0.5rem;">
-                                <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; background:var(--accent-green);"></div> Tangible (Capital/Entregable)</div>
-                                <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; border-bottom:2px dashed var(--accent-purple); background:transparent;"></div> Intangible (Equidad/Feedback)</div>
+                                <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; background:var(--accent-green);"></div> Tangible</div>
+                                <div style="display: flex; align-items: center; gap: 8px; text-transform: uppercase;"><div style="width:18px; height:4px; border-radius:2px; border-bottom:2px dashed var(--accent-purple); background:transparent;"></div> Intangible</div>
                             </div>
 
                             <div class="sh-map-container" id="stakeholderMap">
@@ -153,132 +266,6 @@ export default class SettingsView {
                                     </defs>
                                     <g id="sh-paths-group"></g>
                                 </svg>
-                                </div>
-                        </div>
-                    </div>
-
-                    <div id="tab-ecosistema" class="tab-content ${this.tab === 'ecosistema' ? 'active' : ''}">
-                        <div class="panel">
-                            <h2><span style="font-size: 1.8rem; margin-right:10px;">🪐</span> Identidad y Soberanía</h2>
-                            <p>Configura las reglas macro de esta red descentralizada. El Kernel aplicará estas políticas a todos los Castells.</p>
-                            
-                            <div class="form-group">
-                                <label>Nombre del Universo Global</label>
-                                <input type="text" id="set-eco-name" class="form-control" value="${state.config.ecosystemName}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Arquetipo Estructural Base</label>
-                                <select id="set-eco-arch" class="form-control" style="color: var(--accent-blue); font-weight:bold;">
-                                    <option value="incubator" ${state.config.archetype === 'incubator' ? 'selected' : ''}>🏭 Incubadora Matricial</option>
-                                    <option value="holding" ${state.config.archetype === 'holding' ? 'selected' : ''}>🏢 Holding Tradicional</option>
-                                    <option value="dao" ${state.config.archetype === 'dao' ? 'selected' : ''}>🤖 DAO (Protocolo Autónomo)</option>
-                                    <option value="sos" ${state.config.archetype === 'sos' ? 'selected' : ''}>🆘 S.O.S. (Sistema Social)</option>
-                                    <option value="startup" ${state.config.archetype === 'startup' ? 'selected' : ''}>🚀 Startup Ágil</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>System Prompt Maestro (Cerebro IA)</label>
-                                <textarea id="set-eco-prompt" class="form-control" style="height: 140px; resize:vertical; line-height: 1.5;">${state.config.globalPrompt}</textarea>
-                            </div>
-
-                            <div class="gov-card">
-                                <div>
-                                    <div style="color: var(--accent-orange); font-weight: 900; margin-bottom: 5px; font-size: 1.1rem; text-transform:uppercase;">Privilegios de Instanciación</div>
-                                    <div style="color: #aaa; font-size: 0.9rem; line-height:1.5;">Define quién puede inicializar nuevos proyectos en tu Matrix.</div>
-                                </div>
-                                <select id="set-creation-mode" class="form-control" style="width: auto; flex-shrink: 0; min-width:200px; border-color:var(--accent-orange); margin-top:15px;">
-                                    <option value="open" ${state.config.projectCreationMode === 'open' ? 'selected' : ''}>🌍 Abierto (Cualquiera)</option>
-                                    <option value="templates_only" ${state.config.projectCreationMode === 'templates_only' ? 'selected' : ''}>📦 Solo Plantillas Nativas</option>
-                                    <option value="closed" ${state.config.projectCreationMode === 'closed' ? 'selected' : ''}>🔒 Cerrado (Solo Yo)</option>
-                                </select>
-                            </div>
-
-                            <button class="btn-save" id="btn-save-general" style="margin-top: 2.5rem;">Guardar Leyes del Ecosistema</button>
-                        </div>
-                    </div>
-
-                    <div id="tab-ia" class="tab-content ${this.tab === 'ia' ? 'active' : ''}">
-                        <div class="panel" style="border-top: 4px solid var(--accent-purple);">
-                            <h2 style="color: var(--accent-purple);">🧠 Orquestador Cognitivo (API Keys)</h2>
-                            <p>Conecta el Kernel V9 con los LLMs externos para dar vida al Creador de Proyectos y al @cap_de_colla del Hiperpaper. <strong>Las llaves no viajan a ningún servidor, se guardan en el LocalStorage de tu navegador.</strong></p>
-                            
-                            <div class="ai-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                                <div class="form-group">
-                                    <label>Motor Neuronal Activo</label>
-                                    <select id="inpDefaultProvider" class="form-control" style="color: var(--accent-purple); font-weight:900;">
-                                        <option value="deepseek" ${savedProvider === 'deepseek' ? 'selected' : ''}>DeepSeek (Recomendado)</option>
-                                        <option value="openai" ${savedProvider === 'openai' ? 'selected' : ''}>OpenAI (GPT-4o)</option>
-                                        <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
-                                        <option value="custom" ${savedProvider === 'custom' ? 'selected' : ''}>Servidor Local (LM Studio)</option>
-                                    </select>
-                                </div>
-                                <div id="customEndpointBox" style="display:${savedProvider === 'custom' ? 'block' : 'none'};">
-                                    <label style="font-size: 0.8rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase; margin-bottom:8px; display:block;">URL del Endpoint Local</label>
-                                    <input type="text" id="inpCustomUrl" class="form-control" placeholder="http://localhost:1234/v1/chat/completions">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>DeepSeek API Key</label>
-                                <input type="password" id="keyDeepSeek" class="form-control" placeholder="sk-..." value="${keyDeepSeek}">
-                            </div>
-                            <div class="form-group">
-                                <label>OpenAI API Key</label>
-                                <input type="password" id="keyOpenAI" class="form-control" placeholder="sk-..." value="${keyOpenAI}">
-                            </div>
-                            <div class="form-group">
-                                <label>Google Gemini API Key</label>
-                                <input type="password" id="keyGemini" class="form-control" placeholder="AIza..." value="${keyGemini}">
-                            </div>
-
-                            <button class="btn-save" id="btn-save-keys" style="background: linear-gradient(135deg, #7c4dff, #e040fb); margin-top:2rem;">Forjar Llaves Criptográficas</button>
-                            <div id="keysFeedback" style="display:none; color: var(--accent-green); margin-top: 15px; font-size: 0.95rem; font-weight: bold; text-align:center;">✅ Llaves ancladas en memoria local.</div>
-                        </div>
-                    </div>
-
-                    <div id="tab-users" class="tab-content ${this.tab === 'users' ? 'active' : ''}">
-                        <div class="panel" style="border-top: 4px solid var(--accent-blue);">
-                            <h2 style="color: var(--accent-blue);">➕ Alta de Nodos al Padrón Global</h2>
-                            <div style="background: rgba(0,0,0,0.3); padding:2.5rem; border-radius:16px; border: 1px solid var(--glass-border);">
-                                <div class="user-form-grid" style="display: grid; grid-template-columns: 1fr 1.5fr 1.5fr; gap: 20px; align-items: start; margin-bottom: 20px;">
-                                    <div class="form-group" style="margin:0;">
-                                        <label>Alias (@id)</label>
-                                        <input type="text" id="new-user-id" class="form-control" placeholder="Ej: @neo">
-                                    </div>
-                                    <div class="form-group" style="margin:0;">
-                                        <label>Nombre Humano</label>
-                                        <input type="text" id="new-user-name" class="form-control" placeholder="Ej: Thomas Anderson">
-                                    </div>
-                                    <div class="form-group" style="margin:0;">
-                                        <label>Contacto / Wallet</label>
-                                        <input type="text" id="new-user-contact" class="form-control" placeholder="Email o 0x...">
-                                    </div>
-                                </div>
-                                <button id="btn-create-user" class="btn-save" style="margin-top: 15px;">Añadir al Padrón Global</button>
-                            </div>
-                        </div>
-
-                        <div class="panel">
-                            <h2>Registro Global de Identidades (${state.globalUsers.length})</h2>
-                            <div class="user-table-wrapper" style="overflow-x:auto;">
-                                <table style="width:100%; border-collapse:collapse; text-align:left;">
-                                    <tr style="border-bottom:1px solid #444;">
-                                        <th style="padding:15px; color:#aaa;">Alias (@id)</th>
-                                        <th style="padding:15px; color:#aaa;">Nombre Real</th>
-                                        <th style="padding:15px; color:#aaa;">Privilegios</th>
-                                        <th style="padding:15px; color:#aaa;">Contacto / Hub</th>
-                                    </tr>
-                                    ${state.globalUsers.map(u => `
-                                        <tr style="border-bottom:1px solid #222;">
-                                            <td style="padding:15px; font-weight: bold; color: var(--accent-blue); font-family: monospace;">${u.id}</td>
-                                            <td style="padding:15px; color: white; font-weight: 900;">${u.profile?.isAi ? '🤖 ' : ''}${u.name}</td>
-                                            <td style="padding:15px; color: ${u.globalRole === 'ecosystem-owner' ? 'var(--accent-orange)' : '#888'}; font-weight:bold;">${u.globalRole === 'ecosystem-owner' ? '👑 Owner' : (u.profile?.isAi ? 'IA NATIVA' : 'Ciudadano')}</td>
-                                            <td style="padding:15px; color: #666; font-size:0.85rem; font-family: monospace;">${u.walletOrSocial || '---'}</td>
-                                        </tr>
-                                    `).join('')}
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -286,7 +273,7 @@ export default class SettingsView {
                     <div id="tab-data" class="tab-content ${this.tab === 'data' ? 'active' : ''}">
                         <div class="panel" style="border-color: #333;">
                             <h2>💾 Control de Memoria Local (Web3-First)</h2>
-                            <p>El núcleo de TeamTowers V9 funciona 100% en tu navegador. <strong>Exporta un archivo .JSON para no perder nunca tus datos.</strong> El archivo contendrá el Estado Redux (Ledger, Proyectos) y el Knowledge Base IndexedDB (Memes W3C).</p>
+                            <p>El núcleo V9 funciona 100% en tu navegador. <strong>Exporta un archivo .JSON para asegurar tus ecosistemas, agentes y flujos VNA.</strong></p>
                             
                             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:2.5rem;">
                                 <button class="btn-success-outline" id="btnExport" style="flex:1;">⬇️ Exportar Snapshot (.JSON)</button>
@@ -298,19 +285,7 @@ export default class SettingsView {
                             </div>
                             
                             <div style="margin-top:4rem; border-top:1px dashed #333; padding-top:2rem; text-align:center;">
-                                <button class="btn-lux btn-lux-danger" id="btnNuke" style="width:auto; display:inline-block; padding: 10px 20px; font-size:0.8rem;">⚠️ DESTRUCCIÓN MUTUA ASEGURADA (Borrar Todo)</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="tab-ontology" class="tab-content ${this.tab === 'ontology' ? 'active' : ''}">
-                        <div class="panel">
-                            <h2 style="margin-bottom:5px;">El ADN Estructural (LMS)</h2>
-                            <p style="margin:0; max-width:600px; font-size:0.9rem;">Plantillas teóricas vivas extraídas del Cerebro Semántico (IndexedDB).</p>
-                            
-                            <h3 style="color: var(--accent-blue); margin-top: 3rem; font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 10px; font-weight:900;">📦 Catálogo Inteligente de Ecosistemas</h3>
-                            <div class="ontology-grid" id="nativeOntologyGrid">
-                                <div style="color:#888; grid-column: 1/-1; padding: 2rem; text-align:center;">Extrayendo genoma semántico...</div>
+                                <button class="btn-lux btn-lux-danger" id="btnNuke" style="width:auto; display:inline-block; padding: 10px 20px; font-size:0.8rem;">⚠️ PROTOCOLO OMEGA (Borrar Todo el Kernel)</button>
                             </div>
                         </div>
                     </div>
@@ -390,7 +365,6 @@ export default class SettingsView {
             el.innerHTML = `
                 <div class="node-circle" style="border-color:${n.color}; box-shadow: 0 0 35px ${n.color}50;">
                     <div class="node-icon">${n.icon}</div>
-                    <div class="node-desc">${n.desc}</div>
                 </div>
                 <div class="node-title">${n.label}</div>
             `;
@@ -428,7 +402,7 @@ export default class SettingsView {
         const dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        const trim = 65; 
+        const trim = 55; 
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -492,26 +466,13 @@ export default class SettingsView {
     }
 
     bindContentEvents() {
-        const state = store.getState();
-
-        document.getElementById('btn-save-general')?.addEventListener('click', async () => {
-            const ecosystemName = document.getElementById('set-eco-name').value;
-            const globalPrompt = document.getElementById('set-eco-prompt').value;
-            const projectCreationMode = document.getElementById('set-creation-mode').value;
-            const arch = document.getElementById('set-eco-arch').value;
-            
-            await store.dispatch({ type: 'UPDATE_GLOBAL_CONFIG', payload: { ecosystemName, globalPrompt, projectCreationMode, archetype: arch } });
-            alert("✅ Sistema Re-Calibrado Exitosamente.");
-            window.location.reload();
-        });
-
-        // AI KEYS LOGIC (SPRINT 30)
         const uiKeys = {
             provider: document.getElementById('inpDefaultProvider'),
             apiKeyD: document.getElementById('keyDeepSeek'),
             apiKeyO: document.getElementById('keyOpenAI'),
             apiKeyG: document.getElementById('keyGemini'),
             customUrl: document.getElementById('inpCustomUrl'),
+            customKey: document.getElementById('inpCustomKey'),
             boxCustom: document.getElementById('customEndpointBox'),
             btnSave: document.getElementById('btn-save-keys'),
             feedback: document.getElementById('keysFeedback')
@@ -519,7 +480,7 @@ export default class SettingsView {
 
         if (uiKeys.provider) {
             uiKeys.provider.addEventListener('change', (e) => {
-                uiKeys.boxCustom.style.display = e.target.value === 'custom' ? 'block' : 'none';
+                uiKeys.boxCustom.style.display = e.target.value === 'custom' ? 'flex' : 'none';
             });
 
             uiKeys.btnSave.addEventListener('click', () => {
@@ -527,26 +488,39 @@ export default class SettingsView {
                 localStorage.setItem('tt_key_deepseek', uiKeys.apiKeyD.value.trim());
                 localStorage.setItem('tt_key_openai', uiKeys.apiKeyO.value.trim());
                 localStorage.setItem('tt_key_gemini', uiKeys.apiKeyG.value.trim());
+                localStorage.setItem('tt_custom_url', uiKeys.customUrl.value.trim());
+                localStorage.setItem('tt_custom_key', uiKeys.customKey.value.trim());
                 
                 uiKeys.feedback.style.display = 'block';
                 setTimeout(() => uiKeys.feedback.style.display = 'none', 3000);
             });
         }
 
-        // ADD GLOBAL USER
         document.getElementById('btn-create-user')?.addEventListener('click', async () => {
             let id = document.getElementById('new-user-id').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
-            const contact = document.getElementById('new-user-contact').value.trim();
+            const type = document.getElementById('new-user-type').value;
+            const contactOrPrompt = document.getElementById('new-user-contact').value.trim();
             
             if (!id || !name) return alert("⚠️ Alias y Nombre son obligatorios.");
             if (!id.startsWith('@')) id = '@' + id; 
 
-            await store.dispatch({ type: 'ADD_USER', payload: { id, name, walletOrSocial: contact } });
+            const isAi = type === 'ai';
+            
+            const newUser = {
+                id: id,
+                name: name,
+                globalRole: isAi ? 'ai-agent' : 'network-user',
+                walletOrSocial: !isAi ? contactOrPrompt : undefined,
+                profile: isAi ? { isAi: true, structural_affinity: ['@baixos'], vision: contactOrPrompt } : { sbt_skills: [] }
+            };
+
+            await store.dispatch({ type: 'ADD_USER', payload: newUser });
+            alert(`✅ Nodo ${id} inyectado al Padrón.`);
             window.location.reload(); 
         });
 
-        // DATA MANAGEMENT (SPRINT 30 - IMPORT/EXPORT)
+        // DATA MANAGEMENT
         document.getElementById('btnExport')?.addEventListener('click', async () => {
             const btn = document.getElementById('btnExport');
             btn.innerText = '⏳ Compilando...';
@@ -554,7 +528,7 @@ export default class SettingsView {
                 await KB.init();
                 const kbNodes = await KB.getAllNodes();
                 const backupPayload = {
-                    version: "V9.11", timestamp: Date.now(),
+                    version: "V12.0_Fractal", timestamp: Date.now(),
                     store: store.getState(), knowledge_base: kbNodes
                 };
                 
@@ -566,9 +540,7 @@ export default class SettingsView {
                 a.click();
                 a.remove();
                 btn.innerText = '✔️ Exportación Exitosa';
-            } catch(e) {
-                alert("Error exportando el Kernel.");
-            }
+            } catch(e) { alert("Error exportando el Kernel."); }
             setTimeout(() => btn.innerText = '⬇️ Exportar Snapshot (.JSON)', 2000);
         });
 
@@ -590,14 +562,14 @@ export default class SettingsView {
                         await store.dispatch({ type: 'RESTORE_STATE', payload: importedData.store });
                         window.location.href = '/v8/';
                     }
-                } catch (err) { alert("❌ Error de lectura criptográfica: Archivo corrupto o versión no compatible."); }
+                } catch (err) { alert("❌ Error de lectura criptográfica: Archivo corrupto."); }
             };
             reader.readAsText(file);
         });
 
         document.getElementById('btnNuke')?.addEventListener('click', () => {
             if (confirm("🚨 PROTOCOLO OMEGA: Esto borrará TODOS los proyectos y vaciará el Kernel. ¿Estás seguro?")) {
-                localStorage.removeItem('tt_sos_v8_state');
+                localStorage.clear();
                 window.location.href = '/v8/';
             }
         });
@@ -617,11 +589,10 @@ export default class SettingsView {
         }
 
         const renderRoleData = (lvl, data) => {
-            let delivsHtml = '';
-            if (data.deliverables && data.deliverables.length > 0) {
-                delivsHtml = data.deliverables.map(d => {
-                    const tipoColor = d.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-                    return `<div class="deliv-badge" style="color:${tipoColor}; border-color:${tipoColor}; opacity:0.9;">${d.estimatedHours}h | ${d.name}</div>`;
+            let flowsHtml = '';
+            if (data.core_flows && data.core_flows.length > 0) {
+                flowsHtml = data.core_flows.map(f => {
+                    return `<div class="deliv-badge" style="opacity:0.9;">🔄 ${f}</div>`;
                 }).join(' ');
             }
             return `
@@ -630,7 +601,7 @@ export default class SettingsView {
                         <span style="font-family:var(--font-mono); font-size:0.75rem; color:#888; font-weight:bold; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">${lvl}</span>
                         <b style="color:white; font-size:0.9rem; text-align:right;">${data.name}</b>
                     </div>
-                    <div style="margin-top:8px;">${delivsHtml}</div>
+                    <div style="margin-top:8px;">${flowsHtml}</div>
                 </div>
             `;
         };
@@ -643,7 +614,7 @@ export default class SettingsView {
                 <div style="display: flex; flex-direction: column; gap: 5px; flex:1; opacity:0.8;">
                     ${Object.entries(sectorData.roles).map(([lvl, roleData]) => renderRoleData(lvl, roleData)).join('')}
                 </div>
-                <button class="btn-save btn-use-template" data-sector="${key}" style="margin-top:2.5rem; background:rgba(0,176,255,0.1); border: 1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.95rem; box-shadow:none;">🚀 Instanciar Red (V9)</button>
+                <button class="btn-save btn-use-template" data-sector="${key}" style="margin-top:2.5rem; background:rgba(0,176,255,0.1); border: 1px dashed var(--accent-blue); color:var(--accent-blue); font-size:0.95rem; box-shadow:none;">🚀 Instanciar Red Fractal</button>
             </div>
             `
         }).join('');
