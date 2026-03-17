@@ -18,7 +18,10 @@ class OrchestratorCore {
             const targetModel = 'gemini-1.5-flash';
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }] })
+               body: JSON.stringify({ 
+                    contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }],
+                    generationConfig: { responseMimeType: "application/json" } // 🔥 EL FIX DE GOOGLE
+                })
             });
             if (!response.ok) throw new Error(`Google Gemini Error: ${response.statusText}`);
             const data = await response.json();
