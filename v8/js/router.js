@@ -10,6 +10,7 @@ import TestsView from './views/TestsView.js';
 import AgentEditorView from './views/AgentEditorView.js'; 
 import PaperView from './views/PaperView.js'; 
 import SettingsView from './views/SettingsView.js'; 
+import LmsView from './views/LmsView.js';
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -28,7 +29,9 @@ const router = async () => {
         { path: "/v8/tests", view: TestsView },
         { path: "/v8/agents", view: AgentEditorView },
         { path: "/v8/paper", view: PaperView },
+        { path: "/v8/lms", view: LmsView },
         { path: "/v8/settings", view: SettingsView }
+        
     ];
 
     // Buscar coincidencia exacta con la URL actual
