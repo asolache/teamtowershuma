@@ -13,7 +13,54 @@ const LLM_PRICING = {
 
 class OrchestratorCore {
     constructor() {
-        this.version = "12.0-Telemetry";
+        this.version = "13.0-Usenet";
+        this.isListening = false;
+    }
+
+    /**
+     * 🔥 NUEVO (SPRINT 35): Iniciar el Daemon de Escucha
+     * Se suscribe a Redux para detectar Pings a los agentes IA en tiempo real.
+     */
+    initUsenetDaemon() {
+        if (this.isListening) return;
+        this.isListening = true;
+        
+        console.log("📡 [Usenet Daemon] Orquestador a la escucha de Pings...");
+
+        store.subscribe((state) => {
+            if (!state.projects || state.projects.length === 0) return;
+            
+            // Revisar todos los proyectos buscando logs no leídos por agentes IA
+            state.projects.forEach(project => {
+                if (!project.logs) return;
+                
+                project.logs.forEach(log => {
+                    // Si el log tiene menciones y NO ha sido respondido o leído por los IAs involucrados
+                    if (log.mentions && log.mentions.length > 0) {
+                        log.mentions.forEach(async (mentionId) => {
+                            const isRead = log.readBy && log.readBy.includes(mentionId);
+                            if (isRead) return; // Ya fue procesado
+
+                            const targetNode = state.globalUsers.find(u => u.id === mentionId);
+                            
+                            // Si el mencionado es un Agente IA, el Daemon lo despierta
+                            if (targetNode && targetNode.profile && targetNode.profile.isAi) {
+                                
+                                // 1. Marcar como leído inmediatamente para evitar bucles infinitos
+                                store.dispatch({
+                                    type: 'MARK_LOG_READ',
+                                    payload: { projectId: project.id, logId: log.id, userId: targetNode.id }
+                                });
+
+                                // 2. Procesar respuesta en background
+                                console.log(`⚡ [Usenet Daemon] Despertando agente ${targetNode.id} para responder a log ${log.id}`);
+                                await this.autoRespondUsenet(project, log, targetNode);
+                            }
+                        });
+                    }
+                });
+            });
+        });
     }
 
     // ==========================================
@@ -95,14 +142,9 @@ class OrchestratorCore {
             parsedContent = JSON.parse(cleanText);
         }
 
-        // El Gateway ahora devuelve el cerebro y los sensores completos
         return {
             content: parsedContent,
-            telemetry: {
-                provider,
-                tokens: tokenUsage,
-                latencyMs
-            }
+            telemetry: { provider, tokens: tokenUsage, latencyMs }
         };
     }
 
@@ -145,9 +187,6 @@ class OrchestratorCore {
         const result = await this.callLLM({
             provider, apiKey, systemPrompt, userPrompt: vision, responseFormat: "json_object"
         });
-
-        // 🔥 Opcional: Aquí el Orquestador podría disparar un store.dispatch('LOG_TELEMETRY')
-        // pero como "designEcosystemVNA" aún no tiene ProjectId, lo delegaremos a quien lo llame.
 
         return result.content; 
     }
@@ -192,7 +231,7 @@ class OrchestratorCore {
                 title: `Prompt A2A Forjado: ${role.name}`, content: result.content
             });
 
-            // 🔥 Telemetría: Calculamos y guardamos el coste de forjar esta identidad
+            // Telemetría de Forja
             const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
             const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
                                   ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
@@ -202,7 +241,7 @@ class OrchestratorCore {
                 payload: {
                     projectId: projectId, agentId: '@genesi_ai', engine: provider, actionType: 'FORGE_IDENTITY',
                     tokens: result.telemetry.tokens, costInDollars: costInDollars,
-                    recRatio: 0, // No aplica REC para forjado, solo para SOPs
+                    recRatio: 0, 
                     latencyMs: result.telemetry.latencyMs
                 }
             });
@@ -211,6 +250,94 @@ class OrchestratorCore {
         }
 
         return forgedAgents;
+    }
+
+    // ==========================================
+    // CAPA 4: USENET DAEMON (Auto-Respuesta A2A)
+    // ==========================================
+    async autoRespondUsenet(project, incomingLog, agentNode) {
+        try {
+            // 1. Identificar el motor configurado para este agente, o usar el por defecto
+            let provider = agentNode.profile?.preferredEngine || localStorage.getItem('tt_ai_provider') || 'deepseek';
+            let apiKey = localStorage.getItem(`tt_key_${provider}`);
+            
+            // Fallback al motor principal si el del agente no tiene llave
+            if (!apiKey) {
+                provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+                apiKey = localStorage.getItem(`tt_key_${provider}`);
+            }
+            if (!apiKey) return console.warn(`[Usenet Daemon] Abortado: No hay API Key para ${provider}.`);
+
+            // 2. Extraer contexto (Work Order asociada si existe y el hilo de la conversación)
+            let contextStr = `Ecosistema: ${project.nombre}\nPropósito: ${project.presentation || 'N/A'}\n\n`;
+            
+            if (incomingLog.relatedTxHash) {
+                const wo = project.work_orders.find(w => w.hash === incomingLog.relatedTxHash);
+                if (wo) {
+                    const flow = project.vna_flows.find(f => f.id === wo.flowId);
+                    contextStr += `ESTADO ACTUAL (Work Order):\n- Tarea: ${flow ? flow.template : 'Desconocida'}\n- Estado: ${wo.status}\n- SOCs: ${JSON.stringify(wo.soc_checklist)}\n\n`;
+                }
+            }
+
+            // Hilo de la Usenet (los últimos 5 mensajes relacionados)
+            const thread = project.logs.filter(l => l.relatedTxHash === incomingLog.relatedTxHash).slice(-5);
+            contextStr += `HILO DE USENET RECIENTE:\n`;
+            thread.forEach(l => {
+                const author = store.getState().globalUsers.find(u => u.id === l.authorId)?.name || l.authorId;
+                contextStr += `[${author}]: ${l.content}\n`;
+            });
+
+            // 3. Forjar el Alma (System Prompt)
+            const systemPrompt = `
+                Eres ${agentNode.name} (${agentNode.id}), un nodo operativo en la red TeamTowers V13.
+                Tu arquetipo base es ${agentNode.profile?.guardian || 'desconocido'}.
+                
+                CONTEXTO DE LA OPERACIÓN:
+                ${contextStr}
+                
+                Misión: Acaban de hacerte un 'Ping' (te han mencionado con @). 
+                Responde al último mensaje de forma breve, profesional y accionable. Si es una auditoría de código, da feedback directo. Si es una petición, confirma recepción.
+                Firma tu respuesta. Usa formato texto plano. NO uses JSON.
+            `;
+
+            // 4. Llamada Neuronal
+            const result = await this.callLLM({
+                provider, apiKey, systemPrompt, userPrompt: `Responde al ping en el hilo.`, responseFormat: "text"
+            });
+
+            // 5. Publicar Respuesta en el Ledger
+            await store.dispatch({
+                type: 'ADD_LOG_ENTRY',
+                payload: {
+                    projectId: project.id,
+                    log: {
+                        id: 'log_' + Date.now(),
+                        date: Date.now(),
+                        authorId: agentNode.id,
+                        relatedTxHash: incomingLog.relatedTxHash,
+                        content: result.content,
+                        mentions: [incomingLog.authorId], // Hacemos ping de vuelta al autor original
+                        readBy: []
+                    }
+                }
+            });
+
+            // 6. Registrar Coste
+            const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
+            const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
+                                  ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+
+            await store.dispatch({
+                type: 'LOG_TELEMETRY',
+                payload: {
+                    projectId: project.id, agentId: agentNode.id, engine: provider, actionType: 'USENET_PING',
+                    tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs
+                }
+            });
+
+        } catch (error) {
+            console.error(`[Usenet Daemon] Fallo al responder con ${agentNode.id}:`, error);
+        }
     }
 }
 
