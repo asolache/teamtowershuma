@@ -4,7 +4,8 @@ import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js'; 
 import { PageHeader } from '../components/PageHeader.js';
 import { MapRenderer } from '../components/MapRenderer.js'; 
-import { KanbanRenderer } from '../components/KanbanRenderer.js'; // 🔥 Magia DRY: Importamos el motor del Kanban
+import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
+import { LedgerRenderer } from '../components/LedgerRenderer.js'; // 🔥 Magia DRY: Importamos el motor del Ledger
 
 export default class PaperView {
     constructor() {
@@ -30,7 +31,8 @@ export default class PaperView {
         return `
             <style>
                 ${MapRenderer.getStyles()}
-                ${KanbanRenderer.getStyles()} /* 🔥 DRY: CSS del Kanban integrado en el Paper */
+                ${KanbanRenderer.getStyles()} 
+                ${LedgerRenderer.getStyles()} /* 🔥 DRY: CSS del Ledger integrado en el Paper */
 
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-dark); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
@@ -57,10 +59,7 @@ export default class PaperView {
                 .omni-widget { margin: 1.5rem 0; border: 1px dashed var(--accent-blue); border-radius: 16px; background: rgba(10,10,15,0.8); overflow: hidden; user-select: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
                 .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .omni-widget-body { padding: 0; position: relative; }
-                .omni-ledger-table { width: 100%; border-collapse: collapse; font-family: var(--font-main); font-size: 0.95rem;}
-                .omni-ledger-table th { text-align: left; padding: 10px 15px; color: #888; border-bottom: 1px solid #333; }
-                .omni-ledger-table td { padding: 10px 15px; border-bottom: 1px solid #222; color: white; }
-
+                
                 /* MENÚ AUTOCOMPLETADO (USENET) */
                 .semantic-menu { position: absolute; background: rgba(15,15,20,0.95); border: 1px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; z-index: 6000; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,176,255,0.2); backdrop-filter: blur(15px); padding: 5px 0; min-width: 280px; top: 100%; left: 0;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; font-family: var(--font-main);}
@@ -277,7 +276,7 @@ export default class PaperView {
 
         this.dom.threadList.innerHTML = html;
         
-        // 🔥 HIDRATACIÓN DE WIDGETS DRY (Mapas y Kanbans inyectados)
+        // 🔥 HIDRATACIÓN DE WIDGETS DRY (Mapas, Kanbans y Ledgers inyectados)
         setTimeout(() => {
             // Hidratar Mapas
             const maps = this.dom.threadList.querySelectorAll('.omni-map-canvas');
@@ -301,10 +300,22 @@ export default class PaperView {
                         project: project,
                         activeUserId: activeUserId,
                         isPO: isPO,
-                        currentTab: 'oportunidades', // Renderizamos las tareas libres para mostrar contexto
+                        currentTab: 'oportunidades', 
                         currentFilter: 'all'
                     });
                     kr.render();
+                }
+            });
+
+            // Hidratar Ledgers
+            const ledgers = this.dom.threadList.querySelectorAll('[id^="ledger_"]');
+            ledgers.forEach(container => {
+                if (project) {
+                    const lr = new LedgerRenderer(container, {
+                        projectId: project.id,
+                        showHistory: false // Solo mostramos el Pie y la Cap Table en el log para ahorrar espacio
+                    });
+                    lr.render();
                 }
             });
         }, 100);
@@ -422,29 +433,7 @@ export default class PaperView {
                             }
                         }, 50);
 
-                    } else if (replaceVal === '/ledger') {
-                        const harvest = store.calculateHarvest(this.activeTx.projectId) || [];
-                        let trs = harvest.map(h => {
-                            const u = store.getState().globalUsers.find(gu => gu.id === (h.user||h.userId));
-                            return `<tr><td>${u ? u.name : (h.user||h.userId)}</td><td><span style="color:var(--accent-green); font-weight:bold;">${Math.round(h.slices)}</span></td><td>${h.percentage}%</td></tr>`;
-                        }).join('');
-                        if(!trs) trs = `<tr><td colspan="3" style="text-align:center; color:#666;">Ledger vacío.</td></tr>`;
-
-                        el.innerHTML = `
-                            <div class="omni-widget" contenteditable="false">
-                                <div class="omni-widget-header">⚖️ Slicing Pie (Cap Table Activa)</div>
-                                <div class="omni-widget-body" style="background: rgba(0,0,0,0.5);">
-                                    <table class="omni-ledger-table">
-                                        <tr><th>Nodo</th><th>Equidad (Slices)</th><th>% Red</th></tr>
-                                        ${trs}
-                                    </table>
-                                </div>
-                            </div><p><br></p>
-                        `;
-                        range.insertNode(el);
-                        range.setStartAfter(el);
                     } else if (replaceVal === '/kanban') {
-                        // 🔥 INYECCIÓN DEL KANBAN RENDERER
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
@@ -469,6 +458,29 @@ export default class PaperView {
                                     currentFilter: 'all'
                                 });
                                 kr.render();
+                            }
+                        }, 50);
+                    } else if (replaceVal === '/ledger') {
+                        // 🔥 INYECCIÓN DEL LEDGER RENDERER DRY
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false">
+                                <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">⚖️ Slicing Pie (Cap Table)</div>
+                                <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);">
+                                    </div>
+                            </div><p><br></p>
+                        `;
+                        range.insertNode(el);
+                        range.setStartAfter(el);
+
+                        setTimeout(() => {
+                            const container = document.getElementById(`ledger_${widgetId}`);
+                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                            if(p && container) {
+                                const lr = new LedgerRenderer(container, {
+                                    projectId: p.id,
+                                    showHistory: false // Ocultamos el history largo para no ensuciar el Paper
+                                });
+                                lr.render();
                             }
                         }, 50);
                     }
