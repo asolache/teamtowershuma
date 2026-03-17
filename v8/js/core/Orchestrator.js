@@ -12,7 +12,7 @@ const LLM_PRICING = {
 
 class OrchestratorCore {
     constructor() {
-        this.version = "14.5-AcademicRAG";
+        this.version = "15.0-PromptRegistry";
         this.isListening = false;
     }
 
@@ -51,7 +51,14 @@ class OrchestratorCore {
                 if (provider === 'gemini') {
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }], generationConfig: { temperature, responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" } })
+                        body: JSON.stringify({ 
+                            contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }], 
+                            generationConfig: { 
+                                temperature, 
+                                maxOutputTokens: 8192, // 🔥 VITAL: Evita JSONs truncados
+                                responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" 
+                            } 
+                        })
                     });
                     if (!response.ok) throw new Error(`Google Gemini Error: ${response.statusText}`);
                     const data = await response.json();
@@ -62,7 +69,13 @@ class OrchestratorCore {
                     const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
                     const response = await fetch(endpoint, {
                         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ model: modelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature, response_format: responseFormat === "json_object" ? { type: "json_object" } : null })
+                        body: JSON.stringify({ 
+                            model: modelName, 
+                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
+                            temperature, 
+                            max_tokens: 8192, // 🔥 VITAL: Evita JSONs truncados
+                            response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
+                        })
                     });
                     if (!response.ok) throw new Error(`${provider.toUpperCase()} Error: ${response.statusText}`);
                     const data = await response.json();
@@ -86,69 +99,123 @@ class OrchestratorCore {
         throw new Error(`Fallo tras ${maxRetries + 1} intentos. Último error: ${lastError.message}`);
     }
 
+    // ==========================================
+    // CAPA 2: DISEÑADOR VNA (Agile RAG)
+    // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
-        const systemPrompt = `
-Eres el Master Ecosystem Architect de TeamTowers V14. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto.
-MANDAMIENTOS: 1. MÍNIMO 12 transacciones. 2. 5 ERAS: Kickoff, Growth, Scale, Harvest, Cierre. 3. Lógica DAG en "depends_on". 4. 30% transacciones intangibles. 5. 3 skills por tx. 6. 2 soc_checklists auditable matemáticamente por tx.
-ESTRUCTURA JSON EXACTA: { "presentacion": "...", "tags": ["..."], "new_memes": [{ "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }], "roles": [{ "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "template": "...", "horas": 5, "required_skills": ["meme_skill_x"], "soc_checklist": [{ "text": "..." }] }] }
-REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @pinya).
-`;
-        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, responseFormat: "json_object", temperature: 0.1 });
+        await KB.init();
+        // 🔥 MAGIA: Pedimos el Prompt a la Base de Datos. El Owner puede editarlo visualmente en el LMS.
+        const promptNode = await KB.getNode('prompt_genesi_vna');
+        if (!promptNode) throw new Error("Fallo crítico: Meta-Prompt de Gènesi no encontrado en la KB.");
+        
+        const systemPrompt = promptNode.content;
+        const result = await this.callLLM({ 
+            provider, apiKey, systemPrompt, 
+            userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, 
+            responseFormat: "json_object", temperature: 0.1 
+        });
         return result.content; 
     }
 
+    // ==========================================
+    // CAPA 3: LA FORJA FRACTAL
+    // ==========================================
     async forgeProjectColla(projectId, provider, apiKey) {
-        /* ... Mantenido igual ... */
-    }
+        await KB.init();
+        const state = store.getState();
+        const project = state.projects.find(p => p.id === projectId);
+        if (!project) throw new Error("Proyecto no encontrado en el Kernel.");
 
-    async autoRespondUsenet(project, incomingLog, agentNode) {
-        /* ... Mantenido igual ... */
+        const promptNode = await KB.getNode('prompt_genesi_forge');
+        const systemPrompt = promptNode ? promptNode.content : `Eres @genesi_ai, redacta un System Prompt en primera persona.`;
+        
+        const forgedAgents = [];
+
+        for (const role of project.roles) {
+            const flatContext = await KB.getAgentContextFlattened(projectId, role, project.prompt, project.archetype);
+            const roleFlows = project.vna_flows.filter(f => f.from === role.id || f.to === role.id);
+            const flowsContext = roleFlows.map(f => `- [${f.tipo.toUpperCase()}] ${f.template}`).join('\n');
+
+            const userPrompt = `
+                Crea el SYSTEM PROMPT definitivo para el rol de "${role.name}" (${role.levelId}).
+                CONTEXTO ONTOLÓGICO: ${flatContext}
+                TUBERÍAS VNA: ${flowsContext || "Ninguna aún."}
+                Instrucciones: Texto estricto en primera persona para ejecutar SOPs. NO JSON.
+            `;
+
+            const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "text", temperature: 0.4 });
+
+            const newPromptNode = await KB.saveNode({ id: `prompt_${projectId}_${role.id}`, type: 'prompt_a2a', projectId: projectId, targetId: role.id, roleTarget: role.levelId, title: `Prompt A2A Forjado: ${role.name}`, content: result.content });
+
+            const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
+            const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+
+            await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: projectId, agentId: '@genesi_ai', engine: provider, actionType: 'FORGE_IDENTITY', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
+
+            forgedAgents.push({ roleId: role.id, roleName: role.name, promptId: newPromptNode.id });
+        }
+        return forgedAgents;
     }
 
     // ==========================================
-    // CAPA 5: DEEP RESEARCH ACADÉMICO (ORÁCULO W3C)
+    // CAPA 4: USENET DAEMON
+    // ==========================================
+    async autoRespondUsenet(project, incomingLog, agentNode) {
+        try {
+            let provider = agentNode.profile?.preferredEngine || localStorage.getItem('tt_ai_provider') || 'deepseek';
+            let apiKey = localStorage.getItem(`tt_key_${provider}`);
+            if (!apiKey) { provider = localStorage.getItem('tt_ai_provider') || 'deepseek'; apiKey = localStorage.getItem(`tt_key_${provider}`); }
+            if (!apiKey) return;
+
+            let contextStr = `Ecosistema: ${project.nombre}\n\n`;
+            if (incomingLog.relatedTxHash) {
+                const wo = project.work_orders.find(w => w.hash === incomingLog.relatedTxHash);
+                if (wo) {
+                    const flow = project.vna_flows.find(f => f.id === wo.flowId);
+                    contextStr += `ESTADO ACTUAL:\n- Tarea: ${flow ? flow.template : 'Desconocida'}\n- SOCs: ${JSON.stringify(wo.soc_checklist)}\n\n`;
+                }
+            }
+            const thread = project.logs.filter(l => l.relatedTxHash === incomingLog.relatedTxHash).slice(-5);
+            contextStr += `HILO RECIENTE:\n`;
+            thread.forEach(l => { const author = store.getState().globalUsers.find(u => u.id === l.authorId)?.name || l.authorId; contextStr += `[${author}]: ${l.content}\n`; });
+
+            await KB.init();
+            let agentPrompt = `Eres ${agentNode.name} (${agentNode.id}).`;
+            const customPrompt = await KB.getNode(`prompt_${project.id}_${agentNode.id}`);
+            if (customPrompt) agentPrompt = customPrompt.content;
+
+            const systemPrompt = `${agentPrompt}\n\nCONTEXTO:\n${contextStr}\nMisión: Responde al ping de forma profesional. Firma la respuesta. NO uses JSON. NO uses markdown \`\`\`.`;
+
+            const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Responde al ping de ${incomingLog.authorId}.`, responseFormat: "text", temperature: 0.7 });
+
+            await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId: project.id, log: { id: 'log_' + Date.now(), date: Date.now(), authorId: agentNode.id, relatedTxHash: incomingLog.relatedTxHash, content: result.content, mentions: [incomingLog.authorId], readBy: [] } } });
+
+            const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
+            const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+            await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: project.id, agentId: agentNode.id, engine: provider, actionType: 'USENET_PING', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
+
+        } catch (error) { console.error(`[Usenet Daemon] Fallo al responder con ${agentNode.id}:`, error); }
+    }
+
+    // ==========================================
+    // CAPA 5: DEEP RESEARCH ACADÉMICO (Agile RAG)
     // ==========================================
     async deepResearch(topic, category, provider, apiKey) {
         if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Deep Research.");
 
-        const systemPrompt = `
-            Actúa como @mestre_escola, el Investigador Jefe Académico y de Ingeniería de la Matriz V14.
-            Tu directiva es extraer el conocimiento más veraz, estandarizado a nivel industrial y profundo sobre el tema solicitado. No simules ni inventes; accede a tu base de conocimiento global (patrones de diseño, normativas ISO, frameworks Agile/W3C, documentación técnica oficial).
-            
-            Debes destilar este conocimiento en un array de "Memes" (nodos de conocimiento).
-            Si la categoría solicitada es "SOP" (Procedimientos), describe pasos ejecutables.
-            Si es "SOC" (Condiciones), describe métricas de calidad estrictas y auditables.
-            Si es "SKILL", describe las competencias técnicas reales necesarias.
-            
-            DEVUELVE ÚNICAMENTE JSON:
-            {
-                "memes": [
-                    {
-                        "category": "${category}",
-                        "title": "Nombre del framework/procedimiento exacto",
-                        "content": "Desarrollo técnico profundo...",
-                        "keywords": ["tag_real_1", "tag_real_2"]
-                    }
-                ]
-            }
-        `;
+        await KB.init();
+        // 🔥 MAGIA: El Prompt Académico también viene de la base de datos
+        const promptNode = await KB.getNode('prompt_mestre_research');
+        const systemPrompt = promptNode ? promptNode.content : `Actúa como @mestre_escola. Extrae SOCs/SOPs en JSON.`;
 
         const userPrompt = `INVESTIGA Y EXTRAE CONOCIMIENTO VERAZ SOBRE: "${topic}"\nCategoría de salida deseada: ${category.toUpperCase()}. Extrae al menos 3 nodos de alta densidad informativa.`;
 
-        const result = await this.callLLM({
-            provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", 
-            temperature: 0.2 // Muy bajo para garantizar precisión técnica y reducir alucinación
-        });
+        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
 
-        // Registrar telemetría
         const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
-        const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
-                              ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+        const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
 
-        await store.dispatch({
-            type: 'LOG_TELEMETRY',
-            payload: { projectId: 'global', agentId: '@mestre_escola', engine: provider, actionType: 'DEEP_RESEARCH', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs }
-        });
+        await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: 'global', agentId: '@mestre_escola', engine: provider, actionType: 'DEEP_RESEARCH', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
 
         return result.content;
     }
