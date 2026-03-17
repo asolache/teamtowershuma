@@ -1,9 +1,9 @@
 // v8/js/core/store.js
-// Motor de Estado Global Inmutable (Redux Pattern) - V12 Fractal
+// Motor de Estado Global Inmutable (Redux Pattern) - V13 Usenet
 
 const initialState = {
     config: {
-        version: '12.0.0-Fractal',
+        version: '13.0.0-Fractal',
         theme: 'dark'
     },
     session: {
@@ -80,7 +80,6 @@ class Store {
                 }
                 break;
             case 'CREATE_PROJECT':
-                // 🔥 NUEVO: El array de telemetría nace con el proyecto
                 newState.projects.push({ ...action.payload, activeSprintId: 'sprint_1', logs: [], telemetry: [] });
                 break;
             case 'UPDATE_PROJECT_INFO':
@@ -167,7 +166,7 @@ class Store {
                     });
                 }
                 break;
-            case 'LOG_TELEMETRY': // 🔥 NUEVO: Sensor de Telemetría A2A
+            case 'LOG_TELEMETRY':
                 proj = newState.projects.find(p => p.id === action.payload.projectId);
                 if (proj) {
                     if (!proj.telemetry) proj.telemetry = [];
@@ -176,12 +175,33 @@ class Store {
                         date: Date.now(),
                         agentId: action.payload.agentId,
                         engine: action.payload.engine,
-                        actionType: action.payload.actionType, // ej: "SOP_EXECUTION" o "VNA_CREATION"
+                        actionType: action.payload.actionType,
                         tokens: action.payload.tokens,
                         costInDollars: action.payload.costInDollars,
-                        recRatio: action.payload.recRatio, // Ratio Eficiencia Cognitiva
+                        recRatio: action.payload.recRatio,
                         latencyMs: action.payload.latencyMs
                     });
+                }
+                break;
+
+            // 🔥 NUEVO (SPRINT 35): Usenet Semantic Logs (Pings)
+            case 'ADD_LOG_ENTRY':
+                proj = newState.projects.find(p => p.id === action.payload.projectId);
+                if (proj) {
+                    if (!proj.logs) proj.logs = [];
+                    proj.logs.push(action.payload.log);
+                }
+                break;
+            case 'MARK_LOG_READ':
+                proj = newState.projects.find(p => p.id === action.payload.projectId);
+                if (proj && proj.logs) {
+                    const log = proj.logs.find(l => l.id === action.payload.logId);
+                    if (log) {
+                        if (!log.readBy) log.readBy = [];
+                        if (!log.readBy.includes(action.payload.userId)) {
+                            log.readBy.push(action.payload.userId);
+                        }
+                    }
                 }
                 break;
         }
