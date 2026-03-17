@@ -54,31 +54,40 @@ export default class DashboardView {
             `;
         }
 
-        // --- CÁLCULOS CORE V8 ---
+        // --- CÁLCULOS CORE V8/V9 ---
         const harvest = store.calculateHarvest(project.id) || [];
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
-        const resilience = store.calculateResilience(project.id);
+        const resilience = store.calculateResilience ? store.calculateResilience(project.id) : 100; // Protegido si el método no existe
         
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
 
-        // --- CÁLCULO DE ARBITRAJE IA (Fase 17) ---
-        let aiGrossValue = 0;
-        let aiCost = 0;
-        
+        // --- NUEVO: CÁLCULO DE TELEMETRÍA (SPRINT 34.5) ---
+        let aiGrossValue = 0; // Valor Slicing Pie minado por IA
+        let realApiCost = 0;  // Gasto en dólares real de los LLM
+        let totalTokens = 0;
+
+        // 1. Calculamos el Valor de Mercado minado por las IA
         (project.ledger || []).forEach(tx => {
             const user = state.globalUsers.find(u => u.id === tx.userId);
             if (user && user.profile?.isAi) {
-                const hrs = tx.horas || 1;
-                // Valor de Mercado que hubiera cobrado un humano
-                aiGrossValue += (tx.fmv || 50) * (tx.multiplier || 1) * hrs; 
-                // Coste real de la API
-                aiCost += (user.profile.apiCostPerHour || 0.15) * hrs;
+                aiGrossValue += (tx.fmv || 50) * (tx.multiplier || 1) * (tx.horas || 1); 
             }
         });
-        const aiNetSavings = aiGrossValue - aiCost;
+
+        // 2. Extraemos el coste real desde el array de telemetría inyectado por el Orquestador
+        if (project.telemetry && project.telemetry.length > 0) {
+            project.telemetry.forEach(log => {
+                realApiCost += log.costInDollars || 0;
+                totalTokens += (log.tokens?.total_tokens || log.tokens?.prompt_tokens + log.tokens?.completion_tokens) || 0;
+            });
+        }
+
+        // Ratio de Eficiencia Cognitiva (REC)
+        const recRatio = realApiCost > 0 ? (aiGrossValue / realApiCost) : 0;
+        // ----------------------------------------------------
 
         let vacantesHtml = sillasVacias.length === 0 
             ? `<div style="padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 12px; color: var(--accent-green); text-align: center; font-weight: bold;">✅ Arquitectura completa. Sin vacantes estructurales.</div>`
@@ -100,7 +109,6 @@ export default class DashboardView {
             ? project.tags.map(t => `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: #888; border: 1px solid #333; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.5);">#${t}</span>`).join('') 
             : `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: #888; border: 1px solid #333; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.5);">#VNA</span>`;
         
-        // --- HEADER V8 CONFIG ---
         const headerConfig = {
             title: project.nombre,
             subtitle: project.archetype, 
@@ -136,8 +144,9 @@ export default class DashboardView {
                 .kpi-val { font-size: 2.2rem; font-weight: 900; display: block; margin-bottom: 5px; font-family: var(--font-mono); line-height: 1;}
                 .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-                /* AI ARBITRAGE PANEL */
-                .ai-arbitrage-panel { background: linear-gradient(135deg, rgba(224, 64, 251, 0.05), rgba(0, 176, 255, 0.05)); border: 1px dashed var(--accent-purple); padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;}
+                /* 🔥 NUEVO PANEL DE TELEMETRÍA A2A */
+                .ai-arbitrage-panel { background: linear-gradient(135deg, rgba(224, 64, 251, 0.05), rgba(0, 176, 255, 0.05)); border: 1px dashed var(--accent-purple); padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; display: flex; flex-direction:column; gap: 20px;}
+                .ai-stat-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;}
                 .ai-stat-block { display: flex; flex-direction: column; gap: 5px; }
                 .ai-stat-lbl { font-size: 0.75rem; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
                 .ai-stat-val { font-size: 1.8rem; font-weight: 900; font-family: var(--font-mono); color: white; }
@@ -149,7 +158,6 @@ export default class DashboardView {
                     .workflow-schema { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1.5rem; }
                     .schema-arrow { display: none; }
                     .s-icon { width: 60px; height: 60px; font-size: 2rem; border-radius: 16px; margin-bottom: 10px;}
-                    .ai-arbitrage-panel { flex-direction: column; align-items: flex-start; }
                 }
             </style>
 
@@ -169,40 +177,47 @@ export default class DashboardView {
                             <div class="schema-arrow">→</div>
                             <a href="/v8/project" data-link class="schema-step">
                                 <div class="s-icon">📋</div>
-                                <div class="s-text">2. Asignar<br><span>(Kanban)</span></div>
+                                <div class="s-text">2. Asignar<br><span>(Kanban PULL)</span></div>
                             </a>
                             <div class="schema-arrow">→</div>
                             <a href="/v8/focus" data-link class="schema-step">
                                 <div class="s-icon">🍅</div>
-                                <div class="s-text">3. Ejecutar<br><span>(Focus Mode)</span></div>
+                                <div class="s-text">3. Ejecutar<br><span>(Modo Focus)</span></div>
                             </a>
                             <div class="schema-arrow">→</div>
                             <a href="/v8/ledger" data-link class="schema-step">
                                 <div class="s-icon">⚖️</div>
-                                <div class="s-text">4. Cobrar<br><span>(Ledger Equity)</span></div>
+                                <div class="s-text">4. Sellar<br><span>(Ledger & Equity)</span></div>
                             </a>
                         </div>
 
                         <div class="ai-arbitrage-panel">
-                            <div style="display:flex; align-items:center; gap: 15px;">
-                                <div style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(224, 64, 251, 0.4));">🤖</div>
-                                <div>
-                                    <h3 style="color: var(--accent-purple); margin:0 0 5px 0; font-weight:900;">Arbitraje Cognitivo (IA)</h3>
-                                    <p style="color: #aaa; margin:0; font-size:0.85rem;">Diferencial entre el valor minado por IAs y su coste API real.</p>
+                            <div class="ai-stat-row">
+                                <div style="display:flex; align-items:center; gap: 15px;">
+                                    <div style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(224, 64, 251, 0.4));">🤖</div>
+                                    <div>
+                                        <h3 style="color: var(--accent-purple); margin:0 0 5px 0; font-weight:900;">Telemetría A2A (Arbitraje Cognitivo)</h3>
+                                        <p style="color: #aaa; margin:0; font-size:0.85rem;">Monitoreo de eficiencia (LLM Tokenomics) vs Valor Creado.</p>
+                                    </div>
+                                </div>
+                                <div class="ai-stat-block" style="text-align:right;">
+                                    <span class="ai-stat-lbl">Tokens Consumidos</span>
+                                    <span class="ai-stat-val" style="font-size:1.2rem;">${(totalTokens / 1000).toFixed(1)}k</span>
                                 </div>
                             </div>
-                            <div style="display:flex; gap: 2rem; flex-wrap:wrap;">
+                            
+                            <div class="ai-stat-row" style="margin-top:10px; border-top:1px dashed rgba(255,255,255,0.1); padding-top:20px;">
                                 <div class="ai-stat-block">
-                                    <span class="ai-stat-lbl">Valor Bruto Facturado</span>
-                                    <span class="ai-stat-val">€${aiGrossValue.toFixed(2)}</span>
+                                    <span class="ai-stat-lbl">Valor Slicing Pie Generado</span>
+                                    <span class="ai-stat-val" style="color:white;">€${aiGrossValue.toLocaleString()}</span>
                                 </div>
                                 <div class="ai-stat-block">
-                                    <span class="ai-stat-lbl" style="color:var(--accent-red);">Coste API Asumido</span>
-                                    <span class="ai-stat-val" style="color:var(--accent-red);">- €${aiCost.toFixed(2)}</span>
+                                    <span class="ai-stat-lbl" style="color:var(--accent-red);">Gasto Real API (USD)</span>
+                                    <span class="ai-stat-val" style="color:var(--accent-red);">$${realApiCost.toFixed(4)}</span>
                                 </div>
-                                <div class="ai-stat-block" style="padding-left: 1rem; border-left: 1px dashed rgba(255,255,255,0.2);">
-                                    <span class="ai-stat-lbl" style="color:var(--accent-green);">Ahorro Neto (Profit)</span>
-                                    <span class="ai-stat-val" style="color:var(--accent-green);">€${aiNetSavings.toFixed(2)}</span>
+                                <div class="ai-stat-block" style="padding-left: 1.5rem; border-left: 2px solid var(--accent-purple);">
+                                    <span class="ai-stat-lbl" style="color:var(--accent-purple);">Ratio (REC)</span>
+                                    <span class="ai-stat-val" style="color:var(--accent-purple);">${recRatio > 0 ? recRatio.toFixed(0) + 'x' : '0'}</span>
                                 </div>
                             </div>
                         </div>
@@ -244,8 +259,8 @@ export default class DashboardView {
                     <div id="tab-settings" class="tab-content ${this.currentTab === 'settings' ? 'active' : ''}">
                          <div class="glass-panel">
                             <h2 style="color: var(--text-muted);">Módulo de Configuración de Red</h2>
-                            <p>Opciones de gobernanza y parámetros de la DAO. (Centralizado en la Consola Global V8).</p>
-                            <a href="/v8/settings" data-link class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none;">Ir a Settings Global</a>
+                            <p>Opciones de gobernanza y parámetros de la DAO. (Centralizado en la Consola Global V9).</p>
+                            <a href="/v8/settings" data-link class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none;">Ir a Consola V9</a>
                          </div>
                     </div>
 
@@ -276,14 +291,9 @@ export default class DashboardView {
         PageHeader.execute();
         
         const state = store.getState();
-        
-        // --- PREVENCIÓN DE ERROR: Si el usuario no tiene acceso, abortamos los listeners ---
         const hasAccess = store.canUserViewProject(this.activeProjectId, state.session.activeUserId, state.session.role);
         if (!hasAccess) return;
 
-        const project = state.projects.find(p => p.id === this.activeProjectId);
-
-        // -- LÓGICA DE TABS V8 --
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -291,7 +301,6 @@ export default class DashboardView {
             if(target) target.classList.add('active');
         });
 
-        // -- LÓGICA ACORDEÓN PITCH --
         const pitchEl = document.getElementById('pitchText');
         const btnToggle = document.getElementById('btnTogglePitch');
         if (pitchEl && btnToggle) {
@@ -302,28 +311,25 @@ export default class DashboardView {
             });
         }
 
-        // -- INVITACIONES --
         document.querySelectorAll('.btn-invite').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const roleName = e.target.getAttribute('data-rolename');
-                const email = prompt(`Invitar mercenario o Agente IA para el rol [${roleName}]. Introduce email o Wallet:`);
+                const email = prompt(`Invitar mercenario o Agente IA para el rol [${roleName}]. Introduce email o Alias (@id):`);
                 if (email) alert(`Invitación enviada a ${email}. Pendiente de integración P2P.`);
             });
         });
 
-        // -- MÓDULO IA CONECTADO AL MAGIC BUTTON --
         const modal = document.getElementById('aiModal');
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
         const btnDownload = document.getElementById('btnDownloadPDF');
         const modalCloseBtn = document.getElementById('aiModalClose');
 
-        if (modalCloseBtn) {
-            modalCloseBtn.onclick = () => modal.style.display = 'none';
-        }
+        if (modalCloseBtn) modalCloseBtn.onclick = () => modal.style.display = 'none';
 
         const runAI = async (type) => {
             if (!modal) return;
+            const project = store.getState().projects.find(p => p.id === this.activeProjectId);
             
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             let apiKey = '';
@@ -331,103 +337,67 @@ export default class DashboardView {
             if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
             if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
 
-            if (provider !== 'custom' && !apiKey) return alert("⚠️ Configura tu API Key en Configuración Global antes de invocar al Orquestador.");
+            if (provider !== 'custom' && !apiKey) return alert("⚠️ Configura tu API Key en la Consola V9 antes de invocar al Orquestador.");
 
             modal.style.display = 'flex';
-            modalBody.innerHTML = `<div style="text-align:center; padding:4rem;"><div style="font-size:4rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1.5rem; font-family:var(--font-mono); font-weight:bold;">Leyendo el Ledger Inmutable...</p></div>`;
+            modalBody.innerHTML = `<div style="text-align:center; padding:4rem;"><div style="font-size:4rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1.5rem; font-family:var(--font-mono); font-weight:bold;">Analizando el Ledger Fractal...</p></div>`;
             btnDownload.style.display = 'none';
             modalTitle.innerText = type === 'audit' ? 'Auditoría VNA & Equity' : 'Pacto de Socios (Slicing Pie)';
 
-            // EXTRACCIÓN PROFUNDA
             const harvest = store.calculateHarvest(project.id) || [];
             const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
             
-            let capTableDetails = ["El Ledger está vacío. Aún no se ha minado Equity."];
+            let capTableDetails = ["El Ledger está vacío."];
             if (harvest.length > 0 && totalSlices > 0) {
                 capTableDetails = harvest.map(h => {
-                    const u = state.globalUsers?.find(gu => gu.id === (h.user || h.userId));
+                    const u = store.getState().globalUsers?.find(gu => gu.id === (h.user || h.userId));
                     const userName = u ? u.name : (h.user || h.userId || 'Desconocido');
-                    return `- Socio: ${userName} | Participación: ${((h.slices / totalSlices) * 100).toFixed(2)}% | Capital: ${Number(h.slices).toFixed(2)} Slices`;
+                    return `- Nodo: ${userName} | Equidad: ${((h.slices / totalSlices) * 100).toFixed(2)}%`;
                 });
             }
-
-            const realLedger = (project.ledger || []).map(l => {
-                const u = state.globalUsers?.find(gu => gu.id === l.userId);
-                const userName = u ? u.name : (l.userId || 'Sistema');
-                const isCap = l.isCapital || l.roleId === 'capital' || String(l.entregable || l.description).includes('[Capital');
-                
-                if (isCap) {
-                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} inyectó CAPITAL. Slices: +${l.valorCongelado}.`;
-                } else {
-                    const role = project.roles?.find(r => r.id === l.roleId);
-                    return `[${new Date(l.timestamp).toLocaleDateString()}] ${userName} ejecutó Trabajo (${role ? role.name : 'Operativo'}) ${l.horas}h. Slices: +${l.valorCongelado}.`;
-                }
-            });
 
             const dataPayload = {
                 nombre_ecosistema: project.nombre,
                 arquetipo_gobernanza: project.archetype,
                 vision_fundacional: project.presentation || project.prompt || "Sin definir",
-                cap_table_actual: capTableDetails,
-                registro_aportaciones_reales: realLedger.length > 0 ? realLedger : ["Sin transacciones."]
+                cap_table_actual: capTableDetails
             };
 
-            let systemPrompt = state.config?.globalPrompt || "Eres un Master Architect de DAOs.";
-            
+            let systemPrompt = "Eres un Master Architect de DAOs.";
             if (type === 'audit') {
-                systemPrompt += `\nMisión: Eres un Auditor VNA y experto en economía Slicing Pie. Identifica nodos inversores vs operativos. Evalúa si hay un buen equilibrio o cuellos de botella. Formato texto plano legible.`;
+                systemPrompt += `\nEvalúa si la distribución de Slices refleja un ecosistema sano basado en la teoría Slicing Pie.`;
             } else {
-                systemPrompt += `\nMisión: Eres un Abogado Notarial Web3 experto en Slicing Pie. Redacta un "Pacto de Socios" formal basado estrictamente en los datos recibidos (Cap Table y Aportaciones).`;
+                systemPrompt += `\nRedacta un Pacto de Socios formal basado en el Cap Table adjunto.`;
             }
 
             try {
+                // 🔥 NOTA PARA EL SPRINT 34.5: 
+                // En el siguiente refactor, moveremos esto al Orchestrator.js para no violar el DRY.
                 let text = "";
                 if (provider === 'deepseek') {
-                    const res = await fetch(`https://api.deepseek.com/chat/completions`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }] })
-                    });
-                    if (!res.ok) throw new Error("Error en API DeepSeek");
+                    const res = await fetch(`https://api.deepseek.com/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }] }) });
                     text = (await res.json()).choices[0].message.content;
                 } else if (provider === 'openai') {
-                    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }] })
-                    });
-                    if (!res.ok) throw new Error("Error en API OpenAI");
+                    const res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }] }) });
                     text = (await res.json()).choices[0].message.content;
                 } else if (provider === 'gemini') {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nJSON: ${JSON.stringify(dataPayload)}` }] }] })
-                    });
-                    if (!res.ok) throw new Error("Error en API Gemini");
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nJSON: ${JSON.stringify(dataPayload)}` }] }] }) });
                     text = (await res.json()).candidates[0].content.parts[0].text;
-                } else if (provider === 'custom') {
-                    const customUrl = localStorage.getItem('tt_ai_custom_url') || 'http://localhost:1234/v1/chat/completions';
-                    const res = await fetch(customUrl, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ prompt: systemPrompt, data: dataPayload })
-                    });
-                    if (!res.ok) throw new Error("Error en Endpoint Custom");
-                    const data = await res.json();
-                    text = typeof data === 'string' ? data : JSON.stringify(data);
                 }
 
                 modalBody.innerHTML = `<div style="font-family:var(--font-main);">${text.replace(/\n/g, '<br>')}</div>`;
-                
                 btnDownload.style.display = 'block';
                 btnDownload.onclick = () => {
-                    const b = new Blob([text], {type:"text/plain"});
-                    const u = URL.createObjectURL(b);
-                    const a = document.createElement('a'); a.href=u; a.download=`${type}_${project.nombre.replace(/ /g,'_')}.txt`; a.click();
+                    const a = document.createElement('a'); 
+                    a.href = URL.createObjectURL(new Blob([text], {type:"text/plain"})); 
+                    a.download = `${type}_${project.nombre.replace(/ /g,'_')}.txt`; 
+                    a.click();
                 };
             } catch (e) { 
                 modalBody.innerHTML = `<div style="text-align:center; padding:2rem;"><div style="font-size:3rem; margin-bottom:1rem;">⚠️</div><h3 style="color:var(--accent-red);">Fallo Neural</h3><p style="color:#888;">${e.message}</p></div>`; 
             }
         };
 
-        // --- CONEXIÓN DEL EVENTO MAGIC BUTTON ---
         window.addEventListener('ph-magic-action', (e) => {
             if (e.detail.actionId === 'audit') runAI('audit');
             if (e.detail.actionId === 'legal') runAI('legal');
