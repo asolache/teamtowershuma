@@ -1,543 +1,431 @@
 // v8/js/views/PaperView.js
 import { store } from '../core/store.js';
-import { KB } from '../core/kb.js'; 
 import { Sidebar } from '../components/Sidebar.js';
+import { BottomNav } from '../components/BottomNav.js'; 
 import { PageHeader } from '../components/PageHeader.js';
 
 export default class PaperView {
     constructor() {
-        document.title = "Hiperpaper GTD | TeamTowers V9";
-        this.activeProjectId = null;
-        this.selectedWoHash = null;
-        
-        // Estado del Pomodoro
-        this.timer = null;
-        this.timeLeft = 25 * 60; 
-        this.isWorking = true; 
-        this.timerRunning = false;
+        document.title = "Omni-Paper | TeamTowers V13";
+        this.activeTx = null;
+        this.isMenuOpen = false;
     }
 
     async getHtml() {
         const state = store.getState();
-        let project = state.projects.find(p => p.id === localStorage.getItem('tt_active_project'));
+        let currentActiveId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === currentActiveId);
         if (!project && state.projects.length > 0) project = state.projects[state.projects.length - 1];
 
-        if (!project) {
-            return `
-                <div class="app-layout">
-                    ${Sidebar.getHtml('/paper')}
-                    <main class="workspace" style="justify-content:center; align-items:center;">
-                        <div class="glass-panel" style="text-align:center;">
-                             <h2 style="color:white;">Sin Ecosistema Activo</h2>
-                             <p style="color:var(--text-muted);">Instancia o selecciona un proyecto para acceder al Hiperpaper.</p>
-                        </div>
-                    </main>
-                </div>
-            `;
-        }
-
         const headerConfig = {
-            title: "Hiperpaper GTD",
-            subtitle: project.nombre,
-            tagline: "Entorno Deep Work. Selecciona una Work Order, cumple los SOCs y dialoga con el Cap de Colla.",
-            actionHtml: `<div class="status-badge" style="background: rgba(0,230,118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🧠 DAG Sincronizado</div>`
+            title: "Omni-Paper (Usenet)",
+            subtitle: project ? project.nombre : 'Sin Red',
+            tagline: "Escribe @ para invocar Agentes/Humanos y # para etiquetar Memes W3C."
         };
-
-        // Filtramos tareas activas (teóricas, pinged o in_progress)
-        const pendingWOs = project.work_orders.filter(wo => wo.status !== 'consolidated' && wo.status !== 'reported');
-        let woOptions = `<option value="">-- Selecciona una Work Order (Backlog) --</option>`;
-        
-        pendingWOs.forEach(wo => {
-            const flow = project.vna_flows.find(f => f.id === wo.flowId);
-            if (flow) {
-                woOptions += `<option value="${wo.hash}">[${flow.phase}] SOP: ${flow.template} (${flow.estimatedHours}h)</option>`;
-            }
-        });
 
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
-                .paper-workspace { display: flex; flex-direction: column; flex: 1; padding: 1.5rem 2rem; overflow: hidden; height: 100%; box-sizing: border-box; }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-dark); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
                 
-                /* IDE GRID LAYOUT (3 COLUMNAS) */
-                .ide-grid { display: grid; grid-template-columns: 320px 1fr 350px; gap: 1.5rem; flex: 1; overflow: hidden; }
+                /* =========================================================
+                   OMNI-PAPER EDITOR (Estilo Notion/Medium)
+                   ========================================================= */
+                .paper-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;}
                 
-                .panel { background: rgba(10,10,15,0.8); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 0 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px);}
-                .panel-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4); font-weight: 900; color: white; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;}
-
-                /* PANEL IZQUIERDO: GTD & POMODORO */
-                .timer-container { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-                .timer-display { font-size: 4.5rem; font-family: var(--font-mono); font-weight: 900; margin: 10px 0; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.2); transition: color 0.3s;}
-                .timer-display.work-mode { color: var(--accent-green); text-shadow: 0 0 30px rgba(0,230,118,0.4); }
-                .timer-display.break-mode { color: var(--accent-blue); text-shadow: 0 0 30px rgba(0,176,255,0.4); }
+                .tx-context-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px 20px; border-radius: 12px; border: 1px dashed var(--glass-border); flex-wrap: wrap; gap: 15px;}
+                .tx-selector { background: transparent; border: none; color: white; font-size: 1.1rem; font-weight: 900; font-family: var(--font-main); outline: none; cursor: pointer; flex: 1; min-width: 200px; text-overflow: ellipsis;}
+                .tx-selector option { background: #111; color: white; }
+                .tx-selector optgroup { color: var(--accent-blue); background: #000; font-style: normal;}
                 
-                .timer-controls { display: flex; gap: 10px; width: 100%; margin-top: 15px;}
-                .btn-timer { flex: 1; padding: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.85rem;}
-                .btn-start { background: rgba(0,230,118,0.2); color: var(--accent-green); border: 1px solid var(--accent-green);}
-                .btn-start:hover { background: var(--accent-green); color: black; }
-                .btn-pause { background: rgba(255,171,64,0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange);}
-                .btn-reset { background: rgba(255,255,255,0.1); color: white; border: 1px solid #555;}
+                .slice-ticker { font-size: 1.2rem; font-family: var(--font-mono); font-weight: 900; color: var(--accent-green); background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px;}
+                .slice-ticker span { font-size: 0.8rem; color: #888; text-transform: uppercase; }
 
-                .task-selector { padding: 20px; display: flex; flex-direction: column; flex: 1; overflow-y: auto;}
-                .lux-select { background: rgba(0,0,0,0.5); border: 1px solid var(--accent-purple); color: white; padding: 12px; border-radius: 10px; font-family: inherit; font-size: 0.9rem; outline: none; width: 100%; margin-bottom: 15px; cursor: pointer;}
+                /* EL LIENZO EN BLANCO */
+                .editor-wrapper { position: relative; width: 100%; }
+                .semantic-editor { width: 100%; min-height: 60vh; background: transparent; border: none; color: #ddd; font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; outline: none; resize: none; overflow: hidden; padding: 10px 0;}
+                .semantic-editor::placeholder { color: #555; font-style: italic; }
+
+                /* MENÚ AUTOCOMPLETADO (USENET) */
+                .semantic-menu { position: absolute; background: rgba(15,15,20,0.95); border: 1px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; z-index: 6000; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,176,255,0.2); backdrop-filter: blur(15px); padding: 5px 0; min-width: 250px;}
+                .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; font-family: var(--font-main);}
+                .semantic-item:hover, .semantic-item.selected { background: rgba(0,176,255,0.15); }
+                .semantic-badge { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-orange); margin-left: auto;}
+
+                /* HILO DE CONVERSACIÓN (USENET LOGS) */
+                .thread-container { margin-top: 3rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+                .thread-title { color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: flex; justify-content: space-between;}
                 
-                .soc-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;}
-                .soc-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; transition: 0.2s;}
-                .soc-item:hover { border-color: var(--accent-green); background: rgba(0,230,118,0.05); }
-                .soc-checkbox { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent-green); cursor: pointer;}
-                .soc-text { font-size: 0.85rem; color: #ddd; line-height: 1.4;}
+                .log-bubble { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; position: relative;}
+                .log-bubble.ai-reply { border-left: 4px solid var(--accent-purple); background: rgba(224,64,251,0.05); }
+                .log-bubble.human-reply { border-left: 4px solid var(--accent-blue); }
                 
-                .btn-report { background: var(--accent-purple); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: auto; width: 100%; box-shadow: 0 5px 15px rgba(224,64,251,0.2); font-size: 1rem;}
-                .btn-report:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224,64,251,0.4); }
-                .btn-report:disabled { background: #444; color: #888; cursor: not-allowed; box-shadow: none; transform: none;}
-
-                /* PANEL CENTRAL: EL HIPERPAPER (DRAFT) */
-                .paper-editor { background: #050508; border: none; color: #e0e0e0; padding: 30px; font-family: 'Courier New', monospace; font-size: 1rem; resize: none; flex: 1; outline: none; line-height: 1.6;}
-                .paper-editor::placeholder { color: #444; font-style: italic; }
-
-                /* PANEL DERECHO: LOG & CAP DE COLLA */
-                .log-feed { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;}
-                .log-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; line-height: 1.5; color: #ddd; font-size: 0.9rem; animation: fadeIn 0.3s ease-out;}
-                .log-block.system { border-left: 3px solid #555; font-style: italic; color: #888; background: transparent; padding: 10px 15px;}
-                .log-block.ai-msg { border-left: 4px solid var(--accent-purple); background: linear-gradient(90deg, rgba(224,64,251,0.05) 0%, transparent 100%);}
+                .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
+                .log-author { font-weight: 900; color: white; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
+                .log-time { font-size: 0.75rem; color: #666; font-family: var(--font-mono);}
+                .log-content { color: #ccc; line-height: 1.6; font-family: 'Georgia', serif; font-size: 1.05rem; white-space: pre-wrap;}
                 
-                .log-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.8rem; font-weight: bold;}
-                .log-sender { color: white; display: flex; align-items: center; gap: 5px;}
-                .log-time { color: #666; font-family: var(--font-mono);}
+                .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9rem;}
+                .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9rem;}
 
-                .entity-link { color: var(--accent-blue); background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-                .knowledge-link { color: var(--accent-green); background: rgba(0,230,118,0.1); padding: 2px 6px; border-radius: 6px; font-weight: bold; font-family: var(--font-mono); cursor: pointer; transition: 0.2s;}
+                .btn-seal-pow { position: fixed; bottom: 100px; right: 30px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.4); z-index: 1000;}
+                .btn-seal-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224, 64, 251, 0.5); filter: brightness(1.1);}
 
-                .input-area { padding: 15px; background: rgba(10,10,15,0.9); border-top: 1px solid #222; display: flex; flex-direction: column; gap: 10px;}
-                .chat-input { background: #000; border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: inherit; font-size: 0.9rem; resize: none; min-height: 60px; outline: none; transition: 0.2s;}
-                .chat-input:focus { border-color: var(--accent-purple); }
-                .btn-send-chat { background: transparent; border: 1px solid var(--accent-purple); color: var(--accent-purple); border-radius: 8px; padding: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; align-self: flex-end;}
-                .btn-send-chat:hover { background: var(--accent-purple); color: black; }
-
-                .typing-indicator { display: none; padding: 10px 20px; color: var(--accent-purple); font-weight: bold; font-style: italic; font-size: 0.8rem; background: rgba(0,0,0,0.5); align-items: center; gap: 10px; border-top: 1px solid #222;}
-                .typing-dots::after { content: '...'; animation: typing 1.5s infinite;}
-
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes typing { 0% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } }
-
-                @media (max-width: 1200px) {
-                    .ide-grid { grid-template-columns: 280px 1fr; }
-                    .log-panel { display: none; /* En móvil se ocultaría o apilaría */ }
+                @media (max-width: 768px) {
+                    .workspace-paper { padding: 90px 1rem 120px 1rem; }
+                    .tx-context-bar { flex-direction: column; align-items: stretch; }
+                    .btn-seal-pow { bottom: 80px; right: 20px; width: calc(100% - 40px); border-radius: 12px; text-align: center; }
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/paper')}
-                <main class="paper-workspace">
+
+                <main class="workspace-paper">
                     ${PageHeader.getHtml(headerConfig)}
 
-                    <div class="ide-grid">
+                    <div class="paper-container">
                         
-                        <aside class="panel">
-                            <div class="panel-header">
-                                <span>🎯 Enfoque & GTD</span>
+                        <div class="tx-context-bar">
+                            <select id="omniSelector" class="tx-selector">
+                                <option value="" disabled selected>🎯 Selecciona una Work Order...</option>
+                            </select>
+                            <div class="slice-ticker" title="Valor a minar si el Notario aprueba (TDD)">
+                                💎 <span id="sliceEstimation">0</span> Slices <span>(Est.)</span>
                             </div>
-                            <div class="timer-container">
-                                <div class="timer-display work-mode" id="timerDisplay">25:00</div>
-                                <div style="font-size:0.8rem; color:#888; font-weight:bold; text-transform:uppercase;" id="timerStatus">Deep Work</div>
-                                <div class="timer-controls">
-                                    <button class="btn-timer btn-start" id="btnTimerStart">▶ Play</button>
-                                    <button class="btn-timer btn-pause" id="btnTimerPause" style="display:none;">⏸ Pause</button>
-                                    <button class="btn-timer btn-reset" id="btnTimerReset">⏹ Reset</button>
-                                </div>
-                            </div>
-                            <div class="task-selector">
-                                <select class="lux-select" id="woSelector">
-                                    ${woOptions}
-                                </select>
-                                
-                                <div id="socContainer" style="display:none;">
-                                    <div style="font-size:0.75rem; color:var(--accent-green); font-weight:bold; margin-bottom:10px; text-transform:uppercase;">✔️ Matriz de Certificación (SOC)</div>
-                                    <ul class="soc-list" id="socList"></ul>
-                                    <button class="btn-report" id="btnReportWO" disabled style="margin-top: 20px;">Reportar Tarea (0/0)</button>
-                                </div>
-                                <div id="noTaskMsg" style="color:#666; font-size:0.85rem; text-align:center; margin-top:2rem; font-style:italic;">
-                                    Selecciona una tarea del Backlog para cargar la matriz de auditoría.
-                                </div>
-                            </div>
-                        </aside>
+                        </div>
 
-                        <section class="panel">
-                            <div class="panel-header">
-                                <span>📝 Entregable (Draft)</span>
-                                <button style="background:transparent; border:1px solid #555; color:white; border-radius:6px; font-size:0.7rem; padding:4px 8px; cursor:pointer;" title="Guardar Borrador" onclick="alert('Guardado en caché local.')">💾 Save</button>
-                            </div>
-                            <textarea class="paper-editor" id="paperDraft" placeholder="Inicia el Pomodoro y redacta aquí el cuerpo del entregable (SOP). El texto se mantiene en memoria mientras trabajas..."></textarea>
-                        </section>
-
-                        <section class="panel log-panel">
-                            <div class="panel-header">
-                                <span>💬 Hiper-Foro</span>
-                                <span style="color:var(--accent-purple); font-size:0.8rem;">● @cap_de_colla</span>
-                            </div>
-                            <div class="log-feed" id="logFeed"></div>
+                        <div class="editor-wrapper">
+                            <textarea id="semanticEditor" class="semantic-editor" placeholder="El lienzo está en blanco. Escribe tu Proof of Work aquí... \n\nUsa @ para consultar a La Colla (ej: @deep_coder_ audita esto).\nUsa # para aplicar metodologías W3C de la red."></textarea>
                             
-                            <div class="typing-indicator" id="typingIndicator">
-                                🤖 @cap_de_colla mapeando el DAG <span class="typing-dots"></span>
-                            </div>
+                            <div id="semanticMenu" class="semantic-menu"></div>
+                        </div>
 
-                            <div class="input-area">
-                                <textarea id="paperInput" class="chat-input" placeholder="Comanda a la IA o registra eventos... (@ y # activos)"></textarea>
-                                <button class="btn-send-chat" id="btnSendPaper">➤ Enviar</button>
+                        <div class="thread-container">
+                            <div class="thread-title">
+                                <span>📡 Historial Usenet (Pings)</span>
+                                <span id="threadCount" style="color:var(--accent-blue);">0 Respuestas</span>
                             </div>
-                        </section>
+                            <div id="threadList">
+                                <div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">No hay actividad en este hilo. Escribe una arroba en el lienzo superior para invocar a la red.</div>
+                            </div>
+                        </div>
+
                     </div>
+                    
+                    <button class="btn-seal-pow" id="btnSubmitReport" style="display:none;">⚖️ Sellar Proof of Work</button>
+
                 </main>
+                
+                ${BottomNav.getHtml('/paper')}
             </div>
         `;
     }
 
-    async executeViewScript() {
-        Sidebar.initListeners();
-        PageHeader.execute();
-
+    executeViewScript() {
         const state = store.getState();
-        let project = state.projects.find(p => p.id === localStorage.getItem('tt_active_project'));
-        if (!project) return;
-        this.activeProjectId = project.id;
+        const activeUserId = state.session.activeUserId;
         
-        if (!project.logs) {
-            project.logs = [{ id: 'log_0', text: "Entorno Deep Work inicializado. Sincronizado con el Flujo VNA de 5 Fases.", sender: "system", timestamp: Date.now() }];
-            await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: project.id, updates: { logs: project.logs } } });
-        }
+        Sidebar.initListeners();
+        PageHeader.execute(); 
 
         this.dom = {
-            timerDisplay: document.getElementById('timerDisplay'),
-            timerStatus: document.getElementById('timerStatus'),
-            btnStart: document.getElementById('btnTimerStart'),
-            btnPause: document.getElementById('btnTimerPause'),
-            btnReset: document.getElementById('btnTimerReset'),
-            woSelector: document.getElementById('woSelector'),
-            socContainer: document.getElementById('socContainer'),
-            socList: document.getElementById('socList'),
-            noTaskMsg: document.getElementById('noTaskMsg'),
-            btnReport: document.getElementById('btnReportWO'),
-            logFeed: document.getElementById('logFeed'),
-            input: document.getElementById('paperInput'),
-            btnSend: document.getElementById('btnSendPaper'),
-            typingIndicator: document.getElementById('typingIndicator'),
-            draftEditor: document.getElementById('paperDraft')
+            omniSelector: document.getElementById('omniSelector'),
+            sliceEstimation: document.getElementById('sliceEstimation'),
+            editor: document.getElementById('semanticEditor'),
+            menu: document.getElementById('semanticMenu'),
+            threadList: document.getElementById('threadList'),
+            threadCount: document.getElementById('threadCount'),
+            btnSubmit: document.getElementById('btnSubmitReport')
         };
 
-        this.initPomodoro();
-        this.renderLogs(project.logs);
-
-        // Recuperar draft si existe
-        const savedDraft = localStorage.getItem(`draft_${this.activeProjectId}`);
-        if(savedDraft) this.dom.draftEditor.value = savedDraft;
-
-        this.dom.draftEditor.addEventListener('input', (e) => {
-            localStorage.setItem(`draft_${this.activeProjectId}`, e.target.value);
+        // 1. CARGAR TAREAS DEL USUARIO (Igual que en el FocusView viejo)
+        let allMyTasks = [];
+        state.projects.forEach(p => {
+            const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
+            let tasks = tasksSource.filter(tx => tx.status === 'pinged' && tx.assigneeId === activeUserId);
+            
+            if(tasks.length === 0 && state.session.role === 'ecosystem-owner') {
+                tasks = tasksSource.filter(tx => tx.status === 'pinged');
+            }
+            
+            tasks.forEach(tx => {
+                const roleFrom = p.roles.find(r => r.id === tx.from);
+                let resolvedName = tx.entregable || tx.template;
+                if (!resolvedName && tx.flowId) {
+                    const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
+                    if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
+                }
+                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'Nodo', displayName: resolvedName || 'Work Order' });
+            });
         });
 
-        // Eventos de Chat
-        this.dom.btnSend.addEventListener('click', () => this.handleUserSubmit());
-        this.dom.input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.handleUserSubmit(); }
-        });
+        allMyTasks.sort((a, b) => a.projectName.localeCompare(b.projectName));
 
-        // Eventos del Backlog (GTD)
-        this.dom.woSelector.addEventListener('change', (e) => this.loadWorkOrder(e.target.value, project));
-        this.dom.btnReport.addEventListener('click', () => this.reportCurrentWorkOrder(project));
-    }
+        if (allMyTasks.length > 0) {
+            let currentProjectName = '';
+            let selectHtml = `<option value="" disabled>🎯 Selecciona una Work Order...</option>`;
+            allMyTasks.forEach(t => {
+                if (t.projectName !== currentProjectName) {
+                    if (currentProjectName !== '') selectHtml += `</optgroup>`;
+                    selectHtml += `<optgroup label="🏰 ${t.projectName.toUpperCase()}">`;
+                    currentProjectName = t.projectName;
+                }
+                selectHtml += `<option value="${t.id || t.hash}">[${t.roleName}] ${t.displayName}</option>`;
+            });
+            if (currentProjectName !== '') selectHtml += `</optgroup>`;
+            this.dom.omniSelector.innerHTML = selectHtml;
 
-    loadWorkOrder(woHash, project) {
-        this.selectedWoHash = woHash;
-        if (!woHash) {
-            this.dom.socContainer.style.display = 'none';
-            this.dom.noTaskMsg.style.display = 'block';
-            return;
-        }
+            // Seleccionar tarea de la URL (si venimos del Kanban)
+            const urlParams = new URLSearchParams(window.location.search);
+            const hashFromUrl = urlParams.get('hash');
+            if (hashFromUrl && allMyTasks.find(t => (t.id || t.hash) === hashFromUrl)) {
+                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === hashFromUrl);
+                this.dom.omniSelector.value = this.activeTx.id || this.activeTx.hash;
+                this.loadTaskContext();
+            }
 
-        const wo = project.work_orders.find(w => w.hash === woHash);
-        const flow = project.vna_flows.find(f => f.id === wo.flowId);
-        
-        this.dom.noTaskMsg.style.display = 'none';
-        this.dom.socContainer.style.display = 'block';
-        this.dom.socList.innerHTML = '';
-
-        if (wo && wo.soc_checklist) {
-            wo.soc_checklist.forEach(soc => {
-                const li = document.createElement('li');
-                li.className = 'soc-item';
-                li.innerHTML = `
-                    <input type="checkbox" class="soc-checkbox" id="${soc.id}" ${soc.isChecked ? 'checked' : ''}>
-                    <label class="soc-text" for="${soc.id}">${soc.text}</label>
-                `;
-                this.dom.socList.appendChild(li);
-
-                li.querySelector('.soc-checkbox').addEventListener('change', () => this.validateSOCs());
+            this.dom.omniSelector.addEventListener('change', (e) => {
+                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === e.target.value);
+                this.loadTaskContext();
             });
         }
 
-        this.validateSOCs();
-    }
+        // 2. LÓGICA DEL EDITOR SEMÁNTICO (El Corazón de la Usenet)
+        this.setupSemanticEditor();
 
-    validateSOCs() {
-        const checkboxes = Array.from(this.dom.socList.querySelectorAll('.soc-checkbox'));
-        const total = checkboxes.length;
-        const checked = checkboxes.filter(c => c.checked).length;
-        
-        this.dom.btnReport.innerText = `Reportar Tarea (${checked}/${total})`;
-        // Obligamos al TDD: Solo se puede reportar si todos los SOCs están marcados
-        if (total > 0 && checked === total) {
-            this.dom.btnReport.disabled = false;
-            this.dom.btnReport.style.background = 'var(--accent-green)';
-        } else {
-            this.dom.btnReport.disabled = true;
-            this.dom.btnReport.style.background = 'var(--accent-purple)';
-        }
-    }
+        // 3. ENVÍO AL LEDGER
+        this.dom.btnSubmit.addEventListener('click', () => this.submitReport());
 
-    async reportCurrentWorkOrder(project) {
-        if (!this.selectedWoHash) return;
-        const wo = project.work_orders.find(w => w.hash === this.selectedWoHash);
-        const flow = project.vna_flows.find(f => f.id === wo.flowId);
-        
-        // 1. Despachamos el Reporte a Redux
-        await store.dispatch({
-            type: 'REPORT_WORK_ORDER',
-            payload: { projectId: this.activeProjectId, woHash: this.selectedWoHash, realHours: flow.estimatedHours, comentario: "Completado desde el Hiperpaper GTD." }
+        // 4. AUTO-EXPANDIR TEXTAREA
+        this.dom.editor.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
         });
-
-        this.dom.socContainer.style.display = 'none';
-        this.dom.noTaskMsg.style.display = 'block';
-        this.dom.woSelector.value = '';
-        this.selectedWoHash = null;
-
-        // 2. Log Automático
-        const msg = `✅ **WORK ORDER REPORTADA:** He completado el SOP [${flow.template}]. Mis SOCs están certificados en local. Solicito auditoría de @notari_ledger.`;
-        await this.addUserLog(msg);
-
-        // 3. Magia Proactiva: El Cap de Colla evalúa el DAG y sugiere el siguiente paso
-        this.triggerDAGAI(flow, project);
     }
 
-    // ==========================================
-    // MAGIA PROACTIVA: EL CAP DE COLLA LEE EL DAG
-    // ==========================================
-    async triggerDAGAI(completedFlow, project) {
-        this.dom.typingIndicator.style.display = 'flex';
-        this.dom.logFeed.scrollTop = this.dom.logFeed.scrollHeight;
+    loadTaskContext() {
+        if (!this.activeTx) return;
+        this.dom.btnSubmit.style.display = 'block';
 
-        const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-        let apiKey = localStorage.getItem(`tt_key_${provider}`) || '';
+        const state = store.getState();
+        const p = state.projects.find(x => x.id === this.activeTx.projectId);
+        
+        // Calcular Slices Estimados
+        let estHours = this.activeTx.horas || this.activeTx.estimatedHours || 2;
+        if (!this.activeTx.horas && this.activeTx.flowId) {
+            const parentFlow = (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
+            if (parentFlow) estHours = parentFlow.estimatedHours || 2;
+        }
+        const role = p.roles.find(r => r.id === this.activeTx.from);
+        const slices = role ? (estHours * role.fmv * role.multiplier) : 0;
+        this.dom.sliceEstimation.innerText = Math.round(slices).toLocaleString();
 
-        // Buscar qué flows dependen del que acabamos de terminar
-        const nextFlows = project.vna_flows.filter(f => f.depends_on && f.depends_on.includes(completedFlow.id));
+        // Cargar Historial (Usenet Thread)
+        this.renderThread(p);
+    }
 
-        const systemPrompt = `
-            Eres @cap_de_colla, Orquestador GTD.
-            El usuario acaba de reportar la tarea: "${completedFlow.template}" (Fase: ${completedFlow.phase}).
+    renderThread(project) {
+        if (!project.logs || !this.activeTx) return;
+        
+        const activeHash = this.activeTx.id || this.activeTx.hash;
+        const thread = project.logs.filter(l => l.relatedTxHash === activeHash).sort((a,b) => a.date - b.date);
+        
+        this.dom.threadCount.innerText = `${thread.length} Mensajes`;
+
+        if (thread.length === 0) {
+            this.dom.threadList.innerHTML = `<div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">El lienzo está limpio. Inicia la comunicación invocando a la red con un @.</div>`;
+            return;
+        }
+
+        const state = store.getState();
+        
+        let html = '';
+        thread.forEach(log => {
+            const user = state.globalUsers.find(u => u.id === log.authorId);
+            const isAi = user?.profile?.isAi;
+            const authorName = user ? user.name : log.authorId;
+            const authorIcon = isAi ? '🤖' : '👤';
+            const timeStr = new Date(log.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
-            FLUJOS DESBLOQUEADOS (DAG Next Steps):
-            ${JSON.stringify(nextFlows.map(f => ({ id: f.id, template: f.template, phase: f.phase, toLevel: f.to })))}
-
-            INSTRUCCIONES:
-            1. Felicita brevemente al usuario.
-            2. Si hay flujos desbloqueados en el DAG, sugiérele explícitamente instanciar la siguiente Work Order usando lenguaje natural.
-            3. Si no hay más flujos, indica que la fase ha concluido.
-            4. DEVUELVE SOLO UN JSON: { "reply": "...", "actions": [] }. Si hay flujos desbloqueados, crea en "actions" un objeto SPAWN_WORK_ORDER para el primer flujo de la lista.
-        `;
-
-        try {
-            if (!apiKey) throw new Error("No API Key");
-
-            let textResponse = "";
-            const payload = { model: provider === 'openai' ? 'gpt-4o-mini' : 'deepseek-chat', messages: [{ role: "system", content: systemPrompt }, { role: "user", content: "¿Cuál es el siguiente paso en la cadena de valor?" }], response_format: { type: "json_object" }};
-            const endpoint = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.deepseek.com/chat/completions';
-
-            const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify(payload) });
-            const data = await response.json();
-            const parsedResponse = JSON.parse(data.choices[0].message.content);
-
-            if (parsedResponse.actions && parsedResponse.actions.length > 0) {
-                for (const action of parsedResponse.actions) {
-                    // Completamos datos obligatorios de la accion autogenerada
-                    if(action.type === 'SPAWN_WORK_ORDER' && action.payload && action.payload.workOrder) {
-                         action.payload.projectId = this.activeProjectId;
-                         action.payload.workOrder.hash = 'wo_auto_' + Date.now();
-                         action.payload.workOrder.status = 'theoretical';
-                         action.payload.workOrder.realHours = 0;
-                         await store.dispatch(action);
-                    }
-                }
-                this.addSystemLog(`⚡ DAG Actualizado: Nueva Work Order inyectada en el Backlog basada en dependencias.`);
-            }
-
-            const aiLog = { id: 'log_' + Date.now(), text: parsedResponse.reply, sender: '@cap_de_colla', timestamp: Date.now() };
-            const finalLogs = [...store.getState().projects.find(p => p.id === this.activeProjectId).logs, aiLog];
-            await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { logs: finalLogs } } });
-            this.renderLogs(finalLogs);
-
-        } catch (error) {
-            // Fallback Local sin API: Si no hay tokens, el código lee el DAG y lo hace manualmente
-            if (nextFlows.length > 0) {
-                const next = nextFlows[0];
-                const fallbackReply = `Hecho. Según nuestro mapa VNA, al completar esto se desbloquea [SOP: ${next.template}] para ${next.to}. Tienes la Work Order teórica lista en tu Backlog.`;
-                
-                await store.dispatch({
-                    type: 'SPAWN_WORK_ORDER',
-                    payload: {
-                        projectId: this.activeProjectId,
-                        workOrder: { hash: 'wo_local_' + Date.now(), flowId: next.id, status: 'theoretical', realHours: 0, comentario: `SOP: ${next.template}` }
-                    }
+            // Reemplazar menciones crudas por Badges Visuales
+            let formattedContent = log.content;
+            if (log.mentions) {
+                log.mentions.forEach(m => {
+                    const rgx = new RegExp(m, 'g');
+                    formattedContent = formattedContent.replace(rgx, `<span class="mention-highlight">${m}</span>`);
                 });
-
-                const aiLog = { id: 'log_' + Date.now(), text: fallbackReply, sender: '@cap_de_colla', timestamp: Date.now() };
-                const finalLogs = [...store.getState().projects.find(p => p.id === this.activeProjectId).logs, aiLog];
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { logs: finalLogs } } });
-                this.renderLogs(finalLogs);
             }
-        } finally {
-            this.dom.typingIndicator.style.display = 'none';
-        }
-    }
+            // Simple regex para colorear hashtags (memes)
+            formattedContent = formattedContent.replace(/(#[a-zA-Z0-9_]+)/g, `<span class="meme-highlight">$1</span>`);
 
-    parseHypertext(text) {
-        let safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span class="entity-link" data-id="@$1">@$1</span>');
-        safeText = safeText.replace(/#([a-zA-Z0-9_]+)/g, '<span class="knowledge-link" data-id="#$1">#$1</span>');
-        return safeText.replace(/\n/g, '<br>');
-    }
-
-    renderLogs(logs) {
-        this.dom.logFeed.innerHTML = '';
-        const state = store.getState();
-        const activeUserId = state.session.activeUserId;
-
-        logs.forEach(log => {
-            const el = document.createElement('div');
-            if (log.sender === 'system') {
-                el.className = 'log-block system';
-                el.innerHTML = this.parseHypertext(log.text);
-            } else {
-                const isAI = log.sender === '@cap_de_colla' || log.sender.startsWith('@');
-                el.className = `log-block ${isAI ? 'ai-msg' : ''}`;
-                const timeStr = new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const icon = isAI ? '🤖' : '👤';
-                const displayName = log.sender === activeUserId ? 'Master Architect' : log.sender;
-
-                el.innerHTML = `
+            html += `
+                <div class="log-bubble ${isAi ? 'ai-reply' : 'human-reply'}">
                     <div class="log-header">
-                        <span class="log-sender">${icon} ${displayName}</span>
-                        <span class="log-time">${timeStr}</span>
+                        <div class="log-author">${authorIcon} ${authorName}</div>
+                        <div class="log-time">${timeStr}</div>
                     </div>
-                    <div class="log-content">${this.parseHypertext(log.text)}</div>
-                `;
-            }
-            this.dom.logFeed.appendChild(el);
+                    <div class="log-content">${formattedContent}</div>
+                </div>
+            `;
         });
-        this.dom.logFeed.scrollTop = this.dom.logFeed.scrollHeight;
+
+        this.dom.threadList.innerHTML = html;
+        // Bajar el scroll para ver el último mensaje
+        setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
     }
 
-    async handleUserSubmit() {
-        const text = this.dom.input.value.trim();
-        if (!text) return;
-        await this.addUserLog(text);
-        this.dom.input.value = '';
-        
-        // Disparo de IA estándar si hay menciones
-        if (text.includes('@')) {
-            // (La lógica del Action Parser del sprint anterior va aquí. Por brevedad, he priorizado el triggerDAGAI)
-            this.dom.typingIndicator.style.display = 'flex';
-            setTimeout(() => { this.dom.typingIndicator.style.display = 'none'; }, 1000);
-        }
-    }
-
-    async addUserLog(text) {
+    setupSemanticEditor() {
+        const input = this.dom.editor;
+        const menu = this.dom.menu;
         const state = store.getState();
-        const project = state.projects.find(p => p.id === this.activeProjectId);
-        const newLog = { id: 'log_' + Date.now(), text: text, sender: state.session.activeUserId, timestamp: Date.now() };
-        const updatedLogs = [...(project.logs || []), newLog];
-        await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: project.id, updates: { logs: updatedLogs } } });
-        this.renderLogs(updatedLogs);
-    }
 
-    async addSystemLog(text) {
-        const state = store.getState();
-        const project = state.projects.find(p => p.id === this.activeProjectId);
-        if (!project) return;
-        const newLog = { id: 'log_' + Date.now(), text: text, sender: 'system', timestamp: Date.now() };
-        const updatedLogs = [...(project.logs || []), newLog];
-        await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: project.id, updates: { logs: updatedLogs } } });
-        this.renderLogs(updatedLogs);
-    }
+        let triggerChar = null; // '@' o '#'
 
-    // ==========================================
-    // MOTOR DE DEEP WORK (POMODORO GTD)
-    // ==========================================
-    initPomodoro() {
-        this.updateTimerDisplay();
+        input.addEventListener('input', (e) => {
+            const val = input.value;
+            const cursorIdx = input.selectionStart;
+            
+            const textBeforeCursor = val.substring(0, cursorIdx);
+            const words = textBeforeCursor.split(/\s/);
+            const currentWord = words[words.length - 1];
 
-        this.dom.btnStart.addEventListener('click', () => {
-            if (!this.timerRunning) {
-                if(!this.selectedWoHash) {
-                    alert("Selecciona una Work Order del Backlog antes de iniciar el Pomodoro.");
-                    return;
+            if (currentWord.startsWith('@')) {
+                const search = currentWord.substring(1).toLowerCase();
+                const users = state.globalUsers.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
+                
+                if (users.length > 0) {
+                    menu.innerHTML = users.map(u => `
+                        <div class="semantic-item" data-val="${u.id}">
+                            <span style="font-size:1.5rem;">${u.profile?.isAi ? '🤖' : '👤'}</span> 
+                            <div>
+                                <div style="font-weight:900;">${u.name}</div>
+                                <div style="font-size:0.75rem; color:#888;">${u.profile?.isAi ? 'Agente A2A' : 'Humano'}</div>
+                            </div>
+                            <span class="semantic-badge">${u.id}</span>
+                        </div>
+                    `).join('');
+                    this.showMenu(input, menu, currentWord);
+                    triggerChar = '@';
+                } else {
+                    menu.style.display = 'none';
                 }
-                
-                const state = store.getState();
-                const project = state.projects.find(p => p.id === this.activeProjectId);
-                const wo = project.work_orders.find(w => w.hash === this.selectedWoHash);
-                const flow = project.vna_flows.find(f => f.id === wo.flowId);
-
-                this.addSystemLog(`🍅 Deep Work iniciado. Ejecutando SOP: [${flow.template}]. Enfoque aislado activado.`);
-                
-                this.timerRunning = true;
-                this.dom.btnStart.style.display = 'none';
-                this.dom.btnPause.style.display = 'block';
-                this.timer = setInterval(() => {
-                    this.timeLeft--;
-                    this.updateTimerDisplay();
-                    if (this.timeLeft <= 0) this.switchPomodoroMode();
-                }, 1000);
+            } else if (currentWord.startsWith('#')) {
+                // Mockup W3C Ontologies (Esto luego leerá del KB.js)
+                menu.innerHTML = `
+                    <div class="semantic-item" data-val="#SOP_Review"><span>📄</span> <b>SOP_Review</b> <span class="semantic-badge">Methodology</span></div>
+                    <div class="semantic-item" data-val="#CleanCode"><span>✨</span> <b>CleanCode</b> <span class="semantic-badge">SOC</span></div>
+                    <div class="semantic-item" data-val="#VNA_Mapping"><span>🕸️</span> <b>VNA_Mapping</b> <span class="semantic-badge">Framework</span></div>
+                `;
+                this.showMenu(input, menu, currentWord);
+                triggerChar = '#';
+            } else if (currentWord.startsWith('/')) {
+                // Comandos DRY de Inyección
+                menu.innerHTML = `
+                    <div class="semantic-item" data-val="/mapa"><span>🕸️</span> <div><b>Inyectar Mapa VNA</b><br><span style="font-size:0.7rem;color:#888;">Renderiza topología actual.</span></div></div>
+                    <div class="semantic-item" data-val="/ledger"><span>⚖️</span> <div><b>Inyectar Slicing Pie</b><br><span style="font-size:0.7rem;color:#888;">Renderiza Cap Table en vivo.</span></div></div>
+                `;
+                this.showMenu(input, menu, currentWord);
+                triggerChar = '/';
+            } else {
+                menu.style.display = 'none';
+                this.isMenuOpen = false;
             }
         });
 
-        this.dom.btnPause.addEventListener('click', () => {
-            this.timerRunning = false;
-            clearInterval(this.timer);
-            this.dom.btnPause.style.display = 'none';
-            this.dom.btnStart.style.display = 'block';
-        });
-
-        this.dom.btnReset.addEventListener('click', () => {
-            this.timerRunning = false;
-            clearInterval(this.timer);
-            this.dom.btnPause.style.display = 'none';
-            this.dom.btnStart.style.display = 'block';
-            this.isWorking = true;
-            this.timeLeft = 25 * 60;
-            this.updateTimerDisplay();
+        menu.addEventListener('click', (e) => {
+            const item = e.target.closest('.semantic-item');
+            if (item) {
+                const replaceVal = item.getAttribute('data-val');
+                const val = input.value;
+                const cursorIdx = input.selectionStart;
+                const textBeforeCursor = val.substring(0, cursorIdx);
+                const words = textBeforeCursor.split(/\s/);
+                const currentWord = words[words.length - 1];
+                
+                // Sustituir la palabra actual por la seleccionada + un espacio
+                const newText = val.substring(0, cursorIdx - currentWord.length) + replaceVal + ' ' + val.substring(cursorIdx);
+                input.value = newText;
+                menu.style.display = 'none';
+                this.isMenuOpen = false;
+                input.focus();
+            }
         });
     }
 
-    switchPomodoroMode() {
-        this.isWorking = !this.isWorking;
-        this.timeLeft = this.isWorking ? 25 * 60 : 5 * 60;
-        this.updateTimerDisplay();
-        
-        const msg = this.isWorking ? "🏁 Tiempo de Enfoque iniciado." : "☕ Ciclo completado. Fase de descanso estructurado (Seny). ¿Reportamos la Work Order activa?";
-        this.addSystemLog(msg);
+    showMenu(textarea, menu, currentWord) {
+        // Lógica simple para posicionar el menú cerca del cursor (Aproximación)
+        // En un editor real usaríamos getCaretCoordinates, pero para este prototipo anclamos el menú
+        // de forma flotante elegante.
+        menu.style.display = 'block';
+        this.isMenuOpen = true;
     }
 
-    updateTimerDisplay() {
-        const m = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
-        const s = (this.timeLeft % 60).toString().padStart(2, '0');
-        this.dom.timerDisplay.innerText = `${m}:${s}`;
+    async submitReport() {
+        if (!this.activeTx) return;
         
-        if (this.isWorking) {
-            this.dom.timerStatus.innerText = "Deep Work";
-            this.dom.timerDisplay.className = 'timer-display work-mode';
-        } else {
-            this.dom.timerStatus.innerText = "Descanso";
-            this.dom.timerDisplay.className = 'timer-display break-mode';
+        const textContent = this.dom.editor.value.trim();
+        if (!textContent) return alert("⚠️ No puedes sellar un lienzo vacío. Escribe tu reporte.");
+
+        this.dom.btnSubmit.disabled = true;
+        this.dom.btnSubmit.innerText = '⏳ Sellando y Pingeando...';
+        
+        const activeHash = this.activeTx.id || this.activeTx.hash;
+        const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+        
+        // 🔥 MAGIA USENET: Detectar menciones y comandos
+        const mentions = [];
+        const words = textContent.split(/\s/);
+        words.forEach(w => {
+            if (w.startsWith('@') && w.length > 1) mentions.push(w);
+        });
+
+        // Registrar el Log Semántico (El Paper)
+        await store.dispatch({
+            type: 'ADD_LOG_ENTRY',
+            payload: {
+                projectId: this.activeTx.projectId,
+                log: {
+                    id: 'log_' + Date.now(),
+                    date: Date.now(),
+                    authorId: store.getState().session.activeUserId,
+                    relatedTxHash: activeHash,
+                    content: textContent,
+                    mentions: mentions, 
+                    readBy: []
+                }
+            }
+        });
+
+        // Despachar el reporte clásico de la transacción para el Auditor
+        const isV10 = p.work_orders && p.work_orders.some(w => w.hash === activeHash);
+
+        // TODO: En el futuro calcularemos las 'realHours' a partir de los commits o tiempo en línea.
+        // Ahora pasamos las horas estimadas automáticamente.
+        let estHours = this.activeTx.horas || this.activeTx.estimatedHours || 1;
+        if (!this.activeTx.horas && this.activeTx.flowId) {
+            const parentFlow = (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
+            if (parentFlow) estHours = parentFlow.estimatedHours || 1;
         }
+
+        await store.dispatch({
+            type: isV10 ? 'REPORT_WORK_ORDER' : 'REPORT_TRANSACTION',
+            payload: {
+                projectId: this.activeTx.projectId,
+                [isV10 ? 'woHash' : 'txHash']: activeHash,
+                realHours: estHours, 
+                comentario: "Ver Log Semántico asociado.",
+                proofLink: 'Usenet_Thread'
+            }
+        });
+
+        // Limpieza y Redirección
+        this.dom.editor.value = '';
+        localStorage.setItem('tt_active_project', this.activeTx.projectId);
+        
+        // Esperamos 1 segundo para que el Daemon (si hay IA mencionada) empiece a escribir
+        setTimeout(() => {
+            window.location.href = `/v8/project?hash=${activeHash}`;
+        }, 1000);
     }
 }
