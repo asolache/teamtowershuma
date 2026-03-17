@@ -2,30 +2,49 @@
 import { store } from './store.js';
 import { KB } from './kb.js';
 
+// DICCIONARIO DE TOKENOMICS (Precios por 1 Millón de Tokens)
+const LLM_PRICING = {
+    'deepseek': { input: 0.14, output: 0.28 },
+    'gemini': { input: 0.075, output: 0.30 },
+    'openai': { input: 0.15, output: 0.60 },
+    'anthropic': { input: 3.00, output: 15.00 },
+    'custom': { input: 0.0, output: 0.0 } // Zero Cost Local
+};
+
 class OrchestratorCore {
     constructor() {
-        this.version = "10.0-Fractal";
+        this.version = "12.0-Telemetry";
     }
 
     // ==========================================
-    // CAPA 1: GATEWAY NEURONAL (API Agnostic)
+    // CAPA 1: GATEWAY NEURONAL (API Agnostic + Sensores de Coste)
     // ==========================================
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object" }) {
-        if (!apiKey) throw new Error("API Key requerida para el Orquestador.");
+        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para el Orquestador.");
+        
         let textResponse = "";
+        let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+        const startTime = Date.now();
 
         if (provider === 'gemini') {
             const targetModel = 'gemini-1.5-flash';
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ 
+                body: JSON.stringify({ 
                     contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }],
-                    generationConfig: { responseMimeType: "application/json" } // 🔥 EL FIX DE GOOGLE
+                    generationConfig: responseFormat === "json_object" ? { responseMimeType: "application/json" } : {}
                 })
             });
             if (!response.ok) throw new Error(`Google Gemini Error: ${response.statusText}`);
             const data = await response.json();
             textResponse = data.candidates[0].content.parts[0].text;
+            
+            // Sensor Gemini
+            if (data.usageMetadata) {
+                tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0;
+                tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0;
+                tokenUsage.total_tokens = data.usageMetadata.totalTokenCount || 0;
+            }
         
         } else if (provider === 'openai') {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -39,6 +58,9 @@ class OrchestratorCore {
             if (!response.ok) throw new Error(`OpenAI Error: ${response.statusText}`);
             const data = await response.json();
             textResponse = data.choices[0].message.content;
+            
+            // Sensor OpenAI
+            if (data.usage) tokenUsage = data.usage;
         
         } else if (provider === 'deepseek') {
             const response = await fetch('https://api.deepseek.com/chat/completions', {
@@ -52,26 +74,40 @@ class OrchestratorCore {
             if (!response.ok) throw new Error(`DeepSeek Error: ${response.statusText}`);
             const data = await response.json();
             textResponse = data.choices[0].message.content;
+            
+            // Sensor DeepSeek
+            if (data.usage) tokenUsage = data.usage;
+            
         } else {
             throw new Error(`Proveedor IA desconocido: ${provider}`);
         }
 
-        // Limpieza de formato si se espera JSON
+        const latencyMs = Date.now() - startTime;
+
+        let parsedContent = textResponse;
         if (responseFormat === "json_object") {
-            textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const firstBrace = textResponse.indexOf('{');
-            const lastBrace = textResponse.lastIndexOf('}');
+            let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const firstBrace = cleanText.indexOf('{');
+            const lastBrace = cleanText.lastIndexOf('}');
             if (firstBrace !== -1 && lastBrace !== -1) {
-                textResponse = textResponse.substring(firstBrace, lastBrace + 1);
+                cleanText = cleanText.substring(firstBrace, lastBrace + 1);
             }
-            return JSON.parse(textResponse);
+            parsedContent = JSON.parse(cleanText);
         }
 
-        return textResponse;
+        // El Gateway ahora devuelve el cerebro y los sensores completos
+        return {
+            content: parsedContent,
+            telemetry: {
+                provider,
+                tokens: tokenUsage,
+                latencyMs
+            }
+        };
     }
 
     // ==========================================
-    // CAPA 2: DISEÑADOR VNA (Reemplaza a ProjectCreatorView)
+    // CAPA 2: DISEÑADOR VNA
     // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
         const systemPrompt = `
@@ -106,11 +142,14 @@ class OrchestratorCore {
             }
         `;
 
-        const parsedData = await this.callLLM({
+        const result = await this.callLLM({
             provider, apiKey, systemPrompt, userPrompt: vision, responseFormat: "json_object"
         });
 
-        return parsedData; // El TDD se ejecutará en la Vista o en un middleware posterior
+        // 🔥 Opcional: Aquí el Orquestador podría disparar un store.dispatch('LOG_TELEMETRY')
+        // pero como "designEcosystemVNA" aún no tiene ProjectId, lo delegaremos a quien lo llame.
+
+        return result.content; 
     }
 
     // ==========================================
@@ -125,16 +164,11 @@ class OrchestratorCore {
 
         const forgedAgents = [];
 
-        // Por cada rol en el proyecto, vamos a forjar su "Cerebro A2A"
         for (const role of project.roles) {
-            // 1. Extraemos el contexto fractal de la Base de Conocimiento
             const flatContext = await KB.getAgentContextFlattened(projectId, role, project.prompt, project.archetype);
-
-            // 2. Extraemos los SOPs específicos en los que este rol participa
             const roleFlows = project.vna_flows.filter(f => f.from === role.id || f.to === role.id);
             const flowsContext = roleFlows.map(f => `- [${f.tipo.toUpperCase()}] ${f.template} (ID: ${f.id})`).join('\n');
 
-            // 3. Le pedimos al LLM que redacte el System Prompt definitivo y optimizado para este agente
             const systemPrompt = `Eres @genesi_ai, el Meta-Agente Forjador. Tu misión es redactar el 'System Prompt' perfecto y determinista para un nuevo agente que va a operar en la Matriz V9.`;
             const userPrompt = `
                 Crea el SYSTEM PROMPT definitivo para el rol de "${role.name}" (${role.levelId}) en el proyecto "${project.nombre}".
@@ -145,31 +179,35 @@ class OrchestratorCore {
                 TUBERÍAS DE VALOR (SOPs) ASIGNADAS A ESTE ROL:
                 ${flowsContext || "Aún no hay tuberías asignadas."}
 
-                Instrucciones para el Prompt:
-                Debe ser un texto en primera persona (instruyendo al agente sobre quién es y qué debe hacer). Debe ser estricto, orientado a ejecutar SOPs y cumplir SOCs (Statements of Compliance). No uses formato JSON, solo el texto puro del prompt.
+                Instrucciones: Debe ser un texto en primera persona. Estricto, orientado a ejecutar SOPs y cumplir SOCs. No uses formato JSON.
             `;
 
-            // Llamada a la IA para sintetizar el prompt
-            const generatedAgentPrompt = await this.callLLM({
+            const result = await this.callLLM({
                 provider, apiKey, systemPrompt, userPrompt, responseFormat: "text"
             });
 
-            // 4. Guardamos este prompt optimizado en la KB para persistencia fractal
             const promptNode = await KB.saveNode({
                 id: `prompt_${projectId}_${role.id}`, 
-                type: 'prompt_a2a',
-                projectId: projectId, 
-                targetId: role.id, 
-                roleTarget: role.levelId,
-                title: `Prompt A2A Forjado: ${role.name}`, 
-                content: generatedAgentPrompt
+                type: 'prompt_a2a', projectId: projectId, targetId: role.id, roleTarget: role.levelId,
+                title: `Prompt A2A Forjado: ${role.name}`, content: result.content
             });
 
-            forgedAgents.push({
-                roleId: role.id,
-                roleName: role.name,
-                promptId: promptNode.id
+            // 🔥 Telemetría: Calculamos y guardamos el coste de forjar esta identidad
+            const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
+            const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
+                                  ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+
+            await store.dispatch({
+                type: 'LOG_TELEMETRY',
+                payload: {
+                    projectId: projectId, agentId: '@genesi_ai', engine: provider, actionType: 'FORGE_IDENTITY',
+                    tokens: result.telemetry.tokens, costInDollars: costInDollars,
+                    recRatio: 0, // No aplica REC para forjado, solo para SOPs
+                    latencyMs: result.telemetry.latencyMs
+                }
             });
+
+            forgedAgents.push({ roleId: role.id, roleName: role.name, promptId: promptNode.id });
         }
 
         return forgedAgents;
