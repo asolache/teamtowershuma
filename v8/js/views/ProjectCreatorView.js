@@ -109,6 +109,7 @@ export default class ProjectCreatorView {
                 .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;}
                 .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 15px 10px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
+                .phase-badge { align-self: flex-start; background: rgba(0,176,255,0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--accent-blue);}
 
                 .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
                 
