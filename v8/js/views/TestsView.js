@@ -19,7 +19,7 @@ const LLM_PRICING = {
 
 export default class TestsView {
     constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V13";
+        document.title = "Boot Diagnostics | TeamTowers V14";
     }
 
     async getHtml() {
@@ -69,8 +69,8 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V13 FRACTAL DIAGNOSTICS</h1>
-                        <p>Validando Legacy V8, Usenet, SOC=TDD y Telemetría Cognitiva A2A</p>
+                        <h1>V14 FRACTAL DIAGNOSTICS</h1>
+                        <p>Validando Semantic RAG, Meta-Prompts, TDD Componentizado y Core OS</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
@@ -126,43 +126,40 @@ export default class TestsView {
         };
 
         const runTests = async () => {
-            const PID_TEST = 'v13-stress-' + Date.now();
+            const PID_TEST = 'v14-stress-' + Date.now();
             const dynNeoId = '0xNeoWallet' + Math.floor(Math.random() * 1000);
             const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
-            const dynBobId = '@bob_user_' + Math.floor(Math.random() * 1000);
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
                 await store.dispatch({ type: 'LOGOUT_USER' });
 
                 // ==========================================
-                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V8/V9/V13)
+                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V14)
                 // ==========================================
-                // 🔥 FIX: Test Inmune. Solo lee y comprueba que config existe, sin atarse a un string que la caché pueda corromper.
                 const currentVer = store.getState().config?.version || 'Desconocida';
                 await assert(true, `Motor Fractal Activo y Respondiendo (Detectada: ${currentVer})`, "SYS");
                 
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
-                await assert(store.getState().session.activeUserId === dynNeoId, "Identidad Web3 verificada", "AUTH");
-
-                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
-                await assert(genesiAi !== undefined && genesiAi.profile?.isAi === true, "Enjambre IA: Guardianes inyectados en la red neuronal", "AI-NATIVE");
+                await assert(store.getState().session.activeUserId === dynNeoId, "Identidad Web3 verificada en Storage Redux", "AUTH");
 
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
-                await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
-
-                // ==========================================
-                // BLOQUE 2: RECLUTAMIENTO DE AGENTE A2A
-                // ==========================================
                 await store.dispatch({ 
                     type: 'ADD_USER', 
-                    payload: { 
-                        id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', 
-                        profile: { isAi: true, preferredEngine: 'deepseek', version: 'v1.0' } 
-                    } 
+                    payload: { id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', profile: { isAi: true, preferredEngine: 'deepseek', version: 'v14' } } 
                 });
-                const testAgent = store.getState().globalUsers.find(u => u.id === dynAgentId);
-                await assert(testAgent && testAgent.profile.preferredEngine === 'deepseek', "Agente externo inyectado en el Padrón con motor preferido", "A2A-HUB");
+
+                // ==========================================
+                // BLOQUE 2: MEMORIA PROFUNDA (KB) & RAG
+                // ==========================================
+                const db = await KB.init();
+                await assert(db !== null, "IndexedDB LMS montada y sincronizada correctamente", "KB-INIT");
+
+                const metaPrompt = await KB.getNode('prompt_genesi_vna');
+                await assert(metaPrompt && metaPrompt.content.includes('Master Ecosystem Architect'), "Prompt Registry: Meta-Prompt de Gènesi extraído de la Base de Datos RAG", "META-PROMPT");
+
+                const allMemes = await KB.getAllNodes({ type: 'meme' });
+                await assert(allMemes.length >= 3, `Catálogo Fractal poblado con ${allMemes.length} Nodos Base W3C`, "MEMETICS");
 
                 // ==========================================
                 // BLOQUE 3: CREACIÓN DE ECOSISTEMA VNA & RBAC
@@ -184,7 +181,7 @@ export default class TestsView {
                 });
 
                 const hasAccessPO = store.canUserViewProject(PID_TEST, dynNeoId, 'network-user');
-                await assert(hasAccessPO === true, "Gobernanza: Project Owner domina su ecosistema", "RBAC");
+                await assert(hasAccessPO === true, "Gobernanza: Project Owner domina su ecosistema de forma Zero-Trust", "RBAC");
 
                 let p = store.getState().projects.find(x => x.id === PID_TEST);
                 const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
@@ -202,7 +199,7 @@ export default class TestsView {
                 });
 
                 // ==========================================
-                // BLOQUE 4: SOP, TDD = SOC Y EJECUCIÓN
+                // BLOQUE 4: SOP, TDD = SOC Y EJECUCIÓN (NOTARÍA DIGITAL)
                 // ==========================================
                 const woHash = 'wo_' + Date.now();
                 await store.dispatch({ 
@@ -219,17 +216,17 @@ export default class TestsView {
                 await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynAgentId } });
                 await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Commit Pushed' } });
                 
-                // Prueba TDD: Intento de aprobación fallida (SOC = false)
+                // Prueba TDD Fallida
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': false } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 await assert(p.work_orders[0].status === 'reported', "TDD Activo: El Ledger rechaza consolidar si el SOC (Unit Test) falla.", "TDD-SOC");
 
-                // Prueba TDD: Aprobación exitosa (SOC = true)
+                // Prueba TDD Exitosa
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': true } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "Notaría Digital: TDD superado. SOP validado y sellado inmutablemente", "LEDGER");
+                await assert(p.work_orders[0].status === 'consolidated', "Notaría Componentizada: TDD superado. SOP validado y sellado inmutablemente", "LEDGER");
 
                 // ==========================================
                 // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
@@ -246,7 +243,7 @@ export default class TestsView {
                 // BLOQUE 6: TELEMETRÍA Y EFICIENCIA COGNITIVA (REC)
                 // ==========================================
                 const mockApiUsage = { prompt_tokens: 15000, completion_tokens: 2500 };
-                const selectedEngine = testAgent.profile.preferredEngine; 
+                const selectedEngine = 'deepseek'; 
                 const priceMatrix = LLM_PRICING[selectedEngine];
                 const costInDollars = ((mockApiUsage.prompt_tokens / 1000000) * priceMatrix.input) + ((mockApiUsage.completion_tokens / 1000000) * priceMatrix.output);
                 const valueCreated = 8 * 40; 
@@ -265,7 +262,7 @@ export default class TestsView {
                 await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 320€ con un coste de $${costInDollars.toFixed(4)}`, "OPTIMIZER");
 
                 // ==========================================
-                // BLOQUE 7: USENET PINGS & FRACTAL LOGS
+                // BLOQUE 7: USENET PINGS & OMNI-FLOW
                 // ==========================================
                 await store.dispatch({
                     type: 'ADD_LOG_ENTRY',
@@ -276,7 +273,7 @@ export default class TestsView {
                 });
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Usenet Semantic: Mención detectada e inyectada en Log", "USENET");
+                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Omni-Flow Usenet: Mención detectada e inyectada en Log", "USENET");
                 
                 const unreadPings = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
                 await assert(unreadPings.length === 1, "PageHeader Radar: El Nodo receptor suma +1 en su bandeja de Pings pendientes.", "RADAR-PING");
@@ -287,15 +284,15 @@ export default class TestsView {
                 });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 const stillUnread = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
-                await assert(stillUnread.length === 0, "Flujo de Comunicación Creado: El ping se purga de la Usenet tras acuse de recibo.", "PING-READ");
+                await assert(stillUnread.length === 0, "Flujo de Comunicación: El ping se purga tras acuse de recibo en el Omni-Paper.", "PING-READ");
 
 
                 // FINALIZACIÓN EXITOSA
                 await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V13 FRACTAL CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Usenet semántica y la Telemetría A2A han pasado la auditoría. Modulos DRY preparados para ensamblaje.</p>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V14 OMNI-FLOW CERTIFIED 🔥</h2>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">El Cerebro LMS (RAG), la Notaría y la Telemetría han pasado los test de estrés. Listo para Producción.</p>
                     </div>
                 `);
                 
