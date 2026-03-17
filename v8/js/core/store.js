@@ -1,5 +1,5 @@
 // v8/js/core/store.js
-// Motor de Estado Global Inmutable (Redux Pattern) - V13 Usenet
+// Motor de Estado Global Inmutable (Redux Pattern) - V13 Usenet & Telemetry
 
 const initialState = {
     config: {
@@ -29,8 +29,24 @@ class Store {
         
         if (savedState) {
             this.state = JSON.parse(savedState);
+            
+            // 🔥 MIGRACIÓN Y BLINDAJE (Previene Kernel Panics por datos legacy)
+            if (!this.state.config) this.state.config = { theme: 'dark' };
+            this.state.config.version = initialState.config.version; // Forzar versión actual
+            
             if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
             if (!this.state.projects) this.state.projects = [];
+            
+            // Hidratar proyectos antiguos con las nuevas tuberías de la V13
+            this.state.projects.forEach(p => {
+                if (!p.telemetry) p.telemetry = [];
+                if (!p.logs) p.logs = [];
+                if (!p.vna_flows) p.vna_flows = [];
+                if (!p.work_orders) p.work_orders = [];
+                if (!p.ledger) p.ledger = [];
+                if (!p.roles) p.roles = [];
+            });
+            
         } else {
             this.state = JSON.parse(JSON.stringify(initialState));
         }
@@ -169,7 +185,6 @@ class Store {
             case 'LOG_TELEMETRY':
                 proj = newState.projects.find(p => p.id === action.payload.projectId);
                 if (proj) {
-                    if (!proj.telemetry) proj.telemetry = [];
                     proj.telemetry.push({
                         id: 'tel_' + Date.now(),
                         date: Date.now(),
@@ -183,12 +198,9 @@ class Store {
                     });
                 }
                 break;
-
-            // 🔥 NUEVO (SPRINT 35): Usenet Semantic Logs (Pings)
             case 'ADD_LOG_ENTRY':
                 proj = newState.projects.find(p => p.id === action.payload.projectId);
                 if (proj) {
-                    if (!proj.logs) proj.logs = [];
                     proj.logs.push(action.payload.log);
                 }
                 break;
