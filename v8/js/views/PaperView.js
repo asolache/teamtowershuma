@@ -3,11 +3,12 @@ import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js'; 
 import { PageHeader } from '../components/PageHeader.js';
-import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 Magia DRY: Importamos el motor visual
+import { MapRenderer } from '../components/MapRenderer.js'; 
+import { KanbanRenderer } from '../components/KanbanRenderer.js'; // 🔥 Magia DRY: Importamos el motor del Kanban
 
 export default class PaperView {
     constructor() {
-        document.title = "Omni-Paper | TeamTowers V13";
+        document.title = "Omni-Paper | TeamTowers V14";
         this.activeTx = null;
         this.isMenuOpen = false;
         this.triggerChar = null;
@@ -23,11 +24,14 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
             subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Escribe @ para Agentes, # para Memes W3C, y / para inyectar Widgets (Mapa/Ledger)."
+            tagline: "Escribe @ para Agentes, # para Memes W3C, y / para inyectar Widgets (Mapa/Ledger/Kanban)."
         };
 
         return `
             <style>
+                ${MapRenderer.getStyles()}
+                ${KanbanRenderer.getStyles()} /* 🔥 DRY: CSS del Kanban integrado en el Paper */
+
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
                 .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-dark); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
                 
@@ -148,7 +152,6 @@ export default class PaperView {
             btnSubmit: document.getElementById('btnSubmitReport')
         };
 
-        // Forzar focus inicial para evitar bugs de contenteditable vacío
         this.dom.editor.focus();
 
         // 1. CARGAR TAREAS DEL USUARIO
@@ -251,13 +254,11 @@ export default class PaperView {
             const authorIcon = isAi ? '🤖' : '👤';
             const timeStr = new Date(log.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
-            // Renderizamos contenido HTML en lugar de textContent porque soporta WIDGETS INYECTADOS
             let formattedContent = log.content;
             
-            // Reemplazar menciones crudas por Badges (si están en texto plano y no dentro de HTML inyectado)
             if (log.mentions) {
                 log.mentions.forEach(m => {
-                    const rgx = new RegExp(`(?<!<[^>]*)${m}`, 'g'); // Solo reemplaza si no está dentro de un tag HTML
+                    const rgx = new RegExp(`(?<!<[^>]*)${m}`, 'g');
                     formattedContent = formattedContent.replace(rgx, `<span class="mention-highlight">${m}</span>`);
                 });
             }
@@ -276,8 +277,9 @@ export default class PaperView {
 
         this.dom.threadList.innerHTML = html;
         
-        // 🔥 Si hay mapas inyectados en el log, los renderizamos (Re-hidratación DRY)
+        // 🔥 HIDRATACIÓN DE WIDGETS DRY (Mapas y Kanbans inyectados)
         setTimeout(() => {
+            // Hidratar Mapas
             const maps = this.dom.threadList.querySelectorAll('.omni-map-canvas');
             maps.forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
@@ -285,6 +287,24 @@ export default class PaperView {
                     const flows = project.vna_flows && project.vna_flows.length > 0 ? project.vna_flows : (project.transactions || []);
                     const mr = new MapRenderer(canvas, svg, { isMacro: true });
                     mr.setData(project.roles, flows);
+                }
+            });
+
+            // Hidratar Kanban (Mercado Pull)
+            const kanbans = this.dom.threadList.querySelectorAll('[id^="kanban_"]');
+            kanbans.forEach(container => {
+                if (project) {
+                    const activeUserId = state.session.activeUserId;
+                    const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
+                    
+                    const kr = new KanbanRenderer(container, {
+                        project: project,
+                        activeUserId: activeUserId,
+                        isPO: isPO,
+                        currentTab: 'oportunidades', // Renderizamos las tareas libres para mostrar contexto
+                        currentFilter: 'all'
+                    });
+                    kr.render();
                 }
             });
         }, 100);
@@ -297,7 +317,6 @@ export default class PaperView {
         const menu = this.dom.menu;
         const state = store.getState();
 
-        // Listener de Teclado para atrapar la posición del cursor en un contenteditable
         input.addEventListener('keyup', (e) => {
             const selection = window.getSelection();
             if (!selection.focusNode) return;
@@ -346,6 +365,10 @@ export default class PaperView {
                         <span style="font-size:1.5rem;">⚖️</span> 
                         <div><b>Inyectar Cap Table</b><br><span style="font-size:0.75rem;color:#888;">Tabla Slicing Pie en tiempo real.</span></div>
                     </div>
+                    <div class="semantic-item" data-val="/kanban" data-type="widget">
+                        <span style="font-size:1.5rem;">📋</span> 
+                        <div><b>Inyectar Mercado PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza las oportunidades libres del Sprint.</span></div>
+                    </div>
                 `;
                 this.showMenu(menu);
                 this.triggerChar = '/';
@@ -355,21 +378,18 @@ export default class PaperView {
             }
         });
 
-        // Click en elemento del Menú Autocompletar
         menu.addEventListener('click', (e) => {
             const item = e.target.closest('.semantic-item');
             if (item) {
                 const replaceVal = item.getAttribute('data-val');
                 const type = item.getAttribute('data-type');
                 
-                // Magia de Selección: Reemplazamos la palabra actual
                 const selection = window.getSelection();
                 const range = selection.getRangeAt(0);
                 range.setStart(selection.focusNode, range.endOffset - this.currentWord.length);
                 range.deleteContents();
                 
                 if (type === 'widget') {
-                    // INYECCIÓN DE WIDGETS DRY (/mapa, /ledger)
                     const widgetId = 'wid_' + Date.now();
                     const el = document.createElement('div');
                     
@@ -391,7 +411,6 @@ export default class PaperView {
                         range.insertNode(el);
                         range.setStartAfter(el);
                         
-                        // Renderizar Mapa Automáticamente usando el Componente Base
                         setTimeout(() => {
                             const canvas = document.getElementById(`canvas_${widgetId}`);
                             const svgG = document.getElementById(`svg_${widgetId}`);
@@ -424,16 +443,43 @@ export default class PaperView {
                         `;
                         range.insertNode(el);
                         range.setStartAfter(el);
+                    } else if (replaceVal === '/kanban') {
+                        // 🔥 INYECCIÓN DEL KANBAN RENDERER
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false">
+                                <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
+                                <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);">
+                                    </div>
+                            </div><p><br></p>
+                        `;
+                        range.insertNode(el);
+                        range.setStartAfter(el);
+
+                        setTimeout(() => {
+                            const container = document.getElementById(`kanban_${widgetId}`);
+                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                            if(p && container) {
+                                const activeUserId = store.getState().session.activeUserId;
+                                const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
+                                const kr = new KanbanRenderer(container, {
+                                    project: p,
+                                    activeUserId: activeUserId,
+                                    isPO: isPO,
+                                    currentTab: 'oportunidades',
+                                    currentFilter: 'all'
+                                });
+                                kr.render();
+                            }
+                        }, 50);
                     }
                 } else {
-                    // Texto Simple (Menciones o Tags)
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
                     const el = document.createElement('span');
                     el.className = htmlClass;
                     el.contentEditable = "false";
                     el.innerText = replaceVal;
                     
-                    const space = document.createTextNode('\u00A0'); // Espacio no rompible
+                    const space = document.createTextNode('\u00A0'); 
                     
                     range.insertNode(space);
                     range.insertNode(el);
@@ -457,9 +503,8 @@ export default class PaperView {
     async submitReport() {
         if (!this.activeTx) return;
         
-        // 🔥 Capturamos el HTML enriquecido (con los widgets inyectados)
         const htmlContent = this.dom.editor.innerHTML.trim();
-        const textContent = this.dom.editor.innerText.trim(); // Solo para comprobar si está vacío
+        const textContent = this.dom.editor.innerText.trim(); 
 
         if (!textContent && htmlContent === '<p><br></p>') return alert("⚠️ No puedes sellar un lienzo vacío. Escribe tu Proof of Work.");
 
@@ -469,14 +514,12 @@ export default class PaperView {
         const activeHash = this.activeTx.id || this.activeTx.hash;
         const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
         
-        // Detectar menciones en el texto crudo para disparar notificaciones
         const mentions = [];
         const words = textContent.split(/\s/);
         words.forEach(w => {
             if (w.startsWith('@') && w.length > 1) mentions.push(w);
         });
 
-        // 1. Guardar el Log con el HTML Renderizado (Para que los widgets vivan en el Thread)
         await store.dispatch({
             type: 'ADD_LOG_ENTRY',
             payload: {
@@ -486,14 +529,13 @@ export default class PaperView {
                     date: Date.now(),
                     authorId: store.getState().session.activeUserId,
                     relatedTxHash: activeHash,
-                    content: htmlContent, // 🔥 Guardamos el HTML
+                    content: htmlContent, 
                     mentions: mentions, 
                     readBy: []
                 }
             }
         });
 
-        // 2. Reportar Transacción al Notario
         const isV10 = p.work_orders && p.work_orders.some(w => w.hash === activeHash);
         let estHours = this.activeTx.horas || this.activeTx.estimatedHours || 1;
         if (!this.activeTx.horas && this.activeTx.flowId) {
@@ -512,7 +554,6 @@ export default class PaperView {
             }
         });
 
-        // Recargar vista para ver el mensaje y esperar al Agente IA
         this.dom.editor.innerHTML = '<p><br></p>';
         this.loadTaskContext();
         this.dom.btnSubmit.disabled = false;
