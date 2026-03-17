@@ -91,7 +91,9 @@ export const Sidebar = {
                     <a href="/v8/lms" class="side-link ${currentPath === '/lms' ? 'active' : ''}" data-link title="La Forja (Cerebro LMS)">
                         <span class="link-icon">🧠</span> <span class="link-text">La Forja (LMS)</span>
                     </a>
-                    
+                    <a href="/v8/agents" class="side-link ${currentPath === '/agents' ? 'active' : ''}" data-link title="Sandbox TDD (Entrenar IA)">
+                        <span class="link-icon">🧪</span> <span class="link-text">Sandbox TDD</span>
+                    </a>
                     <a href="/v8/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Mercado PULL (Kanban)">
                         <span class="link-icon">📋</span> <span class="link-text">Mercado PULL</span>
                     </a>
