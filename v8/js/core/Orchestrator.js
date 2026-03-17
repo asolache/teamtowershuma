@@ -2,18 +2,17 @@
 import { store } from './store.js';
 import { KB } from './kb.js';
 
-// DICCIONARIO DE TOKENOMICS (Precios por 1 Millón de Tokens)
 const LLM_PRICING = {
     'deepseek': { input: 0.14, output: 0.28 },
     'gemini': { input: 0.075, output: 0.30 },
     'openai': { input: 0.15, output: 0.60 },
     'anthropic': { input: 3.00, output: 15.00 },
-    'custom': { input: 0.0, output: 0.0 } // Zero Cost Local
+    'custom': { input: 0.0, output: 0.0 } 
 };
 
 class OrchestratorCore {
     constructor() {
-        this.version = "13.5-Resilience";
+        this.version = "14.0-OmniFlow";
         this.isListening = false;
     }
 
@@ -119,7 +118,6 @@ class OrchestratorCore {
                     if (firstBrace !== -1 && lastBrace !== -1) {
                         cleanText = cleanText.substring(firstBrace, lastBrace + 1);
                     }
-                    // Validamos que el JSON no esté roto. Si lo está, saltará al catch y reintentará.
                     parsedContent = JSON.parse(cleanText);
                 }
 
@@ -129,7 +127,7 @@ class OrchestratorCore {
                 lastError = error;
                 attempt++;
                 console.warn(`⚠️ [Orquestador] Fallo en intento ${attempt}/${maxRetries + 1}. Reintentando en 1s... Error:`, error.message);
-                await new Promise(r => setTimeout(r, 1000)); // Esperar 1s antes del retry
+                await new Promise(r => setTimeout(r, 1000));
             }
         }
         
@@ -137,11 +135,11 @@ class OrchestratorCore {
     }
 
     // ==========================================
-    // CAPA 2: DISEÑADOR VNA (Prompt Ingeniería Militar)
+    // CAPA 2: DISEÑADOR VNA
     // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
         const systemPrompt = `
-Eres el Master Ecosystem Architect de TeamTowers V13. Tu única función es diseñar arquitecturas VNA (Value Network Analysis) devolviendo EXCLUSIVAMENTE un objeto JSON válido y estricto. Cero charla. Cero markdown.
+Eres el Master Ecosystem Architect de TeamTowers V14. Tu única función es diseñar arquitecturas VNA (Value Network Analysis) devolviendo EXCLUSIVAMENTE un objeto JSON válido y estricto. Cero charla. Cero markdown.
 
 MANDAMIENTOS DE ARQUITECTURA (TDD):
 1. DEBES crear un MÍNIMO de 12 transacciones (tuberías de valor).
@@ -189,7 +187,7 @@ REGLA DE ORO: Utiliza roles estándar ("@anxaneta", "@aixecador", "@dosos", "@ba
             systemPrompt, 
             userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, 
             responseFormat: "json_object",
-            temperature: 0.1 // 🔥 Razón Fría: Máximo determinismo para no romper el TDD
+            temperature: 0.1 
         });
 
         return result.content; 
@@ -284,7 +282,7 @@ REGLA DE ORO: Utiliza roles estándar ("@anxaneta", "@aixecador", "@dosos", "@ba
             });
 
             const systemPrompt = `
-                Eres ${agentNode.name} (${agentNode.id}), un nodo operativo en la red TeamTowers V13.
+                Eres ${agentNode.name} (${agentNode.id}), un nodo operativo en la red TeamTowers V14.
                 Tu arquetipo base es ${agentNode.profile?.guardian || 'desconocido'}.
                 
                 CONTEXTO DE LA OPERACIÓN:
@@ -297,7 +295,7 @@ REGLA DE ORO: Utiliza roles estándar ("@anxaneta", "@aixecador", "@dosos", "@ba
 
             const result = await this.callLLM({
                 provider, apiKey, systemPrompt, userPrompt: `Responde al ping de ${incomingLog.authorId}.`, responseFormat: "text",
-                temperature: 0.7 // 🔥 Razón Caliente: Creatividad y empatía para conversar en la Usenet
+                temperature: 0.7 
             });
 
             await store.dispatch({
@@ -331,6 +329,71 @@ REGLA DE ORO: Utiliza roles estándar ("@anxaneta", "@aixecador", "@dosos", "@ba
         } catch (error) {
             console.error(`[Usenet Daemon] Fallo al responder con ${agentNode.id}:`, error);
         }
+    }
+
+    // ==========================================
+    // CAPA 5: DEEP RESEARCH (RAG Académico) 🔥 NUEVO SPRINT 37
+    // ==========================================
+    async deepResearch(topic, contextText, provider, apiKey) {
+        if (!apiKey) throw new Error("API Key requerida para Deep Research.");
+
+        const systemPrompt = `
+            Eres @mestre_escola, el Investigador Jefe de TeamTowers V14.
+            Tu misión es realizar un "Deep Research" simulado sobre el tema proporcionado, extrayendo el conocimiento más avanzado y académico disponible en tu corpus de entrenamiento.
+            
+            Debes estructurar el conocimiento extraído en "Memes W3C" compatibles con nuestro ecosistema (SOPs, SOCs, SKILLs o RULEs).
+            
+            DEVUELVE ÚNICAMENTE un objeto JSON con este formato exacto:
+            {
+                "memes": [
+                    {
+                        "category": "soc",
+                        "title": "Título del Criterio o Norma (Ej: OWASP Top 10 Security)",
+                        "content": "Descripción detallada, accionable y auditable de la regla...",
+                        "keywords": ["tag1", "tag2"]
+                    },
+                    {
+                        "category": "sop",
+                        "title": "Procedimiento Operativo (Ej: Flujo de Code Review Ágil)",
+                        "content": "Paso 1... Paso 2...",
+                        "keywords": ["procedimiento", "calidad"]
+                    }
+                ]
+            }
+        `;
+
+        const userPrompt = `
+            TEMA DE INVESTIGACIÓN: "${topic}"
+            
+            CONTEXTO ADICIONAL: 
+            ${contextText || 'Ninguno'}
+            
+            Investiga profundamente y genera al menos 3 Memes estructurados (SOPs o SOCs) que un agente IA pueda usar para auditar y ejecutar este tema con calidad profesional.
+        `;
+
+        const result = await this.callLLM({
+            provider, 
+            apiKey, 
+            systemPrompt, 
+            userPrompt, 
+            responseFormat: "json_object",
+            temperature: 0.3 // Ligera creatividad para expandir el conocimiento, pero estructurado
+        });
+
+        // Registrar telemetría de investigación
+        const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
+        const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
+                              ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+
+        await store.dispatch({
+            type: 'LOG_TELEMETRY',
+            payload: {
+                projectId: 'global', agentId: '@mestre_escola', engine: provider, actionType: 'DEEP_RESEARCH',
+                tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs
+            }
+        });
+
+        return result.content;
     }
 }
 
