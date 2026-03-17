@@ -1,148 +1,186 @@
 // v8/js/components/MapRenderer.js
-/**
- * Componente UI Universal: MapRenderer (V9)
- * Renderiza topologías de valor (VNA) usando nodos HTML y arcos SVG.
- * Aplicable en Dashboard (Macro-VNA), ValueMap (Full) y ProjectCreator (Mini).
- */
 
-export const MapRenderer = {
-    // Diccionarios Visuales
-    colors: { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': 'var(--accent-blue)' },
-    icons: { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' },
-    
-    getColor(level) { return this.colors[level] || '#aaa'; },
-    getIcon(level) { return this.icons[level] || '💠'; },
-
+export class MapRenderer {
     /**
-     * Renderiza una topología de VNA completa en un contenedor dado.
-     * @param {HTMLElement} container - El <div> que contendrá los nodos y el SVG.
-     * @param {HTMLElement} pathsGroup - El <g> dentro del SVG donde irán las líneas.
-     * @param {Array} roles - Lista de nodos (ej. { id: 'x', levelId: '@baixos', x: 50, y: 50, ... })
-     * @param {Array} flows - Lista de aristas (ej. { from: 'x', to: 'y', tipo: 'tangible', ... })
-     * @param {Object} options - Configuración de renderizado { isEditMode, isHeatmap, isMacro, onNodeClick, onEdgeClick, maxHeat }
+     * @param {HTMLElement} canvasEl - Contenedor HTML de los nodos (div)
+     * @param {HTMLElement} svgEl - Contenedor SVG de las aristas (svg > g)
+     * @param {Object} options - Configuración y callbacks { isEditMode, isHeatmap, onNodeClick, onNodeDrop, onEdgeClick }
      */
-    renderMap(container, pathsGroup, roles, flows, options = {}) {
-        if (!container || !pathsGroup || !roles) return;
+    constructor(canvasEl, svgEl, options = {}) {
+        this.canvas = canvasEl;
+        this.svg = svgEl;
+        this.options = Object.assign({
+            isEditMode: false,
+            isHeatmap: false,
+            maxHeat: 1,
+            onNodeClick: () => {},
+            onNodeDrop: () => {},
+            onEdgeClick: () => {}
+        }, options);
 
-        // 1. Limpiar Lienzo
-        container.querySelectorAll('.node-wrapper, .tx-badge, .sim-tx-badge').forEach(n => n.remove());
-        pathsGroup.innerHTML = '';
+        this.nodes = [];
+        this.edges = [];
+        this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
+        
+        this.isDragging = false;
+        this.draggedNode = null;
+        this.hasMoved = false;
 
-        const levelCounts = { '@anxaneta': 0, '@aixecador': 0, '@dosos': 0, '@baixos': 0, '@pinya': 0 };
-        const activeRoles = roles.filter(r => !r.isArchived);
-        const ghostRoles = roles.filter(r => r.isArchived);
+        this.initEvents();
+    }
 
-        // 2. Layout Estructural (Si no tienen coords x,y predefinidas)
+    // --- DICCIONARIOS DE DISEÑO ---
+    static getIcon(level) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[level] || '💠'; }
+    static getColor(level) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[level] || '#fff'; }
+
+    static getStyles() {
+        return `
+            /* MAP RENDERER CORE STYLES */
+            .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); width: 100%; min-height: 500px; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);}
+            .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
+            .map-svg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
+            
+            .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
+            .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.5);}
+            .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
+            .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
+            .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
+            .edge-temp { stroke: var(--accent-orange); stroke-width: 4; stroke-dasharray: 6, 6; animation: dashAnim 5s linear infinite; opacity: 0.9;}
+
+            .node-wrapper { position: absolute; z-index: 5; cursor: grab; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 140px; transition: filter 0.3s;}
+            .node-wrapper:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
+            .node-wrapper.selected { z-index: 10; }
+            .node-wrapper:hover { filter: brightness(1.2); z-index: 9;}
+            
+            .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.1); color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 85px; height: 85px; box-sizing: border-box;}
+            .node-wrapper.selected .node-circle { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.6), inset 0 0 20px rgba(0, 176, 255, 0.2) !important; }
+            .node-wrapper.sick-node .node-circle { border-color: var(--accent-red) !important; box-shadow: 0 0 45px rgba(255, 82, 82, 0.9) !important; animation: pulseSick 1s infinite alternate; }
+            .node-wrapper.ghost-node { opacity: 0.4; filter: grayscale(100%); z-index: 1; }
+            .node-wrapper.ghost-node .node-circle { border-style: dashed;}
+            
+            .node-fmv { font-size: 1.1rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 2px;}
+            .node-label-fmv { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+            .node-level-badge { position: absolute; top: -12px; left: 12px; border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; background: #000; border: 2px solid; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 2; box-sizing: border-box;}
+            .node-title { margin-top: 12px; font-size: 0.85rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px);}
+
+            .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: black;}
+            .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
+            .tx-badge.ghost { opacity: 0.3; }
+
+            .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 40px rgba(255, 171, 64, 0.6) !important; z-index: 20;}
+
+            @keyframes dashAnim { to { stroke-dashoffset: -200; } }
+            @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
+            @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        `;
+    }
+
+    setData(roles, flows) {
+        this.nodes = roles || [];
+        this.edges = flows || [];
+        this.render();
+    }
+
+    render() {
+        if (!this.canvas || !this.svg) return;
+        this.renderNodes();
+        this.renderEdges();
+    }
+
+    renderNodes() {
+        this.canvas.querySelectorAll('.node-wrapper').forEach(n => n.remove());
+        const activeRoles = this.nodes.filter(r => !r.isArchived);
+        const ghostRoles = this.nodes.filter(r => r.isArchived);
+        const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
+
+        const getInitialLayout = (level, totalInLevel, currentCount) => {
+            const baseLayout = { '@anxaneta': 15, '@aixecador': 35, '@dosos': 55, '@baixos': 75, '@pinya': 90 };
+            let y = baseLayout[level] || 50;
+            let x = 50;
+            if (totalInLevel > 1) {
+                const step = 80 / (totalInLevel - 1);
+                x = 10 + (step * currentCount);
+            }
+            y += (currentCount % 2 === 0 ? -3 : 3);
+            return { x, y };
+        };
+
         activeRoles.forEach(r => {
             const level = r.levelId || '@baixos';
             const totalInLevel = activeRoles.filter(role => role.levelId === level).length;
-            
-            let topPos = r.y;
-            let leftPos = r.x;
-
-            if (topPos === undefined || leftPos === undefined) {
-                const baseLayout = { '@anxaneta': 15, '@aixecador': 35, '@dosos': 55, '@baixos': 75, '@pinya': 90 };
-                topPos = baseLayout[level] || 50;
-                leftPos = 50;
-                
-                if (totalInLevel > 1) {
-                    const step = 80 / (totalInLevel - 1);
-                    leftPos = 10 + (step * levelCounts[level]);
-                }
-                // Micro-oscilación vertical para evitar solapamientos de flechas
-                topPos += (levelCounts[level] % 2 === 0 ? -3 : 3);
-            }
-
+            const pos = getInitialLayout(level, totalInLevel, levelCounts[level]);
             levelCounts[level]++;
 
-            const nodeDiv = this.createNodeElement(r, leftPos, topPos, false, options);
-            container.appendChild(nodeDiv);
+            const topPos = r.y !== undefined ? r.y : pos.y;
+            const leftPos = r.x !== undefined ? r.x : pos.x;
+
+            const nodeDiv = this.buildNodeDOM(r, leftPos, topPos, false);
+            this.canvas.appendChild(nodeDiv);
         });
 
-        // 3. Nodos Archivados (Fantasmas en la parte inferior)
         ghostRoles.forEach((r, i) => {
-            const nodeDiv = this.createNodeElement(r, 10 + (i * 10), 90, true, options);
-            container.appendChild(nodeDiv);
+            const nodeDiv = this.buildNodeDOM(r, 10 + (i * 10), 90, true);
+            this.canvas.appendChild(nodeDiv);
         });
+    }
 
-        // 4. Dibujar Arcos (Edges)
-        if (!flows || flows.length === 0) return;
+    buildNodeDOM(role, x, y, isGhost) {
+        const color = MapRenderer.getColor(role.levelId);
+        const icon = MapRenderer.getIcon(role.levelId);
 
-        // Agrupación de arcos paralelos (Multigrafo)
-        const pairCounts = {};
-        flows.forEach((tx, i) => {
-            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
-            if (!pairCounts[key]) pairCounts[key] = [];
-            pairCounts[key].push({ tx, index: i });
-        });
-
-        // setTimeout permite que el DOM posicione los nodos antes de calcular las líneas SVG
-        setTimeout(() => {
-            Object.keys(pairCounts).forEach(key => {
-                const edgesGroup = pairCounts[key];
-                edgesGroup.forEach((edgeData, multiIdx) => {
-                    this.drawEdge(container, pathsGroup, edgeData.tx, edgeData.index, edgesGroup, multiIdx, options);
-                });
-            });
-        }, 100);
-    },
-
-    // Generador HTML del Nodo
-    createNodeElement(role, x, y, isGhost, options) {
         const nodeDiv = document.createElement('div');
         nodeDiv.className = `node-wrapper ${isGhost ? 'ghost-node' : ''}`;
         nodeDiv.dataset.id = role.id;
         nodeDiv.style.top = `${y}%`;
         nodeDiv.style.left = `${x}%`;
 
-        if (options.isMacro) {
-            // Renderizado simplificado para el Macro-VNA
-            nodeDiv.innerHTML = `
-                <div class="node-circle" style="border-color:${role.color}; box-shadow: 0 0 35px ${role.color}50;">
-                    <div class="node-icon">${role.icon}</div>
-                    ${role.desc ? `<div class="node-desc">${role.desc}</div>` : ''}
-                </div>
-                <div class="node-title">${role.label || role.name}</div>
-            `;
-        } else {
-            // Renderizado completo para el Canvas V8/V9
-            const color = this.getColor(role.levelId);
-            const icon = this.getIcon(role.levelId);
-            nodeDiv.innerHTML = `
-                <div class="node-circle">
-                    <div class="node-level-badge" style="color: ${isGhost ? '#666' : color}; border-color: ${isGhost ? '#666' : color};" title="${role.name}">${isGhost ? '👻' : icon}</div>
-                    <div class="node-fmv" style="color: ${isGhost ? '#666' : color};">${isGhost ? 'ARCH' : (role.fmv + '€')}</div>
-                    ${!isGhost ? `<div class="node-label-fmv">x${role.multiplier}</div>` : ''}
-                </div>
-                <div class="node-title">${role.name}</div>
-            `;
-        }
+        nodeDiv.innerHTML = `
+            <div class="node-circle">
+                <div class="node-level-badge" style="color: ${isGhost ? '#666' : color}; border-color: ${isGhost ? '#666' : color};" title="${role.name}">${isGhost ? '👻' : icon}</div>
+                <div class="node-fmv" style="color: ${isGhost ? '#666' : color};">${isGhost ? 'ARCH' : (role.fmv + '€')}</div>
+                ${!isGhost ? `<div class="node-label-fmv">x${role.multiplier}</div>` : ''}
+            </div>
+            <div class="node-title">${role.name}</div>
+        `;
 
-        // Eventos
-        if (options.onNodeClick) {
-            nodeDiv.addEventListener('click', (e) => options.onNodeClick(role.id, e));
+        if (this.options.isEditMode) {
+            nodeDiv.style.cursor = 'pointer';
         }
 
         return nodeDiv;
-    },
+    }
 
-    // Trazador Matemático de Líneas SVG (Curvas Cuadráticas Bezier)
-    drawEdge(container, pathsGroup, tx, originalIndex, edgesGroup, multiIdx, options) {
-        const dom1 = container.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
-        const dom2 = container.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
+    renderEdges() {
+        this.svg.innerHTML = '';
+        this.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove());
+        if (this.edges.length === 0) return;
+
+        const pairCounts = {};
+        this.edges.forEach((tx, i) => {
+            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
+            if (!pairCounts[key]) pairCounts[key] = [];
+            pairCounts[key].push({ tx, index: i });
+        });
+
+        Object.keys(pairCounts).forEach(key => {
+            const edgesGroup = pairCounts[key];
+            edgesGroup.forEach((edgeData, multiIdx) => {
+                this.drawCurve(edgeData.tx, edgeData.index, edgesGroup, multiIdx);
+            });
+        });
+    }
+
+    drawCurve(tx, index, edgesGroup, multiIdx) {
+        const dom1 = this.canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
+        const dom2 = this.canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
 
-        const x1_center = dom1.offsetLeft;
-        const y1_center = dom1.offsetTop;
-        const x2_center = dom2.offsetLeft;
-        const y2_center = dom2.offsetTop;
+        const x1_center = dom1.offsetLeft, y1_center = dom1.offsetTop;
+        const x2_center = dom2.offsetLeft, y2_center = dom2.offsetTop;
 
-        const dx = x2_center - x1_center;
-        const dy = y2_center - y1_center;
+        const dx = x2_center - x1_center, dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
-        
-        // Recorte para que la flecha termine en el borde del nodo, no en el centro
-        const trim = options.trimSize || 50; 
+        const trim = 50; 
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -152,49 +190,33 @@ export const MapRenderer = {
             y2 = y2_center - (dy/dist) * trim;
         }
 
-        // Vectores normales para curvar la línea si hay múltiples flujos entre los mismos nodos
-        const nx = -dy / dist; 
-        const ny = dx / dist;
+        const nx = -dy / dist, ny = dx / dist;
         let offset = 0;
         
         if (edgesGroup.length > 1) {
-            const step = options.curveStep || 60; 
-            if (multiIdx % 2 !== 0) {
-                offset = Math.ceil(multiIdx / 2) * step;
-            } else {
-                offset = -(Math.ceil(multiIdx / 2) * step);
-            }
+            const step = 60; 
+            offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
             if (tx.from > tx.to) offset = -offset;
         }
 
         const cx = (x1_center + x2_center) / 2 + nx * offset;
         const cy = (y1_center + y2_center) / 2 + ny * offset;
 
-        // Trazado de Path
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         
-        const isTangible = tx.tipo === 'tangible';
-        const lineClass = isTangible ? 'edge-tangible' : 'edge-intangible';
-        path.setAttribute('class', `edge-line ${lineClass}`);
+        const suffix = this.options.isEditMode ? 'edit' : 'vis';
+        let markerId = tx.tipo === 'tangible' ? `arrow-tangible-${suffix}` : `arrow-intangible-${suffix}`;
         
-        const strokeHex = isTangible ? '#00e676' : '#e040fb';
+        const strokeHex = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+        path.setAttribute('class', `edge-line ${tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible'}`);
         path.style.stroke = strokeHex;
         
-        // Suffix dinámico para los marcadores (edit, vis, macro, etc.)
-        const markerSuffix = options.markerSuffix || 'vis';
-        const markerId = isTangible ? `arrow-tangible-${markerSuffix}` : `arrow-intangible-${markerSuffix}`;
-
-        // Lógica de Heatmap
-        if (options.isHeatmap) {
+        if (this.options.isHeatmap && !this.options.isEditMode) {
             const hProcessed = tx.total_hours_processed || 0;
-            const maxH = options.maxHeat || 1;
-            const normalizedWidth = 3 + (hProcessed / maxH) * 15;
-            const opac = hProcessed > 0 ? 0.9 : 0.15;
-            
+            const normalizedWidth = 3 + (hProcessed / this.options.maxHeat) * 15;
             path.style.strokeWidth = `${normalizedWidth}px`;
-            path.style.opacity = opac;
-            
+            path.style.opacity = hProcessed > 0 ? 0.9 : 0.15;
             if (normalizedWidth < 10) path.setAttribute('marker-end', `url(#${markerId})`);
         } else {
             path.setAttribute('marker-end', `url(#${markerId})`);
@@ -204,21 +226,11 @@ export const MapRenderer = {
             path.style.opacity = '0.2';
         }
         
-        pathsGroup.appendChild(path);
+        this.svg.appendChild(path);
 
-        // --- Renderizado del Badge sobre la curva ---
-        // Fórmula de Bezier para encontrar el punto medio exacto de la curva Q
-        let t = 0.5; 
-        if (edgesGroup.length > 1 && options.spreadBadges) {
-            const spreadFactor = 0.3; 
-            t = 0.5 + ((multiIdx / (edgesGroup.length - 1)) - 0.5) * spreadFactor;
-        }
-
-        const omt = 1 - t;
-        const omt2 = omt * omt;
-        const t2 = t * t;
-        const txX = omt2 * x1 + 2 * omt * t * cx + t2 * x2;
-        const txY = omt2 * y1 + 2 * omt * t * cy + t2 * y2;
+        // Badge Rendering
+        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
         const badge = document.createElement('div');
         badge.className = 'tx-badge';
@@ -227,9 +239,9 @@ export const MapRenderer = {
         badge.style.left = `${txX}px`;
         badge.style.top = `${txY}px`;
         badge.style.backgroundColor = strokeHex;
-        badge.setAttribute('data-idx', originalIndex);
+        badge.dataset.idx = index;
         
-        if (options.isHeatmap) {
+        if (this.options.isHeatmap && !this.options.isEditMode) {
             const h = tx.total_hours_processed || 0;
             badge.innerText = `${h}h`;
             badge.style.borderRadius = '50%';
@@ -239,16 +251,123 @@ export const MapRenderer = {
             badge.style.justifyContent = 'center';
             badge.style.alignItems = 'center';
             badge.style.opacity = h > 0 ? 1 : 0.3;
-        } else if (options.isMacro) {
-            badge.innerHTML = `<span class="tx-order">${originalIndex + 1}.</span> ${tx.label}`;
         } else {
-            badge.innerText = `[${originalIndex + 1}]`;
+            badge.innerText = `[${index + 1}]`;
         }
         
-        if (options.onEdgeClick) {
-            badge.addEventListener('click', (e) => options.onEdgeClick(originalIndex, e));
+        if (this.options.onEdgeClick && this.options.isEditMode) {
+            badge.addEventListener('click', (e) => this.options.onEdgeClick(index, e));
         }
         
-        container.appendChild(badge);
+        this.canvas.appendChild(badge);
     }
-};
+
+    drawAnimatedSimulationLine(tx, index, isSick) {
+        const dom1 = this.canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
+        const dom2 = this.canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
+        if (!dom1 || !dom2) return null;
+
+        const x1_center = dom1.offsetLeft, y1_center = dom1.offsetTop;
+        const x2_center = dom2.offsetLeft, y2_center = dom2.offsetTop;
+        const dx = x2_center - x1_center, dy = y2_center - y1_center;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const trim = 50; 
+        
+        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
+        if (dist > trim) {
+            x1 = x1_center + (dx/dist) * trim; y1 = y1_center + (dy/dist) * trim;
+            x2 = x2_center - (dx/dist) * trim; y2 = y2_center - (dy/dist) * trim;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
+        
+        let markerId = isSick ? 'arrow-sick-vis' : (tx.tipo === 'tangible' ? 'arrow-tangible-vis' : 'arrow-intangible-vis');
+        path.setAttribute('marker-end', `url(#${markerId})`);
+        
+        const strokeColor = isSick ? '#ff5252' : (tx.tipo === 'tangible' ? '#00e676' : '#e040fb');
+        
+        path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${dist}; stroke-dashoffset: ${dist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
+        this.svg.appendChild(path);
+
+        return { x: (x1_center + x2_center)/2, y: (y1_center + y2_center)/2, color: strokeColor };
+    }
+
+    drawTempLine(fromId, mouseX, mouseY, zoom = 1) {
+        const originNode = this.canvas.querySelector(`.node-wrapper[data-id="${fromId}"]`);
+        if (!originNode) return;
+
+        const canvRect = this.canvas.getBoundingClientRect();
+        const targetX = (mouseX - canvRect.left) / zoom;
+        const targetY = (mouseY - canvRect.top) / zoom;
+
+        let tempLine = this.svg.querySelector('.edge-temp');
+        if (!tempLine) {
+            tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            tempLine.setAttribute('class', 'edge-temp');
+            tempLine.setAttribute('marker-end', 'url(#arrow-temp-edit)');
+            this.svg.appendChild(tempLine);
+        }
+
+        tempLine.setAttribute('x1', originNode.offsetLeft);
+        tempLine.setAttribute('y1', originNode.offsetTop);
+        tempLine.setAttribute('x2', targetX);
+        tempLine.setAttribute('y2', targetY);
+    }
+
+    clearTempLine() {
+        const tempLine = this.svg.querySelector('.edge-temp');
+        if (tempLine) tempLine.remove();
+    }
+
+    initEvents() {
+        // Clic en Nodo
+        this.canvas.addEventListener('click', (e) => {
+            const node = e.target.closest('.node-wrapper');
+            if (node) this.options.onNodeClick(node.dataset.id, e);
+        });
+
+        // Drag & Drop Arquitecto
+        if (this.options.isEditMode) {
+            this.canvas.addEventListener('mousedown', (e) => {
+                if (window.innerWidth <= 768) return; 
+                const node = e.target.closest('.node-wrapper');
+                if (node) {
+                    this.isDragging = true;
+                    this.hasMoved = false;
+                    this.draggedNode = node;
+                    node.style.zIndex = 1000;
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (this.isDragging && this.draggedNode) {
+                    this.hasMoved = true;
+                    const rect = this.canvas.getBoundingClientRect();
+                    let newX = ((e.clientX - rect.left) / rect.width) * 100;
+                    let newY = ((e.clientY - rect.top) / rect.height) * 100;
+                    newX = Math.max(5, Math.min(newX, 95));
+                    newY = Math.max(5, Math.min(newY, 95));
+                    
+                    this.draggedNode.style.left = `${newX}%`;
+                    this.draggedNode.style.top = `${newY}%`;
+                    this.renderEdges(); 
+                }
+            });
+
+            window.addEventListener('mouseup', (e) => {
+                if (this.isDragging && this.draggedNode) {
+                    this.isDragging = false;
+                    this.draggedNode.style.zIndex = this.draggedNode.classList.contains('ghost-node') ? 1 : 5;
+                    
+                    if (this.hasMoved) {
+                        const newX = parseFloat(this.draggedNode.style.left);
+                        const newY = parseFloat(this.draggedNode.style.top);
+                        this.options.onNodeDrop(this.draggedNode.dataset.id, newX, newY);
+                    }
+                    this.draggedNode = null;
+                }
+            });
+        }
+    }
+}
