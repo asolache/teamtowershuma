@@ -11,7 +11,7 @@ export default class LmsView {
     constructor() {
         document.title = "Forja LMS | TeamTowers V14";
         this.activeProjectId = null;
-        this.currentEditMemeId = null; // Para la edición fractal
+        this.currentEditMemeId = null; 
     }
 
     async getHtml() {
@@ -66,7 +66,7 @@ export default class LmsView {
                 .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
                 .meme-wrapper { position: relative; cursor: pointer; transition: 0.2s;}
                 .meme-wrapper:hover { transform: translateY(-4px); z-index:10; }
-                .meme-wrapper:hover::after { content: '✏️ Editar Meme'; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); background: var(--accent-purple); color: white; font-size: 0.7rem; padding: 4px 10px; border-radius: 10px; font-weight: bold; pointer-events: none;}
+                .meme-wrapper:hover::after { content: '✏️ Editar Meme / Prompt'; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); background: var(--accent-purple); color: white; font-size: 0.7rem; padding: 4px 10px; border-radius: 10px; font-weight: bold; pointer-events: none;}
 
                 /* MODAL EDICIÓN FRACTAL */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 5000; }
@@ -160,7 +160,7 @@ export default class LmsView {
                 <div class="modal-overlay" id="editMemeModal">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h2 style="color:white; margin:0; font-weight:900;">✏️ Editor de Memes</h2>
+                            <h2 style="color:white; margin:0; font-weight:900;">✏️ Editor de Memes & Prompts</h2>
                             <button id="btnDeleteMeme" class="btn-delete-meme">🗑️ Extirpar</button>
                         </div>
                         
@@ -170,6 +170,8 @@ export default class LmsView {
                                 <select id="editMemeCat" class="form-control">
                                     <option value="SOC">SOC</option><option value="SOP">SOP</option>
                                     <option value="SKILL">SKILL</option><option value="RULE">RULE</option>
+                                    <option value="meta_prompt" style="color:var(--accent-purple); font-weight:bold;">META PROMPT</option>
+                                    <option value="core_os" style="color:var(--accent-green); font-weight:bold;">CORE OS</option>
                                 </select>
                             </div>
                             <div class="form-group" style="flex:1; margin:0;">
@@ -185,7 +187,7 @@ export default class LmsView {
                         
                         <div class="form-group">
                             <label>Desarrollo / Instrucción (Content)</label>
-                            <textarea id="editMemeContent" class="form-control" style="min-height:150px;"></textarea>
+                            <textarea id="editMemeContent" class="form-control" style="min-height:150px; font-family: monospace;"></textarea>
                         </div>
                         
                         <div class="form-group">
@@ -250,10 +252,8 @@ export default class LmsView {
                 this.dom.loadingResearch.style.display = 'block';
 
                 try {
-                    // Llamada a la nueva función de Orchestrator
                     const response = await Orchestrator.deepResearch(topic, this.dom.inpCategory.value, provider, apiKey);
                     
-                    // Convertir el JSON resultante a texto crudo legible para que el humano lo revise
                     let rawOutput = `--- RESULTADO DEL DEEP RESEARCH (${topic}) ---\n\n`;
                     if (response.memes) {
                         response.memes.forEach(m => {
@@ -321,7 +321,7 @@ export default class LmsView {
 
         this.dom.btnDelete.addEventListener('click', async () => {
             if (!this.currentEditMemeId) return;
-            if (confirm("¿Estás seguro de extirpar este Meme de la Base de Conocimiento? Los agentes perderán este contexto.")) {
+            if (confirm("¿Estás seguro de extirpar este Nodo de la Base de Conocimiento? Los agentes perderán este contexto.")) {
                 const db = await KB.init();
                 const tx = db.transaction(['nodes'], 'readwrite');
                 tx.objectStore('nodes').delete(this.currentEditMemeId);
@@ -355,7 +355,9 @@ export default class LmsView {
         const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
         const apiKey = localStorage.getItem(`tt_key_${provider}`);
 
-        const systemPrompt = `
+        // 🔥 SE USA EL META-PROMPT DESDE LA BASE DE DATOS
+        const promptNode = await KB.getNode('prompt_mestre_research');
+        const systemPrompt = promptNode ? promptNode.content : `
             Actúa como @mestre_escola, destilando el texto en "Memes" W3C.
             Tipos válidos de category: "SOP", "SOC", "SKILL", "RULE".
             DEVUELVE ÚNICAMENTE un JSON con el formato:
@@ -388,6 +390,7 @@ export default class LmsView {
         const allDocs = [...projectDocs];
         globalDocs.forEach(gd => { if (!allDocs.find(d => d.id === gd.id)) allDocs.push(gd); });
 
+        // 🔥 FILTRAMOS PARA VER TAMBIÉN LOS META_PROMPTS
         const memes = allDocs.filter(d => d.type === 'meme' || d.type === 'document');
 
         this.dom.kbCount.innerText = `${memes.length} Nodos Semánticos`;
@@ -399,7 +402,11 @@ export default class LmsView {
 
         this.dom.kbGrid.innerHTML = memes.reverse().map(doc => {
             const jsonldString = JSON.stringify(doc.jsonLd || {}).replace(/"/g, '&quot;');
-            const categoryBadge = doc.category ? `<span style="background:var(--accent-purple); color:white; padding:2px 8px; border-radius:12px; font-size:0.7rem; font-family:monospace;">${doc.category}</span>` : '';
+            
+            // Color especial para los Meta Prompts
+            const isMeta = doc.category === 'meta_prompt';
+            const catColor = isMeta ? 'var(--accent-orange)' : 'var(--accent-purple)';
+            const categoryBadge = doc.category ? `<span style="background:${catColor}; color:${isMeta ? 'black' : 'white'}; padding:2px 8px; border-radius:12px; font-size:0.7rem; font-family:monospace; font-weight:bold;">${doc.category}</span>` : '';
             const roleBadge = `<span style="color:#aaa; font-size:0.7rem; font-family:monospace; border:1px solid #444; padding:2px 6px; border-radius:8px;">${doc.roleTarget || 'Global'}</span>`;
             
             return `
