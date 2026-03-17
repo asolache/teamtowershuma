@@ -1,10 +1,11 @@
 // v8/js/views/ProjectCreatorView.js
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js'; 
-import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 NUEVO: Conexión al Cerebro Central
+import { Orchestrator } from '../core/Orchestrator.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { BottomNav } from '../components/BottomNav.js';
+import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 IMPORTAMOS EL COMPONENTE DRY
 
 export default class ProjectCreatorView {
     constructor() {
@@ -25,6 +26,8 @@ export default class ProjectCreatorView {
             { id: 'magician', label: '✨ Mago' }, { id: 'innocent', label: '🕊️ Inocente' },
             { id: 'explorer', label: '🧭 Explorador' }, { id: 'sage', label: '🦉 Sabio' }
         ];
+
+        this.mapVis = null; // Guardará la instancia del mapa
     }
 
     async getHtml() {
@@ -50,6 +53,8 @@ export default class ProjectCreatorView {
 
         return `
             <style>
+                ${MapRenderer.getStyles()} /* 🔥 INYECTAMOS EL CSS UNIVERSAL DEL MAPA */
+
                 .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
                 .wizard-workspace { flex: 1; padding: 3rem; overflow-y: auto; overflow-x: hidden; display: flex; justify-content: center; align-items: flex-start; background: radial-gradient(circle at center, #111116 0%, #050505 100%); width: 100%; box-sizing: border-box;}
                 
@@ -95,8 +100,8 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.5rem; padding: 5px 10px; transition: transform 0.2s; border-radius: 8px;}
                 .btn-del-role:hover { transform: scale(1.1); background: rgba(255,82,82,0.1); }
 
-                .mini-map-container { width: 100%; height: 400px; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0); background-size: 20px 20px; border: 1px solid var(--glass-border); border-radius: 16px; position: relative; margin-bottom: 2rem; overflow: hidden; background-color: rgba(0,0,0,0.3);}
-                .mini-node { position: absolute; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); border: 2px solid; transform: translate(-50%, -50%); font-size: 1.3rem; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5); cursor: help;}
+                /* REESTILIZADO PARA USAR MAP RENDERER CORE */
+                .mini-map-container { width: 100%; height: 400px; position: relative; margin-bottom: 2rem; }
 
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
@@ -104,7 +109,6 @@ export default class ProjectCreatorView {
                 .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;}
                 .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 15px 10px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
-                .phase-badge { align-self: flex-start; background: rgba(0,176,255,0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--accent-blue);}
 
                 .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
                 
@@ -115,7 +119,6 @@ export default class ProjectCreatorView {
                 .btn-lux-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,230,118,0.4);}
                 .btn-lux-outline { background: transparent; border: 1px solid #555; color: white;}
                 .btn-lux-outline:hover { border-color: white; background: rgba(255,255,255,0.05);}
-                
                 .btn-lux:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
                 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -225,7 +228,17 @@ export default class ProjectCreatorView {
                                 <p>Revisa el mapeo de valor secuencial (5 Eras) antes de inyectarlo en el Kernel.</p>
                             </div>
 
-                            <div id="miniMapContainer" class="mini-map-container" style="display: none;"></div>
+                            <div class="map-container mini-map-container" id="miniMapContainer" style="display: none;">
+                                <div class="map-canvas map-svg-layer" id="miniMapCanvas">
+                                    <svg id="miniMapSvg">
+                                        <defs>
+                                            <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                            <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                        </defs>
+                                        <g id="miniMapPaths"></g>
+                                    </svg>
+                                </div>
+                            </div>
 
                             <div id="aiTxFeedback" class="tx-feedback-box" style="display: none;" title="Haz clic para ver un adelanto de las tuberías y el Pitch">
                                 <div>
@@ -281,10 +294,25 @@ export default class ProjectCreatorView {
             txCount: document.getElementById('txCount'),
             txPreviewList: document.getElementById('txPreviewList'),
             tddErrorPanel: document.getElementById('tddErrorPanel'),
-            tddErrorList: document.getElementById('tddErrorList')
+            tddErrorList: document.getElementById('tddErrorList'),
+            // Referencias del nuevo MapRenderer
+            miniMapContainer: document.getElementById('miniMapContainer'),
+            miniMapCanvas: document.getElementById('miniMapCanvas'),
+            miniMapPaths: document.getElementById('miniMapPaths')
         };
 
         Sidebar.initListeners();
+
+        // Inicializar Componente MapRenderer
+        if (this.dom.miniMapCanvas && this.dom.miniMapPaths) {
+            this.mapVis = new MapRenderer(this.dom.miniMapCanvas, this.dom.miniMapPaths, {
+                isEditMode: false,
+                isHeatmap: false,
+                markerSuffix: 'vis',
+                trimSize: 35, // Flechas un poco más cortas para el minimapa
+                spreadBadges: false // No esparcir los badges en este modo miniatura
+            });
+        }
 
         this.dom.inpAiProvider.addEventListener('change', (e) => {
             this.dom.customEndpointBox.style.display = e.target.value === 'custom' ? 'block' : 'none';
@@ -414,7 +442,6 @@ export default class ProjectCreatorView {
         return errors;
     }
 
-    // 🔥 EL NUEVO METODO AMPUTADO Y CONECTADO AL ORQUESTADOR
     async generateWithAI() {
         const name = this.dom.inpName.value.trim();
         const vision = this.dom.inpVision.value.trim();
@@ -438,11 +465,7 @@ export default class ProjectCreatorView {
 
         try {
             await KB.init();
-
-            // 1. Delegamos TODO el trabajo duro al nuevo Cerebro Central (Orchestrator.js)
             const parsedData = await Orchestrator.designEcosystemVNA(name, archetypeText, vision, provider, apiKey);
-
-            // 2. La Vista solo se encarga de aplicar las reglas TDD visuales
             const tddErrors = this.runCognitiveTDD(parsedData);
             
             if (tddErrors.length > 0) {
@@ -453,30 +476,39 @@ export default class ProjectCreatorView {
                 return;
             }
 
-            // 3. Mapeo a memoria RAM de la vista (Drafts)
             this.draftPresentation = parsedData.presentacion || vision;
             this.draftTags = parsedData.tags || [];
             this.draftNewMemes = parsedData.new_memes || []; 
             
-            this.draftRoles = parsedData.roles.map(r => ({
-                id: 'draft_' + Math.random().toString(36).substr(2, 9),
+            // 🔥 Mapeamos roles al borrador (Añadimos _draft como id si no lo tiene)
+            this.draftRoles = parsedData.roles.map((r, i) => ({
+                id: r.id || ('draft_role_' + i + '_' + Math.random().toString(36).substr(2, 5)),
                 levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || ''
             }));
             
-            this.draftTxs = (parsedData.transactions || []).map(tx => ({
-                id: tx.id,
-                phase: tx.phase || 'Kickoff',
-                step_order: tx.step_order || 1,
-                depends_on: tx.depends_on || [],
-                fromLevel: tx.fromLevel, 
-                toLevel: tx.toLevel, 
-                tipo: tx.tipo, 
-                template: tx.template || tx.entregable, 
-                horas: tx.horas,
-                soc_checklist: (tx.soc_checklist || []).map((soc, i) => ({ id: `soc_${i}_${Date.now()}`, text: soc.text, isChecked: false })),
-                resources: tx.resources || [],
-                required_skills: tx.required_skills || []
-            }));
+            // 🔥 Mapeamos transacciones y aseguramos que apunten a los IDs de los roles borradores
+            this.draftTxs = (parsedData.transactions || []).map((tx, i) => {
+                // Buscamos el ID del rol de origen basándonos en el levelId o el name
+                const rFrom = this.draftRoles.find(r => r.levelId === tx.fromLevel || r.name === tx.fromLevel) || this.draftRoles[0];
+                const rTo = this.draftRoles.find(r => r.levelId === tx.toLevel || r.name === tx.toLevel) || this.draftRoles[this.draftRoles.length - 1];
+
+                return {
+                    id: tx.id || `tx_${i}`,
+                    phase: tx.phase || 'Kickoff',
+                    step_order: tx.step_order || 1,
+                    depends_on: tx.depends_on || [],
+                    fromLevel: tx.fromLevel, 
+                    toLevel: tx.toLevel,
+                    from: rFrom ? rFrom.id : null, // 🔥 FIX PARA EL MAP RENDERER
+                    to: rTo ? rTo.id : null,       // 🔥 FIX PARA EL MAP RENDERER
+                    tipo: tx.tipo, 
+                    template: tx.template || tx.entregable, 
+                    horas: tx.horas,
+                    soc_checklist: (tx.soc_checklist || []).map((soc, i) => ({ id: `soc_${i}_${Date.now()}`, text: soc.text, isChecked: false })),
+                    resources: tx.resources || [],
+                    required_skills: tx.required_skills || []
+                };
+            });
             
             this.dom.btnLaunch.disabled = false;
             this.dom.btnLaunch.innerText = '🚀 Inyectar Red VNA (100% SOC)';
@@ -599,6 +631,7 @@ export default class ProjectCreatorView {
             this.dom.container.appendChild(row);
         });
 
+        // Eventos inputs
         this.dom.container.querySelectorAll('.inp-role-level').forEach(sel => {
             sel.addEventListener('change', (e) => {
                 const idx = e.target.dataset.idx;
@@ -625,107 +658,14 @@ export default class ProjectCreatorView {
             });
         });
 
-        this.renderMiniMap();
-    }
-
-    renderMiniMap() {
-        const container = document.getElementById('miniMapContainer');
-        if (!container) return;
-
-        container.innerHTML = '<svg id="mini-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>';
-        const svg = document.getElementById('mini-svg');
-
-        if (this.draftRoles.length === 0) {
-            container.style.display = 'none';
-            return;
+        // 🔥 NUEVO: DELEGAMOS EL RENDERIZADO AL MAP RENDERER
+        if (this.draftRoles.length > 0 && this.mapVis) {
+            this.dom.miniMapContainer.style.display = 'block';
+            this.mapVis.setData(this.draftRoles, this.draftTxs);
+        } else {
+            this.dom.miniMapContainer.style.display = 'none';
         }
-        
-        container.style.display = 'block';
-
-        const levelY = { '@anxaneta': 20, '@aixecador': 40, '@dosos': 60, '@baixos': 80, '@pinya': 90 };
-        const levelCounts = {};
-
-        this.draftRoles.forEach((rol, i) => {
-            const level = rol.levelId || '@baixos';
-            if (!levelCounts[level]) levelCounts[level] = 0;
-            
-            const totalInLvl = this.draftRoles.filter(r => r.levelId === level).length;
-            
-            let x = 50;
-            if (totalInLvl > 1) {
-                x = 20 + (60 / (totalInLvl - 1)) * levelCounts[level];
-            }
-            
-            let y = levelY[level] || 50;
-            y += (levelCounts[level] % 2 === 0 ? -3 : 3);
-
-            rol.x = x;
-            rol.y = y;
-
-            levelCounts[level]++;
-
-            const el = document.createElement('div');
-            el.className = 'mini-node';
-            el.dataset.idx = i;
-            el.style.left = `${x}%`; el.style.top = `${y}%`;
-            el.style.borderColor = this.getColor(level);
-            el.innerHTML = this.getIcon(level);
-            el.title = rol.name;
-            container.appendChild(el);
-        });
-
-        setTimeout(() => {
-            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            defs.innerHTML = `
-                <marker id="mini-arrow-tangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-green)"/></marker>
-                <marker id="mini-arrow-intangible" markerWidth="8" markerHeight="6" refX="22" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--accent-purple)"/></marker>
-            `;
-            svg.appendChild(defs);
-
-            const pairCounts = {};
-            this.draftTxs.forEach((tx, i) => {
-                const fromIdx = this.draftRoles.findIndex(r => r.levelId === tx.fromLevel);
-                const toIdx = this.draftRoles.findIndex(r => r.levelId === tx.toLevel);
-                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
-                    const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
-                    if (!pairCounts[key]) pairCounts[key] = [];
-                    pairCounts[key].push({ tx, fromIdx, toIdx, i });
-                }
-            });
-
-            const canvRect = container.getBoundingClientRect();
-            Object.keys(pairCounts).forEach(key => {
-                const edges = pairCounts[key];
-                edges.forEach((edge, multiIdx) => {
-                    const dom1 = container.querySelector(`.mini-node[data-idx="${edge.fromIdx}"]`);
-                    const dom2 = container.querySelector(`.mini-node[data-idx="${edge.toIdx}"]`);
-                    if (!dom1 || !dom2) return;
-
-                    const r1 = dom1.getBoundingClientRect(); const r2 = dom2.getBoundingClientRect();
-                    const x1 = r1.left + r1.width/2 - canvRect.left; const y1 = r1.top + r1.height/2 - canvRect.top;
-                    const x2 = r2.left + r2.width/2 - canvRect.left; const y2 = r2.top + r2.height/2 - canvRect.top;
-                    const dx = x2 - x1, dy = y2 - y1;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    const nx = -dy / dist, ny = dx / dist;
-
-                    let offset = 0;
-                    if (edges.length > 1) offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * 15;
-
-                    const cx = (x1 + x2) / 2 + nx * offset; const cy = (y1 + y2) / 2 + ny * offset;
-
-                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-                    path.setAttribute('marker-end', edge.tx.tipo === 'tangible' ? 'url(#mini-arrow-tangible)' : 'url(#mini-arrow-intangible)');
-                    path.style.fill = 'none'; path.style.stroke = edge.tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)'; path.style.strokeWidth = '2';
-                    if(edge.tx.tipo === 'intangible') path.style.strokeDasharray = '4,4';
-                    svg.appendChild(path);
-                });
-            });
-        }, 150);
     }
-
-    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
-    getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 
     async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
@@ -773,11 +713,12 @@ export default class ProjectCreatorView {
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
-                const roleFrom = p.roles.find(r => r.levelId === aiTx.fromLevel);
-                const roleTo = p.roles.find(r => r.levelId === aiTx.toLevel);
+                // Aquí la magia: from y to ya están pre-calculados con los IDs borrador en generateWithAI()
+                const roleFrom = p.roles.find(r => r.id === aiTx.from);
+                const roleTo = p.roles.find(r => r.id === aiTx.to);
                 
                 if (roleFrom && roleTo) {
-                    const flowId = 'flow_' + aiTx.id; // Anclamos el ID generado por la IA
+                    const flowId = 'flow_' + aiTx.id; 
                     const templateName = aiTx.template || 'Entregable Core';
                     
                     await store.dispatch({
@@ -792,7 +733,6 @@ export default class ProjectCreatorView {
                         }
                     });
 
-                    // Instanciamos en el Kanban SOLO las tareas del KICKOFF (Las demás esperan su turno en el DAG)
                     if (aiTx.phase === 'Kickoff' || aiTx.depends_on.length === 0) {
                         let kickoffComment = `SOP: Ejecutar [${templateName}].`;
                         if (aiTx.soc_checklist && aiTx.soc_checklist.length > 0) kickoffComment += ` | SOCs: ` + aiTx.soc_checklist.map(s => `✔️ ${s.text}`).join(' ');
