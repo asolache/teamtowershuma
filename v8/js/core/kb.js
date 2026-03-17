@@ -23,7 +23,6 @@ export const NATIVE_ONTOLOGY = {
             "@pinya": { name: "Node Operator", multiplier: 1.0, fmv: 35, guardian: "everyman", core_flows: ['flow_node_setup'] }
         }
     }
-    // (Añadiremos los demás sectores cuando estandaricemos los flujos)
 };
 
 const GLOBAL_AIS_ONTOLOGY = [
@@ -36,17 +35,17 @@ const GLOBAL_AIS_ONTOLOGY = [
     { id: '@mestre_escola', title: 'Arquetipo: Mestre d\'Escola', content: 'Guardián del Árbol de Habilidades. Gobiernas y defines los estándares para los niveles Bronce, Plata y Oro.' }
 ];
 
-// 2. NUEVO CATÁLOGO FRACTAL (Memes + Flujos de Metodología VNA)
+// 2. NUEVO CATÁLOGO FRACTAL (Memes + Flujos de Metodología VNA + 🚀 META PROMPTS)
 export const CATALOGO_MEMES = [
     // --- CORE OS ---
     { id: 'meme_os_vna', type: 'meme', category: 'core_os', title: 'OS: Value Network Analysis', content: `Un ecosistema es una red de creación de valor. Todo entregable viaja por tuberías y se audita mediante SOCs.`, keywords: ['VNA', 'Value Conversion'], broader: 'root_ecosystem_laws', related: ['meme_os_pantheon'] },
     
-    // --- SKILLS Y GUARDIANES (Resumidos para mantener tu base) ---
+    // --- SKILLS Y GUARDIANES ---
     { id: 'meme_skill_lvl_baixos', type: 'meme', category: 'skill', title: 'Nivel: @baixos (Producción)', content: `Ejecución técnica pura, trabajo de campo, desarrollo de producto.`, keywords: ['Producción'], broader: 'root_castell_levels', related: [] },
     { id: 'meme_skill_lvl_dosos', type: 'meme', category: 'skill', title: 'Nivel: @dosos (Auditoría)', content: `Control de calidad (QA), evaluación de riesgos, revisión por pares.`, keywords: ['Auditoría'], broader: 'root_castell_levels', related: [] },
     { id: 'meme_soc_code_quality', type: 'meme', category: 'soc', title: 'SOC: Calidad de Código (Clean Code)', content: `AUDITORÍA: 1. Sin 'Magic Numbers'. 2. Funciones < 20 líneas. 3. Cobertura >80%.`, keywords: ['SOC', 'Clean Code'], broader: 'root_quality_assurance', related: [] },
 
-    // 🔥 NUEVO: FLUJOS DE METODOLOGÍA (La semilla de los 100 Roles Clave)
+    // --- FLUJOS DE METODOLOGÍA ---
     {
         id: 'flow_tdd_implementation',
         type: 'methodology_flow',
@@ -55,31 +54,51 @@ export const CATALOGO_MEMES = [
         description: 'Implementación estricta de RED-GREEN-REFACTOR entre un productor y un auditor.',
         version: '1.0',
         transactions: [
-            {
-                id: 'tx_tdd_1', step: 1, from: '@baixos', to: '@baixos', tipo: 'tangible',
-                entregable: 'Tests Unitarios (Failing)',
-                sop: 'Escribir tests que definan el comportamiento esperado antes de escribir código de producción.',
-                socs: ['Tests fallan por razones correctas', 'Cobertura de casos límite (Edge cases)']
-            },
-            {
-                id: 'tx_tdd_2', step: 2, from: '@baixos', to: '@dosos', tipo: 'tangible', depends_on: ['tx_tdd_1'],
-                entregable: 'Código de Producción + Refactor (PR)',
-                sop: 'Escribir código mínimo para pasar el test. Refactorizar respetando DRY y SOLID. Abrir Pull Request.',
-                socs: ['Todos los tests pasan (Green)', 'Complejidad ciclomática reducida']
-            },
-            {
-                id: 'tx_tdd_3', step: 3, from: '@dosos', to: '@baixos', tipo: 'intangible', depends_on: ['tx_tdd_2'],
-                entregable: 'Code Review & Merge',
-                sop: 'Auditar el PR asegurando que el código cumple Clean Code y no rompe tests de regresión.',
-                socs: ['Sin vulnerabilidades obvias', 'Aprobado y Merged a main']
-            }
+            { id: 'tx_tdd_1', step: 1, from: '@baixos', to: '@baixos', tipo: 'tangible', entregable: 'Tests Unitarios (Failing)', sop: 'Escribir tests que definan el comportamiento esperado antes de escribir código de producción.', socs: ['Tests fallan por razones correctas', 'Cobertura de casos límite (Edge cases)'] },
+            { id: 'tx_tdd_2', step: 2, from: '@baixos', to: '@dosos', tipo: 'tangible', depends_on: ['tx_tdd_1'], entregable: 'Código de Producción + Refactor (PR)', sop: 'Escribir código mínimo para pasar el test. Refactorizar respetando DRY y SOLID. Abrir Pull Request.', socs: ['Todos los tests pasan (Green)', 'Complejidad ciclomática reducida'] },
+            { id: 'tx_tdd_3', step: 3, from: '@dosos', to: '@baixos', tipo: 'intangible', depends_on: ['tx_tdd_2'], entregable: 'Code Review & Merge', sop: 'Auditar el PR asegurando que el código cumple Clean Code y no rompe tests de regresión.', socs: ['Sin vulnerabilidades obvias', 'Aprobado y Merged a main'] }
         ]
+    },
+
+    // 🚀 NUEVO: META-PROMPTS (Las Almas de los Agentes Core)
+    {
+        id: 'prompt_genesi_vna',
+        type: 'meme',
+        category: 'meta_prompt',
+        title: 'Meta-Prompt: Creador VNA (@genesi_ai)',
+        content: `Eres el Master Ecosystem Architect de TeamTowers V14. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto.
+MANDAMIENTOS: 1. MÍNIMO 12 transacciones. 2. 5 ERAS: Kickoff, Growth, Scale, Harvest, Cierre. 3. Lógica DAG en "depends_on". 4. 30% transacciones intangibles. 5. 3 skills por tx. 6. 2 soc_checklists auditable matemáticamente por tx.
+ESTRUCTURA JSON EXACTA: { "presentacion": "...", "tags": ["..."], "new_memes": [{ "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }], "roles": [{ "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "template": "...", "horas": 5, "required_skills": ["meme_skill_x"], "soc_checklist": [{ "text": "..." }] }] }
+REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @pinya).`,
+        keywords: ['System', 'Prompt', 'Genesi']
+    },
+    {
+        id: 'prompt_genesi_forge',
+        type: 'meme',
+        category: 'meta_prompt',
+        title: 'Meta-Prompt: Forjador de Nodos (@genesi_ai)',
+        content: `Eres @genesi_ai, el Meta-Agente Forjador. Tu misión es redactar el 'System Prompt' perfecto y determinista para un nuevo agente que va a operar en la Matriz V14.`,
+        keywords: ['System', 'Prompt', 'Forge']
+    },
+    {
+        id: 'prompt_mestre_research',
+        type: 'meme',
+        category: 'meta_prompt',
+        title: 'Meta-Prompt: Deep Research (@mestre_escola)',
+        content: `Actúa como @mestre_escola, el Investigador Jefe Académico y de Ingeniería de la Matriz V14.
+Tu directiva es extraer el conocimiento más veraz, estandarizado a nivel industrial y profundo sobre el tema solicitado. No simules ni inventes; accede a tu base de conocimiento global (patrones de diseño, normativas ISO, frameworks Agile/W3C, documentación técnica oficial).
+Debes destilar este conocimiento en un array de "Memes" (nodos de conocimiento).
+Si la categoría solicitada es "SOP" (Procedimientos), describe pasos ejecutables.
+Si es "SOC" (Condiciones), describe métricas de calidad estrictas y auditables.
+Si es "SKILL", describe las competencias técnicas reales necesarias.
+DEVUELVE ÚNICAMENTE JSON: { "memes": [ { "category": "XXX", "title": "Nombre del framework", "content": "Desarrollo técnico...", "keywords": ["tag1", "tag2"] } ] }`,
+        keywords: ['System', 'Prompt', 'Research', 'Mestre']
     }
 ];
 
 export const KB = {
-    dbName: 'TeamTowers_LMS_V12', // Subimos versión por el cambio de esquema
-    dbVersion: 2,
+    dbName: 'TeamTowers_LMS_V14', 
+    dbVersion: 3, // Subimos versión para forzar el re-seed de los Meta-Prompts
     db: null,
 
     init() {
@@ -98,7 +117,6 @@ export const KB = {
                     store.createIndex('type', 'type', { unique: false }); 
                     store.createIndex('projectId', 'projectId', { unique: false });
                     store.createIndex('targetId', 'targetId', { unique: false }); 
-                    // Nuevo índice para rastrear la evolución (forks)
                     store.createIndex('forkedFrom', 'forkedFrom', { unique: false }); 
                 }
             };
@@ -108,7 +126,8 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        if (nodes.filter(n => n.type === 'meme' || n.type === 'methodology_flow').length === 0) {
+        // Forzamos inyección si no hay meta_prompts (Upgrade V14)
+        if (nodes.filter(n => n.category === 'meta_prompt').length === 0) {
             for (const meme of CATALOGO_MEMES) { await this.saveNode(meme); }
         }
 
@@ -116,7 +135,6 @@ export const KB = {
             for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
                 await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Ecosistema: ${sectorData.label}`, content: sectorData.meta });
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
-                    // Ahora guardamos la referencia a los flujos core en lugar de simples entregables
                     const contentStr = `Rol: ${roleData.name} (${levelKey}). Guardian: ${roleData.guardian}. FMV Base: €${roleData.fmv}/h.`;
                     await this.saveNode({ 
                         id: `onto_${sectorKey}_${levelKey.replace('@','')}`, 
@@ -135,6 +153,17 @@ export const KB = {
     async saveDocument(doc) { return this.saveNode(doc); },
     async getAllDocuments(projectId = null) { return this.getAllNodes({ projectId }); },
 
+    async getNode(id) {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction(['nodes'], 'readonly');
+            const store = transaction.objectStore('nodes');
+            const request = store.get(id);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (e) => reject(e.target.error);
+        });
+    },
+
     async saveNode(node) {
         if (!this.db) await this.init();
         return new Promise((resolve, reject) => {
@@ -144,7 +173,7 @@ export const KB = {
             const semanticNode = {
                 ...node, id: node.id || 'node_' + Date.now(), lastUpdated: Date.now(),
                 projectId: node.projectId || 'global', targetId: node.targetId || 'global', type: node.type || 'custom',
-                forkedFrom: node.forkedFrom || null, // Clave para la trazabilidad de mutaciones
+                forkedFrom: node.forkedFrom || null,
                 jsonLd: {
                     "@context": "https://schema.org", "@type": "DefinedTerm",
                     "name": node.title, "description": node.content || node.description, "inDefinedTermSet": "TeamTowers_Ontology",
@@ -239,8 +268,6 @@ export const KB = {
                 
                 if (roleOntologyNode) {
                     defaultDna.push(roleOntologyNode);
-                    
-                    // Extraer los flujos VNA nativos del rol
                     if (roleOntologyNode.core_flows) {
                         roleOntologyNode.core_flows.forEach(flowId => {
                             const flowNode = allNodes.find(n => n.id === flowId && n.type === 'methodology_flow');
@@ -264,7 +291,6 @@ export const KB = {
             branches: [
                 { name: "🌐 Core OS & Arquetipo", nodes: osMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content, isNative: true })) },
                 { name: "🧬 ADN (Ontología)", nodes: finalDna.map(p => ({ id: p.id, title: p.title || p.jsonLd?.name, content: p.content, isNative: true, originalNode: p })) },
-                // NUEVA RAMA: Flujos de Metodología VNA procesables por el agente
                 { name: "🔄 Flujos VNA (SOPs)", nodes: methodologyFlows.map(f => ({ id: f.id, title: f.title, content: JSON.stringify(f.transactions, null, 2), isNative: true })) },
                 { name: "🎒 Skills & SOCs", nodes: finalSkillsAndSocs.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content, isNative: m.isNative })) },
                 { name: "📚 Memoria LMS", nodes: memories.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content })) }
@@ -274,7 +300,7 @@ export const KB = {
 
     async getAgentContextFlattened(projectId, roleObj, projectVision, archetype = 'startup') {
         const tree = await this.getAgentBrainGraph(projectId, roleObj, projectVision, archetype);
-        let flatContext = `Eres un Agente en TeamTowers V9.\nMisión: ${tree.mission}\nArquetipo: ${tree.archetype}\nSilla: ${tree.name} (${tree.level})\nGuardián: ${tree.guardian}\n\n[OS]\n${tree.branches[0].nodes.map(n => n.content).join('\n')}\n\n[ADN]\n${tree.branches[1].nodes.map(n => n.content).join('\n')}\n\n[FLUJOS METODOLÓGICOS VNA]\n${tree.branches[2].nodes.map(n => n.content).join('\n')}\n\n[SKILLS/SOCs]\n${tree.branches[3].nodes.map(n => n.content).join('\n')}\n\n[MEMORIA]\n${tree.branches[4].nodes.map(n => n.content).join('\n')}`;
+        let flatContext = `Eres un Agente en TeamTowers V14.\nMisión: ${tree.mission}\nArquetipo: ${tree.archetype}\nSilla: ${tree.name} (${tree.level})\nGuardián: ${tree.guardian}\n\n[OS]\n${tree.branches[0].nodes.map(n => n.content).join('\n')}\n\n[ADN]\n${tree.branches[1].nodes.map(n => n.content).join('\n')}\n\n[FLUJOS METODOLÓGICOS VNA]\n${tree.branches[2].nodes.map(n => n.content).join('\n')}\n\n[SKILLS/SOCs]\n${tree.branches[3].nodes.map(n => n.content).join('\n')}\n\n[MEMORIA]\n${tree.branches[4].nodes.map(n => n.content).join('\n')}`;
         return flatContext.replace(/\s+/g, ' ').trim();
     }
 };
