@@ -140,36 +140,45 @@ class Store {
                     }
                 }
                 break;
-            case 'APPROVE_WORK_ORDER':
+         case 'APPROVE_WORK_ORDER':
                 proj = newState.projects.find(p => p.id === action.payload.projectId);
                 wo = proj?.work_orders.find(w => w.hash === action.payload.woHash);
+                
                 if (proj && wo) {
-                    wo.status = 'consolidated';
-                    const flow = proj.vna_flows.find(f => f.id === wo.flowId);
-                    const role = proj.roles.find(r => r.id === flow.to);
-                    let finalSlices = 0;
-                    
-                    if (flow && role) {
-                        let baseSlices = wo.realHours * role.fmv * role.multiplier;
-                        let mermaPercent = 0;
-                        if (wo.soc_checklist && wo.soc_checklist.length > 0) {
-                            const failedSocs = wo.soc_checklist.filter(s => !s.isChecked).length;
-                            mermaPercent = (failedSocs / wo.soc_checklist.length) * 0.5; 
-                        }
-                        finalSlices = baseSlices * (1 - mermaPercent);
-                        
-                        proj.ledger.push({
-                            id: 'tx_' + Date.now(), type: 'SOP_EXECUTION',
-                            userId: wo.workerId, roleId: role.id,
-                            horas: wo.realHours, fmv: role.fmv, multiplier: role.multiplier,
-                            valorCongelado: finalSlices, date: Date.now()
-                        });
+                    // 🔥 FIX V13 (TDD ESTRICTO): Verificamos si hay algún SOC fallido
+                    let hasFailedSocs = false;
+                    if (wo.soc_checklist && wo.soc_checklist.length > 0) {
+                        const failedSocs = wo.soc_checklist.filter(s => !s.isChecked).length;
+                        if (failedSocs > 0) hasFailedSocs = true;
                     }
 
-                    const user = newState.globalUsers.find(u => u.id === wo.workerId);
-                    if (user && user.profile) {
-                        if (!user.profile.sbt_skills) user.profile.sbt_skills = [];
-                        user.profile.sbt_skills.push({ flowId: wo.flowId, exp: wo.realHours, date: Date.now() });
+                    if (hasFailedSocs) {
+                        // RECHAZO TDD: El SOC falló. La válvula del DAG se cierra. Vuelve al trabajador.
+                        wo.status = 'reported';
+                    } else {
+                        // APROBACIÓN TDD: 100% Validado. Sello inmutable en el Ledger.
+                        wo.status = 'consolidated';
+                        const flow = proj.vna_flows.find(f => f.id === wo.flowId);
+                        const role = proj.roles.find(r => r.id === flow.to);
+                        
+                        if (flow && role) {
+                            // Al ser 100% TDD, el pago es íntegro sin mermas
+                            let finalSlices = wo.realHours * role.fmv * role.multiplier;
+                            
+                            proj.ledger.push({
+                                id: 'tx_' + Date.now(), type: 'SOP_EXECUTION',
+                                userId: wo.workerId, roleId: role.id,
+                                horas: wo.realHours, fmv: role.fmv, multiplier: role.multiplier,
+                                valorCongelado: finalSlices, date: Date.now()
+                            });
+                        }
+
+                        // Exp. Fractal para el Padrón Global
+                        const user = newState.globalUsers.find(u => u.id === wo.workerId);
+                        if (user && user.profile) {
+                            if (!user.profile.sbt_skills) user.profile.sbt_skills = [];
+                            user.profile.sbt_skills.push({ flowId: wo.flowId, exp: wo.realHours, date: Date.now() });
+                        }
                     }
                 }
                 break;
