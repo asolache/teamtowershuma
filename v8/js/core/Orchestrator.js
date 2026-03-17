@@ -41,8 +41,10 @@ class OrchestratorCore {
     }
 
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
-        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para el Orquestador.");
+    async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
+        if (!apiKey && provider !== 'custom') throw new Error(`API Key requerida para el Orquestador (${provider}).`);
         let attempt = 0; let lastError = null;
+        
         while (attempt <= maxRetries) {
             try {
                 let textResponse = ""; let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
@@ -55,15 +57,23 @@ class OrchestratorCore {
                             contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }], 
                             generationConfig: { 
                                 temperature, 
-                                maxOutputTokens: 8192, // 🔥 VITAL: Evita JSONs truncados
+                                maxOutputTokens: 8192, 
                                 responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" 
                             } 
                         })
                     });
-                    if (!response.ok) throw new Error(`Google Gemini Error: ${response.statusText}`);
+                    
+                    // 🔥 FIX: EXTRAER EL ERROR REAL DE GOOGLE
+                    if (!response.ok) {
+                        let errorDetail = response.statusText;
+                        try { const errJson = await response.json(); errorDetail = errJson.error?.message || JSON.stringify(errJson); } catch(e) {}
+                        throw new Error(`Gemini [${response.status}]: ${errorDetail}`);
+                    }
+                    
                     const data = await response.json();
                     textResponse = data.candidates[0].content.parts[0].text;
                     if (data.usageMetadata) { tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; }
+                
                 } else if (provider === 'openai' || provider === 'deepseek') {
                     const endpoint = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.deepseek.com/chat/completions';
                     const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
@@ -73,11 +83,18 @@ class OrchestratorCore {
                             model: modelName, 
                             messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
                             temperature, 
-                            max_tokens: 8192, // 🔥 VITAL: Evita JSONs truncados
+                            max_tokens: 8192, 
                             response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
                         })
                     });
-                    if (!response.ok) throw new Error(`${provider.toUpperCase()} Error: ${response.statusText}`);
+                    
+                    // 🔥 FIX: EXTRAER EL ERROR REAL DE OPENAI/DEEPSEEK
+                    if (!response.ok) {
+                        let errorDetail = response.statusText;
+                        try { const errJson = await response.json(); errorDetail = errJson.error?.message || JSON.stringify(errJson); } catch(e) {}
+                        throw new Error(`${provider.toUpperCase()} [${response.status}]: ${errorDetail}`);
+                    }
+                    
                     const data = await response.json();
                     textResponse = data.choices[0].message.content;
                     if (data.usage) tokenUsage = data.usage;
@@ -85,6 +102,7 @@ class OrchestratorCore {
 
                 const latencyMs = Date.now() - startTime;
                 let parsedContent = textResponse;
+                
                 if (responseFormat === "json_object") {
                     let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
                     const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
@@ -92,11 +110,14 @@ class OrchestratorCore {
                     parsedContent = JSON.parse(cleanText);
                 }
                 return { content: parsedContent, telemetry: { provider, tokens: tokenUsage, latencyMs } };
+            
             } catch (error) {
-                lastError = error; attempt++; await new Promise(r => setTimeout(r, 1000));
+                lastError = error; attempt++; 
+                console.warn(`⚠️ [Orquestador] Fallo en intento ${attempt}/${maxRetries + 1}. Error:`, error.message);
+                await new Promise(r => setTimeout(r, 1000));
             }
         }
-        throw new Error(`Fallo tras ${maxRetries + 1} intentos. Último error: ${lastError.message}`);
+        throw new Error(`Último error devuelto por la API: ${lastError.message}`);
     }
 
     // ==========================================
