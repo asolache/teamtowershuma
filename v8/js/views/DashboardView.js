@@ -1,11 +1,14 @@
 // v8/js/views/DashboardView.js
 import { store } from '../core/store.js';
+import { KB } from '../core/kb.js'; // Importamos KB para la integración RAG si fuera necesaria
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
+import { MapRenderer } from '../components/MapRenderer.js'; 
+import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
 
 export default class DashboardView {
     constructor() {
-        document.title = "Dashboard de Red | TeamTowers V8";
+        document.title = "Dashboard de Red | TeamTowers V14";
         this.activeProjectId = null;
         this.currentTab = 'overview';
     }
@@ -54,22 +57,21 @@ export default class DashboardView {
             `;
         }
 
-        // --- CÁLCULOS CORE V8/V9 ---
+        // --- CÁLCULOS CORE V14 ---
         const harvest = store.calculateHarvest(project.id) || [];
         const totalSlices = harvest.reduce((sum, h) => sum + h.slices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
-        const resilience = store.calculateResilience ? store.calculateResilience(project.id) : 100; // Protegido si el método no existe
+        const resilience = store.calculateResilience ? store.calculateResilience(project.id) : 100;
         
         const rolesActivos = project.roles.filter(r => !r.isArchived);
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
 
-        // --- NUEVO: CÁLCULO DE TELEMETRÍA (SPRINT 34.5) ---
-        let aiGrossValue = 0; // Valor Slicing Pie minado por IA
-        let realApiCost = 0;  // Gasto en dólares real de los LLM
+        // --- CÁLCULO DE TELEMETRÍA (Arbitraje IA) ---
+        let aiGrossValue = 0; 
+        let realApiCost = 0;  
         let totalTokens = 0;
 
-        // 1. Calculamos el Valor de Mercado minado por las IA
         (project.ledger || []).forEach(tx => {
             const user = state.globalUsers.find(u => u.id === tx.userId);
             if (user && user.profile?.isAi) {
@@ -77,17 +79,20 @@ export default class DashboardView {
             }
         });
 
-        // 2. Extraemos el coste real desde el array de telemetría inyectado por el Orquestador
         if (project.telemetry && project.telemetry.length > 0) {
             project.telemetry.forEach(log => {
                 realApiCost += log.costInDollars || 0;
                 totalTokens += (log.tokens?.total_tokens || log.tokens?.prompt_tokens + log.tokens?.completion_tokens) || 0;
             });
         }
-
-        // Ratio de Eficiencia Cognitiva (REC)
         const recRatio = realApiCost > 0 ? (aiGrossValue / realApiCost) : 0;
-        // ----------------------------------------------------
+        
+        // --- IDENTIFICACIÓN DEL ENJAMBRE IA ASIGNADO ---
+        const projectUsers = project.usuarios || [];
+        const aisInProject = projectUsers.map(u => state.globalUsers.find(gu => gu.id === u.id)).filter(u => u && u.profile?.isAi);
+        const aiAvatarsHtml = aisInProject.length > 0 
+            ? aisInProject.map(ai => `<div class="ai-avatar-badge" title="${ai.name} (${ai.id})">🤖</div>`).join('')
+            : `<div style="color:#888; font-size:0.8rem; font-style:italic;">No hay Agentes IA en la Colla.</div>`;
 
         let vacantesHtml = sillasVacias.length === 0 
             ? `<div style="padding: 1.5rem; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: 12px; color: var(--accent-green); text-align: center; font-weight: bold;">✅ Arquitectura completa. Sin vacantes estructurales.</div>`
@@ -112,7 +117,7 @@ export default class DashboardView {
         const headerConfig = {
             title: project.nombre,
             subtitle: project.archetype, 
-            tagline: "Centro de Mando del Ecosistema",
+            tagline: "Ojo del Castell (Centro de Mando)",
             tabs: [
                 { id: 'overview', label: '📊 Resumen Operativo', active: this.currentTab === 'overview' },
                 { id: 'market', label: '🎯 Mercado Interno', active: this.currentTab === 'market', badge: sillasVacias.length || null },
@@ -126,141 +131,164 @@ export default class DashboardView {
 
         return `
             <style>
-                .workflow-schema { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; margin-bottom: 2rem; }
-                .schema-step { display: flex; flex-direction: column; align-items: center; text-decoration: none; text-align: center; gap: 12px; flex: 1; transition: all 0.3s; filter: grayscale(40%) opacity(0.8); }
-                .schema-step:hover { transform: translateY(-5px); filter: grayscale(0%) opacity(1); }
-                .s-icon { font-size: 2.5rem; background: rgba(255,255,255,0.03); width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: 0.3s; }
-                .schema-step:hover .s-icon { border-color: var(--accent-blue); box-shadow: 0 15px 30px rgba(0,176,255,0.2); }
-                .s-text { color: white; font-weight: 900; font-size: 0.95rem; text-transform: uppercase; }
-                .s-text span { color: var(--accent-blue); font-size: 0.75rem; font-family: var(--font-mono); display: block; margin-top: 4px; font-weight: normal; }
-                .schema-arrow { color: rgba(255,255,255,0.1); font-size: 2rem; font-weight: bold; margin-top: 20px; }
+                ${MapRenderer.getStyles()}
+                ${LedgerRenderer.getStyles()}
 
-                .presentation-text { color: #ccc; font-size: 1rem; line-height: 1.6; overflow: hidden; transition: max-height 0.4s ease; }
-                .presentation-text.collapsed { max-height: 75px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
+                .workspace-dash { flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; box-sizing: border-box;}
+                
+                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
+                .tab-content.active { display: block; }
 
-                .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 2.5rem; }
+                /* GRID PRINCIPAL DEL DASHBOARD */
+                .dash-grid { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; margin-bottom: 2.5rem; align-items: start;}
+                
+                /* PANELES DE INFORMACIÓN */
+                .dash-panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: flex; flex-direction: column; height: 100%; box-sizing: border-box;}
+                .panel-title { color: white; font-size: 1.2rem; font-weight: 900; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; display:flex; justify-content:space-between; align-items:center; text-transform:uppercase; letter-spacing:1px;}
+                
+                /* PRESENTACIÓN Y ENLACE AL PAPER */
+                .presentation-text { color: #ccc; font-size: 1rem; line-height: 1.6; font-style: italic; border-left: 3px solid var(--accent-purple); padding-left: 15px; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;}
+                .btn-open-paper { background: linear-gradient(135deg, rgba(224,64,251,0.1), rgba(0,176,255,0.1)); border: 1px solid var(--accent-purple); color: white; padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display:flex; justify-content:center; align-items:center; gap:10px; width: 100%; font-size: 0.95rem;}
+                .btn-open-paper:hover { background: var(--accent-purple); box-shadow: 0 0 20px rgba(224,64,251,0.4); transform: translateY(-2px);}
+
+                /* MINI MAP CONTAINER DRY */
+                .mini-map-container { width: 100%; height: 300px; position: relative; border-radius:16px; border:1px solid #333; overflow:hidden; margin-bottom: 2rem;}
+
+                /* KPIS */
+                .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.2rem; margin-bottom: 2.5rem; }
                 .kpi-card { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 1.5rem 1rem; border-radius: 16px; text-align: center; transition: 0.3s; }
                 .kpi-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.02); }
                 .kpi-val { font-size: 2.2rem; font-weight: 900; display: block; margin-bottom: 5px; font-family: var(--font-mono); line-height: 1;}
                 .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-                /* 🔥 NUEVO PANEL DE TELEMETRÍA A2A */
-                .ai-arbitrage-panel { background: linear-gradient(135deg, rgba(224, 64, 251, 0.05), rgba(0, 176, 255, 0.05)); border: 1px dashed var(--accent-purple); padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; display: flex; flex-direction:column; gap: 20px;}
-                .ai-stat-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;}
-                .ai-stat-block { display: flex; flex-direction: column; gap: 5px; }
-                .ai-stat-lbl { font-size: 0.75rem; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
-                .ai-stat-val { font-size: 1.8rem; font-weight: 900; font-family: var(--font-mono); color: white; }
+                /* TELEMETRÍA A2A */
+                .ai-arbitrage-panel { background: rgba(0,0,0,0.4); border: 1px dashed var(--accent-blue); padding: 1.5rem; border-radius: 16px; display: flex; flex-direction:column; gap: 15px;}
+                .ai-stat-row { display: flex; align-items: center; justify-content: space-between;}
+                .ai-stat-lbl { font-size: 0.7rem; color: #aaa; text-transform: uppercase; font-weight: bold;}
+                .ai-stat-val { font-size: 1.4rem; font-weight: 900; font-family: var(--font-mono); color: white; }
+                .ai-avatar-badge { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-purple); display:flex; justify-content:center; align-items:center; font-size: 1.2rem; border: 2px solid #111; margin-left: -10px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+                .ai-avatar-badge:first-child { margin-left: 0; }
 
+                /* MODAL IA */
                 .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);}
                 .modal-ia-content { background: var(--bg-dark); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow:hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border-top: 4px solid var(--accent-purple);}
                 
+                @media (max-width: 1024px) {
+                    .dash-grid { grid-template-columns: 1fr; }
+                }
                 @media (max-width: 768px) {
-                    .workflow-schema { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1.5rem; }
-                    .schema-arrow { display: none; }
-                    .s-icon { width: 60px; height: 60px; font-size: 2rem; border-radius: 16px; margin-bottom: 10px;}
+                    .workspace-dash { padding: 90px 1rem 120px 1rem; }
+                    .dash-panel { padding: 1.5rem; }
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/dashboard')}
 
-                <main class="workspace">
+                <main class="workspace-dash">
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="tab-overview" class="tab-content ${this.currentTab === 'overview' ? 'active' : ''}">
                         
-                        <div class="glass-panel workflow-schema">
-                            <a href="/v8/map" data-link class="schema-step">
-                                <div class="s-icon">🕸️</div>
-                                <div class="s-text">1. Diseñar<br><span>(Mapa VNA)</span></div>
-                            </a>
-                            <div class="schema-arrow">→</div>
-                            <a href="/v8/project" data-link class="schema-step">
-                                <div class="s-icon">📋</div>
-                                <div class="s-text">2. Asignar<br><span>(Kanban PULL)</span></div>
-                            </a>
-                            <div class="schema-arrow">→</div>
-                            <a href="/v8/focus" data-link class="schema-step">
-                                <div class="s-icon">🍅</div>
-                                <div class="s-text">3. Ejecutar<br><span>(Modo Focus)</span></div>
-                            </a>
-                            <div class="schema-arrow">→</div>
-                            <a href="/v8/ledger" data-link class="schema-step">
-                                <div class="s-icon">⚖️</div>
-                                <div class="s-text">4. Sellar<br><span>(Ledger & Equity)</span></div>
-                            </a>
-                        </div>
+                        <div class="dash-grid">
+                            <div>
+                                <div class="dash-panel" style="border-top: 4px solid var(--accent-purple); margin-bottom: 2rem;">
+                                    <div class="panel-title"><span>📖 Propósito Fundacional</span> <div style="display:flex; gap:5px;">${tagsHtml}</div></div>
+                                    <div class="presentation-text" id="pitchText">${pitchText}</div>
+                                    <button class="btn-open-paper" id="btnOpenPaper">📝 Desarrollar en Omni-Paper (Usenet)</button>
+                                </div>
 
-                        <div class="ai-arbitrage-panel">
-                            <div class="ai-stat-row">
-                                <div style="display:flex; align-items:center; gap: 15px;">
-                                    <div style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(224, 64, 251, 0.4));">🤖</div>
-                                    <div>
-                                        <h3 style="color: var(--accent-purple); margin:0 0 5px 0; font-weight:900;">Telemetría A2A (Arbitraje Cognitivo)</h3>
-                                        <p style="color: #aaa; margin:0; font-size:0.85rem;">Monitoreo de eficiencia (LLM Tokenomics) vs Valor Creado.</p>
+                                <div class="dash-panel" style="border-top: 4px solid var(--accent-blue); padding:0;">
+                                    <div class="panel-title" style="padding: 2rem 2rem 0 2rem; border:none; margin-bottom:1rem;">🕸️ Topología del Ecosistema</div>
+                                    <div class="mini-map-container" id="dashMapContainer">
+                                        <div class="map-canvas map-svg-layer" id="dashMapCanvas">
+                                            <svg id="dashMapSvg">
+                                                <defs>
+                                                    <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                                    <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                                </defs>
+                                                <g id="dashMapPaths"></g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 0 2rem 2rem 2rem;">
+                                        <a href="/v8/map" data-link style="color:var(--accent-blue); font-size:0.9rem; text-decoration:none; font-weight:bold;">Modificar Arquitectura &rarr;</a>
                                     </div>
                                 </div>
-                                <div class="ai-stat-block" style="text-align:right;">
-                                    <span class="ai-stat-lbl">Tokens Consumidos</span>
-                                    <span class="ai-stat-val" style="font-size:1.2rem;">${(totalTokens / 1000).toFixed(1)}k</span>
-                                </div>
                             </div>
-                            
-                            <div class="ai-stat-row" style="margin-top:10px; border-top:1px dashed rgba(255,255,255,0.1); padding-top:20px;">
-                                <div class="ai-stat-block">
-                                    <span class="ai-stat-lbl">Valor Slicing Pie Generado</span>
-                                    <span class="ai-stat-val" style="color:white;">€${aiGrossValue.toLocaleString()}</span>
+
+                            <div>
+                                <div class="dash-panel" style="border-top: 4px solid var(--accent-green); margin-bottom: 2rem;">
+                                    <div class="panel-title">🤖 Enjambre IA Activo</div>
+                                    <div style="display:flex; margin-bottom:1rem;">
+                                        ${aiAvatarsHtml}
+                                    </div>
+                                    
+                                    <div class="ai-arbitrage-panel">
+                                        <div class="ai-stat-row">
+                                            <span class="ai-stat-lbl">Tokens Consumidos</span>
+                                            <span class="ai-stat-val" style="color:var(--accent-blue);">${(totalTokens / 1000).toFixed(1)}k</span>
+                                        </div>
+                                        <div class="ai-stat-row">
+                                            <span class="ai-stat-lbl">Gasto API (USD)</span>
+                                            <span class="ai-stat-val" style="color:var(--accent-red);">$${realApiCost.toFixed(4)}</span>
+                                        </div>
+                                        <div class="ai-stat-row" style="border-top: 1px dashed #444; padding-top: 15px; margin-top: 5px;">
+                                            <span class="ai-stat-lbl" style="color:var(--accent-green);">Valor (Slices) IA</span>
+                                            <span class="ai-stat-val" style="color:var(--accent-green);">€${aiGrossValue.toLocaleString()}</span>
+                                        </div>
+                                        <div class="ai-stat-row">
+                                            <span class="ai-stat-lbl" style="color:var(--accent-purple);">Ratio (REC)</span>
+                                            <span class="ai-stat-val" style="color:var(--accent-purple);">${recRatio > 0 ? recRatio.toFixed(0) + 'x' : '0'}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="ai-stat-block">
-                                    <span class="ai-stat-lbl" style="color:var(--accent-red);">Gasto Real API (USD)</span>
-                                    <span class="ai-stat-val" style="color:var(--accent-red);">$${realApiCost.toFixed(4)}</span>
-                                </div>
-                                <div class="ai-stat-block" style="padding-left: 1.5rem; border-left: 2px solid var(--accent-purple);">
-                                    <span class="ai-stat-lbl" style="color:var(--accent-purple);">Ratio (REC)</span>
-                                    <span class="ai-stat-val" style="color:var(--accent-purple);">${recRatio > 0 ? recRatio.toFixed(0) + 'x' : '0'}</span>
-                                </div>
+
+                                <section class="kpi-grid">
+                                    <div class="kpi-card" style="border-bottom: 3px solid var(--accent-green);">
+                                        <span class="kpi-val" style="color: var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</span>
+                                        <span class="kpi-lbl">Slices Minados</span>
+                                    </div>
+                                    <div class="kpi-card" style="border-bottom: 3px solid var(--accent-blue);">
+                                        <span class="kpi-val" style="color: var(--accent-blue);">${totalHours.toFixed(1)}h</span>
+                                        <span class="kpi-lbl">Trabajo Auditado</span>
+                                    </div>
+                                    <div class="kpi-card" style="border-bottom: 3px solid ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">
+                                        <span class="kpi-val" style="color: ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">${resilience}%</span>
+                                        <span class="kpi-lbl">Salud Estructural</span>
+                                    </div>
+                                    <div class="kpi-card" style="border-bottom: 3px solid #888;">
+                                        <span class="kpi-val" style="color: white;">${project.usuarios ? project.usuarios.length : 1}</span>
+                                        <span class="kpi-lbl">Nodos en Colla</span>
+                                    </div>
+                                </section>
                             </div>
                         </div>
 
-                        <div class="glass-panel" style="padding: 1.5rem 2rem; border-left: 4px solid var(--accent-blue); margin-bottom: 2.5rem;">
-                            <div style="display:flex; gap: 10px; margin-bottom: 15px; flex-wrap:wrap;">${tagsHtml}</div>
-                            <div class="presentation-text collapsed" id="pitchText">${pitchText.replace(/\n/g, '<br>')}</div>
-                            <button id="btnTogglePitch" style="background:none; border:none; color:var(--accent-blue); font-weight:900; cursor:pointer; padding:10px 0 0 0; font-size:0.8rem; text-transform:uppercase;">Expandir Manifiesto ▾</button>
+                        <div class="dash-panel" style="border-top: 4px solid var(--accent-green); padding:0; overflow:hidden;">
+                            <div class="panel-title" style="padding: 2rem 2rem 0 2rem; border:none; margin-bottom:1rem;">⚖️ Distribución de Equidad</div>
+                            <div id="dashLedgerContainer" style="padding: 0 2rem 2rem 2rem;"></div>
+                            <div style="background: rgba(0,230,118,0.1); padding: 15px 2rem; text-align:right;">
+                                <a href="/v8/ledger" data-link style="color:var(--accent-green); font-size:0.9rem; text-decoration:none; font-weight:bold;">Ir a la Notaría (Ledger Completo) &rarr;</a>
+                            </div>
                         </div>
 
-                        <section class="kpi-grid">
-                            <div class="kpi-card" style="border-bottom: 3px solid var(--accent-green);">
-                                <span class="kpi-val" style="color: var(--accent-green);">${Math.round(totalSlices).toLocaleString()}</span>
-                                <span class="kpi-lbl">Slices Minados</span>
-                            </div>
-                            <div class="kpi-card" style="border-bottom: 3px solid var(--accent-blue);">
-                                <span class="kpi-val" style="color: var(--accent-blue);">${totalHours.toFixed(1)}h</span>
-                                <span class="kpi-lbl">Trabajo Auditado</span>
-                            </div>
-                            <div class="kpi-card" style="border-bottom: 3px solid ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">
-                                <span class="kpi-val" style="color: ${resilience > 50 ? 'var(--accent-purple)' : 'var(--accent-red)'};">${resilience}%</span>
-                                <span class="kpi-lbl">Salud Estructural</span>
-                            </div>
-                            <div class="kpi-card" style="border-bottom: 3px solid #888;">
-                                <span class="kpi-val" style="color: white;">${project.usuarios ? project.usuarios.length : 1}</span>
-                                <span class="kpi-lbl">Nodos en Colla</span>
-                            </div>
-                        </section>
                     </div>
 
                     <div id="tab-market" class="tab-content ${this.currentTab === 'market' ? 'active' : ''}">
-                        <div class="glass-panel">
-                            <h2 style="color: white; margin-top: 0; font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 900; text-transform: uppercase;">🎯 Mercado Interno (Vacantes)</h2>
-                            <p style="color:#888; font-size:0.85rem; margin-bottom:1.5rem; line-height:1.4;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano o IA asignado.</p>
+                        <div class="glass-panel" style="padding:3rem;">
+                            <h2 style="color: white; margin-top: 0; font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 900; text-transform: uppercase;">🎯 Mercado Interno (Vacantes)</h2>
+                            <p style="color:#888; font-size:0.95rem; margin-bottom:2rem; line-height:1.5;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano o IA asignado. El <b>Dharma Coach</b> usa esto para reclutar talento.</p>
                             <div>${vacantesHtml}</div>
                         </div>
                     </div>
 
                     <div id="tab-settings" class="tab-content ${this.currentTab === 'settings' ? 'active' : ''}">
-                         <div class="glass-panel">
-                            <h2 style="color: var(--text-muted);">Módulo de Configuración de Red</h2>
-                            <p>Opciones de gobernanza y parámetros de la DAO. (Centralizado en la Consola Global V9).</p>
-                            <a href="/v8/settings" data-link class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none;">Ir a Consola V9</a>
+                         <div class="glass-panel" style="padding:3rem; text-align:center;">
+                            <h2 style="color: var(--text-muted); margin-top:0;">Módulo de Configuración de Red</h2>
+                            <p style="color:#888;">Las opciones de gobernanza, APIs multimodales y Padrón de IAs se gestionan de forma segura y Zero-Trust desde la Consola Global.</p>
+                            <a href="/v8/settings" data-link class="btn-primary" style="display:inline-block; margin-top:2rem; text-decoration:none;">Ir al Panteón Global</a>
                          </div>
                     </div>
 
@@ -275,7 +303,7 @@ export default class DashboardView {
                     </div>
                     <div style="padding: 30px; overflow-y: auto; color: #ccc; font-size: 1rem; line-height: 1.7; white-space: pre-wrap;" id="aiModalBody"></div>
                     <div style="padding:20px 30px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:flex-end; background:rgba(0,0,0,0.5);">
-                        <button class="btn-primary" id="btnDownloadPDF" style="display:none;">⬇️ DESCARGAR INFORME (.TXT)</button>
+                        <button class="btn-primary" id="btnDownloadPDF" style="display:none; background:var(--accent-purple); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:bold; cursor:pointer;">⬇️ DESCARGAR INFORME (.TXT)</button>
                     </div>
                 </div>
             </div>
@@ -291,8 +319,8 @@ export default class DashboardView {
         PageHeader.execute();
         
         const state = store.getState();
-        const hasAccess = store.canUserViewProject(this.activeProjectId, state.session.activeUserId, state.session.role);
-        if (!hasAccess) return;
+        const project = state.projects.find(p => p.id === this.activeProjectId);
+        if(!project) return;
 
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
@@ -301,13 +329,55 @@ export default class DashboardView {
             if(target) target.classList.add('active');
         });
 
-        const pitchEl = document.getElementById('pitchText');
-        const btnToggle = document.getElementById('btnTogglePitch');
-        if (pitchEl && btnToggle) {
-            btnToggle.addEventListener('click', () => {
-                const isCollapsed = pitchEl.classList.contains('collapsed');
-                pitchEl.classList.toggle('collapsed');
-                btnToggle.innerText = isCollapsed ? 'Contraer Manifiesto ▴' : 'Expandir Manifiesto ▾';
+        // 🔥 MAGIA DRY 1: RENDERIZAR MAPA EN EL DASHBOARD
+        const dashMapCanvas = document.getElementById('dashMapCanvas');
+        const dashMapPaths = document.getElementById('dashMapPaths');
+        if (dashMapCanvas && dashMapPaths && project.roles) {
+            const mr = new MapRenderer(dashMapCanvas, dashMapPaths, { 
+                isMacro: true, 
+                isHeatmap: false,
+                markerSuffix: 'vis',
+                trimSize: 20
+            });
+            mr.setData(project.roles, project.vna_flows || []);
+        }
+
+        // 🔥 MAGIA DRY 2: RENDERIZAR LEDGER (SOLO PIE Y CAP TABLE)
+        const dashLedgerContainer = document.getElementById('dashLedgerContainer');
+        if (dashLedgerContainer) {
+            const lr = new LedgerRenderer(dashLedgerContainer, {
+                projectId: project.id,
+                showHistory: false // Ocultamos la tabla de Blockchain para no saturar el Dashboard
+            });
+            lr.render();
+        }
+
+        // 🔥 CREACIÓN DINÁMICA DE WORK ORDER (IR AL PAPER)
+        const btnOpenPaper = document.getElementById('btnOpenPaper');
+        if (btnOpenPaper) {
+            btnOpenPaper.addEventListener('click', async () => {
+                // Creamos una Work Order "Teórica" en el vuelo (Una Tarea Huérfana de investigación)
+                const newHash = 'wo_research_' + Math.random().toString(36).substr(2, 9);
+                
+                await store.dispatch({
+                    type: 'SPAWN_WORK_ORDER',
+                    payload: {
+                        projectId: this.activeProjectId,
+                        workOrder: {
+                            hash: newHash, 
+                            flowId: null, // No pertenece a ningún SOP, es investigación libre
+                            comentario: `Investigación y Desarrollo del Manifiesto / Prompt del proyecto.`,
+                            status: 'pinged', // Directamente en curso
+                            realHours: 0,
+                            sprintId: project.activeSprintId,
+                            soc_checklist: [], 
+                            assigneeId: state.session.activeUserId // Asignada al PO
+                        }
+                    }
+                });
+
+                // Redirigimos al Omni-Paper con el Hash cargado
+                window.location.href = `/v8/paper?hash=${newHash}`;
             });
         }
 
@@ -319,6 +389,7 @@ export default class DashboardView {
             });
         });
 
+        // Lógica Modal IA (Auditoría VNA & Equity)
         const modal = document.getElementById('aiModal');
         const modalBody = document.getElementById('aiModalBody');
         const modalTitle = document.getElementById('aiModalTitle');
@@ -329,7 +400,6 @@ export default class DashboardView {
 
         const runAI = async (type) => {
             if (!modal) return;
-            const project = store.getState().projects.find(p => p.id === this.activeProjectId);
             
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             let apiKey = '';
@@ -337,10 +407,10 @@ export default class DashboardView {
             if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
             if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
 
-            if (provider !== 'custom' && !apiKey) return alert("⚠️ Configura tu API Key en la Consola V9 antes de invocar al Orquestador.");
+            if (provider !== 'custom' && !apiKey) return alert("⚠️ Configura tu API Key en la Consola V14 antes de invocar al Orquestador.");
 
             modal.style.display = 'flex';
-            modalBody.innerHTML = `<div style="text-align:center; padding:4rem;"><div style="font-size:4rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1.5rem; font-family:var(--font-mono); font-weight:bold;">Analizando el Ledger Fractal...</p></div>`;
+            modalBody.innerHTML = `<div style="text-align:center; padding:4rem;"><div style="font-size:4rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1.5rem; font-family:var(--font-mono); font-weight:bold;">Analizando el Ledger Fractal y la Topología...</p></div>`;
             btnDownload.style.display = 'none';
             modalTitle.innerText = type === 'audit' ? 'Auditoría VNA & Equity' : 'Pacto de Socios (Slicing Pie)';
 
@@ -360,19 +430,19 @@ export default class DashboardView {
                 nombre_ecosistema: project.nombre,
                 arquetipo_gobernanza: project.archetype,
                 vision_fundacional: project.presentation || project.prompt || "Sin definir",
+                roles: project.roles.map(r => r.name),
                 cap_table_actual: capTableDetails
             };
 
             let systemPrompt = "Eres un Master Architect de DAOs.";
             if (type === 'audit') {
-                systemPrompt += `\nEvalúa si la distribución de Slices refleja un ecosistema sano basado en la teoría Slicing Pie.`;
+                systemPrompt += `\nEvalúa si la topología y distribución de Slices refleja un ecosistema sano basado en la teoría Slicing Pie.`;
             } else {
-                systemPrompt += `\nRedacta un Pacto de Socios formal basado en el Cap Table adjunto.`;
+                systemPrompt += `\nRedacta un Pacto de Socios formal (Smart Contract / Legal Draft) basado en el Cap Table adjunto.`;
             }
 
             try {
-                // 🔥 NOTA PARA EL SPRINT 34.5: 
-                // En el siguiente refactor, moveremos esto al Orchestrator.js para no violar el DRY.
+                // LLamada Legacy API directa (Refactor inminente a Orchestrator en Sprints futuros)
                 let text = "";
                 if (provider === 'deepseek') {
                     const res = await fetch(`https://api.deepseek.com/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(dataPayload) }] }) });
