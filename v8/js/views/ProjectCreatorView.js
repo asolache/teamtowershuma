@@ -5,11 +5,11 @@ import { Orchestrator } from '../core/Orchestrator.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 IMPORTAMOS EL COMPONENTE DRY
+import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 DRY Component
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciar Red | TeamTowers V9";
+        document.title = "Instanciar Red | TeamTowers V14";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
@@ -27,7 +27,7 @@ export default class ProjectCreatorView {
             { id: 'explorer', label: '🧭 Explorador' }, { id: 'sage', label: '🦉 Sabio' }
         ];
 
-        this.mapVis = null; // Guardará la instancia del mapa
+        this.mapVis = null;
     }
 
     async getHtml() {
@@ -44,7 +44,7 @@ export default class ProjectCreatorView {
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
-        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V9)">`;
+        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V14)">`;
         Object.keys(this.sectorsFromKB).forEach(k => {
             const sectorLabel = this.sectorsFromKB[k].label;
             sectorOptions += `<option value="${k}" ${preselectedSector === k ? 'selected' : ''}>${sectorLabel}</option>`;
@@ -53,7 +53,7 @@ export default class ProjectCreatorView {
 
         return `
             <style>
-                ${MapRenderer.getStyles()} /* 🔥 INYECTAMOS EL CSS UNIVERSAL DEL MAPA */
+                ${MapRenderer.getStyles()}
 
                 .app-layout { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
                 .wizard-workspace { flex: 1; padding: 3rem; overflow-y: auto; overflow-x: hidden; display: flex; justify-content: center; align-items: flex-start; background: radial-gradient(circle at center, #111116 0%, #050505 100%); width: 100%; box-sizing: border-box;}
@@ -100,8 +100,8 @@ export default class ProjectCreatorView {
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.5rem; padding: 5px 10px; transition: transform 0.2s; border-radius: 8px;}
                 .btn-del-role:hover { transform: scale(1.1); background: rgba(255,82,82,0.1); }
 
-                /* REESTILIZADO PARA USAR MAP RENDERER CORE */
-                .mini-map-container { width: 100%; height: 400px; position: relative; margin-bottom: 2rem; }
+                /* MINI MAP CONTAINER */
+                .mini-map-container { width: 100%; height: 400px; position: relative; margin-bottom: 2rem; border-radius:16px; border:1px solid #333; overflow:hidden;}
 
                 .tx-feedback-box { background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.2); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
                 .tx-feedback-box:hover { background: rgba(0, 230, 118, 0.1); border-color: rgba(0, 230, 118, 0.4); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
@@ -109,7 +109,6 @@ export default class ProjectCreatorView {
                 .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;}
                 .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 15px 10px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
-                .phase-badge { align-self: flex-start; background: rgba(0,176,255,0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--accent-blue);}
 
                 .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
                 
@@ -127,7 +126,6 @@ export default class ProjectCreatorView {
                 @media (max-width: 768px) {
                     .wizard-workspace { padding: 80px 1rem 2rem 1rem; }
                     .wizard-card { padding: 1.5rem; border-radius: 16px; }
-                    .role-draft-item { flex-direction: column; align-items: stretch; }
                     .role-inputs { flex-direction: column; align-items: stretch; }
                     .btn-del-role { align-self: stretch; background: rgba(255, 82, 82, 0.1); border-radius: 8px; padding: 10px; margin-top: 5px; width: 100%; border: 1px solid rgba(255,82,82,0.3);}
                     .actions-row { flex-direction: column; }
@@ -147,7 +145,7 @@ export default class ProjectCreatorView {
 
                         <div id="step1">
                             <div class="wizard-header">
-                                <h1>Instanciar Castell V9</h1>
+                                <h1>Instanciar Castell V14</h1>
                                 <p>Genera una red neuronal de valor y SOPs extrayendo el ADN del Knowledge Base.</p>
                             </div>
                             
@@ -167,7 +165,7 @@ export default class ProjectCreatorView {
                                     </select>
                                 </div>
                                 <div class="form-group" style="margin: 0;">
-                                    <label>Genoma (LMS Data)</label>
+                                    <label>Genoma (LMS Data Base)</label>
                                     <select id="inpSector" class="lux-input">
                                         ${sectorOptions}
                                     </select>
@@ -175,8 +173,8 @@ export default class ProjectCreatorView {
                             </div>
 
                             <div class="form-group">
-                                <label>Input Cognitivo (Visión Bruta para la IA)</label>
-                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la idea. El Orquestador trazará las tuberías de valor en 5 fases (Kickoff -> Harvest) asegurando la certificación TDD..."></textarea>
+                                <label>Input Cognitivo (Visión Bruta para el Creador IA)</label>
+                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la idea. El Orquestador absorberá el Genoma LMS seleccionado, trazará las tuberías de valor en 5 fases y generará los SOCs de auditoría..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
@@ -220,7 +218,7 @@ export default class ProjectCreatorView {
                         <div id="aiLoading" class="ai-loading">
                             <span>🪐</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Generando VNA de 5 Fases y ejecutando TDD interno...</div>
+                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Inyectando Teoría VNA y Memes LMS para el Research Profundo...</div>
                         </div>
 
                         <div id="step2" style="display: none;">
@@ -296,7 +294,6 @@ export default class ProjectCreatorView {
             txPreviewList: document.getElementById('txPreviewList'),
             tddErrorPanel: document.getElementById('tddErrorPanel'),
             tddErrorList: document.getElementById('tddErrorList'),
-            // Referencias del nuevo MapRenderer
             miniMapContainer: document.getElementById('miniMapContainer'),
             miniMapCanvas: document.getElementById('miniMapCanvas'),
             miniMapPaths: document.getElementById('miniMapPaths')
@@ -304,14 +301,13 @@ export default class ProjectCreatorView {
 
         Sidebar.initListeners();
 
-        // Inicializar Componente MapRenderer
         if (this.dom.miniMapCanvas && this.dom.miniMapPaths) {
             this.mapVis = new MapRenderer(this.dom.miniMapCanvas, this.dom.miniMapPaths, {
                 isEditMode: false,
                 isHeatmap: false,
                 markerSuffix: 'vis',
-                trimSize: 35, // Flechas un poco más cortas para el minimapa
-                spreadBadges: false // No esparcir los badges en este modo miniatura
+                trimSize: 35, 
+                spreadBadges: false 
             });
         }
 
@@ -320,11 +316,7 @@ export default class ProjectCreatorView {
         });
 
         this.dom.aiTxFeedback.addEventListener('click', () => {
-            if (this.dom.txPreviewList.style.display === 'block') {
-                this.dom.txPreviewList.style.display = 'none';
-            } else {
-                this.dom.txPreviewList.style.display = 'block';
-            }
+            this.dom.txPreviewList.style.display = this.dom.txPreviewList.style.display === 'block' ? 'none' : 'block';
         });
 
         this.dom.btnStartBlank.addEventListener('click', () => {
@@ -445,13 +437,14 @@ export default class ProjectCreatorView {
 
     async generateWithAI() {
         const name = this.dom.inpName.value.trim();
-        const vision = this.dom.inpVision.value.trim();
+        const visionRaw = this.dom.inpVision.value.trim();
         const provider = this.dom.inpAiProvider.value;
         const apiKey = this.dom.inpApiKey.value.trim();
         const archetypeText = this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text;
+        const sectorVal = this.dom.inpSector.value;
 
         if (!name) return alert("Debes darle un nombre a la red.");
-        if (!vision) return alert("Escribe tu visión en bruto para que el Agente la procese.");
+        if (!visionRaw) return alert("Escribe tu visión en bruto para que el Agente la procese.");
         if (provider !== 'custom' && !apiKey) return alert("Falta la API Key del proveedor.");
 
         if (provider === 'deepseek') localStorage.setItem('tt_key_deepseek', apiKey);
@@ -466,7 +459,31 @@ export default class ProjectCreatorView {
 
         try {
             await KB.init();
-            const parsedData = await Orchestrator.designEcosystemVNA(name, archetypeText, vision, provider, apiKey);
+            
+            // 🔥 LA GRAN INYECCIÓN: RAG LOCAL (TEORÍA Y CONTEXTO)
+            let theoryContext = "";
+            const globalDocs = await KB.getAllDocuments('global');
+            const memes = globalDocs.filter(d => d.type === 'meme' || d.type === 'ontology');
+            
+            if (memes.length > 0) {
+                theoryContext = "\n\n--- TEORÍA VNA Y MEMES W3C GLOBALES (Aplica esto obligatoriamente) ---\n";
+                theoryContext += memes.map(m => `[${m.category || 'REGLA'}] ${m.title}: ${m.content}`).join('\n');
+            }
+
+            let sectorData = this.sectorsFromKB[sectorVal];
+            if (sectorData && sectorData.roles) {
+                theoryContext += `\n\n--- GENOMA DEL SECTOR SELECCIONADO: ${sectorData.label} ---\n`;
+                theoryContext += JSON.stringify(sectorData.roles);
+            }
+
+            const enhancedVision = `
+                VISIÓN DEL USUARIO: ${visionRaw}
+                ${theoryContext}
+            `;
+
+            console.log("Inyectando Super-Prompt con Memética RAG...");
+            
+            const parsedData = await Orchestrator.designEcosystemVNA(name, archetypeText, enhancedVision, provider, apiKey);
             const tddErrors = this.runCognitiveTDD(parsedData);
             
             if (tddErrors.length > 0) {
@@ -477,19 +494,16 @@ export default class ProjectCreatorView {
                 return;
             }
 
-            this.draftPresentation = parsedData.presentacion || vision;
+            this.draftPresentation = parsedData.presentacion || visionRaw;
             this.draftTags = parsedData.tags || [];
             this.draftNewMemes = parsedData.new_memes || []; 
             
-            // 🔥 Mapeamos roles al borrador (Añadimos _draft como id si no lo tiene)
             this.draftRoles = parsedData.roles.map((r, i) => ({
                 id: r.id || ('draft_role_' + i + '_' + Math.random().toString(36).substr(2, 5)),
                 levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || ''
             }));
             
-            // 🔥 Mapeamos transacciones y aseguramos que apunten a los IDs de los roles borradores
             this.draftTxs = (parsedData.transactions || []).map((tx, i) => {
-                // Buscamos el ID del rol de origen basándonos en el levelId o el name
                 const rFrom = this.draftRoles.find(r => r.levelId === tx.fromLevel || r.name === tx.fromLevel) || this.draftRoles[0];
                 const rTo = this.draftRoles.find(r => r.levelId === tx.toLevel || r.name === tx.toLevel) || this.draftRoles[this.draftRoles.length - 1];
 
@@ -500,8 +514,8 @@ export default class ProjectCreatorView {
                     depends_on: tx.depends_on || [],
                     fromLevel: tx.fromLevel, 
                     toLevel: tx.toLevel,
-                    from: rFrom ? rFrom.id : null, // 🔥 FIX PARA EL MAP RENDERER
-                    to: rTo ? rTo.id : null,       // 🔥 FIX PARA EL MAP RENDERER
+                    from: rFrom ? rFrom.id : null,
+                    to: rTo ? rTo.id : null,
                     tipo: tx.tipo, 
                     template: tx.template || tx.entregable, 
                     horas: tx.horas,
@@ -632,7 +646,6 @@ export default class ProjectCreatorView {
             this.dom.container.appendChild(row);
         });
 
-        // Eventos inputs
         this.dom.container.querySelectorAll('.inp-role-level').forEach(sel => {
             sel.addEventListener('change', (e) => {
                 const idx = e.target.dataset.idx;
@@ -659,7 +672,7 @@ export default class ProjectCreatorView {
             });
         });
 
-        // 🔥 NUEVO: DELEGAMOS EL RENDERIZADO AL MAP RENDERER
+        // 🔥 MAPA INYECTADO (Renderizado DRY)
         if (this.draftRoles.length > 0 && this.mapVis) {
             this.dom.miniMapContainer.style.display = 'block';
             this.mapVis.setData(this.draftRoles, this.draftTxs);
@@ -714,7 +727,6 @@ export default class ProjectCreatorView {
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
-                // Aquí la magia: from y to ya están pre-calculados con los IDs borrador en generateWithAI()
                 const roleFrom = p.roles.find(r => r.id === aiTx.from);
                 const roleTo = p.roles.find(r => r.id === aiTx.to);
                 
