@@ -11,6 +11,7 @@ import AgentEditorView from './views/AgentEditorView.js';
 import PaperView from './views/PaperView.js'; 
 import SettingsView from './views/SettingsView.js'; 
 import LmsView from './views/LmsView.js';
+import LedgerView from './views/LedgerView.js'; // 🔥 FIX: Importamos la Notaría
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -18,7 +19,7 @@ const navigateTo = url => {
 };
 
 const router = async () => {
-    // Definición del árbol de rutas de TeamTowers V13
+    // Definición del árbol de rutas de TeamTowers V14
     const routes = [
         { path: "/v8/", view: HomeView },
         { path: "/v8/profile", view: ProfileView },
@@ -30,8 +31,8 @@ const router = async () => {
         { path: "/v8/agents", view: AgentEditorView },
         { path: "/v8/paper", view: PaperView },
         { path: "/v8/lms", view: LmsView },
-        { path: "/v8/settings", view: SettingsView }
-        
+        { path: "/v8/settings", view: SettingsView },
+        { path: "/v8/ledger", view: LedgerView } // 🔥 FIX: Registramos la ruta del Ledger
     ];
 
     // Buscar coincidencia exacta con la URL actual
