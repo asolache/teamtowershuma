@@ -7,7 +7,6 @@ export const PageHeader = {
         const activeUserId = state.session?.activeUserId;
         const activeUser = activeUserId ? state.globalUsers.find(u => u.id === activeUserId) : null;
         
-        // Protecciones contra undefined (Zero-Trust rendering)
         const initial = activeUser && activeUser.name ? activeUser.name.charAt(0).toUpperCase() : 'A';
         const userName = activeUser && activeUser.name ? activeUser.name : 'Desconocido';
         const roleText = state.session?.role === 'ecosystem-owner' ? '👑 Owner' : '⚔️ Nodo';
@@ -37,15 +36,38 @@ export const PageHeader = {
             magicHtml = `<div class="ph-magic-container">${actionsList}</div>`;
         }
 
+        // 🔥 NUEVO: CÁLCULO DE PINGS (NOTIFICACIONES MENCIONES @)
+        // Buscamos en todos los logs del sistema si el activeUserId ha sido mencionado recientemente
+        let pingCount = 0;
+        state.projects.forEach(p => {
+            if (p.logs) {
+                const unreadPings = p.logs.filter(l => l.mentions && l.mentions.includes(activeUserId) && !l.readBy?.includes(activeUserId));
+                pingCount += unreadPings.length;
+            }
+        });
+
         return `
             <style>
-                .ph-view-header { margin-bottom: 2rem; position: relative; z-index: 1000; padding-right: 65px; min-height: 50px;}
+                .ph-view-header { margin-bottom: 2rem; position: relative; z-index: 1000; padding-right: 120px; min-height: 50px;}
                 
-                /* AVATAR MENU */
-                .ph-user-menu { position: absolute; top: 0; right: 0; z-index: 10000; }
+                /* AVATAR & PINGS MENU */
+                .ph-user-menu { position: absolute; top: 0; right: 0; z-index: 10000; display:flex; align-items:center; gap: 15px;}
+                
+                .ph-radar-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: 0.3s;}
+                .ph-radar-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-blue); }
+                .ph-radar-badge { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 0.7rem; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(255,82,82,0.6); animation: pulsePing 2s infinite;}
+                
                 .ph-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.4rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid rgba(255,255,255,0.2); user-select: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
                 .ph-avatar:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(179, 136, 255, 0.4); border-color: white;}
                 
+                /* PINGS DROPDOWN */
+                .ph-pings-dropdown { position: absolute; top: 65px; right: 65px; background: rgba(15,15,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-blue); border-radius: 16px; width: 320px; box-shadow: 0 20px 50px rgba(0,176,255,0.2); display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 10000;}
+                .ph-pings-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+                .ph-ping-header { padding: 15px 20px; border-bottom: 1px solid rgba(0,176,255,0.3); background: rgba(0,176,255,0.1); color: var(--accent-blue); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content:space-between; align-items:center;}
+                .ph-ping-item { padding: 15px 20px; border-bottom: 1px dashed rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 5px; transition: 0.2s; cursor: pointer; font-size:0.85rem; color:#ccc;}
+                .ph-ping-item:hover { background: rgba(255,255,255,0.03); }
+                .ph-ping-empty { padding: 30px; text-align: center; color: #888; font-style: italic; font-size: 0.9rem;}
+
                 /* DROPDOWN MENU */
                 .ph-dropdown { position: absolute; top: 65px; right: 0; background: rgba(15,15,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; width: 240px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 10000;}
                 .ph-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -83,7 +105,11 @@ export const PageHeader = {
                 .ph-tab-badge { background: rgba(255,255,255,0.1); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-family: var(--font-mono); }
                 .ph-tab-btn.active .ph-tab-badge { background: var(--accent-blue); color: black; }
 
+                @keyframes pulsePing { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); } }
+
                 @media (max-width: 768px) {
+                    .ph-view-header { padding-right: 0;}
+                    .ph-user-menu { position: relative; justify-content: flex-end; margin-bottom: 1rem;}
                     .ph-titles h1 { font-size: 1.8rem; }
                     .ph-actions-area { width: 100%; justify-content: space-between;}
                     .ph-magic-container { flex: 1; justify-content: space-between;}
@@ -95,15 +121,27 @@ export const PageHeader = {
             <header class="ph-view-header">
                 
                 <div class="ph-user-menu">
+                    <div class="ph-radar-btn" id="phRadarBtn" title="Radar Semántico (Pings)">
+                        📡
+                        ${pingCount > 0 ? `<div class="ph-radar-badge">${pingCount}</div>` : ''}
+                    </div>
+
                     <div class="ph-avatar" id="phAvatarBtn" title="Menú del Ecosistema">${initial}</div>
                     
+                    <div class="ph-pings-dropdown" id="phPingsMenu">
+                        <div class="ph-ping-header"><span>Alertas de Usenet</span> <span style="font-size:0.75rem; color:#888; font-weight:normal; cursor:pointer;">Marcar Leídas</span></div>
+                        <div id="phPingsList">
+                            ${pingCount === 0 ? `<div class="ph-ping-empty">Silencio en la red.<br>No tienes menciones nuevas.</div>` : `<div class="ph-ping-item" style="color:var(--accent-blue);"><b>@notari_ledger</b> te mencionó en <span style="font-family:var(--font-mono); color:#fff;">[tx_14]</span><br><span style="font-size:0.75rem; color:#888;">Hace 5 min</span></div>`}
+                        </div>
+                    </div>
+
                     <div class="ph-dropdown" id="phDropdownMenu">
                         <div class="ph-drop-header">
                             <div class="ph-drop-name">${userName}</div>
                             <div class="ph-drop-role">${roleText}</div>
                         </div>
                         <a href="/v8/profile" class="ph-drop-item" data-link>👤 Mi Perfil (Ikigai)</a>
-                        <a href="/v8/settings" class="ph-drop-item" data-link>⚙️ Configuración (Keys)</a>
+                        <a href="/v8/settings" class="ph-drop-item" data-link>⚙️ Configuración Global</a>
                         <a href="/v8/manifesto" class="ph-drop-item" data-link>🏛️ El Manifiesto SOS</a>
                         <a href="/v8/help" class="ph-drop-item" data-link>📖 Centro de Ayuda</a>
                         <a href="/v8/tests" class="ph-drop-item" data-link style="color: var(--accent-green);">🟢 Auditoría Kernel</a>
@@ -151,31 +189,43 @@ export const PageHeader = {
             });
         });
 
-        // DROPDOWN MENU LISTENER
+        // DROPDOWN MENUS LISTENER (Avatar + Radar)
         const avatarBtn = document.getElementById('phAvatarBtn');
         const dropdown = document.getElementById('phDropdownMenu');
+        const radarBtn = document.getElementById('phRadarBtn');
+        const pingsMenu = document.getElementById('phPingsMenu');
         
         if (avatarBtn && dropdown) {
             avatarBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                if(pingsMenu) pingsMenu.classList.remove('open');
                 dropdown.classList.toggle('open');
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
-                    dropdown.classList.remove('open');
-                }
             });
         }
 
-        // LOGOUT LISTENER (Arreglado el Type y la ID)
+        if (radarBtn && pingsMenu) {
+            radarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if(dropdown) dropdown.classList.remove('open');
+                pingsMenu.classList.toggle('open');
+            });
+        }
+            
+        document.addEventListener('click', (e) => {
+            if (dropdown && !dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+            if (pingsMenu && !pingsMenu.contains(e.target) && !radarBtn.contains(e.target)) {
+                pingsMenu.classList.remove('open');
+            }
+        });
+
+        // LOGOUT LISTENER
         const btnLogout = document.getElementById('phBtnLogout');
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
                 if(confirm('¿Suspender sesión del Nodo Humano? Los agentes seguirán procesando en Local.')) {
-                    // Despachamos al store la orden correcta
                     store.dispatch({ type: 'LOGOUT_USER' }).then(() => {
-                        // Navegamos al index forzando una recarga de estado
                         window.location.href = '/v8/';
                     });
                 }
