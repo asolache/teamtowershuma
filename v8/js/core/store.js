@@ -90,9 +90,14 @@ class Store {
                 newState.session.activeUserId = null;
                 newState.session.role = 'guest';
                 break;
-            case 'ADD_USER':
+           case 'ADD_USER':
                 if (!newState.globalUsers.find(u => u.id === action.payload.id)) {
-                    newState.globalUsers.push({ ...action.payload, profile: { sbt_skills: [] } });
+                    // Respetamos el perfil (ADN) que venga en el payload, y solo le añadimos sbt_skills si no lo tiene
+                    const newUser = { ...action.payload };
+                    if (!newUser.profile) newUser.profile = {};
+                    if (!newUser.profile.sbt_skills) newUser.profile.sbt_skills = [];
+                    
+                    newState.globalUsers.push(newUser);
                 }
                 break;
             case 'CREATE_PROJECT':
