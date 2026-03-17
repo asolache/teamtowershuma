@@ -1,4 +1,5 @@
 // v8/js/router.js
+import { Orchestrator } from './core/Orchestrator.js'; // 🔥 NUEVO SPRINT 35: Invocación del Daemon
 import HomeView from './views/HomeView.js';
 import ProfileView from './views/ProfileView.js';
 import DashboardView from './views/DashboardView.js';
@@ -8,7 +9,7 @@ import ProjectCreatorView from './views/ProjectCreatorView.js';
 import TestsView from './views/TestsView.js';
 import AgentEditorView from './views/AgentEditorView.js'; 
 import PaperView from './views/PaperView.js'; 
-import SettingsView from './views/SettingsView.js'; // ⚙️ NUEVO SPRINT 30: Notaría y Configuración
+import SettingsView from './views/SettingsView.js'; 
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -16,7 +17,7 @@ const navigateTo = url => {
 };
 
 const router = async () => {
-    // Definición del árbol de rutas de TeamTowers V9
+    // Definición del árbol de rutas de TeamTowers V13
     const routes = [
         { path: "/v8/", view: HomeView },
         { path: "/v8/profile", view: ProfileView },
@@ -27,7 +28,7 @@ const router = async () => {
         { path: "/v8/tests", view: TestsView },
         { path: "/v8/agents", view: AgentEditorView },
         { path: "/v8/paper", view: PaperView },
-        { path: "/v8/settings", view: SettingsView } // ⚙️ Inyección de la vista de Configuración
+        { path: "/v8/settings", view: SettingsView }
     ];
 
     // Buscar coincidencia exacta con la URL actual
@@ -65,6 +66,10 @@ window.addEventListener("popstate", router);
 
 // Interceptar clics en enlaces internos (SPA behavior)
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // 🔥 NUEVO SPRINT 35: Arrancar el Daemon de Auto-Respuesta A2A al cargar la App
+    Orchestrator.initUsenetDaemon();
+
     document.body.addEventListener("click", e => {
         // Soporte para clics directos en el enlace o en elementos hijos (iconos/spans) dentro del enlace
         if (e.target.matches("[data-link]")) {
