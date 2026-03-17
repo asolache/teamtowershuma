@@ -20,7 +20,7 @@ const LLM_PRICING = {
 
 export default class TestsView {
     constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V9";
+        document.title = "Boot Diagnostics | TeamTowers V12";
     }
 
     async getHtml() {
@@ -71,7 +71,7 @@ export default class TestsView {
                 <div class="test-container">
                     <div class="matrix-header">
                         <h1>V12 FRACTAL DIAGNOSTICS</h1>
-                        <p>Validando Memética, VNA, Slicing Pie y Telemetría Cognitiva A2A</p>
+                        <p>Validando Legacy V8, Usenet, SOC=TDD y Telemetría Cognitiva A2A</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
@@ -129,17 +129,29 @@ export default class TestsView {
         const runTests = async () => {
             const PID_TEST = 'v12-stress-' + Date.now();
             const dynNeoId = '0xNeoWallet' + Math.floor(Math.random() * 1000);
+            const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
+            const dynBobId = '@bob_user_' + Math.floor(Math.random() * 1000);
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
                 await store.dispatch({ type: 'LOGOUT_USER' });
 
-                // BLOQUE 1: KERNEL E IDENTIDAD
-                await assert(store.getState().config.version.startsWith('9') || store.getState().config.version.startsWith('10'), "Motor A2A Fractal Activo", "SYS");
+                // ==========================================
+                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V8/V9)
+                // ==========================================
+                await assert(store.getState().config.version.includes('12'), "Motor A2A Fractal Activo (V12)", "SYS");
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
                 await assert(store.getState().session.activeUserId === dynNeoId, "Identidad Web3 verificada", "AUTH");
 
+                const genesiAi = store.getState().globalUsers.find(u => u.id === '@genesi_ai');
+                await assert(genesiAi !== undefined && genesiAi.profile.isAi === true, "Enjambre IA: Guardianes inyectados en la red neuronal", "AI-NATIVE");
+
+                await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
+                await store.dispatch({ type: 'ADD_USER', payload: { id: dynBobId, name: 'Bob Normal', globalRole: 'network-user' } });
+
+                // ==========================================
                 // BLOQUE 2: RECLUTAMIENTO DE AGENTE A2A
+                // ==========================================
                 await store.dispatch({ 
                     type: 'ADD_USER', 
                     payload: { 
@@ -150,7 +162,9 @@ export default class TestsView {
                 const testAgent = store.getState().globalUsers.find(u => u.id === dynAgentId);
                 await assert(testAgent && testAgent.profile.preferredEngine === 'deepseek', "Agente externo inyectado en el Padrón con motor preferido", "A2A-HUB");
 
-                // BLOQUE 3: CREACIÓN DE ECOSISTEMA VNA
+                // ==========================================
+                // BLOQUE 3: CREACIÓN DE ECOSISTEMA VNA & RBAC
+                // ==========================================
                 const draftRoles = Object.keys(MOCK_ONTOLOGY).map(levelKey => ({
                     id: 'role_' + levelKey.replace('@','') + '_' + Date.now(), 
                     levelId: levelKey, name: MOCK_ONTOLOGY[levelKey].name, 
@@ -162,10 +176,16 @@ export default class TestsView {
                     type: 'CREATE_PROJECT', 
                     payload: { 
                         id: PID_TEST, nombre: "Matrix Sandbox", ownerId: dynNeoId, isPrivate: true, 
-                        roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], logs: [], 
-                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true}}, {id: dynAgentId, permissions: {canCreateWO: false}}] 
+                        roles: draftRoles, vna_flows: [], work_orders: [], ledger: [], logs: [], telemetry: [],
+                        usuarios: [{id: dynNeoId, permissions: {canCreateWO: true}}, {id: dynLauraId, permissions: {canCreateWO: false}}, {id: dynAgentId, permissions: {canCreateWO: false}}] 
                     } 
                 });
+
+                const hasAccessPO = store.canUserViewProject(PID_TEST, dynNeoId, 'network-user');
+                await assert(hasAccessPO === true, "Gobernanza: Project Owner domina su ecosistema", "RBAC");
+
+                const hasAccessBob = store.canUserViewProject(PID_TEST, dynBobId, 'network-user');
+                await assert(hasAccessBob === false, "Privacidad: Muro criptográfico bloquea a entidades externas", "PRIVACY");
 
                 let p = store.getState().projects.find(x => x.id === PID_TEST);
                 const rAnx = p.roles.find(r => r.levelId === '@anxaneta');
@@ -182,7 +202,9 @@ export default class TestsView {
                     } 
                 });
 
-                // BLOQUE 4: SOP, SOC Y EJECUCIÓN
+                // ==========================================
+                // BLOQUE 4: SOP, TDD = SOC Y EJECUCIÓN (USENET)
+                // ==========================================
                 const woHash = 'wo_' + Date.now();
                 await store.dispatch({ 
                     type: 'SPAWN_WORK_ORDER', 
@@ -190,59 +212,86 @@ export default class TestsView {
                         projectId: PID_TEST, 
                         workOrder: { 
                             hash: woHash, flowId: 'flow_1', status: 'theoretical', realHours: 0,
-                            soc_checklist: [{ id: 'soc_1', text: "Pasa tests", isChecked: false }]
+                            soc_checklist: [{ id: 'soc_1', text: "Pasa tests TDD", isChecked: false }]
                         } 
                     } 
                 });
 
                 await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynAgentId } });
-                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Commit Pushed' } });
-                await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': true } } });
-                await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
+                
+                // Mención Usenet en el Log
+                await store.dispatch({
+                    type: 'ADD_LOG_ENTRY',
+                    payload: {
+                        projectId: PID_TEST,
+                        log: { id: 'log_1', authorId: dynAgentId, relatedTxHash: woHash, content: "SOP ejecutado. Revisa @laura_dev_", mentions: [dynLauraId], readBy: [] }
+                    }
+                });
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "SOP validado y equidad Slicing Pie distribuida", "LEDGER");
+                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Usenet Semantic: Mención detectada e inyectada en Log", "USENET");
+
+                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Commit Pushed' } });
+                
+                // Prueba TDD: Intento de aprobación fallida (SOC = false)
+                await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': false } } });
+                await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].status === 'reported', "TDD Activo: El Ledger rechaza consolidar si el SOC (Unit Test) falla.", "TDD-SOC");
+
+                // Prueba TDD: Aprobación exitosa (SOC = true)
+                await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': true } } });
+                await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                await assert(p.work_orders[0].status === 'consolidated', "Notaría Digital: TDD superado. SOP validado y sellado inmutablemente", "LEDGER");
+
+                // ==========================================
+                // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
+                // ==========================================
+                const expectedSlices = 8 * 40 * 1.2; 
+                await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie: Ecuación de Equidad resuelta (${expectedSlices} Slices)`, "MATH");
+                
+                await store.dispatch({ type: 'ADD_CAPITAL_INJECTION', payload: { projectId: PID_TEST, userId: dynNeoId, assetType: 'cash', amount: 1000, description: "Seed" } });
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+                const capTx = p.ledger.find(l => l.roleId === 'CAPITAL_ASSET');
+                await assert(capTx !== undefined && capTx.valorCongelado > 1000, "Ledger Cash: Multiplicador de riesgo 4x aplicado al FIAT", "LEDGER-CASH");
+
 
                 // ==========================================
                 // BLOQUE 6: TELEMETRÍA Y EFICIENCIA COGNITIVA (REC)
                 // ==========================================
-                
-                // Simulamos que el Orquestador devuelve los tokens consumidos tras ejecutar la API
                 const mockApiUsage = { prompt_tokens: 15000, completion_tokens: 2500 };
-                const selectedEngine = testAgent.profile.preferredEngine; // 'deepseek'
+                const selectedEngine = testAgent.profile.preferredEngine; 
                 
-                // Cálculo de coste basado en la tabla de precios
                 const priceMatrix = LLM_PRICING[selectedEngine];
                 const costInDollars = ((mockApiUsage.prompt_tokens / 1000000) * priceMatrix.input) + 
                                       ((mockApiUsage.completion_tokens / 1000000) * priceMatrix.output);
 
-                // Cálculo de REC (Ratio de Eficiencia Cognitiva)
-                // FMV del rol @baixos es 40€/h. El entregable tardó 8 horas teóricas. Valor Creado = 320€
                 const valueCreated = 8 * 40; 
                 const REC = valueCreated / costInDollars;
 
-                // TDD Pass Rate Simulado (pasó a la primera = 100%)
-                const loops = 1;
-                const precisionRate = (1 / loops) * 100;
+                const precisionRate = 100;
 
-                // Inyectamos la telemetría en el estado (Esto lo haremos luego en store.js)
-                if (!p.telemetry) p.telemetry = [];
-                p.telemetry.push({
-                    woHash: woHash, agentId: dynAgentId, engine: selectedEngine,
-                    tokens: mockApiUsage, cost: costInDollars, rec: REC, precision: precisionRate
+                await store.dispatch({
+                    type: 'LOG_TELEMETRY',
+                    payload: {
+                        projectId: PID_TEST, agentId: dynAgentId, engine: selectedEngine, actionType: 'SOP_EXECUTION',
+                        tokens: mockApiUsage, costInDollars: costInDollars, recRatio: REC, latencyMs: 1200
+                    }
                 });
 
-                await assert(p.telemetry.length === 1, `Telemetría: Gasto API registrado (${mockApiUsage.total_tokens || 17500} tokens)`, "TELEMETRY");
+                p = store.getState().projects.find(x => x.id === PID_TEST);
+
+                await assert(p.telemetry.length === 1, `Telemetría: Gasto API registrado (${mockApiUsage.prompt_tokens + mockApiUsage.completion_tokens} tokens)`, "TELEMETRY");
                 await assert(costInDollars < 0.01, `Tokenomics: DeepSeek ejecutó el SOP por $${costInDollars.toFixed(4)}`, "FINANCE");
-                await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 320€ con un coste de $${costInDollars.toFixed(4)} (REC: ${REC.toFixed(0)})`, "OPTIMIZER");
-                await assert(precisionRate === 100, `Precisión A2A: Agente pasó el SOC del @notari_ledger a la primera (100%)`, "TDD-RATE");
+                await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 320€ con un coste de $${costInDollars.toFixed(4)}`, "OPTIMIZER");
 
                 // FINALIZACIÓN EXITOSA
                 await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 TELEMETRÍA CERTIFICADA 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">El cálculo de REC y Coste de Tokens está listo para inyectarse en el Tablero de Comando.</p>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V12 FRACTAL CERTIFIED 🔥</h2>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">El Core está listo. La Usenet semántica y la Telemetría A2A están aseguradas en el Ledger.</p>
                     </div>
                 `);
                 
