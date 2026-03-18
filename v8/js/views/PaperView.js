@@ -7,7 +7,7 @@ import { MapRenderer } from '../components/MapRenderer.js';
 import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
 import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
 import { FocusRenderer } from '../components/FocusRenderer.js';
-import { SandboxRenderer } from '../components/SandboxRenderer.js'; // 🔥 NUEVO: El Cerebro Visual
+import { SandboxRenderer } from '../components/SandboxRenderer.js'; 
 
 export default class PaperView {
     constructor() {
@@ -30,7 +30,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
             subtitle: project ? project.nombre : 'Kernel V15',
-            tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos (Widgets & Arquetipos)."
+            tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos (Widgets, Arquetipos y Multimodal)."
         };
 
         return `
@@ -47,7 +47,7 @@ export default class PaperView {
                 .paper-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;}
                 
                 /* =========================================================
-                   BREADCRUMB & CONTEXT BAR (UX DELUXE)
+                   BREADCRUMB & CONTEXT BAR
                    ========================================================= */
                 .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px 12px 0 0; border: 1px solid var(--glass-border); border-bottom: none; gap: 10px; flex-wrap: wrap;}
                 .bc-select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; font-size: 0.9rem; font-weight: bold; font-family: var(--font-main); outline: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: 0.3s;}
@@ -61,7 +61,7 @@ export default class PaperView {
                 .cb-meme { background: rgba(224,64,251,0.1); color: var(--accent-purple); border: 1px solid rgba(224,64,251,0.3); }
 
                 /* =========================================================
-                   EL LIENZO EN BLANCO (contenteditable)
+                   EL LIENZO EN BLANCO
                    ========================================================= */
                 .editor-wrapper { position: relative; width: 100%; margin-top: 1rem;}
                 .semantic-editor { width: 100%; min-height: 40vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; outline: none; padding: 10px 0;}
@@ -78,7 +78,8 @@ export default class PaperView {
                 .inline-input { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.95rem; outline: none; width: 100%; box-sizing: border-box;}
                 .inline-input:focus { border-color: var(--accent-blue); }
                 .inline-btn { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 10px;}
-                .inline-btn:hover { filter: brightness(1.2); }
+                .inline-btn:hover:not(:disabled) { filter: brightness(1.2); }
+                .inline-btn:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
                 .inline-success { color: var(--accent-green); font-weight: bold; padding: 1rem; text-align: center; background: rgba(0,230,118,0.1); border-top: 1px solid rgba(0,230,118,0.3);}
 
                 /* UX DELUXE: MENÚ AUTOCOMPLETADO FLOTANTE */
@@ -107,11 +108,13 @@ export default class PaperView {
                 .log-author { font-weight: 900; color: white; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
                 .log-time { font-size: 0.75rem; color: #666; font-family: var(--font-mono);}
                 .log-content { color: #ccc; line-height: 1.6; font-family: 'Georgia', serif; font-size: 1.05rem; white-space: pre-wrap; word-break: break-word;}
+                .log-content img, .log-content video { max-width: 100%; border-radius: 8px; border: 1px solid #333; margin-top: 10px; }
 
                 /* BOTONES DE ACCIÓN INFERIOR */
                 .action-bar-fixed { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000;}
                 .btn-action-pow { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3);}
                 .btn-action-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224, 64, 251, 0.5); filter: brightness(1.1);}
+                
                 .btn-action-draft { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);}
                 .btn-action-draft:hover { background: var(--accent-orange); color: black; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4); transform: translateY(-3px);}
 
@@ -157,7 +160,7 @@ export default class PaperView {
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/sandbox, /deepwork, /mapa, /agente, /rol...)."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/deepwork, /mapa, /imagen, /video...)."><p><br></p></div>
                         </div>
 
                         <div class="thread-container" id="threadWrapper" style="display:none;">
@@ -207,7 +210,6 @@ export default class PaperView {
 
         this.dom.editor.focus();
 
-        // Cargar Tareas del Proyecto Seleccionado
         this.loadProjectTasks = (projId) => {
             const p = state.projects.find(x => x.id === projId);
             if (!p) return;
@@ -277,40 +279,29 @@ export default class PaperView {
             }
         });
 
-        // 2. LÓGICA DEL OMNI-PAPER EDITOR DELUXE
         this.setupSemanticEditor();
 
-        // 3. ENVÍO Y CONVERSIÓN
         this.dom.btnSubmit.addEventListener('click', () => this.submitReport());
         this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
         
-        // 4. DELEGACIÓN DE EVENTOS INLINE
         this.dom.editor.addEventListener('click', async (e) => {
             if (e.target.classList.contains('btn-inline-action')) {
                 await this.handleInlineConsoleAction(e.target);
             }
         });
 
-        // 5. ESCUCHAR AL SANDBOX D3 (Deep Research de Mestre)
         window.addEventListener('sandbox-action', async (e) => {
             const { action, god, btnElement } = e.detail;
             if (action === 'invoke-mestre') {
                 btnElement.disabled = true;
                 btnElement.innerText = "⏳ El Oráculo está forjando el Arquetipo...";
-
                 try {
                     const { Orchestrator } = await import('../core/Orchestrator.js');
                     const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
                     const apiKey = localStorage.getItem(`tt_key_${provider}`);
 
-                    const systemPrompt = `Actúa como @mestre_escola, Master Architect de TeamTowers V15 y experto en psicología organizacional de Jung, las 13 Lunas, el Panteón Griego y VNA de Verna Allee.
-Tu misión es estandarizar el Modelo Organizativo para el arquetipo: ${god.name} (${god.domain}).
-Genera 1 Nodo Raíz (category "ontology"), 1 Procedimiento (category "SOP") y 2 Auditorías (category "SOC") binarias.
-Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coherentes.`;
-                    
-                    const userPrompt = `Genera la ontología W3C para el sector/arquetipo de ${god.name}.`;
-
-                    const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+                    const systemPrompt = `Actúa como @mestre_escola, Master Architect y experto en VNA. Genera la ontología W3C para: ${god.name} (${god.domain}). Devuelve un JSON estricto con {"memes": [...]}`;
+                    const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Genera la ontología.", responseFormat: "json_object", temperature: 0.1 });
                     
                     if (response.content && response.content.memes) {
                         const { KB } = await import('../core/kb.js');
@@ -322,12 +313,11 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                                 id: meme.id || `meme_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
                                 type: meme.type || 'meme', category: meme.category || 'RULE',
                                 projectId: 'global', targetId: 'global',
-                                title: meme.title, content: meme.content, keywords: meme.keywords, broader: meme.broader || null, related: meme.related || []
+                                title: meme.title, content: meme.content, keywords: meme.keywords, broader: meme.broader || null
                             });
                         }
                         btnElement.innerText = `✅ Arquetipo ${god.name} inyectado (LMS)`;
                     }
-
                 } catch (err) {
                     alert(`Error IA: ${err.message}`);
                     btnElement.disabled = false;
@@ -350,7 +340,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
         this.dom.btnConvertDraft.style.display = 'none';
 
         const state = store.getState();
-        const p = state.projects.find(x => x.id === this.activeProjectId);
+        const p = state.projects.find(x => x.id === this.activeTx.projectId);
         this.renderThread(p);
     }
 
@@ -397,12 +387,8 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
         });
 
         this.dom.threadList.innerHTML = html;
-        this.hydrateWidgets(project);
-    }
-
-    hydrateWidgets(project) {
+        
         setTimeout(() => {
-            // Mapas
             this.dom.threadList.querySelectorAll('.omni-map-canvas').forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
                 if(svg && project) {
@@ -411,7 +397,6 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     mr.setData(project.roles, flows);
                 }
             });
-            // Kanbans
             this.dom.threadList.querySelectorAll('[id^="kanban_"]').forEach(container => {
                 if (project) {
                     const activeUserId = store.getState().session.activeUserId;
@@ -420,26 +405,20 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     kr.render();
                 }
             });
-            // Ledgers
             this.dom.threadList.querySelectorAll('[id^="ledger_"]').forEach(container => {
                 if (project) {
                     const lr = new LedgerRenderer(container, { projectId: project.id, showHistory: false });
                     lr.render();
                 }
             });
-            // Sandbox Visual
             this.dom.threadList.querySelectorAll('[id^="sandbox_"]').forEach(container => {
                 const sr = new SandboxRenderer(container);
                 sr.render();
             });
-
         }, 100);
         setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
     }
 
-    // ==========================================
-    // UX DELUXE: EDITOR SEMÁNTICO FLOTANTE
-    // ==========================================
     setupSemanticEditor() {
         const input = this.dom.editor;
         const menu = this.dom.menu;
@@ -448,7 +427,6 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
         let lastKnownRect = null; 
         let savedRange = null; 
 
-        // Escáner de Contexto en Tiempo Real
         const updateDetectedContext = () => {
             const text = input.innerText;
             const mentions = [...new Set(text.match(/@\w+/g) || [])];
@@ -538,6 +516,10 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     <div class="semantic-item type-action" data-val="/rol" data-type="action"><span style="font-size:1.5rem;">🪑</span> <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un nuevo rol estructural.</span></div></div>
                     <div class="semantic-item type-action" data-val="/tuberia" data-type="action"><span style="font-size:1.5rem;">🛤️</span> <div><b style="color:var(--accent-green);">Trazar Tubería (SOP)</b><br><span style="font-size:0.75rem;color:#888;">Define una entrega de valor.</span></div></div>
 
+                    <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Generación Multimodal</div>
+                    <div class="semantic-item type-action" data-val="/imagen" data-type="action"><span style="font-size:1.5rem;">🍌</span> <div><b style="color:var(--accent-green);">Generar Imagen (Nano Banana 2)</b><br><span style="font-size:0.75rem;color:#888;">Renderiza un asset visual con IA.</span></div></div>
+                    <div class="semantic-item type-action" data-val="/video" data-type="action"><span style="font-size:1.5rem;">🎬</span> <div><b style="color:var(--accent-orange);">Generar Vídeo (Veo)</b><br><span style="font-size:0.75rem;color:#888;">Composición de vídeo generativo.</span></div></div>
+
                     <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Insertar Componentes</div>
                     <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA (Constelación)</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos y Ontología.</span></div></div>
                     <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + SOCs.</span></div></div>
@@ -567,7 +549,27 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     const widgetId = 'wid_' + Date.now();
                     el = document.createElement('div');
                     
-                    if (replaceVal === '/agente') {
+                    if (replaceVal === '/imagen') {
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" id="${widgetId}">
+                                <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">🍌 Generador Visual (Nano Banana 2)</div>
+                                <div class="inline-console">
+                                    <textarea class="inline-input" id="prompt_img_${widgetId}" placeholder="Describe la imagen con el máximo detalle..." rows="3"></textarea>
+                                    <button class="inline-btn btn-inline-action" data-action="generate-image" data-wid="${widgetId}">🎨 Sintetizar Imagen</button>
+                                </div>
+                            </div><p><br></p>
+                        `;
+                    } else if (replaceVal === '/video') {
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" id="${widgetId}">
+                                <div class="omni-widget-header" style="background: rgba(255, 171, 64, 0.1); border-bottom-color: rgba(255, 171, 64, 0.2); color: var(--accent-orange);">🎬 Generador de Movimiento (Veo)</div>
+                                <div class="inline-console">
+                                    <textarea class="inline-input" id="prompt_vid_${widgetId}" placeholder="Describe la escena, movimiento y estilo cinemático..." rows="3"></textarea>
+                                    <button class="inline-btn btn-inline-action" data-action="generate-video" data-wid="${widgetId}" style="background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));">🎥 Renderizar Vídeo</button>
+                                </div>
+                            </div><p><br></p>
+                        `;
+                    } else if (replaceVal === '/agente') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false" id="${widgetId}">
                                 <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">🤖 Forjar Nodo / Agente</div>
@@ -580,7 +582,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                                     </select>
                                     <button class="inline-btn btn-inline-action" data-action="create-agent" data-wid="${widgetId}">Añadir al Padrón Global</button>
                                 </div>
-                            </div>
+                            </div><p><br></p>
                         `;
                     } else if (replaceVal === '/rol') {
                         el.innerHTML = `
@@ -598,7 +600,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                                     <input type="number" class="inline-input" id="role_fmv_${widgetId}" placeholder="Valor de Mercado (FMV €/h, ej: 45)" value="40">
                                     <button class="inline-btn btn-inline-action" data-action="create-role" data-wid="${widgetId}">Inyectar Rol en el Ecosistema</button>
                                 </div>
-                            </div>
+                            </div><p><br></p>
                         `;
                     } else if (replaceVal === '/tuberia') {
                         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -628,13 +630,13 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                                     </div>
                                     <button class="inline-btn btn-inline-action" data-action="create-flow" data-wid="${widgetId}">Trazar Tubería en Mapa</button>
                                 </div>
-                            </div>
+                            </div><p><br></p>
                         `;
                     } else if (replaceVal === '/sandbox') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-body" id="sandbox_${widgetId}" style="padding:0;"></div>
-                            </div>
+                            </div><p><br></p>
                         `;
                         setTimeout(() => {
                             const container = document.getElementById(`sandbox_${widgetId}`);
@@ -643,7 +645,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     } else if (replaceVal === '/mapa') {
                         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                         if (!p || !p.roles || p.roles.length === 0) {
-                            el.innerHTML = `<div class="omni-widget" contenteditable="false"><div class="omni-widget-header">🕸️ Mapa VNA</div><div class="omni-widget-body" style="padding:2rem; text-align:center; color:#888;">⚠️ El mapa está vacío. Traza tuberías primero.</div></div>`;
+                            el.innerHTML = `<div class="omni-widget" contenteditable="false"><div class="omni-widget-header">🕸️ Mapa VNA</div><div class="omni-widget-body" style="padding:2rem; text-align:center; color:#888;">⚠️ El mapa está vacío. Traza tuberías primero.</div></div><p><br></p>`;
                         } else {
                             el.innerHTML = `
                                 <div class="omni-widget" contenteditable="false">
@@ -657,7 +659,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                                             <g id="svg_${widgetId}"></g>
                                         </svg>
                                     </div>
-                                </div>
+                                </div><p><br></p>
                             `;
                             setTimeout(() => {
                                 const canvas = document.getElementById(`canvas_${widgetId}`);
@@ -674,7 +676,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
                                 <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);"></div>
-                            </div>
+                            </div><p><br></p>
                         `;
                         setTimeout(() => {
                             const container = document.getElementById(`kanban_${widgetId}`);
@@ -691,7 +693,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">⚖️ Slicing Pie (Cap Table)</div>
                                 <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);"></div>
-                            </div>
+                            </div><p><br></p>
                         `;
                         setTimeout(() => {
                             const container = document.getElementById(`ledger_${widgetId}`);
@@ -709,14 +711,14 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                                     <div class="omni-widget-body" style="padding: 2rem; text-align: center; color: #888;">
                                         ⚠️ <b>Borrador Libre detectado.</b> Convierte este borrador en una Work Order para activar el Focus.
                                     </div>
-                                </div>
+                                </div><p><br></p>
                             `;
                         } else {
                             const activeHash = this.activeTx.id || this.activeTx.hash;
                             el.innerHTML = `
                                 <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-orange); box-shadow: 0 10px 40px rgba(255,171,64,0.1);">
                                     <div class="omni-widget-body" id="focus_${widgetId}"></div>
-                                </div>
+                                </div><p><br></p>
                             `;
                             setTimeout(() => {
                                 const container = document.getElementById(`focus_${widgetId}`);
@@ -737,10 +739,7 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     }
                     
                     savedRange.insertNode(el);
-                    const pBr = document.createElement('p');
-                    pBr.innerHTML = '<br>';
-                    el.parentNode.insertBefore(pBr, el.nextSibling);
-                    savedRange.setStartAfter(pBr);
+                    savedRange.setStartAfter(el.nextSibling);
 
                 } else {
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
@@ -790,7 +789,40 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
         if (!widgetContainer) return;
 
         try {
-            if (action === 'create-agent') {
+            // MULTIMODAL GENERATION
+            if (action === 'generate-image' || action === 'generate-video') {
+                const isVideo = action === 'generate-video';
+                const promptInput = document.getElementById(isVideo ? `prompt_vid_${wid}` : `prompt_img_${wid}`);
+                const promptText = promptInput.value.trim();
+                
+                if (!promptText) throw new Error("Debes escribir un prompt para generar el asset.");
+
+                btnElement.disabled = true;
+                btnElement.innerText = "⏳ Sintetizando con IA...";
+
+                const { Orchestrator } = await import('../core/Orchestrator.js');
+                const apiKey = localStorage.getItem(isVideo ? 'tt_key_veo' : 'tt_key_nano_banana');
+
+                const asset = await Orchestrator.generateAsset(promptText, isVideo ? 'video' : 'image', apiKey);
+                
+                if (isVideo) {
+                    widgetContainer.innerHTML = `
+                        <div style="padding: 15px; background: #000; text-align:center;">
+                            <video src="${asset.url}" controls autoplay loop style="max-width: 100%; border-radius: 8px; border: 1px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);"></video>
+                            <div style="color: #888; font-size: 0.75rem; margin-top: 10px; font-family: monospace; background:rgba(255,255,255,0.05); padding:8px; border-radius:6px;">Prompt: "${promptText}"</div>
+                        </div>
+                    `;
+                } else {
+                    widgetContainer.innerHTML = `
+                        <div style="padding: 15px; background: #000; text-align:center;">
+                            <img src="${asset.url}" style="max-width: 100%; border-radius: 8px; border: 1px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" alt="${promptText}">
+                            <div style="color: #888; font-size: 0.75rem; margin-top: 10px; font-family: monospace; background:rgba(255,255,255,0.05); padding:8px; border-radius:6px;">Prompt: "${promptText}"</div>
+                        </div>
+                    `;
+                }
+            }
+            // SYSTEM STRUCTURING
+            else if (action === 'create-agent') {
                 let id = document.getElementById(`agent_id_${wid}`).value.trim();
                 const name = document.getElementById(`agent_name_${wid}`).value.trim();
                 const isAi = document.getElementById(`agent_isai_${wid}`).value === 'true';
@@ -805,7 +837,6 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                         profile: { isAi: isAi, preferredEngine: 'deepseek', guardian: 'everyman' }
                     } 
                 });
-                
                 widgetContainer.innerHTML = `<div class="inline-success">✅ Nodo ${id} inscrito en el Padrón Global.</div>`;
             } 
             else if (action === 'create-role') {
@@ -814,7 +845,6 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                 const level = document.getElementById(`role_level_${wid}`).value;
                 const name = document.getElementById(`role_name_${wid}`).value.trim();
                 const fmv = parseFloat(document.getElementById(`role_fmv_${wid}`).value) || 40;
-                
                 if (!name) throw new Error("Nombre del rol obligatorio.");
 
                 const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
@@ -824,7 +854,6 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                     type: 'UPDATE_PROJECT_INFO',
                     payload: { projectId: this.activeProjectId, updates: { roles: [...store.getState().projects.find(p=>p.id===this.activeProjectId).roles, newRole] } }
                 });
-                
                 widgetContainer.innerHTML = `<div class="inline-success">✅ Silla ${name} (${level}) forjada en el Ecosistema.</div>`;
             }
             else if (action === 'create-flow') {
@@ -849,7 +878,6 @@ Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coh
                         }
                     }
                 });
-
                 widgetContainer.innerHTML = `<div class="inline-success">✅ Tubería [${name}] trazada en el Mapa VNA.</div>`;
             }
         } catch (e) {
