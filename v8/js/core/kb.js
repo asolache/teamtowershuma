@@ -35,10 +35,28 @@ const GLOBAL_AIS_ONTOLOGY = [
     { id: '@mestre_escola', title: 'Arquetipo: Mestre d\'Escola', content: 'Guardián del Árbol de Habilidades. Gobiernas y defines los estándares para los niveles Bronce, Plata y Oro.' }
 ];
 
-// 2. NUEVO CATÁLOGO FRACTAL (Memes + Flujos de Metodología VNA + 🚀 META PROMPTS)
+// 2. CATÁLOGO FRACTAL (Memes + Flujos + Prompts)
 export const CATALOGO_MEMES = [
     // --- CORE OS ---
     { id: 'meme_os_vna', type: 'meme', category: 'core_os', title: 'OS: Value Network Analysis', content: `Un ecosistema es una red de creación de valor. Todo entregable viaja por tuberías y se audita mediante SOCs.`, keywords: ['VNA', 'Value Conversion'], broader: 'root_ecosystem_laws', related: ['meme_os_pantheon'] },
+    
+    // 🔥 NUEVO: EL CODEX CASTELLER (Contexto Estructural para la IA)
+    { 
+        id: 'meme_os_codex_casteller', 
+        type: 'meme', 
+        category: 'core_os', 
+        title: 'OS: Codex Casteller (Topología de Roles)', 
+        content: `MANDAMIENTO ESTRUCTURAL: Toda red VNA debe dividirse en 5 niveles de responsabilidad inspirados en los Castells catalanes.
+1. @anxaneta: Cúspide. Dirección, visión estratégica y máximo riesgo. (Ej: CEO, Arquitecto Jefe).
+2. @aixecador: Táctica. Conecta la visión con la estructura. (Ej: CPO, Product Manager).
+3. @dosos: Auditoría y validación. Sostiene el peso del control de calidad. (Ej: Tech Lead, QA Senior).
+4. @baixos: Producción core. El motor de ejecución tangible. (Ej: Desarrollador, Diseñador, Operario).
+5. @pinya: Base comunitaria. Soporte, infraestructura y herramientas. (Ej: SysOps, Community Manager).
+Nunca inventes niveles fuera de estos 5. Toda transacción (SOP) viaja entre dos de estos niveles.`, 
+        keywords: ['Estructura', 'Roles', 'Castells', 'Jerarquía'], 
+        broader: 'root_ecosystem_laws', 
+        related: [] 
+    },
     
     // --- SKILLS Y GUARDIANES ---
     { id: 'meme_skill_lvl_baixos', type: 'meme', category: 'skill', title: 'Nivel: @baixos (Producción)', content: `Ejecución técnica pura, trabajo de campo, desarrollo de producto.`, keywords: ['Producción'], broader: 'root_castell_levels', related: [] },
@@ -60,16 +78,44 @@ export const CATALOGO_MEMES = [
         ]
     },
 
-    // 🚀 NUEVO: META-PROMPTS (Las Almas de los Agentes Core)
+    // --- META-PROMPTS ---
     {
         id: 'prompt_genesi_vna',
         type: 'meme',
         category: 'meta_prompt',
         title: 'Meta-Prompt: Creador VNA (@genesi_ai)',
-        content: `Eres el Master Ecosystem Architect de TeamTowers V14. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto.
-MANDAMIENTOS: 1. MÍNIMO 12 transacciones. 2. 5 ERAS: Kickoff, Growth, Scale, Harvest, Cierre. 3. Lógica DAG en "depends_on". 4. 30% transacciones intangibles. 5. 3 skills por tx. 6. 2 soc_checklists auditable matemáticamente por tx.
-ESTRUCTURA JSON EXACTA: { "presentacion": "...", "tags": ["..."], "new_memes": [{ "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }], "roles": [{ "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "template": "...", "horas": 5, "required_skills": ["meme_skill_x"], "soc_checklist": [{ "text": "..." }] }] }
-REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @pinya).`,
+        content: `Eres el Master Ecosystem Architect de TeamTowers V14. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto. Cero charla. Cero markdown.
+
+MANDAMIENTOS DE ARQUITECTURA (TDD):
+1. Crea EXACTAMENTE entre 15 y 18 transacciones (tuberías de valor). Esto es crítico para modelar el ecosistema completo.
+2. Las transacciones DEBEN distribuirse lógicamente en 5 ERAS secuenciales: "Kickoff", "Growth", "Scale", "Harvest", "Cierre".
+3. Lógica DAG estricta: Las transacciones de "Kickoff" NO tienen "depends_on" (array vacío []). Cualquier transacción en "Growth" o posterior DEBE tener en su "depends_on" el ID ("tx_N") de una transacción anterior.
+4. Tipo de Valor: Al menos el 30% de las transacciones deben ser "intangible" (Mentoria, auditoría, soporte). El resto "tangible" (código, diseño, entregable).
+5. Tríada de Skills: Cada transacción DEBE tener al menos 3 IDs de skills en "required_skills".
+6. Auditoría SOC: Cada transacción DEBE incluir al menos 2 validaciones en "soc_checklist" que respondan a la pregunta: "¿Cómo audito matemáticamente este entregable?".
+
+ESTRUCTURA JSON EXACTA REQUERIDA:
+{
+  "presentacion": "El manifiesto del proyecto...",
+  "tags": ["Tech", "Blockchain"],
+  "new_memes": [
+    { "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }
+  ],
+  "roles": [
+    { "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }
+  ],
+  "transactions": [
+    { 
+      "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [],
+      "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", 
+      "template": "...", "horas": 5,
+      "required_skills": ["meme_skill_x"],
+      "soc_checklist": [{ "text": "..." }, { "text": "..." }]
+    }
+  ]
+}
+
+REGLA DE ORO: Respeta estrictamente los "levelIds" definidos en el Codex Casteller de tu contexto. NUNCA inventes nuevos niveles.`,
         keywords: ['System', 'Prompt', 'Genesi']
     },
     {
@@ -98,7 +144,7 @@ DEVUELVE ÚNICAMENTE JSON: { "memes": [ { "category": "XXX", "title": "Nombre de
 
 export const KB = {
     dbName: 'TeamTowers_LMS_V14', 
-    dbVersion: 3, // Subimos versión para forzar el re-seed de los Meta-Prompts
+    dbVersion: 4, // 🔥 Subimos a v4 para forzar el re-seed del Codex Casteller
     db: null,
 
     init() {
@@ -126,9 +172,14 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        // Forzamos inyección si no hay meta_prompts (Upgrade V14)
-        if (nodes.filter(n => n.category === 'meta_prompt').length === 0) {
-            for (const meme of CATALOGO_MEMES) { await this.saveNode(meme); }
+        // Forzamos inyección si no está el codex_casteller (Upgrade v4)
+        if (!nodes.find(n => n.id === 'meme_os_codex_casteller')) {
+            for (const meme of CATALOGO_MEMES) { 
+                // Evitar duplicados si ya existen otros memes antiguos
+                if (!nodes.find(n => n.id === meme.id)) {
+                    await this.saveNode(meme); 
+                }
+            }
         }
 
         if (nodes.filter(n => n.type === 'ontology').length === 0) {
