@@ -7,25 +7,30 @@ import { MapRenderer } from '../components/MapRenderer.js';
 import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
 import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
 import { FocusRenderer } from '../components/FocusRenderer.js';
+import { SandboxRenderer } from '../components/SandboxRenderer.js'; // 🔥 NUEVO: El Cerebro Visual
 
 export default class PaperView {
     constructor() {
-        document.title = "Omni-Paper | TeamTowers V14";
+        document.title = "Omni-Paper | TeamTowers V15";
         this.activeTx = null; 
+        this.activeProjectId = null;
         this.isMenuOpen = false;
         this.currentWord = "";
     }
 
     async getHtml() {
         const state = store.getState();
-        let currentActiveId = localStorage.getItem('tt_active_project');
-        let project = state.projects.find(p => p.id === currentActiveId);
-        if (!project && state.projects.length > 0) project = state.projects[state.projects.length - 1];
+        this.activeProjectId = localStorage.getItem('tt_active_project');
+        let project = state.projects.find(p => p.id === this.activeProjectId);
+        if (!project && state.projects.length > 0) {
+            project = state.projects[state.projects.length - 1];
+            this.activeProjectId = project.id;
+        }
 
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
-            subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Escribe @ para Agentes, # para Memes, y / para inyectar Componentes o Modificar el Sistema."
+            subtitle: project ? project.nombre : 'Kernel V15',
+            tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos (Widgets & Arquetipos)."
         };
 
         return `
@@ -34,27 +39,32 @@ export default class PaperView {
                 ${KanbanRenderer.getStyles()} 
                 ${LedgerRenderer.getStyles()} 
                 ${FocusRenderer.getStyles()}
+                ${SandboxRenderer ? SandboxRenderer.getStyles() : ''}
 
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width:100%;}
                 .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-dark); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
                 
-                .paper-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;}
+                .paper-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;}
                 
-                .tx-context-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px 20px; border-radius: 12px; border: 1px dashed var(--glass-border); flex-wrap: wrap; gap: 15px; transition: 0.3s;}
-                .tx-context-bar.draft-mode { border-color: var(--accent-orange); box-shadow: 0 0 20px rgba(255,171,64,0.1); }
+                /* =========================================================
+                   BREADCRUMB & CONTEXT BAR (UX DELUXE)
+                   ========================================================= */
+                .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px 12px 0 0; border: 1px solid var(--glass-border); border-bottom: none; gap: 10px; flex-wrap: wrap;}
+                .bc-select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; font-size: 0.9rem; font-weight: bold; font-family: var(--font-main); outline: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: 0.3s;}
+                .bc-select:focus { border-color: var(--accent-blue); }
+                .bc-separator { color: #555; font-weight: bold; }
                 
-                .tx-selector { background: transparent; border: none; color: white; font-size: 1.1rem; font-weight: 900; font-family: var(--font-main); outline: none; cursor: pointer; flex: 1; min-width: 200px; text-overflow: ellipsis;}
-                .tx-selector option { background: #111; color: white; }
-                .tx-selector optgroup { color: var(--accent-blue); background: #000; font-style: normal;}
-                
-                .slice-ticker { font-size: 1.2rem; font-family: var(--font-mono); font-weight: 900; color: var(--accent-green); background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px;}
-                .slice-ticker.draft-ticker { color: var(--accent-orange); background: rgba(255,171,64,0.1); border-color: rgba(255,171,64,0.3); }
+                .live-context-bar { background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 0 0 12px 12px; display: flex; gap: 10px; align-items: center; min-height: 24px; transition: 0.3s; flex-wrap: wrap;}
+                .live-context-label { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-right: 10px;}
+                .context-badge { padding: 4px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; animation: popIn 0.3s ease-out;}
+                .cb-mention { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
+                .cb-meme { background: rgba(224,64,251,0.1); color: var(--accent-purple); border: 1px solid rgba(224,64,251,0.3); }
 
                 /* =========================================================
                    EL LIENZO EN BLANCO (contenteditable)
                    ========================================================= */
-                .editor-wrapper { position: relative; width: 100%; }
-                .semantic-editor { width: 100%; min-height: 50vh; background: transparent; border: none; color: #ddd; font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; outline: none; padding: 10px 0;}
+                .editor-wrapper { position: relative; width: 100%; margin-top: 1rem;}
+                .semantic-editor { width: 100%; min-height: 40vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; outline: none; padding: 10px 0;}
                 .semantic-editor:empty:before { content: attr(data-placeholder); color: #555; font-style: italic; pointer-events: none;}
                 .semantic-editor p { margin: 0 0 1rem 0; }
 
@@ -72,31 +82,27 @@ export default class PaperView {
                 .inline-success { color: var(--accent-green); font-weight: bold; padding: 1rem; text-align: center; background: rgba(0,230,118,0.1); border-top: 1px solid rgba(0,230,118,0.3);}
 
                 /* UX DELUXE: MENÚ AUTOCOMPLETADO FLOTANTE */
-                .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 300px; overflow-y: auto; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); padding: 8px 0; min-width: 320px; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left;}
+                .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 350px; overflow-y: auto; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); padding: 8px 0; min-width: 320px; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
                 .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
                 .semantic-item.type-mention:hover { border-left-color: var(--accent-blue); background: rgba(0,176,255,0.1); }
                 .semantic-item.type-meme:hover { border-left-color: var(--accent-purple); background: rgba(224,64,251,0.1); }
                 .semantic-item.type-widget:hover { border-left-color: var(--accent-orange); background: rgba(255,171,64,0.1); }
                 .semantic-item.type-action:hover { border-left-color: var(--accent-green); background: rgba(0,230,118,0.1); }
-                
                 .semantic-badge { background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-left: auto; font-weight:bold;}
 
                 /* HIGHLIGHTS (LINKS) */
-                .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
+                .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
                 .mention-highlight:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
-                
-                .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
+                .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
                 .meme-highlight:hover { background: var(--accent-purple); color: white; box-shadow: 0 0 15px rgba(224,64,251,0.4);}
 
                 /* HILO DE CONVERSACIÓN (USENET LOGS) */
-                .thread-container { margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 6rem;}
+                .thread-container { margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 6rem;}
                 .thread-title { color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: flex; justify-content: space-between;}
-                
                 .log-bubble { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; position: relative; transition:0.3s;}
                 .log-bubble.ai-reply { border-left: 4px solid var(--accent-purple); background: rgba(224,64,251,0.05); }
                 .log-bubble.human-reply { border-left: 4px solid var(--accent-blue); }
-                
                 .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
                 .log-author { font-weight: 900; color: white; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
                 .log-time { font-size: 0.75rem; color: #666; font-family: var(--font-mono);}
@@ -106,7 +112,6 @@ export default class PaperView {
                 .action-bar-fixed { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000;}
                 .btn-action-pow { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3);}
                 .btn-action-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224, 64, 251, 0.5); filter: brightness(1.1);}
-                
                 .btn-action-draft { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);}
                 .btn-action-draft:hover { background: var(--accent-orange); color: black; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4); transform: translateY(-3px);}
 
@@ -114,7 +119,9 @@ export default class PaperView {
 
                 @media (max-width: 768px) {
                     .workspace-paper { padding: 90px 1rem 120px 1rem; }
-                    .tx-context-bar { flex-direction: column; align-items: stretch; }
+                    .breadcrumb-bar { flex-direction: column; align-items: stretch; border-radius: 12px; border-bottom: 1px solid var(--glass-border); margin-bottom: 10px;}
+                    .live-context-bar { border-radius: 12px; }
+                    .bc-separator { display: none; }
                     .action-bar-fixed { bottom: 80px; right: 20px; left: 20px; justify-content: space-between; gap:10px; }
                     .btn-action-pow, .btn-action-draft { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
                 }
@@ -128,17 +135,29 @@ export default class PaperView {
 
                     <div class="paper-container">
                         
-                        <div class="tx-context-bar" id="contextBar">
-                            <select id="omniSelector" class="tx-selector">
+                        <div class="breadcrumb-bar">
+                            <span style="font-size:1.2rem;">🏰</span>
+                            <select id="selProject" class="bc-select">
+                                ${state.projects.map(p => `<option value="${p.id}" ${p.id === this.activeProjectId ? 'selected' : ''}>Ecosistema: ${p.nombre}</option>`).join('')}
+                            </select>
+                            
+                            <span class="bc-separator">/</span>
+                            
+                            <span style="font-size:1.2rem;">🎯</span>
+                            <select id="omniSelector" class="bc-select" style="flex:1;">
                                 <option value="draft" selected>📝 Borrador Libre (Draft Mode)</option>
                             </select>
-                            <div class="slice-ticker draft-ticker" id="sliceContainer" title="Estimación de valor">
-                                💡 <span id="sliceEstimation">Borrador</span>
+                        </div>
+                        
+                        <div class="live-context-bar" id="liveContextBar">
+                            <span class="live-context-label">📌 Contexto Detectado:</span>
+                            <div id="dynamicTags" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                                <span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para enlazar el conocimiento...</span>
                             </div>
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/deepwork, /mapa, /agente, /rol...)."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/sandbox, /deepwork, /mapa, /agente, /rol...)."><p><br></p></div>
                         </div>
 
                         <div class="thread-container" id="threadWrapper" style="display:none;">
@@ -174,10 +193,9 @@ export default class PaperView {
 
         this.dom = {
             workspace: document.getElementById('paperWorkspace'),
-            contextBar: document.getElementById('contextBar'),
+            selProject: document.getElementById('selProject'),
             omniSelector: document.getElementById('omniSelector'),
-            sliceContainer: document.getElementById('sliceContainer'),
-            sliceEstimation: document.getElementById('sliceEstimation'),
+            dynamicTags: document.getElementById('dynamicTags'),
             editor: document.getElementById('semanticEditor'),
             menu: document.getElementById('semanticMenu'),
             threadWrapper: document.getElementById('threadWrapper'),
@@ -189,51 +207,60 @@ export default class PaperView {
 
         this.dom.editor.focus();
 
-        // 1. CARGAR TAREAS DEL USUARIO
-        let allMyTasks = [];
-        state.projects.forEach(p => {
+        // Cargar Tareas del Proyecto Seleccionado
+        this.loadProjectTasks = (projId) => {
+            const p = state.projects.find(x => x.id === projId);
+            if (!p) return;
+            
+            let tasks = [];
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
-            let tasks = tasksSource.filter(tx => tx.status === 'pinged' && tx.assigneeId === activeUserId);
             
-            if(tasks.length === 0 && state.session.role === 'ecosystem-owner') {
+            if (state.session.role === 'ecosystem-owner' || p.ownerId === activeUserId) {
                 tasks = tasksSource.filter(tx => tx.status === 'pinged');
+            } else {
+                tasks = tasksSource.filter(tx => tx.status === 'pinged' && tx.assigneeId === activeUserId);
             }
-            
-            tasks.forEach(tx => {
-                const roleFrom = p.roles.find(r => r.id === tx.from);
-                let resolvedName = tx.entregable || tx.template;
-                if (!resolvedName && tx.flowId) {
-                    const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
-                    if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
-                }
-                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'VNA', displayName: resolvedName || 'Work Order' });
-            });
+
+            let selectHtml = `<option value="draft">📝 Borrador Libre (Draft Mode)</option>`;
+            if (tasks.length > 0) {
+                selectHtml += `<optgroup label="🎯 Tareas en Curso">`;
+                tasks.forEach(t => {
+                    const roleFrom = p.roles.find(r => r.id === t.from);
+                    let resolvedName = t.entregable || t.template;
+                    if (!resolvedName && t.flowId) {
+                        const parentFlow = (p.vna_flows || []).find(f => f.id === t.flowId);
+                        if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
+                    }
+                    selectHtml += `<option value="${t.id || t.hash}">[${roleFrom ? roleFrom.name : 'VNA'}] ${resolvedName || 'Work Order'}</option>`;
+                });
+                selectHtml += `</optgroup>`;
+            }
+            this.dom.omniSelector.innerHTML = selectHtml;
+        };
+
+        this.loadProjectTasks(this.activeProjectId);
+
+        this.dom.selProject.addEventListener('change', (e) => {
+            this.activeProjectId = e.target.value;
+            localStorage.setItem('tt_active_project', this.activeProjectId);
+            this.loadProjectTasks(this.activeProjectId);
+            this.activeTx = null;
+            this.setDraftMode();
         });
-
-        allMyTasks.sort((a, b) => a.projectName.localeCompare(b.projectName));
-
-        let selectHtml = `<option value="draft">📝 Borrador Libre (Draft Mode)</option>`;
-        if (allMyTasks.length > 0) {
-            let currentProjectName = '';
-            allMyTasks.forEach(t => {
-                if (t.projectName !== currentProjectName) {
-                    if (currentProjectName !== '') selectHtml += `</optgroup>`;
-                    selectHtml += `<optgroup label="🏰 ${t.projectName.toUpperCase()}">`;
-                    currentProjectName = t.projectName;
-                }
-                selectHtml += `<option value="${t.id || t.hash}">[${t.roleName}] ${t.displayName}</option>`;
-            });
-            selectHtml += `</optgroup>`;
-        }
-        this.dom.omniSelector.innerHTML = selectHtml;
 
         const urlParams = new URLSearchParams(window.location.search);
         const hashFromUrl = urlParams.get('hash');
         
-        if (hashFromUrl && allMyTasks.find(t => (t.id || t.hash) === hashFromUrl)) {
-            this.activeTx = allMyTasks.find(t => (t.id || t.hash) === hashFromUrl);
-            this.dom.omniSelector.value = this.activeTx.id || this.activeTx.hash;
-            this.setTaskMode();
+        if (hashFromUrl) {
+            const p = state.projects.find(x => x.id === this.activeProjectId);
+            const task = (p.work_orders || p.transactions || []).find(t => (t.id || t.hash) === hashFromUrl);
+            if (task) {
+                this.activeTx = task;
+                this.dom.omniSelector.value = hashFromUrl;
+                this.setTaskMode();
+            } else {
+                this.setDraftMode();
+            }
         } else {
             this.setDraftMode();
         }
@@ -244,7 +271,8 @@ export default class PaperView {
                 this.activeTx = null;
                 this.setDraftMode();
             } else {
-                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === val);
+                const p = state.projects.find(x => x.id === this.activeProjectId);
+                this.activeTx = (p.work_orders || p.transactions || []).find(t => (t.id || t.hash) === val);
                 this.setTaskMode();
             }
         });
@@ -256,18 +284,60 @@ export default class PaperView {
         this.dom.btnSubmit.addEventListener('click', () => this.submitReport());
         this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
         
-        // 4. DELEGACIÓN DE EVENTOS PARA LAS CONSOLAS INTERACTIVAS INYECTADAS
+        // 4. DELEGACIÓN DE EVENTOS INLINE
         this.dom.editor.addEventListener('click', async (e) => {
             if (e.target.classList.contains('btn-inline-action')) {
                 await this.handleInlineConsoleAction(e.target);
             }
         });
+
+        // 5. ESCUCHAR AL SANDBOX D3 (Deep Research de Mestre)
+        window.addEventListener('sandbox-action', async (e) => {
+            const { action, god, btnElement } = e.detail;
+            if (action === 'invoke-mestre') {
+                btnElement.disabled = true;
+                btnElement.innerText = "⏳ El Oráculo está forjando el Arquetipo...";
+
+                try {
+                    const { Orchestrator } = await import('../core/Orchestrator.js');
+                    const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+                    const apiKey = localStorage.getItem(`tt_key_${provider}`);
+
+                    const systemPrompt = `Actúa como @mestre_escola, Master Architect de TeamTowers V15 y experto en psicología organizacional de Jung, las 13 Lunas, el Panteón Griego y VNA de Verna Allee.
+Tu misión es estandarizar el Modelo Organizativo para el arquetipo: ${god.name} (${god.domain}).
+Genera 1 Nodo Raíz (category "ontology"), 1 Procedimiento (category "SOP") y 2 Auditorías (category "SOC") binarias.
+Devuelve ÚNICAMENTE un JSON estricto con la raíz {"memes": [...]}. Usa IDs coherentes.`;
+                    
+                    const userPrompt = `Genera la ontología W3C para el sector/arquetipo de ${god.name}.`;
+
+                    const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+                    
+                    if (response.content && response.content.memes) {
+                        const { KB } = await import('../core/kb.js');
+                        await KB.init();
+                        for (const meme of response.content.memes) {
+                            meme.keywords = meme.keywords || [];
+                            meme.keywords.push(god.name); 
+                            await KB.saveNode({
+                                id: meme.id || `meme_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                                type: meme.type || 'meme', category: meme.category || 'RULE',
+                                projectId: 'global', targetId: 'global',
+                                title: meme.title, content: meme.content, keywords: meme.keywords, broader: meme.broader || null, related: meme.related || []
+                            });
+                        }
+                        btnElement.innerText = `✅ Arquetipo ${god.name} inyectado (LMS)`;
+                    }
+
+                } catch (err) {
+                    alert(`Error IA: ${err.message}`);
+                    btnElement.disabled = false;
+                    btnElement.innerText = "🧠 Reintentar Asignación";
+                }
+            }
+        });
     }
 
     setDraftMode() {
-        this.dom.contextBar.classList.add('draft-mode');
-        this.dom.sliceContainer.className = 'slice-ticker draft-ticker';
-        this.dom.sliceContainer.innerHTML = `💡 <span id="sliceEstimation">Borrador Libre</span>`;
         this.dom.threadWrapper.style.display = 'none';
         this.dom.btnSubmit.style.display = 'none';
         this.dom.btnConvertDraft.style.display = 'block';
@@ -275,25 +345,12 @@ export default class PaperView {
 
     setTaskMode() {
         if (!this.activeTx) return;
-        this.dom.contextBar.classList.remove('draft-mode');
-        this.dom.sliceContainer.className = 'slice-ticker';
-        
         this.dom.threadWrapper.style.display = 'flex';
         this.dom.btnSubmit.style.display = 'block';
         this.dom.btnConvertDraft.style.display = 'none';
 
         const state = store.getState();
-        const p = state.projects.find(x => x.id === this.activeTx.projectId);
-        
-        let estHours = this.activeTx.horas || this.activeTx.estimatedHours || 2;
-        if (!this.activeTx.horas && this.activeTx.flowId) {
-            const parentFlow = (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
-            if (parentFlow) estHours = parentFlow.estimatedHours || 2;
-        }
-        const role = p.roles.find(r => r.id === this.activeTx.from);
-        const slices = role ? (estHours * role.fmv * role.multiplier) : 0;
-        this.dom.sliceContainer.innerHTML = `💎 <span id="sliceEstimation">${Math.round(slices).toLocaleString()}</span> Slices <span>(Est.)</span>`;
-
+        const p = state.projects.find(x => x.id === this.activeProjectId);
         this.renderThread(p);
     }
 
@@ -345,6 +402,7 @@ export default class PaperView {
 
     hydrateWidgets(project) {
         setTimeout(() => {
+            // Mapas
             this.dom.threadList.querySelectorAll('.omni-map-canvas').forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
                 if(svg && project) {
@@ -353,6 +411,7 @@ export default class PaperView {
                     mr.setData(project.roles, flows);
                 }
             });
+            // Kanbans
             this.dom.threadList.querySelectorAll('[id^="kanban_"]').forEach(container => {
                 if (project) {
                     const activeUserId = store.getState().session.activeUserId;
@@ -361,18 +420,25 @@ export default class PaperView {
                     kr.render();
                 }
             });
+            // Ledgers
             this.dom.threadList.querySelectorAll('[id^="ledger_"]').forEach(container => {
                 if (project) {
                     const lr = new LedgerRenderer(container, { projectId: project.id, showHistory: false });
                     lr.render();
                 }
             });
+            // Sandbox Visual
+            this.dom.threadList.querySelectorAll('[id^="sandbox_"]').forEach(container => {
+                const sr = new SandboxRenderer(container);
+                sr.render();
+            });
+
         }, 100);
         setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
     }
 
     // ==========================================
-    // UX DELUXE: EDITOR SEMÁNTICO FLOTANTE (BLINDADO)
+    // UX DELUXE: EDITOR SEMÁNTICO FLOTANTE
     // ==========================================
     setupSemanticEditor() {
         const input = this.dom.editor;
@@ -380,12 +446,27 @@ export default class PaperView {
         const state = store.getState();
         
         let lastKnownRect = null; 
-        let savedRange = null; // 🔥 FIX: Guardar el Range para que no se pierda al hacer click en el menú
+        let savedRange = null; 
 
-        // Evitamos que al clicar el menú se pierda el foco del editor contenteditable
-        menu.addEventListener('mousedown', (e) => {
-            e.preventDefault(); 
-        });
+        // Escáner de Contexto en Tiempo Real
+        const updateDetectedContext = () => {
+            const text = input.innerText;
+            const mentions = [...new Set(text.match(/@\w+/g) || [])];
+            const tags = [...new Set(text.match(/#\w+/g) || [])];
+            
+            if (mentions.length === 0 && tags.length === 0) {
+                this.dom.dynamicTags.innerHTML = `<span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para enlazar el conocimiento...</span>`;
+            } else {
+                let html = '';
+                mentions.forEach(m => html += `<span class="context-badge cb-mention">${m}</span>`);
+                tags.forEach(t => html += `<span class="context-badge cb-meme">${t}</span>`);
+                this.dom.dynamicTags.innerHTML = html;
+            }
+        };
+
+        input.addEventListener('input', updateDetectedContext);
+
+        menu.addEventListener('mousedown', (e) => e.preventDefault());
 
         document.addEventListener('click', (e) => {
             if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action')) {
@@ -398,8 +479,7 @@ export default class PaperView {
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
             
-            savedRange = selection.getRangeAt(0).cloneRange(); // Guardamos una copia exacta de dónde está el cursor
-            
+            savedRange = selection.getRangeAt(0).cloneRange(); 
             const textBeforeCursor = savedRange.startContainer.textContent.substring(0, savedRange.startOffset);
             const words = textBeforeCursor.split(/\s/);
             this.currentWord = words[words.length - 1];
@@ -454,38 +534,16 @@ export default class PaperView {
             else if (this.currentWord.startsWith('/')) {
                 menu.innerHTML = `
                     <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Forjar Estructura</div>
-                    
-                    <div class="semantic-item type-action" data-val="/agente" data-type="action">
-                        <span style="font-size:1.5rem;">👤</span> 
-                        <div><b style="color:var(--accent-green);">Añadir Nodo / Agente</b><br><span style="font-size:0.75rem;color:#888;">Registra un nuevo talento en el Padrón.</span></div>
-                    </div>
-                    <div class="semantic-item type-action" data-val="/rol" data-type="action">
-                        <span style="font-size:1.5rem;">🪑</span> 
-                        <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un nuevo rol estructural al proyecto.</span></div>
-                    </div>
-                    <div class="semantic-item type-action" data-val="/tuberia" data-type="action">
-                        <span style="font-size:1.5rem;">🛤️</span> 
-                        <div><b style="color:var(--accent-green);">Trazar Tubería (SOP)</b><br><span style="font-size:0.75rem;color:#888;">Define una entrega de valor entre dos roles.</span></div>
-                    </div>
+                    <div class="semantic-item type-action" data-val="/agente" data-type="action"><span style="font-size:1.5rem;">👤</span> <div><b style="color:var(--accent-green);">Añadir Nodo / Agente</b><br><span style="font-size:0.75rem;color:#888;">Registra un nuevo talento en el Padrón.</span></div></div>
+                    <div class="semantic-item type-action" data-val="/rol" data-type="action"><span style="font-size:1.5rem;">🪑</span> <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un nuevo rol estructural.</span></div></div>
+                    <div class="semantic-item type-action" data-val="/tuberia" data-type="action"><span style="font-size:1.5rem;">🛤️</span> <div><b style="color:var(--accent-green);">Trazar Tubería (SOP)</b><br><span style="font-size:0.75rem;color:#888;">Define una entrega de valor.</span></div></div>
 
                     <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Insertar Componentes</div>
-                    
-                    <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget">
-                        <span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> 
-                        <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + Editor + SOCs.</span></div>
-                    </div>
-                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget">
-                        <span style="font-size:1.5rem;">🕸️</span> 
-                        <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta el grafo dinámico del Ecosistema.</span></div>
-                    </div>
-                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget">
-                        <span style="font-size:1.5rem;">📋</span> 
-                        <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza oportunidades libres.</span></div>
-                    </div>
-                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget">
-                        <span style="font-size:1.5rem;">⚖️</span> 
-                        <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Cap Table interactiva y auditada.</span></div>
-                    </div>
+                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA (Constelación)</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos y Ontología.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + SOCs.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget"><span style="font-size:1.5rem;">🕸️</span> <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta el grafo dinámico del Ecosistema.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget"><span style="font-size:1.5rem;">📋</span> <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza oportunidades libres.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget"><span style="font-size:1.5rem;">⚖️</span> <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Cap Table interactiva y auditada.</span></div></div>
                 `;
                 this.showFloatingMenu(menu, lastKnownRect);
             } else {
@@ -500,7 +558,6 @@ export default class PaperView {
                 const replaceVal = item.getAttribute('data-val');
                 const type = item.getAttribute('data-type');
                 
-                // 🔥 FIX: Usamos el Range que guardamos antes de que se perdiera el foco
                 savedRange.setStart(savedRange.startContainer, savedRange.endOffset - this.currentWord.length);
                 savedRange.deleteContents();
                 
@@ -544,8 +601,7 @@ export default class PaperView {
                             </div>
                         `;
                     } else if (replaceVal === '/tuberia') {
-                        const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                        const p = store.getState().projects.find(x => x.id === projId);
+                        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                         let roleOptions = '';
                         if (p && p.roles && p.roles.length > 0) {
                             p.roles.forEach(r => { roleOptions += `<option value="${r.id}">[${r.levelId}] ${r.name}</option>`; });
@@ -574,9 +630,18 @@ export default class PaperView {
                                 </div>
                             </div>
                         `;
+                    } else if (replaceVal === '/sandbox') {
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false">
+                                <div class="omni-widget-body" id="sandbox_${widgetId}" style="padding:0;"></div>
+                            </div>
+                        `;
+                        setTimeout(() => {
+                            const container = document.getElementById(`sandbox_${widgetId}`);
+                            if(container) { const sr = new SandboxRenderer(container); sr.render(); }
+                        }, 50);
                     } else if (replaceVal === '/mapa') {
-                        const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                        const p = store.getState().projects.find(x => x.id === projId);
+                        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                         if (!p || !p.roles || p.roles.length === 0) {
                             el.innerHTML = `<div class="omni-widget" contenteditable="false"><div class="omni-widget-header">🕸️ Mapa VNA</div><div class="omni-widget-body" style="padding:2rem; text-align:center; color:#888;">⚠️ El mapa está vacío. Traza tuberías primero.</div></div>`;
                         } else {
@@ -608,14 +673,12 @@ export default class PaperView {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
-                                <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);">
-                                </div>
+                                <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);"></div>
                             </div>
                         `;
                         setTimeout(() => {
                             const container = document.getElementById(`kanban_${widgetId}`);
-                            const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                            const p = store.getState().projects.find(x => x.id === projId);
+                            const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                             if(p && container) {
                                 const activeUserId = store.getState().session.activeUserId;
                                 const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
@@ -627,14 +690,12 @@ export default class PaperView {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">⚖️ Slicing Pie (Cap Table)</div>
-                                <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);">
-                                </div>
+                                <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);"></div>
                             </div>
                         `;
                         setTimeout(() => {
                             const container = document.getElementById(`ledger_${widgetId}`);
-                            const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                            const p = store.getState().projects.find(x => x.id === projId);
+                            const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                             if(p && container) {
                                 const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
                                 lr.render();
@@ -642,12 +703,11 @@ export default class PaperView {
                         }, 50);
                     } else if (replaceVal === '/deepwork') {
                         if (!this.activeTx) {
-                            // Estado Vacío estético si no hay tarea asignada
                             el.innerHTML = `
                                 <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-red);">
                                     <div class="omni-widget-header" style="background: rgba(255, 82, 82, 0.1); border-bottom-color: rgba(255, 82, 82, 0.2); color: var(--accent-red);">🍅 Modo DeepWork (Focus)</div>
                                     <div class="omni-widget-body" style="padding: 2rem; text-align: center; color: #888;">
-                                        ⚠️ <b>Borrador Libre detectado.</b> Convierte este borrador en una Work Order (Botón Arriba a la derecha) para poder activar el temporizador Focus.
+                                        ⚠️ <b>Borrador Libre detectado.</b> Convierte este borrador en una Work Order para activar el Focus.
                                     </div>
                                 </div>
                             `;
@@ -676,17 +736,13 @@ export default class PaperView {
                         }
                     }
                     
-                    // Inserción segura del Widget
                     savedRange.insertNode(el);
-                    
-                    // Añadir un espacio tras el widget para no atrapar el cursor
                     const pBr = document.createElement('p');
                     pBr.innerHTML = '<br>';
                     el.parentNode.insertBefore(pBr, el.nextSibling);
                     savedRange.setStartAfter(pBr);
 
                 } else {
-                    // Inserción de Enlaces (Meme o Mention)
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
                     const el = document.createElement('a');
                     el.className = htmlClass;
@@ -695,14 +751,12 @@ export default class PaperView {
                     el.contentEditable = "false";
                     el.innerText = replaceVal;
                     
-                    // Inserción segura del Link
                     savedRange.insertNode(el);
                     const space = document.createTextNode('\u00A0'); 
                     el.parentNode.insertBefore(space, el.nextSibling);
                     savedRange.setStartAfter(space);
                 }
 
-                // Restaurar y limpiar el cursor
                 savedRange.collapse(true);
                 const sel = window.getSelection();
                 sel.removeAllRanges();
@@ -710,6 +764,7 @@ export default class PaperView {
                 
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
+                updateDetectedContext();
             }
         });
     }
@@ -754,8 +809,7 @@ export default class PaperView {
                 widgetContainer.innerHTML = `<div class="inline-success">✅ Nodo ${id} inscrito en el Padrón Global.</div>`;
             } 
             else if (action === 'create-role') {
-                const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                if (!projId) throw new Error("No hay proyecto activo. Ve a Instanciar Red primero.");
+                if (!this.activeProjectId) throw new Error("No hay proyecto activo.");
                 
                 const level = document.getElementById(`role_level_${wid}`).value;
                 const name = document.getElementById(`role_name_${wid}`).value.trim();
@@ -768,14 +822,13 @@ export default class PaperView {
 
                 await store.dispatch({
                     type: 'UPDATE_PROJECT_INFO',
-                    payload: { projectId: projId, updates: { roles: [...store.getState().projects.find(p=>p.id===projId).roles, newRole] } }
+                    payload: { projectId: this.activeProjectId, updates: { roles: [...store.getState().projects.find(p=>p.id===this.activeProjectId).roles, newRole] } }
                 });
                 
                 widgetContainer.innerHTML = `<div class="inline-success">✅ Silla ${name} (${level}) forjada en el Ecosistema.</div>`;
             }
             else if (action === 'create-flow') {
-                const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                if (!projId) throw new Error("No hay proyecto activo.");
+                if (!this.activeProjectId) throw new Error("No hay proyecto activo.");
                 
                 const name = document.getElementById(`flow_name_${wid}`).value.trim();
                 const from = document.getElementById(`flow_from_${wid}`).value;
@@ -788,7 +841,7 @@ export default class PaperView {
                 await store.dispatch({
                     type: 'ADD_FLOW',
                     payload: {
-                        projectId: projId,
+                        projectId: this.activeProjectId,
                         flow: {
                             id: 'flow_' + Date.now(),
                             template: name, from: from, to: to, estimatedHours: hours, tipo: type,
@@ -808,14 +861,8 @@ export default class PaperView {
         const textContent = this.dom.editor.innerText.trim(); 
         if (!textContent) return alert("⚠️ Escribe algo en el borrador antes de convertirlo.");
 
-        let projectId = localStorage.getItem('tt_active_project');
-        if (!projectId) {
-            const state = store.getState();
-            if (state.projects.length === 0) return alert("Crea un Ecosistema (Proyecto) primero.");
-            projectId = state.projects[state.projects.length - 1].id;
-        }
-
-        const project = store.getState().projects.find(p => p.id === projectId);
+        if (!this.activeProjectId) return alert("Selecciona o crea un Ecosistema en el selector superior.");
+        const project = store.getState().projects.find(p => p.id === this.activeProjectId);
         if (!project) return;
 
         const words = textContent.split(/\s/);
@@ -829,7 +876,7 @@ export default class PaperView {
         await store.dispatch({
             type: 'SPAWN_WORK_ORDER',
             payload: {
-                projectId: projectId,
+                projectId: this.activeProjectId,
                 workOrder: {
                     hash: newHash, 
                     flowId: null, 
@@ -859,7 +906,6 @@ export default class PaperView {
         this.dom.btnSubmit.innerText = '⏳ Sellando en la Usenet...';
         
         const activeHash = this.activeTx.id || this.activeTx.hash;
-        
         const mentions = [];
         const words = textContent.split(/\s/);
         words.forEach(w => {
@@ -883,6 +929,7 @@ export default class PaperView {
         });
 
         this.dom.editor.innerHTML = '<p><br></p>';
+        this.dom.dynamicTags.innerHTML = `<span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para enlazar el conocimiento...</span>`;
         this.loadTaskContext();
         this.dom.btnSubmit.disabled = false;
         this.dom.btnSubmit.innerText = '⚖️ Enviar a Usenet (Sellar)';
