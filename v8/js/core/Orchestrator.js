@@ -7,12 +7,14 @@ const LLM_PRICING = {
     'gemini': { input: 0.075, output: 0.30 },
     'openai': { input: 0.15, output: 0.60 },
     'anthropic': { input: 3.00, output: 15.00 },
-    'custom': { input: 0.0, output: 0.0 }
+    'custom': { input: 0.0, output: 0.0 },
+    'nano_banana': { input: 0.0, output: 0.02 }, // Coste simulado por imagen
+    'veo': { input: 0.0, output: 0.50 }         // Coste simulado por vídeo
 };
 
 class OrchestratorCore {
     constructor() {
-        this.version = "15.2-MemeEnricher";
+        this.version = "16.0-MultimodalEra";
         this.isListening = false;
     }
 
@@ -40,6 +42,9 @@ class OrchestratorCore {
         });
     }
 
+    // ==========================================
+    // CAPA 1: GATEWAY NEURONAL (TEXTO / JSON)
+    // ==========================================
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
         if (!apiKey && provider !== 'custom') throw new Error(`API Key requerida para el Orquestador (${provider}).`);
         let attempt = 0; let lastError = null;
@@ -50,7 +55,6 @@ class OrchestratorCore {
                 const startTime = Date.now();
 
                 if (provider === 'gemini') {
-                    // 🔥 FIX: Actualizado a gemini-2.0-flash para evitar el error 404 NOT_FOUND
                     const targetModel = 'gemini-2.0-flash';
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                         method: 'POST', 
@@ -134,12 +138,7 @@ MANDAMIENTOS: 1. Crea EXACTAMENTE entre 8 y 10 transacciones. 2. 5 ERAS: Kickoff
 ESTRUCTURA JSON EXACTA: { "presentacion": "...", "tags": ["Tech"], "new_memes": [{ "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }], "roles": [{ "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "template": "...", "horas": 5, "required_skills": ["meme_skill_x"], "soc_checklist": [{ "text": "..." }] }] }
 REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @pinya).
 `;
-        
-        const result = await this.callLLM({ 
-            provider, apiKey, systemPrompt, 
-            userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, 
-            responseFormat: "json_object", temperature: 0.1 
-        });
+        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, responseFormat: "json_object", temperature: 0.1 });
         return result.content; 
     }
 
@@ -246,7 +245,7 @@ REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @piny
     }
 
     // ==========================================
-    // CAPA 6: MEME ENRICHER (Evolución Fractal) 🔥 NUEVO
+    // CAPA 6: MEME ENRICHER
     // ==========================================
     async enrichMeme(memeData, provider, apiKey) {
         if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Enriquecer Memes.");
@@ -254,27 +253,77 @@ REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @piny
         const systemPrompt = `
             Actúa como @mestre_escola, el Investigador y Optimizador Académico.
             Tu tarea es coger un "Meme W3C" (una unidad de conocimiento básica o cruda) y enriquecerlo profesionalmente a nivel industrial.
-            - Si es un SOP (Procedimiento): detalla los pasos exactos, precondiciones y añade SOCs (Condiciones de auditoría) integrados.
-            - Si es un SOC (Regla de calidad): hazlo medible, matemático y binario.
-            - Si es un SKILL: define los niveles de competencia requeridos y herramientas.
-            
             DEVUELVE ÚNICAMENTE un objeto JSON con el siguiente formato exacto:
-            {
-                "title": "Nuevo Título Mejorado",
-                "content": "Contenido expandido, estructurado y altamente profesionalizado...",
-                "keywords": ["nuevos", "tags", "optimizados"]
-            }
+            { "title": "Nuevo Título", "content": "Contenido expandido...", "keywords": ["tags"] }
         `;
-
-        const userPrompt = `
-            MEJORA Y EXPANDE ESTE MEME:
-            Título: ${memeData.title}
-            Categoría: ${memeData.category}
-            Contenido Actual: ${memeData.content}
-        `;
+        const userPrompt = `MEJORA Y EXPANDE ESTE MEME:\nTítulo: ${memeData.title}\nCategoría: ${memeData.category}\nContenido Actual: ${memeData.content}`;
 
         const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
         return result.content;
+    }
+
+    // ==========================================
+    // CAPA 7: SINTETIZADOR MULTIMODAL (NUEVO)
+    // ==========================================
+    async generateAsset(prompt, type, apiKey) {
+        if (!apiKey) throw new Error(`Se requiere API Key configurada en el Panteón para generar ${type}.`);
+        
+        const startTime = Date.now();
+        let finalOutput = "";
+        let tokensLog = { prompt_tokens: 0, completion_tokens: 1 };
+        let engineUsed = "";
+        let costInDollars = 0;
+
+        try {
+            if (type === 'image') {
+                // Integración con Nano Banana 2 (Gemini 3 Flash Image)
+                engineUsed = "nano_banana";
+                // En un entorno de producción haríamos el POST a la API visual de Google (o DALL-E si fuera OpenAI)
+                // fetch('https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict...', { ... })
+                
+                // Simularemos la respuesta exitosa para el prototipo visual:
+                await new Promise(r => setTimeout(r, 2500)); 
+                
+                // Generamos una imagen "placeholder" estética basada en el prompt para la maqueta
+                const safePrompt = encodeURIComponent(prompt.substring(0, 50));
+                finalOutput = `https://image.pollinations.ai/prompt/${safePrompt}?width=800&height=400&nologo=true`;
+                
+                costInDollars = LLM_PRICING.nano_banana.output;
+                
+            } else if (type === 'video') {
+                // Integración con Veo
+                engineUsed = "veo";
+                // fetch('https://generativelanguage.googleapis.com/v1beta/models/veo-1.0:generateVideo...', { ... })
+                
+                await new Promise(r => setTimeout(r, 4000));
+                // Simulador visual de video insertando un video estético de stock o animación
+                finalOutput = `https://www.w3schools.com/html/mov_bbb.mp4`; 
+                
+                costInDollars = LLM_PRICING.veo.output;
+            }
+
+            const latencyMs = Date.now() - startTime;
+
+            // Telemetría de Assets Multimodales
+            await store.dispatch({ 
+                type: 'LOG_TELEMETRY', 
+                payload: { 
+                    projectId: 'global', 
+                    agentId: `@${engineUsed}_engine`, 
+                    engine: engineUsed, 
+                    actionType: `GENERATE_${type.toUpperCase()}`, 
+                    tokens: tokensLog, 
+                    costInDollars: costInDollars, 
+                    recRatio: 0, 
+                    latencyMs 
+                } 
+            });
+
+            return { url: finalOutput, type: type, engine: engineUsed };
+
+        } catch (error) {
+            throw new Error(`Fallo en la generación multimodal de ${type}: ${error.message}`);
+        }
     }
 }
 
