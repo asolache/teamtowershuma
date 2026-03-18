@@ -1,5 +1,5 @@
 // v8/js/router.js
-import { Orchestrator } from './core/Orchestrator.js'; // 🔥 NUEVO SPRINT 35: Invocación del Daemon
+import { Orchestrator } from './core/Orchestrator.js'; // 🔥 Invocación del Daemon A2A
 import HomeView from './views/HomeView.js';
 import ProfileView from './views/ProfileView.js';
 import DashboardView from './views/DashboardView.js';
@@ -11,7 +11,7 @@ import AgentEditorView from './views/AgentEditorView.js';
 import PaperView from './views/PaperView.js'; 
 import SettingsView from './views/SettingsView.js'; 
 import LmsView from './views/LmsView.js';
-import LedgerView from './views/LedgerView.js'; // 🔥 FIX: Importamos la Notaría
+import LedgerView from './views/LedgerView.js'; 
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -30,9 +30,10 @@ const router = async () => {
         { path: "/v8/tests", view: TestsView },
         { path: "/v8/agents", view: AgentEditorView },
         { path: "/v8/paper", view: PaperView },
+        { path: "/v8/focus", view: PaperView }, // 🔥 FIX: DeepWork redirige al Omni-Paper (Usenet)
         { path: "/v8/lms", view: LmsView },
         { path: "/v8/settings", view: SettingsView },
-        { path: "/v8/ledger", view: LedgerView } // 🔥 FIX: Registramos la ruta del Ledger
+        { path: "/v8/ledger", view: LedgerView }
     ];
 
     // Buscar coincidencia exacta con la URL actual
@@ -71,7 +72,7 @@ window.addEventListener("popstate", router);
 // Interceptar clics en enlaces internos (SPA behavior)
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🔥 NUEVO SPRINT 35: Arrancar el Daemon de Auto-Respuesta A2A al cargar la App
+    // 🔥 Arrancar el Daemon de Auto-Respuesta A2A al cargar la App
     Orchestrator.initUsenetDaemon();
 
     document.body.addEventListener("click", e => {
