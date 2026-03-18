@@ -6,14 +6,13 @@ import { PageHeader } from '../components/PageHeader.js';
 import { MapRenderer } from '../components/MapRenderer.js'; 
 import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
 import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
-import { FocusRenderer } from '../components/FocusRenderer.js'; // 🔥 NUEVO: Importamos Focus
+import { FocusRenderer } from '../components/FocusRenderer.js';
 
 export default class PaperView {
     constructor() {
         document.title = "Omni-Paper | TeamTowers V14";
-        this.activeTx = null;
+        this.activeTx = null; // Si es null, estamos en DRAFT MODE
         this.isMenuOpen = false;
-        this.triggerChar = null;
         this.currentWord = "";
     }
 
@@ -26,7 +25,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
             subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Escribe @ para Agentes, # para Memes W3C, y / para inyectar Widgets (Mapa/Ledger/Kanban/DeepWork)."
+            tagline: "Escribe @ para Agentes, # para Memes, y / para inyectar Componentes. Empieza a escribir para crear un Borrador libre."
         };
 
         return `
@@ -34,20 +33,22 @@ export default class PaperView {
                 ${MapRenderer.getStyles()}
                 ${KanbanRenderer.getStyles()} 
                 ${LedgerRenderer.getStyles()} 
-                ${FocusRenderer.getStyles()} /* 🔥 CSS del DeepWork inyectado */
+                ${FocusRenderer.getStyles()}
 
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width:100%;}
                 .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-dark); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
                 
                 .paper-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;}
                 
-                .tx-context-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px 20px; border-radius: 12px; border: 1px dashed var(--glass-border); flex-wrap: wrap; gap: 15px;}
+                .tx-context-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 15px 20px; border-radius: 12px; border: 1px dashed var(--glass-border); flex-wrap: wrap; gap: 15px; transition: 0.3s;}
+                .tx-context-bar.draft-mode { border-color: var(--accent-orange); box-shadow: 0 0 20px rgba(255,171,64,0.1); }
+                
                 .tx-selector { background: transparent; border: none; color: white; font-size: 1.1rem; font-weight: 900; font-family: var(--font-main); outline: none; cursor: pointer; flex: 1; min-width: 200px; text-overflow: ellipsis;}
                 .tx-selector option { background: #111; color: white; }
                 .tx-selector optgroup { color: var(--accent-blue); background: #000; font-style: normal;}
                 
                 .slice-ticker { font-size: 1.2rem; font-family: var(--font-mono); font-weight: 900; color: var(--accent-green); background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px;}
-                .slice-ticker span { font-size: 0.8rem; color: #888; text-transform: uppercase; }
+                .slice-ticker.draft-ticker { color: var(--accent-orange); background: rgba(255,171,64,0.1); border-color: rgba(255,171,64,0.3); }
 
                 /* =========================================================
                    EL LIENZO EN BLANCO (contenteditable)
@@ -62,11 +63,24 @@ export default class PaperView {
                 .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .omni-widget-body { padding: 0; position: relative; }
                 
-                /* MENÚ AUTOCOMPLETADO (USENET) */
-                .semantic-menu { position: absolute; background: rgba(15,15,20,0.95); border: 1px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; z-index: 6000; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,176,255,0.2); backdrop-filter: blur(15px); padding: 5px 0; min-width: 280px; top: 100%; left: 0;}
-                .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; font-family: var(--font-main);}
-                .semantic-item:hover, .semantic-item.selected { background: rgba(0,176,255,0.15); }
-                .semantic-badge { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-orange); margin-left: auto;}
+                /* =========================================================
+                   UX DELUXE: MENÚ AUTOCOMPLETADO FLOTANTE
+                   ========================================================= */
+                .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 300px; overflow-y: auto; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); padding: 8px 0; min-width: 320px; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left;}
+                .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
+                .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
+                .semantic-item.type-mention:hover { border-left-color: var(--accent-blue); background: rgba(0,176,255,0.1); }
+                .semantic-item.type-meme:hover { border-left-color: var(--accent-purple); background: rgba(224,64,251,0.1); }
+                .semantic-item.type-widget:hover { border-left-color: var(--accent-orange); background: rgba(255,171,64,0.1); }
+                
+                .semantic-badge { background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-left: auto; font-weight:bold;}
+
+                /* HIGHLIGHTS (LINKS) */
+                .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
+                .mention-highlight:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.4);}
+                
+                .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
+                .meme-highlight:hover { background: var(--accent-purple); color: white; box-shadow: 0 0 15px rgba(224,64,251,0.4);}
 
                 /* HILO DE CONVERSACIÓN (USENET LOGS) */
                 .thread-container { margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 6rem;}
@@ -80,44 +94,47 @@ export default class PaperView {
                 .log-author { font-weight: 900; color: white; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
                 .log-time { font-size: 0.75rem; color: #666; font-family: var(--font-mono);}
                 .log-content { color: #ccc; line-height: 1.6; font-family: 'Georgia', serif; font-size: 1.05rem; white-space: pre-wrap; word-break: break-word;}
-                
-                .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9rem;}
-                .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9rem;}
 
-                .btn-seal-pow { position: fixed; bottom: 100px; right: 30px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.4); z-index: 1000;}
-                .btn-seal-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224, 64, 251, 0.5); filter: brightness(1.1);}
+                /* BOTONES DE ACCIÓN INFERIOR */
+                .action-bar-fixed { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000;}
+                .btn-action-pow { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 176, 255, 0.3);}
+                .btn-action-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224, 64, 251, 0.5); filter: brightness(1.1);}
+                
+                .btn-action-draft { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);}
+                .btn-action-draft:hover { background: var(--accent-orange); color: black; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4); transform: translateY(-3px);}
+
+                @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
                 @media (max-width: 768px) {
                     .workspace-paper { padding: 90px 1rem 120px 1rem; }
                     .tx-context-bar { flex-direction: column; align-items: stretch; }
-                    .btn-seal-pow { bottom: 80px; right: 20px; width: calc(100% - 40px); border-radius: 12px; text-align: center; }
+                    .action-bar-fixed { bottom: 80px; right: 20px; left: 20px; justify-content: space-between; gap:10px; }
+                    .btn-action-pow, .btn-action-draft { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
                 }
             </style>
 
             <div class="app-layout">
                 ${Sidebar.getHtml('/paper')}
 
-                <main class="workspace-paper">
+                <main class="workspace-paper" id="paperWorkspace">
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div class="paper-container">
                         
-                        <div class="tx-context-bar">
+                        <div class="tx-context-bar" id="contextBar">
                             <select id="omniSelector" class="tx-selector">
-                                <option value="" disabled selected>🎯 Selecciona un Nodo Libre o Work Order...</option>
+                                <option value="draft" selected>📝 Borrador Libre (Draft Mode)</option>
                             </select>
-                            <div class="slice-ticker" title="Valor a minar si el Notario aprueba (TDD)">
-                                💎 <span id="sliceEstimation">0</span> Slices <span>(Est.)</span>
+                            <div class="slice-ticker draft-ticker" id="sliceContainer" title="Estimación de valor">
+                                💡 <span id="sliceEstimation">Borrador</span>
                             </div>
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco. Escribe tu Proof of Work aquí... \n\nUsa @ para invocar Agentes/Colla.\nUsa # para inyectar Memes LMS.\nUsa / para inyectar Widgets (/deepwork, /mapa, /kanban, /ledger)."><p><br></p></div>
-                            
-                            <div id="semanticMenu" class="semantic-menu"></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/deepwork, /mapa...)."><p><br></p></div>
                         </div>
 
-                        <div class="thread-container">
+                        <div class="thread-container" id="threadWrapper" style="display:none;">
                             <div class="thread-title">
                                 <span>📡 Historial Usenet (Pings)</span>
                                 <span id="threadCount" style="color:var(--accent-blue);">0 Logs</span>
@@ -127,16 +144,21 @@ export default class PaperView {
 
                     </div>
                     
-                    <button class="btn-seal-pow" id="btnSubmitReport" style="display:none;">⚖️ Enviar a Usenet (Sellar)</button>
+                    <div class="action-bar-fixed">
+                        <button class="btn-action-draft" id="btnConvertDraft">🚀 Convertir en Work Order</button>
+                        <button class="btn-action-pow" id="btnSubmitReport" style="display:none;">⚖️ Enviar a Usenet (Sellar)</button>
+                    </div>
 
                 </main>
+                
+                <div id="semanticMenu" class="semantic-menu"></div>
                 
                 ${BottomNav.getHtml('/paper')}
             </div>
         `;
     }
 
-    executeViewScript() {
+    async executeViewScript() {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         
@@ -144,18 +166,23 @@ export default class PaperView {
         PageHeader.execute(); 
 
         this.dom = {
+            workspace: document.getElementById('paperWorkspace'),
+            contextBar: document.getElementById('contextBar'),
             omniSelector: document.getElementById('omniSelector'),
+            sliceContainer: document.getElementById('sliceContainer'),
             sliceEstimation: document.getElementById('sliceEstimation'),
             editor: document.getElementById('semanticEditor'),
             menu: document.getElementById('semanticMenu'),
+            threadWrapper: document.getElementById('threadWrapper'),
             threadList: document.getElementById('threadList'),
             threadCount: document.getElementById('threadCount'),
-            btnSubmit: document.getElementById('btnSubmitReport')
+            btnSubmit: document.getElementById('btnSubmitReport'),
+            btnConvertDraft: document.getElementById('btnConvertDraft')
         };
 
         this.dom.editor.focus();
 
-        // 1. CARGAR TAREAS DEL USUARIO (INCLUSO INVESTIGACIÓN LIBRE)
+        // 1. CARGAR TAREAS DEL USUARIO
         let allMyTasks = [];
         state.projects.forEach(p => {
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
@@ -172,15 +199,15 @@ export default class PaperView {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
                     if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
                 }
-                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'Investigación Libre', displayName: resolvedName || 'Work Order Anónima' });
+                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'VNA', displayName: resolvedName || 'Work Order' });
             });
         });
 
         allMyTasks.sort((a, b) => a.projectName.localeCompare(b.projectName));
 
+        let selectHtml = `<option value="draft">📝 Borrador Libre (Draft Mode)</option>`;
         if (allMyTasks.length > 0) {
             let currentProjectName = '';
-            let selectHtml = `<option value="" disabled>🎯 Selecciona una Work Order...</option>`;
             allMyTasks.forEach(t => {
                 if (t.projectName !== currentProjectName) {
                     if (currentProjectName !== '') selectHtml += `</optgroup>`;
@@ -189,33 +216,58 @@ export default class PaperView {
                 }
                 selectHtml += `<option value="${t.id || t.hash}">[${t.roleName}] ${t.displayName}</option>`;
             });
-            if (currentProjectName !== '') selectHtml += `</optgroup>`;
-            this.dom.omniSelector.innerHTML = selectHtml;
+            selectHtml += `</optgroup>`;
+        }
+        this.dom.omniSelector.innerHTML = selectHtml;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const hashFromUrl = urlParams.get('hash');
-            if (hashFromUrl && allMyTasks.find(t => (t.id || t.hash) === hashFromUrl)) {
-                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === hashFromUrl);
-                this.dom.omniSelector.value = this.activeTx.id || this.activeTx.hash;
-                this.loadTaskContext();
-            }
-
-            this.dom.omniSelector.addEventListener('change', (e) => {
-                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === e.target.value);
-                this.loadTaskContext();
-            });
+        // Comprobar si venimos de un enlace con hash (PULL) o es un borrador
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashFromUrl = urlParams.get('hash');
+        
+        if (hashFromUrl && allMyTasks.find(t => (t.id || t.hash) === hashFromUrl)) {
+            this.activeTx = allMyTasks.find(t => (t.id || t.hash) === hashFromUrl);
+            this.dom.omniSelector.value = this.activeTx.id || this.activeTx.hash;
+            this.setTaskMode();
+        } else {
+            this.setDraftMode();
         }
 
-        // 2. LÓGICA DEL OMNI-PAPER EDITOR
+        this.dom.omniSelector.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val === 'draft') {
+                this.activeTx = null;
+                this.setDraftMode();
+            } else {
+                this.activeTx = allMyTasks.find(t => (t.id || t.hash) === val);
+                this.setTaskMode();
+            }
+        });
+
+        // 2. LÓGICA DEL OMNI-PAPER EDITOR DELUXE
         this.setupSemanticEditor();
 
-        // 3. ENVÍO AL LEDGER
+        // 3. ENVÍO Y CONVERSIÓN
         this.dom.btnSubmit.addEventListener('click', () => this.submitReport());
+        this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
     }
 
-    loadTaskContext() {
+    setDraftMode() {
+        this.dom.contextBar.classList.add('draft-mode');
+        this.dom.sliceContainer.className = 'slice-ticker draft-ticker';
+        this.dom.sliceContainer.innerHTML = `💡 <span id="sliceEstimation">Borrador Libre</span>`;
+        this.dom.threadWrapper.style.display = 'none';
+        this.dom.btnSubmit.style.display = 'none';
+        this.dom.btnConvertDraft.style.display = 'block';
+    }
+
+    setTaskMode() {
         if (!this.activeTx) return;
+        this.dom.contextBar.classList.remove('draft-mode');
+        this.dom.sliceContainer.className = 'slice-ticker';
+        
+        this.dom.threadWrapper.style.display = 'flex';
         this.dom.btnSubmit.style.display = 'block';
+        this.dom.btnConvertDraft.style.display = 'none';
 
         const state = store.getState();
         const p = state.projects.find(x => x.id === this.activeTx.projectId);
@@ -227,21 +279,20 @@ export default class PaperView {
         }
         const role = p.roles.find(r => r.id === this.activeTx.from);
         const slices = role ? (estHours * role.fmv * role.multiplier) : 0;
-        this.dom.sliceEstimation.innerText = Math.round(slices).toLocaleString();
+        this.dom.sliceContainer.innerHTML = `💎 <span id="sliceEstimation">${Math.round(slices).toLocaleString()}</span> Slices <span>(Est.)</span>`;
 
         this.renderThread(p);
     }
 
     renderThread(project) {
         if (!project.logs || !this.activeTx) return;
-        
         const activeHash = this.activeTx.id || this.activeTx.hash;
         const thread = project.logs.filter(l => l.relatedTxHash === activeHash).sort((a,b) => a.date - b.date);
         
         this.dom.threadCount.innerText = `${thread.length} Mensajes`;
 
         if (thread.length === 0) {
-            this.dom.threadList.innerHTML = `<div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">El lienzo está limpio. Inicia la comunicación invocando a la red con un @ o usa /deepwork.</div>`;
+            this.dom.threadList.innerHTML = `<div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">El historial de la Usenet está limpio para esta tarea.</div>`;
             return;
         }
 
@@ -256,14 +307,14 @@ export default class PaperView {
             const timeStr = new Date(log.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
             let formattedContent = log.content;
-            
             if (log.mentions) {
                 log.mentions.forEach(m => {
                     const rgx = new RegExp(`(?<!<[^>]*)${m}`, 'g');
-                    formattedContent = formattedContent.replace(rgx, `<span class="mention-highlight">${m}</span>`);
+                    formattedContent = formattedContent.replace(rgx, `<a href="/v8/profile?id=${m}" data-link class="mention-highlight">${m}</a>`);
                 });
             }
-            formattedContent = formattedContent.replace(/(?<!<[^>]*)(#[a-zA-Z0-9_]+)/g, `<span class="meme-highlight">$1</span>`);
+            // Tags (Memes)
+            formattedContent = formattedContent.replace(/(?<!<[^>]*)(#[a-zA-Z0-9_]+)/g, `<a href="/v8/lms" data-link class="meme-highlight">$1</a>`);
 
             html += `
                 <div class="log-bubble ${isAi ? 'ai-reply' : 'human-reply'}">
@@ -277,11 +328,13 @@ export default class PaperView {
         });
 
         this.dom.threadList.innerHTML = html;
-        
-        // 🔥 HIDRATACIÓN DE WIDGETS DRY (Mapas, Kanbans, Ledgers y DeepWorks inyectados)
+        this.hydrateWidgets(project);
+    }
+
+    hydrateWidgets(project) {
         setTimeout(() => {
-            const maps = this.dom.threadList.querySelectorAll('.omni-map-canvas');
-            maps.forEach(canvas => {
+            // Mapas
+            this.dom.threadList.querySelectorAll('.omni-map-canvas').forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
                 if(svg && project) {
                     const flows = project.vna_flows && project.vna_flows.length > 0 ? project.vna_flows : (project.transactions || []);
@@ -289,55 +342,64 @@ export default class PaperView {
                     mr.setData(project.roles, flows);
                 }
             });
-
-            const kanbans = this.dom.threadList.querySelectorAll('[id^="kanban_"]');
-            kanbans.forEach(container => {
+            // Kanbans
+            this.dom.threadList.querySelectorAll('[id^="kanban_"]').forEach(container => {
                 if (project) {
-                    const activeUserId = state.session.activeUserId;
-                    const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
-                    const kr = new KanbanRenderer(container, {
-                        project: project, activeUserId: activeUserId, isPO: isPO,
-                        currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true
-                    });
+                    const activeUserId = store.getState().session.activeUserId;
+                    const isPO = project.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
+                    const kr = new KanbanRenderer(container, { project: project, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
                     kr.render();
                 }
             });
-
-            const ledgers = this.dom.threadList.querySelectorAll('[id^="ledger_"]');
-            ledgers.forEach(container => {
+            // Ledgers
+            this.dom.threadList.querySelectorAll('[id^="ledger_"]').forEach(container => {
                 if (project) {
                     const lr = new LedgerRenderer(container, { projectId: project.id, showHistory: false });
                     lr.render();
                 }
             });
-
         }, 100);
-
         setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
     }
 
+    // ==========================================
+    // UX DELUXE: EDITOR SEMÁNTICO FLOTANTE
+    // ==========================================
     setupSemanticEditor() {
         const input = this.dom.editor;
         const menu = this.dom.menu;
         const state = store.getState();
+        let lastKnownRect = null; // Para guardar la posición del cursor
 
-        input.addEventListener('keyup', (e) => {
+        // Ocultar menú si clicamos fuera
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !menu.contains(e.target)) {
+                menu.style.display = 'none';
+                this.isMenuOpen = false;
+            }
+        });
+
+        input.addEventListener('keyup', async (e) => {
             const selection = window.getSelection();
-            if (!selection.focusNode) return;
+            if (!selection.rangeCount) return;
             
-            const text = selection.focusNode.textContent;
-            const cursorIdx = selection.focusOffset;
-            const textBeforeCursor = text.substring(0, cursorIdx);
+            const range = selection.getRangeAt(0);
+            const textBeforeCursor = range.startContainer.textContent.substring(0, range.startOffset);
             const words = textBeforeCursor.split(/\s/);
             this.currentWord = words[words.length - 1];
 
+            // 🎯 MAGIA: Calcular la posición (X,Y) exacta del cursor en la pantalla
+            const rect = range.getBoundingClientRect();
+            if (rect.top !== 0 && rect.left !== 0) lastKnownRect = rect;
+            
             if (this.currentWord.startsWith('@')) {
                 const search = this.currentWord.substring(1).toLowerCase();
                 const users = state.globalUsers.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
                 
                 if (users.length > 0) {
-                    menu.innerHTML = users.map(u => `
-                        <div class="semantic-item" data-val="${u.id}" data-type="mention">
+                    menu.innerHTML = `<div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Invocar Nodo / Agente IA</div>`;
+                    menu.innerHTML += users.map(u => `
+                        <div class="semantic-item type-mention" data-val="${u.id}" data-type="mention">
                             <span style="font-size:1.5rem;">${u.profile?.isAi ? '🤖' : '👤'}</span> 
                             <div>
                                 <div style="font-weight:900;">${u.name}</div>
@@ -346,40 +408,62 @@ export default class PaperView {
                             <span class="semantic-badge">${u.id}</span>
                         </div>
                     `).join('');
-                    this.showMenu(menu);
-                    this.triggerChar = '@';
+                    this.showFloatingMenu(menu, lastKnownRect);
                 } else {
                     menu.style.display = 'none';
                 }
-            } else if (this.currentWord.startsWith('#')) {
+            } 
+            else if (this.currentWord.startsWith('#')) {
+                // 🔥 CONEXIÓN AL LMS (KB): Buscamos Memes reales en IndexedDB
+                const search = this.currentWord.substring(1).toLowerCase();
+                const { KB } = await import('../core/kb.js'); // Import dinámico para no romper la carga inicial
+                await KB.init();
+                const pId = this.activeTx ? this.activeTx.projectId : null;
+                let memes = await KB.getAllNodes({ type: 'meme' });
+                // Filtramos por búsqueda si hay texto después del #
+                if (search.length > 0) memes = memes.filter(m => m.title.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
+                
+                if (memes.length > 0) {
+                    menu.innerHTML = `<div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Inyectar Conocimiento W3C</div>`;
+                    menu.innerHTML += memes.slice(0, 8).map(m => `
+                        <div class="semantic-item type-meme" data-val="#${m.id.replace('meme_','')}" data-type="meme" title="${m.content}">
+                            <span style="font-size:1.2rem; color:var(--accent-purple);">🧠</span> 
+                            <div>
+                                <div style="font-weight:900; font-size:0.85rem;">${m.title}</div>
+                                <div style="font-size:0.7rem; color:#888; font-family:monospace;">[${m.category}] ${m.roleTarget || 'Global'}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                    this.showFloatingMenu(menu, lastKnownRect);
+                } else {
+                    menu.style.display = 'none';
+                }
+            } 
+            else if (this.currentWord.startsWith('/')) {
                 menu.innerHTML = `
-                    <div class="semantic-item" data-val="#SOP_Review" data-type="meme"><span>📄</span> <b>SOP_Review</b> <span class="semantic-badge">Methodology</span></div>
-                    <div class="semantic-item" data-val="#CleanCode" data-type="meme"><span>✨</span> <b>CleanCode</b> <span class="semantic-badge">SOC</span></div>
-                    <div class="semantic-item" data-val="#VNA_Mapping" data-type="meme"><span>🕸️</span> <b>VNA_Mapping</b> <span class="semantic-badge">Framework</span></div>
-                `;
-                this.showMenu(menu);
-                this.triggerChar = '#';
-            } else if (this.currentWord.startsWith('/')) {
-                menu.innerHTML = `
-                    <div class="semantic-item" data-val="/deepwork" data-type="widget">
-                        <span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> 
-                        <div><b style="color:var(--accent-orange);">Inyectar DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Inicia un temporizador inmersivo con SOCs y Editor para la WO actual.</span></div>
+                    <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Insertar Componentes DRY</div>
+                    
+                    <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget">
+                        <span style="font-size:1.5rem; color:var(--accent-orange); filter:drop-shadow(0 0 5px rgba(255,171,64,0.5));">🍅</span> 
+                        <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + Editor de Código + SOCs.</span></div>
                     </div>
-                    <div class="semantic-item" data-val="/mapa" data-type="widget">
-                        <span style="font-size:1.5rem;">🕸️</span> 
-                        <div><b>Inyectar Mapa VNA</b><br><span style="font-size:0.75rem;color:#888;">Renderiza la topología de la red actual.</span></div>
+                    
+                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget">
+                        <span style="font-size:1.5rem; filter:drop-shadow(0 0 5px rgba(0,176,255,0.5));">🕸️</span> 
+                        <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta el grafo dinámico del Ecosistema.</span></div>
                     </div>
-                    <div class="semantic-item" data-val="/kanban" data-type="widget">
+                    
+                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget">
                         <span style="font-size:1.5rem;">📋</span> 
-                        <div><b>Inyectar Mercado PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza las oportunidades libres del Sprint.</span></div>
+                        <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza las oportunidades libres del Sprint.</span></div>
                     </div>
-                    <div class="semantic-item" data-val="/ledger" data-type="widget">
-                        <span style="font-size:1.5rem;">⚖️</span> 
-                        <div><b>Inyectar Cap Table</b><br><span style="font-size:0.75rem;color:#888;">Tabla Slicing Pie en tiempo real.</span></div>
+                    
+                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget">
+                        <span style="font-size:1.5rem; filter:drop-shadow(0 0 5px rgba(0,230,118,0.5));">⚖️</span> 
+                        <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta la Cap Table interactiva y auditada.</span></div>
                     </div>
                 `;
-                this.showMenu(menu);
-                this.triggerChar = '/';
+                this.showFloatingMenu(menu, lastKnownRect);
             } else {
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
@@ -394,6 +478,8 @@ export default class PaperView {
                 
                 const selection = window.getSelection();
                 const range = selection.getRangeAt(0);
+                
+                // Borrar la palabra (ej: @alv)
                 range.setStart(selection.focusNode, range.endOffset - this.currentWord.length);
                 range.deleteContents();
                 
@@ -422,7 +508,7 @@ export default class PaperView {
                         setTimeout(() => {
                             const canvas = document.getElementById(`canvas_${widgetId}`);
                             const svgG = document.getElementById(`svg_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                            const p = store.getState().projects.find(x => x.id === (this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project')));
                             if(p && canvas && svgG) {
                                 const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
                                 const mr = new MapRenderer(canvas, svgG, { isMacro: true });
@@ -443,7 +529,7 @@ export default class PaperView {
 
                         setTimeout(() => {
                             const container = document.getElementById(`kanban_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                            const p = store.getState().projects.find(x => x.id === (this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project')));
                             if(p && container) {
                                 const activeUserId = store.getState().session.activeUserId;
                                 const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
@@ -464,15 +550,14 @@ export default class PaperView {
 
                         setTimeout(() => {
                             const container = document.getElementById(`ledger_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                            const p = store.getState().projects.find(x => x.id === (this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project')));
                             if(p && container) {
                                 const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
                                 lr.render();
                             }
                         }, 50);
                     } else if (replaceVal === '/deepwork') {
-                        // 🔥 INYECCIÓN DEL FOCUS RENDERER
-                        if (!this.activeTx) return alert("Selecciona una Work Order arriba primero.");
+                        if (!this.activeTx) return alert("❌ El Modo Focus requiere una Work Order. Selecciona una arriba o convierte este borrador primero.");
                         const activeHash = this.activeTx.id || this.activeTx.hash;
                         
                         el.innerHTML = `
@@ -493,7 +578,7 @@ export default class PaperView {
                                     woHash: activeHash,
                                     onCompleteCallback: (hours) => {
                                         alert(`✅ Tarea Reportada al Ledger (${hours}h). Se ha inyectado un log en la Usenet.`);
-                                        this.loadTaskContext(); // Recargar el hilo
+                                        this.loadTaskContext(); 
                                     }
                                 });
                                 fr.render();
@@ -502,8 +587,10 @@ export default class PaperView {
                     }
                 } else {
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
-                    const el = document.createElement('span');
+                    const el = document.createElement('a');
                     el.className = htmlClass;
+                    el.href = type === 'mention' ? `/v8/profile?id=${replaceVal}` : `/v8/lms`;
+                    el.setAttribute('data-link', '');
                     el.contentEditable = "false";
                     el.innerText = replaceVal;
                     
@@ -523,9 +610,63 @@ export default class PaperView {
         });
     }
 
-    showMenu(menu) {
+    showFloatingMenu(menu, rect) {
+        if (!rect) {
+            menu.style.top = '50%'; menu.style.left = '50%';
+        } else {
+            // Posicionar el menú justo debajo del cursor
+            menu.style.top = `${rect.bottom + 10}px`;
+            menu.style.left = `${rect.left}px`;
+        }
         menu.style.display = 'block';
         this.isMenuOpen = true;
+    }
+
+    // ==========================================
+    // LÓGICA DE DRAFT TO TASK (Borrador a Trabajo)
+    // ==========================================
+    async convertDraftToTask() {
+        const textContent = this.dom.editor.innerText.trim(); 
+        if (!textContent) return alert("⚠️ Escribe algo en el borrador antes de convertirlo.");
+
+        let projectId = localStorage.getItem('tt_active_project');
+        if (!projectId) {
+            const state = store.getState();
+            if (state.projects.length === 0) return alert("Crea un Ecosistema (Proyecto) primero.");
+            projectId = state.projects[state.projects.length - 1].id;
+        }
+
+        const project = store.getState().projects.find(p => p.id === projectId);
+        if (!project) return;
+
+        // Extraer menciones (Arrobas) del texto para asignar automáticamente
+        const words = textContent.split(/\s/);
+        let assignee = store.getState().session.activeUserId; // Por defecto a mí mismo
+        for (const w of words) {
+            if (w.startsWith('@') && w.length > 1) { assignee = w; break; }
+        }
+
+        const newHash = 'wo_draft_' + Math.random().toString(36).substr(2, 9);
+        
+        await store.dispatch({
+            type: 'SPAWN_WORK_ORDER',
+            payload: {
+                projectId: projectId,
+                workOrder: {
+                    hash: newHash, 
+                    flowId: null, // Tarea Huérfana (Ad-hoc)
+                    status: 'pinged', 
+                    realHours: 0,
+                    sprintId: project.activeSprintId,
+                    comentario: textContent,
+                    soc_checklist: [],
+                    assigneeId: assignee
+                }
+            }
+        });
+
+        alert(`🚀 Borrador convertido en Work Order y asignado a ${assignee}. Refrescando interfaz...`);
+        window.location.href = `/v8/paper?hash=${newHash}`;
     }
 
     async submitReport() {
