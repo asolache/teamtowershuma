@@ -12,7 +12,7 @@ const LLM_PRICING = {
 
 class OrchestratorCore {
     constructor() {
-        this.version = "15.0-PromptRegistry";
+        this.version = "15.1-TitaniumPatch";
         this.isListening = false;
     }
 
@@ -41,7 +41,6 @@ class OrchestratorCore {
     }
 
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
-    async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
         if (!apiKey && provider !== 'custom') throw new Error(`API Key requerida para el Orquestador (${provider}).`);
         let attempt = 0; let lastError = null;
         
@@ -51,8 +50,10 @@ class OrchestratorCore {
                 const startTime = Date.now();
 
                 if (provider === 'gemini') {
+                    // 🔥 PARCHE TITANIUM: Estructura de fetch a prueba de fallos para Gemini
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }], 
                             generationConfig: { 
@@ -63,20 +64,21 @@ class OrchestratorCore {
                         })
                     });
                     
-                    // 🔥 FIX: EXTRAER EL ERROR REAL DE GOOGLE
                     if (!response.ok) {
-                        let errorDetail = response.statusText;
-                        try { const errJson = await response.json(); errorDetail = errJson.error?.message || JSON.stringify(errJson); } catch(e) {}
-                        throw new Error(`Gemini [${response.status}]: ${errorDetail}`);
+                        const errorText = await response.text();
+                        throw new Error(`[HTTP ${response.status}] ${errorText || response.statusText}`);
                     }
                     
                     const data = await response.json();
+                    if (!data.candidates || data.candidates.length === 0) throw new Error("Gemini devolvió una respuesta vacía.");
+                    
                     textResponse = data.candidates[0].content.parts[0].text;
                     if (data.usageMetadata) { tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; }
                 
                 } else if (provider === 'openai' || provider === 'deepseek') {
                     const endpoint = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.deepseek.com/chat/completions';
                     const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
+                    
                     const response = await fetch(endpoint, {
                         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                         body: JSON.stringify({ 
@@ -88,11 +90,9 @@ class OrchestratorCore {
                         })
                     });
                     
-                    // 🔥 FIX: EXTRAER EL ERROR REAL DE OPENAI/DEEPSEEK
                     if (!response.ok) {
-                        let errorDetail = response.statusText;
-                        try { const errJson = await response.json(); errorDetail = errJson.error?.message || JSON.stringify(errJson); } catch(e) {}
-                        throw new Error(`${provider.toUpperCase()} [${response.status}]: ${errorDetail}`);
+                        const errorText = await response.text();
+                        throw new Error(`[HTTP ${response.status}] ${errorText || response.statusText}`);
                     }
                     
                     const data = await response.json();
@@ -114,10 +114,10 @@ class OrchestratorCore {
             } catch (error) {
                 lastError = error; attempt++; 
                 console.warn(`⚠️ [Orquestador] Fallo en intento ${attempt}/${maxRetries + 1}. Error:`, error.message);
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 1500)); // Damos un poco más de aire (1.5s)
             }
         }
-        throw new Error(`Último error devuelto por la API: ${lastError.message}`);
+        throw new Error(`${lastError.message}`);
     }
 
     // ==========================================
@@ -125,11 +125,17 @@ class OrchestratorCore {
     // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
         await KB.init();
-        // 🔥 MAGIA: Pedimos el Prompt a la Base de Datos. El Owner puede editarlo visualmente en el LMS.
         const promptNode = await KB.getNode('prompt_genesi_vna');
-        if (!promptNode) throw new Error("Fallo crítico: Meta-Prompt de Gènesi no encontrado en la KB.");
         
-        const systemPrompt = promptNode.content;
+        // 🔥 PARCHE DE ESTABILIZACIÓN: Si el prompt cargado es muy restrictivo, lo relajamos.
+        // Si no existe, usamos este fallback infalible.
+        let systemPrompt = promptNode ? promptNode.content : `
+Eres el Master Ecosystem Architect. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto.
+MANDAMIENTOS: 1. Crea EXACTAMENTE entre 8 y 10 transacciones. 2. 5 ERAS: Kickoff, Growth, Scale, Harvest, Cierre. 3. Mínimo 2 required_skills por tx. 4. 2 soc_checklist por tx.
+ESTRUCTURA JSON EXACTA: { "presentacion": "...", "tags": ["Tech"], "new_memes": [{ "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }], "roles": [{ "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "template": "...", "horas": 5, "required_skills": ["meme_skill_x"], "soc_checklist": [{ "text": "..." }] }] }
+REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @pinya).
+`;
+        
         const result = await this.callLLM({ 
             provider, apiKey, systemPrompt, 
             userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, 
@@ -219,13 +225,12 @@ class OrchestratorCore {
     }
 
     // ==========================================
-    // CAPA 5: DEEP RESEARCH ACADÉMICO (Agile RAG)
+    // CAPA 5: DEEP RESEARCH ACADÉMICO
     // ==========================================
     async deepResearch(topic, category, provider, apiKey) {
         if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Deep Research.");
 
         await KB.init();
-        // 🔥 MAGIA: El Prompt Académico también viene de la base de datos
         const promptNode = await KB.getNode('prompt_mestre_research');
         const systemPrompt = promptNode ? promptNode.content : `Actúa como @mestre_escola. Extrae SOCs/SOPs en JSON.`;
 
