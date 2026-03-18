@@ -12,7 +12,7 @@ const LLM_PRICING = {
 
 class OrchestratorCore {
     constructor() {
-        this.version = "15.1-TitaniumPatch";
+        this.version = "15.2-MemeEnricher";
         this.isListening = false;
     }
 
@@ -50,7 +50,9 @@ class OrchestratorCore {
                 const startTime = Date.now();
 
                 if (provider === 'gemini') {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    // 🔥 FIX: Actualizado a gemini-2.0-flash para evitar el error 404 NOT_FOUND
+                    const targetModel = 'gemini-2.0-flash';
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -240,6 +242,38 @@ REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @piny
 
         await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: 'global', agentId: '@mestre_escola', engine: provider, actionType: 'DEEP_RESEARCH', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
 
+        return result.content;
+    }
+
+    // ==========================================
+    // CAPA 6: MEME ENRICHER (Evolución Fractal) 🔥 NUEVO
+    // ==========================================
+    async enrichMeme(memeData, provider, apiKey) {
+        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Enriquecer Memes.");
+        
+        const systemPrompt = `
+            Actúa como @mestre_escola, el Investigador y Optimizador Académico.
+            Tu tarea es coger un "Meme W3C" (una unidad de conocimiento básica o cruda) y enriquecerlo profesionalmente a nivel industrial.
+            - Si es un SOP (Procedimiento): detalla los pasos exactos, precondiciones y añade SOCs (Condiciones de auditoría) integrados.
+            - Si es un SOC (Regla de calidad): hazlo medible, matemático y binario.
+            - Si es un SKILL: define los niveles de competencia requeridos y herramientas.
+            
+            DEVUELVE ÚNICAMENTE un objeto JSON con el siguiente formato exacto:
+            {
+                "title": "Nuevo Título Mejorado",
+                "content": "Contenido expandido, estructurado y altamente profesionalizado...",
+                "keywords": ["nuevos", "tags", "optimizados"]
+            }
+        `;
+
+        const userPrompt = `
+            MEJORA Y EXPANDE ESTE MEME:
+            Título: ${memeData.title}
+            Categoría: ${memeData.category}
+            Contenido Actual: ${memeData.content}
+        `;
+
+        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
         return result.content;
     }
 }
