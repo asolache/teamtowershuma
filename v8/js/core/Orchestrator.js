@@ -50,7 +50,6 @@ class OrchestratorCore {
                 const startTime = Date.now();
 
                 if (provider === 'gemini') {
-                    // 🔥 PARCHE TITANIUM: Estructura de fetch a prueba de fallos para Gemini
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' },
@@ -114,7 +113,7 @@ class OrchestratorCore {
             } catch (error) {
                 lastError = error; attempt++; 
                 console.warn(`⚠️ [Orquestador] Fallo en intento ${attempt}/${maxRetries + 1}. Error:`, error.message);
-                await new Promise(r => setTimeout(r, 1500)); // Damos un poco más de aire (1.5s)
+                await new Promise(r => setTimeout(r, 1500)); 
             }
         }
         throw new Error(`${lastError.message}`);
@@ -127,8 +126,6 @@ class OrchestratorCore {
         await KB.init();
         const promptNode = await KB.getNode('prompt_genesi_vna');
         
-        // 🔥 PARCHE DE ESTABILIZACIÓN: Si el prompt cargado es muy restrictivo, lo relajamos.
-        // Si no existe, usamos este fallback infalible.
         let systemPrompt = promptNode ? promptNode.content : `
 Eres el Master Ecosystem Architect. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto.
 MANDAMIENTOS: 1. Crea EXACTAMENTE entre 8 y 10 transacciones. 2. 5 ERAS: Kickoff, Growth, Scale, Harvest, Cierre. 3. Mínimo 2 required_skills por tx. 4. 2 soc_checklist por tx.
