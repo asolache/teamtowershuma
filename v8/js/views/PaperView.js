@@ -5,7 +5,8 @@ import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { MapRenderer } from '../components/MapRenderer.js'; 
 import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
-import { LedgerRenderer } from '../components/LedgerRenderer.js'; // 🔥 Magia DRY: Importamos el motor del Ledger
+import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
+import { FocusRenderer } from '../components/FocusRenderer.js'; // 🔥 NUEVO: Importamos Focus
 
 export default class PaperView {
     constructor() {
@@ -25,16 +26,17 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
             subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Escribe @ para Agentes, # para Memes W3C, y / para inyectar Widgets (Mapa/Ledger/Kanban)."
+            tagline: "Escribe @ para Agentes, # para Memes W3C, y / para inyectar Widgets (Mapa/Ledger/Kanban/DeepWork)."
         };
 
         return `
             <style>
                 ${MapRenderer.getStyles()}
                 ${KanbanRenderer.getStyles()} 
-                ${LedgerRenderer.getStyles()} /* 🔥 DRY: CSS del Ledger integrado en el Paper */
+                ${LedgerRenderer.getStyles()} 
+                ${FocusRenderer.getStyles()} /* 🔥 CSS del DeepWork inyectado */
 
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width:100%;}
                 .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-dark); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
                 
                 .paper-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;}
@@ -102,7 +104,7 @@ export default class PaperView {
                         
                         <div class="tx-context-bar">
                             <select id="omniSelector" class="tx-selector">
-                                <option value="" disabled selected>🎯 Selecciona una Work Order...</option>
+                                <option value="" disabled selected>🎯 Selecciona un Nodo Libre o Work Order...</option>
                             </select>
                             <div class="slice-ticker" title="Valor a minar si el Notario aprueba (TDD)">
                                 💎 <span id="sliceEstimation">0</span> Slices <span>(Est.)</span>
@@ -110,7 +112,7 @@ export default class PaperView {
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco. Escribe tu Proof of Work aquí... \n\nUsa @ para consultar a La Colla.\nUsa # para aplicar metodologías W3C.\nUsa / para inyectar Widgets Dinámicos."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco. Escribe tu Proof of Work aquí... \n\nUsa @ para invocar Agentes/Colla.\nUsa # para inyectar Memes LMS.\nUsa / para inyectar Widgets (/deepwork, /mapa, /kanban, /ledger)."><p><br></p></div>
                             
                             <div id="semanticMenu" class="semantic-menu"></div>
                         </div>
@@ -125,7 +127,7 @@ export default class PaperView {
 
                     </div>
                     
-                    <button class="btn-seal-pow" id="btnSubmitReport" style="display:none;">⚖️ Sellar Proof of Work</button>
+                    <button class="btn-seal-pow" id="btnSubmitReport" style="display:none;">⚖️ Enviar a Usenet (Sellar)</button>
 
                 </main>
                 
@@ -153,7 +155,7 @@ export default class PaperView {
 
         this.dom.editor.focus();
 
-        // 1. CARGAR TAREAS DEL USUARIO
+        // 1. CARGAR TAREAS DEL USUARIO (INCLUSO INVESTIGACIÓN LIBRE)
         let allMyTasks = [];
         state.projects.forEach(p => {
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
@@ -170,7 +172,7 @@ export default class PaperView {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === tx.flowId);
                     if (parentFlow) resolvedName = parentFlow.template || parentFlow.entregable;
                 }
-                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'Nodo', displayName: resolvedName || 'Work Order' });
+                allMyTasks.push({ ...tx, projectId: p.id, projectName: p.nombre, roleName: roleFrom ? roleFrom.name : 'Investigación Libre', displayName: resolvedName || 'Work Order Anónima' });
             });
         });
 
@@ -239,7 +241,7 @@ export default class PaperView {
         this.dom.threadCount.innerText = `${thread.length} Mensajes`;
 
         if (thread.length === 0) {
-            this.dom.threadList.innerHTML = `<div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">El lienzo está limpio. Inicia la comunicación invocando a la red con un @.</div>`;
+            this.dom.threadList.innerHTML = `<div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">El lienzo está limpio. Inicia la comunicación invocando a la red con un @ o usa /deepwork.</div>`;
             return;
         }
 
@@ -276,9 +278,8 @@ export default class PaperView {
 
         this.dom.threadList.innerHTML = html;
         
-        // 🔥 HIDRATACIÓN DE WIDGETS DRY (Mapas, Kanbans y Ledgers inyectados)
+        // 🔥 HIDRATACIÓN DE WIDGETS DRY (Mapas, Kanbans, Ledgers y DeepWorks inyectados)
         setTimeout(() => {
-            // Hidratar Mapas
             const maps = this.dom.threadList.querySelectorAll('.omni-map-canvas');
             maps.forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
@@ -289,35 +290,27 @@ export default class PaperView {
                 }
             });
 
-            // Hidratar Kanban (Mercado Pull)
             const kanbans = this.dom.threadList.querySelectorAll('[id^="kanban_"]');
             kanbans.forEach(container => {
                 if (project) {
                     const activeUserId = state.session.activeUserId;
                     const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
-                    
                     const kr = new KanbanRenderer(container, {
-                        project: project,
-                        activeUserId: activeUserId,
-                        isPO: isPO,
-                        currentTab: 'oportunidades', 
-                        currentFilter: 'all'
+                        project: project, activeUserId: activeUserId, isPO: isPO,
+                        currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true
                     });
                     kr.render();
                 }
             });
 
-            // Hidratar Ledgers
             const ledgers = this.dom.threadList.querySelectorAll('[id^="ledger_"]');
             ledgers.forEach(container => {
                 if (project) {
-                    const lr = new LedgerRenderer(container, {
-                        projectId: project.id,
-                        showHistory: false // Solo mostramos el Pie y la Cap Table en el log para ahorrar espacio
-                    });
+                    const lr = new LedgerRenderer(container, { projectId: project.id, showHistory: false });
                     lr.render();
                 }
             });
+
         }, 100);
 
         setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
@@ -368,17 +361,21 @@ export default class PaperView {
                 this.triggerChar = '#';
             } else if (this.currentWord.startsWith('/')) {
                 menu.innerHTML = `
+                    <div class="semantic-item" data-val="/deepwork" data-type="widget">
+                        <span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> 
+                        <div><b style="color:var(--accent-orange);">Inyectar DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Inicia un temporizador inmersivo con SOCs y Editor para la WO actual.</span></div>
+                    </div>
                     <div class="semantic-item" data-val="/mapa" data-type="widget">
                         <span style="font-size:1.5rem;">🕸️</span> 
                         <div><b>Inyectar Mapa VNA</b><br><span style="font-size:0.75rem;color:#888;">Renderiza la topología de la red actual.</span></div>
                     </div>
-                    <div class="semantic-item" data-val="/ledger" data-type="widget">
-                        <span style="font-size:1.5rem;">⚖️</span> 
-                        <div><b>Inyectar Cap Table</b><br><span style="font-size:0.75rem;color:#888;">Tabla Slicing Pie en tiempo real.</span></div>
-                    </div>
                     <div class="semantic-item" data-val="/kanban" data-type="widget">
                         <span style="font-size:1.5rem;">📋</span> 
                         <div><b>Inyectar Mercado PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza las oportunidades libres del Sprint.</span></div>
+                    </div>
+                    <div class="semantic-item" data-val="/ledger" data-type="widget">
+                        <span style="font-size:1.5rem;">⚖️</span> 
+                        <div><b>Inyectar Cap Table</b><br><span style="font-size:0.75rem;color:#888;">Tabla Slicing Pie en tiempo real.</span></div>
                     </div>
                 `;
                 this.showMenu(menu);
@@ -438,7 +435,7 @@ export default class PaperView {
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
                                 <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);">
-                                    </div>
+                                </div>
                             </div><p><br></p>
                         `;
                         range.insertNode(el);
@@ -450,23 +447,16 @@ export default class PaperView {
                             if(p && container) {
                                 const activeUserId = store.getState().session.activeUserId;
                                 const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
-                                const kr = new KanbanRenderer(container, {
-                                    project: p,
-                                    activeUserId: activeUserId,
-                                    isPO: isPO,
-                                    currentTab: 'oportunidades',
-                                    currentFilter: 'all'
-                                });
+                                const kr = new KanbanRenderer(container, { project: p, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
                                 kr.render();
                             }
                         }, 50);
                     } else if (replaceVal === '/ledger') {
-                        // 🔥 INYECCIÓN DEL LEDGER RENDERER DRY
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">⚖️ Slicing Pie (Cap Table)</div>
                                 <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);">
-                                    </div>
+                                </div>
                             </div><p><br></p>
                         `;
                         range.insertNode(el);
@@ -476,11 +466,37 @@ export default class PaperView {
                             const container = document.getElementById(`ledger_${widgetId}`);
                             const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
                             if(p && container) {
-                                const lr = new LedgerRenderer(container, {
-                                    projectId: p.id,
-                                    showHistory: false // Ocultamos el history largo para no ensuciar el Paper
-                                });
+                                const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
                                 lr.render();
+                            }
+                        }, 50);
+                    } else if (replaceVal === '/deepwork') {
+                        // 🔥 INYECCIÓN DEL FOCUS RENDERER
+                        if (!this.activeTx) return alert("Selecciona una Work Order arriba primero.");
+                        const activeHash = this.activeTx.id || this.activeTx.hash;
+                        
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-orange); box-shadow: 0 10px 40px rgba(255,171,64,0.1);">
+                                <div class="omni-widget-body" id="focus_${widgetId}">
+                                    </div>
+                            </div><p><br></p>
+                        `;
+                        range.insertNode(el);
+                        range.setStartAfter(el);
+
+                        setTimeout(() => {
+                            const container = document.getElementById(`focus_${widgetId}`);
+                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                            if(p && container) {
+                                const fr = new FocusRenderer(container, { 
+                                    projectId: p.id, 
+                                    woHash: activeHash,
+                                    onCompleteCallback: (hours) => {
+                                        alert(`✅ Tarea Reportada al Ledger (${hours}h). Se ha inyectado un log en la Usenet.`);
+                                        this.loadTaskContext(); // Recargar el hilo
+                                    }
+                                });
+                                fr.render();
                             }
                         }, 50);
                     }
@@ -518,13 +534,12 @@ export default class PaperView {
         const htmlContent = this.dom.editor.innerHTML.trim();
         const textContent = this.dom.editor.innerText.trim(); 
 
-        if (!textContent && htmlContent === '<p><br></p>') return alert("⚠️ No puedes sellar un lienzo vacío. Escribe tu Proof of Work.");
+        if (!textContent && htmlContent === '<p><br></p>') return alert("⚠️ No puedes enviar un mensaje vacío a la Usenet.");
 
         this.dom.btnSubmit.disabled = true;
         this.dom.btnSubmit.innerText = '⏳ Sellando en la Usenet...';
         
         const activeHash = this.activeTx.id || this.activeTx.hash;
-        const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
         
         const mentions = [];
         const words = textContent.split(/\s/);
@@ -548,27 +563,9 @@ export default class PaperView {
             }
         });
 
-        const isV10 = p.work_orders && p.work_orders.some(w => w.hash === activeHash);
-        let estHours = this.activeTx.horas || this.activeTx.estimatedHours || 1;
-        if (!this.activeTx.horas && this.activeTx.flowId) {
-            const parentFlow = (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
-            if (parentFlow) estHours = parentFlow.estimatedHours || 1;
-        }
-
-        await store.dispatch({
-            type: isV10 ? 'REPORT_WORK_ORDER' : 'REPORT_TRANSACTION',
-            payload: {
-                projectId: this.activeTx.projectId,
-                [isV10 ? 'woHash' : 'txHash']: activeHash,
-                realHours: estHours, 
-                comentario: "Proof of Work adjunto en el log semántico.",
-                proofLink: 'Usenet_Thread'
-            }
-        });
-
         this.dom.editor.innerHTML = '<p><br></p>';
         this.loadTaskContext();
         this.dom.btnSubmit.disabled = false;
-        this.dom.btnSubmit.innerText = '⚖️ Sellar Proof of Work';
+        this.dom.btnSubmit.innerText = '⚖️ Enviar a Usenet (Sellar)';
     }
 }
