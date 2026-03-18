@@ -1,16 +1,17 @@
 // v8/js/views/ProjectView.js
 import { store } from '../core/store.js';
-import { KB } from '../core/kb.js'; 
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
+import { KanbanRenderer } from '../components/KanbanRenderer.js'; // 🔥 Magia DRY
+import { Orchestrator } from '../core/Orchestrator.js'; // Para la ejecución de IA
+import { KB } from '../core/kb.js';
 
 export default class ProjectView {
     constructor() {
-        document.title = "Matriz PULL | TeamTowers V9";
+        document.title = "Kanban PULL | TeamTowers V14";
         this.activeProjectId = null;
         this.currentFilter = 'all'; 
-        this.currentTab = 'oportunidades'; 
         this.isProcessingAi = false; 
     }
 
@@ -54,11 +55,6 @@ export default class ProjectView {
             subtitle: project.nombre,
             tagline: "Mercado interno de tareas. Asume responsabilidad, valida SOCs y ejecuta valor.",
             actionHtml: `<button id="btnToggleAvailability" class="${statusBtnClass}">${statusBtnText}</button>`,
-            tabs: [
-                { id: 'oportunidades', label: 'Oportunidades', active: this.currentTab === 'oportunidades' },
-                { id: 'en-curso', label: 'En Curso (y Auditoría)', active: this.currentTab === 'en-curso' },
-                { id: 'contabilizado', label: 'Selladas', active: this.currentTab === 'contabilizado' }
-            ],
             magicActions: [
                 { id: 'ai_assign', label: 'Auto-Asignación IA', icon: '🤖', isAi: true, tokens: 50 }
             ]
@@ -76,8 +72,12 @@ export default class ProjectView {
 
         return `
             <style>
+                ${KanbanRenderer.getStyles()} /* Inyectamos el CSS universal del Kanban */
+                
                 .workspace.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.03); }
-                .kanban-container { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
+                .workspace { flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; box-sizing: border-box; width: 100%;}
+                .kanban-page-container { width: 100%; margin: 0 auto; display: flex; flex-direction: column; }
 
                 .btn-status-closed { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor:pointer; transition: all 0.2s;}
                 .btn-status-open { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0,230,118,0.2);}
@@ -95,50 +95,6 @@ export default class ProjectView {
 
                 .btn-create-task { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; white-space:nowrap; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transition: 0.3s;}
                 .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224,64,251,0.4); filter: brightness(1.1);}
-
-                .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; align-items: start; padding-bottom: 5rem; width: 100%; }
-                
-                .task-card { 
-                    box-sizing: border-box; width: 100%;
-                    background: linear-gradient(180deg, rgba(25,25,30,0.8) 0%, rgba(10,10,15,0.9) 100%); 
-                    border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.8rem; 
-                    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
-                    position: relative; display: flex; flex-direction: column; gap: 12px; 
-                    backdrop-filter: blur(15px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.5);
-                }
-                .task-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 15px 40px rgba(0,0,0,0.8);}
-                .task-card.ai-processing { border-color: var(--accent-purple); box-shadow: 0 0 30px rgba(224,64,251,0.3); animation: aiPulse 2s infinite; }
-                
-                .task-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-                .task-route { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;}
-                .route-badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 8px; font-family: var(--font-mono); font-weight: 900; border: 1px solid; white-space: nowrap;}
-                
-                .task-title { color: white; font-size: 1.25rem; margin: 5px 0 0 0; line-height: 1.3; font-weight: 900; letter-spacing: -0.5px; word-break: break-word;}
-                .task-desc-bubble { font-size: 0.85rem; color: #aaa; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent-blue); margin-bottom: 5px; font-style: italic; line-height: 1.5; word-break: break-word;}
-                .task-ai-output { font-size: 0.85rem; color: #ddd; background: rgba(224, 64, 251, 0.05); border: 1px solid rgba(224, 64, 251, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 5px; line-height: 1.5; max-height: 150px; overflow-y: auto;}
-
-                .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
-                .soc-progress { display: flex; align-items: center; gap: 5px; font-weight: bold; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); }
-                
-                .task-actions { margin-top: auto; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: row; gap: 10px;}
-                
-                .btn-pull, .btn-push { flex: 1; background: transparent; border: 1px solid #666; color: white; transition: 0.2s; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem;}
-                .btn-pull:hover { background: white; color: black; border-color: white;}
-                .btn-push { border-style: dashed; border-color: var(--accent-purple); color: var(--accent-purple); }
-                .btn-push:hover { background: rgba(224, 64, 251, 0.1); border-style: solid;}
-
-                .btn-focus { flex: 1; background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(0,176,255,0.2)); border: 1px solid var(--accent-blue); color: var(--accent-blue); text-align: center; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 900; transition: 0.3s; font-size: 0.9rem;}
-                .btn-focus:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 20px rgba(0,176,255,0.4);}
-                
-                .btn-ai-exec { flex: 1; background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(224, 64, 251, 0.2)); border: 1px solid var(--accent-purple); color: var(--accent-purple); text-align: center; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 900; transition: 0.3s; font-size: 0.9rem; cursor:pointer;}
-                .btn-ai-exec:hover { background: var(--accent-purple); color: white; box-shadow: 0 0 25px rgba(224, 64, 251, 0.5);}
-
-                .btn-review { flex: 1; background: var(--accent-blue); color: black; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.9rem;}
-                .btn-review:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,176,255,0.4);}
-
-                .empty-state { grid-column: 1 / -1; text-align: center; padding: 5rem 2rem; color: var(--text-muted); font-size: 1.2rem; border: 1px dashed var(--glass-border); border-radius: 20px; background: rgba(0,0,0,0.3);}
-
-                @keyframes aiPulse { 0% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } 50% { box-shadow: 0 0 40px rgba(224,64,251,0.6); } 100% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } }
 
                 /* MODAL OVERLAY */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
@@ -161,9 +117,7 @@ export default class ProjectView {
                     .sprint-controls { justify-content: space-between; }
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
                     .filter-dropdown, .btn-create-task { width: 100%; padding: 14px; }
-                    .task-grid { grid-template-columns: 1fr; gap: 1.2rem; padding-bottom: 2rem; }
-                    .task-actions { flex-direction: column; gap: 10px; }
-                    .btn-pull, .btn-push, .btn-focus, .btn-ai-exec, .btn-review { width: 100%; padding: 14px;}
+                    .workspace { padding: 90px 1rem 120px 1rem; }
                 }
             </style>
 
@@ -173,7 +127,7 @@ export default class ProjectView {
                 <main class="workspace ${isOpen ? 'is-open-to-work' : ''}">
                     ${PageHeader.getHtml(headerConfig)}
 
-                    <div class="kanban-container">
+                    <div class="kanban-page-container">
                         <div class="controls-row">
                             <div class="sprint-controls">
                                 <select id="selActiveSprint" class="sprint-selector">${sprintOptions}</select>
@@ -189,7 +143,8 @@ export default class ProjectView {
                                 ${canCreateWO ? `<button class="btn-create-task" id="btnOpenCreateTask">➕ Generar Work Order</button>` : ''}
                             </div>
                         </div>
-                        <div class="task-grid" id="taskGrid"></div>
+                        
+                        <div id="kanbanMountPoint"></div>
                     </div>
                 </main>
 
@@ -260,22 +215,56 @@ export default class ProjectView {
         
         if (!project) return;
         this.activeProjectId = project.id;
+        this.isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
-        window.addEventListener('swarm_update', () => {
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+        // 🔥 MONTAJE DEL COMPONENTE KANBAN DRY
+        const mountPoint = document.getElementById('kanbanMountPoint');
+        if (mountPoint) {
+            this.kanbanRenderer = new KanbanRenderer(mountPoint, {
+                project: project,
+                activeUserId: activeUserId,
+                isPO: this.isPO,
+                currentFilter: this.currentFilter,
+                isMacroMode: false // 3 columnas completas
+            });
+            this.kanbanRenderer.render();
+        }
+
+        // Listener del CustomEvent que dispara el componente Kanban
+        window.addEventListener('kanban-action', async (e) => {
+            const { action, hash, isLegacy, userId, agentId, element } = e.detail;
+            
+            if (action === 'request') {
+                const actType = isLegacy ? 'REQUEST_TRANSACTION' : 'REQUEST_WORK_ORDER';
+                await store.dispatch({ type: actType, payload: isLegacy ? { projectId: project.id, txHash: hash, userId: activeUserId } : { projectId: project.id, woHash: hash, userId: activeUserId } });
+                this.refreshRenderer();
+            } else if (action === 'push') {
+                if (!this.isPO) return alert("Solo el PO puede delegar.");
+                const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:`);
+                if (targetUserId) {
+                    const actType = isLegacy ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                    await store.dispatch({ type: actType, payload: isLegacy ? { projectId: project.id, txHash: hash, userId: targetUserId } : { projectId: project.id, woHash: hash, userId: targetUserId } });
+                    this.refreshRenderer();
+                }
+            } else if (action === 'approve-pull') {
+                const actType = isLegacy ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
+                await store.dispatch({ type: actType, payload: isLegacy ? { projectId: project.id, txHash: hash, userId } : { projectId: project.id, woHash: hash, userId } });
+                this.refreshRenderer();
+            } else if (action === 'ai-exec') {
+                await this.executeAIAgent(hash, element, store.getState().projects.find(p => p.id === this.activeProjectId));
+            } else if (action === 'review') {
+                this.openReviewModal(hash);
+            }
         });
 
-        window.addEventListener('ph-tab-changed', (e) => {
-            this.currentTab = e.detail.tabId;
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-        });
+        window.addEventListener('swarm_update', () => this.refreshRenderer());
 
-        // SPRINT SELECTOR
+        // FILTROS Y SPRINTS
         const selActiveSprint = document.getElementById('selActiveSprint');
         if (selActiveSprint) {
             selActiveSprint.addEventListener('change', async (e) => {
                 await store.dispatch({ type: 'SET_ACTIVE_SPRINT', payload: { projectId: this.activeProjectId, sprintId: e.target.value } });
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                this.refreshRenderer();
             });
         }
 
@@ -284,7 +273,7 @@ export default class ProjectView {
             btnCreateSprint.addEventListener('click', async () => {
                 const currentP = store.getState().projects.find(p => p.id === this.activeProjectId);
                 const nextNum = (currentP.sprints?.length || 0) + 1;
-                const spName = prompt("Nombre del nuevo ciclo de trabajo:", `Sprint ${nextNum}`);
+                const spName = prompt("Nombre del nuevo ciclo temporal:", `Sprint ${nextNum}`);
                 if (spName) {
                     await store.dispatch({ type: 'CREATE_SPRINT', payload: { projectId: this.activeProjectId, name: spName } });
                     window.location.reload(); 
@@ -297,11 +286,79 @@ export default class ProjectView {
             filterDropdown.value = this.currentFilter;
             filterDropdown.addEventListener('change', (e) => {
                 this.currentFilter = e.target.value;
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+                this.kanbanRenderer.options.currentFilter = this.currentFilter;
+                this.refreshRenderer();
             });
         }
 
-        // WORK ORDER CREATION
+        // CREACIÓN WO
+        this.setupCreationModal();
+        
+        // REVISIÓN WO
+        this.setupReviewModal();
+    }
+
+    refreshRenderer() {
+        if (!this.kanbanRenderer) return;
+        this.kanbanRenderer.options.project = store.getState().projects.find(p => p.id === this.activeProjectId);
+        this.kanbanRenderer.render();
+    }
+
+    // ==========================================
+    // EJECUCIÓN DE IA (MOTOR ORCHESTRATOR)
+    // ==========================================
+    async executeAIAgent(txHash, btnElement, currProject) {
+        if (this.isProcessingAi) return alert("Un Agente ya está trabajando en una Work Order. Espera.");
+        this.isProcessingAi = true;
+        
+        const card = btnElement.closest('.task-card');
+        if(card) card.classList.add('ai-processing');
+        btnElement.innerText = "⏳ Orquestando...";
+        
+        try {
+            const wo = currProject.work_orders.find(w => w.hash === txHash);
+            const flow = currProject.vna_flows.find(f => f.id === wo.flowId);
+            
+            const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+            const apiKey = localStorage.getItem(`tt_key_${provider}`);
+            if (!apiKey && provider !== 'custom') throw new Error("Configura tu API Key para ejecutar agentes.");
+
+            await KB.init();
+            const customPrompt = await KB.getNode(`prompt_${currProject.id}_${flow.from}`);
+            const systemPrompt = customPrompt ? customPrompt.content : `Eres el agente ejecutor de la tarea: ${flow.template}. Haz el trabajo solicitado de la forma más profesional posible.`;
+
+            const userPrompt = `
+                TAREA A EJECUTAR: ${flow.template}
+                CONTEXTO: ${wo.comentario || 'Ninguno adicional.'}
+                SOCs A CUMPLIR (Crítico): ${JSON.stringify(wo.soc_checklist.map(s => s.text))}
+                
+                Redacta el entregable final. Sé breve, directo y asegúrate de cumplir con los SOCs para aprobar la auditoría.
+            `;
+
+            const response = await Orchestrator.callLLM({
+                provider, apiKey, systemPrompt, userPrompt, responseFormat: "text", temperature: 0.3
+            });
+
+            await store.dispatch({ 
+                type: 'REPORT_WORK_ORDER', 
+                payload: { 
+                    projectId: currProject.id, 
+                    woHash: txHash, 
+                    realHours: flow.estimatedHours || 2, 
+                    comentario: response.content, 
+                    proofLink: 'Agent_Auto_Report' 
+                } 
+            });
+
+        } catch (error) {
+            alert(`Fallo en la ejecución de la IA: ${error.message}`);
+        } finally {
+            this.isProcessingAi = false;
+            this.refreshRenderer();
+        }
+    }
+
+    setupCreationModal() {
         const createModal = document.getElementById('createTaskModal');
         const btnOpenCreate = document.getElementById('btnOpenCreateTask');
         
@@ -341,13 +398,11 @@ export default class ProjectView {
             const flowId = document.getElementById('newTaskFlowId').value;
             const desc = document.getElementById('newTaskDesc').value.trim();
             const assignee = document.getElementById('newTaskAssignee').value;
-            
             if(!flowId) return alert("Selecciona un Flujo base.");
 
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
             const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             
-            // Clonamos los SOCs y Resources del flujo a la nueva Tarea (SOP)
             const parentFlow = currProj.vna_flows.find(f => f.id === flowId);
             const socsClone = parentFlow.soc_checklist ? JSON.parse(JSON.stringify(parentFlow.soc_checklist)) : [];
             const resourcesClone = parentFlow.resources ? JSON.parse(JSON.stringify(parentFlow.resources)) : [];
@@ -360,35 +415,53 @@ export default class ProjectView {
                         hash: newHash, flowId: flowId, comentario: desc,
                         status: 'theoretical', realHours: 0,
                         sprintId: currProj.activeSprintId,
-                        soc_checklist: socsClone,
-                        resources: resourcesClone
+                        soc_checklist: socsClone, resources: resourcesClone
                     }
                 }
             });
 
             if (assignee !== "") {
-                await store.dispatch({
-                    type: 'PING_WORK_ORDER',
-                    payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee }
-                });
+                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee } });
             }
 
             createModal.style.display = 'none';
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            this.refreshRenderer();
         });
+    }
 
-        // =========================================================================
-        // LÓGICA DE AUDITORÍA (REVIEW MODAL)
-        // =========================================================================
+    setupReviewModal() {
         const reviewModal = document.getElementById('reviewTaskModal');
         let currentReviewHash = null;
+
+        this.openReviewModal = (hash) => {
+            currentReviewHash = hash;
+            const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const taskRef = currProject.work_orders.find(w => w.hash === hash);
+            if(!taskRef) return;
+
+            document.getElementById('reviewTaskDeliverable').innerText = taskRef.comentario || 'Sin comentario adjunto.';
+            
+            const socsContainer = document.getElementById('reviewSocsContainer');
+            if (taskRef.soc_checklist && taskRef.soc_checklist.length > 0) {
+                socsContainer.innerHTML = taskRef.soc_checklist.map(soc => `
+                    <label class="soc-item">
+                        <input type="checkbox" class="soc-checkbox" data-socid="${soc.id}" ${soc.isChecked ? 'checked' : ''}>
+                        <span>${soc.text}</span>
+                    </label>
+                `).join('');
+            } else {
+                socsContainer.innerHTML = `<div style="color:#888; font-style:italic;">No hay SOCs definidos para esta receta. Se puede aprobar directamente.</div>`;
+            }
+
+            reviewModal.style.display = 'flex';
+        };
 
         document.getElementById('btnCancelReviewTask')?.addEventListener('click', () => {
             reviewModal.style.display = 'none';
             currentReviewHash = null;
         });
 
-        // Invocar Auditor IA para chequear los SOCs
+        // AUDITORÍA IA
         document.getElementById('btnAiAudit')?.addEventListener('click', async (e) => {
             if (!currentReviewHash) return;
             const btn = e.target;
@@ -398,10 +471,7 @@ export default class ProjectView {
             const wo = currProject.work_orders.find(w => w.hash === currentReviewHash);
             
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-            let apiKey = '';
-            if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
-            if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
-            if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
+            const apiKey = localStorage.getItem(`tt_key_${provider}`);
 
             if (!apiKey) {
                 alert("Simulando Auditoría Offline. Marcando todos los SOCs como válidos.");
@@ -411,46 +481,19 @@ export default class ProjectView {
             }
 
             const systemPrompt = `
-                Eres @notari_ledger, el Agente Auditor del ecosistema.
-                Tu misión es evaluar estrictamente si el entregable proporcionado cumple con los indicadores de conducta y calidad (SOCs) definidos.
+                Eres @notari_ledger, el Agente Auditor del ecosistema. Evalúa estrictamente si el entregable cumple con los SOCs.
                 Entregable: "${wo.comentario}"
-                
-                Devuelve SOLO un objeto JSON donde las claves son los IDs de los SOCs y los valores booleanos (true/false) según si se cumplen o no.
+                Devuelve SOLO un objeto JSON con las claves de los SOCs y true/false.
                 SOCs a evaluar: ${JSON.stringify(wo.soc_checklist.map(s => ({id: s.id, text: s.text})))}
             `;
 
             try {
-                let aiResponseText = "";
-                if (provider === 'openai') {
-                    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: "Evalúa el entregable." }], response_format: { type: "json_object" } })
-                    });
-                    const data = await res.json(); aiResponseText = data.choices[0].message.content;
-                } else if (provider === 'deepseek') {
-                    const res = await fetch('https://api.deepseek.com/chat/completions', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: "Evalúa el entregable." }], response_format: { type: "json_object" } })
-                    });
-                    const data = await res.json(); aiResponseText = data.choices[0].message.content;
-                } else if (provider === 'gemini') {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
-                    });
-                    const data = await res.json(); aiResponseText = data.candidates[0].content.parts[0].text;
-                }
-
-                // Limpiar JSON
-                aiResponseText = aiResponseText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                const parsedAudit = JSON.parse(aiResponseText);
+                const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Evalúa el entregable.", responseFormat: "json_object", temperature: 0.1 });
+                const parsedAudit = response.content;
                 
-                // Actualizar checkboxes UI
                 document.querySelectorAll('.soc-checkbox').forEach(cb => {
                     const socId = cb.getAttribute('data-socid');
-                    if (parsedAudit[socId] !== undefined) {
-                        cb.checked = parsedAudit[socId];
-                    }
+                    if (parsedAudit[socId] !== undefined) cb.checked = parsedAudit[socId];
                 });
 
             } catch (err) {
@@ -459,7 +502,7 @@ export default class ProjectView {
             btn.innerText = "🤖 Invocar Auditor IA (@notari_ledger)";
         });
 
-        // Botón Final Sellar
+        // SELLAR WORK ORDER
         document.getElementById('btnConfirmReview')?.addEventListener('click', async () => {
             if (!currentReviewHash) return;
             
@@ -468,21 +511,16 @@ export default class ProjectView {
                 socValidation[cb.getAttribute('data-socid')] = cb.checked;
             });
 
-            const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
-            
-            // 1. Guardar estado de la auditoría (in_review + SOCs)
             await store.dispatch({
                 type: 'REVIEW_WORK_ORDER',
                 payload: { projectId: this.activeProjectId, woHash: currentReviewHash, auditorId: store.getState().session.activeUserId, socValidation }
             });
 
-            // 2. Intentar consolidar (store validará si todos los SOCs están a true)
             await store.dispatch({
                 type: 'APPROVE_WORK_ORDER',
                 payload: { projectId: this.activeProjectId, woHash: currentReviewHash }
             });
 
-            // Comprobar si fue exitoso (consolidated) o rechazado (reported)
             const updatedProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const updatedWo = updatedProj.work_orders.find(w => w.hash === currentReviewHash);
 
@@ -493,323 +531,7 @@ export default class ProjectView {
                 currentReviewHash = null;
             }
             
-            this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
+            this.refreshRenderer();
         });
-
-        // KANBAN CARD ACTIONS
-        const taskGrid = document.getElementById('taskGrid');
-        taskGrid.addEventListener('click', async (e) => {
-            const target = e.target.closest('button') || e.target.closest('a'); 
-            if (!target || !target.dataset.hash) return;
-            if (target.tagName === 'A') return; 
-
-            const currentState = store.getState();
-            const currProject = currentState.projects.find(p => p.id === this.activeProjectId);
-            if (!currProject) return;
-
-            const isLegacyTx = target.dataset.legacy === "true";
-            const txHash = target.dataset.hash;
-            const isPO = currProject.ownerId === activeUserId || currentState.session.role === 'ecosystem-owner';
-
-            // AUTO-EJECUCIÓN DE IA (A2A)
-            if (target.classList.contains('btn-ai-exec')) {
-                if (this.isProcessingAi) return alert("Un Agente ya está trabajando en otra Work Order. Espera.");
-                
-                this.isProcessingAi = true;
-                const card = target.closest('.task-card');
-                card.classList.add('ai-processing');
-                target.innerText = "⏳ Invocando LLM...";
-                
-                const taskRef = (currProject.work_orders || []).find(w => w.hash === txHash);
-                const flowRef = (currProject.vna_flows || []).find(f => f.id === taskRef?.flowId);
-                const estHours = flowRef ? (flowRef.estimatedHours || 2) : 2;
-
-                const executingRole = currProject.roles.find(r => r.id === flowRef?.from) || { name: 'IA Node', levelId: '@baixos', guardian: 'everyman' };
-                const projectVision = currProject.presentation || currProject.prompt || "Sin definir";
-
-                const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-                let apiKey = '';
-                if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
-                if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
-                if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
-
-                let aiResponseText = "";
-
-                if (!apiKey || apiKey.length < 5) {
-                    await new Promise(r => setTimeout(r, 2000));
-                    aiResponseText = `[Simulación Modo Offline]\nEl Agente IA ha procesado la Work Order basándose en el marco del proyecto. Documento estructurado entregado.`;
-                } else {
-                    let systemPrompt = "Actúas como un trabajador digital eficiente.";
-                    try {
-                        await KB.init();
-                        systemPrompt = await KB.getAgentContext(currProject.id, executingRole, projectVision);
-                    } catch(err) { }
-
-                    const userPrompt = `
-                        TAREA A EJECUTAR (Entregable esperado): ${flowRef?.template || 'Generar Entregable'}
-                        CONTEXTO ADICIONAL DEL USUARIO: ${taskRef?.comentario || 'N/A'}
-                        
-                        Instrucción: Redacta el entregable final cumpliendo con los estándares de tu rol, tu arquetipo guardián, y la visión del proyecto. Sé directo, profesional y claro.
-                    `;
-
-                    try {
-                        if (provider === 'openai') {
-                            const res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }] }) });
-                            const data = await res.json(); aiResponseText = data.choices[0].message.content;
-                        } else if (provider === 'deepseek') {
-                            const res = await fetch('https://api.deepseek.com/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }] }) });
-                            const data = await res.json(); aiResponseText = data.choices[0].message.content;
-                        } else if (provider === 'gemini') {
-                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }] }) });
-                            const data = await res.json(); aiResponseText = data.candidates[0].content.parts[0].text;
-                        }
-                    } catch(e) {
-                        aiResponseText = `Error de API: ${e.message}. (Simulando entrega de emergencia)`;
-                    }
-                }
-
-                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: currProject.id, woHash: txHash, realHours: estHours, comentario: aiResponseText, proofLink: 'Agent_Auto_Report' } });
-                this.isProcessingAi = false;
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                return;
-            }
-
-            // ABRIR MODAL DE AUDITORÍA
-            if (target.classList.contains('btn-review')) {
-                if (!isPO) return alert("Solo el dueño del ecosistema puede auditar tareas."); 
-                
-                const taskRef = currProject.work_orders.find(w => w.hash === txHash);
-                if(!taskRef) return;
-
-                currentReviewHash = txHash;
-                document.getElementById('reviewTaskDeliverable').innerText = taskRef.comentario || 'Sin comentario adjunto.';
-                
-                const socsContainer = document.getElementById('reviewSocsContainer');
-                if (taskRef.soc_checklist && taskRef.soc_checklist.length > 0) {
-                    socsContainer.innerHTML = taskRef.soc_checklist.map(soc => `
-                        <label class="soc-item">
-                            <input type="checkbox" class="soc-checkbox" data-socid="${soc.id}" ${soc.isChecked ? 'checked' : ''}>
-                            <span>${soc.text}</span>
-                        </label>
-                    `).join('');
-                } else {
-                    socsContainer.innerHTML = `<div style="color:#888; font-style:italic;">No hay SOCs definidos para esta receta. Se puede aprobar directamente.</div>`;
-                }
-
-                reviewModal.style.display = 'flex';
-                return;
-            }
-
-            // OTROS BOTONES (PULL, PUSH, APROBAR DE LEGACY)
-            if (target.classList.contains('btn-approve')) {
-                if (!isPO) return;
-                const action = target.dataset.action;
-                if (action === 'approve-pull') {
-                    const targetUserId = target.dataset.userid;
-                    const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                    await store.dispatch({ type: actType, payload: isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId } });
-                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                } 
-                return;
-            }
-
-            if (target.classList.contains('btn-pull')) {
-                const action = target.dataset.action;
-                const actType = isLegacyTx ? (action === 'request' ? 'REQUEST_TRANSACTION' : 'PING_TRANSACTION') : (action === 'request' ? 'REQUEST_WORK_ORDER' : 'PING_WORK_ORDER');
-                const payload = isLegacyTx ? { projectId: currProject.id, txHash, userId: currentState.session.activeUserId } : { projectId: currProject.id, woHash: txHash, userId: currentState.session.activeUserId };
-
-                await store.dispatch({ type: actType, payload });
-                this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                return;
-            }
-
-            if (target.classList.contains('btn-push')) {
-                if (!isPO) return alert("Solo el PO puede forzar la delegación de tareas.");
-                const usersInProject = currProject.usuarios || [];
-                if (usersInProject.length === 0) return alert("No hay miembros en la Colla para delegar.");
-                
-                let userListStr = "IDs disponibles:\n";
-                usersInProject.forEach(u => {
-                    const globalData = currentState.globalUsers.find(gu => gu.id === u.id);
-                    userListStr += `- ${u.id} (${globalData ? globalData.name : 'Unknown'})\n`;
-                });
-
-                const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:\n\n${userListStr}`);
-                if (targetUserId) {
-                    const actType = isLegacyTx ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                    await store.dispatch({ type: actType, payload: isLegacyTx ? { projectId: currProject.id, txHash, userId: targetUserId } : { projectId: currProject.id, woHash: txHash, userId: targetUserId } });
-                    this.renderTasks(store.getState().projects.find(p => p.id === this.activeProjectId));
-                }
-                return;
-            }
-        });
-
-        this.renderTasks(project);
-    }
-
-    renderTasks(project) {
-        const grid = document.getElementById('taskGrid');
-        if(!grid) return;
-        grid.innerHTML = '';
-
-        const state = store.getState();
-        const activeUser = state.session.activeUserId;
-        const isPO = project.ownerId === activeUser || state.session.role === 'ecosystem-owner';
-        
-        let activeCardsHtml = [];
-
-        let allTasks = [
-            ...(project.work_orders || []).map(wo => ({ ...wo, isWorkOrder: true })),
-            ...(project.transactions || []).map(tx => ({ ...tx, isWorkOrder: false }))
-        ];
-
-        const activeSprintId = project.activeSprintId;
-        allTasks = allTasks.filter(tx => {
-            if (!tx.isWorkOrder) return true; 
-            return tx.sprintId === activeSprintId;
-        });
-
-        allTasks.forEach(tx => {
-            let tabCategory = '';
-            if (tx.status === 'theoretical' || tx.status === 'requested') tabCategory = 'oportunidades';
-            else if (tx.status === 'pinged' || tx.status === 'reported' || tx.status === 'in_review') tabCategory = 'en-curso';
-            else if (tx.status === 'consolidated' || tx.status === 'approved') tabCategory = 'contabilizado';
-
-            if (tabCategory !== this.currentTab) return;
-
-            let flowData = tx.isWorkOrder ? ((project.vna_flows || []).find(f => f.id === tx.flowId) || { tipo: 'tangible', template: 'Tarea Huérfana', estimatedHours: 0 }) : tx;
-
-            if (this.currentFilter === 'tangible' && flowData.tipo !== 'tangible') return;
-            if (this.currentFilter === 'intangible' && flowData.tipo !== 'intangible') return;
-            
-            if (this.currentFilter === 'mine' && tx.status !== 'theoretical' && tx.assigneeId !== activeUser) return;
-            if (!isPO && this.currentFilter === 'all' && tabCategory !== 'oportunidades' && tx.assigneeId !== activeUser) return;
-
-            activeCardsHtml.push(this.createTaskCardHTML(tx, flowData, project, state, isPO));
-        });
-
-        if (activeCardsHtml.length > 0) {
-            grid.innerHTML = activeCardsHtml.join('');
-        } else {
-            let emptyMsg = "No hay tareas en esta categoría.";
-            if (this.currentTab === 'oportunidades') emptyMsg = "No hay oportunidades libres en el mercado del Sprint actual.";
-            if (this.currentTab === 'en-curso') emptyMsg = "No hay ninguna tarea activa en proceso o auditoría en este Sprint.";
-            if (this.currentTab === 'contabilizado') emptyMsg = "Aún no se han sellado Slices en este Sprint.";
-            
-            grid.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
-        }
-    }
-
-    createTaskCardHTML(tx, flowData, project, state, isPO) {
-        const role = project.roles.find(r => r.id === flowData.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
-        const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?' };
-        
-        const color = this.getColorForLevel(role.levelId);
-        const tipoColor = flowData.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-        const tipoEmoji = flowData.tipo === 'tangible' ? '🟢' : '🟣';
-        
-        const isLegacy = !tx.isWorkOrder;
-        const hashAttr = `data-hash="${tx.hash}" data-legacy="${isLegacy}"`;
-
-        let actionHtml = '';
-        let statusTag = '';
-        let aiOutputHtml = '';
-
-        // SOCs Progress
-        const socs = tx.soc_checklist || flowData.soc_checklist || [];
-        const checkedCount = socs.filter(s => s.isChecked).length;
-        const socHtml = socs.length > 0 ? `<div class="soc-progress">☑️ SOCs: ${checkedCount}/${socs.length}</div>` : '';
-
-        if (tx.status === 'theoretical') {
-            statusTag = `<span style="color:#aaa; font-size:0.7rem; border:1px solid #444; padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px;">LIBRE</span>`;
-            if (isPO) {
-                actionHtml = `
-                    <button class="btn-pull" data-action="request" ${hashAttr} title="Adjudicarme la tarea">📥 Hacer PULL</button>
-                    <button class="btn-push" ${hashAttr} title="Asignar a un miembro de la Colla">👤 Delegar (PUSH)</button>
-                `;
-            } else {
-                actionHtml = `<button class="btn-pull" data-action="request" ${hashAttr}>✋ Solicitar Asignación</button>`;
-            }
-        } 
-        else if (tx.status === 'requested') {
-            statusTag = `<span style="color:var(--accent-red); font-size:0.7rem; border:1px solid var(--accent-red); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,82,82,0.1);">SOLICITADO</span>`;
-            if (isPO) {
-                actionHtml = `
-                    <div style="font-size: 0.85rem; color: #ccc; margin-bottom: 10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; border-left:2px solid var(--accent-red);"><b>${tx.assigneeId}</b> solicita ejecutar.</div>
-                    <button class="btn-approve" data-action="approve-pull" ${hashAttr} data-userid="${tx.assigneeId}">✅ Aprobar Asignación</button>
-                `;
-            } else {
-                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.85rem; text-align: center; padding: 10px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando aprobación PO...</div>`;
-            }
-        }
-        else if (tx.status === 'pinged') {
-            statusTag = `<span style="color:var(--accent-orange); font-size:0.7rem; border:1px solid var(--accent-orange); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,171,64,0.1);">EN CURSO</span>`;
-            const worker = state.globalUsers.find(u => u.id === tx.assigneeId);
-            const isMine = tx.assigneeId === state.session.activeUserId;
-
-            if (isMine) actionHtml = `<a href="/v8/focus?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link data-hash="${tx.hash}">▶ MODO FOCUS / REPORTAR</a>`;
-            else if (worker?.profile?.isAi && isPO) actionHtml = `<button class="btn-ai-exec" ${hashAttr}>⚡ EJECUTAR IA (${worker.name})</button>`;
-            else actionHtml = `<div style="color: #888; font-size: 0.85rem; text-align: center; padding: 12px; background:rgba(0,0,0,0.4); border-radius: 10px; border:1px solid #333;">Ejecutando: <span style="color:white; font-weight:bold;">${worker ? worker.name : tx.assigneeId}</span></div>`;
-        } 
-        else if (tx.status === 'reported' || tx.status === 'in_review') {
-            statusTag = `<span style="color:var(--accent-blue); font-size:0.7rem; border:1px solid var(--accent-blue); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,176,255,0.1);">${tx.status === 'reported' ? 'REPORTADO' : 'AUDITORÍA (REVIEW)'}</span>`;
-            if (tx.proofLink === 'Agent_Auto_Report') aiOutputHtml = `<div class="task-ai-output"><b>🤖 Output Generado:</b><br>${tx.comentario.replace(/\n/g, '<br>')}</div>`;
-
-            actionHtml = `
-                <div style="font-size: 0.85rem; color: #ccc; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 10px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent-blue);">
-                    <span>PoW Est: <strong style="color: white; font-family:var(--font-mono); font-size:1rem;">${tx.realHours}h</strong></span>
-                    <a href="${tx.proofLink === 'Agent_Auto_Report' ? '#' : tx.proofLink}" target="_blank" style="color: var(--accent-blue); font-weight:bold; text-decoration:none;">${tx.proofLink === 'Agent_Auto_Report' ? 'Ver Arriba' : '🔗 Ver Proof'}</a>
-                </div>
-                ${isPO ? `<button class="btn-review" ${hashAttr}>🔎 Auditar Receta (SOCs)</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px;">Pendiente de Notaría.</div>`}
-            `;
-        }
-        else if (tx.status === 'consolidated') {
-            statusTag = `<span style="color:var(--accent-green); font-size:0.7rem; border:1px solid var(--accent-green); padding:4px 10px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,230,118,0.1);">SELLADO</span>`;
-            if (tx.proofLink === 'Agent_Auto_Report') aiOutputHtml = `<div class="task-ai-output" style="max-height:80px; opacity:0.8;"><b>🤖 Output:</b><br>${tx.comentario.replace(/\n/g, '<br>')}</div>`;
-
-            actionHtml = `
-                <div style="color: var(--accent-green); font-size: 1.2rem; font-weight: 900; font-family: var(--font-mono); text-align: center; padding: 15px; background: rgba(0, 230, 118, 0.05); border-radius: 12px; border: 1px dashed var(--accent-green);">
-                    +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices
-                </div>
-            `;
-        }
-
-        const borderStyle = tx.status === 'requested' ? 'border-color: var(--accent-red); box-shadow: 0 0 20px rgba(255,82,82,0.15);' : '';
-        const titleText = flowData.template || flowData.entregable || 'Work Order';
-        let contextText = tx.comentario || tx.descripcionContexto || flowData.context || '';
-        if (tx.proofLink === 'Agent_Auto_Report') contextText = ''; 
-
-        const contextHtml = contextText ? `<div class="task-desc-bubble">💬 "${contextText}"</div>` : '';
-
-        return `
-            <div class="task-card" style="${borderStyle}">
-                <div class="task-header">
-                    <div class="task-route">
-                        <span class="route-badge" style="color: ${color}; border-color: ${color};" title="${role.name}">${role.levelId}</span>
-                        <span style="color: #666; font-size:0.8rem;">&rarr;</span>
-                        <span class="route-badge" style="color: #888; border-color: #444;" title="${receiverRole.name}">${receiverRole.levelId}</span>
-                    </div>
-                    ${statusTag}
-                </div>
-                
-                <h3 class="task-title">${titleText}</h3>
-                ${contextHtml}
-                ${aiOutputHtml}
-                
-                <div class="task-meta-row">
-                    ${socHtml || `<span style="color: ${tipoColor}; font-weight: bold; font-size:0.75rem; letter-spacing:1px;">${tipoEmoji} ${flowData.tipo.toUpperCase()}</span>`}
-                    <span style="font-weight:bold; color:white; font-family:var(--font-mono);">⏱ ${flowData.estimatedHours || flowData.horas || 1}h <span style="color:#666; font-weight:normal; font-family:var(--font-main);">Est.</span></span>
-                </div>
-
-                <div class="task-actions">
-                    ${actionHtml}
-                </div>
-            </div>
-        `;
-    }
-
-    getColorForLevel(levelId) {
-        const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': 'var(--accent-orange)', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-blue)', '@pinya': 'var(--accent-green)' };
-        return colors[levelId] || '#aaa';
     }
 }
