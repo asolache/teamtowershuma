@@ -1,5 +1,5 @@
 // v8/js/router.js
-import { Orchestrator } from './core/Orchestrator.js'; // 🔥 Invocación del Daemon A2A
+import { Orchestrator } from './core/Orchestrator.js'; 
 import HomeView from './views/HomeView.js';
 import ProfileView from './views/ProfileView.js';
 import DashboardView from './views/DashboardView.js';
@@ -19,7 +19,7 @@ const navigateTo = url => {
 };
 
 const router = async () => {
-    // Definición del árbol de rutas de TeamTowers V14
+    // Definición estricta del árbol de rutas de TeamTowers V15
     const routes = [
         { path: "/v8/", view: HomeView },
         { path: "/v8/profile", view: ProfileView },
@@ -28,9 +28,9 @@ const router = async () => {
         { path: "/v8/project", view: ProjectView },
         { path: "/v8/create", view: ProjectCreatorView },
         { path: "/v8/tests", view: TestsView },
-        { path: "/v8/agents", view: AgentEditorView },
+        { path: "/v8/agents", view: AgentEditorView }, // 🔥 AQUÍ ESTÁ EL PADRÓN NEURONAL
         { path: "/v8/paper", view: PaperView },
-        { path: "/v8/focus", view: PaperView }, // 🔥 FIX: DeepWork redirige al Omni-Paper (Usenet)
+        { path: "/v8/focus", view: PaperView }, // Redirige al Omni-Paper
         { path: "/v8/lms", view: LmsView },
         { path: "/v8/settings", view: SettingsView },
         { path: "/v8/ledger", view: LedgerView }
@@ -48,6 +48,7 @@ const router = async () => {
 
     // Si la ruta no existe (404), redirigimos al Home (Zero-Trust Login)
     if (!match) {
+        console.warn("⚠️ Ruta no encontrada. Redirigiendo al Home.");
         match = {
             route: routes[0], 
             isMatch: true
@@ -72,11 +73,10 @@ window.addEventListener("popstate", router);
 // Interceptar clics en enlaces internos (SPA behavior)
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🔥 Arrancar el Daemon de Auto-Respuesta A2A al cargar la App
+    // Arrancar el Daemon de Auto-Respuesta A2A al cargar la App
     Orchestrator.initUsenetDaemon();
 
     document.body.addEventListener("click", e => {
-        // Soporte para clics directos en el enlace o en elementos hijos (iconos/spans) dentro del enlace
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
             navigateTo(e.target.href);
@@ -86,6 +86,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Arrancar el router por primera vez
     router();
 });
