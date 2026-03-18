@@ -76,6 +76,10 @@ export default class LmsView {
                 .btn-delete-meme { background: rgba(255,82,82,0.1); color: var(--accent-red); border: 1px solid var(--accent-red); padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition:0.2s;}
                 .btn-delete-meme:hover { background: var(--accent-red); color: white;}
 
+                .btn-enrich-meme { background: transparent; border: 1px dashed var(--accent-green); color: var(--accent-green); width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.3s; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+                .btn-enrich-meme:hover:not(:disabled) { background: rgba(0, 230, 118, 0.1); border-style: solid; box-shadow: 0 5px 15px rgba(0,230,118,0.2); }
+                .btn-enrich-meme:disabled { opacity: 0.5; cursor: not-allowed; }
+
                 .loading-box { display:none; background: rgba(224,64,251,0.05); border: 1px dashed var(--accent-purple); padding: 20px; text-align: center; border-radius: 12px; color: var(--accent-purple); font-family: monospace; font-weight: bold; margin-bottom: 15px;}
 
                 @media (max-width: 900px) {
@@ -160,10 +164,14 @@ export default class LmsView {
                 <div class="modal-overlay" id="editMemeModal">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h2 style="color:white; margin:0; font-weight:900;">✏️ Editor de Memes & Prompts</h2>
+                            <h2 style="color:white; margin:0; font-weight:900;">✏️ Editor Cuántico</h2>
                             <button id="btnDeleteMeme" class="btn-delete-meme">🗑️ Extirpar</button>
                         </div>
                         
+                        <button id="btnEnrichMeme" class="btn-enrich-meme" ${!hasKey || !isPO ? 'disabled' : ''}>
+                            🌟 Enriquecer Meme con @mestre_escola (IA)
+                        </button>
+
                         <div style="display:flex; gap:10px; margin-bottom:15px;">
                             <div class="form-group" style="flex:1; margin:0;">
                                 <label>Categoría</label>
@@ -233,13 +241,14 @@ export default class LmsView {
             editTags: document.getElementById('editMemeTags'),
             btnSaveEdit: document.getElementById('btnSaveEdit'),
             btnCancelEdit: document.getElementById('btnCancelEdit'),
-            btnDelete: document.getElementById('btnDeleteMeme')
+            btnDelete: document.getElementById('btnDeleteMeme'),
+            btnEnrichMeme: document.getElementById('btnEnrichMeme') // 🔥 NUEVO
         };
 
         await KB.init();
         this.renderDocuments();
 
-        // 1. DEEP RESEARCH (Consultar a la IA)
+        // 1. DEEP RESEARCH
         if (this.dom.btnResearch) {
             this.dom.btnResearch.addEventListener('click', async () => {
                 const topic = this.dom.inpTopic.value.trim();
@@ -253,7 +262,6 @@ export default class LmsView {
 
                 try {
                     const response = await Orchestrator.deepResearch(topic, this.dom.inpCategory.value, provider, apiKey);
-                    
                     let rawOutput = `--- RESULTADO DEL DEEP RESEARCH (${topic}) ---\n\n`;
                     if (response.memes) {
                         response.memes.forEach(m => {
@@ -262,7 +270,6 @@ export default class LmsView {
                     } else {
                         rawOutput += JSON.stringify(response, null, 2);
                     }
-                    
                     this.dom.inpRawText.value = rawOutput;
                 } catch (e) {
                     alert(`Fallo en el Oráculo: ${e.message}`);
@@ -332,7 +339,44 @@ export default class LmsView {
             }
         });
 
-        // 4. DELEGACIÓN DE CLICK EN EL GRID PARA ABRIR EDICIÓN
+        // 🔥 LA MAGIA DEL ENRIQUECEDOR
+        this.dom.btnEnrichMeme.addEventListener('click', async () => {
+            const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+            const apiKey = localStorage.getItem(`tt_key_${provider}`);
+            if (!apiKey && provider !== 'custom') return alert("API Key necesaria para enriquecer.");
+
+            const memeData = {
+                title: this.dom.editTitle.value,
+                category: this.dom.editCat.value,
+                content: this.dom.editContent.value
+            };
+
+            this.dom.btnEnrichMeme.disabled = true;
+            this.dom.btnEnrichMeme.innerText = "⏳ El Oráculo está expandiendo el Meme...";
+
+            try {
+                const response = await Orchestrator.enrichMeme(memeData, provider, apiKey);
+                
+                // Autocompletar la vista con el conocimiento expandido
+                if (response.title) this.dom.editTitle.value = response.title;
+                if (response.content) this.dom.editContent.value = response.content;
+                if (response.keywords && Array.isArray(response.keywords)) {
+                    this.dom.editTags.value = response.keywords.join(', ');
+                }
+                
+                // Efecto visual de éxito
+                this.dom.editContent.style.boxShadow = "0 0 20px rgba(0, 230, 118, 0.4)";
+                setTimeout(() => this.dom.editContent.style.boxShadow = "inset 0 2px 5px rgba(0,0,0,0.3)", 2000);
+
+            } catch (error) {
+                alert(`Error al enriquecer: ${error.message}`);
+            } finally {
+                this.dom.btnEnrichMeme.disabled = false;
+                this.dom.btnEnrichMeme.innerText = "🌟 Enriquecer Meme con @mestre_escola (IA)";
+            }
+        });
+
+        // DELEGACIÓN DE CLICK EN EL GRID PARA ABRIR EDICIÓN
         this.dom.kbGrid.addEventListener('click', async (e) => {
             const wrapper = e.target.closest('.meme-wrapper');
             if (!wrapper) return;
@@ -355,7 +399,6 @@ export default class LmsView {
         const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
         const apiKey = localStorage.getItem(`tt_key_${provider}`);
 
-        // 🔥 SE USA EL META-PROMPT DESDE LA BASE DE DATOS
         const promptNode = await KB.getNode('prompt_mestre_research');
         const systemPrompt = promptNode ? promptNode.content : `
             Actúa como @mestre_escola, destilando el texto en "Memes" W3C.
@@ -390,7 +433,6 @@ export default class LmsView {
         const allDocs = [...projectDocs];
         globalDocs.forEach(gd => { if (!allDocs.find(d => d.id === gd.id)) allDocs.push(gd); });
 
-        // 🔥 FILTRAMOS PARA VER TAMBIÉN LOS META_PROMPTS
         const memes = allDocs.filter(d => d.type === 'meme' || d.type === 'document');
 
         this.dom.kbCount.innerText = `${memes.length} Nodos Semánticos`;
@@ -403,7 +445,6 @@ export default class LmsView {
         this.dom.kbGrid.innerHTML = memes.reverse().map(doc => {
             const jsonldString = JSON.stringify(doc.jsonLd || {}).replace(/"/g, '&quot;');
             
-            // Color especial para los Meta Prompts
             const isMeta = doc.category === 'meta_prompt';
             const catColor = isMeta ? 'var(--accent-orange)' : 'var(--accent-purple)';
             const categoryBadge = doc.category ? `<span style="background:${catColor}; color:${isMeta ? 'black' : 'white'}; padding:2px 8px; border-radius:12px; font-size:0.7rem; font-family:monospace; font-weight:bold;">${doc.category}</span>` : '';
