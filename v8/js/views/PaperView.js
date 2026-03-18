@@ -11,7 +11,7 @@ import { FocusRenderer } from '../components/FocusRenderer.js';
 export default class PaperView {
     constructor() {
         document.title = "Omni-Paper | TeamTowers V14";
-        this.activeTx = null; // Si es null, estamos en DRAFT MODE
+        this.activeTx = null; 
         this.isMenuOpen = false;
         this.currentWord = "";
     }
@@ -25,7 +25,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
             subtitle: project ? project.nombre : 'Sin Red',
-            tagline: "Escribe @ para Agentes, # para Memes, y / para inyectar Componentes. Empieza a escribir para crear un Borrador libre."
+            tagline: "Escribe @ para Agentes, # para Memes, y / para inyectar Componentes o Modificar el Sistema."
         };
 
         return `
@@ -63,15 +63,22 @@ export default class PaperView {
                 .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .omni-widget-body { padding: 0; position: relative; }
                 
-                /* =========================================================
-                   UX DELUXE: MENÚ AUTOCOMPLETADO FLOTANTE
-                   ========================================================= */
+                /* MINI CONSOLAS INTERACTIVAS (NUEVO) */
+                .inline-console { padding: 1.5rem; display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.4); }
+                .inline-input { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.95rem; outline: none; width: 100%; box-sizing: border-box;}
+                .inline-input:focus { border-color: var(--accent-blue); }
+                .inline-btn { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 10px;}
+                .inline-btn:hover { filter: brightness(1.2); }
+                .inline-success { color: var(--accent-green); font-weight: bold; padding: 1rem; text-align: center; background: rgba(0,230,118,0.1); border-top: 1px solid rgba(0,230,118,0.3);}
+
+                /* UX DELUXE: MENÚ AUTOCOMPLETADO FLOTANTE */
                 .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 300px; overflow-y: auto; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); padding: 8px 0; min-width: 320px; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
                 .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
                 .semantic-item.type-mention:hover { border-left-color: var(--accent-blue); background: rgba(0,176,255,0.1); }
                 .semantic-item.type-meme:hover { border-left-color: var(--accent-purple); background: rgba(224,64,251,0.1); }
                 .semantic-item.type-widget:hover { border-left-color: var(--accent-orange); background: rgba(255,171,64,0.1); }
+                .semantic-item.type-action:hover { border-left-color: var(--accent-green); background: rgba(0,230,118,0.1); }
                 
                 .semantic-badge { background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-left: auto; font-weight:bold;}
 
@@ -131,7 +138,7 @@ export default class PaperView {
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/deepwork, /mapa...)."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/deepwork, /mapa, /agente, /rol...)."><p><br></p></div>
                         </div>
 
                         <div class="thread-container" id="threadWrapper" style="display:none;">
@@ -220,7 +227,6 @@ export default class PaperView {
         }
         this.dom.omniSelector.innerHTML = selectHtml;
 
-        // Comprobar si venimos de un enlace con hash (PULL) o es un borrador
         const urlParams = new URLSearchParams(window.location.search);
         const hashFromUrl = urlParams.get('hash');
         
@@ -249,6 +255,13 @@ export default class PaperView {
         // 3. ENVÍO Y CONVERSIÓN
         this.dom.btnSubmit.addEventListener('click', () => this.submitReport());
         this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
+        
+        // 4. DELEGACIÓN DE EVENTOS PARA LAS CONSOLAS INTERACTIVAS INYECTADAS
+        this.dom.editor.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-inline-action')) {
+                await this.handleInlineConsoleAction(e.target);
+            }
+        });
     }
 
     setDraftMode() {
@@ -313,7 +326,6 @@ export default class PaperView {
                     formattedContent = formattedContent.replace(rgx, `<a href="/v8/profile?id=${m}" data-link class="mention-highlight">${m}</a>`);
                 });
             }
-            // Tags (Memes)
             formattedContent = formattedContent.replace(/(?<!<[^>]*)(#[a-zA-Z0-9_]+)/g, `<a href="/v8/lms" data-link class="meme-highlight">$1</a>`);
 
             html += `
@@ -333,7 +345,6 @@ export default class PaperView {
 
     hydrateWidgets(project) {
         setTimeout(() => {
-            // Mapas
             this.dom.threadList.querySelectorAll('.omni-map-canvas').forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
                 if(svg && project) {
@@ -342,7 +353,6 @@ export default class PaperView {
                     mr.setData(project.roles, flows);
                 }
             });
-            // Kanbans
             this.dom.threadList.querySelectorAll('[id^="kanban_"]').forEach(container => {
                 if (project) {
                     const activeUserId = store.getState().session.activeUserId;
@@ -351,7 +361,6 @@ export default class PaperView {
                     kr.render();
                 }
             });
-            // Ledgers
             this.dom.threadList.querySelectorAll('[id^="ledger_"]').forEach(container => {
                 if (project) {
                     const lr = new LedgerRenderer(container, { projectId: project.id, showHistory: false });
@@ -369,11 +378,10 @@ export default class PaperView {
         const input = this.dom.editor;
         const menu = this.dom.menu;
         const state = store.getState();
-        let lastKnownRect = null; // Para guardar la posición del cursor
+        let lastKnownRect = null; 
 
-        // Ocultar menú si clicamos fuera
         document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !menu.contains(e.target)) {
+            if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action')) {
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
             }
@@ -388,7 +396,6 @@ export default class PaperView {
             const words = textBeforeCursor.split(/\s/);
             this.currentWord = words[words.length - 1];
 
-            // 🎯 MAGIA: Calcular la posición (X,Y) exacta del cursor en la pantalla
             const rect = range.getBoundingClientRect();
             if (rect.top !== 0 && rect.left !== 0) lastKnownRect = rect;
             
@@ -414,13 +421,10 @@ export default class PaperView {
                 }
             } 
             else if (this.currentWord.startsWith('#')) {
-                // 🔥 CONEXIÓN AL LMS (KB): Buscamos Memes reales en IndexedDB
                 const search = this.currentWord.substring(1).toLowerCase();
-                const { KB } = await import('../core/kb.js'); // Import dinámico para no romper la carga inicial
+                const { KB } = await import('../core/kb.js'); 
                 await KB.init();
-                const pId = this.activeTx ? this.activeTx.projectId : null;
                 let memes = await KB.getAllNodes({ type: 'meme' });
-                // Filtramos por búsqueda si hay texto después del #
                 if (search.length > 0) memes = memes.filter(m => m.title.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
                 
                 if (memes.length > 0) {
@@ -440,27 +444,40 @@ export default class PaperView {
                 }
             } 
             else if (this.currentWord.startsWith('/')) {
+                // 🔥 NUEVAS CONSOLAS INTERACTIVAS (TOTAL FRONTEND)
                 menu.innerHTML = `
-                    <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Insertar Componentes DRY</div>
+                    <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Forjar Estructura</div>
+                    
+                    <div class="semantic-item type-action" data-val="/agente" data-type="action">
+                        <span style="font-size:1.5rem;">👤</span> 
+                        <div><b style="color:var(--accent-green);">Añadir Nodo / Agente</b><br><span style="font-size:0.75rem;color:#888;">Registra un nuevo talento en el Padrón.</span></div>
+                    </div>
+                    <div class="semantic-item type-action" data-val="/rol" data-type="action">
+                        <span style="font-size:1.5rem;">🪑</span> 
+                        <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un nuevo rol estructural al proyecto.</span></div>
+                    </div>
+                    <div class="semantic-item type-action" data-val="/tuberia" data-type="action">
+                        <span style="font-size:1.5rem;">🛤️</span> 
+                        <div><b style="color:var(--accent-green);">Trazar Tubería (SOP)</b><br><span style="font-size:0.75rem;color:#888;">Define una entrega de valor entre dos roles.</span></div>
+                    </div>
+
+                    <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Insertar Componentes</div>
                     
                     <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget">
-                        <span style="font-size:1.5rem; color:var(--accent-orange); filter:drop-shadow(0 0 5px rgba(255,171,64,0.5));">🍅</span> 
-                        <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + Editor de Código + SOCs.</span></div>
+                        <span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> 
+                        <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + Editor + SOCs.</span></div>
                     </div>
-                    
                     <div class="semantic-item type-widget" data-val="/mapa" data-type="widget">
-                        <span style="font-size:1.5rem; filter:drop-shadow(0 0 5px rgba(0,176,255,0.5));">🕸️</span> 
+                        <span style="font-size:1.5rem;">🕸️</span> 
                         <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta el grafo dinámico del Ecosistema.</span></div>
                     </div>
-                    
                     <div class="semantic-item type-widget" data-val="/kanban" data-type="widget">
                         <span style="font-size:1.5rem;">📋</span> 
-                        <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza las oportunidades libres del Sprint.</span></div>
+                        <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza oportunidades libres.</span></div>
                     </div>
-                    
                     <div class="semantic-item type-widget" data-val="/ledger" data-type="widget">
-                        <span style="font-size:1.5rem; filter:drop-shadow(0 0 5px rgba(0,230,118,0.5));">⚖️</span> 
-                        <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta la Cap Table interactiva y auditada.</span></div>
+                        <span style="font-size:1.5rem;">⚖️</span> 
+                        <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Cap Table interactiva y auditada.</span></div>
                     </div>
                 `;
                 this.showFloatingMenu(menu, lastKnownRect);
@@ -478,16 +495,85 @@ export default class PaperView {
                 
                 const selection = window.getSelection();
                 const range = selection.getRangeAt(0);
-                
-                // Borrar la palabra (ej: @alv)
                 range.setStart(selection.focusNode, range.endOffset - this.currentWord.length);
                 range.deleteContents();
                 
-                if (type === 'widget') {
+                if (type === 'widget' || type === 'action') {
                     const widgetId = 'wid_' + Date.now();
                     const el = document.createElement('div');
                     
-                    if (replaceVal === '/mapa') {
+                    // ---------------------------------------------------------
+                    // 🏗️ MINI CONSOLAS INTERACTIVAS (NUEVO SPRINT 43)
+                    // ---------------------------------------------------------
+                    if (replaceVal === '/agente') {
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" id="${widgetId}">
+                                <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">🤖 Forjar Nodo / Agente</div>
+                                <div class="inline-console">
+                                    <input type="text" class="inline-input" id="agent_id_${widgetId}" placeholder="Alias del Nodo (ej: @cyber_monk)">
+                                    <input type="text" class="inline-input" id="agent_name_${widgetId}" placeholder="Nombre Completo (ej: Agente Auditor)">
+                                    <select class="inline-input" id="agent_isai_${widgetId}">
+                                        <option value="true">Es una Inteligencia Artificial (A2A)</option>
+                                        <option value="false">Es un Humano</option>
+                                    </select>
+                                    <button class="inline-btn btn-inline-action" data-action="create-agent" data-wid="${widgetId}">Añadir al Padrón Global</button>
+                                </div>
+                            </div><p><br></p>
+                        `;
+                    } else if (replaceVal === '/rol') {
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" id="${widgetId}">
+                                <div class="omni-widget-header" style="background: rgba(0, 176, 255, 0.1); border-bottom-color: rgba(0, 176, 255, 0.2); color: var(--accent-blue);">🪑 Forjar Silla (Rol VNA)</div>
+                                <div class="inline-console">
+                                    <select class="inline-input" id="role_level_${widgetId}">
+                                        <option value="@anxaneta">@anxaneta (Cúspide / Dirección)</option>
+                                        <option value="@aixecador">@aixecador (Estrategia)</option>
+                                        <option value="@dosos">@dosos (Auditoría / Review)</option>
+                                        <option value="@baixos" selected>@baixos (Producción Core)</option>
+                                        <option value="@pinya">@pinya (Soporte / Infra)</option>
+                                    </select>
+                                    <input type="text" class="inline-input" id="role_name_${widgetId}" placeholder="Nombre del Rol (ej: Especialista en DevOps)">
+                                    <input type="number" class="inline-input" id="role_fmv_${widgetId}" placeholder="Valor de Mercado (FMV €/h, ej: 45)" value="40">
+                                    <button class="inline-btn btn-inline-action" data-action="create-role" data-wid="${widgetId}">Inyectar Rol en el Ecosistema</button>
+                                </div>
+                            </div><p><br></p>
+                        `;
+                    } else if (replaceVal === '/tuberia') {
+                        const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                        const p = store.getState().projects.find(x => x.id === projId);
+                        let roleOptions = '';
+                        if (p && p.roles) {
+                            p.roles.forEach(r => { roleOptions += `<option value="${r.id}">[${r.levelId}] ${r.name}</option>`; });
+                        } else {
+                            roleOptions = `<option value="">Sin red seleccionada</option>`;
+                        }
+                        
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" id="${widgetId}">
+                                <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">🛤️ Trazar Tubería de Valor (SOP)</div>
+                                <div class="inline-console">
+                                    <input type="text" class="inline-input" id="flow_name_${widgetId}" placeholder="Nombre del Entregable (ej: Refactor Componente UI)">
+                                    <div style="display:flex; gap:10px;">
+                                        <select class="inline-input" id="flow_from_${widgetId}" title="De (Rol Origen)">${roleOptions}</select>
+                                        <span style="color:#666; font-size:1.5rem; align-self:center;">&rarr;</span>
+                                        <select class="inline-input" id="flow_to_${widgetId}" title="A (Rol Destino)">${roleOptions}</select>
+                                    </div>
+                                    <div style="display:flex; gap:10px;">
+                                        <input type="number" class="inline-input" id="flow_hours_${widgetId}" placeholder="Horas Est." value="4">
+                                        <select class="inline-input" id="flow_type_${widgetId}">
+                                            <option value="tangible">🟢 Tangible (Código, Diseño)</option>
+                                            <option value="intangible">🟣 Intangible (Auditoría, Soporte)</option>
+                                        </select>
+                                    </div>
+                                    <button class="inline-btn btn-inline-action" data-action="create-flow" data-wid="${widgetId}">Trazar Tubería en Mapa</button>
+                                </div>
+                            </div><p><br></p>
+                        `;
+                    }
+                    // ---------------------------------------------------------
+                    // 📊 COMPONENTES DE RENDERIZADO (WIDGETS EXISTENTES)
+                    // ---------------------------------------------------------
+                    else if (replaceVal === '/mapa') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header">🕸️ Topología VNA (Live Render)</div>
@@ -502,20 +588,6 @@ export default class PaperView {
                                 </div>
                             </div><p><br></p>
                         `;
-                        range.insertNode(el);
-                        range.setStartAfter(el);
-                        
-                        setTimeout(() => {
-                            const canvas = document.getElementById(`canvas_${widgetId}`);
-                            const svgG = document.getElementById(`svg_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === (this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project')));
-                            if(p && canvas && svgG) {
-                                const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
-                                const mr = new MapRenderer(canvas, svgG, { isMacro: true });
-                                mr.setData(p.roles, flows);
-                            }
-                        }, 50);
-
                     } else if (replaceVal === '/kanban') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
@@ -524,19 +596,6 @@ export default class PaperView {
                                 </div>
                             </div><p><br></p>
                         `;
-                        range.insertNode(el);
-                        range.setStartAfter(el);
-
-                        setTimeout(() => {
-                            const container = document.getElementById(`kanban_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === (this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project')));
-                            if(p && container) {
-                                const activeUserId = store.getState().session.activeUserId;
-                                const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
-                                const kr = new KanbanRenderer(container, { project: p, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
-                                kr.render();
-                            }
-                        }, 50);
                     } else if (replaceVal === '/ledger') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
@@ -545,47 +604,69 @@ export default class PaperView {
                                 </div>
                             </div><p><br></p>
                         `;
-                        range.insertNode(el);
-                        range.setStartAfter(el);
-
-                        setTimeout(() => {
-                            const container = document.getElementById(`ledger_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === (this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project')));
-                            if(p && container) {
-                                const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
-                                lr.render();
-                            }
-                        }, 50);
                     } else if (replaceVal === '/deepwork') {
-                        if (!this.activeTx) return alert("❌ El Modo Focus requiere una Work Order. Selecciona una arriba o convierte este borrador primero.");
+                        if (!this.activeTx) return alert("❌ El Modo Focus requiere una Work Order asignada.");
                         const activeHash = this.activeTx.id || this.activeTx.hash;
                         
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-orange); box-shadow: 0 10px 40px rgba(255,171,64,0.1);">
-                                <div class="omni-widget-body" id="focus_${widgetId}">
-                                    </div>
+                                <div class="omni-widget-body" id="focus_${widgetId}"></div>
                             </div><p><br></p>
                         `;
-                        range.insertNode(el);
-                        range.setStartAfter(el);
+                    }
+                    
+                    // Inyección común para Widgets y Actions
+                    range.insertNode(el);
+                    range.setStartAfter(el);
 
+                    // Hidratación diferida para Widgets
+                    if (type === 'widget') {
                         setTimeout(() => {
-                            const container = document.getElementById(`focus_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
-                            if(p && container) {
-                                const fr = new FocusRenderer(container, { 
-                                    projectId: p.id, 
-                                    woHash: activeHash,
-                                    onCompleteCallback: (hours) => {
-                                        alert(`✅ Tarea Reportada al Ledger (${hours}h). Se ha inyectado un log en la Usenet.`);
-                                        this.loadTaskContext(); 
-                                    }
-                                });
-                                fr.render();
+                            const pId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                            const p = store.getState().projects.find(x => x.id === pId);
+                            if(!p) return;
+
+                            if (replaceVal === '/mapa') {
+                                const canvas = document.getElementById(`canvas_${widgetId}`);
+                                const svgG = document.getElementById(`svg_${widgetId}`);
+                                if(canvas && svgG) {
+                                    const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
+                                    const mr = new MapRenderer(canvas, svgG, { isMacro: true });
+                                    mr.setData(p.roles, flows);
+                                }
+                            } else if (replaceVal === '/kanban') {
+                                const container = document.getElementById(`kanban_${widgetId}`);
+                                if(container) {
+                                    const activeUserId = store.getState().session.activeUserId;
+                                    const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
+                                    const kr = new KanbanRenderer(container, { project: p, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
+                                    kr.render();
+                                }
+                            } else if (replaceVal === '/ledger') {
+                                const container = document.getElementById(`ledger_${widgetId}`);
+                                if(container) {
+                                    const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
+                                    lr.render();
+                                }
+                            } else if (replaceVal === '/deepwork') {
+                                const container = document.getElementById(`focus_${widgetId}`);
+                                if(container) {
+                                    const fr = new FocusRenderer(container, { 
+                                        projectId: p.id, 
+                                        woHash: this.activeTx.id || this.activeTx.hash,
+                                        onCompleteCallback: (hours) => {
+                                            alert(`✅ Tarea Reportada al Ledger (${hours}h).`);
+                                            this.loadTaskContext(); 
+                                        }
+                                    });
+                                    fr.render();
+                                }
                             }
                         }, 50);
                     }
+
                 } else {
+                    // Inserción de Enlaces (Meme o Mention)
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
                     const el = document.createElement('a');
                     el.className = htmlClass;
@@ -595,7 +676,6 @@ export default class PaperView {
                     el.innerText = replaceVal;
                     
                     const space = document.createTextNode('\u00A0'); 
-                    
                     range.insertNode(space);
                     range.insertNode(el);
                     range.setStartAfter(space);
@@ -614,7 +694,6 @@ export default class PaperView {
         if (!rect) {
             menu.style.top = '50%'; menu.style.left = '50%';
         } else {
-            // Posicionar el menú justo debajo del cursor
             menu.style.top = `${rect.bottom + 10}px`;
             menu.style.left = `${rect.left}px`;
         }
@@ -623,8 +702,84 @@ export default class PaperView {
     }
 
     // ==========================================
-    // LÓGICA DE DRAFT TO TASK (Borrador a Trabajo)
+    // DELEGACIÓN DE EVENTOS (INLINE CONSOLES)
     // ==========================================
+    async handleInlineConsoleAction(btnElement) {
+        const action = btnElement.dataset.action;
+        const wid = btnElement.dataset.wid;
+        const widgetContainer = document.getElementById(wid);
+        if (!widgetContainer) return;
+
+        try {
+            if (action === 'create-agent') {
+                let id = document.getElementById(`agent_id_${wid}`).value.trim();
+                const name = document.getElementById(`agent_name_${wid}`).value.trim();
+                const isAi = document.getElementById(`agent_isai_${wid}`).value === 'true';
+                
+                if (!id || !name) throw new Error("Alias y Nombre son obligatorios.");
+                if (!id.startsWith('@')) id = '@' + id; 
+
+                await store.dispatch({ 
+                    type: 'ADD_USER', 
+                    payload: {
+                        id: id, name: name, globalRole: isAi ? 'ai-agent' : 'network-user',
+                        profile: { isAi: isAi, preferredEngine: 'deepseek', guardian: 'everyman' }
+                    } 
+                });
+                
+                widgetContainer.innerHTML = `<div class="inline-success">✅ Nodo ${id} inscrito en el Padrón Global.</div>`;
+            } 
+            else if (action === 'create-role') {
+                const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                if (!projId) throw new Error("No hay proyecto activo.");
+                
+                const level = document.getElementById(`role_level_${wid}`).value;
+                const name = document.getElementById(`role_name_${wid}`).value.trim();
+                const fmv = parseFloat(document.getElementById(`role_fmv_${wid}`).value) || 40;
+                
+                if (!name) throw new Error("Nombre del rol obligatorio.");
+
+                const multipliers = { '@anxaneta': 3.0, '@aixecador': 2.0, '@dosos': 1.5, '@baixos': 1.2, '@pinya': 1.0 };
+                const newRole = { id: 'role_' + Date.now(), levelId: level, name: name, fmv: fmv, multiplier: multipliers[level] || 1.0 };
+
+                await store.dispatch({
+                    type: 'UPDATE_PROJECT_INFO',
+                    payload: { projectId: projId, updates: { roles: [...store.getState().projects.find(p=>p.id===projId).roles, newRole] } }
+                });
+                
+                widgetContainer.innerHTML = `<div class="inline-success">✅ Silla ${name} (${level}) forjada en el Ecosistema.</div>`;
+            }
+            else if (action === 'create-flow') {
+                const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                if (!projId) throw new Error("No hay proyecto activo.");
+                
+                const name = document.getElementById(`flow_name_${wid}`).value.trim();
+                const from = document.getElementById(`flow_from_${wid}`).value;
+                const to = document.getElementById(`flow_to_${wid}`).value;
+                const hours = parseFloat(document.getElementById(`flow_hours_${wid}`).value) || 4;
+                const type = document.getElementById(`flow_type_${wid}`).value;
+
+                if (!name || !from || !to) throw new Error("Faltan datos de la Tubería.");
+
+                await store.dispatch({
+                    type: 'ADD_FLOW',
+                    payload: {
+                        projectId: projId,
+                        flow: {
+                            id: 'flow_' + Date.now(),
+                            template: name, from: from, to: to, estimatedHours: hours, tipo: type,
+                            soc_checklist: [], required_skills: []
+                        }
+                    }
+                });
+
+                widgetContainer.innerHTML = `<div class="inline-success">✅ Tubería [${name}] trazada en el Mapa VNA.</div>`;
+            }
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
     async convertDraftToTask() {
         const textContent = this.dom.editor.innerText.trim(); 
         if (!textContent) return alert("⚠️ Escribe algo en el borrador antes de convertirlo.");
@@ -639,9 +794,8 @@ export default class PaperView {
         const project = store.getState().projects.find(p => p.id === projectId);
         if (!project) return;
 
-        // Extraer menciones (Arrobas) del texto para asignar automáticamente
         const words = textContent.split(/\s/);
-        let assignee = store.getState().session.activeUserId; // Por defecto a mí mismo
+        let assignee = store.getState().session.activeUserId; 
         for (const w of words) {
             if (w.startsWith('@') && w.length > 1) { assignee = w; break; }
         }
@@ -654,7 +808,7 @@ export default class PaperView {
                 projectId: projectId,
                 workOrder: {
                     hash: newHash, 
-                    flowId: null, // Tarea Huérfana (Ad-hoc)
+                    flowId: null, 
                     status: 'pinged', 
                     realHours: 0,
                     sprintId: project.activeSprintId,
